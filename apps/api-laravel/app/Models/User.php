@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class User extends Model
+class User extends Authenticatable
 {
-    use HasFactory, HasUuids;
+    use HasFactory, Notifiable, HasUuids;
 
     protected $fillable = [
         'name',
@@ -30,5 +31,10 @@ class User extends Model
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function primaryFacility()
+    {
+        return $this->belongsTo(Facility::class, 'primary_facility_id');
     }
 }
