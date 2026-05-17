@@ -34,8 +34,7 @@
                         <a href="#" class="dropdown-item">Health ID</a>
                         <a href="#" class="dropdown-item">Patient Timeline</a>
                         <a href="#" class="dropdown-item">Consent and Access</a>
-                        <a href="#" class="dropdown-item">Medication Availability</a>
-                        <a href="#" class="dropdown-item">Blood Availability</a>
+                        <a href="{{ route('public.care-map') }}" class="dropdown-item">Verified Care Map</a>
                     </div>
                 </div>
                 <div class="nav-dropdown">
@@ -109,6 +108,7 @@
                         <a href="{{ route('public.how-it-works') }}" class="mobile-nav-link">How OpesCare Works</a>
                         <a href="#" class="mobile-nav-link">Health ID</a>
                         <a href="#" class="mobile-nav-link">Patient Timeline</a>
+                        <a href="{{ route('public.care-map') }}" class="mobile-nav-link">Verified Care Map</a>
                     </div>
                     <div class="mobile-nav-group">
                         <span class="mobile-nav-label">Solutions</span>
