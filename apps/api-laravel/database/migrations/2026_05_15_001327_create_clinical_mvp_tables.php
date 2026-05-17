@@ -68,7 +68,6 @@ return new class extends Migration
 
             $table->foreign('visit_id')->references('id')->on('visits')->onDelete('cascade');
             $table->foreign('provider_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('amends_note_id')->references('id')->on('clinical_notes')->onDelete('set null');
         });
 
         Schema::create('diagnoses', function (Blueprint $table) {
@@ -100,10 +99,18 @@ return new class extends Migration
             $table->foreign('patient_id')->references('id')->on('patients')->onDelete('cascade');
             $table->foreign('provider_id')->references('id')->on('users')->onDelete('cascade');
         });
+
+        Schema::table('clinical_notes', function (Blueprint $table) {
+            $table->foreign('amends_note_id')->references('id')->on('clinical_notes')->onDelete('set null');
+        });
     }
 
     public function down(): void
     {
+        Schema::table('clinical_notes', function (Blueprint $table) {
+            $table->dropForeign(['amends_note_id']);
+        });
+
         Schema::dropIfExists('allergy_records');
         Schema::dropIfExists('diagnoses');
         Schema::dropIfExists('clinical_notes');

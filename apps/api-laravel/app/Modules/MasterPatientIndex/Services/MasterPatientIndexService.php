@@ -25,10 +25,11 @@ class MasterPatientIndexService
         }
 
         if (!empty($data['first_name']) && !empty($data['last_name']) && !empty($data['phone_number']) && !empty($data['date_of_birth']) && !empty($data['sex'])) {
+            $formattedDob = \Carbon\Carbon::parse($data['date_of_birth'])->format('Y-m-d');
             $matches = Patient::where('first_name', $data['first_name'])
                 ->where('last_name', $data['last_name'])
                 ->where('phone_number', $data['phone_number'])
-                ->where('date_of_birth', $data['date_of_birth'])
+                ->whereDate('date_of_birth', $formattedDob)
                 ->where('sex', $data['sex'])
                 ->get();
             $candidates = $candidates->merge($matches);

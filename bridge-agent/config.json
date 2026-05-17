@@ -1,0 +1,34 @@
+{
+  "agent_id": "brg_agent_st_jude_01",
+  "facility_reference": "FAC-001",
+  "environment": "sandbox",
+  "opescare_api": {
+    "auth_token_url": "https://sandbox.connect.opescare.com/api/v1/connect/auth/token",
+    "client_id": "test_client_id",
+    "client_secret": "test_client_secret"
+  },
+  "folder_watcher": {
+    "enabled": true,
+    "directory": "C:\\LegacyHIS\\exports",
+    "file_pattern": "*.csv",
+    "poll_interval_seconds": 30,
+    "archive_directory": "C:\\LegacyHIS\\exports\\archive",
+    "error_directory": "C:\\LegacyHIS\\exports\\errors"
+  },
+  "mapping": {
+    "patient_id": "MRN",
+    "first_name": "FNAME",
+    "last_name": "LNAME",
+    "dob": "DATE_OF_BIRTH",
+    "sex": "GENDER",
+    "encounter_notes": "NOTES"
+  },
+  "database_connector": {
+    "enabled": false,
+    "driver": "postgresql",
+    "host": "127.0.0.1",
+    "port": 5432,
+    "database": "hospital_legacy",
+    "query": "SELECT mrn, name, diagnoses FROM visits WHERE synced = false"
+  }
+}

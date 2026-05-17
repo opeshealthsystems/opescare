@@ -1,0 +1,201 @@
+openapi: 3.1.0
+info:
+  title: OpesCare Connect Interoperability API
+  version: 1.0.0
+  description: Secure, clinical-grade B2B API for external healthcare systems integrating with OpesCare Patient Health ID and timeline registries.
+servers:
+  - url: https://sandbox.connect.opescare.com/api/v1/connect
+    description: Sandbox Environment (Synthetic Data)
+  - url: https://api.connect.opescare.com/api/v1/connect
+    description: Production Environment (Clinical Boundary Access)
+paths:
+  /auth/token:
+    post:
+      summary: OAuth2 Token Issue
+      description: Get temporary Bearer access token for client credentials.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - client_id
+                - client_secret
+                - grant_type
+              properties:
+                client_id:
+                  type: string
+                client_secret:
+                  type: string
+                grant_type:
+                  type: string
+                  enum: [client_credentials]
+      responses:
+        '200':
+          description: Access token generated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  token_type:
+                    type: string
+                  expires_in:
+                    type: integer
+        '401':
+          description: Authentication failed.
+
+  /patients/search:
+    post:
+      summary: Privacy-Safe Patient Search
+      description: Query patient existence securely by health ID, phone, or name and DOB without returning clinical details.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - search_type
+                - query
+                - purpose
+              properties:
+                search_type:
+                  type: string
+                  enum: [health_id, phone, name_date_of_birth]
+                query:
+                  type: string
+                purpose:
+                  type: string
+      responses:
+        '200':
+          description: Exact match or suspects list returned.
+        '400':
+          description: Missing search parameters or correlation headers.
+
+  /consents/request:
+    post:
+      summary: Request Patient Consent
+      description: Initiate a clinical consent request for the patient's mobile app timeline.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - health_id
+                - purpose
+                - requested_scopes
+              properties:
+                health_id:
+                  type: string
+                purpose:
+                  type: string
+                requested_scopes:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Consent request created successfully.
+
+  /patients/{health_id}/summary:
+    get:
+      summary: Pull Patient Clinical Summary
+      description: Retrieve patient demographics, allergies, chronic conditions, and recent visits with active consent grant.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: health_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: X-Purpose-Of-Use
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: X-Consent-Grant-Id
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Approved clinical summary file.
+        '403':
+          description: Consent expired, revoked, or insufficient scopes.
+
+  /patients/{health_id}/emergency-profile:
+    get:
+      summary: Emergency Bypass Profile Pull
+      description: Pull critical allergies, blood group, and emergency contacts under audited emergency overrides.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: health_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: X-Purpose-Of-Use
+          in: header
+          required: true
+          schema:
+            type: string
+            enum: [emergency]
+        - name: X-Emergency-Reason
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Limited emergency summary profile returned safely.
+
+  /records/encounters:
+    post:
+      summary: Push Clinical Encounter
+      description: Log outpatient visits, clinical notes, and ICD-10 diagnoses to the secure timeline.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - health_id
+                - external_encounter_id
+              properties:
+                health_id:
+                  type: string
+                external_encounter_id:
+                  type: string
+      responses:
+        '200':
+          description: Encounter synced successfully.
+        '400':
+          description: Idempotency-Key header is required.
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

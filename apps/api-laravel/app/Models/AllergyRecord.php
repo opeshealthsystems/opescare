@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AllergyRecord extends Model
 {
+    use \App\Traits\IsDemoRecord;
     use HasFactory, HasUuids;
 
     protected $fillable = [

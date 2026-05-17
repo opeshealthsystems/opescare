@@ -1,0 +1,101 @@
+openapi: 3.1.0
+info:
+  title: OpesCare Mobile Patient API
+  version: 1.0.0
+  description: Private API supporting patient mobile apps (Health ID generation, digital QR displays, device registrations, and B2B consent grants).
+servers:
+  - url: https://api.opescare.com/api/mobile
+    description: Sandbox/Production Endpoint Gateway
+paths:
+  /auth/login:
+    post:
+      summary: Pin/Phone Authentication Initializer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phone
+                - pin_hash
+              properties:
+                phone:
+                  type: string
+                pin_hash:
+                  type: string
+      responses:
+        '200':
+          description: Login authorized. Dispatching 2FA OTP code.
+
+  /auth/otp/verify:
+    post:
+      summary: Verify 2FA OTP Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - otp_code
+              properties:
+                otp_code:
+                  type: string
+      responses:
+        '200':
+          description: OTP code matches. Returning mobile bearer token.
+
+  /me:
+    get:
+      summary: Get Patient Identity
+      security:
+        - MobileToken: []
+      responses:
+        '200':
+          description: Demographic files, Health ID, and verification profiles.
+
+  /consent-requests:
+    get:
+      summary: List B2B Consent Requests
+      security:
+        - MobileToken: []
+      responses:
+        '200':
+          description: Array of pending B2B consent queries awaiting approval.
+
+  /consent-requests/{id}/approve:
+    post:
+      summary: Approve B2B Consent Request
+      security:
+        - MobileToken: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: B2B Consent request approved. Token granted.
+
+  /consent-requests/{id}/deny:
+    post:
+      summary: Deny B2B Consent Request
+      security:
+        - MobileToken: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Consent request denied successfully.
+
+components:
+  securitySchemes:
+    MobileToken:
+      type: http
+      scheme: bearer

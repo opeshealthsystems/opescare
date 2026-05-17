@@ -33,4 +33,23 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Roles Tab Switcher
+    const roleTabs = document.querySelectorAll('.role-tab');
+    const rolePanels = document.querySelectorAll('.role-panel');
+
+    roleTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            roleTabs.forEach(t => t.classList.remove('active'));
+            rolePanels.forEach(p => p.classList.remove('active'));
+
+            tab.classList.add('active');
+
+            const targetId = tab.getAttribute('data-target');
+            const targetPanel = document.getElementById(`panel-${targetId}`);
+            if (targetPanel) {
+                targetPanel.classList.add('active');
+            }
+        });
+    });
 });

@@ -81,6 +81,9 @@
                 </div>
                 
                 <div style="display: flex; align-items: center; gap: 1rem;">
+                    <a href="{{ route('demo.public') }}" class="text-sm font-bold hover:text-[var(--color-primary)] transition-colors flex items-center">
+                        <i data-lucide="play-circle" class="h-4 w-4 mr-1"></i> Demo
+                    </a>
                     <a href="{{ route('login') }}" class="text-sm font-bold hover:text-[var(--color-primary)] transition-colors">{{ __('auth.login.title') }}</a>
                     <a href="{{ route('register') }}" class="btn btn-primary">Get Started</a>
                 </div>
@@ -121,7 +124,9 @@
                         <a href="{{ route('lang.switch', 'en') }}" class="{{ app()->getLocale() == 'en' ? 'text-[var(--color-primary)]' : 'text-muted' }} font-bold">ENGLISH</a>
                         <a href="{{ route('lang.switch', 'fr') }}" class="{{ app()->getLocale() == 'fr' ? 'text-[var(--color-primary)]' : 'text-muted' }} font-bold">FRANÇAIS</a>
                     </div>
-                    <a href="{{ route('public.contact') }}" class="btn btn-primary" style="margin-top: 1rem; width: 100%;">{{ __('landing.nav.demo') }}</a>
+                    <a href="{{ route('demo.public') }}" class="btn btn-primary flex justify-center items-center" style="margin-top: 1rem; width: 100%;">
+                        <i data-lucide="play-circle" class="h-4 w-4 mr-2"></i> {{ __('landing.nav.demo') }}
+                    </a>
                 </nav>
             </div>
         </div>

@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    use \App\Traits\IsDemoRecord;
     use HasFactory, Notifiable, HasUuids;
 
     protected $fillable = [

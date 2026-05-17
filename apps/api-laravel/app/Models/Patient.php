@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Patient extends Model
 {
+    use \App\Traits\IsDemoRecord;
     use HasFactory, HasUuids;
 
     protected $fillable = [
         'health_id',
+        'country_code',
         'first_name',
         'last_name',
         'middle_name',
@@ -22,8 +24,10 @@ class Patient extends Model
         'address',
         'emergency_contact',
         'identity_status',
+        'verification_status',
         'verified_by_facility_id',
         'verified_at',
+        'is_demo',
     ];
 
     protected $casts = [

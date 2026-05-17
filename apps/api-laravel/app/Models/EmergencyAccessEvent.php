@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class EmergencyAccessEvent extends Model
 {
+    use \App\Traits\IsDemoRecord;
     use HasFactory, HasUuids;
 
     protected $fillable = [
