@@ -199,6 +199,7 @@ Route::prefix('demo')->group(function () {
 
 require __DIR__.'/partners.php';
 require __DIR__.'/communications.php';
+require __DIR__.'/academy.php';
 
 /*
 |--------------------------------------------------------------------------
