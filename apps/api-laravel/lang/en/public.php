@@ -93,4 +93,8 @@ return [
         'no_partners' => 'No partners found.',
         'loading' => 'Loading partners...',
     ],
+    'availability_may_change' => 'Information may change. Please contact the facility before travelling or making medical decisions.',
+    'medicine_disclaimer' => 'Medicine availability is reported by the pharmacy and may change. Always confirm with the pharmacy.',
+    'blood_disclaimer' => 'Blood availability may change quickly. Contact the blood bank immediately.',
+    'emergency_disclaimer' => 'If this is a life-threatening emergency, contact local emergency services or go to the nearest emergency facility immediately.',
 ];

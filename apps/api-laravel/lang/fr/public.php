@@ -93,4 +93,8 @@ return [
         'no_partners' => 'Aucun partenaire trouvé.',
         'loading' => 'Chargement des partenaires...',
     ],
+    'availability_may_change' => 'La disponibilité peut changer. Veuillez contacter l’établissement avant de vous déplacer ou de prendre des décisions médicales.',
+    'medicine_disclaimer' => 'La disponibilité des médicaments est signalée par la pharmacie et peut changer. Confirmez toujours auprès de la pharmacie.',
+    'blood_disclaimer' => 'La disponibilité des produits sanguins peut changer rapidement. Contactez immédiatement la banque de sang.',
+    'emergency_disclaimer' => 'S’il s’agit d’une urgence vitale, contactez immédiatement les services de secours locaux ou rendez-vous au centre de secours le plus proche.',
 ];
