@@ -215,3 +215,33 @@ Route::post('/v1/documents/{id}/entered-in-error', [\App\Http\Controllers\Api\V1
 Route::post('/v1/document-verification/verify-code', [\App\Http\Controllers\Api\V1\DocumentController::class, 'verifyCode']);
 Route::post('/v1/documents/{id}/share-links', [\App\Http\Controllers\Api\V1\DocumentController::class, 'share']);
 
+/*
+|--------------------------------------------------------------------------
+| OpesCare Verified Care Access Map API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/care-map')->group(function () {
+    Route::get('/facilities', [\App\Http\Controllers\Api\V1\CareMapController::class, 'index']);
+    Route::get('/facilities/{id}', [\App\Http\Controllers\Api\V1\CareMapController::class, 'show']);
+    Route::get('/search', [\App\Http\Controllers\Api\V1\CareMapController::class, 'index']);
+    Route::get('/nearby', [\App\Http\Controllers\Api\V1\CareMapController::class, 'index']);
+    Route::get('/pharmacies/medicine-search', [\App\Http\Controllers\Api\V1\CareMapController::class, 'searchMedicine']);
+    Route::get('/labs/test-search', [\App\Http\Controllers\Api\V1\CareMapController::class, 'searchTests']);
+    Route::get('/blood/search', [\App\Http\Controllers\Api\V1\CareMapController::class, 'searchBlood']);
+    Route::get('/emergency', [\App\Http\Controllers\Api\V1\CareMapController::class, 'searchEmergency']);
+    
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/facilities/{id}/save', [\App\Http\Controllers\Api\V1\CareMapController::class, 'saveFacility']);
+        Route::post('/facilities/{id}/report', [\App\Http\Controllers\Api\V1\CareMapController::class, 'reportFacility']);
+        Route::post('/facilities/{id}/claim', [\App\Http\Controllers\Api\V1\CareMapController::class, 'claimFacility']);
+        
+        // Partner syncs
+        Route::post('/partner/facilities/{id}/stock-sync', [\App\Http\Controllers\Api\V1\CareMapController::class, 'partnerStockSync']);
+        
+        // Admin actions
+        Route::post('/admin/facilities/{id}/verify', [\App\Http\Controllers\Api\V1\CareMapController::class, 'adminVerifyFacility']);
+        Route::post('/admin/facilities/{id}/suspend', [\App\Http\Controllers\Api\V1\CareMapController::class, 'adminSuspendFacility']);
+    });
+});
+
+
