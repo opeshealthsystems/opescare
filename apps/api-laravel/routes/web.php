@@ -161,6 +161,15 @@ Route::middleware(['web'])->group(function () {
 
         return view('portals.staff.billing', ['invoices' => $invoices]);
     })->name('portals.staff.billing');
+    Route::get('/portals/staff/support', function (\Illuminate\Http\Request $request) {
+        $tickets = \App\Models\SupportTicket::query()
+            ->when($request->query('facility_id'), fn ($query, $facilityId) => $query->where('facility_id', $facilityId))
+            ->when($request->query('status'), fn ($query, $status) => $query->where('status', $status))
+            ->orderByDesc('created_at')
+            ->get();
+
+        return view('portals.staff.support', ['tickets' => $tickets]);
+    })->name('portals.staff.support');
     Route::get('/queue-display', function (\Illuminate\Http\Request $request, \App\Modules\Queue\Services\QueueService $service) {
         $tickets = $request->query('facility_id')
             ? $service->maskedDisplay($request->query('facility_id'), $request->query('queue_name'))

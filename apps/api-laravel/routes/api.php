@@ -15,6 +15,23 @@ Route::prefix('v1/operational-flow')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| OpesCare Support and Helpdesk API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/support')->group(function () {
+    Route::get('/tickets', [\App\Http\Controllers\Api\V1\SupportController::class, 'index']);
+    Route::post('/tickets', [\App\Http\Controllers\Api\V1\SupportController::class, 'store']);
+    Route::post('/tickets/{ticket}/messages', [\App\Http\Controllers\Api\V1\SupportController::class, 'addMessage']);
+    Route::post('/tickets/{ticket}/assign', [\App\Http\Controllers\Api\V1\SupportController::class, 'assign']);
+    Route::post('/tickets/{ticket}/escalate', [\App\Http\Controllers\Api\V1\SupportController::class, 'escalate']);
+    Route::post('/tickets/{ticket}/resolve', [\App\Http\Controllers\Api\V1\SupportController::class, 'resolve']);
+    Route::post('/tickets/{ticket}/incident', [\App\Http\Controllers\Api\V1\SupportController::class, 'createIncident']);
+    Route::post('/knowledge-base', [\App\Http\Controllers\Api\V1\SupportController::class, 'publishArticle']);
+    Route::post('/knowledge-base/{article}/view', [\App\Http\Controllers\Api\V1\SupportController::class, 'viewArticle']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | OpesCare Billing and Cashier API Routes
 |--------------------------------------------------------------------------
 */
