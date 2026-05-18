@@ -22,6 +22,22 @@
                 </a>
             </div>
         @else
+            @if(session('error'))
+                <div class="auth-alert auth-alert-danger">
+                    <i data-lucide="triangle-alert" style="width: 1.5rem; height: 1.5rem; flex-shrink: 0;"></i>
+                    <div>{{ session('error') }}</div>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="auth-alert auth-alert-danger">
+                    <i data-lucide="triangle-alert" style="width: 1.5rem; height: 1.5rem; flex-shrink: 0;"></i>
+                    <ul style="margin:0;padding-left:1.25rem;">
+                        @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
+                    </ul>
+                </div>
+            @endif
+
             <!--GuardianSignupForm Component -->
             <form action="{{ route('register.guardian.submit') }}" method="POST" class="auth-form">
                 @csrf
@@ -35,29 +51,34 @@
                     <div class="auth-form-row">
                         <div class="auth-form-group">
                             <label for="first_name" class="auth-label">{{ __('onboarding.patient.first_name') }} *</label>
-                            <input type="text" id="first_name" name="first_name" class="auth-input" required>
+                            <input type="text" id="first_name" name="first_name" class="auth-input{{ $errors->has('first_name') ? ' auth-input-error' : '' }}" required>
+                            @error('first_name')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                         <div class="auth-form-group">
                             <label for="last_name" class="auth-label">{{ __('onboarding.patient.last_name') }} *</label>
-                            <input type="text" id="last_name" name="last_name" class="auth-input" required>
+                            <input type="text" id="last_name" name="last_name" class="auth-input{{ $errors->has('last_name') ? ' auth-input-error' : '' }}" required>
+                            @error('last_name')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                     </div>
 
                     <div class="auth-form-row" style="margin-top: 1rem;">
                         <div class="auth-form-group">
                             <label for="phone" class="auth-label">{{ __('onboarding.common.phone') }} *</label>
-                            <input type="tel" id="phone" name="phone" class="auth-input" required>
+                            <input type="tel" id="phone" name="phone" class="auth-input{{ $errors->has('phone') ? ' auth-input-error' : '' }}" required>
+                            @error('phone')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                         <div class="auth-form-group">
                             <label for="email" class="auth-label">{{ __('onboarding.common.email') }}</label>
-                            <input type="email" id="email" name="email" class="auth-input" placeholder="optional@email.com">
+                            <input type="email" id="email" name="email" class="auth-input{{ $errors->has('email') ? ' auth-input-error' : '' }}" placeholder="optional@email.com">
+                            @error('email')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                     </div>
 
                     <div class="auth-form-row" style="margin-top: 1rem;">
                         <div class="auth-form-group">
                             <label for="dob" class="auth-label">{{ __('onboarding.patient.dob') }} *</label>
-                            <input type="date" id="dob" name="dob" class="auth-input" required>
+                            <input type="date" id="dob" name="dob" class="auth-input{{ $errors->has('dob') ? ' auth-input-error' : '' }}" required>
+                            @error('dob')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                         <div class="auth-form-group">
                             <label for="preferred_language" class="auth-label">{{ __('onboarding.patient.preferred_lang') }} *</label>
@@ -76,23 +97,26 @@
                     </h3>
 
                     <div class="auth-form-group">
-                        <label for="dep_name" class="auth-label">Patient / Dependent Full Name *</label>
-                        <input type="text" id="dep_name" name="dep_name" class="auth-input" required placeholder="Full Name of the dependent">
+                        <label for="dep_name" class="auth-label">{{ __('onboarding.guardian.dep_name_lbl') }} *</label>
+                        <input type="text" id="dep_name" name="dep_name" class="auth-input{{ $errors->has('dep_name') ? ' auth-input-error' : '' }}" required placeholder="Full Name of the dependent">
+                        @error('dep_name')<div class="auth-field-error">{{ $message }}</div>@enderror
                     </div>
 
                     <div class="auth-form-row" style="margin-top: 1rem;">
                         <div class="auth-form-group">
-                            <label for="dep_dob" class="auth-label">Patient Date of Birth *</label>
-                            <input type="date" id="dep_dob" name="dep_dob" class="auth-input" required>
+                            <label for="dep_dob" class="auth-label">{{ __('onboarding.guardian.dep_dob_lbl') }} *</label>
+                            <input type="date" id="dep_dob" name="dep_dob" class="auth-input{{ $errors->has('dep_dob') ? ' auth-input-error' : '' }}" required>
+                            @error('dep_dob')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                         <div class="auth-form-group">
-                            <label for="dep_sex" class="auth-label">Patient Biological Sex *</label>
-                            <select id="dep_sex" name="dep_sex" class="auth-input" style="padding-top: 0.65rem; padding-bottom: 0.65rem;" required>
+                            <label for="dep_sex" class="auth-label">{{ __('onboarding.guardian.dep_sex_lbl') }} *</label>
+                            <select id="dep_sex" name="dep_sex" class="auth-input{{ $errors->has('dep_sex') ? ' auth-input-error' : '' }}" style="padding-top: 0.65rem; padding-bottom: 0.65rem;" required>
                                 <option value="" disabled selected>{{ __('onboarding.common.select_option') }}</option>
                                 <option value="M">Male</option>
                                 <option value="F">Female</option>
                                 <option value="O">Other</option>
                             </select>
+                            @error('dep_sex')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                     </div>
 
@@ -103,13 +127,15 @@
                         </div>
                         <div class="auth-form-group">
                             <label for="dep_relationship" class="auth-label">{{ __('onboarding.guardian.relationship_lbl') }} *</label>
-                            <input type="text" id="dep_relationship" name="dep_relationship" class="auth-input" placeholder="Parent, Legal Guardian, Caregiver" required>
+                            <input type="text" id="dep_relationship" name="dep_relationship" class="auth-input{{ $errors->has('dep_relationship') ? ' auth-input-error' : '' }}" placeholder="Parent, Legal Guardian, Caregiver" required>
+                            @error('dep_relationship')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                     </div>
 
                     <div class="auth-form-group" style="margin-top: 1rem;">
                         <label for="access_reason" class="auth-label">{{ __('onboarding.guardian.reason_lbl') }} *</label>
-                        <textarea id="access_reason" name="access_reason" class="auth-input" style="min-height: 80px; resize: vertical;" required placeholder="{{ __('onboarding.guardian.reason_desc') }}"></textarea>
+                        <textarea id="access_reason" name="access_reason" class="auth-input{{ $errors->has('access_reason') ? ' auth-input-error' : '' }}" style="min-height: 80px; resize: vertical;" required placeholder="{{ __('onboarding.guardian.reason_desc') }}"></textarea>
+                        @error('access_reason')<div class="auth-field-error">{{ $message }}</div>@enderror
                     </div>
                 </div>
 
@@ -122,11 +148,13 @@
                     <div class="auth-form-row">
                         <div class="auth-form-group">
                             <label for="password" class="auth-label">{{ __('onboarding.common.password') }} *</label>
-                            <input type="password" id="password" name="password" class="auth-input" required minlength="8" placeholder="••••••••">
+                            <input type="password" id="password" name="password" class="auth-input{{ $errors->has('password') ? ' auth-input-error' : '' }}" required minlength="8" placeholder="••••••••">
+                            @error('password')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                         <div class="auth-form-group">
                             <label for="confirm_password" class="auth-label">{{ __('onboarding.common.confirm_password') }} *</label>
-                            <input type="password" id="confirm_password" name="confirm_password" class="auth-input" required minlength="8" placeholder="••••••••">
+                            <input type="password" id="confirm_password" name="confirm_password" class="auth-input{{ $errors->has('confirm_password') ? ' auth-input-error' : '' }}" required minlength="8" placeholder="••••••••">
+                            @error('confirm_password')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                     </div>
 
@@ -134,11 +162,13 @@
                         <input type="checkbox" id="accept_terms" name="accept_terms" required>
                         <label for="accept_terms" class="auth-checkbox-label">{{ __('onboarding.common.accept_terms') }} *</label>
                     </div>
+                    @error('accept_terms')<div class="auth-field-error">{{ $message }}</div>@enderror
 
                     <div class="auth-checkbox-group" style="margin-top: 0.75rem;">
                         <input type="checkbox" id="accept_privacy" name="accept_privacy" required>
                         <label for="accept_privacy" class="auth-checkbox-label">{{ __('onboarding.common.accept_privacy') }} *</label>
                     </div>
+                    @error('accept_privacy')<div class="auth-field-error">{{ $message }}</div>@enderror
                 </div>
 
                 <!-- Consent Safety Banner -->

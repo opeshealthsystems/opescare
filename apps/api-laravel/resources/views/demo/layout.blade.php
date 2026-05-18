@@ -78,7 +78,7 @@
     </footer>
 
     <script>
-        lucide.createIcons();
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     </script>
 </body>
 </html>

@@ -64,6 +64,22 @@
                 </div>
             </div>
 
+            @if(session('error'))
+                <div class="auth-alert auth-alert-danger">
+                    <i data-lucide="triangle-alert"></i>
+                    <div>{{ session('error') }}</div>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="auth-alert auth-alert-danger">
+                    <i data-lucide="triangle-alert"></i>
+                    <ul style="margin:0;padding-left:1.25rem;">
+                        @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
+                    </ul>
+                </div>
+            @endif
+
             <!--StaffInviteAcceptForm Component -->
             <form action="{{ route('invite.accept.submit', $token) }}" method="POST" class="auth-form">
                 @csrf
@@ -73,30 +89,35 @@
                 </h3>
 
                 <div class="auth-form-group">
-                    <label for="name" class="auth-label">Full Name *</label>
-                    <input type="text" id="name" name="name" class="auth-input" required value="{{ old('name') }}">
+                    <label for="name" class="auth-label">{{ __('onboarding.common.full_name') }} *</label>
+                    <input type="text" id="name" name="name" class="auth-input{{ $errors->has('name') ? ' auth-input-error' : '' }}" required value="{{ old('name') }}">
+                    @error('name')<div class="auth-field-error">{{ $message }}</div>@enderror
                 </div>
 
                 <div class="auth-form-group" style="margin-top: 0.5rem;">
                     <label for="phone" class="auth-label">{{ __('onboarding.common.phone') }} *</label>
-                    <input type="tel" id="phone" name="phone" class="auth-input" required value="{{ old('phone') }}">
+                    <input type="tel" id="phone" name="phone" class="auth-input{{ $errors->has('phone') ? ' auth-input-error' : '' }}" required value="{{ old('phone') }}">
+                    @error('phone')<div class="auth-field-error">{{ $message }}</div>@enderror
                 </div>
 
                 <div class="auth-form-row" style="margin-top: 0.5rem;">
                     <div class="auth-form-group">
                         <label for="password" class="auth-label">{{ __('onboarding.common.password') }} *</label>
-                        <input type="password" id="password" name="password" class="auth-input" required minlength="8" placeholder="Min. 8 characters">
+                        <input type="password" id="password" name="password" class="auth-input{{ $errors->has('password') ? ' auth-input-error' : '' }}" required minlength="8" placeholder="Min. 8 characters">
+                        @error('password')<div class="auth-field-error">{{ $message }}</div>@enderror
                     </div>
                     <div class="auth-form-group">
                         <label for="confirm_password" class="auth-label">{{ __('onboarding.common.confirm_password') }} *</label>
-                        <input type="password" id="confirm_password" name="confirm_password" class="auth-input" required placeholder="••••••••">
+                        <input type="password" id="confirm_password" name="confirm_password" class="auth-input{{ $errors->has('confirm_password') ? ' auth-input-error' : '' }}" required placeholder="••••••••">
+                        @error('confirm_password')<div class="auth-field-error">{{ $message }}</div>@enderror
                     </div>
                 </div>
 
                 <div class="auth-checkbox-group" style="margin-top: 1rem;">
                     <input type="checkbox" id="accept_terms" name="accept_terms" required>
-                    <label for="accept_terms" class="auth-checkbox-label">I accept the OpesCare terms of service and patient records access audits *</label>
+                    <label for="accept_terms" class="auth-checkbox-label">{{ __('onboarding.invite.terms_label') }}</label>
                 </div>
+                @error('accept_terms')<div class="auth-field-error">{{ $message }}</div>@enderror
 
                 <!-- Submit Button -->
                 <button type="submit" class="auth-btn auth-btn-primary" style="margin-top: 1.25rem;">

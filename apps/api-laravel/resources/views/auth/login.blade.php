@@ -30,7 +30,8 @@
             <!-- TextInput -->
             <div class="auth-form-group">
                 <label for="email" class="auth-label">{{ __('onboarding.login.email_or_phone') }}</label>
-                <input type="text" id="email" name="email" class="auth-input" placeholder="name@facility.org or +123..." required autofocus value="{{ old('email') }}">
+                <input type="text" id="email" name="email" class="auth-input{{ $errors->has('email') ? ' auth-input-error' : '' }}" placeholder="name@facility.org or +123..." required autofocus value="{{ old('email') }}">
+                @error('email')<div class="auth-field-error">{{ $message }}</div>@enderror
             </div>
 
             <!-- PasswordInput -->
@@ -42,11 +43,12 @@
                     </a>
                 </div>
                 <div class="auth-pass-wrapper">
-                    <input type="password" id="password" name="password" class="auth-input" required placeholder="••••••••">
+                    <input type="password" id="password" name="password" class="auth-input{{ $errors->has('password') ? ' auth-input-error' : '' }}" required placeholder="••••••••">
                     <button type="button" class="auth-pass-toggle" onclick="togglePasswordVisibility('password')">
                         <i data-lucide="eye" id="password-toggle-icon"></i>
                     </button>
                 </div>
+                @error('password')<div class="auth-field-error">{{ $message }}</div>@enderror
             </div>
 
             <!-- Checkbox -->
@@ -91,7 +93,7 @@
                 input.type = 'password';
                 icon.setAttribute('data-lucide', 'eye');
             }
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
     </script>
 @endsection

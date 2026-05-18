@@ -454,7 +454,7 @@
                 btnNext.querySelector('span').innerText = "{{ __('onboarding.common.continue') }}";
                 btnNext.querySelector('i').setAttribute('data-lucide', 'arrow-right');
             }
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         function handleFileSelected(inputId, previewSpanId) {

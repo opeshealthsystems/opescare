@@ -68,6 +68,15 @@
                 </div>
             @endif
 
+            @if($errors->any())
+                <div class="auth-alert auth-alert-danger">
+                    <i data-lucide="triangle-alert" style="width: 1.5rem; height: 1.5rem;"></i>
+                    <ul style="margin:0;padding-left:1.25rem;">
+                        @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
+                    </ul>
+                </div>
+            @endif
+
             <!--PatientSignupForm Component -->
             <form action="{{ route('register.patient.submit') }}" method="POST" class="auth-form">
                 @csrf
@@ -81,11 +90,13 @@
                     <div class="auth-form-row">
                         <div class="auth-form-group">
                             <label for="first_name" class="auth-label">{{ __('onboarding.patient.first_name') }} *</label>
-                            <input type="text" id="first_name" name="first_name" class="auth-input" required value="{{ old('first_name') }}">
+                            <input type="text" id="first_name" name="first_name" class="auth-input{{ $errors->has('first_name') ? ' auth-input-error' : '' }}" required value="{{ old('first_name') }}">
+                            @error('first_name')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                         <div class="auth-form-group">
                             <label for="last_name" class="auth-label">{{ __('onboarding.patient.last_name') }} *</label>
-                            <input type="text" id="last_name" name="last_name" class="auth-input" required value="{{ old('last_name') }}">
+                            <input type="text" id="last_name" name="last_name" class="auth-input{{ $errors->has('last_name') ? ' auth-input-error' : '' }}" required value="{{ old('last_name') }}">
+                            @error('last_name')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                     </div>
 
@@ -97,27 +108,31 @@
                     <div class="auth-form-row" style="margin-top: 1rem;">
                         <div class="auth-form-group">
                             <label for="dob" class="auth-label">{{ __('onboarding.patient.dob') }} *</label>
-                            <input type="date" id="dob" name="dob" class="auth-input" required value="{{ old('dob') }}">
+                            <input type="date" id="dob" name="dob" class="auth-input{{ $errors->has('dob') ? ' auth-input-error' : '' }}" required value="{{ old('dob') }}">
+                            @error('dob')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                         <div class="auth-form-group">
                             <label for="sex" class="auth-label">{{ __('onboarding.patient.sex') }} *</label>
-                            <select id="sex" name="sex" class="auth-input" style="padding-top: 0.65rem; padding-bottom: 0.65rem;" required>
+                            <select id="sex" name="sex" class="auth-input{{ $errors->has('sex') ? ' auth-input-error' : '' }}" style="padding-top: 0.65rem; padding-bottom: 0.65rem;" required>
                                 <option value="" disabled selected>{{ __('onboarding.common.select_option') }}</option>
                                 <option value="M" {{ old('sex') == 'M' ? 'selected' : '' }}>Male</option>
                                 <option value="F" {{ old('sex') == 'F' ? 'selected' : '' }}>Female</option>
                                 <option value="O" {{ old('sex') == 'O' ? 'selected' : '' }}>Other</option>
                             </select>
+                            @error('sex')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                     </div>
 
                     <div class="auth-form-row" style="margin-top: 1rem;">
                         <div class="auth-form-group">
                             <label for="phone" class="auth-label">{{ __('onboarding.common.phone') }} *</label>
-                            <input type="tel" id="phone" name="phone" class="auth-input" placeholder="+123..." required value="{{ old('phone') }}">
+                            <input type="tel" id="phone" name="phone" class="auth-input{{ $errors->has('phone') ? ' auth-input-error' : '' }}" placeholder="+123..." required value="{{ old('phone') }}">
+                            @error('phone')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                         <div class="auth-form-group">
                             <label for="email" class="auth-label">{{ __('onboarding.common.email') }}</label>
-                            <input type="email" id="email" name="email" class="auth-input" placeholder="optional@email.com" value="{{ old('email') }}">
+                            <input type="email" id="email" name="email" class="auth-input{{ $errors->has('email') ? ' auth-input-error' : '' }}" placeholder="optional@email.com" value="{{ old('email') }}">
+                            @error('email')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                     </div>
 
@@ -189,17 +204,20 @@
 
                     <div class="auth-form-group">
                         <label for="emergency_name" class="auth-label">{{ __('onboarding.patient.emerg_name') }} *</label>
-                        <input type="text" id="emergency_name" name="emergency_name" class="auth-input" required>
+                        <input type="text" id="emergency_name" name="emergency_name" class="auth-input{{ $errors->has('emergency_name') ? ' auth-input-error' : '' }}" required>
+                        @error('emergency_name')<div class="auth-field-error">{{ $message }}</div>@enderror
                     </div>
 
                     <div class="auth-form-row" style="margin-top: 1rem;">
                         <div class="auth-form-group">
                             <label for="emergency_relationship" class="auth-label">{{ __('onboarding.patient.emerg_rel') }} *</label>
-                            <input type="text" id="emergency_relationship" name="emergency_relationship" class="auth-input" required placeholder="Spouse, Parent, Sibling...">
+                            <input type="text" id="emergency_relationship" name="emergency_relationship" class="auth-input{{ $errors->has('emergency_relationship') ? ' auth-input-error' : '' }}" required placeholder="Spouse, Parent, Sibling...">
+                            @error('emergency_relationship')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                         <div class="auth-form-group">
                             <label for="emergency_phone" class="auth-label">{{ __('onboarding.patient.emerg_phone') }} *</label>
-                            <input type="tel" id="emergency_phone" name="emergency_phone" class="auth-input" required>
+                            <input type="tel" id="emergency_phone" name="emergency_phone" class="auth-input{{ $errors->has('emergency_phone') ? ' auth-input-error' : '' }}" required>
+                            @error('emergency_phone')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                     </div>
                 </div>
@@ -213,11 +231,13 @@
                     <div class="auth-form-row">
                         <div class="auth-form-group">
                             <label for="password" class="auth-label">{{ __('onboarding.common.password') }} *</label>
-                            <input type="password" id="password" name="password" class="auth-input" required minlength="8" placeholder="Min. 8 characters">
+                            <input type="password" id="password" name="password" class="auth-input{{ $errors->has('password') ? ' auth-input-error' : '' }}" required minlength="8" placeholder="Min. 8 characters">
+                            @error('password')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                         <div class="auth-form-group">
                             <label for="confirm_password" class="auth-label">{{ __('onboarding.common.confirm_password') }} *</label>
-                            <input type="password" id="confirm_password" name="confirm_password" class="auth-input" required minlength="8" placeholder="••••••••">
+                            <input type="password" id="confirm_password" name="confirm_password" class="auth-input{{ $errors->has('confirm_password') ? ' auth-input-error' : '' }}" required minlength="8" placeholder="••••••••">
+                            @error('confirm_password')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                     </div>
 
@@ -225,11 +245,13 @@
                         <input type="checkbox" id="accept_terms" name="accept_terms" required>
                         <label for="accept_terms" class="auth-checkbox-label">{{ __('onboarding.common.accept_terms') }} *</label>
                     </div>
+                    @error('accept_terms')<div class="auth-field-error">{{ $message }}</div>@enderror
 
                     <div class="auth-checkbox-group" style="margin-top: 0.75rem;">
                         <input type="checkbox" id="accept_privacy" name="accept_privacy" required>
                         <label for="accept_privacy" class="auth-checkbox-label">{{ __('onboarding.common.accept_privacy') }} *</label>
                     </div>
+                    @error('accept_privacy')<div class="auth-field-error">{{ $message }}</div>@enderror
                 </div>
 
                 <!-- Section 5: Consent Notice -->
