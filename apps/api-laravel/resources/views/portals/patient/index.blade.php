@@ -2,11 +2,11 @@
 
 @section('title', __('public.medical_id.health_id', [], app()->getLocale()) . ' — OpesCare Patient Portal')
 
-@section('breadcrumb_home', 'My Portal')
+@section('breadcrumb_home', __('public.portal.my_portal', [], app()->getLocale()) ?: 'My Portal')
 @section('breadcrumb_home_url', route('portals.patient'))
 
 @section('sidebar_role_badge')
-    <div class="sidebar-role-badge" style="background:rgba(15,118,110,0.3);border-color:rgba(15,118,110,0.5);color:#5EEAD4;">
+    <div class="sidebar-role-badge" style="background:rgba(15,118,110,.3);border-color:rgba(15,118,110,.5);color:#5EEAD4;">
         <i data-lucide="user" style="width:0.75rem;height:0.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
         {{ __('public.portal.patient_role', [], app()->getLocale()) ?: 'Patient' }}
     </div>
@@ -34,7 +34,7 @@
 
     <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">{{ __('public.portal.nav_resources', [], app()->getLocale()) ?: 'Resources' }}</div>
 
-    <a href="{{ route('care_map.directory') }}" class="sidebar-link">
+    <a href="{{ route('public.care-map') }}" class="sidebar-link">
         <i data-lucide="map-pin"></i>
         {{ __('public.portal.nav_care_map', [], app()->getLocale()) ?: 'Care Map' }}
     </a>
@@ -58,7 +58,7 @@
     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:var(--p-space-5);">
         <div style="flex:1;">
             <div style="display:flex;align-items:center;gap:var(--p-space-3);margin-bottom:var(--p-space-5);">
-                <div style="padding:var(--p-space-2);background:rgba(255,255,255,0.15);border-radius:var(--p-radius);">
+                <div style="padding:var(--p-space-2);background:rgba(255,255,255,.15);border-radius:var(--p-radius);">
                     <i data-lucide="fingerprint" style="width:1.25rem;height:1.25rem;"></i>
                 </div>
                 <span class="health-id-label">{{ __('public.medical_id.health_id', [], app()->getLocale()) ?: 'OpesCare Health ID' }}</span>
@@ -105,7 +105,7 @@
         <div class="quick-action-icon"><i data-lucide="history"></i></div>
         <span class="quick-action-label">{{ __('public.medical_id.access_logs', [], app()->getLocale()) ?: 'Access Logs' }}</span>
     </a>
-    <a href="{{ route('care_map.directory') }}" class="quick-action-btn">
+    <a href="{{ route('public.care-map') }}" class="quick-action-btn">
         <div class="quick-action-icon"><i data-lucide="map-pin"></i></div>
         <span class="quick-action-label">{{ __('public.portal.nav_care_map', [], app()->getLocale()) ?: 'Care Map' }}</span>
     </a>
@@ -136,7 +136,7 @@
                 {{ __('public.portal.generate_qr', [], app()->getLocale()) ?: 'Generate Temporary QR' }}
             </button>
 
-            <div id="temp-qr-container" style="margin-top:var(--p-space-6);display:none;flex-direction:column;align-items:center;">
+            <div id="temp-qr-container" style="margin-top:var(--p-space-6);display:none;flex-direction:column;align-items:center;" aria-live="polite">
                 <div style="background:white;padding:var(--p-space-3);border-radius:var(--p-radius);border:1px solid var(--p-border);">
                     <div id="temp-qr" style="width:8rem;height:8rem;display:flex;align-items:center;justify-content:center;background:#F1F5F9;border-radius:var(--p-radius-sm);">
                         <i data-lucide="qr-code" style="width:4rem;height:4rem;color:var(--p-text);"></i>
@@ -155,7 +155,7 @@
         </div>
     </div>
 
-    <!-- Right: Privacy Settings -->
+    <!-- Right: Privacy Settings + Disclaimer -->
     <div style="display:flex;flex-direction:column;gap:var(--p-space-5);">
 
         <div class="panel">
@@ -220,10 +220,11 @@
         <div class="empty-state-icon" style="color:var(--p-warning);">
             <i data-lucide="alert-circle"></i>
         </div>
-        <h3>No Patient Profile Found</h3>
-        <p>Your patient profile could not be loaded. Please contact support if this problem persists.</p>
+        <h3>{{ __('public.portal.no_profile_title', [], app()->getLocale()) ?: 'No Patient Profile Found' }}</h3>
+        <p>{{ __('public.portal.no_profile_desc', [], app()->getLocale()) ?: 'Your patient profile could not be loaded. Please contact support if this problem persists.' }}</p>
         <a href="{{ route('public.help') }}" class="btn btn-primary">
-            <i data-lucide="help-circle"></i> Get Help
+            <i data-lucide="help-circle"></i>
+            {{ __('public.portal.nav_help', [], app()->getLocale()) ?: 'Get Help' }}
         </a>
     </div>
 </div>
@@ -236,7 +237,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     @if(isset($qrToken) && $qrToken)
-    // Render static QR
     if (typeof QRCode !== 'undefined') {
         QRCode.toCanvas(
             document.createElement('canvas'),
@@ -252,7 +252,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     @endif
 
-    // Generate Temp QR
     var btnGen = document.getElementById('generate-temp-qr');
     if (btnGen) {
         btnGen.addEventListener('click', async function () {

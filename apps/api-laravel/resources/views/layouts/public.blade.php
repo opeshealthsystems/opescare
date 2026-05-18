@@ -5,7 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'OpesCare | One Health ID. One Trusted Medical History.')</title>
     <meta name="description" content="@yield('meta_description', 'OpesCare is a digital Health ID and healthcare interoperability platform built to connect patients, hospitals, labs, pharmacies, and insurers.')">
-    
+    <meta name="theme-color" content="#0F4C81">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="OpesCare">
+    <meta property="og:title" content="@yield('title', 'OpesCare | One Health ID. One Trusted Medical History.')">
+    <meta property="og:description" content="@yield('meta_description', 'OpesCare is a digital Health ID and healthcare interoperability platform built to connect patients, hospitals, labs, pharmacies, and insurers.')">
+    <meta property="og:image" content="{{ asset('favicon.svg') }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="@yield('title', 'OpesCare | One Health ID. One Trusted Medical History.')">
+    <meta name="twitter:description" content="@yield('meta_description', 'OpesCare is a digital Health ID and healthcare interoperability platform.')">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,8 +39,11 @@
     <!-- Header / Navigation -->
     <header class="header">
         <div class="container header-inner">
-            <a href="/" class="logo">OpesCare</a>
-            
+            <a href="/" class="logo" style="display:flex;align-items:center;gap:0.5rem;text-decoration:none;">
+                <img src="{{ asset('favicon.svg') }}" alt="" width="28" height="28" style="flex-shrink:0;">
+                <span>OpesCare</span>
+            </a>
+
             <nav class="nav">
                 <div class="nav-dropdown">
                     <a href="#" class="nav-link dropdown-trigger">Product <i data-lucide="chevron-down" class="icon-xs"></i></a>
@@ -97,7 +115,10 @@
         <div class="mobile-drawer" id="mobileDrawer">
             <div class="container">
                 <div class="mobile-drawer-header">
-                    <span class="logo">OpesCare</span>
+                    <span class="logo" style="display:flex;align-items:center;gap:0.5rem;">
+                        <img src="{{ asset('favicon.svg') }}" alt="" width="24" height="24" style="flex-shrink:0;">
+                        <span>OpesCare</span>
+                    </span>
                     <button id="closeMenu" style="background: none; border: none; color: var(--color-text-primary);">
                         <i data-lucide="x"></i>
                     </button>
@@ -140,7 +161,10 @@
     <footer class="footer">
         <div class="container footer-grid">
             <div class="footer-logo">
-                <a href="/" class="logo">OpesCare</a>
+                <a href="/" class="logo" style="display:flex;align-items:center;gap:0.5rem;text-decoration:none;">
+                    <img src="{{ asset('favicon.svg') }}" alt="" width="26" height="26" style="flex-shrink:0;">
+                    <span>OpesCare</span>
+                </a>
                 <p class="text-muted text-sm mt-4" style="margin-top: 1rem;">{{ __('landing.footer.desc') }}</p>
             </div>
             

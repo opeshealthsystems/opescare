@@ -41,7 +41,7 @@
 </div>
 
 @if($errors->any())
-<div class="alert alert-danger mb-6" style="margin-bottom:var(--p-space-6);">
+<div class="alert alert-danger mb-6" style="margin-bottom:var(--p-space-6);" role="alert">
     <i data-lucide="triangle-alert"></i>
     <div>
         <strong>Please fix the following errors:</strong>
@@ -64,7 +64,7 @@
         <h2 class="panel-title"><i data-lucide="syringe"></i> Immunization Record</h2>
     </div>
     <div class="panel-body">
-        <form method="post" action="{{ route('portals.staff.immunizations.store') }}">
+        <form method="POST" action="{{ route('portals.staff.immunizations.store') }}" novalidate>
             @csrf
 
             <!-- Patient & Facility -->
@@ -74,12 +74,14 @@
                 <div class="form-group">
                     <label class="form-label form-label-required" for="patient_id">Patient Health ID</label>
                     <input id="patient_id" name="patient_id" class="form-control"
-                           value="{{ old('patient_id', request('patient_id')) }}" required
+                           value="{{ old('patient_id', request('patient_id')) }}" required aria-required="true"
                            style="font-family:monospace;font-weight:700;text-transform:uppercase;" placeholder="Patient UUID">
+                    @error('patient_id')<div style="color:var(--p-danger);font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
                 </div>
                 <div class="form-group">
                     <label class="form-label form-label-required" for="facility_id">Facility ID</label>
-                    <input id="facility_id" name="facility_id" class="form-control" value="{{ old('facility_id') }}" required>
+                    <input id="facility_id" name="facility_id" class="form-control" value="{{ old('facility_id') }}" required aria-required="true">
+                    @error('facility_id')<div style="color:var(--p-danger);font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
                 </div>
             </div>
 
@@ -89,12 +91,12 @@
             <div class="form-row" style="margin-bottom:var(--p-space-5);">
                 <div class="form-group">
                     <label class="form-label form-label-required" for="vaccine_code">Vaccine Code</label>
-                    <input id="vaccine_code" name="vaccine_code" class="form-control" value="{{ old('vaccine_code') }}" placeholder="e.g. BCG, OPV, DPT" required>
+                    <input id="vaccine_code" name="vaccine_code" class="form-control" value="{{ old('vaccine_code') }}" placeholder="e.g. BCG, OPV, DPT" required aria-required="true">
                     <div class="form-hint">WHO-EPI code or local code</div>
                 </div>
                 <div class="form-group">
                     <label class="form-label form-label-required" for="vaccine_name">Vaccine Name</label>
-                    <input id="vaccine_name" name="vaccine_name" class="form-control" value="{{ old('vaccine_name') }}" placeholder="e.g. Bacillus Calmette-Guérin" required>
+                    <input id="vaccine_name" name="vaccine_name" class="form-control" value="{{ old('vaccine_name') }}" placeholder="e.g. Bacillus Calmette-Guérin" required aria-required="true">
                 </div>
             </div>
 
@@ -121,7 +123,7 @@
                 <div class="form-group">
                     <label class="form-label form-label-required" for="administered_at">Date Administered</label>
                     <input type="datetime-local" id="administered_at" name="administered_at" class="form-control"
-                           value="{{ old('administered_at', now()->format('Y-m-d\TH:i')) }}" required>
+                           value="{{ old('administered_at', now()->format('Y-m-d\TH:i')) }}" required aria-required="true">
                 </div>
             </div>
 
@@ -145,7 +147,7 @@
                     <input id="site" name="site" class="form-control" value="{{ old('site') }}" placeholder="e.g. Left deltoid">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="dose_quantity">Dose Quantity</label>
+                    <label class="form-label" for="dose_quantity">Dose Quantity (ml)</label>
                     <input type="number" step="0.01" id="dose_quantity" name="dose_quantity" class="form-control" value="{{ old('dose_quantity') }}" placeholder="0.5">
                 </div>
             </div>
@@ -153,7 +155,7 @@
             <div class="form-row" style="margin-bottom:var(--p-space-5);">
                 <div class="form-group">
                     <label class="form-label form-label-required" for="status">Status</label>
-                    <select id="status" name="status" class="form-control" required>
+                    <select id="status" name="status" class="form-control" required aria-required="true">
                         <option value="completed" @selected(old('status','completed')==='completed')>Completed</option>
                         <option value="not_done"  @selected(old('status')==='not_done')>Not Done</option>
                     </select>

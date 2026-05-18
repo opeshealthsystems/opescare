@@ -36,11 +36,11 @@
             <i data-lucide="arrow-left"></i> Back to Referrals
         </a>
         <h1 class="page-title">Referral Detail</h1>
-        <p class="page-subtitle">Referral ID: <span class="font-mono">{{ $referral->id }}</span></p>
+        <p class="page-subtitle">Referral ID: <span style="font-family:monospace;">{{ $referral->id }}</span></p>
     </div>
     <div class="page-actions">
         @php
-            $stCls = match($referral->status) {
+            $stCls = match($referral->status ?? 'draft') {
                 'accepted'  => 'badge-success',
                 'completed' => 'badge-teal',
                 'sent'      => 'badge-primary',
@@ -50,11 +50,10 @@
                 default     => 'badge-warning',
             };
         @endphp
-        <span class="badge {{ $stCls }}" style="font-size:0.9rem;padding:0.4rem 1rem;">{{ ucfirst($referral->status) }}</span>
+        <span class="badge {{ $stCls }}" style="font-size:0.9rem;padding:0.4rem 1rem;">{{ ucfirst($referral->status ?? 'draft') }}</span>
     </div>
 </div>
 
-<!-- Referral Details -->
 <div class="grid-main-side">
 
     <div style="display:flex;flex-direction:column;gap:var(--p-space-5);">
@@ -68,7 +67,7 @@
                 <div class="form-row" style="margin-bottom:var(--p-space-5);">
                     <div>
                         <div class="form-label">Patient ID</div>
-                        <div class="font-mono" style="color:var(--p-primary);font-weight:700;">{{ $referral->patient_id }}</div>
+                        <div style="font-family:monospace;color:var(--p-primary);font-weight:700;">{{ $referral->patient_id }}</div>
                     </div>
                     <div>
                         <div class="form-label">Priority</div>
@@ -85,11 +84,11 @@
                 <div class="form-row" style="margin-bottom:var(--p-space-5);">
                     <div>
                         <div class="form-label">Referring Facility</div>
-                        <div style="font-weight:600;color:var(--p-text);">{{ $referral->referring_facility_id ?? '—' }}</div>
+                        <div style="font-weight:600;">{{ $referral->referring_facility_id ?? '—' }}</div>
                     </div>
                     <div>
                         <div class="form-label">Receiving Facility</div>
-                        <div style="font-weight:600;color:var(--p-text);">{{ $referral->receiving_facility_id ?? '—' }}</div>
+                        <div style="font-weight:600;">{{ $referral->receiving_facility_id ?? '—' }}</div>
                     </div>
                 </div>
                 <div class="form-row" style="margin-bottom:var(--p-space-5);">
@@ -102,15 +101,23 @@
                         <div style="{{ $referral->expires_at && \Carbon\Carbon::parse($referral->expires_at)->isPast() ? 'color:var(--p-danger);font-weight:700;' : 'font-weight:600;' }}">
                             {{ $referral->expires_at ? \Carbon\Carbon::parse($referral->expires_at)->format('d M Y H:i') : '—' }}
                             @if($referral->expires_at && \Carbon\Carbon::parse($referral->expires_at)->isPast())
-                                <span class="badge badge-danger">Expired</span>
+                                <span class="badge badge-danger" style="margin-left:var(--p-space-2);">Expired</span>
                             @endif
                         </div>
                     </div>
                 </div>
-                @if($referral->clinical_summary)
+                @if(!empty($referral->reason))
+                <div style="margin-bottom:var(--p-space-4);">
+                    <div class="form-label">Reason for Referral</div>
+                    <div style="margin-top:var(--p-space-2);padding:var(--p-space-4);background:var(--p-surface-2);border:1px solid var(--p-border);border-radius:var(--p-radius);font-size:0.9rem;line-height:1.6;">
+                        {{ $referral->reason }}
+                    </div>
+                </div>
+                @endif
+                @if(!empty($referral->clinical_summary))
                 <div style="margin-bottom:var(--p-space-4);">
                     <div class="form-label">Clinical Summary</div>
-                    <div style="margin-top:var(--p-space-2);padding:var(--p-space-4);background:var(--p-surface-2);border:1px solid var(--p-border);border-radius:var(--p-radius);font-size:0.9rem;color:var(--p-text-2);line-height:1.6;">
+                    <div style="margin-top:var(--p-space-2);padding:var(--p-space-4);background:var(--p-surface-2);border:1px solid var(--p-border);border-radius:var(--p-radius);font-size:0.9rem;line-height:1.6;color:var(--p-text-2);">
                         {{ $referral->clinical_summary }}
                     </div>
                 </div>
@@ -119,14 +126,14 @@
         </div>
 
         <!-- Actions -->
-        @if(in_array($referral->status, ['draft','sent','accepted']))
+        @if(in_array($referral->status ?? 'draft', ['draft','sent','accepted']))
         <div class="panel">
             <div class="panel-header">
                 <h2 class="panel-title"><i data-lucide="zap"></i> Actions</h2>
             </div>
             <div class="panel-body">
                 <div style="display:flex;gap:var(--p-space-3);flex-wrap:wrap;">
-                    @if($referral->status === 'draft')
+                    @if(($referral->status ?? 'draft') === 'draft')
                     <form method="POST" action="{{ route('portals.staff.referrals.send', $referral->id) }}" style="display:inline;">
                         @csrf
                         <button type="submit" class="btn btn-primary">
@@ -159,7 +166,7 @@
                     </form>
                     @endif
 
-                    @if(in_array($referral->status, ['draft','sent']))
+                    @if(in_array($referral->status ?? 'draft', ['draft','sent']))
                     <form method="POST" action="{{ route('portals.staff.referrals.cancel', $referral->id) }}" style="display:inline;"
                           onsubmit="return confirm('Cancel this referral?')">
                         @csrf
@@ -175,7 +182,7 @@
 
     </div>
 
-    <!-- Side Info -->
+    <!-- Sidebar Info -->
     <div style="display:flex;flex-direction:column;gap:var(--p-space-5);">
         <div class="panel">
             <div class="panel-header">
@@ -186,18 +193,18 @@
                     <div class="timeline-item">
                         <div class="timeline-dot"><i data-lucide="plus-circle"></i></div>
                         <div class="timeline-body">
-                            <div class="timeline-time">{{ $referral->created_at?->format('d M Y H:i') }}</div>
+                            <div class="timeline-time">{{ $referral->created_at?->format('d M Y H:i') ?? '—' }}</div>
                             <div class="timeline-title">Referral Created</div>
                             <div class="timeline-desc">Status: Draft</div>
                         </div>
                     </div>
-                    @if($referral->status !== 'draft')
+                    @if(($referral->status ?? 'draft') !== 'draft')
                     <div class="timeline-item">
                         <div class="timeline-dot teal"><i data-lucide="send"></i></div>
                         <div class="timeline-body">
-                            <div class="timeline-time">{{ $referral->updated_at?->format('d M Y H:i') }}</div>
+                            <div class="timeline-time">{{ $referral->updated_at?->format('d M Y H:i') ?? '—' }}</div>
                             <div class="timeline-title">Status Updated</div>
-                            <div class="timeline-desc">{{ ucfirst($referral->status) }}</div>
+                            <div class="timeline-desc">{{ ucfirst($referral->status ?? 'draft') }}</div>
                         </div>
                     </div>
                     @endif
@@ -209,7 +216,7 @@
             <div class="panel-body">
                 <div class="alert alert-warning" role="note">
                     <i data-lucide="shield-alert"></i>
-                    <div style="font-size:0.8125rem;">All referral actions are fully audited and logged for clinical governance purposes.</div>
+                    <div style="font-size:0.8125rem;">All referral actions are fully audited and logged for clinical governance.</div>
                 </div>
             </div>
         </div>

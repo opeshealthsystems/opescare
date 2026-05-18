@@ -9,20 +9,18 @@
 @section('sidebar_role_badge')
     <div class="sidebar-role-badge">
         <i data-lucide="stethoscope" style="width:0.75rem;height:0.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
-        {{ __('public.staff_portal.role_label', [], app()->getLocale()) ?: 'Clinical Staff' }}
+        Clinical Staff
     </div>
 @endsection
 
 @section('sidebar_nav')
     <div class="sidebar-section-label">Overview</div>
     <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i> Dashboard</a>
-
     <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">Clinical</div>
     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link"><i data-lucide="calendar-check-2"></i> Appointments</a>
     <a href="{{ route('portals.staff.queue') }}" class="sidebar-link"><i data-lucide="list-ordered"></i> Patient Queue</a>
     <a href="{{ route('portals.staff.immunizations') }}" class="sidebar-link active"><i data-lucide="syringe"></i> Immunizations</a>
     <a href="{{ route('portals.staff.referrals') }}" class="sidebar-link"><i data-lucide="send"></i> Referrals</a>
-
     <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">Operations</div>
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link"><i data-lucide="receipt"></i> Billing</a>
     <a href="{{ route('portals.staff.support') }}" class="sidebar-link"><i data-lucide="headset"></i> Support</a>
@@ -47,16 +45,16 @@
 
 <!-- Filters -->
 <div class="panel mb-6" style="margin-bottom:var(--p-space-6);">
-    <form method="get" action="{{ route('portals.staff.immunizations') }}">
+    <form method="GET" action="{{ route('portals.staff.immunizations') }}">
         <div class="filter-bar">
             <div class="form-group" style="flex:1;min-width:180px;">
                 <div class="form-search">
                     <span class="search-icon"><i data-lucide="search"></i></span>
-                    <input type="text" name="patient_id" class="form-control" placeholder="Patient Health ID…" value="{{ request('patient_id') }}">
+                    <input type="text" name="patient_id" class="form-control" placeholder="Patient Health ID…" value="{{ request('patient_id') }}" aria-label="Filter by patient health ID">
                 </div>
             </div>
             <div class="form-group" style="min-width:160px;">
-                <input type="text" name="facility_id" class="form-control" placeholder="Facility ID…" value="{{ request('facility_id') }}">
+                <input type="text" name="facility_id" class="form-control" placeholder="Facility ID…" value="{{ request('facility_id') }}" aria-label="Filter by facility ID">
             </div>
             <button type="submit" class="btn btn-primary"><i data-lucide="filter"></i> Filter</button>
             <a href="{{ route('portals.staff.immunizations') }}" class="btn btn-secondary"><i data-lucide="x"></i> Clear</a>
@@ -64,8 +62,8 @@
     </form>
 </div>
 
-<!-- Two-tab view: Records and Schedule -->
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--p-space-6);">
+<!-- Two-panel layout -->
+<div class="grid-2">
 
     <!-- Records Panel -->
     <div class="panel">
@@ -100,6 +98,9 @@
                         <tr>
                             <td data-label="Vaccine">
                                 <span class="td-strong">{{ $record->vaccine_name ?? '—' }}</span>
+                                @if(!empty($record->vaccine_code))
+                                <div class="td-muted">{{ $record->vaccine_code }}</div>
+                                @endif
                             </td>
                             <td data-label="Patient">
                                 <span class="td-mono">{{ $record->patient_id }}</span>

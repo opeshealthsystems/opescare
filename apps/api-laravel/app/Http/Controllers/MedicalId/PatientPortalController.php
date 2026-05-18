@@ -53,6 +53,18 @@ class PatientPortalController extends Controller
     }
 
     /**
+     * Patient Appointments
+     */
+    public function appointments(Request $request)
+    {
+        $patient = Patient::whereNotNull('health_id')->first();
+        return view('portals.patient.appointments', [
+            'patient'      => $patient,
+            'appointments' => collect([]),
+        ]);
+    }
+
+    /**
      * View Access Logs
      */
     public function accessLogs(Request $request)

@@ -41,7 +41,7 @@
 </div>
 
 @if($errors->any())
-<div class="alert alert-danger mb-6" style="margin-bottom:var(--p-space-6);">
+<div class="alert alert-danger mb-6" style="margin-bottom:var(--p-space-6);" role="alert">
     <i data-lucide="triangle-alert"></i>
     <div>
         <div style="font-weight:700;margin-bottom:var(--p-space-2);">Please fix the following errors:</div>
@@ -60,7 +60,7 @@
         <h2 class="panel-title"><i data-lucide="send"></i> Referral Details</h2>
     </div>
     <div class="panel-body">
-        <form method="post" action="{{ route('portals.staff.referrals.store') }}">
+        <form method="POST" action="{{ route('portals.staff.referrals.store') }}" novalidate>
             @csrf
 
             <div class="alert alert-info mb-6" style="margin-bottom:var(--p-space-6);">
@@ -72,11 +72,13 @@
                 <div class="form-group">
                     <label class="form-label form-label-required" for="patient_id">Patient Health ID</label>
                     <input id="patient_id" name="patient_id" class="form-control" value="{{ old('patient_id') }}" required
-                           placeholder="Patient UUID" style="font-family:monospace;font-weight:700;text-transform:uppercase;">
+                           placeholder="Patient UUID" style="font-family:monospace;font-weight:700;text-transform:uppercase;"
+                           aria-required="true">
+                    @error('patient_id')<div style="color:var(--p-danger);font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
                 </div>
                 <div class="form-group">
                     <label class="form-label form-label-required" for="urgency">Priority / Urgency</label>
-                    <select id="urgency" name="urgency" class="form-control" required>
+                    <select id="urgency" name="urgency" class="form-control" required aria-required="true">
                         <option value="routine"   @selected(old('urgency','routine')==='routine')>Routine</option>
                         <option value="urgent"    @selected(old('urgency')==='urgent')>Urgent</option>
                         <option value="emergency" @selected(old('urgency')==='emergency')>Emergency</option>
@@ -87,34 +89,40 @@
             <div class="form-row" style="margin-bottom:var(--p-space-5);">
                 <div class="form-group">
                     <label class="form-label form-label-required" for="referring_facility_id">Referring Facility ID</label>
-                    <input id="referring_facility_id" name="referring_facility_id" class="form-control" value="{{ old('referring_facility_id') }}" required>
+                    <input id="referring_facility_id" name="referring_facility_id" class="form-control"
+                           value="{{ old('referring_facility_id') }}" required aria-required="true">
+                    @error('referring_facility_id')<div style="color:var(--p-danger);font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="referring_provider_id">Referring Provider ID</label>
-                    <input id="referring_provider_id" name="referring_provider_id" class="form-control" value="{{ old('referring_provider_id') }}" placeholder="Optional">
+                    <input id="referring_provider_id" name="referring_provider_id" class="form-control"
+                           value="{{ old('referring_provider_id') }}" placeholder="Optional">
                 </div>
             </div>
 
             <div class="form-row" style="margin-bottom:var(--p-space-5);">
                 <div class="form-group">
                     <label class="form-label" for="receiving_facility_id">Receiving Facility ID</label>
-                    <input id="receiving_facility_id" name="receiving_facility_id" class="form-control" value="{{ old('receiving_facility_id') }}" placeholder="Can be added later">
+                    <input id="receiving_facility_id" name="receiving_facility_id" class="form-control"
+                           value="{{ old('receiving_facility_id') }}" placeholder="Can be added later">
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="receiving_specialty">Specialty / Department</label>
-                    <input id="receiving_specialty" name="receiving_specialty" class="form-control" value="{{ old('receiving_specialty') }}" placeholder="e.g. Cardiology">
+                    <input id="receiving_specialty" name="receiving_specialty" class="form-control"
+                           value="{{ old('receiving_specialty') }}" placeholder="e.g. Cardiology">
                 </div>
             </div>
 
             <div class="form-group" style="margin-bottom:var(--p-space-5);">
                 <label class="form-label form-label-required" for="reason">Reason for Referral</label>
-                <textarea id="reason" name="reason" rows="3" class="form-control" required>{{ old('reason') }}</textarea>
+                <textarea id="reason" name="reason" rows="3" class="form-control" required aria-required="true">{{ old('reason') }}</textarea>
+                @error('reason')<div style="color:var(--p-danger);font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
             </div>
 
             <div class="form-group" style="margin-bottom:var(--p-space-5);">
                 <label class="form-label" for="clinical_summary">Clinical Summary</label>
                 <textarea id="clinical_summary" name="clinical_summary" rows="5" class="form-control">{{ old('clinical_summary') }}</textarea>
-                <div class="form-hint">Include relevant diagnoses, current medications, known allergies, and care context. This helps the receiving facility prepare.</div>
+                <div class="form-hint">Include relevant diagnoses, current medications, known allergies, and care context.</div>
             </div>
 
             <div class="form-group" style="margin-bottom:var(--p-space-8);">
