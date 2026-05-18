@@ -263,6 +263,37 @@ require __DIR__.'/academy.php';
 
 /*
 |--------------------------------------------------------------------------
+| OpesCare Referral Network API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/referrals')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'index']);
+    Route::post('/', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'store']);
+    Route::post('/expire-stale', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'expireStale']);
+    Route::get('/{referral}', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'show']);
+    Route::post('/{referral}/send', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'send']);
+    Route::post('/{referral}/accept', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'accept']);
+    Route::post('/{referral}/reject', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'reject']);
+    Route::post('/{referral}/complete', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'complete']);
+    Route::post('/{referral}/cancel', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'cancel']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| OpesCare Immunization API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/immunizations')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\V1\Immunization\ImmunizationController::class, 'index']);
+    Route::post('/', [\App\Http\Controllers\Api\V1\Immunization\ImmunizationController::class, 'store']);
+    Route::post('/schedule', [\App\Http\Controllers\Api\V1\Immunization\ImmunizationController::class, 'scheduleVaccines']);
+    Route::get('/schedule', [\App\Http\Controllers\Api\V1\Immunization\ImmunizationController::class, 'patientSchedule']);
+    Route::get('/{immunization}', [\App\Http\Controllers\Api\V1\Immunization\ImmunizationController::class, 'show']);
+    Route::post('/{immunization}/adverse-reactions', [\App\Http\Controllers\Api\V1\Immunization\ImmunizationController::class, 'reportAdverseReaction']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | OpesCare Verifiable Document Template System V2 API Routes
 |--------------------------------------------------------------------------
 */
