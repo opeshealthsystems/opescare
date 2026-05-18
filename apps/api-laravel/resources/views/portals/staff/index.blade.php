@@ -1,371 +1,270 @@
-@extends('layouts.public')
+@extends('layouts.portal')
+
+@section('title', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Clinical Portal — OpesCare')
+
+@section('breadcrumb_home', __('public.staff_portal.portal_home', [], app()->getLocale()) ?: 'Staff Portal')
+@section('breadcrumb_home_url', route('portals.staff'))
+
+@section('sidebar_role_badge')
+    <div class="sidebar-role-badge">
+        <i data-lucide="stethoscope" style="width:0.75rem;height:0.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+        {{ __('public.staff_portal.role_label', [], app()->getLocale()) ?: 'Clinical Staff' }}
+    </div>
+@endsection
+
+@section('sidebar_nav')
+    <div class="sidebar-section-label">{{ __('public.staff_portal.nav_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+
+    <a href="{{ route('portals.staff') }}" class="sidebar-link active">
+        <i data-lucide="layout-dashboard"></i>
+        {{ __('public.staff_portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}
+    </a>
+
+    <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">{{ __('public.staff_portal.nav_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+
+    <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+        <i data-lucide="calendar-check-2"></i>
+        {{ __('public.staff_portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}
+    </a>
+
+    <a href="{{ route('portals.staff.queue') }}" class="sidebar-link">
+        <i data-lucide="list-ordered"></i>
+        {{ __('public.staff_portal.nav_queue', [], app()->getLocale()) ?: 'Patient Queue' }}
+    </a>
+
+    <a href="{{ route('portals.staff.immunizations') }}" class="sidebar-link">
+        <i data-lucide="syringe"></i>
+        {{ __('public.staff_portal.nav_immunizations', [], app()->getLocale()) ?: 'Immunizations' }}
+    </a>
+
+    <a href="{{ route('portals.staff.referrals') }}" class="sidebar-link">
+        <i data-lucide="send"></i>
+        {{ __('public.staff_portal.nav_referrals', [], app()->getLocale()) ?: 'Referrals' }}
+    </a>
+
+    <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">{{ __('public.staff_portal.nav_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+
+    <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
+        <i data-lucide="receipt"></i>
+        {{ __('public.staff_portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}
+    </a>
+
+    <a href="{{ route('portals.staff.support') }}" class="sidebar-link">
+        <i data-lucide="headset"></i>
+        {{ __('public.staff_portal.nav_support', [], app()->getLocale()) ?: 'Support' }}
+    </a>
+
+    <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">{{ __('public.staff_portal.nav_tools', [], app()->getLocale()) ?: 'Tools' }}</div>
+
+    <a href="{{ route('care_map.directory') }}" class="sidebar-link">
+        <i data-lucide="map-pin"></i>
+        {{ __('public.staff_portal.nav_care_map', [], app()->getLocale()) ?: 'Care Map' }}
+    </a>
+
+    <a href="{{ route('public.interoperability') }}" class="sidebar-link">
+        <i data-lucide="cable"></i>
+        {{ __('public.staff_portal.nav_integrations', [], app()->getLocale()) ?: 'Integrations' }}
+    </a>
+@endsection
+
+@section('sidebar_user_role')
+    {{ __('public.staff_portal.role_label', [], app()->getLocale()) ?: 'Clinical Staff' }}
+@endsection
 
 @section('content')
-<div class="pt-32 pb-24 bg-slate-900 min-h-screen text-slate-200">
-    <div class="max-w-4xl mx-auto px-6 lg:px-8">
-        
-        <div class="mb-10 text-center">
-            <h1 class="text-3xl font-bold text-white tracking-tight">Staff Clinical Verification Portal</h1>
-            <p class="mt-2 text-slate-400">Search and verify a patient's Medical ID securely before providing care.</p>
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ __('public.staff_portal.dashboard_title', [], app()->getLocale()) ?: 'Clinical Dashboard' }}</h1>
+        <p class="page-subtitle">{{ __('public.staff_portal.dashboard_subtitle', [], app()->getLocale()) ?: 'Welcome back. Here\'s your facility summary for today.' }}</p>
+    </div>
+    <div class="page-actions">
+        <a href="{{ route('portals.staff.queue') }}" class="btn btn-secondary">
+            <i data-lucide="list-ordered"></i>
+            {{ __('public.staff_portal.view_queue', [], app()->getLocale()) ?: 'View Queue' }}
+        </a>
+        <a href="{{ route('portals.staff.appointments') }}" class="btn btn-primary">
+            <i data-lucide="calendar-plus"></i>
+            {{ __('public.staff_portal.new_appointment', [], app()->getLocale()) ?: 'New Appointment' }}
+        </a>
+    </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <div class="kpi-icon blue">
+            <i data-lucide="calendar-check-2"></i>
         </div>
+        <div class="kpi-value">—</div>
+        <div class="kpi-label">{{ __('public.staff_portal.kpi_today_appointments', [], app()->getLocale()) ?: "Today's Appointments" }}</div>
+        <div class="kpi-delta up">
+            <i data-lucide="trending-up"></i>
+            {{ __('public.staff_portal.kpi_vs_yesterday', [], app()->getLocale()) ?: 'vs. yesterday' }}
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon teal">
+            <i data-lucide="list-ordered"></i>
+        </div>
+        <div class="kpi-value">—</div>
+        <div class="kpi-label">{{ __('public.staff_portal.kpi_queue', [], app()->getLocale()) ?: 'Patients in Queue' }}</div>
+        <div class="kpi-delta up">
+            <i data-lucide="clock"></i>
+            {{ __('public.staff_portal.kpi_queue_now', [], app()->getLocale()) ?: 'Current' }}
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon warning">
+            <i data-lucide="send"></i>
+        </div>
+        <div class="kpi-value">—</div>
+        <div class="kpi-label">{{ __('public.staff_portal.kpi_pending_referrals', [], app()->getLocale()) ?: 'Pending Referrals' }}</div>
+        <div class="kpi-delta">
+            <i data-lucide="arrow-right"></i>
+            {{ __('public.staff_portal.kpi_action_needed', [], app()->getLocale()) ?: 'Need action' }}
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon danger">
+            <i data-lucide="receipt"></i>
+        </div>
+        <div class="kpi-value">—</div>
+        <div class="kpi-label">{{ __('public.staff_portal.kpi_open_invoices', [], app()->getLocale()) ?: 'Open Invoices' }}</div>
+        <div class="kpi-delta down">
+            <i data-lucide="alert-circle"></i>
+            {{ __('public.staff_portal.kpi_pending_payment', [], app()->getLocale()) ?: 'Pending payment' }}
+        </div>
+    </div>
+</div>
 
-        <!-- Search Bar -->
-        <div class="bg-slate-800/80 p-8 rounded-2xl border border-slate-700/50 shadow-xl mb-12">
-            <form id="verify-form" class="flex flex-col md:flex-row gap-4">
-                <div class="flex-1 relative">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <i data-lucide="search" class="w-5 h-5 text-slate-500"></i>
-                    </div>
-                    <input type="text" id="health_id_input" placeholder="e.g., CM-HID-7KQ9-MP42-X8D1" class="w-full pl-12 pr-4 py-4 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-lg uppercase tracking-wider font-mono">
-                </div>
-                
-                <div class="w-full md:w-auto relative">
-                    <select id="purpose_input" class="w-full pl-4 pr-10 py-4 bg-slate-900 border border-slate-700 rounded-xl text-slate-300 appearance-none focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 cursor-pointer">
-                        <option value="treatment">Treatment</option>
-                        <option value="pharmacy_dispense">Pharmacy Dispense</option>
-                        <option value="lab_order">Lab Order</option>
-                        <option value="insurance_claim">Insurance Claim</option>
-                    </select>
-                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500"></i>
-                    </div>
-                </div>
+<!-- Verify Patient Card + Quick Navigation -->
+<div class="grid-main-side mb-8" style="margin-bottom:var(--p-space-8);">
 
-                <button type="submit" id="verify-btn" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 whitespace-nowrap">
-                    {{ __('public.medical_id.verify_health_id') }}
+    <!-- Patient Verification -->
+    <div class="panel">
+        <div class="panel-header">
+            <h2 class="panel-title">
+                <i data-lucide="search"></i>
+                {{ __('public.staff_portal.verify_patient_title', [], app()->getLocale()) ?: 'Verify Patient Identity' }}
+            </h2>
+            <a href="{{ route('portals.staff') }}" class="btn btn-sm btn-ghost">
+                {{ __('public.staff_portal.search_all', [], app()->getLocale()) ?: 'Advanced Search' }}
+            </a>
+        </div>
+        <div class="panel-body">
+            <p style="font-size:0.875rem;color:var(--p-text-muted);margin-bottom:var(--p-space-5);">
+                {{ __('public.staff_portal.verify_desc', [], app()->getLocale()) ?: 'Enter the patient\'s Health ID or name to verify identity before treatment.' }}
+            </p>
+            <form id="verifyForm" action="{{ route('portals.staff') }}" method="GET" role="search">
+                <div class="form-group mb-4" style="margin-bottom:var(--p-space-4);">
+                    <label class="form-label" for="health_id">{{ __('public.medical_id.health_id', [], app()->getLocale()) ?: 'Health ID Token' }}</label>
+                    <div class="form-search">
+                        <span class="search-icon"><i data-lucide="id-card"></i></span>
+                        <input type="text"
+                               id="health_id"
+                               name="health_id"
+                               class="form-control"
+                               placeholder="e.g. OPC-8849-DX9"
+                               style="text-transform:uppercase;font-family:monospace;font-weight:700;letter-spacing:0.08em;"
+                               aria-label="{{ __('public.medical_id.health_id', [], app()->getLocale()) ?: 'Health ID Token' }}">
+                    </div>
+                </div>
+                <div class="form-row mb-4" style="margin-bottom:var(--p-space-4);">
+                    <div class="form-group">
+                        <label class="form-label" for="purpose">{{ __('public.staff_portal.purpose', [], app()->getLocale()) ?: 'Access Purpose' }}</label>
+                        <select id="purpose" name="purpose" class="form-control">
+                            <option value="treatment">{{ __('public.staff_portal.purpose_treatment', [], app()->getLocale()) ?: 'Treatment' }}</option>
+                            <option value="pharmacy_dispense">{{ __('public.staff_portal.purpose_pharmacy', [], app()->getLocale()) ?: 'Pharmacy Dispense' }}</option>
+                            <option value="lab_order">{{ __('public.staff_portal.purpose_lab', [], app()->getLocale()) ?: 'Lab Order' }}</option>
+                            <option value="insurance_claim">{{ __('public.staff_portal.purpose_insurance', [], app()->getLocale()) ?: 'Insurance Claim' }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="facility_id">{{ __('public.staff_portal.facility', [], app()->getLocale()) ?: 'Facility' }}</label>
+                        <input type="text" id="facility_id" name="facility_id" class="form-control" placeholder="{{ __('public.staff_portal.facility_placeholder', [], app()->getLocale()) ?: 'Facility ID' }}" value="{{ request('facility_id') }}">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">
+                    <i data-lucide="shield-check"></i>
+                    {{ __('public.medical_id.verify_health_id', [], app()->getLocale()) ?: 'Verify Health ID' }}
                 </button>
             </form>
-            
-            <div class="mt-4 flex items-center justify-center gap-4 text-sm text-slate-500">
-                <span class="flex items-center gap-1"><i data-lucide="shield" class="w-4 h-4"></i> Secure Connection</span>
-                <span class="flex items-center gap-1"><i data-lucide="activity" class="w-4 h-4"></i> Audited Lookup</span>
+
+            <!-- Security Notice -->
+            <div class="alert alert-info mt-4" role="note" style="margin-top:var(--p-space-5);">
+                <i data-lucide="lock-keyhole"></i>
+                <div style="font-size:0.8125rem;">{{ __('public.staff_portal.audit_notice', [], app()->getLocale()) ?: 'This lookup is fully audited. Ensure you have patient consent before proceeding.' }}</div>
+            </div>
+
+            <!-- Results Area -->
+            @if(request('health_id'))
+            <div id="resultsArea" style="margin-top:var(--p-space-6);padding-top:var(--p-space-5);border-top:1px solid var(--p-border);">
+                <div class="alert alert-warning" role="status">
+                    <i data-lucide="info"></i>
+                    <div>{{ __('public.staff_portal.api_lookup_hint', [], app()->getLocale()) ?: 'Patient lookup is processed via the API. Use the mobile app or API integration for live results.' }}</div>
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Quick Nav Modules -->
+    <div style="display:flex;flex-direction:column;gap:var(--p-space-4);">
+
+        <!-- Quick Links -->
+        <div class="panel" style="flex:1;">
+            <div class="panel-header">
+                <h2 class="panel-title">
+                    <i data-lucide="zap"></i>
+                    {{ __('public.staff_portal.quick_links', [], app()->getLocale()) ?: 'Quick Access' }}
+                </h2>
+            </div>
+            <div class="panel-body" style="padding:var(--p-space-3) var(--p-space-4);">
+                <div style="display:flex;flex-direction:column;gap:var(--p-space-2);">
+                    @foreach([
+                        ['route' => 'portals.staff.appointments', 'icon' => 'calendar-check-2', 'label' => 'Appointments'],
+                        ['route' => 'portals.staff.queue',        'icon' => 'list-ordered',     'label' => 'Patient Queue'],
+                        ['route' => 'portals.staff.immunizations','icon' => 'syringe',          'label' => 'Immunizations'],
+                        ['route' => 'portals.staff.referrals',   'icon' => 'send',             'label' => 'Referrals'],
+                        ['route' => 'portals.staff.billing',     'icon' => 'receipt',          'label' => 'Billing'],
+                        ['route' => 'portals.staff.support',     'icon' => 'headset',          'label' => 'Support Tickets'],
+                    ] as $link)
+                    <a href="{{ route($link['route']) }}"
+                       style="display:flex;align-items:center;gap:var(--p-space-3);padding:var(--p-space-3) var(--p-space-3);border-radius:var(--p-radius);color:var(--p-text-2);font-size:0.875rem;font-weight:600;transition:all 0.15s;text-decoration:none;"
+                       onmouseover="this.style.background='var(--p-primary-light)';this.style.color='var(--p-primary)';"
+                       onmouseout="this.style.background='';this.style.color='var(--p-text-2)';">
+                        <span style="width:1.85rem;height:1.85rem;background:var(--p-surface-2);border:1px solid var(--p-border);border-radius:var(--p-radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i data-lucide="{{ $link['icon'] }}" style="width:0.9rem;height:0.9rem;"></i>
+                        </span>
+                        {{ $link['label'] }}
+                        <i data-lucide="chevron-right" style="width:0.85rem;height:0.85rem;margin-left:auto;color:var(--p-text-light);"></i>
+                    </a>
+                    @endforeach
+                </div>
             </div>
         </div>
 
-        <!-- Verification Results Placeholder -->
-        <div id="results-container" class="hidden">
-            <!-- Safe Identity Preview Card -->
-            <div class="bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 shadow-2xl overflow-hidden">
-                <div class="px-8 py-6 border-b border-slate-700/50 flex items-center justify-between bg-slate-800/30">
-                    <div class="flex items-center gap-3">
-                        <div id="status-icon" class="p-2 rounded-lg bg-emerald-500/20 text-emerald-400">
-                            <i data-lucide="check-circle" class="w-6 h-6"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-lg font-semibold text-white">Safe Identity Preview</h2>
-                            <p id="status-text" class="text-sm text-emerald-400 font-medium">Valid Health ID</p>
-                        </div>
-                    </div>
-                    <span id="display-health-id" class="font-mono text-xl font-bold text-slate-300"></span>
-                </div>
-                
-                <div class="p-8 grid md:grid-cols-3 gap-8">
-                    <div>
-                        <p class="text-sm text-slate-400 uppercase tracking-wider mb-1">Masked Name</p>
-                        <p id="display-name" class="text-2xl font-bold text-white">---</p>
+        <!-- Clinical Safety Notice -->
+        <div class="panel">
+            <div class="panel-body" style="padding:var(--p-space-4) var(--p-space-5);">
+                <div style="display:flex;align-items:flex-start;gap:var(--p-space-3);">
+                    <div style="color:var(--p-danger);flex-shrink:0;margin-top:2px;">
+                        <i data-lucide="shield-alert" style="width:1.25rem;height:1.25rem;"></i>
                     </div>
                     <div>
-                        <p class="text-sm text-slate-400 uppercase tracking-wider mb-1">Sex</p>
-                        <p id="display-sex" class="text-xl font-medium text-slate-200 capitalize">---</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-slate-400 uppercase tracking-wider mb-1">Year of Birth</p>
-                        <p id="display-yob" class="text-xl font-medium text-slate-200">----</p>
-                    </div>
-                </div>
-
-                <!-- Next Actions block -->
-                <div class="px-8 py-6 bg-slate-800/50 border-t border-slate-700/50">
-                    <p class="text-sm text-amber-400 mb-4 flex items-center gap-2">
-                        <i data-lucide="lock" class="w-4 h-4"></i> 
-                        {{ __('public.medical_id.consent_required') }} to view full medical history.
-                    </p>
-                    <div class="flex flex-wrap gap-4">
-                        <button id="btn-open-consent" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-colors flex items-center gap-2">
-                            <i data-lucide="message-square" class="w-4 h-4"></i> Request Consent
-                        </button>
-                        <button id="btn-open-emergency" class="px-6 py-3 bg-rose-600 hover:bg-rose-500 text-white rounded-lg font-medium transition-colors flex items-center gap-2">
-                            <i data-lucide="siren" class="w-4 h-4"></i> {{ __('public.medical_id.emergency_access') }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Emergency Profile Container (Rendered on success) -->
-            <div id="emergency-profile-container" class="hidden mt-8">
-                <div class="bg-rose-900/20 border-2 border-rose-500/50 rounded-2xl overflow-hidden shadow-2xl shadow-rose-900/20">
-                    <div class="px-8 py-4 bg-rose-500/20 border-b border-rose-500/50 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="activity" class="w-6 h-6 text-rose-400"></i>
-                            <h2 class="text-lg font-bold text-white tracking-wide uppercase">Emergency Profile</h2>
+                        <div style="font-size:0.8125rem;font-weight:700;color:var(--p-text-2);margin-bottom:4px;">
+                            {{ __('public.staff_portal.safety_title', [], app()->getLocale()) ?: 'Clinical Safety Reminder' }}
                         </div>
-                        <span class="px-3 py-1 bg-rose-500 text-white text-xs font-bold rounded-full animate-pulse">AUDITED OVERRIDE</span>
-                    </div>
-                    <div class="p-8 grid md:grid-cols-2 gap-8">
-                        <div>
-                            <p class="text-sm text-slate-400 uppercase tracking-wider mb-2">Blood Type</p>
-                            <p id="ep-blood" class="text-3xl font-bold text-rose-400 flex items-center gap-2">
-                                <i data-lucide="droplet" class="w-6 h-6"></i> ---
-                            </p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-slate-400 uppercase tracking-wider mb-2">Emergency Contact</p>
-                            <p id="ep-contact" class="text-xl font-medium text-slate-200">---</p>
-                        </div>
-                        <div class="md:col-span-2">
-                            <p class="text-sm text-slate-400 uppercase tracking-wider mb-2">Critical Allergies</p>
-                            <div id="ep-allergies" class="flex flex-wrap gap-2">
-                                <!-- Rendered dynamically -->
-                            </div>
+                        <div style="font-size:0.75rem;color:var(--p-text-muted);line-height:1.5;">
+                            {{ __('public.staff_portal.safety_desc', [], app()->getLocale()) ?: 'Always confirm patient identity before administering treatment. Check allergy status and consent before accessing clinical records.' }}
                         </div>
                     </div>
                 </div>
-            </div>
-
-        </div>
-
-        <!-- Error State Placeholder -->
-        <div id="error-container" class="hidden mt-8 p-6 bg-red-900/20 border border-red-500/30 rounded-xl flex items-start gap-4">
-            <i data-lucide="alert-triangle" class="w-6 h-6 text-red-400 shrink-0 mt-0.5"></i>
-            <div>
-                <h3 id="error-title" class="text-lg font-semibold text-red-400">Verification Failed</h3>
-                <p id="error-desc" class="text-red-300 mt-1"></p>
             </div>
         </div>
 
     </div>
+
 </div>
-
-<!-- Consent Modal -->
-<div id="consent-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm px-4">
-    <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
-        <div class="px-6 py-4 border-b border-slate-700 flex items-center justify-between bg-slate-800/50">
-            <h3 class="text-lg font-semibold text-white">Request Digital Consent</h3>
-            <button id="close-consent" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
-        </div>
-        <div class="p-6 space-y-4">
-            <p class="text-sm text-slate-400">Select the scope and duration of access you are requesting from the patient.</p>
-            
-            <div>
-                <label class="block text-sm font-medium text-slate-300 mb-2">Duration</label>
-                <select id="consent-duration" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-3 px-4 text-white focus:ring-indigo-500 focus:border-indigo-500">
-                    <option value="15">15 Minutes (Consultation)</option>
-                    <option value="60">1 Hour (Standard)</option>
-                    <option value="1440">24 Hours (Admission)</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-slate-300 mb-2">Requested Scope</label>
-                <div class="space-y-2">
-                    <label class="flex items-center gap-3 p-3 bg-slate-900 rounded-lg border border-slate-700">
-                        <input type="checkbox" checked disabled class="w-4 h-4 rounded border-slate-600 text-indigo-600 bg-slate-800 focus:ring-indigo-600 focus:ring-offset-slate-900">
-                        <span class="text-sm text-white">Clinical Summary</span>
-                    </label>
-                    <label class="flex items-center gap-3 p-3 bg-slate-900 rounded-lg border border-slate-700">
-                        <input type="checkbox" checked class="w-4 h-4 rounded border-slate-600 text-indigo-600 bg-slate-800 focus:ring-indigo-600 focus:ring-offset-slate-900">
-                        <span class="text-sm text-white">Lab Results & Prescriptions</span>
-                    </label>
-                </div>
-            </div>
-            
-            <button id="submit-consent" class="w-full mt-4 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
-                Send Request to Patient
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Emergency Access Modal -->
-<div id="emergency-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm px-4">
-    <div class="bg-slate-800 border border-rose-500/50 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
-        <div class="px-6 py-4 border-b border-slate-700 flex items-center justify-between bg-rose-900/20">
-            <h3 class="text-lg font-semibold text-rose-400 flex items-center gap-2"><i data-lucide="siren" class="w-5 h-5"></i> Emergency Access Override</h3>
-            <button id="close-emergency" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
-        </div>
-        <div class="p-6 space-y-4">
-            <div class="p-4 bg-rose-500/10 border border-rose-500/20 rounded-lg text-sm text-rose-300">
-                <strong>WARNING:</strong> You are initiating a break-glass emergency override. This action is heavily audited and will be reviewed by the compliance committee.
-            </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-slate-300 mb-2">Clinical Justification (Required)</label>
-                <textarea id="emergency-reason" rows="3" placeholder="e.g. Unconscious patient arrived at ER after car accident..." class="w-full bg-slate-900 border border-slate-700 rounded-lg py-3 px-4 text-white focus:ring-rose-500 focus:border-rose-500"></textarea>
-            </div>
-
-            <label class="flex items-start gap-3 mt-4">
-                <input type="checkbox" id="emergency-ack" class="mt-1 w-4 h-4 rounded border-slate-600 text-rose-600 bg-slate-800 focus:ring-rose-600 focus:ring-offset-slate-900">
-                <span class="text-sm text-slate-400">I acknowledge that I am opening this record under emergency conditions and understand this action is logged and monitored.</span>
-            </label>
-            
-            <button id="submit-emergency" disabled class="w-full mt-4 py-3 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
-                Unlock Emergency Profile
-            </button>
-        </div>
-    </div>
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('verify-form');
-        const btn = document.getElementById('verify-btn');
-        const resultsContainer = document.getElementById('results-container');
-        const errorContainer = document.getElementById('error-container');
-        
-        let currentHealthId = '';
-
-        if(form) {
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                const healthId = document.getElementById('health_id_input').value.trim();
-                const purpose = document.getElementById('purpose_input').value;
-                
-                if(!healthId) return;
-
-                btn.disabled = true;
-                btn.innerHTML = '<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Verifying...';
-                
-                resultsContainer.classList.add('hidden');
-                errorContainer.classList.add('hidden');
-                document.getElementById('emergency-profile-container').classList.add('hidden');
-
-                try {
-                    const response = await fetch('/api/v1/connect/medical-ids/verify', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            health_id: healthId,
-                            purpose: purpose
-                        })
-                    });
-
-                    const data = await response.json();
-
-                    if(response.ok && data.status === 'valid') {
-                        currentHealthId = data.patient_preview.health_id;
-                        document.getElementById('display-health-id').textContent = currentHealthId;
-                        document.getElementById('display-name').textContent = data.patient_preview.display_name;
-                        document.getElementById('display-sex').textContent = data.patient_preview.sex || 'Unknown';
-                        document.getElementById('display-yob').textContent = data.patient_preview.year_of_birth || 'Unknown';
-                        
-                        resultsContainer.classList.remove('hidden');
-                    } else {
-                        document.getElementById('error-desc').textContent = data.message || 'An error occurred during verification.';
-                        errorContainer.classList.remove('hidden');
-                    }
-                } catch(error) {
-                    document.getElementById('error-desc').textContent = 'Network error. Please try again.';
-                    errorContainer.classList.remove('hidden');
-                } finally {
-                    btn.disabled = false;
-                    btn.innerHTML = '{{ __('public.medical_id.verify_health_id') }}';
-                }
-            });
-        }
-
-        // Modals Logic
-        const consentModal = document.getElementById('consent-modal');
-        const btnOpenConsent = document.getElementById('btn-open-consent');
-        const closeConsent = document.getElementById('close-consent');
-        const submitConsent = document.getElementById('submit-consent');
-
-        const emergencyModal = document.getElementById('emergency-modal');
-        const btnOpenEmergency = document.getElementById('btn-open-emergency');
-        const closeEmergency = document.getElementById('close-emergency');
-        const submitEmergency = document.getElementById('submit-emergency');
-        const emergencyReason = document.getElementById('emergency-reason');
-        const emergencyAck = document.getElementById('emergency-ack');
-
-        // Consent
-        btnOpenConsent.addEventListener('click', () => consentModal.classList.remove('hidden'));
-        closeConsent.addEventListener('click', () => consentModal.classList.add('hidden'));
-
-        submitConsent.addEventListener('click', async () => {
-            submitConsent.disabled = true;
-            submitConsent.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Sending...';
-            
-            try {
-                const response = await fetch('/api/v1/connect/consents/request-medical-id', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({
-                        health_id: currentHealthId,
-                        purpose: document.getElementById('purpose_input').value,
-                        requested_scope: ['clinical_summary', 'labs', 'prescriptions'],
-                        duration_minutes: document.getElementById('consent-duration').value
-                    })
-                });
-                
-                const data = await response.json();
-                if(response.ok) {
-                    alert(data.message); // In real app, show a nice toast
-                    consentModal.classList.add('hidden');
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            } catch (e) {
-                alert('Network error.');
-            } finally {
-                submitConsent.disabled = false;
-                submitConsent.innerHTML = 'Send Request to Patient';
-            }
-        });
-
-        // Emergency
-        btnOpenEmergency.addEventListener('click', () => emergencyModal.classList.remove('hidden'));
-        closeEmergency.addEventListener('click', () => emergencyModal.classList.add('hidden'));
-        
-        emergencyAck.addEventListener('change', (e) => {
-            submitEmergency.disabled = !e.target.checked || emergencyReason.value.trim().length < 10;
-        });
-        
-        emergencyReason.addEventListener('input', (e) => {
-            submitEmergency.disabled = !emergencyAck.checked || e.target.value.trim().length < 10;
-        });
-
-        submitEmergency.addEventListener('click', async () => {
-            submitEmergency.disabled = true;
-            submitEmergency.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Unlocking...';
-            
-            try {
-                const response = await fetch('/api/v1/connect/patients/emergency-profile', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({
-                        health_id: currentHealthId,
-                        reason: emergencyReason.value.trim()
-                    })
-                });
-                
-                const data = await response.json();
-                if(response.ok) {
-                    // Populate Emergency Profile
-                    document.getElementById('ep-blood').innerHTML = '<i data-lucide="droplet" class="w-6 h-6"></i> ' + data.profile.blood_type;
-                    document.getElementById('ep-contact').textContent = data.profile.emergency_contact;
-                    
-                    const allergiesContainer = document.getElementById('ep-allergies');
-                    allergiesContainer.innerHTML = '';
-                    data.profile.allergies.forEach(al => {
-                        allergiesContainer.innerHTML += `<span class="px-3 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-full text-sm font-medium flex items-center gap-1"><i data-lucide="alert-circle" class="w-3 h-3"></i> ${al.substance}</span>`;
-                    });
-                    lucide.createIcons();
-                    
-                    document.getElementById('emergency-profile-container').classList.remove('hidden');
-                    emergencyModal.classList.add('hidden');
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            } catch (e) {
-                alert('Network error.');
-            } finally {
-                submitEmergency.disabled = false;
-                submitEmergency.innerHTML = 'Unlock Emergency Profile';
-            }
-        });
-    });
-</script>
+<!-- /.grid-main-side -->
 @endsection

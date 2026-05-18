@@ -1,128 +1,169 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Referral Network - OpesCare Staff Portal</title>
-    <style>
-        body { font-family: sans-serif; margin: 0; background: #f4f6f9; color: #1a1a2e; }
-        header { background: #1a1a2e; color: #fff; padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; }
-        header h1 { font-size: 1.2rem; margin: 0; }
-        .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
-        .badge-draft      { background: #e2e8f0; color: #475569; }
-        .badge-sent       { background: #dbeafe; color: #1d4ed8; }
-        .badge-accepted   { background: #dcfce7; color: #15803d; }
-        .badge-rejected   { background: #fee2e2; color: #dc2626; }
-        .badge-completed  { background: #ede9fe; color: #7c3aed; }
-        .badge-cancelled  { background: #fef3c7; color: #b45309; }
-        .badge-expired    { background: #f1f5f9; color: #94a3b8; }
-        .badge-urgent     { background: #fef3c7; color: #b45309; }
-        .badge-emergency  { background: #fee2e2; color: #dc2626; }
-        main { padding: 2rem; max-width: 1100px; margin: 0 auto; }
-        .card { background: #fff; border-radius: 8px; padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,.08); margin-bottom: 1.5rem; }
-        .filter-row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end; }
-        .filter-row label { display: flex; flex-direction: column; font-size: 0.85rem; gap: 4px; }
-        .filter-row input, .filter-row select { padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem; }
-        .filter-row button { padding: 7px 18px; background: #1a1a2e; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        th { text-align: left; padding: 10px 12px; background: #f8fafc; border-bottom: 2px solid #e2e8f0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; }
-        td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
-        tr:hover td { background: #f8fafc; }
-        .action-link { color: #1d4ed8; text-decoration: none; font-size: 0.8rem; margin-right: 8px; }
-        .action-link:hover { text-decoration: underline; }
-        .empty { text-align: center; padding: 3rem; color: #94a3b8; }
-        .page-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .btn-primary { display: inline-block; padding: 8px 18px; background: #1a1a2e; color: #fff; border-radius: 6px; text-decoration: none; font-size: 0.9rem; }
-        .urgency-emergency { color: #dc2626; font-weight: 700; }
-        .urgency-urgent    { color: #b45309; font-weight: 600; }
-    </style>
-</head>
-<body>
-<header>
-    <h1>OpesCare — Referral Network</h1>
-</header>
-<main>
-    <div class="page-title">
-        <h2 style="margin:0">Referrals</h2>
-        <a href="{{ route('portals.staff.referrals.create') }}" class="btn-primary">+ New Referral</a>
-    </div>
+@extends('layouts.portal')
 
-    <div class="card">
-        <form method="get" class="filter-row">
-            <label>
-                Patient ID
-                <input name="patient_id" value="{{ request('patient_id') }}" placeholder="UUID">
-            </label>
-            <label>
-                Referring Facility ID
-                <input name="referring_facility_id" value="{{ request('referring_facility_id') }}" placeholder="UUID">
-            </label>
-            <label>
-                Receiving Facility ID
-                <input name="receiving_facility_id" value="{{ request('receiving_facility_id') }}" placeholder="UUID">
-            </label>
-            <label>
-                Status
-                <select name="status">
-                    <option value="">All</option>
+@section('title', 'Referrals — OpesCare Staff Portal')
+
+@section('breadcrumb_home', 'Staff Portal')
+@section('breadcrumb_home_url', route('portals.staff'))
+@section('breadcrumb_section', 'Referrals')
+
+@section('sidebar_role_badge')
+    <div class="sidebar-role-badge">
+        <i data-lucide="stethoscope" style="width:0.75rem;height:0.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+        {{ __('public.staff_portal.role_label', [], app()->getLocale()) ?: 'Clinical Staff' }}
+    </div>
+@endsection
+
+@section('sidebar_nav')
+    <div class="sidebar-section-label">Overview</div>
+    <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+
+    <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">Clinical</div>
+    <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link"><i data-lucide="calendar-check-2"></i> Appointments</a>
+    <a href="{{ route('portals.staff.queue') }}" class="sidebar-link"><i data-lucide="list-ordered"></i> Patient Queue</a>
+    <a href="{{ route('portals.staff.immunizations') }}" class="sidebar-link"><i data-lucide="syringe"></i> Immunizations</a>
+    <a href="{{ route('portals.staff.referrals') }}" class="sidebar-link active"><i data-lucide="send"></i> Referrals</a>
+
+    <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">Operations</div>
+    <a href="{{ route('portals.staff.billing') }}" class="sidebar-link"><i data-lucide="receipt"></i> Billing</a>
+    <a href="{{ route('portals.staff.support') }}" class="sidebar-link"><i data-lucide="headset"></i> Support</a>
+@endsection
+
+@section('sidebar_user_role', 'Clinical Staff')
+
+@section('content')
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Referral Network</h1>
+        <p class="page-subtitle">Manage and track patient referrals across facilities.</p>
+    </div>
+    <div class="page-actions">
+        <a href="{{ route('portals.staff.referrals.create') }}" class="btn btn-primary">
+            <i data-lucide="send"></i>
+            New Referral
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="panel mb-6" style="margin-bottom:var(--p-space-6);">
+    <form method="get" action="{{ route('portals.staff.referrals') }}">
+        <div class="filter-bar">
+            <div class="form-group" style="flex:1;min-width:160px;">
+                <div class="form-search">
+                    <span class="search-icon"><i data-lucide="search"></i></span>
+                    <input type="text" name="patient_id" class="form-control" placeholder="Patient ID…" value="{{ request('patient_id') }}">
+                </div>
+            </div>
+            <div class="form-group" style="min-width:160px;">
+                <select name="status" class="form-control">
+                    <option value="">All Statuses</option>
                     @foreach(['draft','sent','accepted','rejected','completed','cancelled','expired'] as $s)
-                        <option value="{{ $s }}" @selected(request('status') === $s)>{{ ucfirst($s) }}</option>
+                    <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
                     @endforeach
                 </select>
-            </label>
-            <button type="submit">Filter</button>
-        </form>
+            </div>
+            <div class="form-group" style="min-width:160px;">
+                <select name="priority" class="form-control">
+                    <option value="">All Priorities</option>
+                    @foreach(['routine','urgent','emergency'] as $p)
+                    <option value="{{ $p }}" {{ request('priority') === $p ? 'selected' : '' }}>{{ ucfirst($p) }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary"><i data-lucide="filter"></i> Filter</button>
+            <a href="{{ route('portals.staff.referrals') }}" class="btn btn-secondary"><i data-lucide="x"></i> Clear</a>
+        </div>
+    </form>
+</div>
+
+<!-- Referrals Table -->
+<div class="panel">
+    <div class="panel-header">
+        <h2 class="panel-title">
+            <i data-lucide="send"></i>
+            Referrals
+        </h2>
+        <span class="badge badge-primary">{{ count($referrals) }} referrals</span>
     </div>
 
-    <div class="card">
-        @if ($referrals->isEmpty())
-            <div class="empty">No referrals found for the selected filters.</div>
-        @else
-            <table>
+    @if(count($referrals) === 0)
+        <div class="empty-state">
+            <div class="empty-state-icon"><i data-lucide="send"></i></div>
+            <h3>No Referrals Found</h3>
+            <p>No referrals match the current filters.</p>
+            <a href="{{ route('portals.staff.referrals.create') }}" class="btn btn-primary">
+                <i data-lucide="send"></i> Create Referral
+            </a>
+        </div>
+    @else
+        <div class="table-wrapper">
+            <table class="data-table" aria-label="Referrals list">
                 <thead>
                     <tr>
-                        <th>Date</th>
+                        <th>Referral ID</th>
                         <th>Patient</th>
-                        <th>Urgency</th>
-                        <th>Specialty / Provider</th>
+                        <th>From Facility</th>
+                        <th>To Facility</th>
+                        <th>Specialty</th>
+                        <th>Priority</th>
                         <th>Status</th>
-                        <th>Expires</th>
-                        <th>Actions</th>
+                        <th class="td-actions">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($referrals as $referral)
-                        <tr>
-                            <td>{{ $referral->created_at?->format('Y-m-d') }}</td>
-                            <td style="font-size:.8rem;color:#64748b">{{ $referral->patient_id }}</td>
-                            <td>
-                                @if ($referral->urgency === 'emergency')
-                                    <span class="badge badge-emergency">Emergency</span>
-                                @elseif ($referral->urgency === 'urgent')
-                                    <span class="badge badge-urgent">Urgent</span>
-                                @else
-                                    <span>Routine</span>
-                                @endif
-                            </td>
-                            <td>{{ $referral->receiving_specialty ?? $referral->receiving_provider_name ?? '—' }}</td>
-                            <td><span class="badge badge-{{ $referral->status }}">{{ ucfirst($referral->status) }}</span></td>
-                            <td style="font-size:.8rem;color:{{ $referral->isExpired() ? '#dc2626' : '#64748b' }}">
-                                {{ $referral->expires_at?->format('Y-m-d') ?? '—' }}
-                            </td>
-                            <td>
-                                <a href="{{ route('portals.staff.referrals.show', $referral->id) }}" class="action-link">View</a>
-                                @if ($referral->status === 'draft')
-                                    <a href="{{ route('portals.staff.referrals.show', $referral->id) }}" class="action-link">Send</a>
-                                @endif
-                                @if ($referral->status === 'sent')
-                                    <a href="{{ route('portals.staff.referrals.show', $referral->id) }}" class="action-link">Accept / Reject</a>
-                                @endif
-                            </td>
-                        </tr>
+                    @foreach($referrals as $referral)
+                    <tr>
+                        <td data-label="ID">
+                            <span class="td-mono">{{ substr($referral->id, 0, 8) }}</span>
+                        </td>
+                        <td data-label="Patient">
+                            <span class="td-mono">{{ $referral->patient_id }}</span>
+                        </td>
+                        <td data-label="From">
+                            <span class="td-muted">{{ $referral->referring_facility_id ?? '—' }}</span>
+                        </td>
+                        <td data-label="To">
+                            <span class="td-strong">{{ $referral->receiving_facility_id ?? '—' }}</span>
+                        </td>
+                        <td data-label="Specialty">
+                            <span class="td-muted">{{ $referral->specialty ?? '—' }}</span>
+                        </td>
+                        <td data-label="Priority">
+                            @php
+                                $prCls = match($referral->priority ?? 'routine') {
+                                    'emergency' => 'badge-critical',
+                                    'urgent'    => 'badge-danger',
+                                    default     => 'badge-neutral',
+                                };
+                            @endphp
+                            <span class="badge {{ $prCls }}">{{ ucfirst($referral->priority ?? 'routine') }}</span>
+                        </td>
+                        <td data-label="Status">
+                            @php
+                                $stCls = match($referral->status ?? 'draft') {
+                                    'accepted'  => 'badge-success',
+                                    'completed' => 'badge-teal',
+                                    'sent'      => 'badge-primary',
+                                    'rejected'  => 'badge-danger',
+                                    'cancelled' => 'badge-neutral',
+                                    'expired'   => 'badge-neutral',
+                                    default     => 'badge-warning',
+                                };
+                            @endphp
+                            <span class="badge {{ $stCls }}">{{ ucfirst($referral->status ?? 'draft') }}</span>
+                        </td>
+                        <td data-label="Actions" class="td-actions">
+                            <a href="{{ route('portals.staff.referrals.show', $referral->id) }}" class="btn btn-sm btn-secondary">
+                                <i data-lucide="eye" style="width:0.85rem;height:0.85rem;"></i>
+                            </a>
+                        </td>
+                    </tr>
                     @endforeach
                 </tbody>
             </table>
-        @endif
-    </div>
-</main>
-</body>
-</html>
+        </div>
+    @endif
+</div>
+
+@endsection
