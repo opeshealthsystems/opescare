@@ -109,13 +109,9 @@ Route::middleware(['web'])->group(function () {
 
 // Public Medical ID Verification Routes
 Route::middleware(['web', 'throttle:verify'])->group(function () {
-    Route::get('/verify/health-id', function () {
-        return 'Medical ID Verification Portal (Mock)';
-    })->name('verify.health-id');
-
-    Route::get('/verify/qr/{token}', function ($token) {
-        return 'QR Token Verification Portal (Mock) for token: ' . $token;
-    })->name('verify.qr');
+    Route::get('/verify/health-id', [\App\Http\Controllers\MedicalId\VerifyController::class, 'healthId'])->name('verify.health-id');
+    Route::post('/verify/health-id', [\App\Http\Controllers\MedicalId\VerifyController::class, 'healthIdLookup'])->name('verify.health-id.lookup');
+    Route::get('/verify/qr/{token}', [\App\Http\Controllers\MedicalId\VerifyController::class, 'qr'])->name('verify.qr');
 });
 
 // Portal Placeholders
