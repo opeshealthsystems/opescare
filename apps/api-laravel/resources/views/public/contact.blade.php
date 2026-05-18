@@ -3,6 +3,15 @@
 @section('title', __('public.contact.page_title', [], app()->getLocale()) ?: 'Contact Support | OpesCare')
 @section('meta_description', 'Get in touch with the OpesCare support team for technical help, partnership enquiries, or general questions.')
 
+@section('head_scripts')
+<style>
+.contact-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 3rem; align-items: start; }
+.contact-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+@media (max-width: 900px) { .contact-layout { grid-template-columns: 1fr; gap: 2rem; } }
+@media (max-width: 600px) { .contact-form-row { grid-template-columns: 1fr; } }
+</style>
+@endsection
+
 @section('content')
 
 <section class="content-header" style="background:linear-gradient(135deg,#0F2744 0%,#0F4C81 100%);padding:4rem 0 3rem;color:#fff;">
@@ -18,7 +27,7 @@
 
 <section style="padding:4rem 0;">
     <div class="container" style="max-width:1100px;">
-        <div style="display:grid;grid-template-columns:1fr 2fr;gap:3rem;align-items:start;">
+        <div class="contact-layout">
 
             <!-- Contact channels -->
             <div>
@@ -83,7 +92,7 @@
                 <form method="POST" action="{{ route('public.contact.submit') }}" novalidate>
                     @csrf
 
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
+                    <div class="contact-form-row">
                         <div>
                             <label style="display:block;font-size:0.8125rem;font-weight:700;color:var(--color-text-primary);margin-bottom:0.375rem;">
                                 {{ __('public.contact.field_name', [], app()->getLocale()) ?: 'Full Name' }} <span style="color:#DC2626;">*</span>
