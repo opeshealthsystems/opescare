@@ -141,6 +141,24 @@ Route::middleware(['web'])->group(function () {
 
         return view('portals.staff.appointments', ['appointments' => $appointments]);
     })->name('portals.staff.appointments');
+    Route::get('/portals/staff/queue', function (\Illuminate\Http\Request $request) {
+        $tickets = \App\Models\QueueTicket::query()
+            ->with('patient')
+            ->when($request->query('facility_id'), fn ($query, $facilityId) => $query->where('facility_id', $facilityId))
+            ->when($request->query('queue_name'), fn ($query, $queueName) => $query->where('current_queue', $queueName))
+            ->orderBy('priority_level')
+            ->orderBy('checked_in_at')
+            ->get();
+
+        return view('portals.staff.queue', ['tickets' => $tickets]);
+    })->name('portals.staff.queue');
+    Route::get('/queue-display', function (\Illuminate\Http\Request $request, \App\Modules\Queue\Services\QueueService $service) {
+        $tickets = $request->query('facility_id')
+            ? $service->maskedDisplay($request->query('facility_id'), $request->query('queue_name'))
+            : collect();
+
+        return view('portals.staff.queue_display', ['tickets' => $tickets]);
+    })->name('queue.display');
     
     Route::get('/portals/admin', [\App\Http\Controllers\MedicalId\AdminPortalController::class, 'index'])->name('portals.admin');
 });
@@ -179,5 +197,4 @@ Route::get('/care-map', [\App\Http\Controllers\Api\V1\CareMapController::class, 
 Route::get('/care-map/facility/{id}', [\App\Http\Controllers\Api\V1\CareMapController::class, 'publicProfile'])->name('public.care-map.profile');
 Route::get('/care-map/emergency', [\App\Http\Controllers\Api\V1\CareMapController::class, 'publicEmergency'])->name('public.care-map.emergency');
 Route::get('/admin/care-map/governance', [\App\Http\Controllers\Api\V1\CareMapController::class, 'adminGovernance'])->name('admin.care-map.governance');
-
 

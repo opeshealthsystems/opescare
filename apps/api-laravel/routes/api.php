@@ -6,6 +6,23 @@ use App\Http\Middleware\IdempotencyProtection;
 
 /*
 |--------------------------------------------------------------------------
+| OpesCare Queue and Patient Flow API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/queues')->group(function () {
+    Route::get('/tickets', [\App\Http\Controllers\Api\V1\QueueController::class, 'index']);
+    Route::post('/check-ins', [\App\Http\Controllers\Api\V1\QueueController::class, 'checkIn']);
+    Route::post('/call-next', [\App\Http\Controllers\Api\V1\QueueController::class, 'callNext']);
+    Route::get('/display', [\App\Http\Controllers\Api\V1\QueueController::class, 'display']);
+    Route::post('/tickets/{ticket}/start-service', [\App\Http\Controllers\Api\V1\QueueController::class, 'startService']);
+    Route::post('/tickets/{ticket}/transfer', [\App\Http\Controllers\Api\V1\QueueController::class, 'transfer']);
+    Route::post('/tickets/{ticket}/prioritize', [\App\Http\Controllers\Api\V1\QueueController::class, 'prioritize']);
+    Route::post('/tickets/{ticket}/complete', [\App\Http\Controllers\Api\V1\QueueController::class, 'complete']);
+    Route::post('/tickets/{ticket}/cancel', [\App\Http\Controllers\Api\V1\QueueController::class, 'cancel']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | OpesCare Appointment Booking API Routes
 |--------------------------------------------------------------------------
 */
@@ -257,4 +274,3 @@ Route::prefix('v1/care-map')->group(function () {
         Route::post('/admin/facilities/{id}/suspend', [\App\Http\Controllers\Api\V1\CareMapController::class, 'adminSuspendFacility']);
     });
 });
-
