@@ -3,6 +3,17 @@
 @section('title', 'OpesCare Interoperability | Connect Healthcare Systems')
 @section('meta_description', 'OpesCare supports REST API, SDK, embeddable widget, Bridge Agent, and OpesCare Lite to connect hospitals, labs, pharmacies, and insurers without replacing existing systems.')
 
+@section('head_scripts')
+<style>
+.interop-diagram { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem; }
+.interop-nodes   { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin-top: 1.25rem; }
+@media (max-width: 540px) {
+    .interop-diagram { grid-template-columns: 1fr; text-align: center; }
+    .interop-nodes   { grid-template-columns: 1fr; }
+}
+</style>
+@endsection
+
 @section('content')
 
     {{-- Hero --}}
@@ -50,7 +61,7 @@
                     {{-- Diagram: Hospital ↔ OpesCare ↔ Lab/Pharmacy --}}
                     <div style="background:#0F2744;border-radius:1.5rem;padding:2rem;color:#fff;">
                         <div style="text-align:center;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;margin-bottom:1.5rem;">Interop Flow</div>
-                        <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1rem;">
+                        <div class="interop-diagram">
                             {{-- Left: Facility --}}
                             <div style="background:rgba(255,255,255,.07);border-radius:1rem;padding:1.25rem;text-align:center;">
                                 <i data-lucide="hospital" style="width:2rem;height:2rem;color:#93c5fd;margin-bottom:.5rem;display:block;margin:0 auto .5rem;"></i>
@@ -72,7 +83,7 @@
                                 <div style="font-size:.6875rem;color:#94a3b8;margin-top:.25rem;">Consent + Audit Layer</div>
                             </div>
                         </div>
-                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-top:1.25rem;">
+                        <div class="interop-nodes">
                             @foreach(['Laboratory','Pharmacy','Insurer'] as $node)
                             <div style="background:rgba(255,255,255,.07);border-radius:.75rem;padding:.75rem;text-align:center;font-size:.75rem;color:#cbd5e1;">{{ $node }}</div>
                             @endforeach

@@ -3,6 +3,13 @@
 @section('title', 'About OpesCare | Digital Health ID and Connected Medical Records')
 @section('meta_description', 'OpesCare is a digital Health ID and healthcare interoperability platform built by Opesware to connect patients, hospitals, labs, pharmacies, and insurers through consent-based record sharing.')
 
+@section('head_scripts')
+<style>
+.about-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+@media (max-width: 480px) { .about-stats-grid { grid-template-columns: 1fr; } }
+</style>
+@endsection
+
 @section('content')
 
     {{-- Hero --}}
@@ -137,7 +144,7 @@
                 <div class="hero-visual">
                     <div style="background:#0F2744;border-radius:1.5rem;padding:2rem;color:#fff;">
                         <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#38BDF8;margin-bottom:1.5rem;">By the numbers</div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+                        <div class="about-stats-grid" style="display:grid;gap:1.25rem;">
                             @foreach([
                                 ['val'=>'6+','label'=>'Integration methods'],
                                 ['val'=>'5','label'=>'Stakeholder types'],

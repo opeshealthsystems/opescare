@@ -3,6 +3,13 @@
 @section('title', 'OpesCare Developers | Connect API, SDK, Widget & Integration Tools')
 @section('meta_description', 'Developer resources for the OpesCare platform: REST API, PHP/JS/Python SDK, embeddable widget, Bridge Agent, OpesCare Lite, and webhooks.')
 
+@section('head_scripts')
+<style>
+.webhooks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+@media (max-width: 768px) { .webhooks-grid { grid-template-columns: 1fr; } }
+</style>
+@endsection
+
 @section('content')
 
     {{-- Hero --}}
@@ -240,7 +247,7 @@
             <h2>Stay in sync with real-time platform events</h2>
             <p class="text-muted" style="max-width:680px;margin-bottom:3rem;">Subscribe your endpoint to OpesCare events and keep your local system updated without polling the API.</p>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;">
+            <div class="webhooks-grid">
                 <div>
                     <h3 style="font-size:1.0625rem;margin-bottom:1.25rem;">Available event topics</h3>
                     <div style="display:grid;gap:.75rem;">
