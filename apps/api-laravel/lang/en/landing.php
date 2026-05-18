@@ -341,4 +341,55 @@ return [
         'link_partnerships'  => 'Partnerships',
         'link_status'        => 'System Status',
     ],
+
+    /* ── Hero visual mockup ─────────────────────────── */
+    'hero_card' => [
+        'demo_id'            => 'OC-NGA-4F2K-9R7M-Q3WX',
+        'label_health_id'    => 'Health ID',
+        'label_verified'     => 'Verified',
+        'secure_label'       => 'Secure Encrypted Identifier',
+        'consent_approved'   => 'Approved by Patient',
+        'timeline_ago'       => '10 mins ago',
+        'timeline_title'     => 'Lab Result Synchronized',
+        'timeline_desc'      => 'Hematology Profile · City Lab',
+        'pharmacy_label'     => 'Pharmacy Sync',
+        'pharmacy_status'    => 'Medicine Found',
+    ],
+
+    /* ── Consent simulator ──────────────────────────── */
+    'consent_sim' => [
+        'window_title'       => 'Security & Consent Center',
+        'alert_title'        => 'Active Consent Request',
+        'alert_desc'         => 'City General Hospital requests Clinical Notes access',
+        'scope_demographics' => 'Demographic Details',
+        'scope_prescriptions'=> 'Prescription Records',
+        'scope_lab'          => 'Lab Results',
+        'btn_deny'           => 'Deny',
+        'btn_approve'        => 'Approve Access',
+    ],
+
+    /* ── Emergency profile simulator ───────────────── */
+    'emergency_sim' => [
+        'override_label'     => 'Emergency Override Active',
+        'demo_name'          => 'Amara Diallo',
+        'demo_id'            => 'OC-NGA-4F2K-9R7M-Q3WX',
+        'demo_blood'         => 'O Positive (O+)',
+        'demo_allergies'     => 'Penicillin, Peanuts',
+        'demo_conditions'    => 'Chronic Asthma',
+        'demo_contact'       => 'Fatima Diallo (+234-801-555-0193)',
+        'lbl_blood'          => 'Blood Group',
+        'lbl_allergies'      => 'Critical Allergies',
+        'lbl_conditions'     => 'Conditions',
+        'lbl_contact'        => 'Emerg. Contact',
+    ],
+
+    /* ── Bilingual visual ───────────────────────────── */
+    'bilingual_vis' => [
+        'en_panel_title'     => 'English Interface',
+        'en_heading'         => 'Secure Health ID',
+        'en_desc'            => 'Carry your medical records everywhere.',
+        'fr_panel_title'     => 'Interface Française',
+        'fr_heading'         => 'ID Santé Sécurisé',
+        'fr_desc'            => 'Transportez vos dossiers médicaux partout.',
+    ],
 ];

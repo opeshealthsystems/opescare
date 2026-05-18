@@ -341,4 +341,55 @@ return [
         'link_partnerships'  => 'Partenariats',
         'link_status'        => 'Statut du système',
     ],
+
+    /* ── Maquette visuelle héro ─────────────────────── */
+    'hero_card' => [
+        'demo_id'            => 'OC-NGA-4F2K-9R7M-Q3WX',
+        'label_health_id'    => 'Identifiant de Santé',
+        'label_verified'     => 'Vérifié',
+        'secure_label'       => 'Identifiant Chiffré Sécurisé',
+        'consent_approved'   => 'Approuvé par le Patient',
+        'timeline_ago'       => 'il y a 10 min',
+        'timeline_title'     => 'Résultat de Labo Synchronisé',
+        'timeline_desc'      => 'Profil Hématologique · City Lab',
+        'pharmacy_label'     => 'Sync Pharmacie',
+        'pharmacy_status'    => 'Médicament Trouvé',
+    ],
+
+    /* ── Simulateur de consentement ─────────────────── */
+    'consent_sim' => [
+        'window_title'       => 'Centre de Sécurité et Consentement',
+        'alert_title'        => 'Demande de Consentement Active',
+        'alert_desc'         => "L'Hôpital Général de la Ville demande l'accès aux Notes Cliniques",
+        'scope_demographics' => 'Données Démographiques',
+        'scope_prescriptions'=> 'Ordonnances',
+        'scope_lab'          => 'Résultats de Labo',
+        'btn_deny'           => 'Refuser',
+        'btn_approve'        => "Approuver l'accès",
+    ],
+
+    /* ── Simulateur d'urgence ───────────────────────── */
+    'emergency_sim' => [
+        'override_label'     => "Accès d'Urgence Actif",
+        'demo_name'          => 'Amara Diallo',
+        'demo_id'            => 'OC-NGA-4F2K-9R7M-Q3WX',
+        'demo_blood'         => 'O Positif (O+)',
+        'demo_allergies'     => 'Pénicilline, Arachides',
+        'demo_conditions'    => 'Asthme Chronique',
+        'demo_contact'       => 'Fatima Diallo (+234-801-555-0193)',
+        'lbl_blood'          => 'Groupe Sanguin',
+        'lbl_allergies'      => 'Allergies Critiques',
+        'lbl_conditions'     => 'Pathologies',
+        'lbl_contact'        => 'Contact Urgence',
+    ],
+
+    /* ── Visuel bilingue ────────────────────────────── */
+    'bilingual_vis' => [
+        'en_panel_title'     => 'English Interface',
+        'en_heading'         => 'Secure Health ID',
+        'en_desc'            => 'Carry your medical records everywhere.',
+        'fr_panel_title'     => 'Interface Française',
+        'fr_heading'         => 'ID Santé Sécurisé',
+        'fr_desc'            => 'Transportez vos dossiers médicaux partout.',
+    ],
 ];

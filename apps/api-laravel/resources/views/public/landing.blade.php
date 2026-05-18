@@ -32,15 +32,15 @@
                                 <div class="mini-logo"></div>
                                 <span class="logo-text">OpesCare</span>
                             </div>
-                            <div class="status-indicator">Verified</div>
+                            <div class="status-indicator">{{ __('landing.hero_card.label_verified') }}</div>
                         </div>
                         <div class="card-body">
                             <div class="qr-code-area">
                                 <i data-lucide="qr-code"></i>
                             </div>
                             <div class="patient-details">
-                                <div class="detail-label">Health ID Token</div>
-                                <div class="detail-value font-mono">OPC-8849-DX9</div>
+                                <div class="detail-label">{{ __('landing.hero_card.label_health_id') }}</div>
+                                <div class="detail-value font-mono">{{ __('landing.hero_card.demo_id') }}</div>
                                 <div class="detail-bars">
                                     <div class="bar bar-lg"></div>
                                     <div class="bar bar-sm"></div>
@@ -48,7 +48,7 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <span class="footer-msg"><i data-lucide="lock-keyhole"></i> Secure Encrypted Identifier</span>
+                            <span class="footer-msg"><i data-lucide="lock-keyhole"></i> {{ __('landing.hero_card.secure_label') }}</span>
                         </div>
                     </div>
 
@@ -59,7 +59,7 @@
                         </div>
                         <div class="consent-info">
                             <strong>{{ __('landing.consent.requests_title') }}</strong>
-                            <span>Approved by Patient</span>
+                            <span>{{ __('landing.hero_card.consent_approved') }}</span>
                         </div>
                     </div>
 
@@ -67,9 +67,9 @@
                     <div class="mockup-card card-timeline animate-slide-up-delay-2">
                         <div class="timeline-dot"></div>
                         <div class="timeline-details">
-                            <div class="timeline-time">10 mins ago</div>
-                            <div class="timeline-title">Lab Result Synchronized</div>
-                            <div class="timeline-desc text-muted">Hematology Profile • City Lab</div>
+                            <div class="timeline-time">{{ __('landing.hero_card.timeline_ago') }}</div>
+                            <div class="timeline-title">{{ __('landing.hero_card.timeline_title') }}</div>
+                            <div class="timeline-desc text-muted">{{ __('landing.hero_card.timeline_desc') }}</div>
                         </div>
                     </div>
 
@@ -77,8 +77,8 @@
                     <div class="mockup-card card-stock animate-slide-up-delay-3">
                         <i data-lucide="pill" class="text-teal"></i>
                         <div class="stock-details">
-                            <strong>Pharmacy Sync</strong>
-                            <span class="text-success">Medicine Found</span>
+                            <strong>{{ __('landing.hero_card.pharmacy_label') }}</strong>
+                            <span class="text-success">{{ __('landing.hero_card.pharmacy_status') }}</span>
                         </div>
                     </div>
                 </div>
@@ -372,33 +372,33 @@
                         <div class="sim-dot red"></div>
                         <div class="sim-dot yellow"></div>
                         <div class="sim-dot green"></div>
-                        <span class="sim-title">Security & Consent Center</span>
+                        <span class="sim-title">{{ __('landing.consent_sim.window_title') }}</span>
                     </div>
                     <div class="sim-body">
                         <div class="sim-alert">
                             <i data-lucide="shield-alert" class="text-warning"></i>
                             <div>
-                                <strong>Active Consent Request</strong>
-                                <span>City General Hospital requests Clinical Notes access</span>
+                                <strong>{{ __('landing.consent_sim.alert_title') }}</strong>
+                                <span>{{ __('landing.consent_sim.alert_desc') }}</span>
                             </div>
                         </div>
                         <div class="sim-scope-box">
                             <div class="scope-row">
-                                <span>Demographic Details</span>
+                                <span>{{ __('landing.consent_sim.scope_demographics') }}</span>
                                 <div class="toggle active"></div>
                             </div>
                             <div class="scope-row">
-                                <span>Prescription Records</span>
+                                <span>{{ __('landing.consent_sim.scope_prescriptions') }}</span>
                                 <div class="toggle active"></div>
                             </div>
                             <div class="scope-row">
-                                <span>Lab Results</span>
+                                <span>{{ __('landing.consent_sim.scope_lab') }}</span>
                                 <div class="toggle inactive"></div>
                             </div>
                         </div>
                         <div class="sim-actions">
-                            <button class="btn btn-secondary btn-sm">Deny</button>
-                            <button class="btn btn-primary btn-sm">Approve Access</button>
+                            <button class="btn btn-secondary btn-sm">{{ __('landing.consent_sim.btn_deny') }}</button>
+                            <button class="btn btn-primary btn-sm">{{ __('landing.consent_sim.btn_approve') }}</button>
                         </div>
                     </div>
                 </div>
@@ -414,33 +414,33 @@
                 <div class="simulator-card emergency-sim">
                     <div class="sim-header">
                         <i data-lucide="siren" class="text-danger animate-pulse"></i>
-                        <span class="sim-title text-danger uppercase tracking-widest font-black">Emergency Override Active</span>
+                        <span class="sim-title text-danger uppercase tracking-widest font-black">{{ __('landing.emergency_sim.override_label') }}</span>
                     </div>
                     <div class="sim-body">
                         <div class="emergency-profile-box">
                             <div class="profile-header-sim">
                                 <div class="profile-avatar-sim"><i data-lucide="user"></i></div>
                                 <div>
-                                    <h3>John Doe</h3>
-                                    <span class="font-mono text-muted">ID: OPC-8849-DX9</span>
+                                    <h3>{{ __('landing.emergency_sim.demo_name') }}</h3>
+                                    <span class="font-mono text-muted">ID: {{ __('landing.emergency_sim.demo_id') }}</span>
                                 </div>
                             </div>
                             <div class="profile-details-grid">
                                 <div class="detail-sim-item">
-                                    <span class="lbl"><i data-lucide="droplet" class="text-danger"></i> Blood Group</span>
-                                    <strong class="text-danger">O Positive (O+)</strong>
+                                    <span class="lbl"><i data-lucide="droplet" class="text-danger"></i> {{ __('landing.emergency_sim.lbl_blood') }}</span>
+                                    <strong class="text-danger">{{ __('landing.emergency_sim.demo_blood') }}</strong>
                                 </div>
                                 <div class="detail-sim-item">
-                                    <span class="lbl"><i data-lucide="shield-alert" class="text-warning"></i> Critical Allergies</span>
-                                    <strong class="text-warning">Penicillin, Peanuts</strong>
+                                    <span class="lbl"><i data-lucide="shield-alert" class="text-warning"></i> {{ __('landing.emergency_sim.lbl_allergies') }}</span>
+                                    <strong class="text-warning">{{ __('landing.emergency_sim.demo_allergies') }}</strong>
                                 </div>
                                 <div class="detail-sim-item">
-                                    <span class="lbl"><i data-lucide="heart-pulse"></i> Conditions</span>
-                                    <strong>Chronic Asthma</strong>
+                                    <span class="lbl"><i data-lucide="heart-pulse"></i> {{ __('landing.emergency_sim.lbl_conditions') }}</span>
+                                    <strong>{{ __('landing.emergency_sim.demo_conditions') }}</strong>
                                 </div>
                                 <div class="detail-sim-item">
-                                    <span class="lbl"><i data-lucide="phone"></i> Emerg. Contact</span>
-                                    <strong>Jane Doe (+234-800-EMER)</strong>
+                                    <span class="lbl"><i data-lucide="phone"></i> {{ __('landing.emergency_sim.lbl_contact') }}</span>
+                                    <strong>{{ __('landing.emergency_sim.demo_contact') }}</strong>
                                 </div>
                             </div>
                         </div>
@@ -694,17 +694,17 @@
                 <!-- Dual Language Interface Visualizer -->
                 <div class="lang-visualizer-box">
                     <div class="visual-panel en-panel">
-                        <div class="panel-header-mini">English Interface</div>
+                        <div class="panel-header-mini">{{ __('landing.bilingual_vis.en_panel_title') }}</div>
                         <div class="panel-body-mini">
-                            <strong class="text-teal">Secure Health ID</strong>
-                            <p class="text-sm text-muted">Carry your medical records everywhere.</p>
+                            <strong class="text-teal">{{ __('landing.bilingual_vis.en_heading') }}</strong>
+                            <p class="text-sm text-muted">{{ __('landing.bilingual_vis.en_desc') }}</p>
                         </div>
                     </div>
                     <div class="visual-panel fr-panel">
-                        <div class="panel-header-mini">Interface Française</div>
+                        <div class="panel-header-mini">{{ __('landing.bilingual_vis.fr_panel_title') }}</div>
                         <div class="panel-body-mini">
-                            <strong class="text-teal">ID Santé Sécurisé</strong>
-                            <p class="text-sm text-muted">Transportez vos dossiers médicaux partout.</p>
+                            <strong class="text-teal">{{ __('landing.bilingual_vis.fr_heading') }}</strong>
+                            <p class="text-sm text-muted">{{ __('landing.bilingual_vis.fr_desc') }}</p>
                         </div>
                     </div>
                 </div>
