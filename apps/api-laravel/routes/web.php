@@ -122,8 +122,25 @@ Route::middleware(['web'])->group(function () {
     Route::get('/portals/patient', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'index'])->name('portals.patient');
     Route::get('/portals/patient/logs', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'accessLogs'])->name('portals.patient.logs');
     Route::post('/portals/patient/generate-qr', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'generateTemporaryQr'])->name('portals.patient.qr');
+    Route::get('/portals/patient/appointments', function (\Illuminate\Http\Request $request) {
+        $appointments = \App\Models\Appointment::query()
+            ->when($request->query('patient_id'), fn ($query, $patientId) => $query->where('patient_id', $patientId))
+            ->orderBy('scheduled_at')
+            ->get();
+
+        return view('portals.patient.appointments', ['appointments' => $appointments]);
+    })->name('portals.patient.appointments');
 
     Route::get('/portals/staff', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'index'])->name('portals.staff');
+    Route::get('/portals/staff/appointments', function (\Illuminate\Http\Request $request) {
+        $appointments = \App\Models\Appointment::query()
+            ->when($request->query('facility_id'), fn ($query, $facilityId) => $query->where('facility_id', $facilityId))
+            ->when($request->query('provider_id'), fn ($query, $providerId) => $query->where('provider_id', $providerId))
+            ->orderBy('scheduled_at')
+            ->get();
+
+        return view('portals.staff.appointments', ['appointments' => $appointments]);
+    })->name('portals.staff.appointments');
     
     Route::get('/portals/admin', [\App\Http\Controllers\MedicalId\AdminPortalController::class, 'index'])->name('portals.admin');
 });
@@ -162,6 +179,5 @@ Route::get('/care-map', [\App\Http\Controllers\Api\V1\CareMapController::class, 
 Route::get('/care-map/facility/{id}', [\App\Http\Controllers\Api\V1\CareMapController::class, 'publicProfile'])->name('public.care-map.profile');
 Route::get('/care-map/emergency', [\App\Http\Controllers\Api\V1\CareMapController::class, 'publicEmergency'])->name('public.care-map.emergency');
 Route::get('/admin/care-map/governance', [\App\Http\Controllers\Api\V1\CareMapController::class, 'adminGovernance'])->name('admin.care-map.governance');
-
 
 

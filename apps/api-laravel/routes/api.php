@@ -6,6 +6,20 @@ use App\Http\Middleware\IdempotencyProtection;
 
 /*
 |--------------------------------------------------------------------------
+| OpesCare Appointment Booking API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/appointments')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'index']);
+    Route::post('/', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'store']);
+    Route::post('/no-shows', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'noShow']);
+    Route::post('/{appointment}/reschedule', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'reschedule']);
+    Route::post('/{appointment}/cancel', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'cancel']);
+    Route::post('/{appointment}/check-in', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'checkIn']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | OpesCare Connect Interoperability API Routes (B2B)
 |--------------------------------------------------------------------------
 */
@@ -243,5 +257,4 @@ Route::prefix('v1/care-map')->group(function () {
         Route::post('/admin/facilities/{id}/suspend', [\App\Http\Controllers\Api\V1\CareMapController::class, 'adminSuspendFacility']);
     });
 });
-
 
