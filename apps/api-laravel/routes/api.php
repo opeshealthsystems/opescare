@@ -6,6 +6,78 @@ use App\Http\Middleware\IdempotencyProtection;
 
 /*
 |--------------------------------------------------------------------------
+| OpesCare Operational Flow API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/operational-flow')->group(function () {
+    Route::post('/patient-journey', [\App\Http\Controllers\Api\V1\OperationalFlowController::class, 'patientJourney']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| OpesCare Support and Helpdesk API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/support')->group(function () {
+    Route::get('/tickets', [\App\Http\Controllers\Api\V1\SupportController::class, 'index']);
+    Route::post('/tickets', [\App\Http\Controllers\Api\V1\SupportController::class, 'store']);
+    Route::post('/tickets/{ticket}/messages', [\App\Http\Controllers\Api\V1\SupportController::class, 'addMessage']);
+    Route::post('/tickets/{ticket}/assign', [\App\Http\Controllers\Api\V1\SupportController::class, 'assign']);
+    Route::post('/tickets/{ticket}/escalate', [\App\Http\Controllers\Api\V1\SupportController::class, 'escalate']);
+    Route::post('/tickets/{ticket}/resolve', [\App\Http\Controllers\Api\V1\SupportController::class, 'resolve']);
+    Route::post('/tickets/{ticket}/incident', [\App\Http\Controllers\Api\V1\SupportController::class, 'createIncident']);
+    Route::post('/knowledge-base', [\App\Http\Controllers\Api\V1\SupportController::class, 'publishArticle']);
+    Route::post('/knowledge-base/{article}/view', [\App\Http\Controllers\Api\V1\SupportController::class, 'viewArticle']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| OpesCare Billing and Cashier API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/billing')->group(function () {
+    Route::get('/invoices', [\App\Http\Controllers\Api\V1\BillingController::class, 'invoices']);
+    Route::post('/invoices', [\App\Http\Controllers\Api\V1\BillingController::class, 'createInvoice']);
+    Route::post('/invoices/{invoice}/payments', [\App\Http\Controllers\Api\V1\BillingController::class, 'recordPayment']);
+    Route::post('/payments/{payment}/refund', [\App\Http\Controllers\Api\V1\BillingController::class, 'refund']);
+    Route::post('/wallets/deposit', [\App\Http\Controllers\Api\V1\BillingController::class, 'depositWallet']);
+    Route::post('/cashier-sessions', [\App\Http\Controllers\Api\V1\BillingController::class, 'openSession']);
+    Route::post('/cashier-sessions/{session}/close', [\App\Http\Controllers\Api\V1\BillingController::class, 'closeSession']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| OpesCare Queue and Patient Flow API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/queues')->group(function () {
+    Route::get('/tickets', [\App\Http\Controllers\Api\V1\QueueController::class, 'index']);
+    Route::post('/check-ins', [\App\Http\Controllers\Api\V1\QueueController::class, 'checkIn']);
+    Route::post('/call-next', [\App\Http\Controllers\Api\V1\QueueController::class, 'callNext']);
+    Route::get('/display', [\App\Http\Controllers\Api\V1\QueueController::class, 'display']);
+    Route::post('/tickets/{ticket}/start-service', [\App\Http\Controllers\Api\V1\QueueController::class, 'startService']);
+    Route::post('/tickets/{ticket}/transfer', [\App\Http\Controllers\Api\V1\QueueController::class, 'transfer']);
+    Route::post('/tickets/{ticket}/prioritize', [\App\Http\Controllers\Api\V1\QueueController::class, 'prioritize']);
+    Route::post('/tickets/{ticket}/complete', [\App\Http\Controllers\Api\V1\QueueController::class, 'complete']);
+    Route::post('/tickets/{ticket}/cancel', [\App\Http\Controllers\Api\V1\QueueController::class, 'cancel']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| OpesCare Appointment Booking API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/appointments')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'index']);
+    Route::post('/', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'store']);
+    Route::post('/no-shows', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'noShow']);
+    Route::post('/{appointment}/reschedule', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'reschedule']);
+    Route::post('/{appointment}/cancel', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'cancel']);
+    Route::post('/{appointment}/check-in', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'checkIn']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | OpesCare Connect Interoperability API Routes (B2B)
 |--------------------------------------------------------------------------
 */
@@ -78,6 +150,10 @@ Route::prefix('mobile')->group(function () {
     // Access Logs B2C view
     Route::get('/access-logs', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'listAccessLogs']);
 
+    // Limited encrypted offline mode
+    Route::post('/offline/policies', [\App\Http\Controllers\Api\Mobile\OfflineSyncController::class, 'createPolicy']);
+    Route::post('/offline/policies/{policy}/queue', [\App\Http\Controllers\Api\Mobile\OfflineSyncController::class, 'queue']);
+
     // Patient Correction filings
     Route::post('/correction-requests', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'createCorrectionRequest']);
 
@@ -138,6 +214,11 @@ Route::prefix('v1/public-health')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::prefix('v1/admin')->group(function () {
+    Route::get('/global-search', \App\Http\Controllers\Api\V1\Admin\GlobalSearchController::class);
+    Route::get('/facilities/{facility}/go-live-readiness', [\App\Http\Controllers\Api\V1\Admin\FacilityGoLiveReadinessController::class, 'show']);
+    Route::post('/facilities/{facility}/go-live-readiness', [\App\Http\Controllers\Api\V1\Admin\FacilityGoLiveReadinessController::class, 'store']);
+    Route::patch('/facilities/{facility}/go-live-readiness/items/{item}', [\App\Http\Controllers\Api\V1\Admin\FacilityGoLiveReadinessController::class, 'markItem']);
+    Route::post('/facilities/{facility}/go-live-readiness/approve', [\App\Http\Controllers\Api\V1\Admin\FacilityGoLiveReadinessController::class, 'approve']);
     Route::get('/access-logs', [\App\Http\Controllers\Api\V1\Admin\AdminGovernanceController::class, 'listAccessLogs']);
     Route::get('/emergency-access/reviews', [\App\Http\Controllers\Api\V1\Admin\AdminGovernanceController::class, 'listEmergencyAccessReviews']);
     Route::post('/emergency-access/{id}/review', [\App\Http\Controllers\Api\V1\Admin\AdminGovernanceController::class, 'reviewEmergencyAccess']);
@@ -203,6 +284,37 @@ require __DIR__.'/academy.php';
 
 /*
 |--------------------------------------------------------------------------
+| OpesCare Referral Network API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/referrals')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'index']);
+    Route::post('/', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'store']);
+    Route::post('/expire-stale', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'expireStale']);
+    Route::get('/{referral}', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'show']);
+    Route::post('/{referral}/send', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'send']);
+    Route::post('/{referral}/accept', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'accept']);
+    Route::post('/{referral}/reject', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'reject']);
+    Route::post('/{referral}/complete', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'complete']);
+    Route::post('/{referral}/cancel', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'cancel']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| OpesCare Immunization API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/immunizations')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\V1\Immunization\ImmunizationController::class, 'index']);
+    Route::post('/', [\App\Http\Controllers\Api\V1\Immunization\ImmunizationController::class, 'store']);
+    Route::post('/schedule', [\App\Http\Controllers\Api\V1\Immunization\ImmunizationController::class, 'scheduleVaccines']);
+    Route::get('/schedule', [\App\Http\Controllers\Api\V1\Immunization\ImmunizationController::class, 'patientSchedule']);
+    Route::get('/{immunization}', [\App\Http\Controllers\Api\V1\Immunization\ImmunizationController::class, 'show']);
+    Route::post('/{immunization}/adverse-reactions', [\App\Http\Controllers\Api\V1\Immunization\ImmunizationController::class, 'reportAdverseReaction']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | OpesCare Verifiable Document Template System V2 API Routes
 |--------------------------------------------------------------------------
 */
@@ -243,5 +355,3 @@ Route::prefix('v1/care-map')->group(function () {
         Route::post('/admin/facilities/{id}/suspend', [\App\Http\Controllers\Api\V1\CareMapController::class, 'adminSuspendFacility']);
     });
 });
-
-

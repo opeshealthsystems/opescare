@@ -64,6 +64,9 @@ class NotificationPreferenceService
         $now = now();
         $start = now()->setTimeFromTimeString($config['start']);
         $end = now()->setTimeFromTimeString($config['end']);
+        if (preg_match('/^\d{2}:\d{2}$/', $config['end'])) {
+            $end = $end->addSeconds(59);
+        }
 
         if ($start > $end) {
             return $now >= $start || $now <= $end;

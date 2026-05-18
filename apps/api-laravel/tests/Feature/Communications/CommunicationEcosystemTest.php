@@ -119,6 +119,7 @@ class CommunicationEcosystemTest extends TestCase
     public function test_quiet_hours_respects_opt_out_but_critical_security_alerts_bypass_quiet_hours()
     {
         $preferenceService = app(NotificationPreferenceService::class);
+        $this->travelTo(now()->setTime(23, 59, 45));
 
         // Define a preference with active quiet hours starting now to tomorrow
         NotificationPreference::create([
