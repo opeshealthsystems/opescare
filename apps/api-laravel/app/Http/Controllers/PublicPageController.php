@@ -99,15 +99,24 @@ class PublicPageController extends Controller
     public function contactSubmit(\Illuminate\Http\Request $request)
     {
         $request->validate([
-            'name'    => 'required|string|max:120',
-            'email'   => 'required|email|max:180',
-            'subject' => 'required|string|max:60',
-            'message' => 'required|string|max:3000',
+            'name'              => 'required|string|max:120',
+            'email'             => 'required|email|max:180',
+            'subject'           => 'nullable|string|max:60',
+            'message'           => 'required|string|max:5000',
+            // Partner inquiry extras (from landing page form)
+            'organisation'      => 'nullable|string|max:160',
+            'organization'      => 'nullable|string|max:160',
+            'role'              => 'nullable|string|max:100',
+            'phone'             => 'nullable|string|max:30',
+            'organization_type' => 'nullable|string|max:60',
+            'country'           => 'nullable|string|max:80',
         ]);
 
-        // TODO: dispatch ContactMessageReceived mail/job
+        // TODO: dispatch ContactMessageReceived / PartnerInquiryReceived mail/job
 
-        return redirect()->route('public.contact')->with('contact_success', true);
+        // Redirect back to the originating page with success flag
+        $back = url()->previous();
+        return redirect($back)->with('contact_success', true)->with('success', 'Thank you! Your message has been received. We\'ll be in touch shortly.');
     }
 
     public function status()

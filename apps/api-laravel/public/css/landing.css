@@ -1125,3 +1125,27 @@ select.form-control { cursor: pointer; }
     .card-stock { right: 10px; }
     .roles-tabs { justify-content: center; }
 }
+
+/* ── Footer link style ─────────────────────────────── */
+.footer-link {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color 0.15s;
+    font-weight: 500;
+}
+.footer-link:hover { color: var(--color-primary); }
+
+/* ── Active nav link highlight ─────────────────────── */
+.nav-link.active,
+.nav-link[aria-current="page"] {
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+/* ── Dropdown icon alignment ───────────────────────── */
+.dropdown-item i[data-lucide] {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}

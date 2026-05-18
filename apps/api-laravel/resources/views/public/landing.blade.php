@@ -730,7 +730,7 @@
                         <span>{{ session('success') }}</span>
                     </div>
                 @else
-                    <form action="#" method="POST" class="partner-inquiry-form mt-4">
+                    <form action="{{ route('public.contact.submit') }}" method="POST" class="partner-inquiry-form mt-4">
                         @csrf
                         <div class="form-grid">
                             <div class="form-group">
