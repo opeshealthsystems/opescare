@@ -36,6 +36,7 @@ Route::get('/consent', [PublicPageController::class, 'consent'])->name('public.c
 Route::get('/faq', [PublicPageController::class, 'faq'])->name('public.faq');
 Route::get('/help', [PublicPageController::class, 'help'])->name('public.help');
 Route::get('/contact', [PublicPageController::class, 'contact'])->name('public.contact');
+Route::post('/contact', [PublicPageController::class, 'contactSubmit'])->name('public.contact.submit');
 Route::get('/status', [PublicPageController::class, 'status'])->name('public.status');
 
 // Onboarding / Auth Path Selectors & Tailored Routes

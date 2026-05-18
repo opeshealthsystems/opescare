@@ -96,6 +96,20 @@ class PublicPageController extends Controller
         return view('public.contact');
     }
 
+    public function contactSubmit(\Illuminate\Http\Request $request)
+    {
+        $request->validate([
+            'name'    => 'required|string|max:120',
+            'email'   => 'required|email|max:180',
+            'subject' => 'required|string|max:60',
+            'message' => 'required|string|max:3000',
+        ]);
+
+        // TODO: dispatch ContactMessageReceived mail/job
+
+        return redirect()->route('public.contact')->with('contact_success', true);
+    }
+
     public function status()
     {
         return view('public.status');
