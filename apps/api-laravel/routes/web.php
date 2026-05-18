@@ -170,6 +170,19 @@ Route::middleware(['web'])->group(function () {
     })->name('queue.display');
     
     Route::get('/portals/admin', [\App\Http\Controllers\MedicalId\AdminPortalController::class, 'index'])->name('portals.admin');
+    Route::get('/portals/admin/facilities/{facility}/go-live-readiness', function (
+        \App\Models\Facility $facility,
+        \App\Modules\FacilityReadiness\Services\FacilityGoLiveService $service
+    ) {
+        $readiness = $service->getOrCreateReadiness($facility->id);
+
+        return view('portals.admin.go_live_readiness', [
+            'facility' => $facility,
+            'readiness' => $readiness,
+            'labels' => $service->checklistLabels(),
+            'missingItems' => $service->missingItems($readiness),
+        ]);
+    })->name('portals.admin.go-live-readiness');
 });
 
 /*
