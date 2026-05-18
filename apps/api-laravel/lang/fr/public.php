@@ -470,4 +470,11 @@ return [
         ‘golive_no’                  => ‘Non’,
         ‘golive_none’                => ‘Aucun’,
     ],
+
+    /* ── Modèles d’e-mail ───────────────────────────── */
+    ‘emails’ => [
+        ‘footer_automated’  => ‘Ceci est une transmission opérationnelle automatisée de la plateforme OpesCare.’,
+        ‘footer_privacy’    => "Pour protéger votre vie privée, cette communication externe ne contient pas d’historique médical détaillé ni de valeurs diagnostiques. Connectez-vous à votre portail sécurisé pour consulter vos dossiers cliniques.",
+        ‘footer_copyright’  => ‘© :year OpesCare. Tous droits réservés.’,
+    ],
 ];

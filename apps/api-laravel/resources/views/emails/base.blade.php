@@ -101,9 +101,9 @@
             </div>
         @endif
         <div class="footer">
-            <p>This is an automated operational transmission from OpesCare Platform.</p>
-            <p>To protect your privacy, this external communication does not contain detailed medical history or diagnostic values. Log in to your secure portal to review detailed clinical records.</p>
-            <p>&copy; {{ date('Y') }} OpesCare. All rights reserved.</p>
+            <p>{{ __('public.emails.footer_automated', [], app()->getLocale()) ?: 'This is an automated operational transmission from OpesCare Platform.' }}</p>
+            <p>{{ __('public.emails.footer_privacy', [], app()->getLocale()) ?: 'To protect your privacy, this external communication does not contain detailed medical history or diagnostic values. Log in to your secure portal to review detailed clinical records.' }}</p>
+            <p>{{ __('public.emails.footer_copyright', ['year' => date('Y')], app()->getLocale()) ?: '© ' . date('Y') . ' OpesCare. All rights reserved.' }}</p>
         </div>
     </div>
 </body>

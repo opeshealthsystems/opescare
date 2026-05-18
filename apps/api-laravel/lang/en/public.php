@@ -470,4 +470,11 @@ return [
         'golive_no'                  => 'No',
         'golive_none'                => 'None',
     ],
+
+    /* ── Email Templates ────────────────────────────── */
+    'emails' => [
+        'footer_automated'  => 'This is an automated operational transmission from OpesCare Platform.',
+        'footer_privacy'    => 'To protect your privacy, this external communication does not contain detailed medical history or diagnostic values. Log in to your secure portal to review detailed clinical records.',
+        'footer_copyright'  => '© :year OpesCare. All rights reserved.',
+    ],
 ];
