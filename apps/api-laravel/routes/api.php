@@ -6,6 +6,21 @@ use App\Http\Middleware\IdempotencyProtection;
 
 /*
 |--------------------------------------------------------------------------
+| OpesCare Billing and Cashier API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/billing')->group(function () {
+    Route::get('/invoices', [\App\Http\Controllers\Api\V1\BillingController::class, 'invoices']);
+    Route::post('/invoices', [\App\Http\Controllers\Api\V1\BillingController::class, 'createInvoice']);
+    Route::post('/invoices/{invoice}/payments', [\App\Http\Controllers\Api\V1\BillingController::class, 'recordPayment']);
+    Route::post('/payments/{payment}/refund', [\App\Http\Controllers\Api\V1\BillingController::class, 'refund']);
+    Route::post('/wallets/deposit', [\App\Http\Controllers\Api\V1\BillingController::class, 'depositWallet']);
+    Route::post('/cashier-sessions', [\App\Http\Controllers\Api\V1\BillingController::class, 'openSession']);
+    Route::post('/cashier-sessions/{session}/close', [\App\Http\Controllers\Api\V1\BillingController::class, 'closeSession']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | OpesCare Queue and Patient Flow API Routes
 |--------------------------------------------------------------------------
 */
