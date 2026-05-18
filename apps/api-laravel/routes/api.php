@@ -6,6 +6,15 @@ use App\Http\Middleware\IdempotencyProtection;
 
 /*
 |--------------------------------------------------------------------------
+| OpesCare Operational Flow API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/operational-flow')->group(function () {
+    Route::post('/patient-journey', [\App\Http\Controllers\Api\V1\OperationalFlowController::class, 'patientJourney']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | OpesCare Billing and Cashier API Routes
 |--------------------------------------------------------------------------
 */
