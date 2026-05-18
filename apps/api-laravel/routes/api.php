@@ -193,6 +193,7 @@ Route::prefix('v1/public-health')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::prefix('v1/admin')->group(function () {
+    Route::get('/global-search', \App\Http\Controllers\Api\V1\Admin\GlobalSearchController::class);
     Route::get('/access-logs', [\App\Http\Controllers\Api\V1\Admin\AdminGovernanceController::class, 'listAccessLogs']);
     Route::get('/emergency-access/reviews', [\App\Http\Controllers\Api\V1\Admin\AdminGovernanceController::class, 'listEmergencyAccessReviews']);
     Route::post('/emergency-access/{id}/review', [\App\Http\Controllers\Api\V1\Admin\AdminGovernanceController::class, 'reviewEmergencyAccess']);
