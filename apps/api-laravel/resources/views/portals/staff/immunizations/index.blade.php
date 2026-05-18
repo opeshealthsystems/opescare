@@ -2,14 +2,14 @@
 
 @section('title', 'Immunizations — OpesCare Staff Portal')
 
-@section('breadcrumb_home', 'Staff Portal')
+@section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
 @section('breadcrumb_section', 'Immunizations')
 
 @section('sidebar_role_badge')
     <div class="sidebar-role-badge">
         <i data-lucide="stethoscope" style="width:0.75rem;height:0.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
-        Clinical Staff
+        {{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}
     </div>
 @endsection
 
@@ -26,7 +26,7 @@
     <a href="{{ route('portals.staff.support') }}" class="sidebar-link"><i data-lucide="headset"></i> Support</a>
 @endsection
 
-@section('sidebar_user_role', 'Clinical Staff')
+@section('sidebar_user_role', __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff')
 
 @section('content')
 

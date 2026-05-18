@@ -157,6 +157,8 @@ return [
 
     /* ── Staff Portal ───────────────────────────────── */
     'staff_portal' => [
+        'title'               => 'Staff Portal',
+        'role_clinical_staff' => 'Clinical Staff',
         'dashboard_title'            => 'Staff Clinical Portal',
         'dashboard_subtitle'         => 'Manage appointments, queues, and patient care from one place.',
         'appointments_title'         => 'Appointments',

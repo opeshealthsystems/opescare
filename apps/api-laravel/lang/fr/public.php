@@ -157,6 +157,8 @@ return [
 
     /* ── Staff Portal ───────────────────────────────── */
     ‘staff_portal’ => [
+        ‘title’               => ‘Portail Personnel Clinique’,
+        ‘role_clinical_staff’ => ‘Personnel Clinique’,
         ‘dashboard_title’            => ‘Portail Clinique du Personnel’,
         ‘dashboard_subtitle’         => ‘Gérez les rendez-vous, les files et les soins depuis un seul endroit.’,
         ‘appointments_title’         => ‘Rendez-vous’,
