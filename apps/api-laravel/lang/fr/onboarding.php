@@ -20,6 +20,7 @@ return [
         'bullet_3_desc' => 'Chaque demande de données, accès d\'urgence ou modification de dossier est enregistré de manière permanente et audité.',
         'need_help' => 'Besoin d\'assistance technique ou clinique ?',
         'contact_support' => 'Contacter le Support Technique',
+        'clinical_disclaimer' => "OpesCare facilite l'accès à vos dossiers de santé mais ne remplace pas un avis clinique. Consultez toujours un professionnel de santé agréé pour toute décision médicale.",
     ],
 
     // Common Action Buttons & General Labels

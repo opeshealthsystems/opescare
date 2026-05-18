@@ -20,6 +20,7 @@ return [
         'bullet_3_desc' => 'Every single data request, access override, and record modification is permanently recorded and fully audited.',
         'need_help' => 'Need clinical or technical assistance?',
         'contact_support' => 'Contact Support Plane',
+        'clinical_disclaimer' => 'OpesCare facilitates access to your health records but is not a substitute for clinical advice. Always consult a licensed healthcare provider for medical decisions.',
     ],
 
     // Common Action Buttons & General Labels
