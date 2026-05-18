@@ -202,6 +202,7 @@ return [
         'main_phone' => 'Primary Contact Phone',
         'main_email' => 'Primary Public Email',
         
+        'contact_sec'   => 'Primary Contact Details',
         'contact_name' => 'Primary Contact Full Name',
         'contact_role' => 'Role / Official Title',
         'contact_email' => 'Contact Email Address',
@@ -242,6 +243,7 @@ return [
             'laboratory_notice' => 'Released lab results must not be silently edited. Corrections must be recorded as amendments.',
             'insurer_msg' => 'Register your insurance organization to support eligibility checks, preauthorization, claims, and controlled access to necessary information.',
             'insurer_notice' => 'Insurers should only access the minimum necessary information required for eligibility, authorization, claims, or policy-related workflows.',
+            'insurance_notice' => 'Insurers should only access the minimum necessary information required for eligibility, authorization, claims, or policy-related workflows.',
             'public_health_msg' => 'Contact OpesCare to discuss approved public health reporting, controlled data access, and governance-based collaboration.',
             'public_health_notice' => 'Public health and research data access must follow approved governance, privacy, and data minimization rules.',
         ]

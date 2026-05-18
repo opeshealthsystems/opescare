@@ -202,6 +202,7 @@ return [
         'main_phone' => 'Téléphone principal de l\'établissement',
         'main_email' => 'E-mail public principal',
         
+        'contact_sec'   => 'Coordonnées du Contact Principal',
         'contact_name' => 'Nom complet du contact principal',
         'contact_role' => 'Rôle / Titre officiel',
         'contact_email' => 'Adresse e-mail de contact',
@@ -242,6 +243,7 @@ return [
             'laboratory_notice' => 'Les résultats de laboratoire publiés ne doivent pas être modifiés en silence. Les corrections doivent être enregistrées comme des modifications.',
             'insurer_msg' => 'Inscrivez votre organisme d\'assurance pour gérer les vérifications d\'éligibilité, les autorisations préalables, les demandes de remboursement et l\'accès contrôlé aux informations nécessaires.',
             'insurer_notice' => 'Les assureurs ne doivent accéder qu\'aux informations strictement nécessaires pour l\'éligibilité, l\'autorisation, les demandes de remboursement ou les opérations liées à la police d\'assurance.',
+            'insurance_notice' => 'Les assureurs ne doivent accéder qu\'aux informations strictement nécessaires pour l\'éligibilité, l\'autorisation, les demandes de remboursement ou les opérations liées à la police d\'assurance.',
             'public_health_msg' => 'Contactez OpesCare pour discuter du reporting de santé publique, de l\'accès contrôlé aux données et d\'une collaboration encadrée par la gouvernance.',
             'public_health_notice' => 'L\'accès aux données de santé publique et de recherche doit respecter les règles approuvées de gouvernance, de confidentialité et de minimisation des données.',
         ]
