@@ -28,6 +28,8 @@ return [
         'step5_desc' => 'After care, the facility can push new records back to OpesCare so the patient’s history stays updated.',
         'step6_title' => 'Patients can review access',
         'step6_desc' => 'Patients can see who accessed their records and manage access where policy allows.',
+        'integration_title' => 'Works With Existing Systems',
+        'integration_desc'  => 'OpesCare allows approved systems to push and pull patient data through secure integration methods.',
     ],
     'solutions' => [
         'patients' => [

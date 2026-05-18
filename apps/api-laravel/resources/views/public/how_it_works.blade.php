@@ -60,8 +60,8 @@
         <div class="container">
             <div class="hero-grid">
                 <div class="hero-content">
-                    <h2>Works With Existing Systems</h2>
-                    <p class="text-muted">OpesCare allows approved systems to push and pull patient data through secure integration methods.</p>
+                    <h2>{{ __('public.how_it_works.integration_title') }}</h2>
+                    <p class="text-muted">{{ __('public.how_it_works.integration_desc') }}</p>
                     <div class="feature-list mt-6" style="margin-top: 1.5rem; display: grid; gap: 1rem;">
                         <div class="feature-item"><i data-lucide="braces"></i> Direct API Integration</div>
                         <div class="feature-item"><i data-lucide="code"></i> Connect SDK</div>

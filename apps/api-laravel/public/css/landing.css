@@ -1078,6 +1078,17 @@ h4 { font-size: 1.1rem; }
 
 select.form-control { cursor: pointer; }
 
+.form-control-error { border-color: #B91C1C !important; }
+.form-control-error:focus { box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.12) !important; }
+.form-field-error { font-size: 0.75rem; font-weight: 600; color: #B91C1C; margin-top: 0.2rem; }
+.form-alert-danger {
+    display: flex; align-items: flex-start; gap: 0.625rem;
+    background: #FEF2F2; border: 1px solid #FECACA; border-radius: 0.5rem;
+    padding: 0.875rem 1rem; margin-bottom: 1rem;
+    font-size: 0.875rem; font-weight: 600; color: #B91C1C;
+}
+.form-alert-danger ul { margin: 0; padding-left: 1.25rem; }
+
 /* FAQ details accordion */
 .faq-container { max-width: 800px; margin: 0 auto; }
 .faq-accordion { display: flex; flex-direction: column; gap: 1rem; }

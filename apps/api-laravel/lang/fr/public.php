@@ -28,6 +28,8 @@ return [
         'step5_desc' => 'Après les soins, l\'établissement peut renvoyer les nouveaux dossiers à OpesCare afin que l\'historique du patient reste à jour.',
         'step6_title' => 'Les patients peuvent examiner l\'accès',
         'step6_desc' => 'Les patients peuvent voir qui a accédé à leurs dossiers et gérer l\'accès là où la politique le permet.',
+        'integration_title' => 'Compatible avec les systèmes existants',
+        'integration_desc'  => 'OpesCare permet aux systèmes agréés d\'envoyer et de récupérer des données patients via des méthodes d\'intégration sécurisées.',
     ],
     'solutions' => [
         'patients' => [

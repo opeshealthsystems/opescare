@@ -730,45 +730,62 @@
                         <span>{{ session('success') }}</span>
                     </div>
                 @else
+                    @if($errors->any())
+                        <div class="form-alert-danger mt-4">
+                            <i data-lucide="triangle-alert" style="width:1.125rem;height:1.125rem;flex-shrink:0;"></i>
+                            <ul>
+                                @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                     <form action="{{ route('public.contact.submit') }}" method="POST" class="partner-inquiry-form mt-4">
                         @csrf
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="form-name">{{ __('landing.partner_cta.form.name') }} *</label>
-                                <input type="text" id="form-name" name="name" required class="form-control">
+                                <input type="text" id="form-name" name="name" required class="form-control{{ $errors->has('name') ? ' form-control-error' : '' }}" value="{{ old('name') }}">
+                                @error('name')<span class="form-field-error">{{ $message }}</span>@enderror
                             </div>
                             <div class="form-group">
                                 <label for="form-org">{{ __('landing.partner_cta.form.org') }} *</label>
-                                <input type="text" id="form-org" name="organization" required class="form-control">
+                                <input type="text" id="form-org" name="organization" required class="form-control{{ $errors->has('organization') ? ' form-control-error' : '' }}" value="{{ old('organization') }}">
+                                @error('organization')<span class="form-field-error">{{ $message }}</span>@enderror
                             </div>
                             <div class="form-group">
                                 <label for="form-role">{{ __('landing.partner_cta.form.role') }} *</label>
-                                <input type="text" id="form-role" name="role" required class="form-control">
+                                <input type="text" id="form-role" name="role" required class="form-control{{ $errors->has('role') ? ' form-control-error' : '' }}" value="{{ old('role') }}">
+                                @error('role')<span class="form-field-error">{{ $message }}</span>@enderror
                             </div>
                             <div class="form-group">
                                 <label for="form-email">{{ __('landing.partner_cta.form.email') }} *</label>
-                                <input type="email" id="form-email" name="email" required class="form-control">
+                                <input type="email" id="form-email" name="email" required class="form-control{{ $errors->has('email') ? ' form-control-error' : '' }}" value="{{ old('email') }}">
+                                @error('email')<span class="form-field-error">{{ $message }}</span>@enderror
                             </div>
                             <div class="form-group">
                                 <label for="form-phone">{{ __('landing.partner_cta.form.phone') }}</label>
-                                <input type="text" id="form-phone" name="phone" class="form-control">
+                                <input type="text" id="form-phone" name="phone" class="form-control{{ $errors->has('phone') ? ' form-control-error' : '' }}" value="{{ old('phone') }}">
+                                @error('phone')<span class="form-field-error">{{ $message }}</span>@enderror
                             </div>
                             <div class="form-group">
                                 <label for="form-type">{{ __('landing.partner_cta.form.type') }} *</label>
-                                <select id="form-type" name="organization_type" required class="form-control">
+                                <select id="form-type" name="organization_type" required class="form-control{{ $errors->has('organization_type') ? ' form-control-error' : '' }}">
                                     <option value="">-- Select Type --</option>
                                     @foreach(__('landing.partner_cta.form.options') as $value => $label)
-                                        <option value="{{ $value }}">{{ $label }}</option>
+                                        <option value="{{ $value }}" {{ old('organization_type') == $value ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>
+                                @error('organization_type')<span class="form-field-error">{{ $message }}</span>@enderror
                             </div>
                             <div class="form-group full-width">
                                 <label for="form-country">{{ __('landing.partner_cta.form.country') }} *</label>
-                                <input type="text" id="form-country" name="country" required class="form-control">
+                                <input type="text" id="form-country" name="country" required class="form-control{{ $errors->has('country') ? ' form-control-error' : '' }}" value="{{ old('country') }}">
+                                @error('country')<span class="form-field-error">{{ $message }}</span>@enderror
                             </div>
                             <div class="form-group full-width">
                                 <label for="form-message">{{ __('landing.partner_cta.form.message') }} *</label>
-                                <textarea id="form-message" name="message" required rows="4" class="form-control"></textarea>
+                                <textarea id="form-message" name="message" required rows="4" class="form-control{{ $errors->has('message') ? ' form-control-error' : '' }}">{{ old('message') }}</textarea>
+                                @error('message')<span class="form-field-error">{{ $message }}</span>@enderror
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary w-full mt-4">{{ __('landing.partner_cta.form.submit') }}</button>
