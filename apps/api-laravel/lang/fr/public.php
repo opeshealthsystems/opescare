@@ -302,6 +302,42 @@ return [
         'cta_title'   => 'Vous avez encore des questions ?',
         'cta_body'    => 'Notre équipe de support est prête à répondre à toutes les questions non couvertes ici.',
         'cta_button'  => 'Contacter le Support',
+        'categories'  => [
+            [
+                'icon'  => 'id-card',
+                'title' => 'Identifiant de Santé',
+                'items' => [
+                    ['q' => "Qu'est-ce qu'un identifiant de santé OpesCare ?",          'a' => "Un identifiant de santé OpesCare est un identifiant numérique unique qui vous permet de porter votre historique médical approuvé avec vous dans tous les établissements de santé partenaires. Il regroupe vos dossiers — consultations, analyses, ordonnances, vaccinations — dans une chronologie vérifiée et unifiée."],
+                    ['q' => 'Comment obtenir mon identifiant de santé ?',               'a' => "Créez un compte OpesCare sur la page d'inscription. Votre identifiant est généré automatiquement et lié à votre profil vérifié. Vous pouvez le consulter et le partager depuis votre portail patient."],
+                    ['q' => "Mon identifiant de santé peut-il être utilisé hors ligne ?", 'a' => "Oui. Votre identifiant de santé génère un code QR que les prestataires peuvent scanner même sans connexion internet, sous réserve d'une vérification en ligne ultérieure."],
+                ],
+            ],
+            [
+                'icon'  => 'shield-check',
+                'title' => 'Confidentialité et sécurité',
+                'items' => [
+                    ['q' => 'Qui peut voir mes dossiers médicaux ?',                    'a' => "Uniquement les prestataires que vous avez explicitement autorisés. Chaque accès est enregistré dans votre journal d'accès, visible dans votre portail patient. Vous pouvez révoquer l'accès à tout moment."],
+                    ['q' => 'Comment OpesCare protège-t-il mes données ?',              'a' => "OpesCare utilise le chiffrement AES-256 au repos et TLS 1.3 en transit. Toutes les données cliniques sont stockées dans des centres de données conformes à la HIPAA avec des sauvegardes redondantes. Nous procédons régulièrement à des audits de sécurité par des tiers."],
+                    ['q' => 'OpesCare vend-il mes données ?',                           'a' => "Non. OpesCare ne vend jamais, ne loue pas et ne partage pas vos données personnelles ou médicales avec des tiers à des fins commerciales. Vos données vous appartiennent."],
+                ],
+            ],
+            [
+                'icon'  => 'building-2',
+                'title' => 'Pour les établissements de santé',
+                'items' => [
+                    ['q' => 'Comment un hôpital peut-il rejoindre OpesCare ?',          'a' => "Contactez notre équipe partenariats via partners@opescare.com ou utilisez le formulaire de contact. Notre équipe d'intégration vous accompagnera dans le processus d'onboarding, notamment la configuration de l'API et la formation du personnel."],
+                    ['q' => 'Quels systèmes OpesCare prend-il en charge ?',             'a' => "OpesCare s'intègre avec les principaux systèmes HIS/EMR via HL7 FHIR R4, notre API REST, ou le Bridge Agent pour les systèmes legacy. Nous prenons également en charge l'import de fichiers CSV pour l'intégration des dossiers historiques."],
+                ],
+            ],
+            [
+                'icon'  => 'code-2',
+                'title' => 'Développeurs',
+                'items' => [
+                    ['q' => 'Y a-t-il une documentation API ?',                         'a' => "Oui. La documentation complète de l'API Connect est disponible sur la page Développeurs, avec les guides d'authentification, les références d'endpoints, les identifiants sandbox et les démarrages rapides SDK."],
+                    ['q' => 'Existe-t-il un environnement sandbox ?',                   'a' => "Oui. Chaque compte développeur a accès à un environnement sandbox complet avec des données de test et une clé API dédiée. Vous pouvez tester tous les endpoints sans affecter les données de production."],
+                ],
+            ],
+        ],
     ],
 
     /* ── Admin Portal ───────────────────────────────── */

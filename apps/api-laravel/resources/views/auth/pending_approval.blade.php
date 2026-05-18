@@ -24,7 +24,7 @@
             </div>
 
             <div class="pending-meta-row">
-                <span class="pending-meta-label">Organization Name</span>
+                <span class="pending-meta-label">{{ __('onboarding.pending.org_name') }}</span>
                 <span class="pending-meta-value">{{ $org_name }}</span>
             </div>
 
@@ -35,13 +35,13 @@
 
             <div class="pending-meta-row">
                 <span class="pending-meta-label">{{ __('onboarding.pending.status_label') }}</span>
-                <span class="badge-status badge-review">Under Review</span>
+                <span class="badge-status badge-review">{{ __('onboarding.pending.status_under_review') }}</span>
             </div>
 
             <div class="pending-meta-row" style="flex-direction: column; align-items: flex-start; gap: 0.5rem; border-bottom: none;">
                 <span class="pending-meta-label">{{ __('onboarding.pending.admin_notes') }}</span>
                 <div style="font-size: 0.8125rem; line-height: 1.4; color: var(--auth-text-secondary); background: white; border: 1px dashed var(--auth-border); border-radius: 0.5rem; padding: 0.75rem; width: 100%; font-weight: 500;">
-                    Document audit check passed. Pending clinical facility registration authority verification. Expected completion within 24 hours.
+                    {{ $admin_note ?? __('onboarding.pending.default_admin_note') }}
                 </div>
             </div>
         </div>

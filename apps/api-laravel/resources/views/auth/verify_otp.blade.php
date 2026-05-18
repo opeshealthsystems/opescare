@@ -55,14 +55,17 @@
         </div>
 
         <div class="auth-security-block" style="margin-top: 2rem;">
-            <i data-lucide="info" style="color: var(--auth-teal);"></i>
-            <p><strong>Testing Guides:</strong> Input <code>000000</code> to trigger incorrect code error, or <code>111111</code> to trigger expired code error.</p>
+            <i data-lucide="shield-check"></i>
+            <p>{{ __('onboarding.otp.security_note') }}</p>
         </div>
     </div>
 @endsection
 
 @section('scripts')
     <script>
+        var msgExpired = @json(__('onboarding.otp.errors.expired', [], app()->getLocale()) ?: 'The code has expired. Please request a new verification code.');
+        var msgResent  = @json(__('onboarding.otp.resent_notice', [], app()->getLocale()) ?: 'A new 6-digit verification code has been transmitted to your secure inbox.');
+
         // Automatic keypad movement
         function moveNext(current, nextId) {
             current.value = current.value.replace(/[^0-9]/g, ''); // Numeric only
@@ -80,7 +83,6 @@
         function submitOtpForm(current) {
             current.value = current.value.replace(/[^0-9]/g, '');
             if (current.value.length >= 1) {
-                // Focus out and submit
                 current.blur();
                 setTimeout(() => {
                     document.getElementById('otp-form').submit();
@@ -88,29 +90,29 @@
             }
         }
 
-        // 3 minute countdown timer simulation
-        let timeLeft = 180; 
+        // 3 minute countdown timer
+        let timeLeft = 180;
         const timerSpan = document.getElementById('otp-timer');
-        
+
         const countdown = setInterval(function() {
             timeLeft--;
             let minutes = Math.floor(timeLeft / 60);
             let seconds = timeLeft % 60;
-            
+
             if (seconds < 10) seconds = '0' + seconds;
             if (minutes < 10) minutes = '0' + minutes;
-            
+
             timerSpan.innerText = minutes + ':' + seconds;
-            
+
             if (timeLeft <= 0) {
                 clearInterval(countdown);
                 timerSpan.innerText = "EXPIRED";
-                alert("The code has expired. Please request a new verification code.");
+                alert(msgExpired);
             }
         }, 1000);
 
         function resendCode() {
-            alert("A new 6-digit verification code has been transmitted to your secure inbox.");
+            alert(msgResent);
             timeLeft = 180;
         }
     </script>

@@ -302,6 +302,42 @@ return [
         'cta_title'   => 'Still have questions?',
         'cta_body'    => 'Our support team is ready to help you with any questions not answered here.',
         'cta_button'  => 'Contact Support',
+        'categories'  => [
+            [
+                'icon'  => 'id-card',
+                'title' => 'Health ID',
+                'items' => [
+                    ['q' => 'What is an OpesCare Health ID?',              'a' => 'An OpesCare Health ID is a unique digital identifier that lets you carry your approved medical history with you across all partner healthcare facilities. It links your records — visits, labs, prescriptions, immunisations — into a single verified timeline.'],
+                    ['q' => 'How do I get my Health ID?',                  'a' => 'Create an OpesCare account on the registration page. Your Health ID is generated automatically and linked to your verified profile. You can view and share it from your patient portal.'],
+                    ['q' => 'Can my Health ID be used offline?',           'a' => 'Yes. Your Health ID generates a QR code that providers can scan even without an internet connection, subject to later online verification.'],
+                ],
+            ],
+            [
+                'icon'  => 'shield-check',
+                'title' => 'Privacy & Security',
+                'items' => [
+                    ['q' => 'Who can see my medical records?',             'a' => 'Only providers you have explicitly authorised. Every access is recorded in your access log, visible in your patient portal. You can revoke access at any time.'],
+                    ['q' => 'How does OpesCare protect my data?',          'a' => 'OpesCare uses AES-256 encryption at rest and TLS 1.3 in transit. All clinical data is stored in HIPAA-compliant data centres with redundant backups. We undergo regular third-party security audits.'],
+                    ['q' => 'Does OpesCare sell my data?',                 'a' => 'Absolutely not. OpesCare never sells, rents, or shares your personal or medical data with third parties for commercial purposes. Your data belongs to you.'],
+                ],
+            ],
+            [
+                'icon'  => 'building-2',
+                'title' => 'For Healthcare Facilities',
+                'items' => [
+                    ['q' => 'How can a hospital join OpesCare?',           'a' => 'Contact our partnerships team via partners@opescare.com or use the contact form. Our integration team will guide you through the onboarding process, including API setup and staff training.'],
+                    ['q' => 'Which systems does OpesCare integrate with?', 'a' => 'OpesCare integrates with major HIS/EMR systems via HL7 FHIR R4, our REST API, or the Bridge Agent for legacy systems. We also support flat-file and CSV imports for onboarding historical records.'],
+                ],
+            ],
+            [
+                'icon'  => 'code-2',
+                'title' => 'Developers',
+                'items' => [
+                    ['q' => 'Is there API documentation?',                 'a' => 'Yes. Full Connect API documentation is available on the Developers page, including authentication guides, endpoint references, sandbox credentials, and SDK quickstarts.'],
+                    ['q' => 'Is there a sandbox environment?',             'a' => 'Yes. Every developer account gets access to a full sandbox environment with test data and a dedicated API key. You can test all endpoints without affecting production data.'],
+                ],
+            ],
+        ],
     ],
 
     /* ── Admin Portal ───────────────────────────────── */

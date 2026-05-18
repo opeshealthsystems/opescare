@@ -22,16 +22,33 @@
                 </a>
             </div>
         @else
+            @if(session('error'))
+                <div class="auth-alert auth-alert-danger">
+                    <i data-lucide="triangle-alert"></i>
+                    <div>{{ session('error') }}</div>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="auth-alert auth-alert-danger">
+                    <i data-lucide="triangle-alert"></i>
+                    <ul style="margin:0;padding-left:1.25rem;">
+                        @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form action="{{ route('password.email') }}" method="POST" class="auth-form">
                 @csrf
 
                 <div class="auth-form-group">
-                    <label for="email" class="auth-label">{{ __('onboarding.common.email') }} or {{ __('onboarding.common.phone') }} *</label>
-                    <input type="text" id="email" name="email" class="auth-input" required autofocus placeholder="name@email.com or +123...">
+                    <label for="email" class="auth-label">{{ __('onboarding.common.email') }} {{ __('onboarding.common.or') }} {{ __('onboarding.common.phone') }} *</label>
+                    <input type="text" id="email" name="email" class="auth-input{{ $errors->has('email') ? ' auth-input-error' : '' }}" required autofocus placeholder="name@email.com or +123..." value="{{ old('email') }}">
+                    @error('email')<div class="auth-field-error">{{ $message }}</div>@enderror
                 </div>
 
                 <div style="background-color: var(--auth-bg); padding: 0.85rem; border-radius: 0.5rem; border: 1px solid var(--auth-border); font-size: 0.75rem; color: var(--auth-text-secondary); line-height: 1.4; font-weight: 500;">
-                    To protect patient record privacy, we do not reveal whether a matching profile is found in our registry.
+                    {{ __('onboarding.forgot.privacy_note') }}
                 </div>
 
                 <!-- Submit Button -->

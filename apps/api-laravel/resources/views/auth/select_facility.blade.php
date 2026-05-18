@@ -26,36 +26,30 @@
             <input type="hidden" name="facility" id="selected-facility" value="">
 
             <div class="facility-select-grid">
-                
-                <!-- Facility 1: Active -->
-                <div class="facility-select-card" id="card-fac-1" onclick="selectFacility('fac-1', 'card-fac-1')">
-                    <div class="facility-select-info">
-                        <h4>St. Jude Clinical Research Hospital</h4>
-                        <span style="display: block; margin-bottom: 0.15rem;">Down-Town Main Ward Branch</span>
-                        <span style="color: var(--auth-primary);">{{ __('onboarding.facility_selector.role_label') }}: Chief Medical Registrar</span>
-                    </div>
-                    <span class="facility-select-badge active">{{ __('onboarding.facility_selector.status_active') }}</span>
-                </div>
 
-                <!-- Facility 2: Active -->
-                <div class="facility-select-card" id="card-fac-2" onclick="selectFacility('fac-2', 'card-fac-2')">
-                    <div class="facility-select-info">
-                        <h4>Metro Emergency General Clinic</h4>
-                        <span style="display: block; margin-bottom: 0.15rem;">North-End Outpatient Wing</span>
-                        <span style="color: var(--auth-primary);">{{ __('onboarding.facility_selector.role_label') }}: Consulting Attending Physician</span>
+                @foreach($facilities as $index => $facility)
+                    @php
+                        $cardId    = 'card-fac-' . $index;
+                        $isSuspended = ($facility['status'] ?? '') === 'suspended';
+                        $facilityVal = $isSuspended ? 'suspended' : $facility['id'];
+                    @endphp
+                    <div class="facility-select-card{{ $isSuspended ? ' disabled' : '' }}"
+                         id="{{ $cardId }}"
+                         onclick="selectFacility('{{ $facilityVal }}', '{{ $cardId }}')">
+                        <div class="facility-select-info">
+                            <h4>{{ $facility['name'] }}</h4>
+                            <span style="display: block; margin-bottom: 0.15rem;">{{ $facility['branch'] ?? '' }}</span>
+                            <span style="color: {{ $isSuspended ? 'var(--auth-text-muted)' : 'var(--auth-primary)' }};">
+                                {{ __('onboarding.facility_selector.role_label') }}: {{ $facility['role'] }}
+                            </span>
+                        </div>
+                        @if($isSuspended)
+                            <span class="facility-select-badge suspended" style="background-color: #FEE2E2; color: var(--auth-danger);">{{ __('onboarding.facility_selector.status_suspended') }}</span>
+                        @else
+                            <span class="facility-select-badge active">{{ __('onboarding.facility_selector.status_active') }}</span>
+                        @endif
                     </div>
-                    <span class="facility-select-badge active">{{ __('onboarding.facility_selector.status_active') }}</span>
-                </div>
-
-                <!-- Facility 3: Suspended -->
-                <div class="facility-select-card disabled" id="card-fac-3" onclick="selectFacility('suspended', 'card-fac-3')">
-                    <div class="facility-select-info">
-                        <h4>West-Side Pediatric Care Station</h4>
-                        <span style="display: block; margin-bottom: 0.15rem;">West Branch</span>
-                        <span style="color: var(--auth-text-muted);">{{ __('onboarding.facility_selector.role_label') }}: Visiting Pediatric Specialist</span>
-                    </div>
-                    <span class="facility-select-badge suspended" style="background-color: #FEE2E2; color: var(--auth-danger);">{{ __('onboarding.facility_selector.status_suspended') }}</span>
-                </div>
+                @endforeach
 
             </div>
 

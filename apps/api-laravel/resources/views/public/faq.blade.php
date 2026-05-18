@@ -19,76 +19,7 @@
 <section style="padding:4rem 0;">
     <div class="container" style="max-width:820px;">
 
-        @php
-        $categories = [
-            [
-                'icon' => 'id-card',
-                'title' => app()->getLocale() === 'fr' ? 'Identifiant de Santé' : 'Health ID',
-                'items' => [
-                    [
-                        'q' => app()->getLocale() === 'fr' ? 'Qu'est-ce qu'un identifiant de santé OpesCare ?' : 'What is an OpesCare Health ID?',
-                        'a' => app()->getLocale() === 'fr' ? 'Un identifiant de santé OpesCare est un identifiant numérique unique qui vous permet de porter votre historique médical approuvé avec vous dans tous les établissements de santé partenaires.' : 'An OpesCare Health ID is a unique digital identifier that lets you carry your approved medical history with you across all partner healthcare facilities. It links your records — visits, labs, prescriptions, immunisations — into a single verified timeline.',
-                    ],
-                    [
-                        'q' => app()->getLocale() === 'fr' ? 'Comment obtenir mon identifiant de santé ?' : 'How do I get my Health ID?',
-                        'a' => app()->getLocale() === 'fr' ? 'Créez un compte OpesCare sur la page d'inscription. Votre identifiant est généré automatiquement et lié à votre profil vérifié.' : 'Create an OpesCare account on the registration page. Your Health ID is generated automatically and linked to your verified profile. You can view and share it from your patient portal.',
-                    ],
-                    [
-                        'q' => app()->getLocale() === 'fr' ? 'Mon identifiant de santé peut-il être utilisé hors ligne ?' : 'Can my Health ID be used offline?',
-                        'a' => app()->getLocale() === 'fr' ? 'Oui. Votre identifiant de santé génère un code QR que les prestataires peuvent scanner même sans connexion internet, sous réserve d'une vérification en ligne ultérieure.' : 'Yes. Your Health ID generates a QR code that providers can scan even without an internet connection, subject to later online verification.',
-                    ],
-                ],
-            ],
-            [
-                'icon' => 'shield-check',
-                'title' => app()->getLocale() === 'fr' ? 'Confidentialité et sécurité' : 'Privacy & Security',
-                'items' => [
-                    [
-                        'q' => app()->getLocale() === 'fr' ? 'Qui peut voir mes dossiers médicaux ?' : 'Who can see my medical records?',
-                        'a' => app()->getLocale() === 'fr' ? 'Uniquement les prestataires que vous avez explicitement autorisés. Chaque accès est enregistré dans votre journal d'accès, visible dans votre portail patient.' : 'Only providers you have explicitly authorised. Every access is recorded in your access log, visible in your patient portal. You can revoke access at any time.',
-                    ],
-                    [
-                        'q' => app()->getLocale() === 'fr' ? 'Comment OpesCare protège-t-il mes données ?' : 'How does OpesCare protect my data?',
-                        'a' => app()->getLocale() === 'fr' ? 'OpesCare utilise le chiffrement AES-256 au repos et TLS 1.3 en transit. Toutes les données cliniques sont stockées dans des centres de données conformes à la HIPAA avec des sauvegardes redondantes.' : 'OpesCare uses AES-256 encryption at rest and TLS 1.3 in transit. All clinical data is stored in HIPAA-compliant data centres with redundant backups. We undergo regular third-party security audits.',
-                    ],
-                    [
-                        'q' => app()->getLocale() === 'fr' ? 'OpesCare vend-il mes données ?' : 'Does OpesCare sell my data?',
-                        'a' => app()->getLocale() === 'fr' ? 'Non. OpesCare ne vend jamais, ne loue pas et ne partage pas vos données personnelles ou médicales avec des tiers à des fins commerciales.' : 'Absolutely not. OpesCare never sells, rents, or shares your personal or medical data with third parties for commercial purposes. Your data belongs to you.',
-                    ],
-                ],
-            ],
-            [
-                'icon' => 'building-2',
-                'title' => app()->getLocale() === 'fr' ? 'Pour les établissements de santé' : 'For Healthcare Facilities',
-                'items' => [
-                    [
-                        'q' => app()->getLocale() === 'fr' ? 'Comment un hôpital peut-il rejoindre OpesCare ?' : 'How can a hospital join OpesCare?',
-                        'a' => app()->getLocale() === 'fr' ? 'Contactez notre équipe partenariats via partners@opescare.com ou utilisez le formulaire de contact ci-dessous. Notre équipe d'intégration vous accompagnera dans le processus d'onboarding.' : 'Contact our partnerships team via partners@opescare.com or use the contact form. Our integration team will guide you through the onboarding process, including API setup and staff training.',
-                    ],
-                    [
-                        'q' => app()->getLocale() === 'fr' ? 'Quels systèmes OpesCare prend-il en charge ?' : 'Which systems does OpesCare integrate with?',
-                        'a' => app()->getLocale() === 'fr' ? 'OpesCare s'intègre avec les principaux systèmes HIS/EMR via HL7 FHIR R4, notre API REST, ou le Bridge Agent pour les systèmes legacy.' : 'OpesCare integrates with major HIS/EMR systems via HL7 FHIR R4, our REST API, or the Bridge Agent for legacy systems. We also support flat-file and CSV imports for onboarding historical records.',
-                    ],
-                ],
-            ],
-            [
-                'icon' => 'code-2',
-                'title' => app()->getLocale() === 'fr' ? 'Développeurs' : 'Developers',
-                'items' => [
-                    [
-                        'q' => app()->getLocale() === 'fr' ? 'Y a-t-il une documentation API ?' : 'Is there API documentation?',
-                        'a' => app()->getLocale() === 'fr' ? 'Oui. La documentation complète de l\'API Connect est disponible sur la page Développeurs.' : 'Yes. Full Connect API documentation is available on the Developers page, including authentication guides, endpoint references, sandbox credentials, and SDK quickstarts.',
-                    ],
-                    [
-                        'q' => app()->getLocale() === 'fr' ? 'Existe-t-il un environnement sandbox ?' : 'Is there a sandbox environment?',
-                        'a' => app()->getLocale() === 'fr' ? 'Oui. Chaque compte développeur a accès à un environnement sandbox complet avec des données de test et une clé API dédiée.' : 'Yes. Every developer account gets access to a full sandbox environment with test data and a dedicated API key. You can test all endpoints without affecting production data.',
-                    ],
-                ],
-            ],
-        ];
-        @endphp
-
-        @foreach($categories as $cat)
+        @foreach(__('public.faq.categories', [], app()->getLocale()) as $cat)
         <div style="margin-bottom:3rem;">
             <h2 style="display:flex;align-items:center;gap:0.625rem;font-size:1.0625rem;font-weight:800;color:var(--color-text-primary);margin:0 0 1.25rem;padding-bottom:0.75rem;border-bottom:2px solid var(--color-border);">
                 <i data-lucide="{{ $cat['icon'] }}" style="width:1.125rem;height:1.125rem;color:#0F4C81;flex-shrink:0;"></i>

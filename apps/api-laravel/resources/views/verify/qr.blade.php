@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function() {
         var spinner = document.querySelector('.state-loading');
         if (spinner) {
-            spinner.innerHTML = '<p style="font-size:0.875rem;color:#94A3B8;">{{ __('verify.qr_token_expired_ui', [], app()->getLocale()) ?: "Token not found or expired. Please ask the patient to regenerate their QR code." }}</p><div style="margin-top:1.25rem;"><a href="{{ route('verify.health-id') }}" style="display:inline-flex;align-items:center;gap:0.5rem;background:#0F4C81;color:#fff;font-size:0.875rem;font-weight:700;border-radius:0.5rem;padding:0.625rem 1.25rem;text-decoration:none;">Manual ID Lookup</a></div>';
+            spinner.innerHTML = '<p style="font-size:0.875rem;color:#94A3B8;">{{ __('verify.qr_token_expired_ui', [], app()->getLocale()) ?: "Token not found or expired. Please ask the patient to regenerate their QR code." }}</p><div style="margin-top:1.25rem;"><a href="{{ route('verify.health-id') }}" style="display:inline-flex;align-items:center;gap:0.5rem;background:#0F4C81;color:#fff;font-size:0.875rem;font-weight:700;border-radius:0.5rem;padding:0.625rem 1.25rem;text-decoration:none;">{{ __('verify.footer_manual_verify', [], app()->getLocale()) ?: 'Manual ID Lookup' }}</a></div>';
         }
     }, 3000);
     @endif
