@@ -45,4 +45,15 @@
             </div>
         </div>
     </section>
+
+    <section class="section" style="background:#0F2744;color:#fff;text-align:center;">
+        <div class="container" style="max-width:640px;">
+            <h2 style="color:#fff;margin-bottom:1rem;">Connect your laboratory to the OpesCare network</h2>
+            <p style="color:rgba(255,255,255,.75);margin-bottom:2rem;">Register to start receiving digital lab orders, tracking samples, and automatically pushing validated results to patient timelines.</p>
+            <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:1rem;">
+                <a href="{{ route('register.organization') }}" class="btn btn-primary">Register Your Laboratory</a>
+                <a href="{{ route('public.developers') }}" class="btn" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);">Integration Options</a>
+            </div>
+        </div>
+    </section>
 @endsection

@@ -18,6 +18,12 @@ return [
         'contact' => 'Contact',
         'how_it_works' => 'Comment ça marche',
         'demo' => 'Demander une démo',
+        'product' => 'Produit',
+        'solutions' => 'Solutions',
+        'interop' => 'Interopérabilité',
+        'resources' => 'Ressources',
+        'sign_in' => 'Se connecter',
+        'get_started' => 'Commencer',
     ],
     'trust_strip' => [
         'item1_title' => 'Un ID Santé',

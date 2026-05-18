@@ -38,9 +38,23 @@
                 </div>
             </div>
             
-            <div style="margin-top: 4rem; padding: 2rem; background-color: var(--color-primary-light); border-radius: 1rem;">
-                <p class="text-sm font-bold uppercase tracking-widest text-primary" style="margin-bottom: 0.5rem;">Integration Options</p>
-                <p>Pharmacies can connect by API, SDK, Bridge Agent, or the OpesCare Lite portal.</p>
+            <div style="margin-top: 4rem; padding: 1.5rem 2rem; background-color: var(--color-primary-light); border-radius: 1rem; display:flex; align-items:flex-start; gap:1rem;">
+                <i data-lucide="plug-zap" style="width:1.5rem;height:1.5rem;color:#0F4C81;flex-shrink:0;margin-top:.1rem;"></i>
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-widest text-primary" style="margin-bottom: 0.5rem;">Integration Options</p>
+                    <p style="margin:0;">Pharmacies can connect by <a href="{{ route('public.developers') }}#api" style="color:#0F4C81;font-weight:600;">Connect API</a>, <a href="{{ route('public.developers') }}#sdk" style="color:#0F4C81;font-weight:600;">SDK</a>, <a href="{{ route('public.developers') }}#bridge" style="color:#0F4C81;font-weight:600;">Bridge Agent</a>, or the <a href="{{ route('public.developers') }}#lite" style="color:#0F4C81;font-weight:600;">OpesCare Lite</a> browser portal.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="background:#0F2744;color:#fff;text-align:center;">
+        <div class="container" style="max-width:640px;">
+            <h2 style="color:#fff;margin-bottom:1rem;">Connect your pharmacy to the OpesCare network</h2>
+            <p style="color:rgba(255,255,255,.75);margin-bottom:2rem;">Register your pharmacy to start receiving verified prescriptions, publishing medicine availability, and contributing to safer patient care.</p>
+            <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:1rem;">
+                <a href="{{ route('register.organization') }}" class="btn btn-primary">Register Your Pharmacy</a>
+                <a href="{{ route('public.contact') }}" class="btn" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);">Contact Us</a>
             </div>
         </div>
     </section>

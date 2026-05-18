@@ -70,8 +70,35 @@
                     </div>
                 </div>
                 <div class="hero-visual">
-                    <img src="{{ asset('images/interop_diagram.png') }}" alt="Interoperability Diagram" class="hero-image">
+                    <div style="background:#0F2744;border-radius:1.5rem;padding:2rem;color:#fff;">
+                        <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#38BDF8;margin-bottom:1.25rem;">Integration Options</div>
+                        <div style="display:grid;gap:.75rem;">
+                            @foreach([
+                                ['icon'=>'braces','label'=>'OpesCare Connect API'],
+                                ['icon'=>'code-2','label'=>'Connect SDK (PHP / JS / Python)'],
+                                ['icon'=>'panel-top','label'=>'Connect Widget (Embeddable)'],
+                                ['icon'=>'cpu','label'=>'Bridge Agent (Legacy Systems)'],
+                                ['icon'=>'layout-dashboard','label'=>'OpesCare Lite (Browser Portal)'],
+                            ] as $item)
+                            <a href="{{ route('public.developers') }}" style="display:flex;align-items:center;gap:.875rem;background:rgba(255,255,255,.07);border-radius:.75rem;padding:.875rem 1rem;text-decoration:none;">
+                                <i data-lucide="{{ $item['icon'] }}" style="width:1rem;height:1rem;color:#14B8A6;flex-shrink:0;"></i>
+                                <span style="font-size:.875rem;color:#e2e8f0;">{{ $item['label'] }}</span>
+                            </a>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="background:#0F2744;color:#fff;text-align:center;">
+        <div class="container" style="max-width:640px;">
+            <h2 style="color:#fff;margin-bottom:1rem;">Ready to see OpesCare in action?</h2>
+            <p style="color:rgba(255,255,255,.75);margin-bottom:2rem;">Contact us to arrange a live demonstration for your hospital, clinic, or health authority.</p>
+            <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:1rem;">
+                <a href="{{ route('public.contact') }}" class="btn btn-primary">Request a Demo</a>
+                <a href="{{ route('public.developers') }}" class="btn" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);">Developer Docs</a>
             </div>
         </div>
     </section>

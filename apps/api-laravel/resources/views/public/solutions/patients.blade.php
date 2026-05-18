@@ -70,9 +70,21 @@
                 </div>
             </div>
             
-            <div style="margin-top: 4rem; padding: 2rem; background-color: var(--color-primary-light); border-radius: 1rem; text-align: center;">
-                <p class="text-sm font-bold uppercase tracking-widest text-primary" style="margin-bottom: 0.5rem;">Safety Note</p>
-                <p class="text-muted" style="font-size: 0.875rem;">OpesCare does not replace doctors or medical advice. Always follow guidance from qualified healthcare professionals.</p>
+            <div style="margin-top: 4rem; padding: 1.25rem 2rem; background-color: var(--color-primary-light); border-radius: 1rem; display:flex; align-items:center; gap:1rem;">
+                <i data-lucide="info" style="width:1.25rem;height:1.25rem;color:#0F4C81;flex-shrink:0;"></i>
+                <p class="text-muted" style="font-size: 0.875rem;margin:0;"><strong>Safety Note:</strong> OpesCare does not replace doctors or medical advice. Always follow guidance from qualified healthcare professionals.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="background:#0F2744;color:#fff;text-align:center;">
+        <div class="container" style="max-width:640px;">
+            <i data-lucide="id-card" style="width:3rem;height:3rem;color:#14B8A6;margin-bottom:1.5rem;"></i>
+            <h2 style="color:#fff;margin-bottom:1rem;">Get your OpesCare Health ID today</h2>
+            <p style="color:rgba(255,255,255,.75);margin-bottom:2rem;">Registration takes a few minutes. Your Health ID connects your medical history across every facility in the OpesCare network.</p>
+            <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:1rem;">
+                <a href="{{ route('register.patient') }}" class="btn btn-primary">Register as a Patient</a>
+                <a href="{{ route('public.consent') }}" class="btn" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);">Learn About Consent</a>
             </div>
         </div>
     </section>

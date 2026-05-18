@@ -18,6 +18,12 @@ return [
         'contact' => 'Contact',
         'how_it_works' => 'How It Works',
         'demo' => 'Request Demo',
+        'product' => 'Product',
+        'solutions' => 'Solutions',
+        'interop' => 'Interoperability',
+        'resources' => 'Resources',
+        'sign_in' => 'Sign In',
+        'get_started' => 'Get Started',
     ],
     'trust_strip' => [
         'item1_title' => 'One Health ID',
