@@ -56,7 +56,7 @@
                     </div>
                 </div>
                 <div class="nav-dropdown">
-                    <a href="#" class="nav-link dropdown-trigger">{{ __('landing.nav.solutions', [], app()->getLocale()) ?: 'Solutions' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
+                    <a href="{{ route('public.solutions.patients') }}" class="nav-link dropdown-trigger">{{ __('landing.nav.solutions', [], app()->getLocale()) ?: 'Solutions' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
                     <div class="dropdown-menu">
                         <a href="{{ route('public.solutions.patients') }}" class="dropdown-item"><i data-lucide="user" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>For Patients</a>
                         <a href="{{ route('public.solutions.hospitals') }}" class="dropdown-item"><i data-lucide="hospital" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>For Hospitals</a>
@@ -80,7 +80,7 @@
                 </div>
                 <a href="{{ route('public.security') }}" class="nav-link">{{ __('landing.nav.security', [], app()->getLocale()) ?: 'Security' }}</a>
                 <div class="nav-dropdown">
-                    <a href="#" class="nav-link dropdown-trigger">{{ __('landing.nav.resources', [], app()->getLocale()) ?: 'Resources' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
+                    <a href="{{ route('public.help') }}" class="nav-link dropdown-trigger">{{ __('landing.nav.resources', [], app()->getLocale()) ?: 'Resources' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
                     <div class="dropdown-menu">
                         <a href="{{ route('public.faq') }}" class="dropdown-item"><i data-lucide="help-circle" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>FAQ</a>
                         <a href="{{ route('public.help') }}" class="dropdown-item"><i data-lucide="book-open" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>Help Center</a>
