@@ -15,7 +15,7 @@
             <div class="card">
                 <form action="#" method="POST" style="display: grid; gap: 1.5rem;">
                     @csrf
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="auth-form-row" style="gap: 1rem;">
                         <div class="form-group">
                             <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">{{ __('auth.register.hospital.name') }}</label>
                             <input type="text" name="facility_name" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 0.5rem;" required>
@@ -43,7 +43,7 @@
                         <input type="text" name="admin_name" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 0.5rem;" required>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="auth-form-row" style="gap: 1rem;">
                         <div class="form-group">
                             <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">{{ __('auth.register.hospital.admin_email') }}</label>
                             <input type="email" name="admin_email" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 0.5rem;" required>

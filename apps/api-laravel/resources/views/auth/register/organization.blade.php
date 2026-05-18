@@ -174,7 +174,7 @@
                     
                     <!-- Hospital/Clinic Services -->
                     <div class="services-block" id="services-hospital">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="auth-form-row" style="gap: 1rem;">
                             <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;"><input type="checkbox" name="services[]" value="outpatient"> Outpatient care</label>
                             <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;"><input type="checkbox" name="services[]" value="emergency"> Emergency care</label>
                             <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;"><input type="checkbox" name="services[]" value="inpatient"> Inpatient care</label>
@@ -186,7 +186,7 @@
 
                     <!-- Pharmacy Services -->
                     <div class="services-block" id="services-pharmacy" style="display: none;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="auth-form-row" style="gap: 1rem;">
                             <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;"><input type="checkbox" name="services[]" value="dispensing"> Prescription dispensing</label>
                             <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;"><input type="checkbox" name="services[]" value="availability"> Medicine availability</label>
                             <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;"><input type="checkbox" name="services[]" value="reservation"> Medication reservation</label>
@@ -196,7 +196,7 @@
 
                     <!-- Laboratory Services -->
                     <div class="services-block" id="services-laboratory" style="display: none;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="auth-form-row" style="gap: 1rem;">
                             <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;"><input type="checkbox" name="services[]" value="collection"> Sample collection</label>
                             <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;"><input type="checkbox" name="services[]" value="entry"> Result entry</label>
                             <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;"><input type="checkbox" name="services[]" value="validation"> Result validation</label>
@@ -206,7 +206,7 @@
 
                     <!-- Insurer Services -->
                     <div class="services-block" id="services-insurer" style="display: none;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="auth-form-row" style="gap: 1rem;">
                             <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;"><input type="checkbox" name="services[]" value="eligibility"> Eligibility checks</label>
                             <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;"><input type="checkbox" name="services[]" value="preauth"> Preauthorization</label>
                             <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;"><input type="checkbox" name="services[]" value="claims"> Claims processing</label>

@@ -116,6 +116,12 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             padding-bottom: 3mm;
         }
+        @media (max-width: 768px) {
+            .metric-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .metric-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>

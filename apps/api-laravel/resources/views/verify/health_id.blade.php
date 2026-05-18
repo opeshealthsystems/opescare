@@ -237,6 +237,7 @@
             .topbar { padding: 0.75rem 1rem; }
             .verify-card-body { padding: 1.5rem 1.25rem; }
             .verify-card-header { padding: 1.75rem 1.25rem 1.5rem; }
+            .result-detail-grid { grid-template-columns: 1fr !important; }
         }
     </style>
 </head>
@@ -332,7 +333,7 @@
                     <div class="status-dot"></div>
                     <span style="font-weight:800;font-size:0.9375rem;color:#065F46;">{{ __('verify.result_verified', [], app()->getLocale()) ?: 'Identity Verified' }}</span>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0.75rem;">
+                <div class="result-detail-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0.75rem;">
                     <div>
                         <div class="result-label">{{ __('verify.result_name', [], app()->getLocale()) ?: 'Name' }}</div>
                         <div class="result-value">{{ $result->name ?? '—' }}</div>
