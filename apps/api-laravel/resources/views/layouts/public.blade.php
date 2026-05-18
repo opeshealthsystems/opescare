@@ -92,18 +92,18 @@
             </nav>
             
             <div class="header-actions">
-                <div class="lang-switcher" style="display: flex; gap: 0.5rem; margin-right: 1.5rem; font-size: 0.75rem; font-weight: 700;">
-                    <a href="{{ route('lang.switch', 'en') }}" class="{{ app()->getLocale() == 'en' ? 'text-[var(--color-primary)]' : 'text-muted' }}">EN</a>
-                    <span class="text-muted">|</span>
-                    <a href="{{ route('lang.switch', 'fr') }}" class="{{ app()->getLocale() == 'fr' ? 'text-[var(--color-primary)]' : 'text-muted' }}">FR</a>
+                <div class="lang-switcher" style="display:flex;gap:0.5rem;margin-right:1.5rem;font-size:0.75rem;font-weight:700;">
+                    <a href="{{ route('lang.switch', 'en') }}" style="color:{{ app()->getLocale()=='en' ? 'var(--color-primary)' : 'var(--color-text-secondary)' }};text-decoration:none;">EN</a>
+                    <span style="color:var(--color-border);">|</span>
+                    <a href="{{ route('lang.switch', 'fr') }}" style="color:{{ app()->getLocale()=='fr' ? 'var(--color-primary)' : 'var(--color-text-secondary)' }};text-decoration:none;">FR</a>
                 </div>
-                
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <a href="{{ route('demo.public') }}" class="text-sm font-bold hover:text-[var(--color-primary)] transition-colors flex items-center">
-                        <i data-lucide="play-circle" class="h-4 w-4 mr-1"></i> Demo
+
+                <div style="display:flex;align-items:center;gap:1rem;">
+                    <a href="{{ route('demo.public') }}" style="font-size:0.875rem;font-weight:700;color:var(--color-text-secondary);text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem;">
+                        <i data-lucide="play-circle" style="width:1rem;height:1rem;"></i> Demo
                     </a>
-                    <a href="{{ route('login') }}" class="text-sm font-bold hover:text-[var(--color-primary)] transition-colors">{{ __('auth.login.title') }}</a>
-                    <a href="{{ route('register') }}" class="btn btn-primary">Get Started</a>
+                    <a href="{{ route('login') }}" style="font-size:0.875rem;font-weight:700;color:var(--color-text-secondary);text-decoration:none;">{{ __('auth.login.title') ?: 'Sign In' }}</a>
+                    <a href="{{ route('register') }}" class="btn btn-primary">{{ __('landing.nav.get_started', [], app()->getLocale()) ?: 'Get Started' }}</a>
                 </div>
 
                 <button class="mobile-menu-toggle" id="menuToggle" style="display: none; background: none; border: none; color: var(--color-text-primary); cursor: pointer; margin-left: 1rem;">
