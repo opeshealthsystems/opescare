@@ -74,6 +74,7 @@ Route::post('/reset-password/{token}', [PublicPageController::class, 'submitRese
 // OTP Screen Challenge
 Route::get('/verify/otp', [PublicPageController::class, 'showVerifyOtp'])->name('otp.verify');
 Route::post('/verify/otp', [PublicPageController::class, 'submitVerifyOtp'])->name('otp.verify.submit');
+Route::post('/verify/otp/resend', [PublicPageController::class, 'resendOtp'])->name('otp.resend');
 
 // Verification & Restriction Status Displays
 Route::get('/pending-approval', [PublicPageController::class, 'showPendingApproval'])->name('account.pending');

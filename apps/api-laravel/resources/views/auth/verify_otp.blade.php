@@ -112,8 +112,18 @@
         }, 1000);
 
         function resendCode() {
-            alert(msgResent);
-            timeLeft = 180;
+            fetch('{{ route('otp.resend') }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+            }).then(function(res) {
+                if (res.ok) {
+                    timeLeft = 180;
+                    alert(msgResent);
+                }
+            }).catch(function() {});
         }
     </script>
 @endsection
