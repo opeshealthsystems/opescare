@@ -907,6 +907,12 @@ textarea.form-control {
 .btn-ghost     { background: transparent; color: var(--p-text-muted); border-color: transparent; }
 .btn-ghost:hover:not(:disabled)     { background: var(--p-surface-2); color: var(--p-text); }
 
+.btn-warning   { background: var(--p-warning); color: white; border-color: var(--p-warning); }
+.btn-warning:hover:not(:disabled)   { background: #92400E; border-color: #92400E; }
+
+.btn-success   { background: var(--p-success); color: white; border-color: var(--p-success); }
+.btn-success:hover:not(:disabled)   { background: #166534; border-color: #166534; }
+
 .btn-sm  { padding: 0.375rem 0.75rem; font-size: 0.8125rem; }
 .btn-sm svg, .btn-sm [data-lucide] { width: 0.8rem; height: 0.8rem; }
 .btn-lg  { padding: 0.75rem var(--p-space-6); font-size: 0.9375rem; }

@@ -59,6 +59,12 @@
         <h1 class="page-title">{{ __('public.portal.nav_queue', [], app()->getLocale()) ?: 'Patient Queue' }}</h1>
         <p class="page-subtitle">{{ __('public.staff_portal.queue_subtitle', [], app()->getLocale()) ?: 'Monitor live patient queues across your facility.' }}</p>
     </div>
+    <div class="page-actions">
+        <a href="{{ route('portals.staff.queue-display') }}" target="_blank" class="btn btn-secondary btn-sm">
+            <i data-lucide="monitor" style="width:13px;height:13px;"></i>
+            Display Board
+        </a>
+    </div>
 </div>
 
 {{-- Filter Bar --}}

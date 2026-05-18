@@ -26,6 +26,16 @@ class StaffPortalController extends Controller
         ]);
     }
 
+    public function queueDisplay(Request $request)
+    {
+        // Standalone TV/kiosk queue board — no layout, no auth required by default
+        // In production this would fetch live queue data from the queue service
+        $facilityId = $request->query('facility_id');
+        return view('portals.staff.queue_display', [
+            'tickets' => [],
+        ]);
+    }
+
     public function billing(Request $request)
     {
         return view('portals.staff.billing', [
