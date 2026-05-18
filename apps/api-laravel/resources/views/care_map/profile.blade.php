@@ -138,6 +138,13 @@
             color: #F87171;
             line-height: 1.5;
         }
+
+        @media (max-width: 768px) {
+            body { padding: 4mm; }
+            .grid { grid-template-columns: 1fr; gap: 4mm; }
+            .header { flex-direction: column-reverse; gap: 3mm; align-items: flex-start; }
+            .facility-title { font-size: 22px; }
+        }
     </style>
 </head>
 <body>

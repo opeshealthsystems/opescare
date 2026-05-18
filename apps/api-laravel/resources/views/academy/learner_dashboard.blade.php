@@ -142,6 +142,12 @@
             font-weight: 700;
             border: 1px solid rgba(16, 185, 129, 0.2);
         }
+
+        @media (max-width: 768px) {
+            body { padding: 4mm; }
+            .grid { grid-template-columns: 1fr; gap: 4mm; }
+            .header { flex-direction: column; align-items: flex-start; gap: 2mm; }
+        }
     </style>
 </head>
 <body>
@@ -207,7 +213,7 @@
                     <div style="text-align: center; color: #64748B; padding: 4mm 0;">
                         No digital health competency certificates have been issued yet.
                     </div>
-                @forelse
+                @endforelse
             </div>
         </div>
     </div>

@@ -19,6 +19,11 @@
         .ok { color: #166534; font-weight: 700; }
         .missing { color: #991b1b; font-weight: 700; }
         .meta { color: #526071; }
+        @media (max-width: 640px) {
+            body { margin: 16px; }
+            header { flex-direction: column; gap: 12px; }
+            th, td { padding: 8px 6px; font-size: 13px; }
+        }
     </style>
 </head>
 <body>

@@ -290,6 +290,41 @@
             color: #94A3B8;
             line-height: 1.5;
         }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 320px 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .header {
+                padding: 3mm 4mm;
+                flex-wrap: wrap;
+                gap: 2mm;
+            }
+            .title { font-size: 16px; }
+            .layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 300px;
+                height: auto;
+                overflow: visible;
+            }
+            .sidebar {
+                max-height: 55vh;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .map-pane {
+                height: 300px;
+                position: relative;
+            }
+            .safety-bar {
+                width: calc(100% - 8mm);
+                font-size: 10.5px;
+                padding: 3mm 4mm;
+            }
+        }
     </style>
 </head>
 <body>

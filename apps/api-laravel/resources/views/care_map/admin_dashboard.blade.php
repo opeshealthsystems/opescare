@@ -114,6 +114,13 @@
         .btn-action:hover {
             border-color: #0DF2C9;
         }
+
+        @media (max-width: 768px) {
+            body { padding: 4mm; }
+            .grid { grid-template-columns: 1fr; gap: 4mm; }
+            .header { flex-direction: column; align-items: flex-start; gap: 2mm; }
+            .list-item { flex-wrap: wrap; gap: 2mm; }
+        }
     </style>
 </head>
 <body>

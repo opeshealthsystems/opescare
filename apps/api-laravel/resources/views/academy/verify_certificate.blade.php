@@ -252,6 +252,17 @@
             margin-top: 6mm;
             line-height: 1.4;
         }
+
+        @media (max-width: 600px) {
+            body {
+                align-items: flex-start;
+                padding: 6mm 0;
+            }
+            .verification-wrapper { padding: 4mm; }
+            .elite-card { padding: 5mm; }
+            .brand-title { font-size: 18px; }
+            .ambient-glow, .ambient-glow-2 { display: none; }
+        }
     </style>
 </head>
 <body>
