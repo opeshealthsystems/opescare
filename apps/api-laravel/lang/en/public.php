@@ -357,4 +357,117 @@ return [
         'nav_audit'              => 'Audit Log',
         'nav_settings'           => 'Settings',
     ],
+
+    /* ── Admin Governance Portal ────────────────────── */
+    'admin_governance' => [
+        // Page meta
+        'page_meta_title'            => 'Admin Governance Portal — OpesCare',
+        'breadcrumb_home'            => 'Admin Portal',
+        'role_administrator'         => 'Administrator',
+
+        // Sidebar nav
+        'nav_governance'             => 'Governance',
+        'nav_dashboard'              => 'Dashboard',
+        'nav_identity'               => 'Identity',
+        'nav_partner_governance'     => 'Partner Governance',
+        'nav_duplicate_reviews'      => 'Duplicate Reviews',
+        'nav_security_events'        => 'Security Events',
+        'nav_tools'                  => 'Tools',
+        'nav_help'                   => 'Help',
+
+        // Page header
+        'page_title'                 => 'Admin Governance Portal',
+        'page_subtitle'              => 'Manage Health IDs, review duplicate cases, and monitor security events.',
+        'btn_duplicate_review'       => 'Duplicate Review',
+        'btn_partners'               => 'Partners',
+
+        // KPI labels
+        'kpi_total_health_ids'       => 'Total Health IDs',
+        'kpi_registered_patients'    => 'Registered patients',
+        'kpi_active_tokens'          => 'Active Tokens',
+        'kpi_live_tokens'            => 'Live access tokens',
+        'kpi_total_lookups'          => 'Total Lookups',
+        'kpi_alltime_events'         => 'All-time access events',
+        'kpi_denied_lookups'         => 'Denied Lookups',
+        'kpi_failed_denied'          => 'Failed / denied',
+
+        // Section headings
+        'section_partner_governance' => 'Partner Governance',
+        'section_duplicate_reviews'  => 'Pending Duplicate Reviews',
+        'section_security_events'    => 'Recent Security Events',
+
+        // Table column headers
+        'col_partner'                => 'Partner',
+        'col_type'                   => 'Type',
+        'col_status'                 => 'Status',
+        'col_trust_level'            => 'Trust Level',
+        'col_match_score'            => 'Match Score',
+        'col_primary_patient'        => 'Primary Patient',
+        'col_secondary_patient'      => 'Secondary Patient',
+        'col_timestamp'              => 'Timestamp',
+        'col_event_type'             => 'Event Type',
+        'col_target_health_id'       => 'Target Health ID',
+        'col_actor'                  => 'Actor',
+        'col_result'                 => 'Result',
+
+        // Loading / empty states (HTML)
+        'loading_partners'           => 'Loading partners…',
+        'loading_cases'              => 'Loading pending cases…',
+        'no_partners'                => 'No partners found.',
+        'no_duplicates'              => 'No pending duplicate reviews.',
+        'no_security_events'         => 'No security events recorded yet.',
+        'error_loading_duplicates'   => 'Error loading duplicate cases.',
+
+        // Result badges
+        'result_success'             => 'Success',
+        'result_denied'              => 'Denied',
+        'lbl_unknown'                => 'Unknown',
+
+        // Duplicate review modal
+        'modal_review_title'         => 'Review Suspected Duplicate',
+        'badge_primary_record'       => 'Primary Record',
+        'badge_suspected_duplicate'  => 'Suspected Duplicate',
+        'lbl_health_id'              => 'Health ID:',
+        'lbl_name'                   => 'Name:',
+        'lbl_dob'                    => 'DOB:',
+        'lbl_sex'                    => 'Sex:',
+        'lbl_reviewer_notes'         => 'Reviewer Notes (Optional)',
+        'lbl_reviewer_notes_ph'      => 'e.g. Verified via National ID…',
+        'btn_reject_match'           => 'Reject Match (Keep Separate)',
+        'btn_confirm_merge'          => 'Confirm Merge',
+        'lbl_processing'             => 'Processing…',
+
+        // JS confirm / prompt / alert strings
+        'js_confirm_approve'         => 'Approve this partner?',
+        'js_prompt_suspension'       => 'Enter suspension reason (min 10 chars):',
+        'js_alert_valid_reason'      => 'A valid reason of at least 10 characters is required.',
+        'js_alert_error_approving'   => 'Error approving partner.',
+        'js_alert_error_suspending'  => 'Error suspending partner.',
+        'js_alert_error_resolve'     => 'An error occurred while resolving the case.',
+        'js_alert_network_error'     => 'Network error. Please try again.',
+
+        // JS action button labels (injected via @json)
+        'btn_approve'                => 'Approve',
+        'btn_suspend'                => 'Suspend',
+        'btn_review'                 => 'Review',
+
+        // Go-live readiness page
+        'golive_page_title'          => 'Facility Go-Live Readiness',
+        'golive_facility_status'     => 'Facility status:',
+        'golive_facility_type'       => 'Type:',
+        'golive_section_result'      => 'Readiness Result',
+        'golive_can_go_live'         => 'Can go live:',
+        'golive_missing'             => 'Missing:',
+        'golive_risks'               => 'Risks:',
+        'golive_risks_blocked'       => 'Go-live is blocked until all missing readiness items are complete.',
+        'golive_approval_note'       => 'Approval note:',
+        'golive_section_checklist'   => 'Checklist',
+        'golive_col_item'            => 'Item',
+        'golive_col_status'          => 'Status',
+        'golive_complete'            => 'Complete',
+        'golive_missing_status'      => 'Missing',
+        'golive_yes'                 => 'Yes',
+        'golive_no'                  => 'No',
+        'golive_none'                => 'None',
+    ],
 ];

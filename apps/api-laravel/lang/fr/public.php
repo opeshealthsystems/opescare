@@ -357,4 +357,117 @@ return [
         ‘nav_audit’              => "Journal d’audit",
         ‘nav_settings’           => "Paramètres",
     ],
+
+    /* ── Admin Governance Portal ────────────────────── */
+    ‘admin_governance’ => [
+        // Page meta
+        ‘page_meta_title’            => ‘Portail de Gouvernance Admin — OpesCare’,
+        ‘breadcrumb_home’            => ‘Portail Admin’,
+        ‘role_administrator’         => ‘Administrateur’,
+
+        // Sidebar nav
+        ‘nav_governance’             => ‘Gouvernance’,
+        ‘nav_dashboard’              => ‘Tableau de bord’,
+        ‘nav_identity’               => ‘Identité’,
+        ‘nav_partner_governance’     => ‘Gouvernance Partenaires’,
+        ‘nav_duplicate_reviews’      => ‘Révisions de doublons’,
+        ‘nav_security_events’        => ‘Événements de sécurité’,
+        ‘nav_tools’                  => ‘Outils’,
+        ‘nav_help’                   => ‘Aide’,
+
+        // Page header
+        ‘page_title’                 => ‘Portail de Gouvernance Admin’,
+        ‘page_subtitle’              => "Gérez les identifiants de santé, révisez les cas de doublons et surveillez les événements de sécurité.",
+        ‘btn_duplicate_review’       => ‘Révision des doublons’,
+        ‘btn_partners’               => ‘Partenaires’,
+
+        // KPI labels
+        ‘kpi_total_health_ids’       => ‘Total des identifiants de santé’,
+        ‘kpi_registered_patients’    => ‘Patients enregistrés’,
+        ‘kpi_active_tokens’          => ‘Jetons actifs’,
+        ‘kpi_live_tokens’            => "Jetons d’accès actifs",
+        ‘kpi_total_lookups’          => ‘Total des consultations’,
+        ‘kpi_alltime_events’         => "Événements d’accès (total)",
+        ‘kpi_denied_lookups’         => ‘Consultations refusées’,
+        ‘kpi_failed_denied’          => ‘Échecs / refusés’,
+
+        // Section headings
+        ‘section_partner_governance’ => ‘Gouvernance Partenaires’,
+        ‘section_duplicate_reviews’  => ‘Révisions de doublons en attente’,
+        ‘section_security_events’    => ‘Événements de sécurité récents’,
+
+        // Table column headers
+        ‘col_partner’                => ‘Partenaire’,
+        ‘col_type’                   => ‘Type’,
+        ‘col_status’                 => ‘Statut’,
+        ‘col_trust_level’            => ‘Niveau de confiance’,
+        ‘col_match_score’            => ‘Score de correspondance’,
+        ‘col_primary_patient’        => ‘Patient principal’,
+        ‘col_secondary_patient’      => ‘Patient secondaire’,
+        ‘col_timestamp’              => ‘Horodatage’,
+        ‘col_event_type’             => "Type d’événement",
+        ‘col_target_health_id’       => ‘Identifiant de santé cible’,
+        ‘col_actor’                  => ‘Acteur’,
+        ‘col_result’                 => ‘Résultat’,
+
+        // Loading / empty states (HTML)
+        ‘loading_partners’           => ‘Chargement des partenaires…’,
+        ‘loading_cases’              => ‘Chargement des cas en attente…’,
+        ‘no_partners’                => ‘Aucun partenaire trouvé.’,
+        ‘no_duplicates’              => ‘Aucune révision de doublon en attente.’,
+        ‘no_security_events’         => "Aucun événement de sécurité enregistré.",
+        ‘error_loading_duplicates’   => ‘Erreur lors du chargement des cas de doublons.’,
+
+        // Result badges
+        ‘result_success’             => ‘Succès’,
+        ‘result_denied’              => ‘Refusé’,
+        ‘lbl_unknown’                => ‘Inconnu’,
+
+        // Duplicate review modal
+        ‘modal_review_title’         => ‘Réviser le doublon suspecté’,
+        ‘badge_primary_record’       => ‘Dossier principal’,
+        ‘badge_suspected_duplicate’  => ‘Doublon suspecté’,
+        ‘lbl_health_id’              => ‘Identifiant de santé :’,
+        ‘lbl_name’                   => ‘Nom :’,
+        ‘lbl_dob’                    => ‘Date de naissance :’,
+        ‘lbl_sex’                    => ‘Sexe :’,
+        ‘lbl_reviewer_notes’         => ‘Notes du réviseur (optionnel)’,
+        ‘lbl_reviewer_notes_ph’      => ‘ex. Vérifié via carte nationale d\’identité…’,
+        ‘btn_reject_match’           => ‘Rejeter la correspondance (conserver séparé)’,
+        ‘btn_confirm_merge’          => ‘Confirmer la fusion’,
+        ‘lbl_processing’             => ‘Traitement…’,
+
+        // JS confirm / prompt / alert strings
+        ‘js_confirm_approve’         => ‘Approuver ce partenaire ?’,
+        ‘js_prompt_suspension’       => ‘Entrez le motif de suspension (min. 10 caractères) :’,
+        ‘js_alert_valid_reason’      => ‘Un motif valide d\’au moins 10 caractères est requis.’,
+        ‘js_alert_error_approving’   => "Erreur lors de l’approbation du partenaire.",
+        ‘js_alert_error_suspending’  => ‘Erreur lors de la suspension du partenaire.’,
+        ‘js_alert_error_resolve’     => "Une erreur est survenue lors de la résolution du cas.",
+        ‘js_alert_network_error’     => ‘Erreur réseau. Veuillez réessayer.’,
+
+        // JS action button labels (injected via @json)
+        ‘btn_approve’                => ‘Approuver’,
+        ‘btn_suspend’                => ‘Suspendre’,
+        ‘btn_review’                 => ‘Réviser’,
+
+        // Go-live readiness page
+        ‘golive_page_title’          => ‘Préparation au démarrage de l\’établissement’,
+        ‘golive_facility_status’     => ‘Statut de l\’établissement :’,
+        ‘golive_facility_type’       => ‘Type :’,
+        ‘golive_section_result’      => ‘Résultat de préparation’,
+        ‘golive_can_go_live’         => ‘Peut démarrer :’,
+        ‘golive_missing’             => ‘Manquant :’,
+        ‘golive_risks’               => ‘Risques :’,
+        ‘golive_risks_blocked’       => ‘Le démarrage est bloqué jusqu\’à ce que tous les éléments de préparation manquants soient complétés.’,
+        ‘golive_approval_note’       => ‘Note d\’approbation :’,
+        ‘golive_section_checklist’   => ‘Liste de contrôle’,
+        ‘golive_col_item’            => ‘Élément’,
+        ‘golive_col_status’          => ‘Statut’,
+        ‘golive_complete’            => ‘Complété’,
+        ‘golive_missing_status’      => ‘Manquant’,
+        ‘golive_yes’                 => ‘Oui’,
+        ‘golive_no’                  => ‘Non’,
+        ‘golive_none’                => ‘Aucun’,
+    ],
 ];

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facility Go-Live Readiness</title>
+    <title>{{ __('public.admin_governance.golive_page_title', [], app()->getLocale()) ?: 'Facility Go-Live Readiness' }}</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 32px; color: #172033; background: #f7f9fc; }
         main { max-width: 980px; margin: 0 auto; }
-        header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 24px; }
+        header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; }
         h1 { margin: 0 0 8px; font-size: 28px; }
         .status { padding: 8px 12px; border-radius: 6px; background: #e8eefc; font-weight: 700; text-transform: uppercase; }
         .approved { background: #dff5e6; color: #166534; }
@@ -21,8 +21,14 @@
         .meta { color: #526071; }
         @media (max-width: 640px) {
             body { margin: 16px; }
+            main { max-width: 100%; }
             header { flex-direction: column; gap: 12px; }
+            h1 { font-size: 20px; }
             th, td { padding: 8px 6px; font-size: 13px; }
+            th { display: none; }
+            td { display: block; padding: 6px 8px; }
+            td::before { content: attr(data-label); font-size: 11px; text-transform: uppercase; color: #526071; display: block; margin-bottom: 2px; }
+            tr { border-bottom: 1px solid #dbe3ef; margin-bottom: 8px; display: block; }
         }
     </style>
 </head>
@@ -30,8 +36,12 @@
 <main>
     <header>
         <div>
-            <h1>{{ $facility->name }} Go-Live Readiness</h1>
-            <div class="meta">Facility status: {{ $facility->status }} | Type: {{ $facility->type }}</div>
+            <h1>{{ $facility->name }} — {{ __('public.admin_governance.golive_page_title', [], app()->getLocale()) ?: 'Go-Live Readiness' }}</h1>
+            <div class="meta">
+                {{ __('public.admin_governance.golive_facility_status', [], app()->getLocale()) ?: 'Facility status:' }} {{ $facility->status }}
+                &nbsp;|&nbsp;
+                {{ __('public.admin_governance.golive_facility_type', [], app()->getLocale()) ?: 'Type:' }} {{ $facility->type }}
+            </div>
         </div>
         <div class="status {{ $readiness->can_go_live ? 'approved' : 'blocked' }}">
             {{ $readiness->status }}
@@ -39,30 +49,51 @@
     </header>
 
     <section>
-        <h2>Readiness Result</h2>
-        <p><strong>Can go live:</strong> {{ $readiness->can_go_live ? 'Yes' : 'No' }}</p>
-        <p><strong>Missing:</strong> {{ empty($missingItems) ? 'None' : implode(', ', $missingItems) }}</p>
-        <p><strong>Risks:</strong> {{ empty($missingItems) ? 'None' : 'Go-live is blocked until all missing readiness items are complete.' }}</p>
+        <h2>{{ __('public.admin_governance.golive_section_result', [], app()->getLocale()) ?: 'Readiness Result' }}</h2>
+        <p>
+            <strong>{{ __('public.admin_governance.golive_can_go_live', [], app()->getLocale()) ?: 'Can go live:' }}</strong>
+            {{ $readiness->can_go_live
+                ? (__('public.admin_governance.golive_yes', [], app()->getLocale()) ?: 'Yes')
+                : (__('public.admin_governance.golive_no', [], app()->getLocale()) ?: 'No') }}
+        </p>
+        <p>
+            <strong>{{ __('public.admin_governance.golive_missing', [], app()->getLocale()) ?: 'Missing:' }}</strong>
+            {{ empty($missingItems)
+                ? (__('public.admin_governance.golive_none', [], app()->getLocale()) ?: 'None')
+                : implode(', ', $missingItems) }}
+        </p>
+        <p>
+            <strong>{{ __('public.admin_governance.golive_risks', [], app()->getLocale()) ?: 'Risks:' }}</strong>
+            {{ empty($missingItems)
+                ? (__('public.admin_governance.golive_none', [], app()->getLocale()) ?: 'None')
+                : (__('public.admin_governance.golive_risks_blocked', [], app()->getLocale()) ?: 'Go-live is blocked until all missing readiness items are complete.') }}
+        </p>
         @if ($readiness->approval_note)
-            <p><strong>Approval note:</strong> {{ $readiness->approval_note }}</p>
+            <p>
+                <strong>{{ __('public.admin_governance.golive_approval_note', [], app()->getLocale()) ?: 'Approval note:' }}</strong>
+                {{ $readiness->approval_note }}
+            </p>
         @endif
     </section>
 
     <section>
-        <h2>Checklist</h2>
+        <h2>{{ __('public.admin_governance.golive_section_checklist', [], app()->getLocale()) ?: 'Checklist' }}</h2>
         <table>
             <thead>
             <tr>
-                <th>Item</th>
-                <th>Status</th>
+                <th>{{ __('public.admin_governance.golive_col_item', [], app()->getLocale()) ?: 'Item' }}</th>
+                <th>{{ __('public.admin_governance.golive_col_status', [], app()->getLocale()) ?: 'Status' }}</th>
             </tr>
             </thead>
             <tbody>
             @foreach ($labels as $key => $label)
                 <tr>
-                    <td>{{ $label }}</td>
-                    <td class="{{ ($readiness->checklist_json[$key] ?? false) ? 'ok' : 'missing' }}">
-                        {{ ($readiness->checklist_json[$key] ?? false) ? 'Complete' : 'Missing' }}
+                    <td data-label="{{ __('public.admin_governance.golive_col_item', [], app()->getLocale()) ?: 'Item' }}">{{ $label }}</td>
+                    <td data-label="{{ __('public.admin_governance.golive_col_status', [], app()->getLocale()) ?: 'Status' }}"
+                        class="{{ ($readiness->checklist_json[$key] ?? false) ? 'ok' : 'missing' }}">
+                        {{ ($readiness->checklist_json[$key] ?? false)
+                            ? (__('public.admin_governance.golive_complete', [], app()->getLocale()) ?: 'Complete')
+                            : (__('public.admin_governance.golive_missing_status', [], app()->getLocale()) ?: 'Missing') }}
                     </td>
                 </tr>
             @endforeach
