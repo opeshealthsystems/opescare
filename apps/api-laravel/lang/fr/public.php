@@ -119,6 +119,8 @@ return [
         ‘sign_out’               => ‘Déconnexion’,
 
         // Chaînes des pages du portail patient
+        ‘generating’             => ‘Génération en cours…’,
+        ‘regenerate_qr’          => ‘Régénérer le QR’,
         ‘appointments_subtitle’  => ‘Consultez vos rendez-vous à venir et passés.’,
         ‘access_logs_subtitle’   => "Vérifiez qui a accédé à votre identifiant de santé et le statut de ces demandes.",
         ‘access_logs_info’       => "Chaque accès à votre identifiant de santé est enregistré ici pour votre examen. Si vous constatez un accès que vous ne reconnaissez pas, contactez le support immédiatement.",

@@ -119,6 +119,8 @@ return [
         'sign_out'               => 'Sign Out',
 
         // Patient portal page strings
+        'generating'             => 'Generating…',
+        'regenerate_qr'          => 'Regenerate QR',
         'appointments_subtitle'  => 'View your upcoming and past appointments.',
         'access_logs_subtitle'   => 'Review who has accessed your Health ID and the status of those requests.',
         'access_logs_info'       => 'Every access to your Health ID is recorded here for your review. If you see an access you do not recognise, contact support immediately.',

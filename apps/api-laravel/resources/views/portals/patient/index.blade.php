@@ -252,11 +252,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     @endif
 
+    var lblGenerating  = @json(__('public.portal.generating', [], app()->getLocale()) ?: 'Generating…');
+    var lblRegenerateQr = @json(__('public.portal.regenerate_qr', [], app()->getLocale()) ?: 'Regenerate QR');
+
     var btnGen = document.getElementById('generate-temp-qr');
     if (btnGen) {
         btnGen.addEventListener('click', async function () {
             btnGen.disabled = true;
-            btnGen.innerHTML = '<i data-lucide="loader" style="width:1rem;height:1rem;"></i> Generating…';
+            btnGen.innerHTML = '<i data-lucide="loader" style="width:1rem;height:1rem;"></i> ' + lblGenerating;
             if (typeof lucide !== 'undefined') lucide.createIcons();
 
             try {
@@ -286,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error(e);
             } finally {
                 btnGen.disabled = false;
-                btnGen.innerHTML = '<i data-lucide="refresh-cw" style="width:1rem;height:1rem;"></i> Regenerate QR';
+                btnGen.innerHTML = '<i data-lucide="refresh-cw" style="width:1rem;height:1rem;"></i> ' + lblRegenerateQr;
                 if (typeof lucide !== 'undefined') lucide.createIcons();
             }
         });
