@@ -152,7 +152,8 @@ body.portal-body {
   gap: 2px;
 }
 
-.sidebar-section-label {
+.sidebar-section-label,
+.sidebar-nav-label {
   font-size: 0.6875rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -160,6 +161,13 @@ body.portal-body {
   color: #475569;
   padding: var(--p-space-3) var(--p-space-2) var(--p-space-1);
   margin-top: var(--p-space-2);
+}
+
+.sidebar-nav-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: var(--p-space-2);
 }
 
 .sidebar-link {

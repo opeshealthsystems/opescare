@@ -93,8 +93,51 @@ return [
         'no_partners' => 'Aucun partenaire trouvé.',
         'loading' => 'Chargement des partenaires...',
     ],
-    'availability_may_change' => 'La disponibilité peut changer. Veuillez contacter l’établissement avant de vous déplacer ou de prendre des décisions médicales.',
-    'medicine_disclaimer' => 'La disponibilité des médicaments est signalée par la pharmacie et peut changer. Confirmez toujours auprès de la pharmacie.',
-    'blood_disclaimer' => 'La disponibilité des produits sanguins peut changer rapidement. Contactez immédiatement la banque de sang.',
-    'emergency_disclaimer' => 'S’il s’agit d’une urgence vitale, contactez immédiatement les services de secours locaux ou rendez-vous au centre de secours le plus proche.',
+    ‘availability_may_change’ => "La disponibilité peut changer. Veuillez contacter l’établissement avant de vous déplacer.",
+    ‘medicine_disclaimer’ => ‘La disponibilité des médicaments est signalée par la pharmacie et peut changer. Confirmez auprès de la pharmacie.’,
+    ‘blood_disclaimer’ => ‘La disponibilité du sang peut changer rapidement. Contactez immédiatement la banque de sang.’,
+    ‘emergency_disclaimer’ => "En cas d’urgence vitale, contactez les services de secours locaux ou rendez-vous au centre d’urgence le plus proche.",
+
+    /* ── Patient Portal ─────────────────────────────── */
+    ‘portal’ => [
+        ‘my_portal’              => ‘Mon Portail’,
+        ‘patient_role’           => ‘Patient’,
+        ‘nav_my_health’          => ‘Ma Santé’,
+        ‘nav_appointments’       => ‘Rendez-vous’,
+        ‘nav_privacy’            => ‘Confidentialité & Accès’,
+        ‘nav_care_map’           => ‘Carte de soins’,
+        ‘nav_help’               => ‘Aide’,
+        ‘nav_dashboard’          => ‘Tableau de bord’,
+        ‘nav_queue’              => ‘File de patients’,
+        ‘nav_immunizations’      => ‘Vaccinations’,
+        ‘nav_referrals’          => ‘Références’,
+        ‘nav_billing’            => ‘Facturation’,
+        ‘nav_support’            => ‘Assistance’,
+        ‘nav_resources’          => ‘Ressources’,
+        ‘sign_out’               => ‘Déconnexion’,
+    ],
+
+    /* ── Staff Portal ───────────────────────────────── */
+    ‘staff_portal’ => [
+        ‘dashboard_title’        => ‘Portail Clinique du Personnel’,
+        ‘dashboard_subtitle’     => ‘Gérez les rendez-vous, les files et les soins depuis un seul endroit.’,
+        ‘appointments_title’     => ‘Rendez-vous’,
+        ‘queue_title’            => ‘File de patients’,
+        ‘billing_title’          => ‘Facturation’,
+        ‘referrals_title’        => ‘Références’,
+        ‘immunizations_title’    => ‘Dossiers de vaccination’,
+        ‘support_title’          => ‘Assistance’,
+    ],
+
+    /* ── Admin Portal ───────────────────────────────── */
+    ‘admin_portal’ => [
+        ‘dashboard_title’        => ‘Portail d\’Administration’,
+        ‘dashboard_subtitle’     => ‘Gérez les établissements, les utilisateurs, les partenaires et les paramètres.’,
+        ‘nav_overview’           => ‘Vue d\’ensemble’,
+        ‘nav_facilities’         => ‘Établissements’,
+        ‘nav_users’              => ‘Utilisateurs’,
+        ‘nav_partners’           => ‘Partenaires’,
+        ‘nav_audit’              => ‘Journal d\’audit’,
+        ‘nav_settings’           => ‘Paramètres’,
+    ],
 ];

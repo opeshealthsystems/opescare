@@ -97,4 +97,47 @@ return [
     'medicine_disclaimer' => 'Medicine availability is reported by the pharmacy and may change. Always confirm with the pharmacy.',
     'blood_disclaimer' => 'Blood availability may change quickly. Contact the blood bank immediately.',
     'emergency_disclaimer' => 'If this is a life-threatening emergency, contact local emergency services or go to the nearest emergency facility immediately.',
+
+    /* ── Patient Portal ─────────────────────────────── */
+    'portal' => [
+        'my_portal'              => 'My Portal',
+        'patient_role'           => 'Patient',
+        'nav_my_health'          => 'My Health',
+        'nav_appointments'       => 'Appointments',
+        'nav_privacy'            => 'Privacy & Access',
+        'nav_care_map'           => 'Care Map',
+        'nav_help'               => 'Help',
+        'nav_dashboard'          => 'Dashboard',
+        'nav_queue'              => 'Patient Queue',
+        'nav_immunizations'      => 'Immunizations',
+        'nav_referrals'          => 'Referrals',
+        'nav_billing'            => 'Billing',
+        'nav_support'            => 'Support',
+        'nav_resources'          => 'Resources',
+        'sign_out'               => 'Sign Out',
+    ],
+
+    /* ── Staff Portal ───────────────────────────────── */
+    'staff_portal' => [
+        'dashboard_title'        => 'Staff Clinical Portal',
+        'dashboard_subtitle'     => 'Manage appointments, queues, and patient care from one place.',
+        'appointments_title'     => 'Appointments',
+        'queue_title'            => 'Patient Queue',
+        'billing_title'          => 'Billing',
+        'referrals_title'        => 'Referrals',
+        'immunizations_title'    => 'Immunization Records',
+        'support_title'          => 'Support & Help Desk',
+    ],
+
+    /* ── Admin Portal ───────────────────────────────── */
+    'admin_portal' => [
+        'dashboard_title'        => 'Administration Portal',
+        'dashboard_subtitle'     => 'Manage facilities, users, partners, and platform settings.',
+        'nav_overview'           => 'Overview',
+        'nav_facilities'         => 'Facilities',
+        'nav_users'              => 'Users',
+        'nav_partners'           => 'Partners',
+        'nav_audit'              => 'Audit Log',
+        'nav_settings'           => 'Settings',
+    ],
 ];

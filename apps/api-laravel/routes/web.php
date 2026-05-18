@@ -87,6 +87,17 @@ Route::post('/select-facility', [PublicPageController::class, 'submitSelectFacil
 Route::get('/login', [PublicPageController::class, 'showLogin'])->name('login');
 Route::post('/login', [PublicPageController::class, 'submitLogin'])->name('login.submit');
 
+// Session / Logout
+Route::post('/logout', function () {
+    auth()->logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect()->route('login')->with('success', 'You have been signed out securely.');
+})->name('logout');
+Route::get('/logout', function () {
+    return redirect()->route('login');
+});
+
 // Localization Switcher
 Route::get('/lang/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'fr'])) {
