@@ -1,190 +1,307 @@
-@extends('layouts.public')
+@extends('layouts.portal')
+
+@section('title', __('public.medical_id.health_id', [], app()->getLocale()) . ' — OpesCare Patient Portal')
+
+@section('breadcrumb_home', __('public.portal.my_portal', [], app()->getLocale()) ?: 'My Portal')
+@section('breadcrumb_home_url', route('portals.patient'))
+
+@section('sidebar_role_badge')
+    <div class="sidebar-role-badge" style="background:rgba(15,118,110,.3);border-color:rgba(15,118,110,.5);color:#5EEAD4;">
+        <i data-lucide="user" style="width:0.75rem;height:0.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+        {{ __('public.portal.patient_role', [], app()->getLocale()) ?: 'Patient' }}
+    </div>
+@endsection
+
+@section('sidebar_nav')
+    <div class="sidebar-section-label">{{ __('public.portal.nav_my_health', [], app()->getLocale()) ?: 'My Health' }}</div>
+
+    <a href="{{ route('portals.patient') }}" class="sidebar-link active">
+        <i data-lucide="id-card"></i>
+        {{ __('public.medical_id.health_id', [], app()->getLocale()) ?: 'My Health ID' }}
+    </a>
+
+    <a href="{{ route('portals.patient.appointments') }}" class="sidebar-link">
+        <i data-lucide="calendar-check-2"></i>
+        {{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}
+    </a>
+
+    <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">{{ __('public.portal.nav_privacy', [], app()->getLocale()) ?: 'Privacy & Access' }}</div>
+
+    <a href="{{ route('portals.patient.logs') }}" class="sidebar-link">
+        <i data-lucide="history"></i>
+        {{ __('public.medical_id.access_logs', [], app()->getLocale()) ?: 'Access Logs' }}
+    </a>
+
+    <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">{{ __('public.portal.nav_resources', [], app()->getLocale()) ?: 'Resources' }}</div>
+
+    <a href="{{ route('public.care-map') }}" class="sidebar-link">
+        <i data-lucide="map-pin"></i>
+        {{ __('public.portal.nav_care_map', [], app()->getLocale()) ?: 'Care Map' }}
+    </a>
+
+    <a href="{{ route('public.help') }}" class="sidebar-link">
+        <i data-lucide="help-circle"></i>
+        {{ __('public.portal.nav_help', [], app()->getLocale()) ?: 'Help' }}
+    </a>
+@endsection
+
+@section('sidebar_user_role')
+    {{ __('public.portal.patient_role', [], app()->getLocale()) ?: 'Patient' }}
+@endsection
 
 @section('content')
-<div class="pt-32 pb-24 bg-slate-900 min-h-screen text-slate-200">
-    <div class="max-w-4xl mx-auto px-6 lg:px-8">
-        
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h1 class="text-3xl font-bold text-white tracking-tight">Patient Portal</h1>
-                <p class="mt-2 text-slate-400">Manage your medical identity and track access.</p>
+
+@if($patient)
+
+<!-- Health ID Card -->
+<div class="health-id-card mb-8" style="margin-bottom:var(--p-space-8);">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:var(--p-space-5);">
+        <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:var(--p-space-3);margin-bottom:var(--p-space-5);">
+                <div style="padding:var(--p-space-2);background:rgba(255,255,255,.15);border-radius:var(--p-radius);">
+                    <i data-lucide="fingerprint" style="width:1.25rem;height:1.25rem;"></i>
+                </div>
+                <span class="health-id-label">{{ __('public.medical_id.health_id', [], app()->getLocale()) ?: 'OpesCare Health ID' }}</span>
             </div>
-            <a href="{{ route('portals.patient.logs') }}" class="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-sm font-medium transition-colors">
-                <i data-lucide="history" class="w-4 h-4"></i>
-                {{ __('public.medical_id.access_logs') }}
-            </a>
+
+            <div class="health-id-value">{{ $patient->health_id }}</div>
+
+            <div class="health-id-meta">
+                <div>
+                    <div class="health-id-meta-label">{{ __('public.portal.status', [], app()->getLocale()) ?: 'Status' }}</div>
+                    <div class="health-id-meta-value" style="display:flex;align-items:center;gap:0.35rem;">
+                        <span style="width:7px;height:7px;background:#34D399;border-radius:50%;display:inline-block;"></span>
+                        {{ ucfirst($patient->verification_status ?? 'Active') }}
+                    </div>
+                </div>
+                <div>
+                    <div class="health-id-meta-label">{{ __('public.portal.country', [], app()->getLocale()) ?: 'Country' }}</div>
+                    <div class="health-id-meta-value">{{ $patient->country_code ?? '—' }}</div>
+                </div>
+                <div>
+                    <div class="health-id-meta-label">{{ __('public.portal.registered', [], app()->getLocale()) ?: 'Registered' }}</div>
+                    <div class="health-id-meta-value">{{ $patient->created_at?->format('M Y') ?? '—' }}</div>
+                </div>
+            </div>
         </div>
 
-        @if($patient)
-            <!-- Digital Identity Card -->
-            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-900 to-slate-900 border border-indigo-500/30 shadow-2xl p-8 mb-8">
-                <!-- Glass effect overlay -->
-                <div class="absolute inset-0 bg-white/5 backdrop-blur-sm pointer-events-none"></div>
-                
-                <div class="relative z-10 flex flex-col md:flex-row items-center md:items-start justify-between gap-8">
-                    <div class="flex-1 w-full">
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="p-2 bg-indigo-500/20 rounded-lg">
-                                <i data-lucide="fingerprint" class="w-6 h-6 text-indigo-400"></i>
-                            </div>
-                            <span class="text-sm font-medium text-indigo-300 uppercase tracking-wider">{{ __('public.medical_id.health_id') }}</span>
-                        </div>
-                        
-                        <div class="font-mono text-3xl md:text-5xl font-bold text-white tracking-widest mb-6">
-                            {{ $patient->health_id }}
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-6">
-                            <div>
-                                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Status</div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
-                                    <span class="font-medium text-slate-200 capitalize">{{ $patient->verification_status ?? 'Active' }}</span>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Country</div>
-                                <div class="font-medium text-slate-200">{{ $patient->country_code }}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Static QR -->
-                    <div class="bg-white p-4 rounded-xl shadow-inner shrink-0">
-                        <div id="static-qr" class="w-40 h-40 flex items-center justify-center bg-slate-100 rounded-lg">
-                            <!-- QR rendered by JS -->
-                        </div>
-                        <div class="text-center mt-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                            {{ __('public.medical_id.scan_qr') }}
-                        </div>
-                    </div>
-                </div>
+        <!-- Static QR -->
+        <div class="health-id-qr" id="staticQrWrapper" aria-label="{{ __('public.medical_id.scan_qr', [], app()->getLocale()) ?: 'Scan QR' }}">
+            <div id="static-qr" style="width:5rem;height:5rem;display:flex;align-items:center;justify-content:center;background:#F1F5F9;border-radius:var(--p-radius-sm);">
+                <i data-lucide="qr-code" style="width:3rem;height:3rem;color:var(--p-text);"></i>
             </div>
-
-            <!-- Actions Grid -->
-            <div class="grid md:grid-cols-2 gap-6">
-                <!-- Temp QR Generator -->
-                <div class="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50 flex flex-col items-center text-center">
-                    <div class="p-4 bg-blue-500/10 rounded-full mb-4">
-                        <i data-lucide="qr-code" class="w-8 h-8 text-blue-400"></i>
-                    </div>
-                    <h3 class="text-lg font-semibold text-white mb-2">{{ __('public.medical_id.temporary_access_qr') }}</h3>
-                    <p class="text-sm text-slate-400 mb-6">Generate a secure, time-limited QR code to share with a new provider. Expires in 1 hour.</p>
-                    <button id="generate-temp-qr" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                        Generate Temporary QR
-                    </button>
-                    
-                    <div id="temp-qr-container" class="mt-6 hidden flex-col items-center">
-                        <div class="bg-white p-3 rounded-lg">
-                            <div id="temp-qr" class="w-32 h-32"></div>
-                        </div>
-                        <p class="text-xs text-amber-400 mt-2 flex items-center gap-1">
-                            <i data-lucide="clock" class="w-3 h-3"></i> Expires in <span id="countdown">60:00</span>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Privacy Settings -->
-                <div class="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-                    <div class="flex items-center gap-3 mb-6">
-                        <i data-lucide="shield-check" class="w-6 h-6 text-emerald-400"></i>
-                        <h3 class="text-lg font-semibold text-white">Card Privacy Settings</h3>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <label class="flex items-start gap-4 p-4 rounded-lg bg-slate-900/50 border border-slate-700 cursor-pointer hover:border-slate-600 transition-colors">
-                            <div class="flex items-center h-5">
-                                <input type="checkbox" checked class="w-4 h-4 rounded border-slate-600 text-indigo-600 bg-slate-800 focus:ring-indigo-600 focus:ring-offset-slate-900">
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-sm font-medium text-white">Require Consent for Full Record</span>
-                                <span class="text-xs text-slate-400">Providers can only see a masked preview of your identity without your explicit consent.</span>
-                            </div>
-                        </label>
-
-                        <label class="flex items-start gap-4 p-4 rounded-lg bg-slate-900/50 border border-slate-700 cursor-pointer hover:border-slate-600 transition-colors">
-                            <div class="flex items-center h-5">
-                                <input type="checkbox" checked class="w-4 h-4 rounded border-slate-600 text-indigo-600 bg-slate-800 focus:ring-indigo-600 focus:ring-offset-slate-900">
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-sm font-medium text-white">Emergency Access Allowed</span>
-                                <span class="text-xs text-slate-400">Permit audited "break-glass" access during emergencies without standard consent.</span>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-            </div>
-        @else
-            <div class="text-center p-12 bg-slate-800/50 rounded-xl border border-slate-700/50">
-                <i data-lucide="alert-circle" class="w-12 h-12 text-slate-500 mx-auto mb-4"></i>
-                <h3 class="text-lg font-medium text-white">No Patient Profile Found</h3>
-                <p class="text-slate-400 mt-2">Please ensure the demo data has been seeded properly.</p>
-            </div>
-        @endif
+            <span>{{ __('public.medical_id.scan_qr', [], app()->getLocale()) ?: 'Scan QR' }}</span>
+        </div>
     </div>
 </div>
 
+<!-- Quick Actions -->
+<div class="quick-actions mb-8" style="margin-bottom:var(--p-space-8);">
+    <a href="{{ route('portals.patient.appointments') }}" class="quick-action-btn">
+        <div class="quick-action-icon"><i data-lucide="calendar-check-2"></i></div>
+        <span class="quick-action-label">{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
+    </a>
+    <a href="{{ route('portals.patient.logs') }}" class="quick-action-btn">
+        <div class="quick-action-icon"><i data-lucide="history"></i></div>
+        <span class="quick-action-label">{{ __('public.medical_id.access_logs', [], app()->getLocale()) ?: 'Access Logs' }}</span>
+    </a>
+    <a href="{{ route('public.care-map') }}" class="quick-action-btn">
+        <div class="quick-action-icon"><i data-lucide="map-pin"></i></div>
+        <span class="quick-action-label">{{ __('public.portal.nav_care_map', [], app()->getLocale()) ?: 'Care Map' }}</span>
+    </a>
+    <a href="{{ route('public.help') }}" class="quick-action-btn">
+        <div class="quick-action-icon"><i data-lucide="help-circle"></i></div>
+        <span class="quick-action-label">{{ __('public.portal.nav_help', [], app()->getLocale()) ?: 'Help' }}</span>
+    </a>
+</div>
+
+<!-- Main Two-Column Layout -->
+<div class="grid-main-side">
+
+    <!-- Left: Temp QR Generator -->
+    <div class="panel">
+        <div class="panel-header">
+            <h2 class="panel-title">
+                <i data-lucide="qr-code"></i>
+                {{ __('public.medical_id.temporary_access_qr', [], app()->getLocale()) ?: 'Temporary Access QR' }}
+            </h2>
+        </div>
+        <div class="panel-body" style="text-align:center;">
+            <p style="font-size:0.9rem;color:var(--p-text-muted);margin-bottom:var(--p-space-6);">
+                {{ __('public.portal.temp_qr_desc', [], app()->getLocale()) ?: 'Generate a secure, time-limited QR code to share with a new healthcare provider. Expires in 1 hour.' }}
+            </p>
+
+            <button id="generate-temp-qr" class="btn btn-primary" style="margin:0 auto;">
+                <i data-lucide="refresh-cw"></i>
+                {{ __('public.portal.generate_qr', [], app()->getLocale()) ?: 'Generate Temporary QR' }}
+            </button>
+
+            <div id="temp-qr-container" style="margin-top:var(--p-space-6);display:none;flex-direction:column;align-items:center;" aria-live="polite">
+                <div style="background:white;padding:var(--p-space-3);border-radius:var(--p-radius);border:1px solid var(--p-border);">
+                    <div id="temp-qr" style="width:8rem;height:8rem;display:flex;align-items:center;justify-content:center;background:#F1F5F9;border-radius:var(--p-radius-sm);">
+                        <i data-lucide="qr-code" style="width:4rem;height:4rem;color:var(--p-text);"></i>
+                    </div>
+                </div>
+                <p style="margin-top:var(--p-space-3);font-size:0.8125rem;color:var(--p-warning);font-weight:700;display:flex;align-items:center;gap:var(--p-space-2);">
+                    <i data-lucide="clock" style="width:0.9rem;height:0.9rem;"></i>
+                    {{ __('public.portal.expires_in', [], app()->getLocale()) ?: 'Expires in' }}: <span id="countdown">60:00</span>
+                </p>
+            </div>
+
+            <div class="alert alert-info mt-6" style="margin-top:var(--p-space-6);text-align:left;">
+                <i data-lucide="info"></i>
+                <div style="font-size:0.8125rem;">{{ __('public.portal.qr_audit_notice', [], app()->getLocale()) ?: 'Each QR scan is audited. You can view access history in your Access Logs.' }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Privacy Settings + Disclaimer -->
+    <div style="display:flex;flex-direction:column;gap:var(--p-space-5);">
+
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">
+                    <i data-lucide="shield-check"></i>
+                    {{ __('public.portal.privacy_settings', [], app()->getLocale()) ?: 'Privacy Settings' }}
+                </h2>
+            </div>
+            <div class="panel-body" style="display:flex;flex-direction:column;gap:var(--p-space-4);">
+
+                <label style="display:flex;align-items:flex-start;gap:var(--p-space-4);padding:var(--p-space-4);background:var(--p-surface-2);border:1px solid var(--p-border);border-radius:var(--p-radius);cursor:pointer;transition:border-color 0.15s;"
+                       onmouseover="this.style.borderColor='var(--p-primary-light)'"
+                       onmouseout="this.style.borderColor='var(--p-border)'">
+                    <input type="checkbox" checked style="width:1.1rem;height:1.1rem;accent-color:var(--p-primary);margin-top:1px;flex-shrink:0;">
+                    <div>
+                        <div style="font-size:0.875rem;font-weight:700;color:var(--p-text);margin-bottom:3px;">
+                            {{ __('public.portal.require_consent', [], app()->getLocale()) ?: 'Require Consent for Full Record' }}
+                        </div>
+                        <div style="font-size:0.8125rem;color:var(--p-text-muted);line-height:1.45;">
+                            {{ __('public.portal.require_consent_desc', [], app()->getLocale()) ?: 'Providers can only see a masked preview without your explicit consent.' }}
+                        </div>
+                    </div>
+                </label>
+
+                <label style="display:flex;align-items:flex-start;gap:var(--p-space-4);padding:var(--p-space-4);background:var(--p-surface-2);border:1px solid var(--p-border);border-radius:var(--p-radius);cursor:pointer;transition:border-color 0.15s;"
+                       onmouseover="this.style.borderColor='var(--p-danger-light)'"
+                       onmouseout="this.style.borderColor='var(--p-border)'">
+                    <input type="checkbox" checked style="width:1.1rem;height:1.1rem;accent-color:var(--p-danger);margin-top:1px;flex-shrink:0;">
+                    <div>
+                        <div style="font-size:0.875rem;font-weight:700;color:var(--p-text);margin-bottom:3px;">
+                            {{ __('public.portal.emergency_access', [], app()->getLocale()) ?: 'Emergency Access Allowed' }}
+                        </div>
+                        <div style="font-size:0.8125rem;color:var(--p-text-muted);line-height:1.45;">
+                            {{ __('public.portal.emergency_access_desc', [], app()->getLocale()) ?: 'Permit audited "break-glass" access during emergencies without standard consent.' }}
+                        </div>
+                    </div>
+                </label>
+
+            </div>
+        </div>
+
+        <!-- Clinical Safety Disclaimer -->
+        <div class="panel">
+            <div class="panel-body">
+                <div class="alert alert-warning">
+                    <i data-lucide="alert-triangle"></i>
+                    <div style="font-size:0.8125rem;">
+                        {{ __('onboarding.brand.clinical_disclaimer', [], app()->getLocale()) ?: 'OpesCare facilitates access to your health records but is not a substitute for clinical advice. Always consult a licensed healthcare provider for medical decisions.' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@else
+<!-- No patient profile -->
+<div class="panel">
+    <div class="empty-state">
+        <div class="empty-state-icon" style="color:var(--p-warning);">
+            <i data-lucide="alert-circle"></i>
+        </div>
+        <h3>{{ __('public.portal.no_profile_title', [], app()->getLocale()) ?: 'No Patient Profile Found' }}</h3>
+        <p>{{ __('public.portal.no_profile_desc', [], app()->getLocale()) ?: 'Your patient profile could not be loaded. Please contact support if this problem persists.' }}</p>
+        <a href="{{ route('public.help') }}" class="btn btn-primary">
+            <i data-lucide="help-circle"></i>
+            {{ __('public.portal.nav_help', [], app()->getLocale()) ?: 'Get Help' }}
+        </a>
+    </div>
+</div>
+@endif
+
+@endsection
+
+@section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        @if($qrToken)
-            // Render static QR
-            QRCode.toCanvas(
-                document.createElement('canvas'), 
-                "{{ route('verify.qr', ['token' => $qrToken]) }}",
-                { width: 160, margin: 1, color: { dark: '#0f172a', light: '#ffffff' } },
-                function (error, canvas) {
-                    if (error) console.error(error);
-                    const container = document.getElementById('static-qr');
-                    container.innerHTML = '';
-                    container.appendChild(canvas);
+document.addEventListener('DOMContentLoaded', function () {
+    @if(isset($qrToken) && $qrToken)
+    if (typeof QRCode !== 'undefined') {
+        QRCode.toCanvas(
+            document.createElement('canvas'),
+            "{{ route('verify.qr', ['token' => $qrToken]) }}",
+            { width: 80, margin: 1, color: { dark: '#0F172A', light: '#FFFFFF' } },
+            function (err, canvas) {
+                if (!err) {
+                    var container = document.getElementById('static-qr');
+                    if (container) { container.innerHTML = ''; container.appendChild(canvas); }
                 }
-            );
-        @endif
+            }
+        );
+    }
+    @endif
 
-        // Generate Temp QR via Ajax
-        const btnGen = document.getElementById('generate-temp-qr');
-        if (btnGen) {
-            btnGen.addEventListener('click', async () => {
-                btnGen.disabled = true;
-                btnGen.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Generating...';
-                
-                try {
-                    const response = await fetch("{{ route('portals.patient.qr') }}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
-                    });
-                    
-                    const data = await response.json();
-                    if (data.raw_token) {
-                        const canvas = document.createElement('canvas');
-                        QRCode.toCanvas(
-                            canvas, 
-                            "{{ url('/verify/qr') }}/" + data.raw_token,
-                            { width: 128, margin: 1, color: { dark: '#1e3a8a', light: '#ffffff' } },
-                            function (error) {
-                                if (error) console.error(error);
-                                const container = document.getElementById('temp-qr');
-                                container.innerHTML = '';
-                                container.appendChild(canvas);
-                                
-                                document.getElementById('temp-qr-container').classList.remove('hidden');
-                                document.getElementById('temp-qr-container').classList.add('flex');
-                                btnGen.classList.add('hidden');
+    var btnGen = document.getElementById('generate-temp-qr');
+    if (btnGen) {
+        btnGen.addEventListener('click', async function () {
+            btnGen.disabled = true;
+            btnGen.innerHTML = '<i data-lucide="loader" style="width:1rem;height:1rem;"></i> Generating…';
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+
+            try {
+                var response = await fetch("{{ route('portals.patient.qr') }}", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                });
+                var data = await response.json();
+                if (data.url && typeof QRCode !== 'undefined') {
+                    QRCode.toCanvas(
+                        document.createElement('canvas'),
+                        data.url,
+                        { width: 128, margin: 1, color: { dark: '#0F172A', light: '#FFFFFF' } },
+                        function (err, canvas) {
+                            if (!err) {
+                                var qrEl = document.getElementById('temp-qr');
+                                qrEl.innerHTML = '';
+                                qrEl.appendChild(canvas);
+                                var container = document.getElementById('temp-qr-container');
+                                container.style.display = 'flex';
+                                startCountdown(3600);
                             }
-                        );
-                    }
-                } catch (e) {
-                    console.error(e);
-                    btnGen.disabled = false;
-                    btnGen.innerHTML = 'Error. Try Again.';
+                        }
+                    );
                 }
-            });
-        }
-    });
+            } catch (e) {
+                console.error(e);
+            } finally {
+                btnGen.disabled = false;
+                btnGen.innerHTML = '<i data-lucide="refresh-cw" style="width:1rem;height:1rem;"></i> Regenerate QR';
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
+        });
+    }
+
+    function startCountdown(seconds) {
+        var el = document.getElementById('countdown');
+        var interval = setInterval(function () {
+            if (seconds <= 0) { clearInterval(interval); if (el) el.textContent = 'Expired'; return; }
+            seconds--;
+            var m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            var s = (seconds % 60).toString().padStart(2, '0');
+            if (el) el.textContent = m + ':' + s;
+        }, 1000);
+    }
+});
 </script>
 @endsection

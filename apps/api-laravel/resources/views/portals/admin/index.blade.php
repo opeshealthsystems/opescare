@@ -1,198 +1,270 @@
-@extends('layouts.public')
+@extends('layouts.portal')
+
+@section('title', 'Admin Governance Portal — OpesCare')
+
+@section('breadcrumb_home', 'Admin Portal')
+@section('breadcrumb_home_url', route('portals.admin'))
+
+@section('sidebar_role_badge')
+    <div class="sidebar-role-badge" style="background:rgba(109,40,217,.3);border-color:rgba(109,40,217,.5);color:#C4B5FD;">
+        <i data-lucide="shield-check" style="width:0.75rem;height:0.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+        Administrator
+    </div>
+@endsection
+
+@section('sidebar_nav')
+    <div class="sidebar-section-label">Governance</div>
+    <a href="{{ route('portals.admin') }}" class="sidebar-link active">
+        <i data-lucide="layout-dashboard"></i>
+        Dashboard
+    </a>
+
+    <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">Identity</div>
+    <a href="{{ route('portals.admin') }}#partners" class="sidebar-link">
+        <i data-lucide="building-2"></i>
+        Partner Governance
+    </a>
+    <a href="{{ route('portals.admin') }}#duplicates" class="sidebar-link">
+        <i data-lucide="users"></i>
+        Duplicate Reviews
+    </a>
+    <a href="{{ route('portals.admin') }}#security" class="sidebar-link">
+        <i data-lucide="activity"></i>
+        Security Events
+    </a>
+
+    <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">Tools</div>
+    <a href="{{ route('public.help') }}" class="sidebar-link">
+        <i data-lucide="help-circle"></i>
+        Help
+    </a>
+@endsection
+
+@section('sidebar_user_role', 'Administrator')
 
 @section('content')
-<div class="pt-32 pb-24 bg-slate-900 min-h-screen text-slate-200">
-    <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        
-        <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-                <h1 class="text-3xl font-bold text-white tracking-tight">Admin Governance Portal</h1>
-                <p class="mt-2 text-slate-400">Manage Health IDs, tokens, and monitor security events.</p>
-            </div>
-            <div class="flex items-center gap-3">
-                <button class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-sm font-medium transition-colors">
-                    Duplicate Review
-                </button>
-                <button class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-sm font-medium transition-colors">
-                    Suspended IDs
-                </button>
-            </div>
-        </div>
 
-        <!-- KPI Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-            <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50">
-                <div class="text-slate-400 text-sm font-medium uppercase tracking-wider mb-2">Total Health IDs</div>
-                <div class="text-3xl font-bold text-white">{{ number_format($stats['total_ids']) }}</div>
-            </div>
-            <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50">
-                <div class="text-slate-400 text-sm font-medium uppercase tracking-wider mb-2">Active Tokens</div>
-                <div class="text-3xl font-bold text-emerald-400">{{ number_format($stats['active_tokens']) }}</div>
-            </div>
-            <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50">
-                <div class="text-slate-400 text-sm font-medium uppercase tracking-wider mb-2">Total Lookups</div>
-                <div class="text-3xl font-bold text-indigo-400">{{ number_format($stats['total_access_logs']) }}</div>
-            </div>
-            <div class="bg-slate-800/50 p-6 rounded-xl border border-rose-500/30">
-                <div class="text-rose-400 text-sm font-medium uppercase tracking-wider mb-2">Denied Lookups</div>
-                <div class="text-3xl font-bold text-rose-400">{{ number_format($stats['denied_access']) }}</div>
-            </div>
-        </div>
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Admin Governance Portal</h1>
+        <p class="page-subtitle">Manage Health IDs, review duplicate cases, and monitor security events.</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-secondary" onclick="document.getElementById('duplicates').scrollIntoView({behavior:'smooth'})">
+            <i data-lucide="users"></i>
+            Duplicate Review
+        </button>
+        <button class="btn btn-secondary" onclick="document.getElementById('partners').scrollIntoView({behavior:'smooth'})">
+            <i data-lucide="building-2"></i>
+            Partners
+        </button>
+    </div>
+</div>
 
-        <!-- Partner Governance (Phase 2) -->
-        <div class="bg-slate-800/50 rounded-xl border border-indigo-500/30 overflow-hidden mb-12">
-            <div class="px-6 py-4 border-b border-indigo-500/20 bg-indigo-900/10 flex justify-between items-center">
-                <h2 class="text-lg font-semibold text-indigo-400 flex items-center gap-2"><i data-lucide="shield-check" class="w-5 h-5"></i> Partner Governance</h2>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm" id="partners-table">
-                    <thead class="bg-slate-900/30 border-b border-slate-700/50 text-slate-400 uppercase tracking-wider text-xs">
-                        <tr>
-                            <th class="px-6 py-4 font-medium">Partner</th>
-                            <th class="px-6 py-4 font-medium">Type</th>
-                            <th class="px-6 py-4 font-medium">Status</th>
-                            <th class="px-6 py-4 font-medium">Trust Level</th>
-                            <th class="px-6 py-4 font-medium">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-700/50" id="partners-body">
-                        <tr>
-                            <td colspan="5" class="px-6 py-8 text-center text-slate-500">
-                                <i data-lucide="loader" class="w-5 h-5 animate-spin mx-auto mb-2"></i> Loading partners...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+<!-- KPI Cards -->
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <div class="kpi-icon blue"><i data-lucide="id-card"></i></div>
+        <div class="kpi-body">
+            <div class="kpi-label">Total Health IDs</div>
+            <div class="kpi-value">{{ number_format($stats['total_ids']) }}</div>
+            <div class="kpi-sub">Registered patients</div>
         </div>
-
-        <!-- Pending Duplicate Reviews -->
-        <div class="bg-slate-800/50 rounded-xl border border-amber-500/30 overflow-hidden mb-12">
-            <div class="px-6 py-4 border-b border-amber-500/20 bg-amber-900/10 flex justify-between items-center">
-                <h2 class="text-lg font-semibold text-amber-400 flex items-center gap-2"><i data-lucide="users" class="w-5 h-5"></i> Pending Duplicate Reviews</h2>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm" id="duplicates-table">
-                    <thead class="bg-slate-900/30 border-b border-slate-700/50 text-slate-400 uppercase tracking-wider text-xs">
-                        <tr>
-                            <th class="px-6 py-4 font-medium">Match Score</th>
-                            <th class="px-6 py-4 font-medium">Primary Patient</th>
-                            <th class="px-6 py-4 font-medium">Secondary Patient</th>
-                            <th class="px-6 py-4 font-medium">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-700/50" id="duplicates-body">
-                        <tr>
-                            <td colspan="4" class="px-6 py-8 text-center text-slate-500">
-                                <i data-lucide="loader" class="w-5 h-5 animate-spin mx-auto mb-2"></i> Loading pending cases...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon teal"><i data-lucide="qr-code"></i></div>
+        <div class="kpi-body">
+            <div class="kpi-label">Active Tokens</div>
+            <div class="kpi-value" style="color:var(--p-teal);">{{ number_format($stats['active_tokens']) }}</div>
+            <div class="kpi-sub">Live access tokens</div>
         </div>
-
-        <!-- Recent Audit Logs -->
-        <div class="bg-slate-800/50 rounded-xl border border-slate-700/50 overflow-hidden mb-12">
-            <div class="px-6 py-4 border-b border-slate-700/50 bg-slate-900/50 flex justify-between items-center">
-                <h2 class="text-lg font-semibold text-white">Recent Security Events</h2>
-                <a href="#" class="text-sm text-indigo-400 hover:text-indigo-300 font-medium">View All Logs</a>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-900/30 border-b border-slate-700/50 text-slate-400 uppercase tracking-wider text-xs">
-                        <tr>
-                            <th class="px-6 py-4 font-medium">Timestamp</th>
-                            <th class="px-6 py-4 font-medium">Event Type</th>
-                            <th class="px-6 py-4 font-medium">Target Health ID</th>
-                            <th class="px-6 py-4 font-medium">Actor</th>
-                            <th class="px-6 py-4 font-medium">Result</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-700/50">
-                        @forelse($recentLogs as $log)
-                        <tr class="hover:bg-slate-800/80 transition-colors">
-                            <td class="px-6 py-4 whitespace-nowrap text-slate-400">
-                                {{ \Carbon\Carbon::parse($log->created_at)->format('Y-m-d H:i:s') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="font-medium text-slate-300">{{ $log->access_type }}</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap font-mono text-xs text-indigo-300">
-                                {{ $log->health_id ?? 'Unknown' }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-slate-400">
-                                {{ $log->actor_type }} <span class="text-xs ml-1">({{ $log->ip_address }})</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @if($log->result === 'success')
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400">
-                                        Success
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-rose-500/10 text-rose-400">
-                                        Denied
-                                    </span>
-                                @endif
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="px-6 py-8 text-center text-slate-500">
-                                No security events recorded yet.
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon purple"><i data-lucide="activity"></i></div>
+        <div class="kpi-body">
+            <div class="kpi-label">Total Lookups</div>
+            <div class="kpi-value" style="color:#7C3AED;">{{ number_format($stats['total_access_logs']) }}</div>
+            <div class="kpi-sub">All-time access events</div>
         </div>
+    </div>
+    <div class="kpi-card" style="border-color:rgba(185,28,28,.2);">
+        <div class="kpi-icon danger"><i data-lucide="shield-x"></i></div>
+        <div class="kpi-body">
+            <div class="kpi-label">Denied Lookups</div>
+            <div class="kpi-value" style="color:var(--p-danger);">{{ number_format($stats['denied_access']) }}</div>
+            <div class="kpi-sub">Failed / denied</div>
+        </div>
+    </div>
+</div>
 
+<!-- Partner Governance -->
+<div class="panel mb-6" id="partners" style="margin-bottom:var(--p-space-6);">
+    <div class="panel-header">
+        <h2 class="panel-title" style="color:var(--p-primary);">
+            <i data-lucide="building-2"></i>
+            Partner Governance
+        </h2>
+    </div>
+    <div class="table-wrapper">
+        <table class="data-table" id="partners-table" aria-label="Partners governance">
+            <thead>
+                <tr>
+                    <th>Partner</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Trust Level</th>
+                    <th><span class="sr-only">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody id="partners-body">
+                <tr>
+                    <td colspan="5" style="text-align:center;padding:var(--p-space-8);color:var(--p-text-muted);">
+                        <i data-lucide="loader" style="width:1.25rem;height:1.25rem;display:inline-block;animation:spin 1s linear infinite;vertical-align:middle;margin-right:var(--p-space-2);"></i>
+                        Loading partners…
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pending Duplicate Reviews -->
+<div class="panel mb-6" id="duplicates" style="margin-bottom:var(--p-space-6);">
+    <div class="panel-header">
+        <h2 class="panel-title" style="color:var(--p-warning);">
+            <i data-lucide="users"></i>
+            Pending Duplicate Reviews
+        </h2>
+    </div>
+    <div class="table-wrapper">
+        <table class="data-table" id="duplicates-table" aria-label="Duplicate review queue">
+            <thead>
+                <tr>
+                    <th>Match Score</th>
+                    <th>Primary Patient</th>
+                    <th>Secondary Patient</th>
+                    <th><span class="sr-only">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody id="duplicates-body">
+                <tr>
+                    <td colspan="4" style="text-align:center;padding:var(--p-space-8);color:var(--p-text-muted);">
+                        <i data-lucide="loader" style="width:1.25rem;height:1.25rem;display:inline-block;animation:spin 1s linear infinite;vertical-align:middle;margin-right:var(--p-space-2);"></i>
+                        Loading pending cases…
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Recent Security Events -->
+<div class="panel" id="security">
+    <div class="panel-header">
+        <h2 class="panel-title">
+            <i data-lucide="activity"></i>
+            Recent Security Events
+        </h2>
+    </div>
+    <div class="table-wrapper">
+        <table class="data-table" aria-label="Recent security events">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Event Type</th>
+                    <th>Target Health ID</th>
+                    <th>Actor</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($recentLogs as $log)
+                <tr>
+                    <td data-label="Timestamp">
+                        <span class="td-muted">{{ \Carbon\Carbon::parse($log->created_at)->format('d M Y') }}</span>
+                        <div class="td-muted" style="font-size:0.75rem;">{{ \Carbon\Carbon::parse($log->created_at)->format('H:i:s') }}</div>
+                    </td>
+                    <td data-label="Event">
+                        <span class="td-strong">{{ $log->access_type }}</span>
+                    </td>
+                    <td data-label="Health ID">
+                        <span class="td-mono">{{ $log->health_id ?? 'Unknown' }}</span>
+                    </td>
+                    <td data-label="Actor">
+                        <span class="td-muted">{{ $log->actor_type ?? '—' }}</span>
+                        @if(!empty($log->ip_address))
+                        <div class="td-muted" style="font-size:0.75rem;">{{ $log->ip_address }}</div>
+                        @endif
+                    </td>
+                    <td data-label="Result">
+                        @if(($log->result ?? '') === 'success')
+                            <span class="badge badge-success">Success</span>
+                        @else
+                            <span class="badge badge-danger">Denied</span>
+                        @endif
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" style="text-align:center;padding:var(--p-space-8);color:var(--p-text-muted);">
+                        No security events recorded yet.
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 
 <!-- Duplicate Review Modal -->
-<div id="duplicate-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm px-4">
-    <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl">
-        <div class="px-6 py-4 border-b border-slate-700 flex items-center justify-between bg-slate-800/50">
-            <h3 class="text-lg font-semibold text-white">Review Suspected Duplicate</h3>
-            <button id="close-duplicate" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+<div id="duplicate-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;background:rgba(15,23,42,.7);backdrop-filter:blur(4px);padding:var(--p-space-4);" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div style="background:var(--p-surface);border:1px solid var(--p-border);border-radius:var(--p-radius-xl);width:100%;max-width:800px;overflow:hidden;box-shadow:var(--p-shadow-lg);">
+        <div style="padding:var(--p-space-5) var(--p-space-6);border-bottom:1px solid var(--p-border);display:flex;align-items:center;justify-content:space-between;">
+            <h3 id="modal-title" style="font-size:1rem;font-weight:700;color:var(--p-text);margin:0;">Review Suspected Duplicate</h3>
+            <button id="close-duplicate" class="topbar-icon-btn" aria-label="Close modal" style="color:var(--p-text-muted);">
+                <i data-lucide="x"></i>
+            </button>
         </div>
-        <div class="p-6">
-            <div class="grid grid-cols-2 gap-8 mb-6">
+        <div style="padding:var(--p-space-6);">
+            <div class="grid-2" style="margin-bottom:var(--p-space-5);">
                 <!-- Primary -->
-                <div class="bg-slate-900 border border-indigo-500/30 rounded-xl p-5">
-                    <span class="px-3 py-1 bg-indigo-500/20 text-indigo-400 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">Primary Record</span>
-                    <div class="space-y-3">
-                        <div><span class="text-slate-500 text-sm">Health ID:</span> <span id="m-primary-id" class="text-white font-mono font-medium ml-2"></span></div>
-                        <div><span class="text-slate-500 text-sm">Name:</span> <span id="m-primary-name" class="text-white font-medium ml-2"></span></div>
-                        <div><span class="text-slate-500 text-sm">DOB:</span> <span id="m-primary-dob" class="text-white ml-2"></span></div>
-                        <div><span class="text-slate-500 text-sm">Sex:</span> <span id="m-primary-sex" class="text-white ml-2"></span></div>
+                <div style="background:var(--p-surface-2);border:1px solid var(--p-border);border-left:4px solid var(--p-primary);border-radius:var(--p-radius-lg);padding:var(--p-space-5);">
+                    <div style="margin-bottom:var(--p-space-3);">
+                        <span class="badge badge-primary">Primary Record</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:var(--p-space-2);font-size:0.875rem;">
+                        <div><span style="color:var(--p-text-muted);">Health ID:</span> <span id="m-primary-id" style="font-family:monospace;font-weight:700;color:var(--p-primary);"></span></div>
+                        <div><span style="color:var(--p-text-muted);">Name:</span> <strong id="m-primary-name" style="margin-left:4px;"></strong></div>
+                        <div><span style="color:var(--p-text-muted);">DOB:</span> <span id="m-primary-dob" style="margin-left:4px;"></span></div>
+                        <div><span style="color:var(--p-text-muted);">Sex:</span> <span id="m-primary-sex" style="margin-left:4px;"></span></div>
                     </div>
                 </div>
-                
                 <!-- Secondary -->
-                <div class="bg-slate-900 border border-amber-500/30 rounded-xl p-5 relative">
-                    <span class="px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">Suspected Duplicate</span>
-                    <div class="space-y-3">
-                        <div><span class="text-slate-500 text-sm">Health ID:</span> <span id="m-secondary-id" class="text-white font-mono font-medium ml-2"></span></div>
-                        <div><span class="text-slate-500 text-sm">Name:</span> <span id="m-secondary-name" class="text-white font-medium ml-2"></span></div>
-                        <div><span class="text-slate-500 text-sm">DOB:</span> <span id="m-secondary-dob" class="text-white ml-2"></span></div>
-                        <div><span class="text-slate-500 text-sm">Sex:</span> <span id="m-secondary-sex" class="text-white ml-2"></span></div>
+                <div style="background:var(--p-surface-2);border:1px solid var(--p-border);border-left:4px solid var(--p-warning);border-radius:var(--p-radius-lg);padding:var(--p-space-5);">
+                    <div style="margin-bottom:var(--p-space-3);">
+                        <span class="badge badge-warning">Suspected Duplicate</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:var(--p-space-2);font-size:0.875rem;">
+                        <div><span style="color:var(--p-text-muted);">Health ID:</span> <span id="m-secondary-id" style="font-family:monospace;font-weight:700;color:var(--p-warning);"></span></div>
+                        <div><span style="color:var(--p-text-muted);">Name:</span> <strong id="m-secondary-name" style="margin-left:4px;"></strong></div>
+                        <div><span style="color:var(--p-text-muted);">DOB:</span> <span id="m-secondary-dob" style="margin-left:4px;"></span></div>
+                        <div><span style="color:var(--p-text-muted);">Sex:</span> <span id="m-secondary-sex" style="margin-left:4px;"></span></div>
                     </div>
                 </div>
             </div>
 
-            <div>
-                <label class="block text-sm font-medium text-slate-300 mb-2">Reviewer Notes (Optional)</label>
-                <textarea id="review-reason" rows="2" placeholder="e.g. Verified via National ID..." class="w-full bg-slate-900 border border-slate-700 rounded-lg py-3 px-4 text-white focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+            <div class="form-group" style="margin-bottom:var(--p-space-5);">
+                <label class="form-label" for="review-reason">Reviewer Notes (Optional)</label>
+                <textarea id="review-reason" rows="2" class="form-control" placeholder="e.g. Verified via National ID…"></textarea>
             </div>
-            
-            <div class="flex gap-4 mt-6">
-                <button id="btn-reject-merge" class="flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors">
+
+            <div style="display:flex;gap:var(--p-space-3);">
+                <button id="btn-reject-merge" class="btn btn-secondary" style="flex:1;">
+                    <i data-lucide="x-circle"></i>
                     Reject Match (Keep Separate)
                 </button>
-                <button id="btn-approve-merge" class="flex-1 py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-medium transition-colors">
+                <button id="btn-approve-merge" class="btn btn-warning" style="flex:1;background:var(--p-warning);color:white;border-color:var(--p-warning);">
+                    <i data-lucide="merge"></i>
                     Confirm Merge
                 </button>
             </div>
@@ -200,174 +272,166 @@
     </div>
 </div>
 
+@endsection
+
+@section('scripts')
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
 <script>
-    document.addEventListener('DOMContentLoaded', async function() {
-        // Fetch Duplicate Cases
-        const tbody = document.getElementById('duplicates-body');
-        let mergeCases = [];
-        let currentReviewId = null;
+document.addEventListener('DOMContentLoaded', async function () {
+    var modal         = document.getElementById('duplicate-modal');
+    var closeBtn      = document.getElementById('close-duplicate');
+    var btnApprove    = document.getElementById('btn-approve-merge');
+    var btnReject     = document.getElementById('btn-reject-merge');
+    var mergeCases    = [];
+    var currentReviewId = null;
 
-        const loadCases = async () => {
-            try {
-                const response = await fetch('/api/v1/connect/admin/merge-cases');
-                const data = await response.json();
-                
-                if (data.status === 'success') {
-                    mergeCases = data.cases;
-                    tbody.innerHTML = '';
-                    
-                    if(mergeCases.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-slate-500">No pending duplicate reviews.</td></tr>`;
-                        return;
-                    }
-
-                    mergeCases.forEach(c => {
-                        tbody.innerHTML += `
-                            <tr class="hover:bg-slate-800/80 transition-colors">
-                                <td class="px-6 py-4 whitespace-nowrap text-amber-400 font-bold">${c.match_score}%</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-slate-300">
-                                    ${c.primary_patient.first_name} ${c.primary_patient.last_name}<br>
-                                    <span class="text-xs text-slate-500 font-mono">${c.primary_patient.health_id}</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-slate-300">
-                                    ${c.secondary_patient.first_name} ${c.secondary_patient.last_name}<br>
-                                    <span class="text-xs text-slate-500 font-mono">${c.secondary_patient.health_id}</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <button onclick="openReviewModal('${c.uuid}')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-lg transition-colors">Review</button>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                }
-            } catch (e) {
-                tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-red-500">Error loading cases.</td></tr>`;
+    // ── Partner Governance ──
+    const loadPartners = async () => {
+        try {
+            const res = await fetch('/api/partner-governance/partners');
+            const data = await res.json();
+            const tbody = document.getElementById('partners-body');
+            if (!data.data || data.data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:var(--p-space-8);color:var(--p-text-muted);">No partners found.</td></tr>';
+                return;
             }
-        };
+            tbody.innerHTML = data.data.map(p => {
+                const stBadge = p.status === 'active'
+                    ? '<span class="badge badge-success">' + p.status + '</span>'
+                    : p.status === 'suspended'
+                    ? '<span class="badge badge-danger">' + p.status + '</span>'
+                    : '<span class="badge badge-warning">' + p.status + '</span>';
 
-        await loadCases();
+                const actions = [
+                    p.status === 'submitted' ? `<button onclick="approvePartner('${p.uuid}')" class="btn btn-teal btn-sm">Approve</button>` : '',
+                    p.status !== 'suspended' && p.status !== 'submitted' ? `<button onclick="suspendPartner('${p.uuid}')" class="btn btn-danger btn-sm">Suspend</button>` : ''
+                ].filter(Boolean).join(' ');
 
-        // Partner Governance Logic (Phase 2)
-        const loadPartners = async () => {
-            try {
-                const response = await fetch('/api/partner-governance/partners');
-                const data = await response.json();
-                const tbody = document.getElementById('partners-body');
-                
-                if (data.data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-slate-500">No partners found.</td></tr>';
+                return `<tr>
+                    <td data-label="Partner"><span class="td-strong">${p.legal_name}</span><div class="td-muted" style="font-size:0.75rem;">${p.uuid}</div></td>
+                    <td data-label="Type"><span class="badge badge-neutral">${p.partner_type}</span></td>
+                    <td data-label="Status">${stBadge}</td>
+                    <td data-label="Trust">${p.trust_level.replace('level_','').replace(/_/g,' ')}</td>
+                    <td data-label="Actions" style="text-align:right;">${actions}</td>
+                </tr>`;
+            }).join('');
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        } catch (e) { console.error(e); }
+    };
+
+    window.approvePartner = async (id) => {
+        if (!confirm('Approve this partner?')) return;
+        try {
+            await fetch(`/api/partner-governance/partners/${id}/approve`, { method: 'POST' });
+            loadPartners();
+        } catch(e) { alert('Error approving partner.'); }
+    };
+
+    window.suspendPartner = async (id) => {
+        const reason = prompt('Enter suspension reason (min 10 chars):');
+        if (!reason || reason.length < 10) return alert('Valid reason required.');
+        try {
+            const res = await fetch(`/api/partner-governance/partners/${id}/suspend`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ reason })
+            });
+            if (res.ok) loadPartners();
+            else alert((await res.json()).message);
+        } catch(e) { alert('Error suspending partner.'); }
+    };
+
+    loadPartners();
+
+    // ── Duplicate Cases ──
+    const loadCases = async () => {
+        const tbody = document.getElementById('duplicates-body');
+        try {
+            const res = await fetch('/api/v1/connect/admin/merge-cases');
+            const data = await res.json();
+            if (data.status === 'success') {
+                mergeCases = data.cases;
+                if (mergeCases.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:var(--p-space-8);color:var(--p-text-muted);">No pending duplicate reviews.</td></tr>';
                     return;
                 }
-
-                tbody.innerHTML = data.data.map(p => `
-                    <tr class="hover:bg-slate-800/50 transition-colors">
-                        <td class="px-6 py-4 font-medium text-slate-200">${p.legal_name} <br><span class="text-xs text-slate-500">${p.uuid}</span></td>
-                        <td class="px-6 py-4"><span class="px-2 py-1 bg-slate-700 rounded text-xs">${p.partner_type}</span></td>
-                        <td class="px-6 py-4">
-                            <span class="px-2.5 py-1 rounded-full text-xs font-medium border ${p.status === 'active' ? 'bg-emerald-900/30 text-emerald-400 border-emerald-500/30' : (p.status === 'suspended' ? 'bg-red-900/30 text-red-400 border-red-500/30' : 'bg-amber-900/30 text-amber-400 border-amber-500/30')}">
-                                ${p.status}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-xs">${p.trust_level.replace('level_', '').replace(/_/g, ' ')}</td>
-                        <td class="px-6 py-4">
-                            <div class="flex gap-2">
-                                ${p.status === 'submitted' ? `<button onclick="approvePartner('${p.uuid}')" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 rounded text-white text-xs transition-colors">Approve</button>` : ''}
-                                ${p.status !== 'suspended' && p.status !== 'submitted' ? `<button onclick="suspendPartner('${p.uuid}')" class="px-3 py-1 bg-rose-600 hover:bg-rose-500 rounded text-white text-xs transition-colors">Suspend</button>` : ''}
-                            </div>
-                        </td>
-                    </tr>
-                `).join('');
-                lucide.createIcons();
-            } catch (e) {
-                console.error(e);
+                tbody.innerHTML = mergeCases.map(c => `<tr>
+                    <td data-label="Score"><span class="badge badge-warning" style="font-size:0.875rem;">${c.match_score}%</span></td>
+                    <td data-label="Primary">
+                        <span class="td-strong">${c.primary_patient.first_name} ${c.primary_patient.last_name}</span>
+                        <div class="td-mono">${c.primary_patient.health_id}</div>
+                    </td>
+                    <td data-label="Secondary">
+                        <span class="td-strong">${c.secondary_patient.first_name} ${c.secondary_patient.last_name}</span>
+                        <div class="td-mono">${c.secondary_patient.health_id}</div>
+                    </td>
+                    <td data-label="Action" style="text-align:right;">
+                        <button onclick="openReviewModal('${c.uuid}')" class="btn btn-primary btn-sm">Review</button>
+                    </td>
+                </tr>`).join('');
+                if (typeof lucide !== 'undefined') lucide.createIcons();
             }
-        };
+        } catch(e) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--p-danger);padding:var(--p-space-6);">Error loading duplicate cases.</td></tr>';
+        }
+    };
 
-        window.approvePartner = async (id) => {
-            if(!confirm('Approve this partner?')) return;
-            try {
-                const response = await fetch(`/api/partner-governance/partners/${id}/approve`, { method: 'POST' });
-                if(response.ok) loadPartners();
-            } catch(e) { alert('Error approving partner'); }
-        };
+    await loadCases();
 
-        window.suspendPartner = async (id) => {
-            const reason = prompt('Enter suspension reason (min 10 chars):');
-            if(!reason || reason.length < 10) return alert('Valid reason required.');
-            try {
-                const response = await fetch(`/api/partner-governance/partners/${id}/suspend`, { 
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ reason })
-                });
-                if(response.ok) loadPartners();
-                else alert((await response.json()).message);
-            } catch(e) { alert('Error suspending partner'); }
-        };
+    // ── Modal Logic ──
+    window.openReviewModal = (id) => {
+        currentReviewId = id;
+        const c = mergeCases.find(x => x.uuid === id);
+        if (!c) return;
+        document.getElementById('m-primary-id').textContent   = c.primary_patient.health_id;
+        document.getElementById('m-primary-name').textContent = c.primary_patient.first_name + ' ' + c.primary_patient.last_name;
+        document.getElementById('m-primary-dob').textContent  = c.primary_patient.date_of_birth;
+        document.getElementById('m-primary-sex').textContent  = c.primary_patient.sex;
+        document.getElementById('m-secondary-id').textContent   = c.secondary_patient.health_id;
+        document.getElementById('m-secondary-name').textContent = c.secondary_patient.first_name + ' ' + c.secondary_patient.last_name;
+        document.getElementById('m-secondary-dob').textContent  = c.secondary_patient.date_of_birth;
+        document.getElementById('m-secondary-sex').textContent  = c.secondary_patient.sex;
+        document.getElementById('review-reason').value = '';
+        modal.style.display = 'flex';
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    };
 
-        loadPartners();
+    if (closeBtn) closeBtn.addEventListener('click', () => { modal.style.display = 'none'; });
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') modal.style.display = 'none'; });
 
-        // Modal Logic
-        const modal = document.getElementById('duplicate-modal');
-        const closeBtn = document.getElementById('close-duplicate');
-        const btnApprove = document.getElementById('btn-approve-merge');
-        const btnReject = document.getElementById('btn-reject-merge');
+    const resolveMerge = async (resolution) => {
+        const reason = document.getElementById('review-reason').value;
+        const btn = resolution === 'approve' ? btnApprove : btnReject;
+        const oldHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i data-lucide="loader" style="width:1rem;height:1rem;"></i> Processing…';
+        if (typeof lucide !== 'undefined') lucide.createIcons();
 
-        closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
-
-        window.openReviewModal = (id) => {
-            currentReviewId = id;
-            const c = mergeCases.find(x => x.uuid === id);
-            if(!c) return;
-
-            document.getElementById('m-primary-id').textContent = c.primary_patient.health_id;
-            document.getElementById('m-primary-name').textContent = c.primary_patient.first_name + ' ' + c.primary_patient.last_name;
-            document.getElementById('m-primary-dob').textContent = c.primary_patient.date_of_birth;
-            document.getElementById('m-primary-sex').textContent = c.primary_patient.sex;
-
-            document.getElementById('m-secondary-id').textContent = c.secondary_patient.health_id;
-            document.getElementById('m-secondary-name').textContent = c.secondary_patient.first_name + ' ' + c.secondary_patient.last_name;
-            document.getElementById('m-secondary-dob').textContent = c.secondary_patient.date_of_birth;
-            document.getElementById('m-secondary-sex').textContent = c.secondary_patient.sex;
-
-            document.getElementById('review-reason').value = '';
-            modal.classList.remove('hidden');
-        };
-
-        const resolveMerge = async (resolution) => {
-            const reason = document.getElementById('review-reason').value;
-            const btn = resolution === 'approve' ? btnApprove : btnReject;
-            const oldText = btn.textContent;
-            
-            btn.disabled = true;
-            btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin inline"></i> Processing...';
-            
-            try {
-                const response = await fetch(`/api/v1/connect/admin/merge-cases/${currentReviewId}/resolve`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ resolution, review_reason: reason })
-                });
-
-                if(response.ok) {
-                    modal.classList.add('hidden');
-                    await loadCases();
-                    // Optionally refresh the page to show the new audit log
-                    window.location.reload();
-                } else {
-                    const data = await response.json();
-                    alert('Error: ' + data.message);
-                }
-            } catch (e) {
-                alert('Network error');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = oldText;
+        try {
+            const res = await fetch(`/api/v1/connect/admin/merge-cases/${currentReviewId}/resolve`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ resolution, review_reason: reason })
+            });
+            if (res.ok) {
+                modal.style.display = 'none';
+                await loadCases();
+            } else {
+                alert('Error: ' + (await res.json()).message);
             }
-        };
+        } catch(e) { alert('Network error.'); }
+        finally {
+            btn.disabled = false;
+            btn.innerHTML = oldHtml;
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+    };
 
-        btnApprove.addEventListener('click', () => resolveMerge('approve'));
-        btnReject.addEventListener('click', () => resolveMerge('reject'));
-    });
+    if (btnApprove) btnApprove.addEventListener('click', () => resolveMerge('approve'));
+    if (btnReject)  btnReject.addEventListener('click', () => resolveMerge('reject'));
+});
 </script>
 @endsection
