@@ -361,6 +361,7 @@
 /* ── Utility: text / font helpers ─────────────────── */
 .font-bold  { font-weight: 700; }
 .text-sm    { font-size: 0.875rem; }
+.lead       { font-size: 1.125rem; color: var(--color-text-secondary); line-height: 1.75; margin-bottom: 2rem; }
 .text-xs    { font-size: 0.75rem; }
 .uppercase  { text-transform: uppercase; }
 .tracking-widest { letter-spacing: .1em; }

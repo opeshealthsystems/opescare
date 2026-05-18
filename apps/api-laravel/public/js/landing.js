@@ -5,20 +5,28 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Mobile Menu Logic
-    const menuToggle = document.getElementById('menuToggle');
-    const mobileDrawer = document.getElementById('mobileDrawer');
-    const closeMenu = document.getElementById('closeMenu');
+    const menuToggle    = document.getElementById('menuToggle');
+    const mobileDrawer  = document.getElementById('mobileDrawer');
+    const closeMenu     = document.getElementById('closeMenu');
+    const drawerBackdrop = document.getElementById('drawerBackdrop');
+
+    function openDrawer() {
+        mobileDrawer.classList.add('active');
+        if (drawerBackdrop) drawerBackdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+        mobileDrawer.classList.remove('active');
+        if (drawerBackdrop) drawerBackdrop.classList.remove('active');
+        document.body.style.overflow = '';
+    }
 
     if (menuToggle && mobileDrawer && closeMenu) {
-        menuToggle.addEventListener('click', () => {
-            mobileDrawer.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        });
-
-        closeMenu.addEventListener('click', () => {
-            mobileDrawer.classList.remove('active');
-            document.body.style.overflow = '';
-        });
+        menuToggle.addEventListener('click', openDrawer);
+        closeMenu.addEventListener('click', closeDrawer);
+        if (drawerBackdrop) drawerBackdrop.addEventListener('click', closeDrawer);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
     }
 
     // Smooth Scroll

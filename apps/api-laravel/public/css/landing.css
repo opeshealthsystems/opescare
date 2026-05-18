@@ -9,6 +9,7 @@
     --color-surface: #FFFFFF;
     --color-text-primary: #0F172A;
     --color-text-secondary: #475569;
+    --color-text-muted: #94A3B8;
     --color-border: #E2E8F0;
     --color-warning: #B45309;
     --color-danger: #B91C1C;
@@ -180,6 +181,18 @@ h4 { font-size: 1.1rem; }
     .mobile-menu-toggle {
         display: block !important;
     }
+    /* Hide desktop auth CTA buttons — they live inside the mobile drawer */
+    .header-desktop-cta {
+        display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    /* Also hide the lang switcher from the header bar on small screens
+       (it appears inside the mobile drawer instead) */
+    .header-lang-switcher {
+        display: none;
+    }
 }
 
 /* Mobile drawer */
@@ -187,17 +200,34 @@ h4 { font-size: 1.1rem; }
     position: fixed;
     top: 0;
     right: -100%;
-    width: 320px;
+    width: min(320px, 92vw);
     height: 100vh;
     background: white;
     box-shadow: -10px 0 25px rgba(0,0,0,0.05);
     z-index: 200;
     transition: right 0.3s ease;
     padding: 2rem 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .mobile-drawer.active {
     right: 0;
+}
+
+.mobile-drawer-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,.5);
+    z-index: 199;
+    opacity: 0;
+    transition: opacity .3s;
+}
+
+.mobile-drawer-backdrop.active {
+    display: block;
+    opacity: 1;
 }
 
 .mobile-drawer-header {

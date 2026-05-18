@@ -43,7 +43,7 @@
                 <li>Request corrections to your identity information</li>
             </ul>
 
-            <div style="margin-top: 4rem; padding: 2rem; background-color: var(--color-background); border-radius: 1rem; font-size: 0.875rem;">
+            <div style="margin-top: 4rem; padding: 2rem; background-color: var(--color-bg); border-radius: 1rem; font-size: 0.875rem;">
                 <p>Last Updated: May 16, 2026. For detailed legal terms, please refer to our <a href="{{ route('public.terms') }}" class="text-primary font-bold">Terms and Conditions</a>.</p>
             </div>
         </div>

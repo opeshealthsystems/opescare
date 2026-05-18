@@ -30,7 +30,7 @@
             <h2>5. Limitation of Liability</h2>
             <p>OpesCare provides the infrastructure for data exchange but is not responsible for the clinical accuracy of records provided by third-party facilities. Healthcare decisions must always be made by qualified professionals based on their clinical judgment.</p>
 
-            <div style="margin-top: 4rem; padding: 2rem; background-color: var(--color-background); border-radius: 1rem; font-size: 0.875rem;">
+            <div style="margin-top: 4rem; padding: 2rem; background-color: var(--color-bg); border-radius: 1rem; font-size: 0.875rem;">
                 <p>Last Updated: May 16, 2026. For questions regarding these terms, contact legal@opesware.com.</p>
             </div>
         </div>

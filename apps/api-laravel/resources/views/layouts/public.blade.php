@@ -92,13 +92,13 @@
             </nav>
             
             <div class="header-actions">
-                <div class="lang-switcher" style="display:flex;gap:0.5rem;margin-right:1.5rem;font-size:0.75rem;font-weight:700;">
+                <div class="lang-switcher header-lang-switcher" style="display:flex;gap:0.5rem;margin-right:1.5rem;font-size:0.75rem;font-weight:700;">
                     <a href="{{ route('lang.switch', 'en') }}" style="color:{{ app()->getLocale()=='en' ? 'var(--color-primary)' : 'var(--color-text-secondary)' }};text-decoration:none;">EN</a>
                     <span style="color:var(--color-border);">|</span>
                     <a href="{{ route('lang.switch', 'fr') }}" style="color:{{ app()->getLocale()=='fr' ? 'var(--color-primary)' : 'var(--color-text-secondary)' }};text-decoration:none;">FR</a>
                 </div>
 
-                <div style="display:flex;align-items:center;gap:1rem;">
+                <div class="header-desktop-cta" style="display:flex;align-items:center;gap:1rem;">
                     <a href="{{ route('demo.public') }}" style="font-size:0.875rem;font-weight:700;color:var(--color-text-secondary);text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem;">
                         <i data-lucide="play-circle" style="width:1rem;height:1rem;"></i> Demo
                     </a>
@@ -112,6 +112,8 @@
             </div>
         </div>
         
+        <!-- Mobile Drawer Backdrop -->
+        <div class="mobile-drawer-backdrop" id="drawerBackdrop"></div>
         <!-- Mobile Drawer -->
         <div class="mobile-drawer" id="mobileDrawer">
             <div class="container">
