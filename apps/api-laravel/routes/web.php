@@ -245,6 +245,13 @@ Route::middleware(['web'])->group(function () {
     // --- Global Search ---
     Route::get('/portals/staff/search', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'search'])->name('portals.staff.search');
 
+    // --- File Storage & Medical Attachments ---
+    Route::get('/portals/staff/files',              [\App\Http\Controllers\MedicalId\FileStorageController::class, 'index'])->name('portals.staff.files.index');
+    Route::get('/portals/staff/files/upload',       [\App\Http\Controllers\MedicalId\FileStorageController::class, 'create'])->name('portals.staff.files.create');
+    Route::post('/portals/staff/files',             [\App\Http\Controllers\MedicalId\FileStorageController::class, 'store'])->name('portals.staff.files.store');
+    Route::get('/portals/staff/files/{id}/download',[\App\Http\Controllers\MedicalId\FileStorageController::class, 'download'])->name('portals.staff.files.download');
+    Route::delete('/portals/staff/files/{id}',      [\App\Http\Controllers\MedicalId\FileStorageController::class, 'destroy'])->name('portals.staff.files.destroy');
+
     // --- Insurance Portal ---
     Route::get('/portals/insurance/providers', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'providers'])->name('portals.insurance.providers');
     Route::post('/portals/insurance/providers', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'providersStore'])->name('portals.insurance.providers.store');

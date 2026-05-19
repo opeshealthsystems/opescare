@@ -126,6 +126,7 @@ return [
         'nav_staff_leave'        => 'Leave',
         'nav_data_import'        => 'Data Import',
         'nav_search'             => 'Global Search',
+        'nav_files'              => 'Files & Attachments',
         'nav_resources'          => 'Resources',
         'sign_out'               => 'Sign Out',
 

@@ -95,6 +95,10 @@
         <i data-lucide="search"></i>
         <span>{{ __('public.portal.nav_search', [], app()->getLocale()) ?: 'Global Search' }}</span>
     </a>
+    <a href="{{ route('portals.staff.files.index') }}" class="sidebar-link {{ request()->routeIs('portals.staff.files*') ? 'active' : '' }}">
+        <i data-lucide="paperclip"></i>
+        <span>{{ __('public.portal.nav_files', [], app()->getLocale()) ?: 'Files & Attachments' }}</span>
+    </a>
 </div>
 @endsection
 
