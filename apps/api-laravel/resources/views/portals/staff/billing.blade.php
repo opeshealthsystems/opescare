@@ -1,11 +1,10 @@
 @extends('layouts.portal')
 
-@section('title', __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing')
+@section('title', __('public.staff_portal.billing_title', [], app()->getLocale()) ?: 'Billing')
 
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
 @endsection
-
 @section('sidebar_user_role', __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff')
 
 @section('sidebar_nav')
@@ -26,14 +25,6 @@
         <i data-lucide="list-ordered"></i>
         <span>{{ __('public.portal.nav_queue', [], app()->getLocale()) ?: 'Patient Queue' }}</span>
     </a>
-    <a href="{{ route('portals.staff.immunizations') }}" class="sidebar-link">
-        <i data-lucide="syringe"></i>
-        <span>{{ __('public.portal.nav_immunizations', [], app()->getLocale()) ?: 'Immunizations' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.referrals') }}" class="sidebar-link">
-        <i data-lucide="send"></i>
-        <span>{{ __('public.portal.nav_referrals', [], app()->getLocale()) ?: 'Referrals' }}</span>
-    </a>
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">Operations</div>
@@ -50,32 +41,46 @@
 
 @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing')
+@section('breadcrumb_section', __('public.staff_portal.billing_title', [], app()->getLocale()) ?: 'Billing')
 
 @section('content')
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</h1>
+        <h1 class="page-title">{{ __('public.staff_portal.billing_title', [], app()->getLocale()) ?: 'Billing' }}</h1>
         <p class="page-subtitle">{{ __('public.staff_portal.billing_subtitle', [], app()->getLocale()) ?: 'Review patient invoices and record payments.' }}</p>
     </div>
+    <a href="{{ route('portals.staff.billing.create') }}" class="btn btn-primary btn-sm">
+        <i data-lucide="file-plus" style="width:14px;height:14px;"></i>
+        {{ __('public.staff_portal.btn_create_invoice', [], app()->getLocale()) ?: 'Create Invoice' }}
+    </a>
 </div>
 
-{{-- Filter Bar --}}
-<form method="GET" action="{{ route('portals.staff.billing') }}" class="filter-bar">
-    <div class="form-search">
-        <span class="search-icon">
-            <i data-lucide="search" style="width:13px;height:13px;"></i>
-        </span>
-        <input
-            type="text"
-            name="patient_id"
-            class="form-control"
-            placeholder="{{ __('public.staff_portal.filter_patient_id', [], app()->getLocale()) ?: 'Patient ID…' }}"
-            value="{{ request('patient_id') }}"
-            style="padding-left: 2.1rem;"
-        >
+@if(session('success'))
+    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;">
+        <i data-lucide="check-circle"></i><div>{{ session('success') }}</div>
     </div>
+@endif
+@if(session('error'))
+    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;">
+        <i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div>
+    </div>
+@endif
+
+{{-- Filters --}}
+<form method="GET" action="{{ route('portals.staff.billing') }}" class="filter-bar" style="flex-wrap:wrap;gap:.5rem;">
+    <div class="form-search">
+        <span class="search-icon"><i data-lucide="search" style="width:13px;height:13px;"></i></span>
+        <input type="text" name="patient_id" class="form-control"
+            placeholder="{{ __('public.staff_portal.filter_patient_id', [], app()->getLocale()) ?: 'Patient ID…' }}"
+            value="{{ request('patient_id') }}" style="padding-left:2.1rem;">
+    </div>
+    <select name="status" class="form-control">
+        <option value="">{{ __('public.staff_portal.filter_all_statuses', [], app()->getLocale()) ?: 'All Statuses' }}</option>
+        @foreach(['draft','issued','partial','paid','cancelled','refunded'] as $s)
+            <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ ucwords($s) }}</option>
+        @endforeach
+    </select>
     <button type="submit" class="btn btn-primary btn-sm">
         <i data-lucide="filter" style="width:13px;height:13px;"></i>
         {{ __('public.staff_portal.filter_apply', [], app()->getLocale()) ?: 'Filter' }}
@@ -86,14 +91,15 @@
 </form>
 
 <div class="panel">
-    <div class="panel-body" style="padding: 0;">
+    <div class="panel-body" style="padding:0;">
         @if(count($invoices) === 0)
             <div class="empty-state">
-                <div class="empty-state-icon">
-                    <i data-lucide="file-x"></i>
-                </div>
+                <div class="empty-state-icon"><i data-lucide="file-text"></i></div>
                 <h3>{{ __('public.staff_portal.no_invoices_title', [], app()->getLocale()) ?: 'No Invoices Found' }}</h3>
                 <p>{{ __('public.staff_portal.no_invoices_desc', [], app()->getLocale()) ?: 'There are no invoices matching your current filters.' }}</p>
+                <a href="{{ route('portals.staff.billing.create') }}" class="btn btn-primary btn-sm" style="margin-top:1rem;">
+                    {{ __('public.staff_portal.btn_create_invoice', [], app()->getLocale()) ?: 'Create Invoice' }}
+                </a>
             </div>
         @else
             <div class="table-wrapper">
@@ -102,9 +108,9 @@
                         <tr>
                             <th>{{ __('public.staff_portal.col_invoice_no', [], app()->getLocale()) ?: 'Invoice #' }}</th>
                             <th>{{ __('public.staff_portal.col_patient_id', [], app()->getLocale()) ?: 'Patient ID' }}</th>
-                            <th>{{ __('public.staff_portal.col_description', [], app()->getLocale()) ?: 'Description' }}</th>
                             <th>{{ __('public.staff_portal.col_amount', [], app()->getLocale()) ?: 'Amount' }}</th>
                             <th>{{ __('public.staff_portal.col_balance', [], app()->getLocale()) ?: 'Balance' }}</th>
+                            <th>{{ __('public.staff_portal.col_datetime', [], app()->getLocale()) ?: 'Issued' }}</th>
                             <th>{{ __('public.staff_portal.col_status', [], app()->getLocale()) ?: 'Status' }}</th>
                             <th>{{ __('public.staff_portal.col_actions', [], app()->getLocale()) ?: 'Actions' }}</th>
                         </tr>
@@ -114,50 +120,39 @@
                         @php
                             $statusBadge = match($invoice->status ?? '') {
                                 'paid'      => 'badge-success',
-                                'overdue'   => 'badge-danger',
                                 'issued'    => 'badge-primary',
-                                'cancelled' => 'badge-neutral',
-                                'draft'     => 'badge-warning',
+                                'partial'   => 'badge-warning',
+                                'cancelled' => 'badge-danger',
+                                'refunded'  => 'badge-neutral',
                                 default     => 'badge-neutral',
                             };
-                            $statusLabel  = ucfirst($invoice->status ?? 'unknown');
-                            $balance      = $invoice->balance_due ?? $invoice->balance ?? 0;
-                            $balanceClass = $balance > 0 ? 'color: var(--p-danger)' : 'color: var(--p-teal)';
-                            $canPayment   = in_array($invoice->status ?? '', ['issued', 'overdue']);
                         @endphp
                         <tr>
                             <td data-label="{{ __('public.staff_portal.col_invoice_no', [], app()->getLocale()) ?: 'Invoice #' }}">
-                                <strong style="font-family: monospace; font-size: var(--p-text-xs);">
-                                    {{ $invoice->invoice_number ?? $invoice->reference ?? '#' . ($invoice->id ?? '?') }}
-                                </strong>
+                                <span style="font-family:monospace;font-size:var(--p-text-xs);">{{ $invoice->invoice_number ?? '--' }}</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_patient_id', [], app()->getLocale()) ?: 'Patient ID' }}">
-                                <span style="font-family: monospace; font-size: var(--p-text-xs);">{{ $invoice->patient_id ?? '--' }}</span>
-                            </td>
-                            <td data-label="{{ __('public.staff_portal.col_description', [], app()->getLocale()) ?: 'Description' }}">
-                                {{ $invoice->description ?? '--' }}
+                                <span style="font-family:monospace;font-size:var(--p-text-xs);">{{ $invoice->patient_id ?? '--' }}</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_amount', [], app()->getLocale()) ?: 'Amount' }}">
-                                {{ number_format($invoice->total_amount ?? $invoice->amount ?? 0, 2) }}
-                                {{ $invoice->currency ?? '' }}
+                                {{ number_format($invoice->patient_responsibility_amount ?? 0, 2) }}
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_balance', [], app()->getLocale()) ?: 'Balance' }}">
-                                <strong style="{{ $balanceClass }};">
-                                    {{ number_format($balance, 2) }}
-                                    {{ $invoice->currency ?? '' }}
-                                </strong>
+                                <strong>{{ number_format($invoice->balance_amount ?? 0, 2) }}</strong>
+                            </td>
+                            <td data-label="{{ __('public.staff_portal.col_datetime', [], app()->getLocale()) ?: 'Issued' }}">
+                                {{ $invoice->issued_at ? \Carbon\Carbon::parse($invoice->issued_at)->format('M d, Y') : '--' }}
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_status', [], app()->getLocale()) ?: 'Status' }}">
-                                <span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span>
+                                <span class="badge {{ $statusBadge }}">{{ ucwords($invoice->status ?? '') }}</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_actions', [], app()->getLocale()) ?: 'Actions' }}">
-                                @if($canPayment)
-                                    <a href="{{ route('portals.staff.billing') }}?record_payment={{ $invoice->id ?? $invoice->uuid ?? '' }}" class="btn btn-teal btn-sm">
-                                        <i data-lucide="circle-dollar-sign" style="width:13px;height:13px;"></i>
-                                        {{ __('public.staff_portal.action_record_payment', [], app()->getLocale()) ?: 'Record Payment' }}
-                                    </a>
-                                @else
-                                    <span style="color: var(--p-text-muted); font-size: var(--p-text-xs);">—</span>
+                                @if(in_array($invoice->status ?? '', ['issued','partial']))
+                                    <button type="button" class="btn btn-primary btn-xs"
+                                        onclick="openPayModal('{{ $invoice->id }}','{{ $invoice->balance_amount ?? 0 }}')">
+                                        <i data-lucide="credit-card" style="width:11px;height:11px;"></i>
+                                        {{ __('public.staff_portal.btn_record_payment', [], app()->getLocale()) ?: 'Record Payment' }}
+                                    </button>
                                 @endif
                             </td>
                         </tr>
@@ -169,4 +164,58 @@
     </div>
 </div>
 
+{{-- Payment Modal --}}
+<div id="pay-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:440px;margin:1rem;">
+        <h3 style="margin:0 0 1.25rem;font-size:1.1rem;">
+            {{ __('public.staff_portal.btn_record_payment', [], app()->getLocale()) ?: 'Record Payment' }}
+        </h3>
+        <form id="pay-form" method="POST" action="">
+            @csrf
+            <div class="form-group" style="margin-bottom:.75rem;">
+                <label class="form-label">{{ __('public.staff_portal.lbl_amount', [], app()->getLocale()) ?: 'Amount' }} *</label>
+                <input type="number" name="amount" id="pay-amount" class="form-control" step="0.01" min="0.01" required>
+            </div>
+            <div class="form-group" style="margin-bottom:.75rem;">
+                <label class="form-label">{{ __('public.staff_portal.lbl_payment_method', [], app()->getLocale()) ?: 'Payment Method' }} *</label>
+                <select name="payment_method" class="form-control" required>
+                    <option value="cash">{{ __('public.staff_portal.method_cash', [], app()->getLocale()) ?: 'Cash' }}</option>
+                    <option value="card">{{ __('public.staff_portal.method_card', [], app()->getLocale()) ?: 'Card' }}</option>
+                    <option value="mobile_money">{{ __('public.staff_portal.method_mobile_money', [], app()->getLocale()) ?: 'Mobile Money' }}</option>
+                    <option value="bank_transfer">{{ __('public.staff_portal.method_bank_transfer', [], app()->getLocale()) ?: 'Bank Transfer' }}</option>
+                    <option value="insurance">{{ __('public.staff_portal.method_insurance', [], app()->getLocale()) ?: 'Insurance' }}</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom:.75rem;">
+                <label class="form-label">{{ __('public.staff_portal.lbl_reference', [], app()->getLocale()) ?: 'Reference' }}</label>
+                <input type="text" name="reference_number" class="form-control" placeholder="Optional reference…">
+            </div>
+            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closePayModal()">Back</button>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i data-lucide="check" style="width:13px;height:13px;"></i>
+                    {{ __('public.staff_portal.btn_record_payment', [], app()->getLocale()) ?: 'Record Payment' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@endsection
+
+@section('scripts')
+<script>
+    function openPayModal(invoiceId, balance) {
+        var form   = document.getElementById('pay-form');
+        var amount = document.getElementById('pay-amount');
+        var base   = '{{ url('/portals/staff/billing') }}';
+        form.setAttribute('action', base + '/' + invoiceId + '/pay');
+        amount.value = parseFloat(balance).toFixed(2);
+        document.getElementById('pay-modal').style.display = 'flex';
+    }
+    function closePayModal() { document.getElementById('pay-modal').style.display = 'none'; }
+    document.getElementById('pay-modal').addEventListener('click', function(e) {
+        if (e.target === this) closePayModal();
+    });
+</script>
 @endsection

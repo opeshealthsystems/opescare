@@ -67,7 +67,7 @@
             <i data-lucide="calendar-check-2"></i>
         </div>
         <div class="kpi-label">{{ __('public.staff_portal.kpi_todays_appointments', [], app()->getLocale()) ?: "Today's Appointments" }}</div>
-        <div class="kpi-value">--</div>
+        <div class="kpi-value">{{ $kpis['todays_appointments'] ?? 0 }}</div>
         <div class="kpi-sub">{{ __('public.staff_portal.kpi_scheduled_today', [], app()->getLocale()) ?: 'Scheduled today' }}</div>
     </div>
     <div class="kpi-card">
@@ -75,7 +75,7 @@
             <i data-lucide="list-ordered"></i>
         </div>
         <div class="kpi-label">{{ __('public.staff_portal.kpi_patient_queue', [], app()->getLocale()) ?: 'Patient Queue' }}</div>
-        <div class="kpi-value">--</div>
+        <div class="kpi-value">{{ $kpis['in_queue'] ?? 0 }}</div>
         <div class="kpi-sub">{{ __('public.staff_portal.kpi_currently_waiting', [], app()->getLocale()) ?: 'Currently waiting' }}</div>
     </div>
     <div class="kpi-card">
@@ -83,7 +83,7 @@
             <i data-lucide="send"></i>
         </div>
         <div class="kpi-label">{{ __('public.staff_portal.kpi_pending_referrals', [], app()->getLocale()) ?: 'Pending Referrals' }}</div>
-        <div class="kpi-value">--</div>
+        <div class="kpi-value">{{ $kpis['pending_referrals'] ?? 0 }}</div>
         <div class="kpi-sub">{{ __('public.staff_portal.kpi_awaiting_action', [], app()->getLocale()) ?: 'Awaiting action' }}</div>
     </div>
     <div class="kpi-card">
@@ -91,7 +91,7 @@
             <i data-lucide="receipt"></i>
         </div>
         <div class="kpi-label">{{ __('public.staff_portal.kpi_open_invoices', [], app()->getLocale()) ?: 'Open Invoices' }}</div>
-        <div class="kpi-value">--</div>
+        <div class="kpi-value">{{ $kpis['open_invoices'] ?? 0 }}</div>
         <div class="kpi-sub">{{ __('public.staff_portal.kpi_unpaid_balance', [], app()->getLocale()) ?: 'Unpaid balance' }}</div>
     </div>
 </div>

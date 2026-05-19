@@ -58,10 +58,14 @@ class PatientPortalController extends Controller
     public function appointments(Request $request)
     {
         $patient = Patient::whereNotNull('health_id')->first();
-        return view('portals.patient.appointments', [
-            'patient'      => $patient,
-            'appointments' => collect([]),
-        ]);
+        $appointments = $patient
+            ? \App\Models\Appointment::where('patient_id', $patient->id)
+                ->orderByDesc('scheduled_at')
+                ->limit(50)
+                ->get()
+            : collect([]);
+
+        return view('portals.patient.appointments', compact('patient', 'appointments'));
     }
 
     /**
