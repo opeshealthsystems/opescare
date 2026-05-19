@@ -355,3 +355,53 @@ Route::prefix('v1/care-map')->group(function () {
         Route::post('/admin/facilities/{id}/suspend', [\App\Http\Controllers\Api\V1\CareMapController::class, 'adminSuspendFacility']);
     });
 });
+
+/*
+|--------------------------------------------------------------------------
+| OpesCare SDK Token API Routes (Bearer token auth)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/sdk')
+    ->middleware(['sdk.token', 'throttle.client:120,1'])
+    ->group(function () {
+
+    // ── Patient lookup ────────────────────────────────────────
+    Route::get('/patients/{health_id}/summary',
+        [\App\Http\Controllers\Api\V1\Sdk\SdkPatientController::class, 'summary'])
+        ->middleware('sdk.token:read_records');
+
+    Route::get('/patients/{health_id}/encounters',
+        [\App\Http\Controllers\Api\V1\Sdk\SdkPatientController::class, 'encounters'])
+        ->middleware('sdk.token:read_records');
+
+    // ── Facility data ──────────────────────────────────────────
+    Route::get('/facilities/{id}',
+        [\App\Http\Controllers\Api\V1\Sdk\SdkFacilityController::class, 'show'])
+        ->middleware('sdk.token:read_facility');
+
+    Route::get('/facilities/{id}/stock',
+        [\App\Http\Controllers\Api\V1\Sdk\SdkFacilityController::class, 'stockSummary'])
+        ->middleware('sdk.token:read_stock');
+
+    // ── Appointments ────────────────────────────────────────────
+    Route::post('/appointments',
+        [\App\Http\Controllers\Api\V1\Sdk\SdkAppointmentController::class, 'book'])
+        ->middleware('sdk.token:write_appointments');
+
+    Route::get('/appointments/{id}',
+        [\App\Http\Controllers\Api\V1\Sdk\SdkAppointmentController::class, 'show'])
+        ->middleware('sdk.token:read_appointments');
+
+    // ── Webhooks ────────────────────────────────────────────────
+    Route::post('/webhooks/subscriptions',
+        [\App\Http\Controllers\Api\V1\Sdk\SdkWebhookController::class, 'subscribe'])
+        ->middleware('sdk.token:manage_webhooks');
+
+    Route::delete('/webhooks/subscriptions/{id}',
+        [\App\Http\Controllers\Api\V1\Sdk\SdkWebhookController::class, 'unsubscribe'])
+        ->middleware('sdk.token:manage_webhooks');
+
+    // ── Token introspection ─────────────────────────────────────
+    Route::get('/token/introspect',
+        [\App\Http\Controllers\Api\V1\Sdk\SdkAuthController::class, 'introspect']);
+});

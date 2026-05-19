@@ -40,6 +40,12 @@
         @endif
     </a>
 
+    <a href="{{ route('portals.admin.connect.widget') }}"
+       class="sidebar-link {{ request()->routeIs('portals.admin.connect.widget') ? 'active' : '' }}">
+        <i data-lucide="layout-panel-left"></i>
+        <span>Widget Embed</span>
+    </a>
+
     <div class="sidebar-section-label">NAVIGATE</div>
     <a href="{{ route('portals.admin.control_center') }}" class="sidebar-link">
         <i data-lucide="arrow-left"></i>

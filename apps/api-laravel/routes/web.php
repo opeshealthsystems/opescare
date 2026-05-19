@@ -327,6 +327,7 @@ Route::middleware(['web'])->group(function () {
     Route::post('/portals/admin/connect/tokens/{id}/revoke',   [\App\Http\Controllers\MedicalId\ConnectPortalController::class, 'tokenRevoke'])->name('portals.admin.connect.tokens.revoke');
     Route::get('/portals/admin/connect/webhooks',              [\App\Http\Controllers\MedicalId\ConnectPortalController::class, 'webhooks'])->name('portals.admin.connect.webhooks');
     Route::post('/portals/admin/connect/webhooks/{id}/toggle', [\App\Http\Controllers\MedicalId\ConnectPortalController::class, 'webhookToggle'])->name('portals.admin.connect.webhooks.toggle');
+    Route::get('/portals/admin/connect/widget',                [\App\Http\Controllers\MedicalId\ConnectPortalController::class, 'widget'])->name('portals.admin.connect.widget');
 
     // --- Security Operations Center ---
     Route::get('/portals/admin/security',                    [\App\Http\Controllers\MedicalId\SecurityOpsController::class, 'index'])->name('portals.admin.security');

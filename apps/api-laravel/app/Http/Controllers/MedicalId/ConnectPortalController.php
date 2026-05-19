@@ -154,4 +154,14 @@ class ConnectPortalController extends Controller
         return redirect()->route('portals.admin.connect.webhooks')
             ->with('success', 'Webhook subscription updated.');
     }
+
+    // ── Widget Embed ──────────────────────────────────────────────
+
+    public function widget(Request $request)
+    {
+        $clients = IntegrationClient::where('status', 'active')->orderBy('name')->get();
+        $baseUrl = rtrim(config('app.url'), '/');
+
+        return view('portals.admin.connect.widget', compact('clients', 'baseUrl'));
+    }
 }
