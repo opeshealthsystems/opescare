@@ -31,6 +31,25 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">HR & Staff</div>
+    <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
+        <i data-lucide="users"></i>
+        <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.hr.shifts') }}" class="sidebar-link">
+        <i data-lucide="clock"></i>
+        <span>{{ __('public.portal.nav_staff_shifts', [], app()->getLocale()) ?: 'Shifts' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.hr.roster') }}" class="sidebar-link">
+        <i data-lucide="calendar-range"></i>
+        <span>{{ __('public.portal.nav_staff_roster', [], app()->getLocale()) ?: 'Duty Roster' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.hr.leave') }}" class="sidebar-link">
+        <i data-lucide="plane-takeoff"></i>
+        <span>{{ __('public.portal.nav_staff_leave', [], app()->getLocale()) ?: 'Leave' }}</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
     <div class="sidebar-nav-label">Operations</div>
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>

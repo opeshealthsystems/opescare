@@ -167,6 +167,26 @@ Route::middleware(['web'])->group(function () {
     Route::get('/portals/staff/visits/{id}/consult', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'consult'])->name('portals.staff.visits.consult');
     Route::post('/portals/staff/visits/{id}/consult', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'consultStore'])->name('portals.staff.visits.consult.store');
 
+    // --- Staff HR Portal ---
+    Route::get('/portals/staff/hr/directory', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'directory'])->name('portals.staff.hr.directory');
+    Route::post('/portals/staff/hr/directory', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'directoryStore'])->name('portals.staff.hr.directory.store');
+    Route::post('/portals/staff/hr/directory/{id}/status', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'directoryStatus'])->name('portals.staff.hr.directory.status');
+    Route::post('/portals/staff/hr/directory/{id}/license', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'addLicense'])->name('portals.staff.hr.directory.license');
+    Route::get('/portals/staff/hr/shifts', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'shifts'])->name('portals.staff.hr.shifts');
+    Route::post('/portals/staff/hr/shifts', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'shiftsStore'])->name('portals.staff.hr.shifts.store');
+    Route::post('/portals/staff/hr/shifts/{id}/toggle', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'shiftsToggle'])->name('portals.staff.hr.shifts.toggle');
+    Route::get('/portals/staff/hr/roster', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'roster'])->name('portals.staff.hr.roster');
+    Route::post('/portals/staff/hr/roster', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'rosterStore'])->name('portals.staff.hr.roster.store');
+    Route::post('/portals/staff/hr/roster/{id}/publish', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'rosterPublish'])->name('portals.staff.hr.roster.publish');
+    Route::post('/portals/staff/hr/roster/{id}/archive', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'rosterArchive'])->name('portals.staff.hr.roster.archive');
+    Route::post('/portals/staff/hr/roster/{rosterId}/assign', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'rosterAssign'])->name('portals.staff.hr.roster.assign');
+    Route::delete('/portals/staff/hr/roster/assignment/{assignmentId}', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'rosterUnassign'])->name('portals.staff.hr.roster.unassign');
+    Route::get('/portals/staff/hr/leave', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'leave'])->name('portals.staff.hr.leave');
+    Route::post('/portals/staff/hr/leave', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'leaveStore'])->name('portals.staff.hr.leave.store');
+    Route::post('/portals/staff/hr/leave/{id}/approve', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'leaveApprove'])->name('portals.staff.hr.leave.approve');
+    Route::post('/portals/staff/hr/leave/{id}/reject', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'leaveReject'])->name('portals.staff.hr.leave.reject');
+    Route::post('/portals/staff/hr/leave/{id}/withdraw', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'leaveWithdraw'])->name('portals.staff.hr.leave.withdraw');
+
     // ── Staff: Appointment actions ──────────────────────────────
     Route::get('/portals/staff/appointments/create', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'appointmentsCreate'])->name('portals.staff.appointments.create');
     Route::post('/portals/staff/appointments', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'appointmentsStore'])->name('portals.staff.appointments.store');

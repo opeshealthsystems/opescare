@@ -117,6 +117,10 @@ return [
         ‘nav_billing’            => ‘Facturation’,
         ‘nav_support’            => ‘Assistance’,
         ‘nav_insurance’          => ‘Assurance’,
+        ‘nav_staff_directory’    => ‘Annuaire’,
+        ‘nav_staff_shifts’       => ‘Quarts’,
+        ‘nav_staff_roster’       => ‘Tableau de Service’,
+        ‘nav_staff_leave’        => ‘Congés’,
         ‘nav_resources’          => ‘Ressources’,
         ‘sign_out’               => ‘Déconnexion’,
 

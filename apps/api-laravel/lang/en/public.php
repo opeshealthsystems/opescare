@@ -117,6 +117,10 @@ return [
         'nav_billing'            => 'Billing',
         'nav_support'            => 'Support',
         'nav_insurance'          => 'Insurance',
+        'nav_staff_directory'    => 'Directory',
+        'nav_staff_shifts'       => 'Shifts',
+        'nav_staff_roster'       => 'Duty Roster',
+        'nav_staff_leave'        => 'Leave',
         'nav_resources'          => 'Resources',
         'sign_out'               => 'Sign Out',
 
