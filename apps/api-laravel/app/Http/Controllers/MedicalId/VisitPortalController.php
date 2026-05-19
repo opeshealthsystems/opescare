@@ -135,6 +135,19 @@ class VisitPortalController extends Controller
         return view('portals.staff.visits.triage', compact('visit'));
     }
 
+    public function triageEscalate(string $id, Request $req, TriageService $svc)
+    {
+        $req->validate(['reason' => 'required|string|max:500']);
+
+        try {
+            $svc->escalateEmergency($id, $req->reason, $this->demoActorId());
+            return redirect()->route('portals.staff.visits.triage', $id)
+                ->with('success', 'Visit escalated to EMERGENCY. Acuity set to Resuscitation (Level 1).');
+        } catch (Throwable $e) {
+            return back()->with('error', 'Escalation failed: ' . $e->getMessage());
+        }
+    }
+
     public function triageStore(string $id, Request $req, TriageService $svc)
     {
         $data = $req->validate([

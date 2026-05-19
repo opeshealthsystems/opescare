@@ -3,6 +3,7 @@
 namespace App\Modules\Triage\Services;
 
 use App\Models\TriageRecord;
+use App\Models\Visit;
 use App\Models\VitalSign;
 use App\Models\AuditEvent;
 use Exception;
@@ -61,5 +62,96 @@ class TriageService
             DB::rollBack();
             throw $e;
         }
+    }
+
+    /**
+     * Escalate a visit to emergency status.
+     * Sets acuity_score = 'resuscitation' on latest triage, marks visit emergency.
+     */
+    public function escalateEmergency(string $visitId, string $reason, ?string $actorId = null): TriageRecord
+    {
+        DB::beginTransaction();
+        try {
+            $visit = Visit::findOrFail($visitId);
+
+            // Upsert triage record with emergency acuity
+            $triage = TriageRecord::where('visit_id', $visitId)
+                ->latest()
+                ->first();
+
+            if ($triage) {
+                $triage->update(['acuity_score' => 'resuscitation']);
+            } else {
+                $triage = TriageRecord::create([
+                    'visit_id'             => $visitId,
+                    'nurse_id'             => $actorId,
+                    'presenting_complaint' => $reason,
+                    'acuity_score'         => 'resuscitation',
+                ]);
+            }
+
+            // Advance visit to emergency status if not already closed
+            if (!in_array($visit->status, ['completed', 'cancelled'])) {
+                $visit->update(['status' => 'emergency']);
+            }
+
+            AuditEvent::create([
+                'actor_id'      => $actorId,
+                'patient_id'    => $visit->patient_id,
+                'encounter_id'  => $visitId,
+                'action_type'   => 'emergency_escalation',
+                'resource_type' => 'triage_record',
+                'resource_id'   => $triage->id,
+                'reason'        => $reason,
+                'after_state'   => ['acuity_score' => 'resuscitation', 'escalation_reason' => $reason],
+            ]);
+
+            DB::commit();
+            return $triage;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * Vital sign range assessment for clinical alerts.
+     * Returns array of ['vital', 'value', 'status' => critical|warning|ok, 'note']
+     */
+    public static function assessVitals(array $vitals): array
+    {
+        $alerts = [];
+
+        if (isset($vitals['oxygen_saturation'])) {
+            $spo2 = (float) $vitals['oxygen_saturation'];
+            if ($spo2 < 90)      $alerts[] = ['vital' => 'SpO₂', 'value' => $spo2 . '%', 'status' => 'critical', 'note' => 'Severe hypoxia — immediate oxygen'];
+            elseif ($spo2 < 95)  $alerts[] = ['vital' => 'SpO₂', 'value' => $spo2 . '%', 'status' => 'warning', 'note' => 'Low oxygen saturation'];
+        }
+
+        if (isset($vitals['pulse'])) {
+            $p = (int) $vitals['pulse'];
+            if ($p < 50 || $p > 150) $alerts[] = ['vital' => 'Pulse', 'value' => $p . ' bpm', 'status' => 'critical', 'note' => $p < 50 ? 'Bradycardia' : 'Tachycardia'];
+            elseif ($p < 60 || $p > 100) $alerts[] = ['vital' => 'Pulse', 'value' => $p . ' bpm', 'status' => 'warning', 'note' => 'Outside normal range'];
+        }
+
+        if (isset($vitals['blood_pressure_systolic'])) {
+            $sys = (int) $vitals['blood_pressure_systolic'];
+            if ($sys < 90 || $sys > 180) $alerts[] = ['vital' => 'BP Systolic', 'value' => $sys . ' mmHg', 'status' => 'critical', 'note' => $sys < 90 ? 'Hypotension' : 'Severe hypertension'];
+            elseif ($sys < 100 || $sys > 140) $alerts[] = ['vital' => 'BP Systolic', 'value' => $sys . ' mmHg', 'status' => 'warning', 'note' => 'Elevated or low blood pressure'];
+        }
+
+        if (isset($vitals['temperature'])) {
+            $t = (float) $vitals['temperature'];
+            if ($t < 35 || $t > 40)       $alerts[] = ['vital' => 'Temperature', 'value' => $t . '°C', 'status' => 'critical', 'note' => $t < 35 ? 'Hypothermia' : 'High-grade fever'];
+            elseif ($t < 36 || $t > 38.5) $alerts[] = ['vital' => 'Temperature', 'value' => $t . '°C', 'status' => 'warning', 'note' => 'Abnormal temperature'];
+        }
+
+        if (isset($vitals['respiratory_rate'])) {
+            $rr = (int) $vitals['respiratory_rate'];
+            if ($rr < 8 || $rr > 30) $alerts[] = ['vital' => 'Resp. Rate', 'value' => $rr . '/min', 'status' => 'critical', 'note' => 'Respiratory distress'];
+            elseif ($rr < 12 || $rr > 20) $alerts[] = ['vital' => 'Resp. Rate', 'value' => $rr . '/min', 'status' => 'warning', 'note' => 'Abnormal respiratory rate'];
+        }
+
+        return $alerts;
     }
 }
