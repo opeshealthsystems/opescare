@@ -462,6 +462,16 @@ Route::get('/portals/admin/legal/minor-transitions',                    [\App\Ht
 // --------------------------------------------------
 // Facility Onboarding & Go-Live Portal
 // --------------------------------------------------
+// Integration Certifications
+Route::get('/portals/admin/certifications',                                   [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'index'])->name('portals.admin.certifications.index');
+Route::get('/portals/admin/certifications/create',                            [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'create'])->name('portals.admin.certifications.create');
+Route::post('/portals/admin/certifications',                                  [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'store'])->name('portals.admin.certifications.store');
+Route::get('/portals/admin/certifications/{certification}',                   [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'show'])->name('portals.admin.certifications.show');
+Route::post('/portals/admin/certifications/{certification}/test-run',         [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'recordTestRun'])->name('portals.admin.certifications.test_run');
+Route::post('/portals/admin/certifications/{certification}/badge/issue',      [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'issueBadge'])->name('portals.admin.certifications.badge.issue');
+Route::post('/portals/admin/certifications/badges/{badge}/revoke',            [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'revokeBadge'])->name('portals.admin.certifications.badge.revoke');
+Route::post('/portals/admin/certifications/seed-requirements',                [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'seedRequirements'])->name('portals.admin.certifications.seed');
+// --------------------------------------------------
 // Code System Mappings (LOINC/ICD-10/ATC)
 Route::get('/portals/admin/code-mappings',                               [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'index'])->name('portals.admin.code_mappings.index');
 Route::get('/portals/admin/code-mappings/create',                        [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'create'])->name('portals.admin.code_mappings.create');
