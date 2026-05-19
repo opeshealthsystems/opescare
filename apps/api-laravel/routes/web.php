@@ -347,6 +347,21 @@ Route::middleware(['web'])->group(function () {
     Route::post('/portals/admin/bridge/{id}/toggle',           [\App\Http\Controllers\MedicalId\BridgeAdminController::class, 'toggle'])->name('portals.admin.bridge.toggle');
     Route::get('/portals/admin/bridge/{id}/batches',           [\App\Http\Controllers\MedicalId\BridgeAdminController::class, 'batches'])->name('portals.admin.bridge.batches');
 
+    // --- Subscription & SaaS Billing ---
+    Route::get('/portals/admin/subscription/plans',                             [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'plans'])->name('portals.admin.subscription.plans');
+    Route::post('/portals/admin/subscription/plans',                            [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'plansStore'])->name('portals.admin.subscription.plans.store');
+    Route::post('/portals/admin/subscription/plans/{id}/toggle',                [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'plansToggle'])->name('portals.admin.subscription.plans.toggle');
+    Route::get('/portals/admin/subscription',                                   [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'subscriptions'])->name('portals.admin.subscription');
+    Route::post('/portals/admin/subscription',                                  [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'subscriptionsStore'])->name('portals.admin.subscription.store');
+    Route::get('/portals/admin/subscription/{id}',                              [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'subscriptionDetail'])->name('portals.admin.subscription.detail');
+    Route::post('/portals/admin/subscription/{id}/cancel',                      [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'subscriptionsCancel'])->name('portals.admin.subscription.cancel');
+    Route::post('/portals/admin/subscription/{id}/renew',                       [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'subscriptionsRenew'])->name('portals.admin.subscription.renew');
+    Route::post('/portals/admin/subscription/{id}/pause',                       [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'subscriptionsPause'])->name('portals.admin.subscription.pause');
+    Route::post('/portals/admin/subscription/{id}/reactivate',                  [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'subscriptionsReactivate'])->name('portals.admin.subscription.reactivate');
+    Route::post('/portals/admin/subscription/{id}/change-plan',                 [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'subscriptionsChangePlan'])->name('portals.admin.subscription.change_plan');
+    Route::get('/portals/admin/subscription/invoices',                          [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'invoices'])->name('portals.admin.subscription.invoices');
+    Route::post('/portals/admin/subscription/invoices/{id}/mark-paid',          [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'invoiceMarkPaid'])->name('portals.admin.subscription.invoices.mark_paid');
+
     // --- Security Operations Center ---
     Route::get('/portals/admin/security',                    [\App\Http\Controllers\MedicalId\SecurityOpsController::class, 'index'])->name('portals.admin.security');
     Route::get('/portals/admin/security/incidents',          [\App\Http\Controllers\MedicalId\SecurityOpsController::class, 'incidents'])->name('portals.admin.security.incidents');

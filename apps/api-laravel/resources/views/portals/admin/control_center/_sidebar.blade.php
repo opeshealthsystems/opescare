@@ -47,6 +47,26 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">Billing</div>
+    <a href="{{ route('portals.admin.subscription') }}" class="sidebar-link {{ request()->routeIs('portals.admin.subscription') || request()->routeIs('portals.admin.subscription.detail') ? 'active' : '' }}">
+        <i data-lucide="credit-card"></i><span>Subscriptions</span>
+        @php $pastDue = \App\Models\OrganizationSubscription::where('status','past_due')->count(); @endphp
+        @if($pastDue > 0)
+            <span class="sidebar-badge sidebar-badge--warning">{{ $pastDue }}</span>
+        @endif
+    </a>
+    <a href="{{ route('portals.admin.subscription.plans') }}" class="sidebar-link {{ request()->routeIs('portals.admin.subscription.plans*') ? 'active' : '' }}">
+        <i data-lucide="layers"></i><span>Plans</span>
+    </a>
+    <a href="{{ route('portals.admin.subscription.invoices') }}" class="sidebar-link {{ request()->routeIs('portals.admin.subscription.invoices*') ? 'active' : '' }}">
+        <i data-lucide="file-text"></i><span>Invoices</span>
+        @php $overdueInv = \App\Models\SubscriptionInvoice::where('status','sent')->where('due_date','<',now())->count(); @endphp
+        @if($overdueInv > 0)
+            <span class="sidebar-badge sidebar-badge--danger">{{ $overdueInv }}</span>
+        @endif
+    </a>
+</div>
+<div class="sidebar-nav-section">
     <div class="sidebar-nav-label">Integrations</div>
     <a href="{{ route('portals.admin.connect.index') }}" class="sidebar-link {{ request()->routeIs('portals.admin.connect*') ? 'active' : '' }}">
         <i data-lucide="plug-zap"></i><span>Connect Suite</span>
