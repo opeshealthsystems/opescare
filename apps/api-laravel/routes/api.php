@@ -405,3 +405,16 @@ Route::prefix('v1/sdk')
     Route::get('/token/introspect',
         [\App\Http\Controllers\Api\V1\Sdk\SdkAuthController::class, 'introspect']);
 });
+
+/*
+|--------------------------------------------------------------------------
+| OpesCare Bridge Agent API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/bridge')
+    ->middleware(['bridge.agent', 'throttle.client:300,1'])
+    ->group(function () {
+    Route::post('/sync',       [\App\Http\Controllers\Api\V1\Bridge\BridgeSyncController::class, 'sync']);
+    Route::post('/heartbeat',  [\App\Http\Controllers\Api\V1\Bridge\BridgeSyncController::class, 'heartbeat']);
+    Route::get('/status',      [\App\Http\Controllers\Api\V1\Bridge\BridgeSyncController::class, 'status']);
+});

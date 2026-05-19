@@ -329,6 +329,12 @@ Route::middleware(['web'])->group(function () {
     Route::post('/portals/admin/connect/webhooks/{id}/toggle', [\App\Http\Controllers\MedicalId\ConnectPortalController::class, 'webhookToggle'])->name('portals.admin.connect.webhooks.toggle');
     Route::get('/portals/admin/connect/widget',                [\App\Http\Controllers\MedicalId\ConnectPortalController::class, 'widget'])->name('portals.admin.connect.widget');
 
+    // --- Bridge Agent Management ---
+    Route::get('/portals/admin/bridge',                        [\App\Http\Controllers\MedicalId\BridgeAdminController::class, 'index'])->name('portals.admin.bridge');
+    Route::post('/portals/admin/bridge',                       [\App\Http\Controllers\MedicalId\BridgeAdminController::class, 'store'])->name('portals.admin.bridge.store');
+    Route::post('/portals/admin/bridge/{id}/toggle',           [\App\Http\Controllers\MedicalId\BridgeAdminController::class, 'toggle'])->name('portals.admin.bridge.toggle');
+    Route::get('/portals/admin/bridge/{id}/batches',           [\App\Http\Controllers\MedicalId\BridgeAdminController::class, 'batches'])->name('portals.admin.bridge.batches');
+
     // --- Security Operations Center ---
     Route::get('/portals/admin/security',                    [\App\Http\Controllers\MedicalId\SecurityOpsController::class, 'index'])->name('portals.admin.security');
     Route::get('/portals/admin/security/incidents',          [\App\Http\Controllers\MedicalId\SecurityOpsController::class, 'incidents'])->name('portals.admin.security.incidents');

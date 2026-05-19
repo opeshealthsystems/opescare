@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'sdk.token'      => \App\Http\Middleware\VerifySdkToken::class,
             'throttle.client'=> \App\Http\Middleware\ThrottleByClient::class,
+            'bridge.agent'   => \App\Http\Middleware\VerifyBridgeAgent::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

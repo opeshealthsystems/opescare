@@ -55,5 +55,8 @@
             <span class="sidebar-badge sidebar-badge--warning">{{ $pendingConnect }}</span>
         @endif
     </a>
+    <a href="{{ route('portals.admin.bridge') }}" class="sidebar-link {{ request()->routeIs('portals.admin.bridge*') ? 'active' : '' }}">
+        <i data-lucide="cable"></i><span>Bridge Agents</span>
+    </a>
 </div>
 @endsection
