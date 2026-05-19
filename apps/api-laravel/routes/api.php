@@ -161,6 +161,31 @@ Route::prefix('mobile')->group(function () {
     Route::post('/data-export-requests', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'createExportRequest']);
     Route::get('/data-export-requests', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'listExportRequests']);
     Route::get('/data-exports/{id}/download', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'downloadExport']);
+
+    // Health-ID card (digital wallet)
+    Route::get('/health-id-card', [\App\Http\Controllers\Api\Mobile\MobilePatientController::class, 'getHealthIdCard']);
+
+    // Lab orders & results
+    Route::get('/labs', [\App\Http\Controllers\Api\Mobile\MobileLabController::class, 'index']);
+    Route::get('/labs/{id}', [\App\Http\Controllers\Api\Mobile\MobileLabController::class, 'show']);
+
+    // Prescriptions
+    Route::get('/prescriptions', [\App\Http\Controllers\Api\Mobile\MobilePrescriptionController::class, 'index']);
+    Route::get('/prescriptions/{id}', [\App\Http\Controllers\Api\Mobile\MobilePrescriptionController::class, 'show']);
+
+    // Appointments (read-only from patient side)
+    Route::get('/appointments', [\App\Http\Controllers\Api\Mobile\MobileAppointmentController::class, 'index']);
+    Route::get('/appointments/{id}', [\App\Http\Controllers\Api\Mobile\MobileAppointmentController::class, 'show']);
+
+    // Official documents
+    Route::get('/documents', [\App\Http\Controllers\Api\Mobile\MobileDocumentController::class, 'index']);
+    Route::get('/documents/{id}', [\App\Http\Controllers\Api\Mobile\MobileDocumentController::class, 'show']);
+
+    // App settings & push tokens
+    Route::get('/settings', [\App\Http\Controllers\Api\Mobile\MobileSettingsController::class, 'show']);
+    Route::patch('/settings', [\App\Http\Controllers\Api\Mobile\MobileSettingsController::class, 'update']);
+    Route::post('/push-tokens', [\App\Http\Controllers\Api\Mobile\MobileSettingsController::class, 'registerPushToken']);
+    Route::delete('/push-tokens/{id}', [\App\Http\Controllers\Api\Mobile\MobileSettingsController::class, 'revokePushToken']);
 });
 
 /*
