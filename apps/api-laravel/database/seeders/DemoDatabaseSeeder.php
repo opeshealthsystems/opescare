@@ -12,6 +12,7 @@ class DemoDatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            LegalDocumentSeeder::class,
             DemoOrganizationsSeeder::class,
             DemoFacilitiesSeeder::class,
             DemoDepartmentsSeeder::class,
