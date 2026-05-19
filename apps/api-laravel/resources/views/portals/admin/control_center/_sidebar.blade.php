@@ -42,5 +42,8 @@
     <a href="{{ route('portals.admin.go-live') }}" class="sidebar-link">
         <i data-lucide="rocket"></i><span>Facility Go-Live</span>
     </a>
+    <a href="{{ route('portals.admin.security') }}" class="sidebar-link {{ request()->routeIs('portals.admin.security*') ? 'active' : '' }}">
+        <i data-lucide="shield-alert"></i><span>Security Ops</span>
+    </a>
 </div>
 @endsection
