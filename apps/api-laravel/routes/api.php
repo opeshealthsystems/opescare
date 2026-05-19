@@ -190,6 +190,35 @@ Route::prefix('mobile')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| OpesCare Provider Mobile API Routes (B2B Private)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('provider-mobile')->group(function () {
+
+    // Auth & session management
+    Route::post('/auth/login', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileAuthController::class, 'login']);
+    Route::post('/auth/otp/verify', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileAuthController::class, 'verifyOtp']);
+    Route::post('/auth/push-token', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileAuthController::class, 'registerPushToken']);
+    Route::post('/auth/logout', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileAuthController::class, 'logout']);
+
+    // Facility context switching
+    Route::get('/facilities', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileFacilityController::class, 'index']);
+    Route::get('/facilities/current', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileFacilityController::class, 'current']);
+    Route::post('/facilities/{id}/switch', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileFacilityController::class, 'switchFacility']);
+
+    // Patient lookup & Health ID scan
+    Route::get('/patients/scan', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobilePatientController::class, 'scan']);
+    Route::get('/patients/search', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobilePatientController::class, 'search']);
+    Route::get('/patients/{id}', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobilePatientController::class, 'show']);
+
+    // Tasks: queue + appointments
+    Route::get('/tasks', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileTaskController::class, 'index']);
+    Route::post('/tasks/queue/{id}/call', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileTaskController::class, 'callQueueEntry']);
+    Route::post('/tasks/queue/{id}/complete', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileTaskController::class, 'completeQueueEntry']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | OpesCare Public Health Reporting API Routes (Phases 1-4)
 |--------------------------------------------------------------------------
 */
