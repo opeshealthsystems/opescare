@@ -86,6 +86,10 @@
         <i data-lucide="shield-check"></i>
         <span>{{ __('public.portal.nav_insurance', [], app()->getLocale()) ?: 'Insurance' }}</span>
     </a>
+    <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link">
+        <i data-lucide="upload-cloud"></i>
+        <span>{{ __('public.portal.nav_data_import', [], app()->getLocale()) ?: 'Data Import' }}</span>
+    </a>
 </div>
 @endsection
 

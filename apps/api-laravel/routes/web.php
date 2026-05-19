@@ -228,6 +228,19 @@ Route::middleware(['web'])->group(function () {
     Route::post('/portals/staff/support/{id}/escalate', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'supportEscalate'])->name('portals.staff.support.escalate');
     Route::post('/portals/staff/support/{id}/assign', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'supportAssign'])->name('portals.staff.support.assign');
 
+    // ── Data Import Portal ────────────────────────────────────────
+    Route::get('/portals/staff/data-import',                    [\App\Http\Controllers\MedicalId\DataImportController::class, 'index'])->name('portals.staff.data_import.index');
+    Route::get('/portals/staff/data-import/upload',             [\App\Http\Controllers\MedicalId\DataImportController::class, 'create'])->name('portals.staff.data_import.create');
+    Route::post('/portals/staff/data-import',                   [\App\Http\Controllers\MedicalId\DataImportController::class, 'store'])->name('portals.staff.data_import.store');
+    Route::get('/portals/staff/data-import/{id}/mapping',       [\App\Http\Controllers\MedicalId\DataImportController::class, 'mapping'])->name('portals.staff.data_import.mapping');
+    Route::post('/portals/staff/data-import/{id}/mapping',      [\App\Http\Controllers\MedicalId\DataImportController::class, 'mappingStore'])->name('portals.staff.data_import.mapping.store');
+    Route::post('/portals/staff/data-import/{id}/validate',     [\App\Http\Controllers\MedicalId\DataImportController::class, 'validate'])->name('portals.staff.data_import.validate');
+    Route::get('/portals/staff/data-import/{id}/preview',       [\App\Http\Controllers\MedicalId\DataImportController::class, 'preview'])->name('portals.staff.data_import.preview');
+    Route::post('/portals/staff/data-import/{id}/approve',      [\App\Http\Controllers\MedicalId\DataImportController::class, 'approve'])->name('portals.staff.data_import.approve');
+    Route::post('/portals/staff/data-import/{id}/rollback',     [\App\Http\Controllers\MedicalId\DataImportController::class, 'rollback'])->name('portals.staff.data_import.rollback');
+    Route::post('/portals/staff/data-import/{id}/cancel',       [\App\Http\Controllers\MedicalId\DataImportController::class, 'cancel'])->name('portals.staff.data_import.cancel');
+    Route::get('/portals/staff/data-import/{id}/audit',         [\App\Http\Controllers\MedicalId\DataImportController::class, 'auditLog'])->name('portals.staff.data_import.audit');
+
     // --- Insurance Portal ---
     Route::get('/portals/insurance/providers', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'providers'])->name('portals.insurance.providers');
     Route::post('/portals/insurance/providers', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'providersStore'])->name('portals.insurance.providers.store');

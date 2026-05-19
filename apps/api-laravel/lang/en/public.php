@@ -124,6 +124,7 @@ return [
         'nav_staff_shifts'       => 'Shifts',
         'nav_staff_roster'       => 'Duty Roster',
         'nav_staff_leave'        => 'Leave',
+        'nav_data_import'        => 'Data Import',
         'nav_resources'          => 'Resources',
         'sign_out'               => 'Sign Out',
 

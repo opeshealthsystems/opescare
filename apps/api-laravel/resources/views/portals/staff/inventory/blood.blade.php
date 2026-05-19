@@ -70,6 +70,10 @@
         <i data-lucide="headset"></i>
         <span>{{ __('public.portal.nav_support', [], app()->getLocale()) ?: 'Support' }}</span>
     </a>
+    <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link">
+        <i data-lucide="upload-cloud"></i>
+        <span>{{ __('public.portal.nav_data_import', [], app()->getLocale()) ?: 'Data Import' }}</span>
+    </a>
 </div>
 @endsection
 
