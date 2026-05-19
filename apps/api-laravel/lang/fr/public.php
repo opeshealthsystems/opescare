@@ -117,6 +117,8 @@ return [
         ‘nav_billing’            => ‘Facturation’,
         ‘nav_support’            => ‘Assistance’,
         ‘nav_insurance’          => ‘Assurance’,
+        ‘nav_inventory_pharmacy’ => ‘Pharmacie’,
+        ‘nav_inventory_blood’    => ‘Banque de Sang’,
         ‘nav_staff_directory’    => ‘Annuaire’,
         ‘nav_staff_shifts’       => ‘Quarts’,
         ‘nav_staff_roster’       => ‘Tableau de Service’,

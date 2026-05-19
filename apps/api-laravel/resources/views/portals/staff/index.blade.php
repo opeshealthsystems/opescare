@@ -59,6 +59,17 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">Inventory</div>
+    <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
+        <i data-lucide="pill"></i>
+        <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.inventory.blood') }}" class="sidebar-link">
+        <i data-lucide="droplets"></i>
+        <span>{{ __('public.portal.nav_inventory_blood', [], app()->getLocale()) ?: 'Blood Bank' }}</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
     <div class="sidebar-nav-label">Operations</div>
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>
@@ -235,6 +246,14 @@
                 <a href="{{ route('portals.insurance.policies') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
                     <i data-lucide="shield-check" style="width:15px;height:15px;"></i>
                     {{ __('public.portal.nav_insurance', [], app()->getLocale()) ?: 'Insurance' }}
+                </a>
+                <a href="{{ route('portals.staff.hr.directory') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
+                    <i data-lucide="users" style="width:15px;height:15px;"></i>
+                    {{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Staff Directory' }}
+                </a>
+                <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
+                    <i data-lucide="pill" style="width:15px;height:15px;"></i>
+                    {{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy Stock' }}
                 </a>
             </div>
         </div>

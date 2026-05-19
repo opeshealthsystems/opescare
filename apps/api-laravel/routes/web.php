@@ -167,6 +167,18 @@ Route::middleware(['web'])->group(function () {
     Route::get('/portals/staff/visits/{id}/consult', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'consult'])->name('portals.staff.visits.consult');
     Route::post('/portals/staff/visits/{id}/consult', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'consultStore'])->name('portals.staff.visits.consult.store');
 
+    // --- Inventory Portal ---
+    Route::get('/portals/staff/inventory/pharmacy', [\App\Http\Controllers\MedicalId\InventoryPortalController::class, 'pharmacy'])->name('portals.staff.inventory.pharmacy');
+    Route::post('/portals/staff/inventory/pharmacy', [\App\Http\Controllers\MedicalId\InventoryPortalController::class, 'pharmacyStore'])->name('portals.staff.inventory.pharmacy.store');
+    Route::post('/portals/staff/inventory/pharmacy/{id}/restock', [\App\Http\Controllers\MedicalId\InventoryPortalController::class, 'pharmacyRestock'])->name('portals.staff.inventory.pharmacy.restock');
+    Route::post('/portals/staff/inventory/pharmacy/{id}/dispense', [\App\Http\Controllers\MedicalId\InventoryPortalController::class, 'pharmacyDispense'])->name('portals.staff.inventory.pharmacy.dispense');
+    Route::post('/portals/staff/inventory/pharmacy/{id}/flag', [\App\Http\Controllers\MedicalId\InventoryPortalController::class, 'pharmacyFlag'])->name('portals.staff.inventory.pharmacy.flag');
+    Route::delete('/portals/staff/inventory/pharmacy/{id}', [\App\Http\Controllers\MedicalId\InventoryPortalController::class, 'pharmacyDelete'])->name('portals.staff.inventory.pharmacy.delete');
+    Route::get('/portals/staff/inventory/blood', [\App\Http\Controllers\MedicalId\InventoryPortalController::class, 'blood'])->name('portals.staff.inventory.blood');
+    Route::post('/portals/staff/inventory/blood', [\App\Http\Controllers\MedicalId\InventoryPortalController::class, 'bloodUpsert'])->name('portals.staff.inventory.blood.upsert');
+    Route::post('/portals/staff/inventory/blood/{id}/adjust', [\App\Http\Controllers\MedicalId\InventoryPortalController::class, 'bloodAdjust'])->name('portals.staff.inventory.blood.adjust');
+    Route::post('/portals/staff/inventory/blood/{id}/flag', [\App\Http\Controllers\MedicalId\InventoryPortalController::class, 'bloodFlag'])->name('portals.staff.inventory.blood.flag');
+
     // --- Staff HR Portal ---
     Route::get('/portals/staff/hr/directory', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'directory'])->name('portals.staff.hr.directory');
     Route::post('/portals/staff/hr/directory', [\App\Http\Controllers\MedicalId\StaffHRPortalController::class, 'directoryStore'])->name('portals.staff.hr.directory.store');
