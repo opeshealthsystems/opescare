@@ -13,6 +13,7 @@ use App\Modules\Appointments\Services\AppointmentService;
 use App\Modules\Billing\Services\BillingService;
 use App\Modules\Billing\Services\PaymentService;
 use App\Modules\Queue\Services\QueueService;
+use App\Modules\Search\Services\GlobalSearchService;
 use App\Modules\Support\Services\SupportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -568,5 +569,28 @@ class StaffPortalController extends Controller
         ]);
 
         return redirect()->route('portals.staff.immunizations')->with('success', 'Immunization record saved.');
+    }
+
+    // ─── Global Search ────────────────────────────────────────────
+
+    public function search(Request $request, GlobalSearchService $svc)
+    {
+        $query = trim($request->input('q', ''));
+
+        $context = [
+            'actor_id'         => $this->demoActorId(),
+            'include_sensitive' => false, // sensitive results require explicit permission
+        ];
+
+        $data = $query !== '' ? $svc->search($query, $context) : ['query' => '', 'results' => [], 'counts' => []];
+
+        $grouped = collect($data['results'])->groupBy('type');
+
+        return view('portals.staff.search', [
+            'query'   => $query,
+            'grouped' => $grouped,
+            'counts'  => $data['counts'],
+            'total'   => count($data['results']),
+        ]);
     }
 }

@@ -74,6 +74,10 @@
         <i data-lucide="upload-cloud"></i>
         <span>{{ __('public.portal.nav_data_import', [], app()->getLocale()) ?: 'Data Import' }}</span>
     </a>
+    <a href="{{ route('portals.staff.search') }}" class="sidebar-link {{ request()->routeIs('portals.staff.search') ? 'active' : '' }}">
+        <i data-lucide="search"></i>
+        <span>{{ __('public.portal.nav_search', [], app()->getLocale()) ?: 'Global Search' }}</span>
+    </a>
 </div>
 @endsection
 

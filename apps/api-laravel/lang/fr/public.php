@@ -125,6 +125,7 @@ return [
         ‘nav_staff_roster’       => ‘Tableau de Service’,
         ‘nav_staff_leave’        => ‘Congés’,
         ‘nav_data_import’        => ‘Import de Données’,
+        ‘nav_search’             => ‘Recherche Globale’,
         ‘nav_resources’          => ‘Ressources’,
         ‘sign_out’               => ‘Déconnexion’,
 

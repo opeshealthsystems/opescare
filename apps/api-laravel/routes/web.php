@@ -241,6 +241,9 @@ Route::middleware(['web'])->group(function () {
     Route::post('/portals/staff/data-import/{id}/cancel',       [\App\Http\Controllers\MedicalId\DataImportController::class, 'cancel'])->name('portals.staff.data_import.cancel');
     Route::get('/portals/staff/data-import/{id}/audit',         [\App\Http\Controllers\MedicalId\DataImportController::class, 'auditLog'])->name('portals.staff.data_import.audit');
 
+    // --- Global Search ---
+    Route::get('/portals/staff/search', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'search'])->name('portals.staff.search');
+
     // --- Insurance Portal ---
     Route::get('/portals/insurance/providers', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'providers'])->name('portals.insurance.providers');
     Route::post('/portals/insurance/providers', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'providersStore'])->name('portals.insurance.providers.store');
