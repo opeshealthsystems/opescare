@@ -462,6 +462,14 @@ Route::get('/portals/admin/legal/minor-transitions',                    [\App\Ht
 // --------------------------------------------------
 // Facility Onboarding & Go-Live Portal
 // --------------------------------------------------
+// Code System Mappings (LOINC/ICD-10/ATC)
+Route::get('/portals/admin/code-mappings',                               [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'index'])->name('portals.admin.code_mappings.index');
+Route::get('/portals/admin/code-mappings/create',                        [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'create'])->name('portals.admin.code_mappings.create');
+Route::post('/portals/admin/code-mappings',                              [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'store'])->name('portals.admin.code_mappings.store');
+Route::post('/portals/admin/code-mappings/{mapping}/approve',            [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'approve'])->name('portals.admin.code_mappings.approve');
+Route::post('/portals/admin/code-mappings/{mapping}/reject',             [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'reject'])->name('portals.admin.code_mappings.reject');
+Route::delete('/portals/admin/code-mappings/{mapping}',                  [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'destroy'])->name('portals.admin.code_mappings.destroy');
+// --------------------------------------------------
 // KPI Dashboard
 Route::get('/portals/admin/kpi',                                         [\App\Http\Controllers\MedicalId\KpiDashboardController::class, 'index'])->name('portals.admin.kpi.index');
 Route::get('/portals/admin/kpi/trend',                                   [\App\Http\Controllers\MedicalId\KpiDashboardController::class, 'trend'])->name('portals.admin.kpi.trend');
