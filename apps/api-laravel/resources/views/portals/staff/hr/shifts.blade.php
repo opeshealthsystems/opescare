@@ -65,6 +65,13 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">Supply Chain</div>
+    <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+        <i data-lucide="package"></i>
+        <span>Supply Chain</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
     <div class="sidebar-nav-label">Operations</div>
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>

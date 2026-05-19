@@ -260,6 +260,22 @@ Route::middleware(['web'])->group(function () {
     Route::get('/portals/staff/files/{id}/download',[\App\Http\Controllers\MedicalId\FileStorageController::class, 'download'])->name('portals.staff.files.download');
     Route::delete('/portals/staff/files/{id}',      [\App\Http\Controllers\MedicalId\FileStorageController::class, 'destroy'])->name('portals.staff.files.destroy');
 
+    // --- Supply Chain Portal ---
+    Route::get('/portals/staff/supply',                                     [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'index'])->name('portals.staff.supply');
+    Route::get('/portals/staff/supply/items',                               [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'items'])->name('portals.staff.supply.items');
+    Route::post('/portals/staff/supply/items',                              [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'itemStore'])->name('portals.staff.supply.items.store');
+    Route::get('/portals/staff/supply/suppliers',                           [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'suppliers'])->name('portals.staff.supply.suppliers');
+    Route::post('/portals/staff/supply/suppliers',                          [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'supplierStore'])->name('portals.staff.supply.suppliers.store');
+    Route::get('/portals/staff/supply/stock',                               [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'stock'])->name('portals.staff.supply.stock');
+    Route::post('/portals/staff/supply/stock/receive',                      [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'stockReceive'])->name('portals.staff.supply.stock.receive');
+    Route::post('/portals/staff/supply/stock/{id}/adjust',                  [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'stockAdjust'])->name('portals.staff.supply.stock.adjust');
+    Route::get('/portals/staff/supply/purchase-orders',                     [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'purchaseOrders'])->name('portals.staff.supply.purchase_orders');
+    Route::post('/portals/staff/supply/purchase-orders',                    [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'purchaseOrderStore'])->name('portals.staff.supply.purchase_orders.store');
+    Route::post('/portals/staff/supply/purchase-orders/{id}/approve',       [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'purchaseOrderApprove'])->name('portals.staff.supply.purchase_orders.approve');
+    Route::get('/portals/staff/supply/goods-receipts',                      [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'goodsReceipts'])->name('portals.staff.supply.goods_receipts');
+    Route::post('/portals/staff/supply/goods-receipts',                     [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'goodsReceiptsStore'])->name('portals.staff.supply.goods_receipts.store');
+    Route::get('/portals/staff/supply/movements',                           [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'movements'])->name('portals.staff.supply.movements');
+
     // --- Insurance Portal ---
     Route::get('/portals/insurance/providers', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'providers'])->name('portals.insurance.providers');
     Route::post('/portals/insurance/providers', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'providersStore'])->name('portals.insurance.providers.store');
