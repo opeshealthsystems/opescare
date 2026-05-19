@@ -19,6 +19,8 @@
     <a href="{{ route('portals.staff.support') }}" class="sidebar-link"><i data-lucide="headset"></i><span>Support</span></a>
     <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active"><i data-lucide="upload-cloud"></i><span>Data Import</span></a>
 </div>
+    <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+        <i data-lucide="brain-circuit"></i> Clinical Alerts</a>
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
         <i data-lucide="package"></i> Supply Chain</a>
 @endsection

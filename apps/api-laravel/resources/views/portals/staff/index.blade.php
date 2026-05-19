@@ -34,6 +34,10 @@
         <i data-lucide="stethoscope"></i>
         <span>{{ __('public.portal.nav_visits', [], app()->getLocale()) ?: 'Visits' }}</span>
     </a>
+    <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+        <i data-lucide="brain-circuit"></i>
+        <span>Clinical Alerts</span>
+    </a>
     <a href="{{ route('portals.staff.immunizations') }}" class="sidebar-link">
         <i data-lucide="syringe"></i>
         <span>{{ __('public.portal.nav_immunizations', [], app()->getLocale()) ?: 'Immunizations' }}</span>

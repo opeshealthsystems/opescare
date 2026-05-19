@@ -276,6 +276,18 @@ Route::middleware(['web'])->group(function () {
     Route::post('/portals/staff/supply/goods-receipts',                     [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'goodsReceiptsStore'])->name('portals.staff.supply.goods_receipts.store');
     Route::get('/portals/staff/supply/movements',                           [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'movements'])->name('portals.staff.supply.movements');
 
+    // --- CDSS / Clinical Alerts ---
+    Route::get('/portals/staff/cdss',                                        [\App\Http\Controllers\MedicalId\CdssController::class, 'index'])->name('portals.staff.cdss');
+    Route::get('/portals/staff/cdss/rules',                                  [\App\Http\Controllers\MedicalId\CdssController::class, 'rules'])->name('portals.staff.cdss.rules');
+    Route::get('/portals/staff/cdss/lab-rules',                              [\App\Http\Controllers\MedicalId\CdssController::class, 'labRules'])->name('portals.staff.cdss.lab_rules');
+    Route::get('/portals/staff/cdss/drug-interactions',                      [\App\Http\Controllers\MedicalId\CdssController::class, 'drugInteractions'])->name('portals.staff.cdss.drug_interactions');
+    Route::get('/portals/staff/cdss/patients/{patientId}/alerts',            [\App\Http\Controllers\MedicalId\CdssController::class, 'patientAlerts'])->name('portals.staff.cdss.patient_alerts');
+    Route::get('/portals/staff/cdss/visits/{visitId}/alerts',                [\App\Http\Controllers\MedicalId\CdssController::class, 'visitAlerts'])->name('portals.staff.cdss.visit_alerts');
+    Route::post('/portals/staff/cdss/run-checks',                            [\App\Http\Controllers\MedicalId\CdssController::class, 'runChecks'])->name('portals.staff.cdss.run_checks');
+    Route::post('/portals/staff/cdss/alerts/{alertId}/acknowledge',          [\App\Http\Controllers\MedicalId\CdssController::class, 'acknowledge'])->name('portals.staff.cdss.acknowledge');
+    Route::post('/portals/staff/cdss/alerts/{alertId}/override',             [\App\Http\Controllers\MedicalId\CdssController::class, 'override'])->name('portals.staff.cdss.override');
+    Route::post('/portals/staff/cdss/alerts/{alertId}/dismiss',              [\App\Http\Controllers\MedicalId\CdssController::class, 'dismiss'])->name('portals.staff.cdss.dismiss');
+
     // --- Insurance Portal ---
     Route::get('/portals/insurance/providers', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'providers'])->name('portals.insurance.providers');
     Route::post('/portals/insurance/providers', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'providersStore'])->name('portals.insurance.providers.store');

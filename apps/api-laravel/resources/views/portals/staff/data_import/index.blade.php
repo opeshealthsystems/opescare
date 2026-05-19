@@ -28,6 +28,9 @@
     <a href="{{ route('portals.staff.visits') }}" class="sidebar-link">
         <i data-lucide="stethoscope"></i><span>Visits</span>
     </a>
+    <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+        <i data-lucide="brain-circuit"></i><span>Clinical Alerts</span>
+    </a>
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">HR & Staff</div>
