@@ -513,4 +513,24 @@ Route::prefix('fhir/R4')->group(function () {
     // MedicationRequest resource
     Route::get('/MedicationRequest',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchMedicationRequest']);
     Route::get('/MedicationRequest/{id}', [\App\Http\Controllers\Api\Fhir\FhirController::class, 'medicationRequest']);
+
+    // Practitioner (Phase 30)
+    Route::get('/Practitioner',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchPractitioner']);
+    Route::get('/Practitioner/{id}',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'practitioner']);
+
+    // Organization (Phase 30)
+    Route::get('/Organization',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchOrganization']);
+    Route::get('/Organization/{id}',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'organization']);
+
+    // DocumentReference (Phase 30)
+    Route::get('/DocumentReference',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchDocumentReference']);
+    Route::get('/DocumentReference/{id}', [\App\Http\Controllers\Api\Fhir\FhirController::class, 'documentReference']);
+
+    // Consent (Phase 30)
+    Route::get('/Consent',                [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchConsent']);
+    Route::get('/Consent/{id}',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'consent']);
+
+    // Coverage (Phase 30)
+    Route::get('/Coverage',               [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchCoverage']);
+    Route::get('/Coverage/{id}',          [\App\Http\Controllers\Api\Fhir\FhirController::class, 'coverage']);
 });

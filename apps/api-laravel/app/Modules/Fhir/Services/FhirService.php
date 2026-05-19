@@ -2,16 +2,26 @@
 
 namespace App\Modules\Fhir\Services;
 
+use App\Models\ConsentGrant;
+use App\Models\Facility;
 use App\Models\LabOrder;
+use App\Models\OfficialDocument;
 use App\Models\Patient;
+use App\Models\PatientInsurancePolicy;
 use App\Models\Prescription;
+use App\Models\User;
 use App\Models\Visit;
 use App\Models\VitalSign;
+use App\Modules\Fhir\Mappers\FhirConsentMapper;
+use App\Modules\Fhir\Mappers\FhirCoverageMapper;
 use App\Modules\Fhir\Mappers\FhirDiagnosticReportMapper;
+use App\Modules\Fhir\Mappers\FhirDocumentReferenceMapper;
 use App\Modules\Fhir\Mappers\FhirEncounterMapper;
 use App\Modules\Fhir\Mappers\FhirMedicationRequestMapper;
 use App\Modules\Fhir\Mappers\FhirObservationMapper;
+use App\Modules\Fhir\Mappers\FhirOrganizationMapper;
 use App\Modules\Fhir\Mappers\FhirPatientMapper;
+use App\Modules\Fhir\Mappers\FhirPractitionerMapper;
 
 /**
  * FHIR R4 Service
@@ -20,7 +30,8 @@ use App\Modules\Fhir\Mappers\FhirPatientMapper;
  * from OpesCare internal models.
  *
  * This is a READ-ONLY mapping layer. It does not accept FHIR writes.
- * Supported resources: Patient, Encounter, Observation, MedicationRequest, DiagnosticReport
+ * Supported resources: Patient, Encounter, Observation, MedicationRequest,
+ * DiagnosticReport, Practitioner, Organization, DocumentReference, Consent, Coverage
  */
 class FhirService
 {
@@ -30,6 +41,11 @@ class FhirService
         private readonly FhirObservationMapper        $observationMapper,
         private readonly FhirMedicationRequestMapper  $medicationMapper,
         private readonly FhirDiagnosticReportMapper   $diagnosticMapper,
+        private readonly FhirPractitionerMapper       $practitionerMapper,
+        private readonly FhirOrganizationMapper       $organizationMapper,
+        private readonly FhirDocumentReferenceMapper  $documentReferenceMapper,
+        private readonly FhirConsentMapper            $consentMapper,
+        private readonly FhirCoverageMapper           $coverageMapper,
     ) {}
 
     // -------------------------------------------------------------------------
@@ -118,6 +134,60 @@ class FhirService
     }
 
     // -------------------------------------------------------------------------
+    // Extended Resources (Phase 30)
+    // -------------------------------------------------------------------------
+
+    public function practitioner(User $user): array
+    {
+        return $this->practitionerMapper->toFhir($user);
+    }
+
+    public function practitionerBundle(\Illuminate\Support\Collection $users): array
+    {
+        return $this->practitionerMapper->toBundle($users);
+    }
+
+    public function organization(Facility $facility): array
+    {
+        return $this->organizationMapper->toFhir($facility);
+    }
+
+    public function organizationBundle(\Illuminate\Support\Collection $facilities): array
+    {
+        return $this->organizationMapper->toBundle($facilities);
+    }
+
+    public function documentReference(OfficialDocument $document): array
+    {
+        return $this->documentReferenceMapper->toFhir($document);
+    }
+
+    public function documentReferenceBundle(\Illuminate\Support\Collection $documents): array
+    {
+        return $this->documentReferenceMapper->toBundle($documents);
+    }
+
+    public function consent(ConsentGrant $grant): array
+    {
+        return $this->consentMapper->toFhir($grant);
+    }
+
+    public function consentBundle(\Illuminate\Support\Collection $grants): array
+    {
+        return $this->consentMapper->toBundle($grants);
+    }
+
+    public function coverage(PatientInsurancePolicy $policy): array
+    {
+        return $this->coverageMapper->toFhir($policy);
+    }
+
+    public function coverageBundle(\Illuminate\Support\Collection $policies): array
+    {
+        return $this->coverageMapper->toBundle($policies);
+    }
+
+    // -------------------------------------------------------------------------
     // FHIR CapabilityStatement
     // -------------------------------------------------------------------------
 
@@ -140,11 +210,16 @@ class FhirService
                 [
                     'mode'     => 'server',
                     'resource' => [
-                        ['type' => 'Patient',           'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
-                        ['type' => 'Encounter',         'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
-                        ['type' => 'Observation',       'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
-                        ['type' => 'MedicationRequest', 'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
-                        ['type' => 'DiagnosticReport',  'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'Patient',             'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'Encounter',           'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'Observation',         'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'MedicationRequest',   'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'DiagnosticReport',    'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'Practitioner',        'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'Organization',        'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'DocumentReference',   'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'Consent',             'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'Coverage',            'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
                     ],
                 ],
             ],

@@ -3,14 +3,18 @@
 namespace App\Http\Controllers\Api\Fhir;
 
 use App\Http\Controllers\Controller;
+use App\Models\ConsentGrant;
+use App\Models\Facility;
 use App\Models\LabOrder;
+use App\Models\OfficialDocument;
 use App\Models\Patient;
+use App\Models\PatientInsurancePolicy;
 use App\Models\Prescription;
+use App\Models\User;
 use App\Models\Visit;
 use App\Modules\Fhir\Mappers\FhirDiagnosticReportMapper;
 use App\Modules\Fhir\Mappers\FhirEncounterMapper;
 use App\Modules\Fhir\Mappers\FhirMedicationRequestMapper;
-use App\Modules\Fhir\Mappers\FhirPatientMapper;
 use App\Modules\Fhir\Services\FhirService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -230,6 +234,154 @@ class FhirController extends Controller
             'total'        => count($entries),
             'entry'        => $entries,
         ]);
+    }
+
+    // -------------------------------------------------------------------------
+    // Practitioner (Phase 30)
+    // -------------------------------------------------------------------------
+
+    /**
+     * GET /api/fhir/R4/Practitioner/{id}
+     */
+    public function practitioner(string $id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+        return $this->fhirResponse($this->fhirService->practitioner($user));
+    }
+
+    /**
+     * GET /api/fhir/R4/Practitioner?facility={facilityId}
+     */
+    public function searchPractitioner(Request $request): JsonResponse
+    {
+        $query = User::query()->limit(50);
+
+        if ($facilityId = $request->query('facility')) {
+            $query->where('primary_facility_id', $facilityId);
+        }
+
+        return $this->fhirResponse($this->fhirService->practitionerBundle($query->get()));
+    }
+
+    // -------------------------------------------------------------------------
+    // Organization (Phase 30)
+    // -------------------------------------------------------------------------
+
+    /**
+     * GET /api/fhir/R4/Organization/{id}
+     */
+    public function organization(string $id): JsonResponse
+    {
+        $facility = Facility::findOrFail($id);
+        return $this->fhirResponse($this->fhirService->organization($facility));
+    }
+
+    /**
+     * GET /api/fhir/R4/Organization?active={true|false}
+     */
+    public function searchOrganization(Request $request): JsonResponse
+    {
+        $query = Facility::query()->limit(50);
+
+        if ($request->query('active') !== null) {
+            $status = filter_var($request->query('active'), FILTER_VALIDATE_BOOLEAN) ? 'active' : 'inactive';
+            $query->where('status', $status);
+        }
+
+        return $this->fhirResponse($this->fhirService->organizationBundle($query->get()));
+    }
+
+    // -------------------------------------------------------------------------
+    // DocumentReference (Phase 30)
+    // -------------------------------------------------------------------------
+
+    /**
+     * GET /api/fhir/R4/DocumentReference/{id}
+     */
+    public function documentReference(string $id): JsonResponse
+    {
+        $doc = OfficialDocument::findOrFail($id);
+        return $this->fhirResponse($this->fhirService->documentReference($doc));
+    }
+
+    /**
+     * GET /api/fhir/R4/DocumentReference?patient={patientId}&status={status}
+     */
+    public function searchDocumentReference(Request $request): JsonResponse
+    {
+        $query = OfficialDocument::query()->latest('issued_at')->limit(50);
+
+        if ($patientId = $request->query('patient')) {
+            $patientId = str_replace('Patient/', '', $patientId);
+            $query->where('patient_id', $patientId);
+        }
+        if ($status = $request->query('status')) {
+            $query->where('status', $status);
+        }
+
+        return $this->fhirResponse($this->fhirService->documentReferenceBundle($query->get()));
+    }
+
+    // -------------------------------------------------------------------------
+    // Consent (Phase 30)
+    // -------------------------------------------------------------------------
+
+    /**
+     * GET /api/fhir/R4/Consent/{id}
+     */
+    public function consent(string $id): JsonResponse
+    {
+        $grant = ConsentGrant::findOrFail($id);
+        return $this->fhirResponse($this->fhirService->consent($grant));
+    }
+
+    /**
+     * GET /api/fhir/R4/Consent?patient={patientId}&status={status}
+     */
+    public function searchConsent(Request $request): JsonResponse
+    {
+        $query = ConsentGrant::query()->latest()->limit(50);
+
+        if ($patientId = $request->query('patient')) {
+            $patientId = str_replace('Patient/', '', $patientId);
+            $query->where('patient_id', $patientId);
+        }
+        if ($status = $request->query('status')) {
+            $query->where('status', $status);
+        }
+
+        return $this->fhirResponse($this->fhirService->consentBundle($query->get()));
+    }
+
+    // -------------------------------------------------------------------------
+    // Coverage (Phase 30)
+    // -------------------------------------------------------------------------
+
+    /**
+     * GET /api/fhir/R4/Coverage/{id}
+     */
+    public function coverage(string $id): JsonResponse
+    {
+        $policy = PatientInsurancePolicy::findOrFail($id);
+        return $this->fhirResponse($this->fhirService->coverage($policy));
+    }
+
+    /**
+     * GET /api/fhir/R4/Coverage?patient={patientId}&status={status}
+     */
+    public function searchCoverage(Request $request): JsonResponse
+    {
+        $query = PatientInsurancePolicy::query()->latest()->limit(50);
+
+        if ($patientId = $request->query('patient')) {
+            $patientId = str_replace('Patient/', '', $patientId);
+            $query->where('patient_id', $patientId);
+        }
+        if ($status = $request->query('status')) {
+            $query->where('status', $status);
+        }
+
+        return $this->fhirResponse($this->fhirService->coverageBundle($query->get()));
     }
 
     // -------------------------------------------------------------------------
