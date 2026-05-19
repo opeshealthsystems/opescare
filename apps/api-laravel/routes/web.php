@@ -410,5 +410,25 @@ Route::get('/care-map/facility/{id}', [\App\Http\Controllers\Api\V1\CareMapContr
 Route::get('/care-map/emergency', [\App\Http\Controllers\Api\V1\CareMapController::class, 'publicEmergency'])->name('public.care-map.emergency');
 Route::get('/admin/care-map/governance', [\App\Http\Controllers\Api\V1\CareMapController::class, 'adminGovernance'])->name('admin.care-map.governance');
 
+/*
+|--------------------------------------------------------------------------
+| OpesCare Lite — Simplified Portal for Small / Low-Connectivity Facilities
+|--------------------------------------------------------------------------
+*/
+Route::get('/portals/lite',                                         [\App\Http\Controllers\MedicalId\LitePortalController::class, 'dashboard'])->name('portals.lite.dashboard');
+Route::get('/portals/lite/lookup',                                  [\App\Http\Controllers\MedicalId\LitePortalController::class, 'lookup'])->name('portals.lite.lookup');
+Route::get('/portals/lite/register-patient',                        [\App\Http\Controllers\MedicalId\LitePortalController::class, 'registerPatientForm'])->name('portals.lite.register_patient');
+Route::post('/portals/lite/register-patient',                       [\App\Http\Controllers\MedicalId\LitePortalController::class, 'registerPatientStore'])->name('portals.lite.register_patient.store');
+Route::get('/portals/lite/checkin',                                 [\App\Http\Controllers\MedicalId\LitePortalController::class, 'checkIn'])->name('portals.lite.checkin');
+Route::post('/portals/lite/checkin',                                [\App\Http\Controllers\MedicalId\LitePortalController::class, 'checkInStore'])->name('portals.lite.checkin.store');
+Route::get('/portals/lite/consultation',                            [\App\Http\Controllers\MedicalId\LitePortalController::class, 'consultation'])->name('portals.lite.consultation');
+Route::get('/portals/lite/billing',                                 [\App\Http\Controllers\MedicalId\LitePortalController::class, 'billing'])->name('portals.lite.billing');
+Route::get('/portals/lite/devices',                                 [\App\Http\Controllers\MedicalId\LitePortalController::class, 'devices'])->name('portals.lite.devices');
+Route::post('/portals/lite/devices/{device}/activate',              [\App\Http\Controllers\MedicalId\LitePortalController::class, 'activateDevice'])->name('portals.lite.devices.activate');
+Route::post('/portals/lite/devices/{device}/revoke',                [\App\Http\Controllers\MedicalId\LitePortalController::class, 'revokeDevice'])->name('portals.lite.devices.revoke');
+Route::get('/portals/lite/conflicts',                               [\App\Http\Controllers\MedicalId\LitePortalController::class, 'conflicts'])->name('portals.lite.conflicts');
+Route::post('/portals/lite/conflicts/{conflict}/resolve',           [\App\Http\Controllers\MedicalId\LitePortalController::class, 'resolveConflict'])->name('portals.lite.conflicts.resolve');
+Route::get('/portals/lite/devices/{device}/offline-events',         [\App\Http\Controllers\MedicalId\LitePortalController::class, 'offlineEvents'])->name('portals.lite.offline_events');
+
 
 

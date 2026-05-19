@@ -418,3 +418,16 @@ Route::prefix('v1/bridge')
     Route::post('/heartbeat',  [\App\Http\Controllers\Api\V1\Bridge\BridgeSyncController::class, 'heartbeat']);
     Route::get('/status',      [\App\Http\Controllers\Api\V1\Bridge\BridgeSyncController::class, 'status']);
 });
+
+/*
+|--------------------------------------------------------------------------
+| OpesCare Lite Sync API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/lite')->group(function () {
+    Route::post('/register-device',  [\App\Http\Controllers\Api\V1\LiteApiController::class, 'registerDevice']);
+    Route::get('/config',            [\App\Http\Controllers\Api\V1\LiteApiController::class, 'config']);
+    Route::post('/sync/push',        [\App\Http\Controllers\Api\V1\LiteApiController::class, 'syncPush']);
+    Route::get('/sync/pull',         [\App\Http\Controllers\Api\V1\LiteApiController::class, 'syncPull']);
+    Route::post('/offline-events',   [\App\Http\Controllers\Api\V1\LiteApiController::class, 'offlineEvent']);
+});
