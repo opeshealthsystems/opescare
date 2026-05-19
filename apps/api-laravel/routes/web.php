@@ -167,6 +167,9 @@ Route::middleware(['web'])->group(function () {
     Route::get('/portals/staff/visits/{id}/consult', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'consult'])->name('portals.staff.visits.consult');
     Route::post('/portals/staff/visits/{id}/consult', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'consultStore'])->name('portals.staff.visits.consult.store');
 
+    // --- Analytics Dashboard ---
+    Route::get('/portals/staff/analytics', [\App\Http\Controllers\MedicalId\AnalyticsDashboardController::class, 'index'])->name('portals.staff.analytics');
+
     // --- Inventory Portal ---
     Route::get('/portals/staff/inventory/pharmacy', [\App\Http\Controllers\MedicalId\InventoryPortalController::class, 'pharmacy'])->name('portals.staff.inventory.pharmacy');
     Route::post('/portals/staff/inventory/pharmacy', [\App\Http\Controllers\MedicalId\InventoryPortalController::class, 'pharmacyStore'])->name('portals.staff.inventory.pharmacy.store');

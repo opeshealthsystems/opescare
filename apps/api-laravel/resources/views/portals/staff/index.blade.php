@@ -15,6 +15,10 @@
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
     </a>
+    <a href="{{ route('portals.staff.analytics') }}" class="sidebar-link">
+        <i data-lucide="bar-chart-2"></i>
+        <span>{{ __('public.portal.nav_analytics', [], app()->getLocale()) ?: 'Analytics' }}</span>
+    </a>
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">Clinical</div>
@@ -254,6 +258,10 @@
                 <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
                     <i data-lucide="pill" style="width:15px;height:15px;"></i>
                     {{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy Stock' }}
+                </a>
+                <a href="{{ route('portals.staff.analytics') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
+                    <i data-lucide="bar-chart-2" style="width:15px;height:15px;"></i>
+                    {{ __('public.portal.nav_analytics', [], app()->getLocale()) ?: 'Analytics' }}
                 </a>
             </div>
         </div>

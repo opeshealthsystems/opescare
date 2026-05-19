@@ -15,6 +15,10 @@
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
     </a>
+    <a href="{{ route('portals.staff.analytics') }}" class="sidebar-link">
+        <i data-lucide="bar-chart-2"></i>
+        <span>{{ __('public.portal.nav_analytics', [], app()->getLocale()) ?: 'Analytics' }}</span>
+    </a>
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">Clinical</div>
