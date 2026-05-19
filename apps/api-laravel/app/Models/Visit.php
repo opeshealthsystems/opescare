@@ -55,4 +55,43 @@ class Visit extends Model
     {
         return $this->hasMany(Diagnosis::class);
     }
+
+    public function steps()
+    {
+        return $this->hasMany(VisitStep::class)->orderBy('display_order');
+    }
+
+    public function timeline()
+    {
+        return $this->hasMany(VisitTimeline::class)->orderBy('occurred_at');
+    }
+
+    // ── Status helpers ────────────────────────────────────────────────────────
+
+    public function isActive(): bool
+    {
+        return in_array($this->status, ['in_progress', 'pending', 'triaged']);
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->status === 'completed';
+    }
+
+    public function currentStep(): ?VisitStep
+    {
+        return $this->steps()->where('status', 'in_progress')->first();
+    }
+
+    public function statusBadgeClass(): string
+    {
+        return match($this->status) {
+            'pending'     => 'badge badge--neutral',
+            'in_progress' => 'badge badge--info',
+            'triaged'     => 'badge badge--warning',
+            'completed'   => 'badge badge--success',
+            'cancelled'   => 'badge badge--danger',
+            default       => 'badge badge--neutral',
+        };
+    }
 }
