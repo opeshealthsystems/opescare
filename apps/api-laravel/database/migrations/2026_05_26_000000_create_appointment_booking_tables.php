@@ -77,7 +77,13 @@ return new class extends Migration
             $table->foreign('provider_id')->references('id')->on('users')->onDelete('set null');
             $table->foreign('appointment_slot_id')->references('id')->on('appointment_slots')->onDelete('set null');
             $table->foreign('visit_id')->references('id')->on('visits')->onDelete('set null');
-            $table->foreign('rescheduled_from_appointment_id')->references('id')->on('appointments')->onDelete('set null');
+        });
+
+        Schema::table('appointments', function (Blueprint $table) {
+            $table->foreign('rescheduled_from_appointment_id')
+                ->references('id')
+                ->on('appointments')
+                ->onDelete('set null');
         });
     }
 
