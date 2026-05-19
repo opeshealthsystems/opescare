@@ -309,6 +309,8 @@ return [
         'ticket_created'             => 'Support ticket created.',
         'ticket_reply_sent'          => 'Reply sent.',
         'ticket_closed'              => 'Ticket resolved.',
+        'ticket_escalated'           => 'Ticket escalated.',
+        'ticket_assigned'            => 'Ticket assigned.',
 
         // Actions
         'action_record_payment'      => 'Record Payment',

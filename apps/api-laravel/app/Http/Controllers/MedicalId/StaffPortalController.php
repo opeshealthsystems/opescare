@@ -356,13 +356,16 @@ class StaffPortalController extends Controller
 
     public function support(Request $request)
     {
-        $query = SupportTicket::query()->orderByDesc('created_at');
+        $query = SupportTicket::withCount('messages')->orderByDesc('created_at');
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
         if ($request->filled('priority')) {
             $query->where('priority', $request->priority);
+        }
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
         }
 
         $tickets = $query->limit(100)->get();
@@ -425,6 +428,41 @@ class StaffPortalController extends Controller
 
             return redirect()->route('portals.staff.support')
                 ->with('success', __('public.staff_portal.ticket_closed', [], app()->getLocale()) ?: 'Ticket resolved.');
+        } catch (Throwable $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function supportEscalate(Request $request, string $id, SupportService $svc)
+    {
+        $request->validate([
+            'escalation_level' => 'required|in:l1,l2,l3,management',
+            'reason'           => 'nullable|string|max:500',
+        ]);
+
+        try {
+            $ticket = SupportTicket::findOrFail($id);
+            $svc->escalateTicket($ticket, $request->escalation_level, $this->demoActorId(), $request->reason);
+
+            return redirect()->route('portals.staff.support')
+                ->with('success', __('public.staff_portal.ticket_escalated', [], app()->getLocale()) ?: 'Ticket escalated.');
+        } catch (Throwable $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function supportAssign(Request $request, string $id, SupportService $svc)
+    {
+        $request->validate([
+            'assigned_to' => 'required|string|max:100',
+        ]);
+
+        try {
+            $ticket = SupportTicket::findOrFail($id);
+            $svc->assignTicket($ticket, $request->assigned_to, $this->demoActorId());
+
+            return redirect()->route('portals.staff.support')
+                ->with('success', __('public.staff_portal.ticket_assigned', [], app()->getLocale()) ?: 'Ticket assigned.');
         } catch (Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

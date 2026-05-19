@@ -309,6 +309,8 @@ return [
         ‘ticket_created’             => "Ticket de support créé.",
         ‘ticket_reply_sent’          => "Réponse envoyée.",
         ‘ticket_closed’              => "Ticket résolu.",
+        ‘ticket_escalated’           => "Ticket escaladé.",
+        ‘ticket_assigned’            => "Ticket assigné.",
 
         // Actions
         ‘action_record_payment’      => "Enregistrer le paiement",

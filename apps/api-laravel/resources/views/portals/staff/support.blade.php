@@ -123,6 +123,12 @@
             <option value="{{ $p }}" {{ request('priority') === $p ? 'selected' : '' }}>{{ ucwords($p) }}</option>
         @endforeach
     </select>
+    <select name="category" class="form-control">
+        <option value="">All Categories</option>
+        @foreach(['clinical','technical','billing','access','other'] as $c)
+            <option value="{{ $c }}" {{ request('category') === $c ? 'selected' : '' }}>{{ ucwords($c) }}</option>
+        @endforeach
+    </select>
     <button type="submit" class="btn btn-primary btn-sm">
         <i data-lucide="filter" style="width:13px;height:13px;"></i>
         {{ __('public.staff_portal.filter_apply', [], app()->getLocale()) ?: 'Filter' }}
@@ -152,6 +158,8 @@
                             <th>{{ __('public.staff_portal.col_type', [], app()->getLocale()) ?: 'Category' }}</th>
                             <th>{{ __('public.staff_portal.col_priority', [], app()->getLocale()) ?: 'Priority' }}</th>
                             <th>{{ __('public.staff_portal.col_status', [], app()->getLocale()) ?: 'Status' }}</th>
+                            <th>SLA Due</th>
+                            <th>Messages</th>
                             <th>{{ __('public.staff_portal.col_created', [], app()->getLocale()) ?: 'Created' }}</th>
                             <th>{{ __('public.staff_portal.col_actions', [], app()->getLocale()) ?: 'Actions' }}</th>
                         </tr>
@@ -174,38 +182,83 @@
                                 'high'     => 'badge-primary',
                                 default    => 'badge-neutral',
                             };
-                            $canClose = in_array($ticket->status ?? '', ['open','assigned','in_progress','escalated']);
+                            $canAct   = in_array($ticket->status ?? '', ['open','assigned','in_progress','escalated']);
+                            $slaDate  = $ticket->sla_due_at ? \Carbon\Carbon::parse($ticket->sla_due_at) : null;
+                            $slaOver  = $slaDate && $slaDate->isPast() && !in_array($ticket->status, ['resolved','closed']);
+                            $slaSoon  = $slaDate && !$slaOver && $slaDate->diffInHours(now()) < 4 && !in_array($ticket->status, ['resolved','closed']);
                         @endphp
                         <tr>
-                            <td data-label="{{ __('public.staff_portal.col_subject', [], app()->getLocale()) ?: 'Subject' }}">
-                                {{ $ticket->subject ?? '--' }}
+                            <td data-label="Subject">
+                                <span style="font-weight:500;">{{ $ticket->subject ?? '--' }}</span>
+                                @if($ticket->assigned_to)
+                                    <div style="font-size:.75rem;color:var(--p-text-muted);">Assigned: {{ $ticket->assigned_to }}</div>
+                                @endif
                             </td>
-                            <td data-label="{{ __('public.staff_portal.col_type', [], app()->getLocale()) ?: 'Category' }}">
+                            <td data-label="Category">
                                 <span class="badge badge-neutral">{{ ucwords($ticket->category ?? '') }}</span>
                             </td>
-                            <td data-label="{{ __('public.staff_portal.col_priority', [], app()->getLocale()) ?: 'Priority' }}">
+                            <td data-label="Priority">
                                 <span class="badge {{ $priorityBadge }}">{{ ucwords($ticket->priority ?? '') }}</span>
                             </td>
-                            <td data-label="{{ __('public.staff_portal.col_status', [], app()->getLocale()) ?: 'Status' }}">
+                            <td data-label="Status">
                                 <span class="badge {{ $statusBadge }}">{{ ucwords(str_replace('_', ' ', $ticket->status ?? '')) }}</span>
+                                @if($ticket->escalation_level)
+                                    <div style="font-size:.72rem;color:var(--p-danger);">↑ {{ strtoupper($ticket->escalation_level) }}</div>
+                                @endif
                             </td>
-                            <td data-label="{{ __('public.staff_portal.col_created', [], app()->getLocale()) ?: 'Created' }}">
+                            <td data-label="SLA Due">
+                                @if($slaDate)
+                                    <span style="font-size:.8rem;{{ $slaOver ? 'color:var(--p-danger);font-weight:600;' : ($slaSoon ? 'color:var(--p-warning);' : 'color:var(--p-text-muted);') }}">
+                                        @if($slaOver)
+                                            <i data-lucide="alert-triangle" style="width:11px;height:11px;"></i>
+                                            Overdue
+                                        @else
+                                            {{ $slaDate->format('M d, H:i') }}
+                                        @endif
+                                    </span>
+                                @else
+                                    <span style="color:var(--p-text-muted);font-size:.8rem;">—</span>
+                                @endif
+                            </td>
+                            <td data-label="Messages">
+                                @if(($ticket->messages_count ?? 0) > 0)
+                                    <span class="badge badge-teal">
+                                        <i data-lucide="message-circle" style="width:10px;height:10px;"></i>
+                                        {{ $ticket->messages_count }}
+                                    </span>
+                                @else
+                                    <span style="color:var(--p-text-muted);font-size:.8rem;">—</span>
+                                @endif
+                            </td>
+                            <td data-label="Created">
                                 {{ \Carbon\Carbon::parse($ticket->created_at)->format('M d, Y') }}
                             </td>
-                            <td data-label="{{ __('public.staff_portal.col_actions', [], app()->getLocale()) ?: 'Actions' }}">
-                                <div style="display:flex;gap:.35rem;flex-wrap:wrap;">
-                                    @if($canClose)
+                            <td data-label="Actions">
+                                <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
+                                    @if($canAct)
                                         <button type="button" class="btn btn-ghost btn-xs"
                                             onclick="openReplyModal('{{ $ticket->id }}')">
                                             <i data-lucide="message-circle" style="width:11px;height:11px;"></i>
-                                            {{ __('public.staff_portal.btn_reply', [], app()->getLocale()) ?: 'Reply' }}
+                                            Reply
                                         </button>
+                                        <button type="button" class="btn btn-ghost btn-xs"
+                                            onclick="openAssignModal('{{ $ticket->id }}', '{{ addslashes($ticket->assigned_to ?? '') }}')">
+                                            <i data-lucide="user-check" style="width:11px;height:11px;"></i>
+                                            Assign
+                                        </button>
+                                        @if($ticket->status !== 'escalated')
+                                        <button type="button" class="btn btn-ghost btn-xs"
+                                            onclick="openEscalateModal('{{ $ticket->id }}')">
+                                            <i data-lucide="arrow-up-circle" style="width:11px;height:11px;"></i>
+                                            Escalate
+                                        </button>
+                                        @endif
                                         <form method="POST" action="{{ route('portals.staff.support.close', $ticket->id) }}" style="display:inline;">
                                             @csrf
                                             <button type="submit" class="btn btn-success btn-xs"
                                                 onclick="return confirm('Close this ticket?')">
                                                 <i data-lucide="check-circle" style="width:11px;height:11px;"></i>
-                                                {{ __('public.staff_portal.btn_close_ticket', [], app()->getLocale()) ?: 'Close' }}
+                                                Close
                                             </button>
                                         </form>
                                     @endif
@@ -223,45 +276,47 @@
 {{-- New Ticket Modal --}}
 <div id="ticket-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;overflow-y:auto;">
     <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:520px;margin:1rem;">
-        <h3 style="margin:0 0 1.25rem;font-size:1.1rem;">
-            {{ __('public.staff_portal.btn_new_ticket', [], app()->getLocale()) ?: 'New Support Ticket' }}
-        </h3>
+        <h3 style="margin:0 0 1.25rem;font-size:1.1rem;">New Support Ticket</h3>
         <form method="POST" action="{{ route('portals.staff.support.store') }}">
             @csrf
             <div class="form-group" style="margin-bottom:.75rem;">
-                <label class="form-label">{{ __('public.staff_portal.lbl_subject', [], app()->getLocale()) ?: 'Subject' }} *</label>
+                <label class="form-label">Subject *</label>
                 <input type="text" name="subject" class="form-control" required maxlength="200">
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
                 <div class="form-group">
-                    <label class="form-label">{{ __('public.staff_portal.lbl_category', [], app()->getLocale()) ?: 'Category' }} *</label>
+                    <label class="form-label">Category *</label>
                     <select name="category" class="form-control" required>
-                        <option value="clinical">{{ __('public.staff_portal.cat_clinical', [], app()->getLocale()) ?: 'Clinical' }}</option>
-                        <option value="technical">{{ __('public.staff_portal.cat_technical', [], app()->getLocale()) ?: 'Technical' }}</option>
-                        <option value="billing">{{ __('public.staff_portal.cat_billing', [], app()->getLocale()) ?: 'Billing' }}</option>
-                        <option value="access">{{ __('public.staff_portal.cat_access', [], app()->getLocale()) ?: 'Access / Permissions' }}</option>
-                        <option value="other">{{ __('public.staff_portal.cat_other', [], app()->getLocale()) ?: 'Other' }}</option>
+                        <option value="clinical">Clinical</option>
+                        <option value="technical">Technical</option>
+                        <option value="billing">Billing</option>
+                        <option value="access">Access / Permissions</option>
+                        <option value="other">Other</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">{{ __('public.staff_portal.lbl_priority', [], app()->getLocale()) ?: 'Priority' }} *</label>
+                    <label class="form-label">Priority *</label>
                     <select name="priority" class="form-control" required>
-                        <option value="normal">{{ __('public.staff_portal.priority_normal', [], app()->getLocale()) ?: 'Normal' }}</option>
-                        <option value="high">{{ __('public.staff_portal.priority_high', [], app()->getLocale()) ?: 'High' }}</option>
-                        <option value="urgent">{{ __('public.staff_portal.priority_urgent', [], app()->getLocale()) ?: 'Urgent' }}</option>
-                        <option value="critical">{{ __('public.staff_portal.priority_critical', [], app()->getLocale()) ?: 'Critical' }}</option>
+                        <option value="normal">Normal</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                        <option value="critical">Critical</option>
                     </select>
                 </div>
             </div>
             <div class="form-group" style="margin-bottom:.75rem;">
-                <label class="form-label">{{ __('public.staff_portal.lbl_description', [], app()->getLocale()) ?: 'Description' }} *</label>
+                <label class="form-label">Description *</label>
                 <textarea name="description" class="form-control" rows="4" required minlength="10" maxlength="2000"></textarea>
+                <div style="font-size:.75rem;color:var(--p-text-muted);margin-top:.25rem;">
+                    <i data-lucide="shield" style="width:11px;height:11px;"></i>
+                    PII (Health IDs, emails, phone numbers) will be automatically redacted.
+                </div>
             </div>
             <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeTicketModal()">Back</button>
                 <button type="submit" class="btn btn-primary btn-sm">
                     <i data-lucide="send" style="width:13px;height:13px;"></i>
-                    {{ __('public.staff_portal.btn_new_ticket', [], app()->getLocale()) ?: 'Submit Ticket' }}
+                    Submit Ticket
                 </button>
             </div>
         </form>
@@ -271,20 +326,77 @@
 {{-- Reply Modal --}}
 <div id="reply-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
     <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:480px;margin:1rem;">
-        <h3 style="margin:0 0 1.25rem;font-size:1.1rem;">
-            {{ __('public.staff_portal.btn_reply', [], app()->getLocale()) ?: 'Reply to Ticket' }}
-        </h3>
+        <h3 style="margin:0 0 1.25rem;font-size:1.1rem;">Reply to Ticket</h3>
         <form id="reply-form" method="POST" action="">
             @csrf
             <div class="form-group" style="margin-bottom:.75rem;">
-                <label class="form-label">{{ __('public.staff_portal.lbl_reply', [], app()->getLocale()) ?: 'Your Reply' }} *</label>
+                <label class="form-label">Your Reply *</label>
                 <textarea name="body" class="form-control" rows="4" required minlength="2" maxlength="2000"></textarea>
             </div>
             <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeReplyModal()">Back</button>
                 <button type="submit" class="btn btn-primary btn-sm">
                     <i data-lucide="send" style="width:13px;height:13px;"></i>
-                    {{ __('public.staff_portal.btn_reply', [], app()->getLocale()) ?: 'Send Reply' }}
+                    Send Reply
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Assign Modal --}}
+<div id="assign-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:420px;margin:1rem;">
+        <h3 style="margin:0 0 1.25rem;font-size:1.1rem;">Assign Ticket</h3>
+        <form id="assign-form" method="POST" action="">
+            @csrf
+            <div class="form-group" style="margin-bottom:.75rem;">
+                <label class="form-label">Assign To *</label>
+                <input type="text" id="assign-to-input" name="assigned_to" class="form-control" required maxlength="100"
+                    placeholder="e.g. it-support, helpdesk@facility.org, John Doe">
+                <div style="font-size:.75rem;color:var(--p-text-muted);margin-top:.25rem;">
+                    Enter staff name, email, or team identifier.
+                </div>
+            </div>
+            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeAssignModal()">Back</button>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i data-lucide="user-check" style="width:13px;height:13px;"></i>
+                    Assign
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Escalate Modal --}}
+<div id="escalate-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:420px;margin:1rem;">
+        <h3 style="margin:0 0 .25rem;font-size:1.1rem;">Escalate Ticket</h3>
+        <p style="color:var(--p-text-muted);font-size:.85rem;margin:0 0 1.25rem;">
+            This will flag the ticket for higher-level attention and update the SLA.
+        </p>
+        <form id="escalate-form" method="POST" action="">
+            @csrf
+            <div class="form-group" style="margin-bottom:.75rem;">
+                <label class="form-label">Escalation Level *</label>
+                <select name="escalation_level" class="form-control" required>
+                    <option value="l1">L1 — First-line support</option>
+                    <option value="l2">L2 — Technical / Specialist</option>
+                    <option value="l3">L3 — Engineering / Senior</option>
+                    <option value="management">Management</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom:.75rem;">
+                <label class="form-label">Reason <span style="color:var(--p-text-muted)">(optional)</span></label>
+                <textarea name="reason" class="form-control" rows="3" maxlength="500"
+                    placeholder="Why is this ticket being escalated?"></textarea>
+            </div>
+            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeEscalateModal()">Back</button>
+                <button type="submit" class="btn btn-danger btn-sm">
+                    <i data-lucide="arrow-up-circle" style="width:13px;height:13px;"></i>
+                    Escalate
                 </button>
             </div>
         </form>
@@ -295,21 +407,45 @@
 
 @section('scripts')
 <script>
+    // ── Ticket modal ──────────────────────────────────────
     function openTicketModal() { document.getElementById('ticket-modal').style.display = 'flex'; }
     function closeTicketModal() { document.getElementById('ticket-modal').style.display = 'none'; }
     document.getElementById('ticket-modal').addEventListener('click', function(e) {
         if (e.target === this) closeTicketModal();
     });
 
+    // ── Reply modal ───────────────────────────────────────
     function openReplyModal(ticketId) {
         var form = document.getElementById('reply-form');
-        var base = '{{ url('/portals/staff/support') }}';
-        form.setAttribute('action', base + '/' + ticketId + '/reply');
+        form.setAttribute('action', '{{ url('/portals/staff/support') }}/' + ticketId + '/reply');
         document.getElementById('reply-modal').style.display = 'flex';
     }
     function closeReplyModal() { document.getElementById('reply-modal').style.display = 'none'; }
     document.getElementById('reply-modal').addEventListener('click', function(e) {
         if (e.target === this) closeReplyModal();
+    });
+
+    // ── Assign modal ──────────────────────────────────────
+    function openAssignModal(ticketId, currentAssignee) {
+        var form = document.getElementById('assign-form');
+        form.setAttribute('action', '{{ url('/portals/staff/support') }}/' + ticketId + '/assign');
+        document.getElementById('assign-to-input').value = currentAssignee || '';
+        document.getElementById('assign-modal').style.display = 'flex';
+    }
+    function closeAssignModal() { document.getElementById('assign-modal').style.display = 'none'; }
+    document.getElementById('assign-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeAssignModal();
+    });
+
+    // ── Escalate modal ────────────────────────────────────
+    function openEscalateModal(ticketId) {
+        var form = document.getElementById('escalate-form');
+        form.setAttribute('action', '{{ url('/portals/staff/support') }}/' + ticketId + '/escalate');
+        document.getElementById('escalate-modal').style.display = 'flex';
+    }
+    function closeEscalateModal() { document.getElementById('escalate-modal').style.display = 'none'; }
+    document.getElementById('escalate-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeEscalateModal();
     });
 </script>
 @endsection
