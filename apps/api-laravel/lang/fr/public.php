@@ -127,6 +127,7 @@ return [
         ‘nav_data_import’        => ‘Import de Données’,
         ‘nav_search’             => ‘Recherche Globale’,
         ‘nav_files’              => ‘Fichiers & Pièces Jointes’,
+        ‘nav_wards’              => ‘Salles & Lits’,
         ‘nav_resources’          => ‘Ressources’,
         ‘sign_out’               => ‘Déconnexion’,
 

@@ -127,6 +127,7 @@ return [
         'nav_data_import'        => 'Data Import',
         'nav_search'             => 'Global Search',
         'nav_files'              => 'Files & Attachments',
+        'nav_wards'              => 'Wards & Beds',
         'nav_resources'          => 'Resources',
         'sign_out'               => 'Sign Out',
 

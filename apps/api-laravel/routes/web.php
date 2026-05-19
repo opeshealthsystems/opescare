@@ -245,6 +245,14 @@ Route::middleware(['web'])->group(function () {
     // --- Global Search ---
     Route::get('/portals/staff/search', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'search'])->name('portals.staff.search');
 
+    // --- Ward / Admission / Bed Management ---
+    Route::get('/portals/staff/wards',                            [\App\Http\Controllers\MedicalId\WardController::class, 'index'])->name('portals.staff.wards');
+    Route::post('/portals/staff/wards',                           [\App\Http\Controllers\MedicalId\WardController::class, 'wardStore'])->name('portals.staff.wards.store');
+    Route::get('/portals/staff/wards/admissions',                 [\App\Http\Controllers\MedicalId\WardController::class, 'admissions'])->name('portals.staff.wards.admissions');
+    Route::post('/portals/staff/wards/admissions',                [\App\Http\Controllers\MedicalId\WardController::class, 'admitStore'])->name('portals.staff.wards.admit');
+    Route::post('/portals/staff/wards/admissions/{id}/discharge', [\App\Http\Controllers\MedicalId\WardController::class, 'dischargeStore'])->name('portals.staff.wards.discharge');
+    Route::post('/portals/staff/wards/admissions/{id}/transfer',  [\App\Http\Controllers\MedicalId\WardController::class, 'transferStore'])->name('portals.staff.wards.transfer');
+
     // --- File Storage & Medical Attachments ---
     Route::get('/portals/staff/files',              [\App\Http\Controllers\MedicalId\FileStorageController::class, 'index'])->name('portals.staff.files.index');
     Route::get('/portals/staff/files/upload',       [\App\Http\Controllers\MedicalId\FileStorageController::class, 'create'])->name('portals.staff.files.create');

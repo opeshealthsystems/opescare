@@ -90,6 +90,10 @@
         <i data-lucide="paperclip"></i>
         <span>{{ __('public.portal.nav_files', [], app()->getLocale()) ?: 'Files & Attachments' }}</span>
     </a>
+    <a href="{{ route('portals.staff.wards') }}" class="sidebar-link {{ request()->routeIs('portals.staff.wards*') ? 'active' : '' }}">
+        <i data-lucide="bed"></i>
+        <span>{{ __('public.portal.nav_wards', [], app()->getLocale()) ?: 'Wards & Beds' }}</span>
+    </a>
 </div>
 @endsection
 
