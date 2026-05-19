@@ -46,4 +46,14 @@
         <i data-lucide="shield-alert"></i><span>Security Ops</span>
     </a>
 </div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">Integrations</div>
+    <a href="{{ route('portals.admin.connect.index') }}" class="sidebar-link {{ request()->routeIs('portals.admin.connect*') ? 'active' : '' }}">
+        <i data-lucide="plug-zap"></i><span>Connect Suite</span>
+        @php $pendingConnect = \App\Models\IntegrationClient::where('status','pending')->count(); @endphp
+        @if($pendingConnect > 0)
+            <span class="sidebar-badge sidebar-badge--warning">{{ $pendingConnect }}</span>
+        @endif
+    </a>
+</div>
 @endsection

@@ -301,6 +301,17 @@ Route::middleware(['web'])->group(function () {
     Route::get('/portals/admin/cc/health',               [\App\Http\Controllers\MedicalId\AdminControlCenterController::class, 'systemHealth'])->name('portals.admin.cc.health');
     Route::get('/portals/admin/cc/audit',                [\App\Http\Controllers\MedicalId\AdminControlCenterController::class, 'auditLog'])->name('portals.admin.cc.audit');
 
+    // --- Connect Suite Admin Portal ---
+    Route::get('/portals/admin/connect',                       [\App\Http\Controllers\MedicalId\ConnectPortalController::class, 'index'])->name('portals.admin.connect');
+    Route::get('/portals/admin/connect/clients',               [\App\Http\Controllers\MedicalId\ConnectPortalController::class, 'clients'])->name('portals.admin.connect.clients');
+    Route::post('/portals/admin/connect/clients',              [\App\Http\Controllers\MedicalId\ConnectPortalController::class, 'clientStore'])->name('portals.admin.connect.clients.store');
+    Route::post('/portals/admin/connect/clients/{id}/action',  [\App\Http\Controllers\MedicalId\ConnectPortalController::class, 'clientAction'])->name('portals.admin.connect.clients.action');
+    Route::get('/portals/admin/connect/tokens',                [\App\Http\Controllers\MedicalId\ConnectPortalController::class, 'tokens'])->name('portals.admin.connect.tokens');
+    Route::post('/portals/admin/connect/tokens',               [\App\Http\Controllers\MedicalId\ConnectPortalController::class, 'tokenStore'])->name('portals.admin.connect.tokens.store');
+    Route::post('/portals/admin/connect/tokens/{id}/revoke',   [\App\Http\Controllers\MedicalId\ConnectPortalController::class, 'tokenRevoke'])->name('portals.admin.connect.tokens.revoke');
+    Route::get('/portals/admin/connect/webhooks',              [\App\Http\Controllers\MedicalId\ConnectPortalController::class, 'webhooks'])->name('portals.admin.connect.webhooks');
+    Route::post('/portals/admin/connect/webhooks/{id}/toggle', [\App\Http\Controllers\MedicalId\ConnectPortalController::class, 'webhookToggle'])->name('portals.admin.connect.webhooks.toggle');
+
     // --- Security Operations Center ---
     Route::get('/portals/admin/security',                    [\App\Http\Controllers\MedicalId\SecurityOpsController::class, 'index'])->name('portals.admin.security');
     Route::get('/portals/admin/security/incidents',          [\App\Http\Controllers\MedicalId\SecurityOpsController::class, 'incidents'])->name('portals.admin.security.incidents');
