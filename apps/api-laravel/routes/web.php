@@ -432,3 +432,29 @@ Route::get('/portals/lite/devices/{device}/offline-events',         [\App\Http\C
 
 
 
+
+/*
+|--------------------------------------------------------------------------
+| OpesCare Legal Centre — Public & Admin Routes
+|--------------------------------------------------------------------------
+*/
+// Public legal centre
+Route::get('/legal',                                                    [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'publicIndex'])->name('public.legal');
+Route::get('/legal/{slug}',                                             [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'publicShow'])->name('public.legal.show');
+
+// Admin legal document management
+Route::get('/portals/admin/legal',                                      [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'index'])->name('portals.admin.legal');
+Route::post('/portals/admin/legal',                                     [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'store'])->name('portals.admin.legal.store');
+Route::get('/portals/admin/legal/{document}',                           [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'show'])->name('portals.admin.legal.show');
+Route::post('/portals/admin/legal/{document}/versions',                 [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'publishVersion'])->name('portals.admin.legal.publish_version');
+
+// Patient rights — account closures
+Route::get('/portals/admin/legal/patient-rights/closures',              [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'closureRequests'])->name('portals.admin.legal.closures');
+Route::post('/portals/admin/legal/patient-rights/closures/{closure}/review', [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'reviewClosure'])->name('portals.admin.legal.closures.review');
+
+// Privacy complaints
+Route::get('/portals/admin/legal/privacy-complaints',                   [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'privacyComplaints'])->name('portals.admin.legal.complaints');
+Route::post('/portals/admin/legal/privacy-complaints/{complaint}/resolve', [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'resolveComplaint'])->name('portals.admin.legal.complaints.resolve');
+
+// Minor transitions
+Route::get('/portals/admin/legal/minor-transitions',                    [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'minorTransitions'])->name('portals.admin.legal.minor_transitions');
