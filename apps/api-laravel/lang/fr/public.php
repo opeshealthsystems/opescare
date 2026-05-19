@@ -112,6 +112,7 @@ return [
         ‘nav_dashboard’          => ‘Tableau de bord’,
         ‘nav_queue’              => ‘File de patients’,
         ‘nav_immunizations’      => ‘Vaccinations’,
+        ‘nav_visits’             => ‘Visites’,
         ‘nav_referrals’          => ‘Références’,
         ‘nav_billing’            => ‘Facturation’,
         ‘nav_support’            => ‘Assistance’,

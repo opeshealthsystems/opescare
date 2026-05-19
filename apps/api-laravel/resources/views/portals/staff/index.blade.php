@@ -26,6 +26,10 @@
         <i data-lucide="list-ordered"></i>
         <span>{{ __('public.portal.nav_queue', [], app()->getLocale()) ?: 'Patient Queue' }}</span>
     </a>
+    <a href="{{ route('portals.staff.visits') }}" class="sidebar-link">
+        <i data-lucide="stethoscope"></i>
+        <span>{{ __('public.portal.nav_visits', [], app()->getLocale()) ?: 'Visits' }}</span>
+    </a>
     <a href="{{ route('portals.staff.immunizations') }}" class="sidebar-link">
         <i data-lucide="syringe"></i>
         <span>{{ __('public.portal.nav_immunizations', [], app()->getLocale()) ?: 'Immunizations' }}</span>
@@ -204,6 +208,10 @@
                 <a href="{{ route('portals.staff.referrals') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
                     <i data-lucide="send" style="width:15px;height:15px;"></i>
                     {{ __('public.portal.nav_referrals', [], app()->getLocale()) ?: 'Referrals' }}
+                </a>
+                <a href="{{ route('portals.staff.visits') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
+                    <i data-lucide="stethoscope" style="width:15px;height:15px;"></i>
+                    {{ __('public.portal.nav_visits', [], app()->getLocale()) ?: 'Visits' }}
                 </a>
                 <a href="{{ route('portals.insurance.policies') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
                     <i data-lucide="shield-check" style="width:15px;height:15px;"></i>

@@ -26,6 +26,10 @@
         <i data-lucide="list-ordered"></i>
         <span>{{ __('public.portal.nav_queue', [], app()->getLocale()) ?: 'Patient Queue' }}</span>
     </a>
+    <a href="{{ route('portals.staff.visits') }}" class="sidebar-link">
+        <i data-lucide="stethoscope"></i>
+        <span>{{ __('public.portal.nav_visits', [], app()->getLocale()) ?: 'Visits' }}</span>
+    </a>
     <a href="{{ route('portals.staff.immunizations') }}" class="sidebar-link">
         <i data-lucide="syringe"></i>
         <span>{{ __('public.portal.nav_immunizations', [], app()->getLocale()) ?: 'Immunizations' }}</span>

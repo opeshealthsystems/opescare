@@ -25,6 +25,10 @@
         <i data-lucide="list-ordered"></i>
         <span>{{ __('public.portal.nav_queue', [], app()->getLocale()) ?: 'Patient Queue' }}</span>
     </a>
+    <a href="{{ route('portals.staff.visits') }}" class="sidebar-link">
+        <i data-lucide="stethoscope"></i>
+        <span>{{ __('public.portal.nav_visits', [], app()->getLocale()) ?: 'Visits' }}</span>
+    </a>
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">Operations</div>

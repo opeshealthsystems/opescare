@@ -112,6 +112,7 @@ return [
         'nav_dashboard'          => 'Dashboard',
         'nav_queue'              => 'Patient Queue',
         'nav_immunizations'      => 'Immunizations',
+        'nav_visits'             => 'Visits',
         'nav_referrals'          => 'Referrals',
         'nav_billing'            => 'Billing',
         'nav_support'            => 'Support',

@@ -156,6 +156,17 @@ Route::middleware(['web'])->group(function () {
 
     Route::get('/portals/patient/appointments', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'appointments'])->name('portals.patient.appointments');
 
+    // ── Staff: Visit Flow ────────────────────────────────────────
+    Route::get('/portals/staff/visits', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'index'])->name('portals.staff.visits');
+    Route::post('/portals/staff/visits', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'store'])->name('portals.staff.visits.store');
+    Route::post('/portals/staff/visits/{id}/transition', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'transition'])->name('portals.staff.visits.transition');
+    Route::post('/portals/staff/visits/{id}/complete', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'complete'])->name('portals.staff.visits.complete');
+    Route::post('/portals/staff/visits/{id}/cancel', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'cancel'])->name('portals.staff.visits.cancel');
+    Route::get('/portals/staff/visits/{id}/triage', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'triage'])->name('portals.staff.visits.triage');
+    Route::post('/portals/staff/visits/{id}/triage', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'triageStore'])->name('portals.staff.visits.triage.store');
+    Route::get('/portals/staff/visits/{id}/consult', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'consult'])->name('portals.staff.visits.consult');
+    Route::post('/portals/staff/visits/{id}/consult', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'consultStore'])->name('portals.staff.visits.consult.store');
+
     // ── Staff: Appointment actions ──────────────────────────────
     Route::get('/portals/staff/appointments/create', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'appointmentsCreate'])->name('portals.staff.appointments.create');
     Route::post('/portals/staff/appointments', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'appointmentsStore'])->name('portals.staff.appointments.store');
