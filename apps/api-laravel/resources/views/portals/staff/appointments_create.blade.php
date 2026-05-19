@@ -36,6 +36,10 @@
         <i data-lucide="headset"></i>
         <span>{{ __('public.portal.nav_support', [], app()->getLocale()) ?: 'Support' }}</span>
     </a>
+    <a href="{{ route('portals.insurance.policies') }}" class="sidebar-link">
+        <i data-lucide="shield-check"></i>
+        <span>{{ __('public.portal.nav_insurance', [], app()->getLocale()) ?: 'Insurance' }}</span>
+    </a>
 </div>
 @endsection
 

@@ -45,6 +45,10 @@
         <i data-lucide="headset"></i>
         <span>{{ __('public.portal.nav_support', [], app()->getLocale()) ?: 'Support' }}</span>
     </a>
+    <a href="{{ route('portals.insurance.policies') }}" class="sidebar-link">
+        <i data-lucide="shield-check"></i>
+        <span>{{ __('public.portal.nav_insurance', [], app()->getLocale()) ?: 'Insurance' }}</span>
+    </a>
 </div>
 @endsection
 
@@ -200,6 +204,10 @@
                 <a href="{{ route('portals.staff.referrals') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
                     <i data-lucide="send" style="width:15px;height:15px;"></i>
                     {{ __('public.portal.nav_referrals', [], app()->getLocale()) ?: 'Referrals' }}
+                </a>
+                <a href="{{ route('portals.insurance.policies') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
+                    <i data-lucide="shield-check" style="width:15px;height:15px;"></i>
+                    {{ __('public.portal.nav_insurance', [], app()->getLocale()) ?: 'Insurance' }}
                 </a>
             </div>
         </div>

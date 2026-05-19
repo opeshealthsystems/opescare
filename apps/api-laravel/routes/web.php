@@ -180,6 +180,30 @@ Route::middleware(['web'])->group(function () {
     Route::post('/portals/staff/support/{id}/reply', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'supportReply'])->name('portals.staff.support.reply');
     Route::post('/portals/staff/support/{id}/close', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'supportClose'])->name('portals.staff.support.close');
 
+    // --- Insurance Portal ---
+    Route::get('/portals/insurance/providers', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'providers'])->name('portals.insurance.providers');
+    Route::post('/portals/insurance/providers', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'providersStore'])->name('portals.insurance.providers.store');
+    Route::post('/portals/insurance/providers/{providerId}/plans', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'plansStore'])->name('portals.insurance.plans.store');
+
+    Route::get('/portals/insurance/policies', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'policies'])->name('portals.insurance.policies');
+    Route::post('/portals/insurance/policies', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'policiesStore'])->name('portals.insurance.policies.store');
+    Route::post('/portals/insurance/policies/{id}/activate', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'policiesActivate'])->name('portals.insurance.policies.activate');
+    Route::post('/portals/insurance/policies/{id}/deactivate', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'policiesDeactivate'])->name('portals.insurance.policies.deactivate');
+    Route::post('/portals/insurance/policies/{policyId}/eligibility', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'eligibilityStore'])->name('portals.insurance.eligibility.store');
+
+    Route::get('/portals/insurance/preauths', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'preauths'])->name('portals.insurance.preauths');
+    Route::post('/portals/insurance/preauths', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'preauthsStore'])->name('portals.insurance.preauths.store');
+    Route::post('/portals/insurance/preauths/{id}/submit', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'preauthsSubmit'])->name('portals.insurance.preauths.submit');
+    Route::post('/portals/insurance/preauths/{id}/decide', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'preauthsDecide'])->name('portals.insurance.preauths.decide');
+    Route::post('/portals/insurance/preauths/{id}/cancel', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'preauthsCancel'])->name('portals.insurance.preauths.cancel');
+
+    Route::get('/portals/insurance/claims', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'claims'])->name('portals.insurance.claims');
+    Route::post('/portals/insurance/claims', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'claimsStore'])->name('portals.insurance.claims.store');
+    Route::post('/portals/insurance/claims/{id}/submit', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'claimsSubmit'])->name('portals.insurance.claims.submit');
+    Route::post('/portals/insurance/claims/{id}/decide', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'claimsDecide'])->name('portals.insurance.claims.decide');
+    Route::post('/portals/insurance/claims/{id}/cancel', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'claimsCancel'])->name('portals.insurance.claims.cancel');
+    Route::post('/portals/insurance/claims/{id}/pay', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'claimsPay'])->name('portals.insurance.claims.pay');
+
     Route::get('/portals/admin', [\App\Http\Controllers\MedicalId\AdminPortalController::class, 'index'])->name('portals.admin');
     Route::get('/portals/admin/go-live', [\App\Http\Controllers\Api\V1\Admin\FacilityGoLiveReadinessController::class, 'index'])->name('portals.admin.go-live');
 });

@@ -115,6 +115,7 @@ return [
         ‘nav_referrals’          => ‘Références’,
         ‘nav_billing’            => ‘Facturation’,
         ‘nav_support’            => ‘Assistance’,
+        ‘nav_insurance’          => ‘Assurance’,
         ‘nav_resources’          => ‘Ressources’,
         ‘sign_out’               => ‘Déconnexion’,
 
