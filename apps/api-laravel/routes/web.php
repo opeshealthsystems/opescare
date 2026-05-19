@@ -462,6 +462,12 @@ Route::get('/portals/admin/legal/minor-transitions',                    [\App\Ht
 // --------------------------------------------------
 // Facility Onboarding & Go-Live Portal
 // --------------------------------------------------
+// KPI Dashboard
+Route::get('/portals/admin/kpi',                                         [\App\Http\Controllers\MedicalId\KpiDashboardController::class, 'index'])->name('portals.admin.kpi.index');
+Route::get('/portals/admin/kpi/trend',                                   [\App\Http\Controllers\MedicalId\KpiDashboardController::class, 'trend'])->name('portals.admin.kpi.trend');
+Route::post('/portals/admin/kpi/export',                                 [\App\Http\Controllers\MedicalId\KpiDashboardController::class, 'requestExport'])->name('portals.admin.kpi.export');
+Route::post('/portals/admin/kpi/recompute',                              [\App\Http\Controllers\MedicalId\KpiDashboardController::class, 'recompute'])->name('portals.admin.kpi.recompute');
+// --------------------------------------------------
 Route::get('/portals/admin/onboarding',                                  [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'index'])->name('portals.admin.onboarding');
 Route::get('/portals/admin/onboarding/{facility}',                       [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'show'])->name('portals.admin.onboarding.show');
 Route::post('/portals/admin/onboarding/{facility}/mark',                 [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'markItem'])->name('portals.admin.onboarding.mark');
