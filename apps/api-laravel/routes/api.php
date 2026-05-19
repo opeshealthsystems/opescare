@@ -485,3 +485,32 @@ Route::prefix('v1/lite')->group(function () {
     Route::get('/sync/pull',         [\App\Http\Controllers\Api\V1\LiteApiController::class, 'syncPull']);
     Route::post('/offline-events',   [\App\Http\Controllers\Api\V1\LiteApiController::class, 'offlineEvent']);
 });
+
+/*
+|--------------------------------------------------------------------------
+| OpesCare FHIR R4 API Routes
+| Read-only healthcare data interoperability layer
+|--------------------------------------------------------------------------
+*/
+Route::prefix('fhir/R4')->group(function () {
+
+    // CapabilityStatement (no auth required — standard FHIR metadata endpoint)
+    Route::get('/metadata', [\App\Http\Controllers\Api\Fhir\FhirController::class, 'metadata']);
+
+    // Patient resource
+    Route::get('/Patient',                [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchPatient']);
+    Route::get('/Patient/{id}',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'patient']);
+    Route::get('/Patient/{id}/\$everything', [\App\Http\Controllers\Api\Fhir\FhirController::class, 'patientEverything']);
+
+    // Encounter resource
+    Route::get('/Encounter',              [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchEncounter']);
+    Route::get('/Encounter/{id}',         [\App\Http\Controllers\Api\Fhir\FhirController::class, 'encounter']);
+
+    // DiagnosticReport resource
+    Route::get('/DiagnosticReport',       [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchDiagnosticReport']);
+    Route::get('/DiagnosticReport/{id}',  [\App\Http\Controllers\Api\Fhir\FhirController::class, 'diagnosticReport']);
+
+    // MedicationRequest resource
+    Route::get('/MedicationRequest',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchMedicationRequest']);
+    Route::get('/MedicationRequest/{id}', [\App\Http\Controllers\Api\Fhir\FhirController::class, 'medicationRequest']);
+});
