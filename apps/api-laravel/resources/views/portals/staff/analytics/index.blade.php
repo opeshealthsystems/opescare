@@ -119,6 +119,8 @@
     $periodTo     = $snapshot['period']['to'];
 @endphp
 
+@include('portals.staff.analytics._tabs')
+
 <div class="page-header">
     <div>
         <h1 class="page-title">Analytics Dashboard</h1>

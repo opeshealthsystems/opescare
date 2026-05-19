@@ -169,7 +169,11 @@ Route::middleware(['web'])->group(function () {
     Route::post('/portals/staff/visits/{id}/consult', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'consultStore'])->name('portals.staff.visits.consult.store');
 
     // --- Analytics Dashboard ---
-    Route::get('/portals/staff/analytics', [\App\Http\Controllers\MedicalId\AnalyticsDashboardController::class, 'index'])->name('portals.staff.analytics');
+    Route::get('/portals/staff/analytics',                  [\App\Http\Controllers\MedicalId\AnalyticsDashboardController::class, 'index'])->name('portals.staff.analytics');
+    Route::get('/portals/staff/analytics/queue',            [\App\Http\Controllers\MedicalId\AnalyticsDashboardController::class, 'queue'])->name('portals.staff.analytics.queue');
+    Route::get('/portals/staff/analytics/ward',             [\App\Http\Controllers\MedicalId\AnalyticsDashboardController::class, 'ward'])->name('portals.staff.analytics.ward');
+    Route::get('/portals/staff/analytics/financial',        [\App\Http\Controllers\MedicalId\AnalyticsDashboardController::class, 'financial'])->name('portals.staff.analytics.financial');
+    Route::get('/portals/staff/analytics/data-quality',     [\App\Http\Controllers\MedicalId\AnalyticsDashboardController::class, 'dataQuality'])->name('portals.staff.analytics.data_quality');
 
     // --- Inventory Portal ---
     Route::get('/portals/staff/inventory/pharmacy', [\App\Http\Controllers\MedicalId\InventoryPortalController::class, 'pharmacy'])->name('portals.staff.inventory.pharmacy');
