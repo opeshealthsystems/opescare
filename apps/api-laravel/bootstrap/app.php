@@ -15,15 +15,18 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
             \App\Http\Middleware\DemoSessionMiddleware::class,
+            \App\Http\Middleware\DemoDataScope::class,
         ]);
         $middleware->api(append: [
             \App\Http\Middleware\DemoSessionMiddleware::class,
+            \App\Http\Middleware\DemoDataScope::class,
         ]);
         $middleware->alias([
-            'sdk.token'      => \App\Http\Middleware\VerifySdkToken::class,
-            'throttle.client'=> \App\Http\Middleware\ThrottleByClient::class,
-            'bridge.agent'   => \App\Http\Middleware\VerifyBridgeAgent::class,
-            'portal.access'  => \App\Http\Middleware\EnsurePortalAccess::class,
+            'sdk.token'        => \App\Http\Middleware\VerifySdkToken::class,
+            'throttle.client'  => \App\Http\Middleware\ThrottleByClient::class,
+            'bridge.agent'     => \App\Http\Middleware\VerifyBridgeAgent::class,
+            'portal.access'    => \App\Http\Middleware\EnsurePortalAccess::class,
+            'facility.context' => \App\Http\Middleware\RequireFacilityContext::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

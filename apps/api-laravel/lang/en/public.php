@@ -211,6 +211,16 @@ return [
         'privacy_settings'       => 'Privacy Settings',
         'require_consent'        => 'Require Consent for Access',
         'require_consent_desc'   => 'When enabled, providers must request your approval before accessing your records.',
+
+        // Phase E: demo isolation + facility context + high-risk modal
+        'demo_banner'            => 'Demo Mode — You are viewing sample data only. No real patient records are accessible.',
+        'demo_expires'           => 'Session expires',
+        'select_facility_required' => 'Please select a facility to continue.',
+        'confirm'                => 'Confirm',
+        'cancel'                 => 'Cancel',
+        'reason_required'        => 'Reason (required)',
+        'reason_placeholder'     => 'Explain why this action is necessary…',
+        'select_facility'        => 'Select Facility',
     ],
 
     /* ── Staff Portal ───────────────────────────────── */

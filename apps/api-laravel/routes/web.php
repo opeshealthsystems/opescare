@@ -119,8 +119,8 @@ Route::middleware(['web', 'throttle:verify'])->group(function () {
     Route::get('/verify/qr/{token}', [\App\Http\Controllers\MedicalId\VerifyController::class, 'qr'])->name('verify.qr');
 });
 
-// Portal Routes — require authentication and correct portal for role
-Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
+// Portal Routes — require authentication, correct portal for role, and facility context
+Route::middleware(['web', 'auth', 'portal.access', 'facility.context'])->group(function () {
     Route::get('/portals/patient', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'index'])->name('portals.patient');
     Route::get('/portals/patient/logs', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'accessLogs'])->name('portals.patient.logs');
     Route::post('/portals/patient/generate-qr', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'generateTemporaryQr'])->name('portals.patient.qr');

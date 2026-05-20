@@ -15,39 +15,35 @@ use App\Modules\Billing\Services\PaymentService;
 use App\Modules\Queue\Services\QueueService;
 use App\Modules\Search\Services\GlobalSearchService;
 use App\Modules\Support\Services\SupportService;
+use App\Services\Portal\PortalContextService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class StaffPortalController extends Controller
 {
-    // ─── Demo context helpers ─────────────────────────────────────
-    // TODO: Replace with auth()->user() context when real auth is wired.
-
-    private function demoActorId(): string
-    {
-        return session('auth_email') ?: 'demo-staff';
-    }
-
-    private function demoFacilityId(): ?string
-    {
-        return Facility::value('id');
-    }
+    public function __construct(private readonly PortalContextService $ctx) {}
 
     // ─── Dashboard ────────────────────────────────────────────────
 
     public function index(Request $request)
     {
-        $facilityId = $this->demoFacilityId();
-
         $todayStart = now()->startOfDay();
         $todayEnd   = now()->endOfDay();
 
+        $apptQuery    = Appointment::whereBetween('scheduled_at', [$todayStart, $todayEnd]);
+        $queueQuery   = QueueTicket::whereIn('status', ['waiting', 'called', 'service_started']);
+        $invoiceQuery = Invoice::where('status', 'issued');
+
+        $this->ctx->scopeToFacility($apptQuery);
+        $this->ctx->scopeToFacility($queueQuery);
+        $this->ctx->scopeToFacility($invoiceQuery);
+
         $kpis = [
-            'todays_appointments' => Appointment::whereBetween('scheduled_at', [$todayStart, $todayEnd])->count(),
-            'in_queue'            => QueueTicket::whereIn('status', ['waiting', 'called', 'service_started'])->count(),
+            'todays_appointments' => $apptQuery->count(),
+            'in_queue'            => $queueQuery->count(),
             'pending_referrals'   => DB::table('referral_cases')->where('status', 'draft')->count(),
-            'open_invoices'       => Invoice::where('status', 'issued')->count(),
+            'open_invoices'       => $invoiceQuery->count(),
         ];
 
         return view('portals.staff.index', compact('kpis'));
@@ -59,11 +55,14 @@ class StaffPortalController extends Controller
     {
         $query = Appointment::query()->orderByDesc('scheduled_at');
 
-        if ($request->filled('patient_id')) {
-            $query->where('patient_id', 'like', '%'.$request->patient_id.'%');
-        }
         if ($request->filled('facility_id')) {
             $query->where('facility_id', $request->facility_id);
+        } else {
+            $this->ctx->scopeToFacility($query);
+        }
+
+        if ($request->filled('patient_id')) {
+            $query->where('patient_id', 'like', '%'.$request->patient_id.'%');
         }
         if ($request->filled('provider_id')) {
             $query->where('provider_id', $request->provider_id);
@@ -99,25 +98,23 @@ class StaffPortalController extends Controller
         ]);
 
         try {
-            // Bypass availability check for demo (no schedules seeded yet)
             $appointment = Appointment::create([
-                'patient_id'       => $request->patient_id,
-                'facility_id'      => $request->facility_id,
-                'appointment_type' => $request->appointment_type,
-                'status'           => 'scheduled',
-                'scheduled_at'     => $request->scheduled_at,
-                'booked_by_type'   => 'staff',
-                'booked_by_id'     => $this->demoActorId(),
-                'reason'           => $request->reason,
-                'billing_deferred'     => true,
+                'patient_id'            => $request->patient_id,
+                'facility_id'           => $request->facility_id,
+                'appointment_type'      => $request->appointment_type,
+                'status'                => 'scheduled',
+                'scheduled_at'          => $request->scheduled_at,
+                'booked_by_type'        => 'staff',
+                'booked_by_id'          => $this->ctx->actorId(),
+                'reason'                => $request->reason,
+                'billing_deferred'      => true,
                 'telemedicine_deferred' => true,
             ]);
 
             return redirect()->route('portals.staff.appointments')
                 ->with('success', __('public.staff_portal.appointment_booked', [], app()->getLocale()) ?: 'Appointment booked successfully.');
         } catch (Throwable $e) {
-            return redirect()->back()->withInput()
-                ->with('error', $e->getMessage());
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
     }
 
@@ -136,7 +133,7 @@ class StaffPortalController extends Controller
 
         try {
             $appointment = Appointment::findOrFail($id);
-            $svc->cancel($appointment, $request->reason, $this->demoActorId());
+            $svc->cancel($appointment, $request->reason, $this->ctx->actorId());
 
             return redirect()->route('portals.staff.appointments')
                 ->with('success', __('public.staff_portal.appointment_cancelled', [], app()->getLocale()) ?: 'Appointment cancelled.');
@@ -149,7 +146,7 @@ class StaffPortalController extends Controller
     {
         try {
             $appointment = Appointment::findOrFail($id);
-            $svc->checkIn($appointment, $this->demoActorId());
+            $svc->checkIn($appointment, $this->ctx->actorId());
 
             return redirect()->route('portals.staff.appointments')
                 ->with('success', __('public.staff_portal.appointment_checked_in', [], app()->getLocale()) ?: 'Patient checked in.');
@@ -180,7 +177,10 @@ class StaffPortalController extends Controller
 
         if ($request->filled('facility_id')) {
             $query->where('facility_id', $request->facility_id);
+        } else {
+            $this->ctx->scopeToFacility($query);
         }
+
         if ($request->filled('queue_name')) {
             $query->where('current_queue', $request->queue_name);
         }
@@ -197,7 +197,8 @@ class StaffPortalController extends Controller
 
     public function queueDisplay(Request $request)
     {
-        $facilityId = $request->query('facility_id');
+        $facilityId = $request->query('facility_id') ?? $this->ctx->facilityId();
+
         $tickets = QueueTicket::whereIn('status', ['waiting', 'called', 'service_started'])
             ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->orderBy('priority_level')
@@ -215,7 +216,11 @@ class StaffPortalController extends Controller
             'destination_queue' => 'required|string',
         ]);
 
-        $facilityId = $this->demoFacilityId() ?? $request->input('facility_id', 'demo-facility');
+        $facilityId = $this->ctx->facilityId() ?? $request->input('facility_id');
+
+        if (!$facilityId) {
+            return redirect()->back()->with('error', 'No facility context. Please select a facility first.');
+        }
 
         try {
             $svc->checkInWalkIn([
@@ -223,7 +228,7 @@ class StaffPortalController extends Controller
                 'facility_id'       => $facilityId,
                 'destination_queue' => $request->destination_queue,
                 'visit_type'        => 'outpatient',
-                'actor_id'          => $this->demoActorId(),
+                'actor_id'          => $this->ctx->actorId(),
                 'check_in_type'     => 'walk_in',
             ]);
 
@@ -254,7 +259,7 @@ class StaffPortalController extends Controller
     {
         try {
             $ticket = QueueTicket::findOrFail($id);
-            $svc->startService($ticket, $this->demoActorId());
+            $svc->startService($ticket, $this->ctx->actorId());
 
             return redirect()->route('portals.staff.queue')
                 ->with('success', __('public.staff_portal.queue_service_started', [], app()->getLocale()) ?: 'Service started.');
@@ -269,7 +274,7 @@ class StaffPortalController extends Controller
 
         try {
             $ticket = QueueTicket::findOrFail($id);
-            $svc->complete($ticket, $request->reason ?: 'Completed by staff.', $this->demoActorId());
+            $svc->complete($ticket, $request->reason ?: 'Completed by staff.', $this->ctx->actorId());
 
             return redirect()->route('portals.staff.queue')
                 ->with('success', __('public.staff_portal.queue_completed', [], app()->getLocale()) ?: 'Queue ticket completed.');
@@ -283,6 +288,10 @@ class StaffPortalController extends Controller
     public function billing(Request $request)
     {
         $query = Invoice::query()->orderByDesc('issued_at');
+
+        if (!$request->filled('facility_id')) {
+            $this->ctx->scopeToFacility($query);
+        }
 
         if ($request->filled('patient_id')) {
             $query->where('patient_id', 'like', '%'.$request->patient_id.'%');
@@ -306,21 +315,25 @@ class StaffPortalController extends Controller
     public function billingStore(Request $request, BillingService $svc)
     {
         $request->validate([
-            'patient_id'        => 'required|string',
-            'items'             => 'required|array|min:1',
-            'items.*.description' => 'required|string',
-            'items.*.quantity'  => 'required|numeric|min:1',
-            'items.*.unit_price' => 'required|numeric|min:0',
+            'patient_id'              => 'required|string',
+            'items'                   => 'required|array|min:1',
+            'items.*.description'     => 'required|string',
+            'items.*.quantity'        => 'required|numeric|min:1',
+            'items.*.unit_price'      => 'required|numeric|min:0',
         ]);
 
-        $facilityId = $this->demoFacilityId() ?? $request->input('facility_id', 'demo-facility');
+        $facilityId = $this->ctx->facilityId() ?? $request->input('facility_id');
+
+        if (!$facilityId) {
+            return redirect()->back()->withInput()->with('error', 'No facility context.');
+        }
 
         try {
             $invoice = $svc->createInvoice([
                 'patient_id'  => $request->patient_id,
                 'facility_id' => $facilityId,
                 'items'       => $request->items,
-                'actor_id'    => $this->demoActorId(),
+                'actor_id'    => $this->ctx->actorId(),
             ]);
 
             return redirect()->route('portals.staff.billing')
@@ -340,9 +353,9 @@ class StaffPortalController extends Controller
         try {
             $invoice = Invoice::findOrFail($id);
             $svc->recordPayment($invoice, [
-                'amount'         => $request->amount,
-                'payment_method' => $request->payment_method,
-                'actor_id'       => $this->demoActorId(),
+                'amount'           => $request->amount,
+                'payment_method'   => $request->payment_method,
+                'actor_id'         => $this->ctx->actorId(),
                 'reference_number' => $request->reference_number,
             ]);
 
@@ -358,6 +371,8 @@ class StaffPortalController extends Controller
     public function support(Request $request)
     {
         $query = SupportTicket::withCount('messages')->orderByDesc('created_at');
+
+        $this->ctx->scopeToFacility($query);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -377,22 +392,22 @@ class StaffPortalController extends Controller
     public function supportStore(Request $request, SupportService $svc)
     {
         $request->validate([
-            'subject'  => 'required|string|max:200',
-            'category' => 'required|string',
-            'priority' => 'required|in:normal,high,urgent,critical',
+            'subject'     => 'required|string|max:200',
+            'category'    => 'required|string',
+            'priority'    => 'required|in:normal,high,urgent,critical',
             'description' => 'required|string|min:10|max:2000',
         ]);
 
         try {
             $svc->createTicket([
                 'requester_type' => 'staff',
-                'requester_id'   => $this->demoActorId(),
-                'facility_id'    => $this->demoFacilityId(),
+                'requester_id'   => $this->ctx->actorId(),
+                'facility_id'    => $this->ctx->facilityId(),
                 'category'       => $request->category,
                 'priority'       => $request->priority,
                 'subject'        => $request->subject,
                 'description'    => $request->description,
-            ], $this->demoActorId());
+            ], $this->ctx->actorId());
 
             return redirect()->route('portals.staff.support')
                 ->with('success', __('public.staff_portal.ticket_created', [], app()->getLocale()) ?: 'Support ticket created.');
@@ -409,10 +424,10 @@ class StaffPortalController extends Controller
             $ticket = SupportTicket::findOrFail($id);
             $svc->addMessage($ticket, [
                 'sender_type' => 'staff',
-                'sender_id'   => $this->demoActorId(),
+                'sender_id'   => $this->ctx->actorId(),
                 'body'        => $request->body,
                 'internal'    => false,
-            ], $this->demoActorId());
+            ], $this->ctx->actorId());
 
             return redirect()->route('portals.staff.support')
                 ->with('success', __('public.staff_portal.ticket_reply_sent', [], app()->getLocale()) ?: 'Reply sent.');
@@ -425,7 +440,7 @@ class StaffPortalController extends Controller
     {
         try {
             $ticket = SupportTicket::findOrFail($id);
-            $svc->resolveTicket($ticket, $this->demoActorId(), $request->resolution_note);
+            $svc->resolveTicket($ticket, $this->ctx->actorId(), $request->resolution_note);
 
             return redirect()->route('portals.staff.support')
                 ->with('success', __('public.staff_portal.ticket_closed', [], app()->getLocale()) ?: 'Ticket resolved.');
@@ -443,7 +458,7 @@ class StaffPortalController extends Controller
 
         try {
             $ticket = SupportTicket::findOrFail($id);
-            $svc->escalateTicket($ticket, $request->escalation_level, $this->demoActorId(), $request->reason);
+            $svc->escalateTicket($ticket, $request->escalation_level, $this->ctx->actorId(), $request->reason);
 
             return redirect()->route('portals.staff.support')
                 ->with('success', __('public.staff_portal.ticket_escalated', [], app()->getLocale()) ?: 'Ticket escalated.');
@@ -454,13 +469,11 @@ class StaffPortalController extends Controller
 
     public function supportAssign(Request $request, string $id, SupportService $svc)
     {
-        $request->validate([
-            'assigned_to' => 'required|string|max:100',
-        ]);
+        $request->validate(['assigned_to' => 'required|string|max:100']);
 
         try {
             $ticket = SupportTicket::findOrFail($id);
-            $svc->assignTicket($ticket, $request->assigned_to, $this->demoActorId());
+            $svc->assignTicket($ticket, $request->assigned_to, $this->ctx->actorId());
 
             return redirect()->route('portals.staff.support')
                 ->with('success', __('public.staff_portal.ticket_assigned', [], app()->getLocale()) ?: 'Ticket assigned.');
@@ -578,8 +591,9 @@ class StaffPortalController extends Controller
         $query = trim($request->input('q', ''));
 
         $context = [
-            'actor_id'         => $this->demoActorId(),
-            'include_sensitive' => false, // sensitive results require explicit permission
+            'actor_id'          => $this->ctx->actorId(),
+            'facility_id'       => $this->ctx->facilityId(),
+            'include_sensitive' => false,
         ];
 
         $data = $query !== '' ? $svc->search($query, $context) : ['query' => '', 'results' => [], 'counts' => []];

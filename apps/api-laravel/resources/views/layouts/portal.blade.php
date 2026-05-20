@@ -16,6 +16,8 @@
 </head>
 <body class="portal-body">
 
+<x-portal-demo-banner />
+
 <div class="portal-wrap">
 
     <!-- Sidebar Overlay (mobile) -->
