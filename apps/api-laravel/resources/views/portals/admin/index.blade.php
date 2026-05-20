@@ -5,43 +5,6 @@
 @section('breadcrumb_home', __('public.admin_governance.breadcrumb_home', [], app()->getLocale()) ?: 'Admin Portal')
 @section('breadcrumb_home_url', route('portals.admin'))
 
-@section('sidebar_role_badge')
-    <div class="sidebar-role-badge" style="background:rgba(109,40,217,.3);border-color:rgba(109,40,217,.5);color:#C4B5FD;">
-        <i data-lucide="shield-check" style="width:0.75rem;height:0.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
-        {{ __('public.admin_governance.role_administrator', [], app()->getLocale()) ?: 'Administrator' }}
-    </div>
-@endsection
-
-@section('sidebar_nav')
-    <div class="sidebar-section-label">{{ __('public.admin_governance.nav_governance', [], app()->getLocale()) ?: 'Governance' }}</div>
-    <a href="{{ route('portals.admin') }}" class="sidebar-link active">
-        <i data-lucide="layout-dashboard"></i>
-        {{ __('public.admin_governance.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}
-    </a>
-
-    <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">{{ __('public.admin_governance.nav_identity', [], app()->getLocale()) ?: 'Identity' }}</div>
-    <a href="{{ route('portals.admin') }}#partners" class="sidebar-link">
-        <i data-lucide="building-2"></i>
-        {{ __('public.admin_governance.nav_partner_governance', [], app()->getLocale()) ?: 'Partner Governance' }}
-    </a>
-    <a href="{{ route('portals.admin') }}#duplicates" class="sidebar-link">
-        <i data-lucide="users"></i>
-        {{ __('public.admin_governance.nav_duplicate_reviews', [], app()->getLocale()) ?: 'Duplicate Reviews' }}
-    </a>
-    <a href="{{ route('portals.admin') }}#security" class="sidebar-link">
-        <i data-lucide="activity"></i>
-        {{ __('public.admin_governance.nav_security_events', [], app()->getLocale()) ?: 'Security Events' }}
-    </a>
-
-    <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">{{ __('public.admin_governance.nav_tools', [], app()->getLocale()) ?: 'Tools' }}</div>
-    <a href="{{ route('public.help') }}" class="sidebar-link">
-        <i data-lucide="help-circle"></i>
-        {{ __('public.admin_governance.nav_help', [], app()->getLocale()) ?: 'Help' }}
-    </a>
-@endsection
-
-@section('sidebar_user_role', __('public.admin_governance.role_administrator', [], app()->getLocale()) ?: 'Administrator')
-
 @section('content')
 
 <div class="page-header">

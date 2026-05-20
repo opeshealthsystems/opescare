@@ -2,52 +2,6 @@
 
 @section('title', __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing')
 
-@section('sidebar_role_badge')
-<div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
-@endsection
-
-@section('sidebar_user_role', __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff')
-
-@section('sidebar_nav')
-<div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Overview</div>
-    <a href="{{ route('portals.staff') }}" class="sidebar-link">
-        <i data-lucide="layout-dashboard"></i>
-        <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
-    </a>
-</div>
-<div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Clinical</div>
-    <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
-        <i data-lucide="calendar-check-2"></i>
-        <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.queue') }}" class="sidebar-link">
-        <i data-lucide="list-ordered"></i>
-        <span>{{ __('public.portal.nav_queue', [], app()->getLocale()) ?: 'Patient Queue' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.immunizations') }}" class="sidebar-link">
-        <i data-lucide="syringe"></i>
-        <span>{{ __('public.portal.nav_immunizations', [], app()->getLocale()) ?: 'Immunizations' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.referrals') }}" class="sidebar-link">
-        <i data-lucide="send"></i>
-        <span>{{ __('public.portal.nav_referrals', [], app()->getLocale()) ?: 'Referrals' }}</span>
-    </a>
-</div>
-<div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Operations</div>
-    <a href="{{ route('portals.staff.billing') }}" class="sidebar-link active">
-        <i data-lucide="receipt"></i>
-        <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.support') }}" class="sidebar-link">
-        <i data-lucide="headset"></i>
-        <span>{{ __('public.portal.nav_support', [], app()->getLocale()) ?: 'Support' }}</span>
-    </a>
-</div>
-@endsection
-
 @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
 @section('breadcrumb_section', __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing')

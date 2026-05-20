@@ -6,28 +6,6 @@
 @section('breadcrumb_home_url', route('portals.staff'))
 @section('breadcrumb_section', 'Referral Detail')
 
-@section('sidebar_role_badge')
-    <div class="sidebar-role-badge">
-        <i data-lucide="stethoscope" style="width:0.75rem;height:0.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
-        {{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}
-    </div>
-@endsection
-
-@section('sidebar_nav')
-    <div class="sidebar-section-label">Overview</div>
-    <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i> Dashboard</a>
-    <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">Clinical</div>
-    <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link"><i data-lucide="calendar-check-2"></i> Appointments</a>
-    <a href="{{ route('portals.staff.queue') }}" class="sidebar-link"><i data-lucide="list-ordered"></i> Patient Queue</a>
-    <a href="{{ route('portals.staff.immunizations') }}" class="sidebar-link"><i data-lucide="syringe"></i> Immunizations</a>
-    <a href="{{ route('portals.staff.referrals') }}" class="sidebar-link active"><i data-lucide="send"></i> Referrals</a>
-    <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">Operations</div>
-    <a href="{{ route('portals.staff.billing') }}" class="sidebar-link"><i data-lucide="receipt"></i> Billing</a>
-    <a href="{{ route('portals.staff.support') }}" class="sidebar-link"><i data-lucide="headset"></i> Support</a>
-@endsection
-
-@section('sidebar_user_role', __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff')
-
 @section('content')
 
 <div class="page-header">

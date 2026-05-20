@@ -21,6 +21,11 @@
     <!-- Sidebar Overlay (mobile) -->
     <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
 
+    @php
+        $sidebarProfileKey = auth()->user()?->role?->dashboard_profile_key ?? 'patient';
+        $sidebarRoleLabel  = auth()->user()?->role?->description ?? (auth()->user()?->roleName() ?? 'Portal');
+    @endphp
+
     <!-- Sidebar -->
     <aside class="portal-sidebar" id="portal-sidebar" role="navigation" aria-label="Portal navigation">
 
@@ -32,14 +37,20 @@
             </div>
             <div>
                 <div class="sidebar-brand-name">OpesCare</div>
-                <div class="sidebar-brand-sub">@yield('sidebar_user_role', 'Portal')</div>
+                <div class="sidebar-brand-sub">
+                    @hasSection('sidebar_user_role')@yield('sidebar_user_role')@else{{ $sidebarRoleLabel }}@endif
+                </div>
             </div>
         </a>
 
         <div class="sidebar-nav">
-            @yield('sidebar_role_badge')
-            <div style="margin-bottom: var(--p-space-3);"></div>
-            @yield('sidebar_nav')
+            @hasSection('sidebar_nav')
+                @yield('sidebar_role_badge')
+                <div style="margin-bottom: var(--p-space-3);"></div>
+                @yield('sidebar_nav')
+            @else
+                @includeIf('partials.sidebars.' . $sidebarProfileKey)
+            @endif
         </div>
 
         <div class="sidebar-footer">
@@ -49,7 +60,9 @@
                 </div>
                 <div style="min-width:0;">
                     <div class="sidebar-user-name">{{ auth()->user()->name ?? 'User' }}</div>
-                    <div class="sidebar-user-role">@yield('sidebar_user_role', 'Portal')</div>
+                    <div class="sidebar-user-role">
+                        @hasSection('sidebar_user_role')@yield('sidebar_user_role')@else{{ $sidebarRoleLabel }}@endif
+                    </div>
                 </div>
             </div>
             <form method="POST" action="{{ route('logout') }}">
