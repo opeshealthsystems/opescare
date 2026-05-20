@@ -95,6 +95,10 @@ Route::prefix('v1/connect')->group(function () {
         // Secure patient search
         Route::post('/patients/search', [\App\Http\Controllers\Api\V1\Connect\PatientSearchController::class, 'search']);
 
+        // Health ID resolution — find or auto-create (key interoperability endpoint)
+        Route::post('/patients/resolve', [\App\Http\Controllers\Api\V1\Connect\HealthIdResolutionController::class, 'resolve']);
+        Route::get('/patients/verify/{health_id}', [\App\Http\Controllers\Api\V1\Connect\HealthIdResolutionController::class, 'verify']);
+
         // Consent management
         Route::post('/consents/request', [\App\Http\Controllers\Api\V1\Connect\ConnectGovernanceController::class, 'requestConsent']);
         Route::post('/consents/verify', [\App\Http\Controllers\Api\V1\Connect\ConnectGovernanceController::class, 'verifyConsent']);

@@ -28,6 +28,143 @@
 </div>
 <p>Issues an OAuth 2.0 Bearer token using <code>client_credentials</code> grant. See <a href="{{ route('docs.authentication') }}">Authentication</a> for full code examples and available scopes.</p>
 
+<h2 id="health-id-resolution">Health ID Resolution <span style="background:#22C55E;color:#fff;font-size:.65rem;font-weight:700;padding:2px 6px;border-radius:4px;vertical-align:middle;margin-left:.5rem;">KEY ENDPOINT</span></h2>
+
+<p>The primary interoperability endpoint. Accepts a Health ID <em>or</em> patient demographics. Returns the existing Health ID if the patient is found, or auto-creates a new patient record and issues a fresh Health ID if they are not yet registered in OpesCare.</p>
+
+<div class="endpoint-pill">
+    <span class="method-badge method-post">POST</span>
+    <span class="endpoint-path">/connect/patients/resolve</span>
+</div>
+
+<table class="docs-table">
+    <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+        <tr><td><code>health_id</code></td><td>string</td><td>Either/or</td><td>Known OpesCare Health ID to look up (e.g. <code>CM-HID-7KQ9-MP42-X8D1</code>)</td></tr>
+        <tr><td><code>first_name</code></td><td>string</td><td>Either/or</td><td>Patient first name (required when no health_id)</td></tr>
+        <tr><td><code>last_name</code></td><td>string</td><td>Either/or</td><td>Patient last name</td></tr>
+        <tr><td><code>date_of_birth</code></td><td>string</td><td>Either/or</td><td>ISO date <code>YYYY-MM-DD</code></td></tr>
+        <tr><td><code>country_code</code></td><td>string</td><td>No</td><td>ISO 2-letter code, default <code>CM</code></td></tr>
+        <tr><td><code>sex</code></td><td>string</td><td>No</td><td><code>male</code> / <code>female</code> / <code>other</code></td></tr>
+        <tr><td><code>phone_number</code></td><td>string</td><td>No</td><td>Patient phone (stored if creating)</td></tr>
+        <tr><td><code>purpose</code></td><td>string</td><td>No</td><td>Reason for lookup — logged in audit trail</td></tr>
+        <tr><td><code>external_reference</code></td><td>string</td><td>No</td><td>Your system's patient ID — logged for traceability</td></tr>
+    </tbody>
+</table>
+
+<p><strong>Response <code>status</code> values:</strong></p>
+<ul>
+    <li><code>found</code> — patient already registered; <code>health_id</code> returned</li>
+    <li><code>created</code> — new patient registered; new <code>health_id</code> issued (HTTP 201)</li>
+    <li><code>not_found</code> — health_id provided but not registered; supply demographics to register</li>
+</ul>
+
+<div class="docs-code-block">
+    <div class="docs-code-tabs">
+        <button class="docs-code-tab" data-lang="curl">cURL</button>
+        <button class="docs-code-tab" data-lang="php">PHP</button>
+        <button class="docs-code-tab" data-lang="js">JavaScript</button>
+        <button class="docs-code-tab" data-lang="python">Python</button>
+    </div>
+    <div class="docs-code-pane" data-lang="curl">
+<pre># Case A — patient has no Health ID yet (auto-creates)
+curl -X POST https://opescare.test/api/v1/connect/patients/resolve \
+  -H "Authorization: Bearer {access_token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "first_name": "Marie",
+    "last_name": "Fouda",
+    "date_of_birth": "1990-07-22",
+    "country_code": "CM",
+    "sex": "female",
+    "purpose": "his_registration",
+    "external_reference": "HIS-PAT-00341"
+  }'
+
+# Case B — patient already has a Health ID (lookup only)
+curl -X POST https://opescare.test/api/v1/connect/patients/resolve \
+  -H "Authorization: Bearer {access_token}" \
+  -H "Content-Type: application/json" \
+  -d '{"health_id": "CM-HID-7KQ9-MP42-X8D1"}'</pre>
+    </div>
+    <div class="docs-code-pane" data-lang="php">
+<pre>$response = Http::withToken($accessToken)
+    ->post('https://opescare.test/api/v1/connect/patients/resolve', [
+        'first_name'         => 'Marie',
+        'last_name'          => 'Fouda',
+        'date_of_birth'      => '1990-07-22',
+        'country_code'       => 'CM',
+        'sex'                => 'female',
+        'purpose'            => 'his_registration',
+        'external_reference' => 'HIS-PAT-00341',
+    ])->json();
+
+$healthId = $response['health_id'];  // use this for all future calls
+$status   = $response['status'];     // 'found' or 'created'</pre>
+    </div>
+    <div class="docs-code-pane" data-lang="js">
+<pre>const res = await fetch(
+  'https://opescare.test/api/v1/connect/patients/resolve',
+  {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      first_name: 'Marie',
+      last_name: 'Fouda',
+      date_of_birth: '1990-07-22',
+      country_code: 'CM',
+      sex: 'female',
+      purpose: 'his_registration',
+      external_reference: 'HIS-PAT-00341',
+    }),
+  }
+).then(r => r.json());
+
+const healthId = res.health_id;
+// status === 'found' → existing patient
+// status === 'created' → new patient, store this health_id in your HIS</pre>
+    </div>
+    <div class="docs-code-pane" data-lang="python">
+<pre>resp = requests.post(
+    'https://opescare.test/api/v1/connect/patients/resolve',
+    json={
+        'first_name': 'Marie',
+        'last_name': 'Fouda',
+        'date_of_birth': '1990-07-22',
+        'country_code': 'CM',
+        'sex': 'female',
+        'purpose': 'his_registration',
+        'external_reference': 'HIS-PAT-00341',
+    },
+    headers={'Authorization': f'Bearer {access_token}'},
+)
+data = resp.json()
+health_id = data['health_id']</pre>
+    </div>
+</div>
+
+<div class="docs-callout info">
+    <i data-lucide="info" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <div><strong>Recommended flow for HIS integration:</strong> On every patient encounter, call <code>/patients/resolve</code> first. Store the returned <code>health_id</code> in your system. Use it for all subsequent record pushes. This ensures the patient exists in OpesCare before any clinical data is sent.</div>
+</div>
+
+<div class="endpoint-pill">
+    <span class="method-badge method-get">GET</span>
+    <span class="endpoint-path">/connect/patients/verify/{health_id}</span>
+</div>
+<p>Validate a Health ID format (checksum) and confirm it is registered in OpesCare. Returns patient summary if valid.</p>
+
+<div class="docs-code-block">
+    <div class="docs-code-tabs"><button class="docs-code-tab active" data-lang="curl">cURL</button></div>
+    <div class="docs-code-pane active" data-lang="curl">
+<pre>curl "https://opescare.test/api/v1/connect/patients/verify/CM-HID-7KQ9-MP42-X8D1" \
+  -H "Authorization: Bearer {access_token}"</pre>
+    </div>
+</div>
+
 <h2 id="patient-search">Patient Search</h2>
 
 <div class="endpoint-pill">

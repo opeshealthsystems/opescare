@@ -32,7 +32,7 @@
 
 <h2 id="sandbox-credentials">Sandbox Credentials</h2>
 
-<p>Use these credentials to authenticate against the sandbox. They are pre-loaded and ready.</p>
+<p>Use these credentials to authenticate against the sandbox. They are pre-loaded and ready — no approval needed.</p>
 
 <table class="docs-table">
     <thead>
@@ -50,6 +50,35 @@
         </td></tr>
     </tbody>
 </table>
+
+<h2 id="production-credentials">Production Credentials — OpesCare HIS</h2>
+
+<p>For the production integration with <strong>OpesCare HIS</strong>, use the credentials below. These are fully approved with access to Health ID resolution, patient data read, and clinical record push.</p>
+
+<table class="docs-table">
+    <thead>
+        <tr><th>Field</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><code>client_id</code></td><td><code>opeshisos_production</code></td></tr>
+        <tr><td><code>client_secret</code></td><td><code>prod_secret_opeshisos_2026</code></td></tr>
+        <tr><td><code>environment</code></td><td><code>production</code></td></tr>
+        <tr><td>Approved scopes</td><td>
+            <code>health_id:verify</code> &nbsp;
+            <code>patient:read</code> &nbsp;
+            <code>encounter:push</code> &nbsp;
+            <code>lab:push</code> &nbsp;
+            <code>prescription:push</code> &nbsp;
+            <code>facility:sync</code>
+        </td></tr>
+        <tr><td>Key endpoint</td><td><code>POST /api/v1/connect/patients/resolve</code> — find or auto-create Health ID</td></tr>
+    </tbody>
+</table>
+
+<div class="docs-callout info">
+    <i data-lucide="info" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <div><strong>Integration workflow for OpesCare HIS:</strong> (1) Call <code>/auth/token</code> with production credentials. (2) For each patient, call <code>/patients/resolve</code> — OpesCare returns or creates a Health ID. (3) Push clinical data using the Health ID via <code>/records/encounters</code>, <code>/records/lab-results</code>, or the Bridge Agent. See <a href="{{ route('docs.api') }}#health-id-resolution">Health ID Resolution</a> for full examples.</div>
+</div>
 
 <h2 id="quickstart">5-Minute Quickstart</h2>
 

@@ -42,11 +42,70 @@ class DemoDeveloperAccountSeeder extends Seeder
             'api_terms_accepted_at'    => now(),
             'api_terms_version'        => 'v1.0',
             'sandbox_only'             => false,
-            'admin_notes'              => 'Demo account — pre-approved for all integration types.',
+            'admin_notes'              => 'Demo account — pre-approved for all integration types. Production access granted.',
             'suspended_by'             => null,
             'suspend_reason'           => null,
             'created_at'               => now(),
             'updated_at'               => now(),
         ]);
+
+        // Production access request — approved
+        if (DB::getSchemaBuilder()->hasTable('production_access_requests')) {
+            $prodRequestId = '00000000-0000-0000-0000-500000000001';
+            if (!DB::table('production_access_requests')->where('id', $prodRequestId)->exists()) {
+                DB::table('production_access_requests')->insert([
+                    'id'                        => $prodRequestId,
+                    'developer_account_id'      => self::DEV_ACCOUNT_ID,
+                    'integration_client_id'     => '00000000-0000-0000-0000-300000000002',
+                    'use_case'                  => 'OpesCare HIS interoperability — Health ID lookup, patient data sync, clinical record push.',
+                    'technical_description'     => 'Integration with external Hospital Information System (OpesCare HIS / opeshisos). Pulls patient Health IDs, pushes encounter data and lab results via Bridge Agent and Connect API.',
+                    'requested_scopes'          => json_encode(['health_id:verify', 'patient:read', 'encounter:push', 'lab:push', 'prescription:push', 'facility:sync']),
+                    'estimated_daily_requests'  => '< 10 000',
+                    'handles_patient_data'      => true,
+                    'data_residency_region'     => 'AF',
+                    'security_review_done'      => true,
+                    'terms_accepted'            => true,
+                    'terms_version'             => 'v1.0',
+                    'status'                    => 'approved',
+                    'reviewed_by'               => self::DEV_USER_ID,
+                    'reviewed_at'               => now(),
+                    'review_notes'              => 'Auto-approved for demo environment. Production credentials issued.',
+                    'approved_scopes'           => json_encode(['health_id:verify', 'patient:read', 'encounter:push', 'lab:push', 'prescription:push', 'facility:sync']),
+                    'approved_at'               => now(),
+                    'rejected_reason'           => null,
+                    'created_at'                => now(),
+                    'updated_at'                => now(),
+                ]);
+            }
+        }
+
+        // Production integration client for OpesCare HIS
+        $prodClientId = '00000000-0000-0000-0000-300000000002';
+        if (!DB::table('integration_clients')->where('id', $prodClientId)->exists()) {
+            $facilityId = DB::table('facilities')->where('is_demo', true)->value('id');
+            DB::table('integration_clients')->insert([
+                'id'            => $prodClientId,
+                'name'          => 'OpesCare HIS — Production Client',
+                'client_id'     => 'opeshisos_production',
+                'client_secret' => \Illuminate\Support\Facades\Hash::make('prod_secret_opeshisos_2026'),
+                'facility_id'   => $facilityId,
+                'scopes'        => json_encode(['health_id:verify', 'patient:read', 'encounter:push', 'lab:push', 'prescription:push', 'facility:sync']),
+                'status'        => 'active',
+                'environment'   => 'production',
+                'description'   => 'Production client for the OpesCare Hospital Information System integration. Authorised for full Health ID resolution and clinical record push.',
+                'contact_email' => 'integration@opeshisos.test',
+                'created_by'    => self::DEV_USER_ID,
+                'approved_at'   => now(),
+                'approved_by'   => self::DEV_USER_ID,
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ]);
+        } else {
+            DB::table('integration_clients')->where('id', $prodClientId)->update([
+                'status'      => 'active',
+                'environment' => 'production',
+                'updated_at'  => now(),
+            ]);
+        }
     }
 }

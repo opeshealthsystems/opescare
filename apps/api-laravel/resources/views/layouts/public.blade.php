@@ -70,12 +70,13 @@
                     <a href="{{ route('public.interoperability') }}" class="nav-link dropdown-trigger">{{ __('landing.nav.interop', [], app()->getLocale()) ?: 'Interoperability' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
                     <div class="dropdown-menu">
                         <a href="{{ route('public.interoperability') }}" class="dropdown-item"><i data-lucide="network" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.nav.interop_overview', [], app()->getLocale()) ?: 'Overview' }}</a>
-                        <a href="{{ route('public.developers') }}" class="dropdown-item"><i data-lucide="braces" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>Connect API</a>
-                        <a href="{{ route('public.developers') }}#sdk" class="dropdown-item"><i data-lucide="code-2" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>SDK</a>
-                        <a href="{{ route('public.developers') }}#widget" class="dropdown-item"><i data-lucide="panel-top" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>Widget</a>
-                        <a href="{{ route('public.developers') }}#bridge" class="dropdown-item"><i data-lucide="cpu" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>Bridge Agent</a>
-                        <a href="{{ route('public.developers') }}#lite" class="dropdown-item"><i data-lucide="layout-dashboard" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>OpesCare Lite</a>
-                        <a href="{{ route('public.developers') }}#webhooks" class="dropdown-item"><i data-lucide="radio-tower" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>Webhooks</a>
+                        <a href="{{ route('docs.index') }}" class="dropdown-item" style="font-weight:600;color:var(--color-primary,#4F46E5);"><i data-lucide="book-open" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>Developer Docs</a>
+                        <a href="{{ route('docs.api') }}" class="dropdown-item"><i data-lucide="braces" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>Connect API</a>
+                        <a href="{{ route('docs.sdk') }}" class="dropdown-item"><i data-lucide="code-2" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>SDK</a>
+                        <a href="{{ route('docs.widget') }}" class="dropdown-item"><i data-lucide="panel-top" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>Widget</a>
+                        <a href="{{ route('docs.bridge') }}" class="dropdown-item"><i data-lucide="cpu" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>Bridge Agent</a>
+                        <a href="{{ route('docs.webhooks') }}" class="dropdown-item"><i data-lucide="radio-tower" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>Webhooks</a>
+                        <a href="{{ route('docs.playground') }}" class="dropdown-item"><i data-lucide="play-circle" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>API Playground</a>
                     </div>
                 </div>
                 <a href="{{ route('public.security') }}" class="nav-link">{{ __('landing.nav.security', [], app()->getLocale()) ?: 'Security' }}</a>
