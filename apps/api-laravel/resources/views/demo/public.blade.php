@@ -255,6 +255,63 @@
         </form>
     </div>
 
+    {{-- Developer / API Partner --}}
+    <div class="demo-card" role="listitem" style="border-color:#0ea5e9;grid-column:span 2;" aria-label="Developer and API access">
+        <div class="demo-card-header">
+            <div class="demo-card-icon" style="background:#e0f2fe;color:#0284c7;" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <div>
+                <div class="demo-card-role">{{ $t('role_developer', 'Developer / API Partner') }}</div>
+                <div class="demo-card-org">OpesCare Connect — Sandbox Environment</div>
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0.75rem;">
+
+            {{-- Left: Portal login --}}
+            <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:0.875rem;">
+                <div style="font-size:0.75rem;font-weight:600;color:#0369a1;text-transform:uppercase;letter-spacing:.05em;margin-bottom:0.5rem;">
+                    🌐 Developer Portal
+                </div>
+                <div class="demo-card-meta" style="margin-bottom:0.75rem;">
+                    <div><strong>Email:</strong> <code>demo.developer@opescare.test</code></div>
+                    <div><strong>Password:</strong> <code>DemoPass!2026</code></div>
+                </div>
+                <div style="font-size:0.8rem;color:#0c4a6e;margin-bottom:0.75rem;">Access the API Connect portal, manage sandbox apps, view webhook logs, and explore integration docs.</div>
+                <form method="POST" action="{{ route('demo.login-as') }}">
+                    @csrf
+                    <input type="hidden" name="role" value="developer">
+                    <input type="hidden" name="email" value="demo.developer@opescare.test">
+                    <input type="hidden" name="mode" value="public">
+                    <button type="submit" class="demo-login-btn" style="background:#0284c7;width:100%;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                        Open Developer Portal
+                    </button>
+                </form>
+            </div>
+
+            {{-- Right: Sandbox API credentials --}}
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:0.875rem;">
+                <div style="font-size:0.75rem;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:.05em;margin-bottom:0.5rem;">
+                    🔑 Sandbox API Credentials
+                </div>
+                <div class="demo-card-meta" style="margin-bottom:0.5rem;">
+                    <div><strong>Endpoint:</strong> <code style="font-size:0.72rem;">POST /api/v1/connect/auth/token</code></div>
+                    <div><strong>client_id:</strong> <code>demo_dev_sandbox</code></div>
+                    <div><strong>client_secret:</strong> <code>demo_secret_sandbox_2026</code></div>
+                    <div><strong>grant_type:</strong> <code>client_credentials</code></div>
+                </div>
+                <div style="font-size:0.775rem;color:#64748b;margin-bottom:0.5rem;line-height:1.5;">
+                    <strong>Scopes:</strong> pharmacy_stock.sync &middot; blood_stock.sync &middot; lab_results.push &middot; records.push &middot; patients.search
+                </div>
+                <div style="background:#fef9c3;border:1px solid #fde047;border-radius:6px;padding:0.5rem 0.625rem;font-size:0.775rem;color:#713f12;">
+                    ⚠️ Sandbox only — no real data is written or read.
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>{{-- /.demo-grid --}}
 
 <hr class="demo-divider">
