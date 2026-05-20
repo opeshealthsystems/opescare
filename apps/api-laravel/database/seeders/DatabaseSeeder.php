@@ -21,9 +21,10 @@ class DatabaseSeeder extends Seeder
             RolesSeeder::class,
         ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // When demo mode is enabled, seed all demo data automatically so that
+        // `php artisan db:seed` (or migrate:fresh --seed) is a single-step setup.
+        if (config('demo.enabled', (bool) env('OPESCARE_DEMO_MODE', false))) {
+            $this->call(DemoDatabaseSeeder::class);
+        }
     }
 }
