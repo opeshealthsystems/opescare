@@ -48,7 +48,7 @@ class RequireFacilityContext
             return $next($request);
         }
 
-        return redirect()->route('portals.select-facility')
+        return redirect()->route('select-facility')
             ->with('info', __('public.portal.select_facility_required', [], app()->getLocale())
                 ?: 'Please select a facility to continue.');
     }

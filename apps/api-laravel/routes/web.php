@@ -109,6 +109,9 @@ Route::get('/lang/{locale}', function ($locale) {
 
 // Demo Access Routes
 Route::middleware(['web'])->group(function () {
+    Route::get('/demo-access',          [\App\Http\Controllers\Demo\DemoAccessController::class, 'index'])->name('demo.index');
+    Route::get('/demo-access/public',   [\App\Http\Controllers\Demo\DemoAccessController::class, 'publicDemo'])->name('demo.public');
+    Route::get('/demo-access/internal', [\App\Http\Controllers\Demo\DemoAccessController::class, 'internalDemo'])->name('demo.internal');
     Route::post('/demo-access/login-as', [\App\Http\Controllers\Demo\DemoAccessController::class, 'loginAs'])->name('demo.login-as');
 });
 
