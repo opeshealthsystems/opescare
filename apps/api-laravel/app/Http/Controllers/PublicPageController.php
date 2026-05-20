@@ -341,14 +341,24 @@ class PublicPageController extends Controller
 
     public function submitSelectFacility(Request $request)
     {
-        $facility = $request->input('facility');
-        if ($facility === 'suspended') {
-            return redirect()->route('select-facility')->with('error', __('onboarding.login.errors.facility_suspended'));
+        $facilityId = $request->input('facility');
+
+        if ($facilityId === 'suspended') {
+            return redirect()->route('select-facility')
+                ->with('error', __('onboarding.login.errors.facility_suspended'));
         }
+
+        if (!$facilityId) {
+            return redirect()->route('select-facility')
+                ->with('error', 'Please select a facility to continue.');
+        }
+
+        // ✅ Save the chosen facility to session so RequireFacilityContext passes
+        session(['active_facility_id' => $facilityId]);
 
         $url = Auth::check()
             ? app(DashboardProfileService::class)->landingUrlForCurrent()
-            : route('portals.patient');
+            : route('login');
 
         return redirect($url)->with('success', 'Active clinical session established.');
     }

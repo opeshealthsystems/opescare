@@ -31,15 +31,7 @@ class PatientPortalController extends Controller
             return $user->patient;
         }
 
-        // Fallback: find patient by user's email (common account-linking pattern)
-        if ($user && $user->email) {
-            $patient = Patient::where('email', $user->email)->first();
-            if ($patient) {
-                return $patient;
-            }
-        }
-
-        // Demo fallback: first seeded patient with a Health ID
+        // Demo fallback: first available patient with a Health ID
         return Patient::whereNotNull('health_id')->first();
     }
 
