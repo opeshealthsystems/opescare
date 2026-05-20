@@ -193,15 +193,15 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     @if(isset($qrToken) && $qrToken)
-    if (typeof QRCode !== 'undefined') {
-        QRCode.toCanvas(
-            document.createElement('canvas'),
-            "{{ route('verify.qr', ['token' => $qrToken]) }}",
+    var staticQrUrl = "{{ route('verify.qr', ['token' => $qrToken]) }}";
+    var staticQrEl  = document.getElementById('static-qr');
+    if (staticQrEl && typeof QRCode !== 'undefined') {
+        QRCode.toDataURL(staticQrUrl,
             { width: 80, margin: 1, color: { dark: '#0F172A', light: '#FFFFFF' } },
-            function (err, canvas) {
-                if (!err) {
-                    var container = document.getElementById('static-qr');
-                    if (container) { container.innerHTML = ''; container.appendChild(canvas); }
+            function (err, url) {
+                if (!err && url) {
+                    staticQrEl.innerHTML = '<img src="' + url + '" alt="Health ID QR Code"'
+                        + ' style="width:5rem;height:5rem;border-radius:4px;" />';
                 }
             }
         );
@@ -225,15 +225,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
                 var data = await response.json();
                 if (data.url && typeof QRCode !== 'undefined') {
-                    QRCode.toCanvas(
-                        document.createElement('canvas'),
-                        data.url,
+                    QRCode.toDataURL(data.url,
                         { width: 128, margin: 1, color: { dark: '#0F172A', light: '#FFFFFF' } },
-                        function (err, canvas) {
-                            if (!err) {
+                        function (err, imgUrl) {
+                            if (!err && imgUrl) {
                                 var qrEl = document.getElementById('temp-qr');
-                                qrEl.innerHTML = '';
-                                qrEl.appendChild(canvas);
+                                qrEl.innerHTML = '<img src="' + imgUrl + '" alt="Temporary QR Code"'
+                                    + ' style="width:8rem;height:8rem;border-radius:4px;" />';
                                 var container = document.getElementById('temp-qr-container');
                                 container.style.display = 'flex';
                                 startCountdown(3600);
