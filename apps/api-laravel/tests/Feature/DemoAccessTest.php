@@ -24,19 +24,25 @@ class DemoAccessTest extends TestCase
         Config::set('demo.external_services_simulated', true);
     }
 
-    public function test_demo_routes_exist_and_accessible()
+    public function test_demo_login_as_route_exists()
     {
-        $this->get('/demo-access')->assertRedirect('/demo-access/public');
-        $this->get('/demo-access/public')->assertStatus(200);
-        $this->get('/demo-access/internal')->assertStatus(200);
+        // The login-as POST endpoint must always be present in demo mode
+        $response = $this->post('/demo-access/login-as', [
+            'role'  => 'doctor',
+            'email' => 'nonexistent@opescare.test',
+        ]);
+        // Returns a validation error (account not found), not a 404 or 403
+        $response->assertSessionHasErrors('email');
     }
 
     public function test_demo_mode_can_be_disabled()
     {
         Config::set('demo.enabled', false);
-        $this->get('/demo-access')->assertStatus(404);
-        $this->get('/demo-access/public')->assertStatus(404);
-        $this->get('/demo-access/internal')->assertStatus(404);
+        // Middleware returns 404 for all demo-access/* paths when demo is disabled
+        $this->post('/demo-access/login-as', [
+            'role'  => 'doctor',
+            'email' => 'demo.doctor@opescare.test',
+        ])->assertStatus(404);
     }
 
     public function test_demo_accounts_cannot_access_non_demo_records()
@@ -83,8 +89,8 @@ class DemoAccessTest extends TestCase
 
         session(['demo_session_expires_at' => now()->subMinutes(1)]);
 
-        // Try to access a demo route, should be redirected out
-        $this->get('/demo-access/internal')->assertRedirect(route('demo.public'));
+        // Any request with an expired demo session should be redirected to login
+        $this->get('/portals/staff')->assertRedirect(route('login'));
         $this->assertGuest();
     }
 

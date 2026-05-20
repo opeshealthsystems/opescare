@@ -534,3 +534,141 @@ Route::prefix('fhir/R4')->group(function () {
     Route::get('/Coverage',               [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchCoverage']);
     Route::get('/Coverage/{id}',          [\App\Http\Controllers\Api\Fhir\FhirController::class, 'coverage']);
 });
+
+/*
+|--------------------------------------------------------------------------
+| Insurance Claims & Preauthorization
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/insurance')->group(function () {
+    Route::post('/eligibility/check', [\App\Http\Controllers\Api\V1\InsuranceController::class, 'checkEligibility']);
+    Route::post('/preauth', [\App\Http\Controllers\Api\V1\InsuranceController::class, 'requestPreauth']);
+    Route::post('/preauth/{id}/decide', [\App\Http\Controllers\Api\V1\InsuranceController::class, 'decidePreauth']);
+    Route::get('/claims', [\App\Http\Controllers\Api\V1\InsuranceController::class, 'index']);
+    Route::get('/claims/{id}', [\App\Http\Controllers\Api\V1\InsuranceController::class, 'show']);
+    Route::post('/claims/{id}/submit', [\App\Http\Controllers\Api\V1\InsuranceController::class, 'submit']);
+    Route::post('/claims/{id}/decide', [\App\Http\Controllers\Api\V1\InsuranceController::class, 'decide']);
+    Route::post('/claims/{id}/payment', [\App\Http\Controllers\Api\V1\InsuranceController::class, 'postPayment']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Triage & Emergency Workflow
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/triage')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\V1\TriageController::class, 'listActive']);
+    Route::post('/', [\App\Http\Controllers\Api\V1\TriageController::class, 'store']);
+    Route::post('/{triageId}/score', [\App\Http\Controllers\Api\V1\TriageController::class, 'score']);
+    Route::post('/{triageId}/reassess', [\App\Http\Controllers\Api\V1\TriageController::class, 'reassess']);
+    Route::post('/{triageId}/escalate', [\App\Http\Controllers\Api\V1\TriageController::class, 'escalateToEmergency']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Inventory & Supply Chain
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/inventory')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\V1\InventoryController::class, 'index']);
+    Route::patch('/{itemId}/stock', [\App\Http\Controllers\Api\V1\InventoryController::class, 'updateStock']);
+    Route::get('/low-stock', [\App\Http\Controllers\Api\V1\InventoryController::class, 'getLowStockItems']);
+    Route::post('/purchase-orders', [\App\Http\Controllers\Api\V1\InventoryController::class, 'createPurchaseOrder']);
+    Route::post('/purchase-orders/{orderId}/receive', [\App\Http\Controllers\Api\V1\InventoryController::class, 'receiveGoods']);
+    Route::post('/audits', [\App\Http\Controllers\Api\V1\InventoryController::class, 'openAudit']);
+    Route::post('/audits/{auditId}/close', [\App\Http\Controllers\Api\V1\InventoryController::class, 'closeAudit']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Analytics & Reporting
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/analytics')->group(function () {
+    Route::get('/facilities/{facilityId}/dashboard', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'facilityDashboard']);
+    Route::get('/appointments', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'appointmentStats']);
+    Route::get('/queues', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'queueStats']);
+    Route::get('/billing', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'billingStats']);
+    Route::post('/exports', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'requestExport']);
+    Route::get('/exports/{exportId}', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'exportStatus']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Staff, HR & Shift Management
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/staff')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\V1\StaffController::class, 'index']);
+    Route::get('/{staffId}', [\App\Http\Controllers\Api\V1\StaffController::class, 'show']);
+    Route::patch('/{staffId}', [\App\Http\Controllers\Api\V1\StaffController::class, 'updateProfile']);
+    Route::get('/rosters', [\App\Http\Controllers\Api\V1\StaffController::class, 'getRoster']);
+    Route::post('/shifts', [\App\Http\Controllers\Api\V1\StaffController::class, 'assignShift']);
+    Route::delete('/shifts/{shiftId}', [\App\Http\Controllers\Api\V1\StaffController::class, 'removeShift']);
+    Route::post('/leave', [\App\Http\Controllers\Api\V1\StaffController::class, 'requestLeave']);
+    Route::post('/leave/{leaveId}/approve', [\App\Http\Controllers\Api\V1\StaffController::class, 'approveLeave']);
+    Route::post('/leave/{leaveId}/reject', [\App\Http\Controllers\Api\V1\StaffController::class, 'rejectLeave']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Telemedicine
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/telemedicine')->group(function () {
+    Route::post('/consultations', [\App\Http\Controllers\Api\V1\TelemedicineController::class, 'book']);
+    Route::get('/consultations/{consultId}', [\App\Http\Controllers\Api\V1\TelemedicineController::class, 'show']);
+    Route::post('/consultations/{consultId}/cancel', [\App\Http\Controllers\Api\V1\TelemedicineController::class, 'cancel']);
+    Route::post('/consultations/{consultId}/consent', [\App\Http\Controllers\Api\V1\TelemedicineController::class, 'recordConsent']);
+    Route::post('/consultations/{consultId}/waiting-room', [\App\Http\Controllers\Api\V1\TelemedicineController::class, 'joinWaitingRoom']);
+    Route::post('/consultations/{consultId}/call', [\App\Http\Controllers\Api\V1\TelemedicineController::class, 'initiateCall']);
+    Route::post('/sessions/{sessionId}/end', [\App\Http\Controllers\Api\V1\TelemedicineController::class, 'endCall']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Ward, Admission & Bed Management
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/ward')->group(function () {
+    Route::post('/admissions', [\App\Http\Controllers\Api\V1\WardController::class, 'admit']);
+    Route::post('/admissions/{admissionId}/assign-bed', [\App\Http\Controllers\Api\V1\WardController::class, 'assignBed']);
+    Route::post('/admissions/{admissionId}/transfer', [\App\Http\Controllers\Api\V1\WardController::class, 'transferBed']);
+    Route::post('/admissions/{admissionId}/discharge', [\App\Http\Controllers\Api\V1\WardController::class, 'discharge']);
+    Route::post('/admissions/{admissionId}/nursing-round', [\App\Http\Controllers\Api\V1\WardController::class, 'recordNursingRound']);
+    Route::post('/admissions/{admissionId}/discharge-plan', [\App\Http\Controllers\Api\V1\WardController::class, 'initiateDischargePlan']);
+    Route::get('/beds/availability', [\App\Http\Controllers\Api\V1\WardController::class, 'getBedAvailability']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Security Operations Center
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/security')->group(function () {
+    Route::get('/audit-log', [\App\Http\Controllers\Api\V1\SecurityOperationsController::class, 'searchAuditLog']);
+    Route::get('/suspicious-flags', [\App\Http\Controllers\Api\V1\SecurityOperationsController::class, 'listSuspiciousFlags']);
+    Route::post('/suspicious-flags/{flagId}/review', [\App\Http\Controllers\Api\V1\SecurityOperationsController::class, 'reviewFlag']);
+    Route::post('/breaches', [\App\Http\Controllers\Api\V1\SecurityOperationsController::class, 'openBreach']);
+    Route::post('/breaches/{breachId}/notify', [\App\Http\Controllers\Api\V1\SecurityOperationsController::class, 'markBreachNotified']);
+    Route::post('/breaches/{breachId}/close', [\App\Http\Controllers\Api\V1\SecurityOperationsController::class, 'closeBreach']);
+    Route::post('/access-reviews', [\App\Http\Controllers\Api\V1\SecurityOperationsController::class, 'initiateAccessReview']);
+    Route::post('/access-reviews/{reviewId}/complete', [\App\Http\Controllers\Api\V1\SecurityOperationsController::class, 'completeAccessReview']);
+    Route::post('/compliance-exports', [\App\Http\Controllers\Api\V1\SecurityOperationsController::class, 'requestComplianceExport']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Subscription & SaaS Billing
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/subscriptions')->group(function () {
+    Route::get('/plans', [\App\Http\Controllers\Api\V1\SubscriptionController::class, 'listPlans']);
+    Route::get('/plans/{planId}', [\App\Http\Controllers\Api\V1\SubscriptionController::class, 'showPlan']);
+    Route::get('/my', [\App\Http\Controllers\Api\V1\SubscriptionController::class, 'getMySubscription']);
+    Route::post('/', [\App\Http\Controllers\Api\V1\SubscriptionController::class, 'subscribe']);
+    Route::post('/upgrade', [\App\Http\Controllers\Api\V1\SubscriptionController::class, 'upgrade']);
+    Route::post('/cancel', [\App\Http\Controllers\Api\V1\SubscriptionController::class, 'cancel']);
+    Route::get('/usage', [\App\Http\Controllers\Api\V1\SubscriptionController::class, 'getUsage']);
+    Route::get('/limits/{featureKey}', [\App\Http\Controllers\Api\V1\SubscriptionController::class, 'checkLimit']);
+});

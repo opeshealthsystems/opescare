@@ -99,7 +99,7 @@
                 </div>
 
                 <div class="header-desktop-cta" style="display:flex;align-items:center;gap:1rem;">
-                    <a href="{{ route('demo.public') }}" style="font-size:0.875rem;font-weight:700;color:var(--color-text-secondary);text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem;">
+                    <a href="{{ route('login') }}#demo" style="font-size:0.875rem;font-weight:700;color:var(--color-text-secondary);text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem;">
                         <i data-lucide="play-circle" style="width:1rem;height:1rem;"></i> Demo
                     </a>
                     <a href="{{ route('login') }}" style="font-size:0.875rem;font-weight:700;color:var(--color-text-secondary);text-decoration:none;">{{ __('auth.login.title') ?: 'Sign In' }}</a>
@@ -172,7 +172,7 @@
                     <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:0.5rem;">
                         <a href="{{ route('login') }}" class="btn btn-secondary" style="text-align:center;width:100%;">{{ __('auth.login.title', [], app()->getLocale()) ?: 'Sign In' }}</a>
                         <a href="{{ route('register') }}" class="btn btn-primary" style="text-align:center;width:100%;">{{ __('landing.nav.get_started', [], app()->getLocale()) ?: 'Get Started' }}</a>
-                        <a href="{{ route('demo.public') }}" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;font-size:0.875rem;font-weight:600;color:var(--color-text-secondary);text-decoration:none;padding:0.5rem 0;">
+                        <a href="{{ route('login') }}#demo" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;font-size:0.875rem;font-weight:600;color:var(--color-text-secondary);text-decoration:none;padding:0.5rem 0;">
                             <i data-lucide="play-circle" style="width:1rem;height:1rem;"></i> {{ __('landing.nav.demo', [], app()->getLocale()) ?: 'Demo' }}
                         </a>
                     </div>

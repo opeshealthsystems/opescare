@@ -33,7 +33,7 @@ class QrTokenService
             'expires_at' => $expiresAt
         ]);
 
-        $secureUrl = route('demo.public'); // Usually route('verify.qr', ['token' => $rawToken])
+        $secureUrl = route('verify.qr', ['token' => $rawToken]);
 
         return [
             'raw_token' => $rawToken,

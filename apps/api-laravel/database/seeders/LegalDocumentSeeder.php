@@ -54,7 +54,7 @@ class LegalDocumentSeeder extends Seeder
                 'is_current'            => true,
                 'requires_reacceptance' => false,
                 'change_summary'        => 'Initial version',
-                'published_by'          => 'OpesCare Legal Team',
+                'published_by'          => null,
                 'published_at'          => now(),
                 'effective_at'          => now(),
             ]);

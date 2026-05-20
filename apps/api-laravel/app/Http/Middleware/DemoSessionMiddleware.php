@@ -29,8 +29,8 @@ class DemoSessionMiddleware
 
                 Log::channel('single')->info('demo_session_expired');
 
-                return redirect()->route('demo.public')->withErrors([
-                    'session' => 'Your demo session has expired.'
+                return redirect()->route('login')->withErrors([
+                    'session' => 'Your demo session has expired. Please log in again.',
                 ]);
             }
         }
