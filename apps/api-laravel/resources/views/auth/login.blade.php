@@ -124,6 +124,9 @@
                 <button class="demo-tab-btn" type="button" onclick="switchDemoTab('admin', this)">
                     <i data-lucide="settings-2"></i> Admin
                 </button>
+                <button class="demo-tab-btn" type="button" onclick="switchDemoTab('developer', this)">
+                    <i data-lucide="code-2"></i> Developer
+                </button>
             </div>
 
             {{-- Clinical Portal --}}
@@ -223,6 +226,23 @@
                         <span>Platform Admin</span>
                         <small>Super Administrator</small>
                     </button>
+                </div>
+            </div>
+
+            {{-- Developer / API --}}
+            <div class="demo-tab-pane" id="demo-tab-developer" role="tabpanel">
+                <div class="demo-btn-grid">
+                    <button type="button" class="demo-login-btn" style="background:#0284c7;" onclick="demoLogin('developer','demo.developer@opescare.test')">
+                        <i data-lucide="code-2"></i>
+                        <span>API Developer</span>
+                        <small>Developer Portal</small>
+                    </button>
+                </div>
+                <div style="margin-top:0.875rem;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:0.75rem 1rem;font-size:0.8rem;color:#0c4a6e;line-height:1.6;">
+                    <strong>Sandbox API Credentials</strong><br>
+                    <code>client_id: demo_dev_sandbox</code><br>
+                    <code>client_secret: demo_secret_sandbox_2026</code><br>
+                    <code>POST /api/v1/connect/auth/token</code>
                 </div>
             </div>
         </div>{{-- /demo-panel-body --}}
