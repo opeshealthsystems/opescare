@@ -119,8 +119,8 @@ Route::middleware(['web', 'throttle:verify'])->group(function () {
     Route::get('/verify/qr/{token}', [\App\Http\Controllers\MedicalId\VerifyController::class, 'qr'])->name('verify.qr');
 });
 
-// Portal Placeholders
-Route::middleware(['web'])->group(function () {
+// Portal Routes — require authentication and correct portal for role
+Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
     Route::get('/portals/patient', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'index'])->name('portals.patient');
     Route::get('/portals/patient/logs', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'accessLogs'])->name('portals.patient.logs');
     Route::post('/portals/patient/generate-qr', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'generateTemporaryQr'])->name('portals.patient.qr');
@@ -409,8 +409,10 @@ Route::get('/share/document/{token}', function ($token) {
 |--------------------------------------------------------------------------
 */
 Route::get('/verify/certificate/{token}', [\App\Http\Controllers\Api\V1\Academy\AcademyController::class, 'verifyPublic'])->name('academy.certificate.verify');
-Route::get('/academy/dashboard', [\App\Http\Controllers\Api\V1\Academy\AcademyController::class, 'learnerDashboard'])->name('academy.dashboard');
-Route::get('/admin/academy/readiness/{facilityId}', [\App\Http\Controllers\Api\V1\Academy\AcademyAdminController::class, 'readinessDashboard'])->name('academy.admin.readiness');
+Route::middleware(['web', 'auth'])->group(function () {
+    Route::get('/academy/dashboard', [\App\Http\Controllers\Api\V1\Academy\AcademyController::class, 'learnerDashboard'])->name('academy.dashboard');
+    Route::get('/admin/academy/readiness/{facilityId}', [\App\Http\Controllers\Api\V1\Academy\AcademyAdminController::class, 'readinessDashboard'])->name('academy.admin.readiness');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -420,27 +422,29 @@ Route::get('/admin/academy/readiness/{facilityId}', [\App\Http\Controllers\Api\V
 Route::get('/care-map', [\App\Http\Controllers\Api\V1\CareMapController::class, 'publicDirectory'])->name('public.care-map');
 Route::get('/care-map/facility/{id}', [\App\Http\Controllers\Api\V1\CareMapController::class, 'publicProfile'])->name('public.care-map.profile');
 Route::get('/care-map/emergency', [\App\Http\Controllers\Api\V1\CareMapController::class, 'publicEmergency'])->name('public.care-map.emergency');
-Route::get('/admin/care-map/governance', [\App\Http\Controllers\Api\V1\CareMapController::class, 'adminGovernance'])->name('admin.care-map.governance');
+Route::middleware(['web', 'auth'])->get('/admin/care-map/governance', [\App\Http\Controllers\Api\V1\CareMapController::class, 'adminGovernance'])->name('admin.care-map.governance');
 
 /*
 |--------------------------------------------------------------------------
 | OpesCare Lite — Simplified Portal for Small / Low-Connectivity Facilities
 |--------------------------------------------------------------------------
 */
-Route::get('/portals/lite',                                         [\App\Http\Controllers\MedicalId\LitePortalController::class, 'dashboard'])->name('portals.lite.dashboard');
-Route::get('/portals/lite/lookup',                                  [\App\Http\Controllers\MedicalId\LitePortalController::class, 'lookup'])->name('portals.lite.lookup');
-Route::get('/portals/lite/register-patient',                        [\App\Http\Controllers\MedicalId\LitePortalController::class, 'registerPatientForm'])->name('portals.lite.register_patient');
-Route::post('/portals/lite/register-patient',                       [\App\Http\Controllers\MedicalId\LitePortalController::class, 'registerPatientStore'])->name('portals.lite.register_patient.store');
-Route::get('/portals/lite/checkin',                                 [\App\Http\Controllers\MedicalId\LitePortalController::class, 'checkIn'])->name('portals.lite.checkin');
-Route::post('/portals/lite/checkin',                                [\App\Http\Controllers\MedicalId\LitePortalController::class, 'checkInStore'])->name('portals.lite.checkin.store');
-Route::get('/portals/lite/consultation',                            [\App\Http\Controllers\MedicalId\LitePortalController::class, 'consultation'])->name('portals.lite.consultation');
-Route::get('/portals/lite/billing',                                 [\App\Http\Controllers\MedicalId\LitePortalController::class, 'billing'])->name('portals.lite.billing');
-Route::get('/portals/lite/devices',                                 [\App\Http\Controllers\MedicalId\LitePortalController::class, 'devices'])->name('portals.lite.devices');
-Route::post('/portals/lite/devices/{device}/activate',              [\App\Http\Controllers\MedicalId\LitePortalController::class, 'activateDevice'])->name('portals.lite.devices.activate');
-Route::post('/portals/lite/devices/{device}/revoke',                [\App\Http\Controllers\MedicalId\LitePortalController::class, 'revokeDevice'])->name('portals.lite.devices.revoke');
-Route::get('/portals/lite/conflicts',                               [\App\Http\Controllers\MedicalId\LitePortalController::class, 'conflicts'])->name('portals.lite.conflicts');
-Route::post('/portals/lite/conflicts/{conflict}/resolve',           [\App\Http\Controllers\MedicalId\LitePortalController::class, 'resolveConflict'])->name('portals.lite.conflicts.resolve');
-Route::get('/portals/lite/devices/{device}/offline-events',         [\App\Http\Controllers\MedicalId\LitePortalController::class, 'offlineEvents'])->name('portals.lite.offline_events');
+Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
+    Route::get('/portals/lite',                                         [\App\Http\Controllers\MedicalId\LitePortalController::class, 'dashboard'])->name('portals.lite.dashboard');
+    Route::get('/portals/lite/lookup',                                  [\App\Http\Controllers\MedicalId\LitePortalController::class, 'lookup'])->name('portals.lite.lookup');
+    Route::get('/portals/lite/register-patient',                        [\App\Http\Controllers\MedicalId\LitePortalController::class, 'registerPatientForm'])->name('portals.lite.register_patient');
+    Route::post('/portals/lite/register-patient',                       [\App\Http\Controllers\MedicalId\LitePortalController::class, 'registerPatientStore'])->name('portals.lite.register_patient.store');
+    Route::get('/portals/lite/checkin',                                 [\App\Http\Controllers\MedicalId\LitePortalController::class, 'checkIn'])->name('portals.lite.checkin');
+    Route::post('/portals/lite/checkin',                                [\App\Http\Controllers\MedicalId\LitePortalController::class, 'checkInStore'])->name('portals.lite.checkin.store');
+    Route::get('/portals/lite/consultation',                            [\App\Http\Controllers\MedicalId\LitePortalController::class, 'consultation'])->name('portals.lite.consultation');
+    Route::get('/portals/lite/billing',                                 [\App\Http\Controllers\MedicalId\LitePortalController::class, 'billing'])->name('portals.lite.billing');
+    Route::get('/portals/lite/devices',                                 [\App\Http\Controllers\MedicalId\LitePortalController::class, 'devices'])->name('portals.lite.devices');
+    Route::post('/portals/lite/devices/{device}/activate',              [\App\Http\Controllers\MedicalId\LitePortalController::class, 'activateDevice'])->name('portals.lite.devices.activate');
+    Route::post('/portals/lite/devices/{device}/revoke',                [\App\Http\Controllers\MedicalId\LitePortalController::class, 'revokeDevice'])->name('portals.lite.devices.revoke');
+    Route::get('/portals/lite/conflicts',                               [\App\Http\Controllers\MedicalId\LitePortalController::class, 'conflicts'])->name('portals.lite.conflicts');
+    Route::post('/portals/lite/conflicts/{conflict}/resolve',           [\App\Http\Controllers\MedicalId\LitePortalController::class, 'resolveConflict'])->name('portals.lite.conflicts.resolve');
+    Route::get('/portals/lite/devices/{device}/offline-events',         [\App\Http\Controllers\MedicalId\LitePortalController::class, 'offlineEvents'])->name('portals.lite.offline_events');
+});
 
 
 /*
@@ -448,23 +452,25 @@ Route::get('/portals/lite/devices/{device}/offline-events',         [\App\Http\C
 | Developer Portal — External Developer Self-Service
 |--------------------------------------------------------------------------
 */
-Route::get('/portals/developer',                                          [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'dashboard'])->name('portals.developer.dashboard');
-Route::get('/portals/developer/onboard',                                  [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'onboard'])->name('portals.developer.onboard');
-Route::post('/portals/developer/onboard',                                 [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'onboardStore'])->name('portals.developer.onboard.store');
+Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
+    Route::get('/portals/developer',                                          [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'dashboard'])->name('portals.developer.dashboard');
+    Route::get('/portals/developer/onboard',                                  [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'onboard'])->name('portals.developer.onboard');
+    Route::post('/portals/developer/onboard',                                 [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'onboardStore'])->name('portals.developer.onboard.store');
 
-// Apps (Integration Clients)
-Route::get('/portals/developer/apps',                                     [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'apps'])->name('portals.developer.apps');
-Route::get('/portals/developer/apps/create',                              [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'createApp'])->name('portals.developer.apps.create');
-Route::post('/portals/developer/apps',                                    [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'storeApp'])->name('portals.developer.apps.store');
-Route::get('/portals/developer/apps/{clientId}',                          [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'showApp'])->name('portals.developer.apps.show');
+    // Apps (Integration Clients)
+    Route::get('/portals/developer/apps',                                     [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'apps'])->name('portals.developer.apps');
+    Route::get('/portals/developer/apps/create',                              [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'createApp'])->name('portals.developer.apps.create');
+    Route::post('/portals/developer/apps',                                    [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'storeApp'])->name('portals.developer.apps.store');
+    Route::get('/portals/developer/apps/{clientId}',                          [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'showApp'])->name('portals.developer.apps.show');
 
-// Production Access Requests
-Route::get('/portals/developer/production-requests',                      [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'productionRequests'])->name('portals.developer.production_requests');
-Route::get('/portals/developer/production-requests/create',               [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'createProductionRequest'])->name('portals.developer.production_requests.create');
-Route::post('/portals/developer/production-requests',                     [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'storeProductionRequest'])->name('portals.developer.production_requests.store');
+    // Production Access Requests
+    Route::get('/portals/developer/production-requests',                      [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'productionRequests'])->name('portals.developer.production_requests');
+    Route::get('/portals/developer/production-requests/create',               [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'createProductionRequest'])->name('portals.developer.production_requests.create');
+    Route::post('/portals/developer/production-requests',                     [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'storeProductionRequest'])->name('portals.developer.production_requests.store');
 
-// Webhook Delivery Logs
-Route::get('/portals/developer/apps/{clientId}/webhook-deliveries',       [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'webhookDeliveries'])->name('portals.developer.webhook_deliveries');
+    // Webhook Delivery Logs
+    Route::get('/portals/developer/apps/{clientId}/webhook-deliveries',       [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'webhookDeliveries'])->name('portals.developer.webhook_deliveries');
+});
 
 
 /*
@@ -477,50 +483,54 @@ Route::get('/legal',                                                    [\App\Ht
 Route::get('/legal/{slug}',                                             [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'publicShow'])->name('public.legal.show');
 
 // Admin legal document management
-Route::get('/portals/admin/legal',                                      [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'index'])->name('portals.admin.legal');
-Route::post('/portals/admin/legal',                                     [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'store'])->name('portals.admin.legal.store');
-Route::get('/portals/admin/legal/{document}',                           [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'show'])->name('portals.admin.legal.show');
-Route::post('/portals/admin/legal/{document}/versions',                 [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'publishVersion'])->name('portals.admin.legal.publish_version');
+Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
+    Route::get('/portals/admin/legal',                                      [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'index'])->name('portals.admin.legal');
+    Route::post('/portals/admin/legal',                                     [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'store'])->name('portals.admin.legal.store');
+    Route::get('/portals/admin/legal/{document}',                           [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'show'])->name('portals.admin.legal.show');
+    Route::post('/portals/admin/legal/{document}/versions',                 [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'publishVersion'])->name('portals.admin.legal.publish_version');
 
-// Patient rights — account closures
-Route::get('/portals/admin/legal/patient-rights/closures',              [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'closureRequests'])->name('portals.admin.legal.closures');
-Route::post('/portals/admin/legal/patient-rights/closures/{closure}/review', [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'reviewClosure'])->name('portals.admin.legal.closures.review');
+    // Patient rights — account closures
+    Route::get('/portals/admin/legal/patient-rights/closures',              [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'closureRequests'])->name('portals.admin.legal.closures');
+    Route::post('/portals/admin/legal/patient-rights/closures/{closure}/review', [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'reviewClosure'])->name('portals.admin.legal.closures.review');
 
-// Privacy complaints
-Route::get('/portals/admin/legal/privacy-complaints',                   [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'privacyComplaints'])->name('portals.admin.legal.complaints');
-Route::post('/portals/admin/legal/privacy-complaints/{complaint}/resolve', [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'resolveComplaint'])->name('portals.admin.legal.complaints.resolve');
+    // Privacy complaints
+    Route::get('/portals/admin/legal/privacy-complaints',                   [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'privacyComplaints'])->name('portals.admin.legal.complaints');
+    Route::post('/portals/admin/legal/privacy-complaints/{complaint}/resolve', [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'resolveComplaint'])->name('portals.admin.legal.complaints.resolve');
 
-// Minor transitions
-Route::get('/portals/admin/legal/minor-transitions',                    [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'minorTransitions'])->name('portals.admin.legal.minor_transitions');
+    // Minor transitions
+    Route::get('/portals/admin/legal/minor-transitions',                    [\App\Http\Controllers\MedicalId\LegalAdminController::class, 'minorTransitions'])->name('portals.admin.legal.minor_transitions');
+});
 
 // --------------------------------------------------
 // Facility Onboarding & Go-Live Portal
 // --------------------------------------------------
-// Integration Certifications
-Route::get('/portals/admin/certifications',                                   [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'index'])->name('portals.admin.certifications.index');
-Route::get('/portals/admin/certifications/create',                            [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'create'])->name('portals.admin.certifications.create');
-Route::post('/portals/admin/certifications',                                  [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'store'])->name('portals.admin.certifications.store');
-Route::get('/portals/admin/certifications/{certification}',                   [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'show'])->name('portals.admin.certifications.show');
-Route::post('/portals/admin/certifications/{certification}/test-run',         [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'recordTestRun'])->name('portals.admin.certifications.test_run');
-Route::post('/portals/admin/certifications/{certification}/badge/issue',      [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'issueBadge'])->name('portals.admin.certifications.badge.issue');
-Route::post('/portals/admin/certifications/badges/{badge}/revoke',            [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'revokeBadge'])->name('portals.admin.certifications.badge.revoke');
-Route::post('/portals/admin/certifications/seed-requirements',                [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'seedRequirements'])->name('portals.admin.certifications.seed');
-// --------------------------------------------------
-// Code System Mappings (LOINC/ICD-10/ATC)
-Route::get('/portals/admin/code-mappings',                               [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'index'])->name('portals.admin.code_mappings.index');
-Route::get('/portals/admin/code-mappings/create',                        [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'create'])->name('portals.admin.code_mappings.create');
-Route::post('/portals/admin/code-mappings',                              [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'store'])->name('portals.admin.code_mappings.store');
-Route::post('/portals/admin/code-mappings/{mapping}/approve',            [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'approve'])->name('portals.admin.code_mappings.approve');
-Route::post('/portals/admin/code-mappings/{mapping}/reject',             [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'reject'])->name('portals.admin.code_mappings.reject');
-Route::delete('/portals/admin/code-mappings/{mapping}',                  [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'destroy'])->name('portals.admin.code_mappings.destroy');
-// --------------------------------------------------
-// KPI Dashboard
-Route::get('/portals/admin/kpi',                                         [\App\Http\Controllers\MedicalId\KpiDashboardController::class, 'index'])->name('portals.admin.kpi.index');
-Route::get('/portals/admin/kpi/trend',                                   [\App\Http\Controllers\MedicalId\KpiDashboardController::class, 'trend'])->name('portals.admin.kpi.trend');
-Route::post('/portals/admin/kpi/export',                                 [\App\Http\Controllers\MedicalId\KpiDashboardController::class, 'requestExport'])->name('portals.admin.kpi.export');
-Route::post('/portals/admin/kpi/recompute',                              [\App\Http\Controllers\MedicalId\KpiDashboardController::class, 'recompute'])->name('portals.admin.kpi.recompute');
-// --------------------------------------------------
-Route::get('/portals/admin/onboarding',                                  [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'index'])->name('portals.admin.onboarding');
-Route::get('/portals/admin/onboarding/{facility}',                       [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'show'])->name('portals.admin.onboarding.show');
-Route::post('/portals/admin/onboarding/{facility}/mark',                 [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'markItem'])->name('portals.admin.onboarding.mark');
-Route::post('/portals/admin/onboarding/{facility}/approve',              [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'approve'])->name('portals.admin.onboarding.approve');
+Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
+    // Integration Certifications
+    Route::get('/portals/admin/certifications',                                   [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'index'])->name('portals.admin.certifications.index');
+    Route::get('/portals/admin/certifications/create',                            [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'create'])->name('portals.admin.certifications.create');
+    Route::post('/portals/admin/certifications',                                  [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'store'])->name('portals.admin.certifications.store');
+    Route::get('/portals/admin/certifications/{certification}',                   [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'show'])->name('portals.admin.certifications.show');
+    Route::post('/portals/admin/certifications/{certification}/test-run',         [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'recordTestRun'])->name('portals.admin.certifications.test_run');
+    Route::post('/portals/admin/certifications/{certification}/badge/issue',      [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'issueBadge'])->name('portals.admin.certifications.badge.issue');
+    Route::post('/portals/admin/certifications/badges/{badge}/revoke',            [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'revokeBadge'])->name('portals.admin.certifications.badge.revoke');
+    Route::post('/portals/admin/certifications/seed-requirements',                [\App\Http\Controllers\MedicalId\IntegrationCertificationController::class, 'seedRequirements'])->name('portals.admin.certifications.seed');
+    // --------------------------------------------------
+    // Code System Mappings (LOINC/ICD-10/ATC)
+    Route::get('/portals/admin/code-mappings',                               [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'index'])->name('portals.admin.code_mappings.index');
+    Route::get('/portals/admin/code-mappings/create',                        [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'create'])->name('portals.admin.code_mappings.create');
+    Route::post('/portals/admin/code-mappings',                              [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'store'])->name('portals.admin.code_mappings.store');
+    Route::post('/portals/admin/code-mappings/{mapping}/approve',            [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'approve'])->name('portals.admin.code_mappings.approve');
+    Route::post('/portals/admin/code-mappings/{mapping}/reject',             [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'reject'])->name('portals.admin.code_mappings.reject');
+    Route::delete('/portals/admin/code-mappings/{mapping}',                  [\App\Http\Controllers\MedicalId\CodeSystemMappingController::class, 'destroy'])->name('portals.admin.code_mappings.destroy');
+    // --------------------------------------------------
+    // KPI Dashboard
+    Route::get('/portals/admin/kpi',                                         [\App\Http\Controllers\MedicalId\KpiDashboardController::class, 'index'])->name('portals.admin.kpi.index');
+    Route::get('/portals/admin/kpi/trend',                                   [\App\Http\Controllers\MedicalId\KpiDashboardController::class, 'trend'])->name('portals.admin.kpi.trend');
+    Route::post('/portals/admin/kpi/export',                                 [\App\Http\Controllers\MedicalId\KpiDashboardController::class, 'requestExport'])->name('portals.admin.kpi.export');
+    Route::post('/portals/admin/kpi/recompute',                              [\App\Http\Controllers\MedicalId\KpiDashboardController::class, 'recompute'])->name('portals.admin.kpi.recompute');
+    // --------------------------------------------------
+    Route::get('/portals/admin/onboarding',                                  [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'index'])->name('portals.admin.onboarding');
+    Route::get('/portals/admin/onboarding/{facility}',                       [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'show'])->name('portals.admin.onboarding.show');
+    Route::post('/portals/admin/onboarding/{facility}/mark',                 [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'markItem'])->name('portals.admin.onboarding.mark');
+    Route::post('/portals/admin/onboarding/{facility}/approve',              [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'approve'])->name('portals.admin.onboarding.approve');
+});

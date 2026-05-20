@@ -38,4 +38,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Facility::class, 'primary_facility_id');
     }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function roleName(): ?string
+    {
+        return $this->role?->name;
+    }
 }

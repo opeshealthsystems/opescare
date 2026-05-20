@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'sdk.token'      => \App\Http\Middleware\VerifySdkToken::class,
             'throttle.client'=> \App\Http\Middleware\ThrottleByClient::class,
             'bridge.agent'   => \App\Http\Middleware\VerifyBridgeAgent::class,
+            'portal.access'  => \App\Http\Middleware\EnsurePortalAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
