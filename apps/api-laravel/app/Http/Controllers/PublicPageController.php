@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\Dashboard\DashboardProfileService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PublicPageController extends Controller
 {
@@ -268,7 +270,11 @@ class PublicPageController extends Controller
             return redirect()->route('otp.verify')->with('error', __('onboarding.otp.errors.expired'));
         }
 
-        return redirect()->route('public.landing')->with('success', 'Authentication complete. Welcome to OpesCare.');
+        $url = Auth::check()
+            ? app(DashboardProfileService::class)->landingUrlForCurrent()
+            : route('portals.patient');
+
+        return redirect($url)->with('success', 'Authentication complete. Welcome to OpesCare.');
     }
 
     public function showPendingApproval()
@@ -297,6 +303,10 @@ class PublicPageController extends Controller
             return redirect()->route('select-facility')->with('error', __('onboarding.login.errors.facility_suspended'));
         }
 
-        return redirect()->route('public.landing')->with('success', 'Active clinical session established.');
+        $url = Auth::check()
+            ? app(DashboardProfileService::class)->landingUrlForCurrent()
+            : route('portals.patient');
+
+        return redirect($url)->with('success', 'Active clinical session established.');
     }
 }

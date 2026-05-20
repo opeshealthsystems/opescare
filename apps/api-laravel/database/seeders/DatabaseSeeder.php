@@ -15,7 +15,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->call([
+            AccountCategoriesSeeder::class,
+            DashboardProfilesSeeder::class,
+            RolesSeeder::class,
+        ]);
 
         User::factory()->create([
             'name' => 'Test User',

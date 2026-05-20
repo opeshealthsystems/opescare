@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Demo;
 
 use App\Http\Controllers\Controller;
+use App\Services\Dashboard\DashboardProfileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -71,6 +72,8 @@ class DemoAccessController extends Controller
             'session_expires_at' => now()->addMinutes($lifetime)
         ]);
 
-        return redirect('/dashboard'); // Mock redirect based on role
+        $url = app(DashboardProfileService::class)->landingUrlForUser($user);
+
+        return redirect($url);
     }
 }
