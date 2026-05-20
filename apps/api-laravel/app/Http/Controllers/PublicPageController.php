@@ -134,22 +134,42 @@ class PublicPageController extends Controller
 
     public function submitLogin(Request $request)
     {
-        $email = $request->input('email');
-        
-        if ($email === 'suspended@opescare.com') {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        $credentials = $request->only('email', 'password');
+        $remember    = $request->boolean('remember');
+
+        // Attempt real authentication
+        if (!Auth::attempt($credentials, $remember)) {
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => __('onboarding.login.errors.invalid_credentials', [], app()->getLocale())
+                    ?: 'The email or password you entered is incorrect.']);
+        }
+
+        $user = Auth::user();
+
+        // Suspended account
+        if ($user->status === 'suspended') {
+            Auth::logout();
             return redirect()->route('account.suspended');
         }
-        
-        if ($email === 'pending@opescare.com') {
+
+        // Pending account
+        if ($user->status === 'pending') {
+            Auth::logout();
             return redirect()->route('account.pending');
         }
-        
-        if ($email === 'staff@opescare.com' || $email === 'doctor@opescare.com') {
-            return redirect()->route('select-facility');
-        }
-        
-        // Default clinical path asks for 2FA OTP
-        return redirect()->route('otp.verify');
+
+        $request->session()->regenerate();
+
+        // Route to correct portal based on role
+        $landingUrl = app(DashboardProfileService::class)->landingUrlForUser($user);
+
+        return redirect()->intended($landingUrl);
     }
 
     public function showRegisterSelector()

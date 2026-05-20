@@ -21,12 +21,16 @@ class AuditLogger
         array $beforeState = [],
         array $afterState = []
     ): AuditEvent {
-        $clientId = $request->attributes->get('integration_client_id');
+        $clientId   = $request->attributes->get('integration_client_id');
         $facilityId = $request->attributes->get('facility_id');
 
+        // actor_id is a UUID column — integration client IDs are strings, not UUIDs.
+        // Store null for actor_id and record the client identifier in actor_role.
+        $actorRole = $clientId ? 'integration_client:' . $clientId : 'integration_client';
+
         return AuditEvent::create([
-            'actor_id' => $clientId ?? 'system',
-            'actor_role' => 'integration_client',
+            'actor_id'   => null,   // no user UUID for machine-to-machine calls
+            'actor_role' => $actorRole,
             'facility_id' => $facilityId,
             'patient_id' => $patientId,
             'action_type' => $actionType,
