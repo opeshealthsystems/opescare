@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Facility;
 use App\Services\Dashboard\DashboardProfileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -293,7 +294,29 @@ class PublicPageController extends Controller
 
     public function showSelectFacility()
     {
-        return view('auth.select_facility');
+        $user     = Auth::user();
+        $roleName = $user?->role?->description ?? $user?->role?->name ?? 'User';
+
+        // Build a list of selectable facilities.
+        // Platform-level users (no primary facility) see all active facilities.
+        // A user with a primary facility would normally never reach this page,
+        // but we handle it gracefully by showing their own facility.
+        $query = Facility::withoutGlobalScope('isolate_demo')
+            ->orderBy('name');
+
+        if ($user?->primary_facility_id) {
+            $query->where('id', $user->primary_facility_id);
+        }
+
+        $facilities = $query->get()->map(fn(Facility $f) => [
+            'id'     => $f->id,
+            'name'   => $f->name,
+            'branch' => ucfirst($f->type ?? ''),
+            'role'   => $roleName,
+            'status' => ($f->status === 'suspended') ? 'suspended' : 'active',
+        ])->values()->all();
+
+        return view('auth.select_facility', compact('facilities'));
     }
 
     public function submitSelectFacility(Request $request)
