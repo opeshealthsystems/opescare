@@ -24,4 +24,14 @@ class Role extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function accountCategory()
+    {
+        return $this->belongsTo(AccountCategory::class);
+    }
+
+    public function dashboardProfile()
+    {
+        return $this->belongsTo(DashboardProfile::class, 'dashboard_profile_key', 'key');
+    }
 }

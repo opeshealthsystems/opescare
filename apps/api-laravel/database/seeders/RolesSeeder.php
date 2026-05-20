@@ -4,168 +4,181 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Role;
+use App\Models\AccountCategory;
 
 /**
- * Seeds canonical role names from the OpesCare Account Types document.
- * All inserts are idempotent via firstOrCreate.
+ * Seeds 107 canonical role names from the OpesCare account types document.
+ * Each role is mapped to an account category key and a dashboard profile key.
+ * All inserts are idempotent via firstOrCreate + updateOrCreate for existing rows.
  */
 class RolesSeeder extends Seeder
 {
+    /** [ role_name, account_category_key, dashboard_profile_key, description ] */
+    private const ROLES = [
+        // Patient & Family
+        ['patient',              'patient_family',          'patient',              'Patient Account'],
+        ['guardian',             'patient_family',          'guardian',             'Guardian / Parent Account'],
+        ['caregiver',            'patient_family',          'caregiver',            'Caregiver Account'],
+        ['dependent_manager',    'patient_family',          'dependent_manager',    'Dependent Manager Account'],
+        ['emergency_contact',    'patient_family',          'patient',              'Emergency Contact Account'],
+
+        // Clinical Providers
+        ['doctor',               'clinical_provider',       'doctor',               'General Doctor'],
+        ['multi_doctor',         'clinical_provider',       'resident_doctor',      'Multi-Facility Doctor'],
+        ['specialist',           'clinical_provider',       'specialist_doctor',    'Specialist Doctor'],
+        ['consultant',           'clinical_provider',       'specialist_doctor',    'Consultant Doctor'],
+        ['resident',             'clinical_provider',       'resident_doctor',      'Resident Doctor'],
+        ['visiting_doctor',      'clinical_provider',       'resident_doctor',      'Visiting Doctor'],
+
+        // Nursing & Midwifery
+        ['nurse',                'nursing_midwifery',       'nurse',                'Nurse'],
+        ['triage_nurse',         'nursing_midwifery',       'triage_nurse',         'Triage Nurse'],
+        ['ward_nurse',           'nursing_midwifery',       'ward_nurse',           'Ward Nurse'],
+        ['midwife',              'nursing_midwifery',       'midwife',              'Midwife'],
+        ['nurse_supervisor',     'nursing_midwifery',       'nurse_supervisor',     'Nurse Supervisor'],
+
+        // Clinical Training
+        ['student_doctor',       'clinical_training',       'student_clinical',     'Student Doctor'],
+        ['student_nurse',        'clinical_training',       'student_clinical',     'Student Nurse'],
+        ['intern',               'clinical_training',       'student_clinical',     'Intern / Trainee'],
+        ['medical_supervisor',   'clinical_training',       'medical_supervisor',   'Medical School Supervisor'],
+
+        // Front Desk & Operations
+        ['receptionist',         'front_desk_operations',   'receptionist',         'Receptionist / Front Desk'],
+        ['front_desk',           'front_desk_operations',   'receptionist',         'Front Desk Officer'],
+        ['appointment_coordinator','front_desk_operations', 'appointment_coordinator','Appointment Coordinator'],
+        ['queue_manager',        'front_desk_operations',   'queue_manager',        'Queue Manager'],
+        ['records_officer',      'front_desk_operations',   'records_officer',      'Records Officer'],
+
+        // Laboratory
+        ['labtech',              'laboratory',              'labtech',              'Lab Technician'],
+        ['lab_scientist',        'laboratory',              'labtech',              'Lab Scientist'],
+        ['lab_manager',          'laboratory',              'lab_manager',          'Lab Manager'],
+        ['lab_validator',        'laboratory',              'lab_manager',          'Lab Result Validator'],
+        ['sample_collection',    'laboratory',              'sample_collection',    'Sample Collection Officer'],
+
+        // Pharmacy
+        ['pharmacist',           'pharmacy',                'pharmacist',           'Pharmacist'],
+        ['pharmacy_technician',  'pharmacy',                'pharmacist',           'Pharmacy Technician'],
+        ['pharmacy_manager',     'pharmacy',                'pharmacy_manager',     'Pharmacy Manager'],
+        ['medicine_stock',       'pharmacy',                'medicine_stock',       'Medicine Stock Manager'],
+        ['dispensing_officer',   'pharmacy',                'pharmacist',           'Dispensing Officer'],
+
+        // Billing & Finance
+        ['cashier',              'billing_finance',         'cashier',              'Cashier'],
+        ['billing_officer',      'billing_finance',         'billing_officer',      'Billing Officer'],
+        ['finance_manager',      'billing_finance',         'finance_manager',      'Finance Manager'],
+        ['refund_approver',      'billing_finance',         'finance_manager',      'Refund Approver'],
+        ['wallet_ops',           'billing_finance',         'billing_officer',      'Wallet / Payment Operations'],
+
+        // Insurance
+        ['insurance_reviewer',   'insurance',               'insurance_reviewer',   'Insurance Reviewer'],
+        ['insurance_claims',     'insurance',               'insurance_reviewer',   'Insurance Claims Officer'],
+        ['insurance_preauth',    'insurance',               'insurance_reviewer',   'Insurance Pre-Authorization Officer'],
+        ['insurance_admin',      'insurance',               'insurance_admin',      'Insurance Admin'],
+        ['insurance_finance',    'insurance',               'insurance_admin',      'Insurance Finance / Payment Officer'],
+
+        // Facility Administration
+        ['facility_admin',       'facility_administration', 'facility_admin',       'Facility Admin'],
+        ['clinic_admin',         'facility_administration', 'facility_admin',       'Clinic Admin'],
+        ['hospital_admin',       'facility_administration', 'facility_admin',       'Hospital Admin'],
+        ['facility_ceo',         'facility_administration', 'facility_executive',   'Hospital Director / Facility Executive'],
+        ['department_manager',   'facility_administration', 'department_manager',   'Department Manager'],
+        ['branch_admin',         'facility_administration', 'multi_facility_admin', 'Branch / Multi-Facility Admin'],
+        ['finance',              'billing_finance',         'billing_officer',      'Facility Finance Role'],
+
+        // Health Organization / NGO
+        ['ngo_admin',            'health_org_ngo',          'ngo_health_org',       'Health Organization / NGO Admin'],
+        ['health_program_manager','health_org_ngo',         'ngo_health_org',       'Health Program Manager'],
+        ['outreach_team',        'health_org_ngo',          'outreach_mobile',      'Outreach Team'],
+        ['mobile_clinic_team',   'health_org_ngo',          'outreach_mobile',      'Mobile Clinic Team'],
+
+        // Public Health
+        ['public_health_officer','public_health_government','public_health_officer','Public Health Officer'],
+        ['public_health_reviewer','public_health_government','public_health_officer','Public Health Data Reviewer'],
+        ['public_health_admin',  'public_health_government','public_health_admin',  'Public Health Admin'],
+        ['government_supervisor','public_health_government','public_health_admin',  'Ministry / Government Supervisor'],
+        ['disease_surveillance', 'public_health_government','disease_surveillance', 'Disease Surveillance Officer'],
+        ['public_health_api',    'developer_api_partner',   'developer',            'Public Health Reporting API Client'],
+
+        // Developer / API Partner
+        ['developer',            'developer_api_partner',   'developer',            'Developer Account'],
+        ['developer_org_admin',  'developer_api_partner',   'api_partner_admin',    'Developer Organization Admin'],
+        ['api_partner',          'developer_api_partner',   'api_partner_admin',    'API Partner Admin'],
+        ['api_technical',        'developer_api_partner',   'developer',            'API Technical User'],
+        ['webhook_manager',      'developer_api_partner',   'webhook_manager',      'Webhook Manager'],
+        ['sandbox_developer',    'developer_api_partner',   'developer',            'Sandbox Developer'],
+
+        // Integration Device / Bridge Agent
+        ['bridge_agent',         'integration_device',      'device_kiosk',         'Bridge Agent Device Account'],
+        ['bridge_admin',         'integration_device',      'bridge_agent_admin',   'Bridge Agent Admin'],
+        ['integration_device',   'integration_device',      'device_kiosk',         'Integration Device Account'],
+        ['facility_device',      'integration_device',      'device_kiosk',         'Facility Device Account'],
+        ['kiosk',                'integration_device',      'device_kiosk',         'Kiosk / Shared Workstation'],
+
+        // OpesCare Lite
+        ['lite_facility',        'opescare_lite',           'lite',                 'OpesCare Lite Facility Account'],
+        ['lite_staff',           'opescare_lite',           'lite',                 'OpesCare Lite Staff Account'],
+        ['lite_device',          'opescare_lite',           'lite',                 'OpesCare Lite Device Account'],
+        ['lite_offline_sync',    'opescare_lite',           'lite',                 'OpesCare Lite Offline Sync Account'],
+
+        // Support & Customer Success
+        ['support_agent',        'support_customer_success','support_agent',        'Support Agent'],
+        ['support_manager',      'support_customer_success','support_manager',      'Support Manager'],
+        ['customer_success',     'support_customer_success','support_manager',      'Customer Success'],
+        ['implementation_lead',  'support_customer_success','implementation_lead',  'Implementation Lead'],
+        ['training_support',     'support_customer_success','support_agent',        'Training Support'],
+
+        // Privacy, Security & Compliance
+        ['privacy_officer',      'privacy_security',        'privacy_officer',      'Privacy Officer'],
+        ['data_protection_officer','privacy_security',      'privacy_officer',      'Data Protection Officer'],
+        ['security_officer',     'privacy_security',        'security_officer',     'Security Officer'],
+        ['compliance_officer',   'privacy_security',        'compliance_audit',     'Compliance Officer'],
+        ['audit_reviewer',       'privacy_security',        'compliance_audit',     'Audit Reviewer'],
+        ['emergency_access_reviewer','privacy_security',    'emergency_access_reviewer','Emergency Access Reviewer'],
+
+        // Data Quality / Reconciliation
+        ['data_steward',         'data_quality',            'data_steward',         'Data Steward'],
+        ['reconciliation_officer','data_quality',           'data_steward',         'Reconciliation Officer'],
+        ['data_import_officer',  'data_quality',            'data_import',          'Data Import Officer'],
+        ['data_quality_reviewer','data_quality',            'data_steward',         'Data Quality Reviewer'],
+
+        // Academy / Certification
+        ['academy_learner',      'academy_certification',   'academy_learner',      'Academy Learner'],
+        ['academy_instructor',   'academy_certification',   'academy_instructor',   'Academy Instructor / Trainer'],
+        ['academy_admin',        'academy_certification',   'academy_admin',        'Academy Admin'],
+        ['certification_reviewer','academy_certification',  'academy_admin',        'Certification Reviewer'],
+
+        // Partner Governance
+        ['partner_admin',        'partner_governance',      'partner_admin',        'Partner Admin'],
+        ['partner_reviewer',     'partner_governance',      'partner_review',       'Partner Reviewer'],
+        ['partner_compliance',   'partner_governance',      'partner_review',       'Partner Compliance Reviewer'],
+        ['partner_technical',    'partner_governance',      'developer',            'Partner Technical Contact'],
+
+        // Platform / Super Admin
+        ['super_admin',          'platform_super_admin',    'super_admin',          'Super Admin'],
+        ['platform_admin',       'platform_super_admin',    'platform_owner',       'Platform Owner'],
+        ['system_admin',         'platform_super_admin',    'super_admin',          'System Administrator'],
+        ['product_admin',        'platform_super_admin',    'super_admin',          'Product Admin'],
+        ['legal_admin',          'platform_super_admin',    'super_admin',          'Legal Document Admin'],
+        ['country_admin',        'platform_super_admin',    'country_regional_admin','Country Admin'],
+        ['regional_admin',       'platform_super_admin',    'country_regional_admin','Regional Admin'],
+    ];
+
     public function run(): void
     {
-        $roles = [
-            // Patient & Family
-            ['name' => 'patient',              'description' => 'Patient Account'],
-            ['name' => 'guardian',             'description' => 'Guardian / Parent Account'],
-            ['name' => 'caregiver',            'description' => 'Caregiver Account'],
-            ['name' => 'dependent_manager',    'description' => 'Dependent Manager Account'],
-            ['name' => 'emergency_contact',    'description' => 'Emergency Contact Account'],
+        // Pre-load categories into a name→id map to avoid N+1 queries
+        $categoryMap = AccountCategory::all()->keyBy('key')->map->id;
 
-            // Clinical Providers
-            ['name' => 'doctor',               'description' => 'General Doctor'],
-            ['name' => 'multi_doctor',         'description' => 'Multi-Facility Doctor'],
-            ['name' => 'specialist',           'description' => 'Specialist Doctor'],
-            ['name' => 'consultant',           'description' => 'Consultant Doctor'],
-            ['name' => 'resident',             'description' => 'Resident Doctor'],
-            ['name' => 'visiting_doctor',      'description' => 'Visiting Doctor'],
-
-            // Nursing & Midwifery
-            ['name' => 'nurse',                'description' => 'Nurse'],
-            ['name' => 'triage_nurse',         'description' => 'Triage Nurse'],
-            ['name' => 'ward_nurse',           'description' => 'Ward Nurse'],
-            ['name' => 'midwife',              'description' => 'Midwife'],
-            ['name' => 'nurse_supervisor',     'description' => 'Nurse Supervisor'],
-
-            // Clinical Training
-            ['name' => 'student_doctor',       'description' => 'Student Doctor'],
-            ['name' => 'student_nurse',        'description' => 'Student Nurse'],
-            ['name' => 'intern',               'description' => 'Intern / Trainee'],
-            ['name' => 'medical_supervisor',   'description' => 'Medical School Supervisor'],
-
-            // Front Desk & Operations
-            ['name' => 'receptionist',         'description' => 'Receptionist / Front Desk'],
-            ['name' => 'front_desk',           'description' => 'Front Desk Officer'],
-            ['name' => 'appointment_coordinator', 'description' => 'Appointment Coordinator'],
-            ['name' => 'queue_manager',        'description' => 'Queue Manager'],
-            ['name' => 'records_officer',      'description' => 'Records Officer'],
-
-            // Laboratory
-            ['name' => 'labtech',              'description' => 'Lab Technician'],
-            ['name' => 'lab_scientist',        'description' => 'Lab Scientist'],
-            ['name' => 'lab_manager',          'description' => 'Lab Manager'],
-            ['name' => 'lab_validator',        'description' => 'Lab Result Validator'],
-            ['name' => 'sample_collection',    'description' => 'Sample Collection Officer'],
-
-            // Pharmacy
-            ['name' => 'pharmacist',           'description' => 'Pharmacist'],
-            ['name' => 'pharmacy_technician',  'description' => 'Pharmacy Technician'],
-            ['name' => 'pharmacy_manager',     'description' => 'Pharmacy Manager'],
-            ['name' => 'medicine_stock',       'description' => 'Medicine Stock Manager'],
-            ['name' => 'dispensing_officer',   'description' => 'Dispensing Officer'],
-
-            // Billing & Finance
-            ['name' => 'cashier',              'description' => 'Cashier'],
-            ['name' => 'billing_officer',      'description' => 'Billing Officer'],
-            ['name' => 'finance_manager',      'description' => 'Finance Manager'],
-            ['name' => 'refund_approver',      'description' => 'Refund Approver'],
-            ['name' => 'wallet_ops',           'description' => 'Wallet / Payment Operations'],
-
-            // Insurance
-            ['name' => 'insurance_reviewer',   'description' => 'Insurance Reviewer'],
-            ['name' => 'insurance_claims',     'description' => 'Insurance Claims Officer'],
-            ['name' => 'insurance_preauth',    'description' => 'Insurance Pre-Authorization Officer'],
-            ['name' => 'insurance_admin',      'description' => 'Insurance Admin'],
-            ['name' => 'insurance_finance',    'description' => 'Insurance Finance / Payment Officer'],
-
-            // Facility Administration
-            ['name' => 'facility_admin',       'description' => 'Facility Admin'],
-            ['name' => 'clinic_admin',         'description' => 'Clinic Admin'],
-            ['name' => 'hospital_admin',       'description' => 'Hospital Admin'],
-            ['name' => 'facility_ceo',         'description' => 'Hospital Director / Facility Executive'],
-            ['name' => 'department_manager',   'description' => 'Department Manager'],
-            ['name' => 'branch_admin',         'description' => 'Branch / Multi-Facility Admin'],
-            ['name' => 'finance',              'description' => 'Facility Finance Role'],
-
-            // Health Organization / NGO
-            ['name' => 'ngo_admin',            'description' => 'Health Organization / NGO Admin'],
-            ['name' => 'health_program_manager', 'description' => 'Health Program Manager'],
-            ['name' => 'outreach_team',        'description' => 'Outreach Team'],
-            ['name' => 'mobile_clinic_team',   'description' => 'Mobile Clinic Team'],
-
-            // Public Health
-            ['name' => 'public_health_officer', 'description' => 'Public Health Officer'],
-            ['name' => 'public_health_reviewer', 'description' => 'Public Health Data Reviewer'],
-            ['name' => 'public_health_admin',  'description' => 'Public Health Admin'],
-            ['name' => 'government_supervisor', 'description' => 'Ministry / Government Supervisor'],
-            ['name' => 'disease_surveillance', 'description' => 'Disease Surveillance Officer'],
-            ['name' => 'public_health_api',    'description' => 'Public Health Reporting API Client'],
-
-            // Developer / API Partner
-            ['name' => 'developer',            'description' => 'Developer Account'],
-            ['name' => 'developer_org_admin',  'description' => 'Developer Organization Admin'],
-            ['name' => 'api_partner',          'description' => 'API Partner Admin'],
-            ['name' => 'api_technical',        'description' => 'API Technical User'],
-            ['name' => 'webhook_manager',      'description' => 'Webhook Manager'],
-            ['name' => 'sandbox_developer',    'description' => 'Sandbox Developer'],
-
-            // Integration Device / Bridge Agent
-            ['name' => 'bridge_agent',         'description' => 'Bridge Agent Device Account'],
-            ['name' => 'bridge_admin',         'description' => 'Bridge Agent Admin'],
-            ['name' => 'integration_device',   'description' => 'Integration Device Account'],
-            ['name' => 'facility_device',      'description' => 'Facility Device Account'],
-            ['name' => 'kiosk',                'description' => 'Kiosk / Shared Workstation'],
-
-            // OpesCare Lite
-            ['name' => 'lite_facility',        'description' => 'OpesCare Lite Facility Account'],
-            ['name' => 'lite_staff',           'description' => 'OpesCare Lite Staff Account'],
-            ['name' => 'lite_device',          'description' => 'OpesCare Lite Device Account'],
-            ['name' => 'lite_offline_sync',    'description' => 'OpesCare Lite Offline Sync Account'],
-
-            // Support & Customer Success
-            ['name' => 'support_agent',        'description' => 'Support Agent'],
-            ['name' => 'support_manager',      'description' => 'Support Manager'],
-            ['name' => 'customer_success',     'description' => 'Customer Success'],
-            ['name' => 'implementation_lead',  'description' => 'Implementation Lead'],
-            ['name' => 'training_support',     'description' => 'Training Support'],
-
-            // Privacy, Security & Compliance
-            ['name' => 'privacy_officer',      'description' => 'Privacy Officer'],
-            ['name' => 'data_protection_officer', 'description' => 'Data Protection Officer'],
-            ['name' => 'security_officer',     'description' => 'Security Officer'],
-            ['name' => 'compliance_officer',   'description' => 'Compliance Officer'],
-            ['name' => 'audit_reviewer',       'description' => 'Audit Reviewer'],
-            ['name' => 'emergency_access_reviewer', 'description' => 'Emergency Access Reviewer'],
-
-            // Data Quality / Reconciliation
-            ['name' => 'data_steward',         'description' => 'Data Steward'],
-            ['name' => 'reconciliation_officer', 'description' => 'Reconciliation Officer'],
-            ['name' => 'data_import_officer',  'description' => 'Data Import Officer'],
-            ['name' => 'data_quality_reviewer', 'description' => 'Data Quality Reviewer'],
-
-            // Academy / Certification
-            ['name' => 'academy_learner',      'description' => 'Academy Learner'],
-            ['name' => 'academy_instructor',   'description' => 'Academy Instructor / Trainer'],
-            ['name' => 'academy_admin',        'description' => 'Academy Admin'],
-            ['name' => 'certification_reviewer', 'description' => 'Certification Reviewer'],
-
-            // Partner Governance
-            ['name' => 'partner_admin',        'description' => 'Partner Admin'],
-            ['name' => 'partner_reviewer',     'description' => 'Partner Reviewer'],
-            ['name' => 'partner_compliance',   'description' => 'Partner Compliance Reviewer'],
-            ['name' => 'partner_technical',    'description' => 'Partner Technical Contact'],
-
-            // Platform / Super Admin
-            ['name' => 'super_admin',          'description' => 'Super Admin'],
-            ['name' => 'platform_admin',       'description' => 'Platform Owner'],
-            ['name' => 'system_admin',         'description' => 'System Administrator'],
-            ['name' => 'product_admin',        'description' => 'Product Admin'],
-            ['name' => 'legal_admin',          'description' => 'Legal Document Admin'],
-            ['name' => 'country_admin',        'description' => 'Country Admin'],
-            ['name' => 'regional_admin',       'description' => 'Regional Admin'],
-        ];
-
-        foreach ($roles as $role) {
-            Role::firstOrCreate(['name' => $role['name']], ['description' => $role['description']]);
+        foreach (self::ROLES as [$name, $categoryKey, $profileKey, $description]) {
+            Role::updateOrCreate(
+                ['name' => $name],
+                [
+                    'description'           => $description,
+                    'account_category_id'   => $categoryMap[$categoryKey] ?? null,
+                    'dashboard_profile_key' => $profileKey,
+                ]
+            );
         }
     }
 }

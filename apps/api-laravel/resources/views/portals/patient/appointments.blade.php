@@ -6,42 +6,6 @@
 @section('breadcrumb_home_url', route('portals.patient'))
 @section('breadcrumb_section', __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments')
 
-@section('sidebar_role_badge')
-    <div class="sidebar-role-badge" style="background:rgba(15,118,110,.3);border-color:rgba(15,118,110,.5);color:#5EEAD4;">
-        <i data-lucide="user" style="width:0.75rem;height:0.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
-        {{ __('public.portal.patient_role', [], app()->getLocale()) ?: 'Patient' }}
-    </div>
-@endsection
-
-@section('sidebar_nav')
-    <div class="sidebar-section-label">{{ __('public.portal.nav_my_health', [], app()->getLocale()) ?: 'My Health' }}</div>
-    <a href="{{ route('portals.patient') }}" class="sidebar-link">
-        <i data-lucide="id-card"></i>
-        {{ __('public.medical_id.health_id', [], app()->getLocale()) ?: 'My Health ID' }}
-    </a>
-    <a href="{{ route('portals.patient.appointments') }}" class="sidebar-link active">
-        <i data-lucide="calendar-check-2"></i>
-        {{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}
-    </a>
-    <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">{{ __('public.portal.nav_privacy', [], app()->getLocale()) ?: 'Privacy & Access' }}</div>
-    <a href="{{ route('portals.patient.logs') }}" class="sidebar-link">
-        <i data-lucide="history"></i>
-        {{ __('public.medical_id.access_logs', [], app()->getLocale()) ?: 'Access Logs' }}
-    </a>
-    <div class="sidebar-section-label" style="margin-top:var(--p-space-4);">{{ __('public.portal.nav_resources', [], app()->getLocale()) ?: 'Resources' }}</div>
-    <a href="{{ route('public.care-map') }}" class="sidebar-link">
-        <i data-lucide="map-pin"></i>
-        {{ __('public.portal.nav_care_map', [], app()->getLocale()) ?: 'Care Map' }}
-    </a>
-    <a href="{{ route('public.help') }}" class="sidebar-link">
-        <i data-lucide="help-circle"></i>
-        {{ __('public.portal.nav_help', [], app()->getLocale()) ?: 'Help' }}
-    </a>
-@endsection
-
-@section('sidebar_user_role')
-    {{ __('public.portal.patient_role', [], app()->getLocale()) ?: 'Patient' }}
-@endsection
 
 @section('content')
 

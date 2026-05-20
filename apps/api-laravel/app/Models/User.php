@@ -48,4 +48,9 @@ class User extends Authenticatable
     {
         return $this->role?->name;
     }
+
+    public function dashboardProfile(): ?\App\Models\DashboardProfile
+    {
+        return $this->role?->dashboardProfile;
+    }
 }

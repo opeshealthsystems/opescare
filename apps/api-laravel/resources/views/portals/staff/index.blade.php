@@ -2,121 +2,6 @@
 
 @section('title', __('public.staff_portal.dashboard_title', [], app()->getLocale()) ?: 'Staff Clinical Portal')
 
-@section('sidebar_role_badge')
-<div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
-@endsection
-
-@section('sidebar_user_role', __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff')
-
-@section('sidebar_nav')
-<div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Overview</div>
-    <a href="{{ route('portals.staff') }}" class="sidebar-link active">
-        <i data-lucide="layout-dashboard"></i>
-        <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.analytics') }}" class="sidebar-link">
-        <i data-lucide="bar-chart-2"></i>
-        <span>{{ __('public.portal.nav_analytics', [], app()->getLocale()) ?: 'Analytics' }}</span>
-    </a>
-</div>
-<div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Clinical</div>
-    <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
-        <i data-lucide="calendar-check-2"></i>
-        <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.queue') }}" class="sidebar-link">
-        <i data-lucide="list-ordered"></i>
-        <span>{{ __('public.portal.nav_queue', [], app()->getLocale()) ?: 'Patient Queue' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.visits') }}" class="sidebar-link">
-        <i data-lucide="stethoscope"></i>
-        <span>{{ __('public.portal.nav_visits', [], app()->getLocale()) ?: 'Visits' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
-        <i data-lucide="brain-circuit"></i>
-        <span>Clinical Alerts</span>
-    </a>
-    <a href="{{ route('portals.staff.immunizations') }}" class="sidebar-link">
-        <i data-lucide="syringe"></i>
-        <span>{{ __('public.portal.nav_immunizations', [], app()->getLocale()) ?: 'Immunizations' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.referrals') }}" class="sidebar-link">
-        <i data-lucide="send"></i>
-        <span>{{ __('public.portal.nav_referrals', [], app()->getLocale()) ?: 'Referrals' }}</span>
-    </a>
-</div>
-<div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">HR & Staff</div>
-    <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
-        <i data-lucide="users"></i>
-        <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.hr.shifts') }}" class="sidebar-link">
-        <i data-lucide="clock"></i>
-        <span>{{ __('public.portal.nav_staff_shifts', [], app()->getLocale()) ?: 'Shifts' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.hr.roster') }}" class="sidebar-link">
-        <i data-lucide="calendar-range"></i>
-        <span>{{ __('public.portal.nav_staff_roster', [], app()->getLocale()) ?: 'Duty Roster' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.hr.leave') }}" class="sidebar-link">
-        <i data-lucide="plane-takeoff"></i>
-        <span>{{ __('public.portal.nav_staff_leave', [], app()->getLocale()) ?: 'Leave' }}</span>
-    </a>
-</div>
-<div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Inventory</div>
-    <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
-        <i data-lucide="pill"></i>
-        <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.inventory.blood') }}" class="sidebar-link">
-        <i data-lucide="droplets"></i>
-        <span>{{ __('public.portal.nav_inventory_blood', [], app()->getLocale()) ?: 'Blood Bank' }}</span>
-    </a>
-</div>
-<div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Supply Chain</div>
-    <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
-        <i data-lucide="package"></i>
-        <span>Supply Chain</span>
-    </a>
-</div>
-<div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Operations</div>
-    <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
-        <i data-lucide="receipt"></i>
-        <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.support') }}" class="sidebar-link">
-        <i data-lucide="headset"></i>
-        <span>{{ __('public.portal.nav_support', [], app()->getLocale()) ?: 'Support' }}</span>
-    </a>
-    <a href="{{ route('portals.insurance.policies') }}" class="sidebar-link">
-        <i data-lucide="shield-check"></i>
-        <span>{{ __('public.portal.nav_insurance', [], app()->getLocale()) ?: 'Insurance' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link">
-        <i data-lucide="upload-cloud"></i>
-        <span>{{ __('public.portal.nav_data_import', [], app()->getLocale()) ?: 'Data Import' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.search') }}" class="sidebar-link {{ request()->routeIs('portals.staff.search') ? 'active' : '' }}">
-        <i data-lucide="search"></i>
-        <span>{{ __('public.portal.nav_search', [], app()->getLocale()) ?: 'Global Search' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.files.index') }}" class="sidebar-link {{ request()->routeIs('portals.staff.files*') ? 'active' : '' }}">
-        <i data-lucide="paperclip"></i>
-        <span>{{ __('public.portal.nav_files', [], app()->getLocale()) ?: 'Files & Attachments' }}</span>
-    </a>
-    <a href="{{ route('portals.staff.wards') }}" class="sidebar-link {{ request()->routeIs('portals.staff.wards*') ? 'active' : '' }}">
-        <i data-lucide="bed"></i>
-        <span>{{ __('public.portal.nav_wards', [], app()->getLocale()) ?: 'Wards & Beds' }}</span>
-    </a>
-</div>
-@endsection
-
 @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
 
@@ -136,7 +21,7 @@
             <i data-lucide="calendar-check-2"></i>
         </div>
         <div class="kpi-label">{{ __('public.staff_portal.kpi_todays_appointments', [], app()->getLocale()) ?: "Today's Appointments" }}</div>
-        <div class="kpi-value">{{ $kpis['todays_appointments'] ?? 0 }}</div>
+        <div class="kpi-value">--</div>
         <div class="kpi-sub">{{ __('public.staff_portal.kpi_scheduled_today', [], app()->getLocale()) ?: 'Scheduled today' }}</div>
     </div>
     <div class="kpi-card">
@@ -144,7 +29,7 @@
             <i data-lucide="list-ordered"></i>
         </div>
         <div class="kpi-label">{{ __('public.staff_portal.kpi_patient_queue', [], app()->getLocale()) ?: 'Patient Queue' }}</div>
-        <div class="kpi-value">{{ $kpis['in_queue'] ?? 0 }}</div>
+        <div class="kpi-value">--</div>
         <div class="kpi-sub">{{ __('public.staff_portal.kpi_currently_waiting', [], app()->getLocale()) ?: 'Currently waiting' }}</div>
     </div>
     <div class="kpi-card">
@@ -152,7 +37,7 @@
             <i data-lucide="send"></i>
         </div>
         <div class="kpi-label">{{ __('public.staff_portal.kpi_pending_referrals', [], app()->getLocale()) ?: 'Pending Referrals' }}</div>
-        <div class="kpi-value">{{ $kpis['pending_referrals'] ?? 0 }}</div>
+        <div class="kpi-value">--</div>
         <div class="kpi-sub">{{ __('public.staff_portal.kpi_awaiting_action', [], app()->getLocale()) ?: 'Awaiting action' }}</div>
     </div>
     <div class="kpi-card">
@@ -160,7 +45,7 @@
             <i data-lucide="receipt"></i>
         </div>
         <div class="kpi-label">{{ __('public.staff_portal.kpi_open_invoices', [], app()->getLocale()) ?: 'Open Invoices' }}</div>
-        <div class="kpi-value">{{ $kpis['open_invoices'] ?? 0 }}</div>
+        <div class="kpi-value">--</div>
         <div class="kpi-sub">{{ __('public.staff_portal.kpi_unpaid_balance', [], app()->getLocale()) ?: 'Unpaid balance' }}</div>
     </div>
 </div>
@@ -269,26 +154,6 @@
                 <a href="{{ route('portals.staff.referrals') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
                     <i data-lucide="send" style="width:15px;height:15px;"></i>
                     {{ __('public.portal.nav_referrals', [], app()->getLocale()) ?: 'Referrals' }}
-                </a>
-                <a href="{{ route('portals.staff.visits') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="stethoscope" style="width:15px;height:15px;"></i>
-                    {{ __('public.portal.nav_visits', [], app()->getLocale()) ?: 'Visits' }}
-                </a>
-                <a href="{{ route('portals.insurance.policies') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="shield-check" style="width:15px;height:15px;"></i>
-                    {{ __('public.portal.nav_insurance', [], app()->getLocale()) ?: 'Insurance' }}
-                </a>
-                <a href="{{ route('portals.staff.hr.directory') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="users" style="width:15px;height:15px;"></i>
-                    {{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Staff Directory' }}
-                </a>
-                <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="pill" style="width:15px;height:15px;"></i>
-                    {{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy Stock' }}
-                </a>
-                <a href="{{ route('portals.staff.analytics') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="bar-chart-2" style="width:15px;height:15px;"></i>
-                    {{ __('public.portal.nav_analytics', [], app()->getLocale()) ?: 'Analytics' }}
                 </a>
             </div>
         </div>

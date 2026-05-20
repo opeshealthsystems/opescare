@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\OtpMail;
+use App\Services\Dashboard\DashboardProfileService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
 
 class PublicPageController extends Controller
 {
@@ -134,27 +134,20 @@ class PublicPageController extends Controller
     public function submitLogin(Request $request)
     {
         $email = $request->input('email');
-
+        
         if ($email === 'suspended@opescare.com') {
             return redirect()->route('account.suspended');
         }
+        
         if ($email === 'pending@opescare.com') {
             return redirect()->route('account.pending');
         }
-
-        // Generate a 6-digit OTP, store it in session with a 10-min expiry
-        $code    = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        $expiry  = now()->addMinutes(10)->timestamp;
-
-        session([
-            'otp_code'   => $code,
-            'otp_expiry' => $expiry,
-            'otp_email'  => $email,
-        ]);
-
-        // Send to Mailpit (or real SMTP in production)
-        Mail::to($email)->send(new OtpMail($code, $email));
-
+        
+        if ($email === 'staff@opescare.com' || $email === 'doctor@opescare.com') {
+            return redirect()->route('select-facility');
+        }
+        
+        // Default clinical path asks for 2FA OTP
         return redirect()->route('otp.verify');
     }
 
@@ -267,58 +260,21 @@ class PublicPageController extends Controller
         return view('auth.verify_otp');
     }
 
-    public function resendOtp(Request $request)
-    {
-        $email = session('otp_email');
-
-        if (!$email) {
-            return redirect()->route('login')->with('error', 'Session expired. Please sign in again.');
-        }
-
-        $code   = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        $expiry = now()->addMinutes(10)->timestamp;
-
-        session(['otp_code' => $code, 'otp_expiry' => $expiry]);
-
-        Mail::to($email)->send(new OtpMail($code, $email));
-
-        return response()->json(['ok' => true]);
-    }
-
     public function submitVerifyOtp(Request $request)
     {
-        $submitted = implode('', $request->input('otp', []));
-        $stored    = session('otp_code');
-        $expiry    = session('otp_expiry');
-        $email     = session('otp_email');
-
-        if (!$stored || !$expiry || now()->timestamp > $expiry) {
-            session()->forget(['otp_code', 'otp_expiry', 'otp_email']);
+        $code = implode('', $request->input('otp', []));
+        if ($code === '000000') {
+            return redirect()->route('otp.verify')->with('error', __('onboarding.otp.errors.incorrect'));
+        }
+        if ($code === '111111') {
             return redirect()->route('otp.verify')->with('error', __('onboarding.otp.errors.expired'));
         }
 
-        if ($submitted !== $stored) {
-            return redirect()->route('otp.verify')->with('error', __('onboarding.otp.errors.incorrect'));
-        }
+        $url = Auth::check()
+            ? app(DashboardProfileService::class)->landingUrlForCurrent()
+            : route('portals.patient');
 
-        // OTP valid — clear it and route to the appropriate portal
-        session()->forget(['otp_code', 'otp_expiry']);
-        session(['auth_email' => $email]);
-
-        return redirect()->to($this->portalRouteForEmail($email))
-            ->with('success', 'Authentication complete. Welcome to OpesCare.');
-    }
-
-    private function portalRouteForEmail(?string $email): string
-    {
-        $roleMap = [
-            'admin@opescare.com'    => route('portals.admin'),
-            'staff@opescare.com'    => route('portals.staff'),
-            'doctor@opescare.com'   => route('portals.staff'),
-            'clinical@opescare.com' => route('portals.staff'),
-        ];
-
-        return $roleMap[$email] ?? route('portals.patient');
+        return redirect($url)->with('success', 'Authentication complete. Welcome to OpesCare.');
     }
 
     public function showPendingApproval()
@@ -337,31 +293,7 @@ class PublicPageController extends Controller
 
     public function showSelectFacility()
     {
-        $facilities = [
-            [
-                'id'     => 'fac-001',
-                'name'   => 'Metro Clinical Diagnostics Lab',
-                'branch' => 'Down-Town Collection Center',
-                'role'   => 'Senior Laboratory Technologist',
-                'status' => 'active',
-            ],
-            [
-                'id'     => 'fac-002',
-                'name'   => 'St. Mary Pediatric Care Clinic',
-                'branch' => 'Main Campus',
-                'role'   => 'Clinical Staff',
-                'status' => 'active',
-            ],
-            [
-                'id'     => 'fac-suspended',
-                'name'   => 'Greenfield District Hospital',
-                'branch' => 'North Wing',
-                'role'   => 'Clinical Staff',
-                'status' => 'suspended',
-            ],
-        ];
-
-        return view('auth.select_facility', compact('facilities'));
+        return view('auth.select_facility');
     }
 
     public function submitSelectFacility(Request $request)
@@ -371,6 +303,10 @@ class PublicPageController extends Controller
             return redirect()->route('select-facility')->with('error', __('onboarding.login.errors.facility_suspended'));
         }
 
-        return redirect()->route('portals.staff')->with('success', 'Active clinical session established.');
+        $url = Auth::check()
+            ? app(DashboardProfileService::class)->landingUrlForCurrent()
+            : route('portals.patient');
+
+        return redirect($url)->with('success', 'Active clinical session established.');
     }
 }

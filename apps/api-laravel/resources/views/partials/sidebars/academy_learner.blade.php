@@ -1,0 +1,24 @@
+@php $l = app()->getLocale(); @endphp
+<div class="sidebar-role-badge" style="background:rgba(37,99,235,.2);border-color:rgba(37,99,235,.4);color:#93C5FD;">
+    <i data-lucide="graduation-cap" style="width:.75rem;height:.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+    {{ __('portal.academy_learner_role', [], $l) ?: 'Academy Learner' }}
+</div>
+<div style="margin-bottom:var(--p-space-3);"></div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.portal.nav_dashboard', [], $l) ?: 'Overview' }}</div>
+    <a href="{{ route('portals.staff') }}" class="sidebar-link">
+        <i data-lucide="layout-dashboard"></i>
+        <span>{{ __('public.portal.nav_dashboard', [], $l) ?: 'Dashboard' }}</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.portal.nav_academy', [], $l) ?: 'Academy / Training' }}</div>
+    <a href="{{ route('portals.staff.support') }}" class="sidebar-link">
+        <i data-lucide="book-open"></i>
+        <span>{{ __('public.portal.nav_academy', [], $l) ?: 'Academy / Training' }}</span>
+    </a>
+    <a href="{{ route('public.help') }}" class="sidebar-link">
+        <i data-lucide="help-circle"></i>
+        <span>{{ __('public.portal.nav_help', [], $l) ?: 'Help' }}</span>
+    </a>
+</div>
