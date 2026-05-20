@@ -257,6 +257,18 @@ Route::middleware(['web'])->group(function () {
     Route::post('/portals/staff/wards/admissions/{id}/discharge', [\App\Http\Controllers\MedicalId\WardController::class, 'dischargeStore'])->name('portals.staff.wards.discharge');
     Route::post('/portals/staff/wards/admissions/{id}/transfer',  [\App\Http\Controllers\MedicalId\WardController::class, 'transferStore'])->name('portals.staff.wards.transfer');
 
+    // --- Telemedicine ---
+    Route::get('/portals/staff/telemedicine',                                              [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'index'])->name('portals.staff.telemedicine.index');
+    Route::get('/portals/staff/telemedicine/create',                                       [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'create'])->name('portals.staff.telemedicine.create');
+    Route::post('/portals/staff/telemedicine',                                             [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'store'])->name('portals.staff.telemedicine.store');
+    Route::get('/portals/staff/telemedicine/waiting-room',                                 [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'waitingRoom'])->name('portals.staff.telemedicine.waiting_room');
+    Route::post('/portals/staff/telemedicine/waiting-room/call-next',                      [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'callNext'])->name('portals.staff.telemedicine.call_next');
+    Route::get('/portals/staff/telemedicine/{id}',                                         [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'show'])->name('portals.staff.telemedicine.show');
+    Route::post('/portals/staff/telemedicine/{id}/consent',                                [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'recordConsent'])->name('portals.staff.telemedicine.consent');
+    Route::post('/portals/staff/telemedicine/{id}/start',                                  [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'startCall'])->name('portals.staff.telemedicine.start');
+    Route::post('/portals/staff/telemedicine/{id}/end',                                    [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'endCall'])->name('portals.staff.telemedicine.end');
+    Route::post('/portals/staff/telemedicine/{id}/cancel',                                 [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'cancel'])->name('portals.staff.telemedicine.cancel');
+
     // --- File Storage & Medical Attachments ---
     Route::get('/portals/staff/files',              [\App\Http\Controllers\MedicalId\FileStorageController::class, 'index'])->name('portals.staff.files.index');
     Route::get('/portals/staff/files/upload',       [\App\Http\Controllers\MedicalId\FileStorageController::class, 'create'])->name('portals.staff.files.create');
