@@ -2,8 +2,23 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PublicPageController;
+use App\Http\Controllers\DocsController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
+
+// ── Developer Documentation (public, no auth required) ──────────────────────
+Route::prefix('docs')->name('docs.')->group(function () {
+    Route::get('/',              [DocsController::class, 'index'])->name('index');
+    Route::get('/authentication',[DocsController::class, 'authentication'])->name('authentication');
+    Route::get('/api',           [DocsController::class, 'api'])->name('api');
+    Route::get('/sdk',           [DocsController::class, 'sdk'])->name('sdk');
+    Route::get('/bridge',        [DocsController::class, 'bridge'])->name('bridge');
+    Route::get('/widget',        [DocsController::class, 'widget'])->name('widget');
+    Route::get('/webhooks',      [DocsController::class, 'webhooks'])->name('webhooks');
+    Route::get('/errors',        [DocsController::class, 'errors'])->name('errors');
+    Route::get('/playground',    [DocsController::class, 'playground'])->name('playground');
+    Route::get('/changelog',     [DocsController::class, 'changelog'])->name('changelog');
+});
 
 // Root / Landing
 Route::get('/', [PublicPageController::class, 'index'])->name('public.landing');

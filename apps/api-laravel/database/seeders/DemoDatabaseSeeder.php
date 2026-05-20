@@ -28,6 +28,7 @@ class DemoDatabaseSeeder extends Seeder
             DemoInsuranceSeeder::class,
             DemoPublicHealthSeeder::class,
             DemoDeveloperSeeder::class,
+            DemoDeveloperAccountSeeder::class,
             DemoNotificationsSeeder::class,
             DemoReconciliationSeeder::class,
             DemoAuditSeeder::class,
