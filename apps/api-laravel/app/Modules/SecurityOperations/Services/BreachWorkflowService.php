@@ -100,7 +100,7 @@ class BreachWorkflowService
     public function getBreachesRequiringRegulatoryAction(): \Illuminate\Database\Eloquent\Collection
     {
         return BreachReport::whereIn('status', ['open', 'investigating'])
-            ->where('created_at', '<=', now()->subHours(48))
+            ->where('discovered_at', '<=', now()->subHours(48))
             ->whereNull('reported_to_authority_at')
             ->get();
     }

@@ -29,7 +29,7 @@ class DuplicateMergeEndpointTest extends TestCase
             'health_id' => 'CM-HID-1111-2222-3333',
             'verification_status' => 'facility_verified',
             'identity_status' => 'verified',
-            'is_demo' => true
+            'is_demo' => false
         ]);
 
         $this->secondary = Patient::create([
@@ -39,7 +39,7 @@ class DuplicateMergeEndpointTest extends TestCase
             'health_id' => 'CM-HID-4444-5555-6666',
             'verification_status' => 'duplicate_suspected',
             'identity_status' => 'unverified',
-            'is_demo' => true
+            'is_demo' => false
         ]);
 
         $this->mergeCase = IdentityMergeCase::create([

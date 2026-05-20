@@ -27,7 +27,7 @@ class EmergencyAccessEndpointTest extends TestCase
             'health_id' => $generator->generate('CM'),
             'verification_status' => 'facility_verified',
             'identity_status' => 'verified',
-            'is_demo' => true
+            'is_demo' => false
         ]);
     }
 
