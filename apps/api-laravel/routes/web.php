@@ -372,14 +372,15 @@ Route::middleware(['web', 'auth', 'portal.access', 'facility.context'])->group(f
     Route::post('/portals/admin/subscription/plans/{id}/toggle',                [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'plansToggle'])->name('portals.admin.subscription.plans.toggle');
     Route::get('/portals/admin/subscription',                                   [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'subscriptions'])->name('portals.admin.subscription');
     Route::post('/portals/admin/subscription',                                  [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'subscriptionsStore'])->name('portals.admin.subscription.store');
+    // Static sub-paths MUST come before the {id} wildcard to avoid being swallowed by it
+    Route::get('/portals/admin/subscription/invoices',                          [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'invoices'])->name('portals.admin.subscription.invoices');
+    Route::post('/portals/admin/subscription/invoices/{id}/mark-paid',          [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'invoiceMarkPaid'])->name('portals.admin.subscription.invoices.mark_paid');
     Route::get('/portals/admin/subscription/{id}',                              [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'subscriptionDetail'])->name('portals.admin.subscription.detail');
     Route::post('/portals/admin/subscription/{id}/cancel',                      [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'subscriptionsCancel'])->name('portals.admin.subscription.cancel');
     Route::post('/portals/admin/subscription/{id}/renew',                       [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'subscriptionsRenew'])->name('portals.admin.subscription.renew');
     Route::post('/portals/admin/subscription/{id}/pause',                       [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'subscriptionsPause'])->name('portals.admin.subscription.pause');
     Route::post('/portals/admin/subscription/{id}/reactivate',                  [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'subscriptionsReactivate'])->name('portals.admin.subscription.reactivate');
     Route::post('/portals/admin/subscription/{id}/change-plan',                 [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'subscriptionsChangePlan'])->name('portals.admin.subscription.change_plan');
-    Route::get('/portals/admin/subscription/invoices',                          [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'invoices'])->name('portals.admin.subscription.invoices');
-    Route::post('/portals/admin/subscription/invoices/{id}/mark-paid',          [\App\Http\Controllers\MedicalId\SubscriptionAdminController::class, 'invoiceMarkPaid'])->name('portals.admin.subscription.invoices.mark_paid');
 
     // --- Security Operations Center ---
     Route::get('/portals/admin/security',                    [\App\Http\Controllers\MedicalId\SecurityOpsController::class, 'index'])->name('portals.admin.security');

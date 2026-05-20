@@ -7,8 +7,8 @@
     </div>
 
     <div class="sidebar-section-label">OVERVIEW</div>
-    <a href="{{ route('portals.admin.connect.index') }}"
-       class="sidebar-link {{ request()->routeIs('portals.admin.connect.index') ? 'active' : '' }}">
+    <a href="{{ route('portals.admin.connect') }}"
+       class="sidebar-link {{ request()->routeIs('portals.admin.connect') ? 'active' : '' }}">
         <i data-lucide="layout-dashboard"></i>
         <span>Dashboard</span>
     </a>

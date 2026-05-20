@@ -1,5 +1,5 @@
-@extends('layouts.portal')
-@section('title', 'Developer Production Requests — Admin')
+﻿@extends('layouts.portal')
+@section('title', 'Developer Production Requests â€” Admin')
 @section('sidebar') @include('portals.admin.connect._sidebar') @endsection
 
 @section('content')
@@ -7,17 +7,17 @@
 
     <div class="portal-page-header">
         <div>
-            <a href="{{ route('portals.admin.connect.index') }}" style="font-size:0.83rem;color:#6b7280;text-decoration:none;">← Connect Suite</a>
+            <a href="{{ route('portals.admin.connect') }}" style="font-size:0.83rem;color:#6b7280;text-decoration:none;">â† Connect Suite</a>
             <h1 class="portal-page-title" style="margin-top:4px;">Developer Production Requests</h1>
             <p class="portal-page-subtitle">Review and action production access requests from external developers</p>
         </div>
     </div>
 
     @if(session('success'))
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;">✓ {{ session('success') }}</div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;">âœ“ {{ session('success') }}</div>
     @endif
     @if(session('error'))
-    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#991b1b;font-size:0.88rem;">✗ {{ session('error') }}</div>
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#991b1b;font-size:0.88rem;">âœ— {{ session('error') }}</div>
     @endif
 
     {{-- Stats strip --}}
@@ -49,7 +49,7 @@
 
     @if($requests->isEmpty())
     <div class="portal-card" style="padding:40px;text-align:center;color:#9ca3af;">
-        <div style="font-size:1.8rem;margin-bottom:12px;">📋</div>
+        <div style="font-size:1.8rem;margin-bottom:12px;">ðŸ“‹</div>
         <p style="font-size:0.88rem;">No production access requests found.</p>
     </div>
     @else
@@ -69,7 +69,7 @@
                 @foreach($requests as $req)
                 <tr>
                     <td>
-                        <div style="font-weight:600;font-size:0.82rem;">{{ $req->developerAccount->display_name ?? $req->developerAccount->email ?? '—' }}</div>
+                        <div style="font-weight:600;font-size:0.82rem;">{{ $req->developerAccount->display_name ?? $req->developerAccount->email ?? 'â€”' }}</div>
                         @if($req->integration_client_id)
                         <div style="font-size:0.72rem;color:#9ca3af;font-family:monospace;">{{ Str::limit($req->integration_client_id, 28) }}</div>
                         @endif
@@ -115,19 +115,19 @@
                                 <button type="submit" class="btn btn--success btn--xs"
                                         onclick="return confirm('Approve this production access request?')"
                                         style="font-size:0.72rem;padding:3px 10px;">
-                                    ✓ Approve
+                                    âœ“ Approve
                                 </button>
                             </form>
                             {{-- Reject form with reason --}}
                             <button type="button" class="btn btn--danger btn--xs"
                                     style="font-size:0.72rem;padding:3px 10px;"
                                     onclick="document.getElementById('reject-form-{{ $req->id }}').style.display='block';this.style.display='none';">
-                                ✗ Reject
+                                âœ— Reject
                             </button>
                             <div id="reject-form-{{ $req->id }}" style="display:none;margin-top:4px;">
                                 <form method="POST" action="{{ route('portals.admin.developer.production_requests.reject', $req->id) }}">
                                     @csrf
-                                    <textarea name="reason" rows="2" required placeholder="Rejection reason…"
+                                    <textarea name="reason" rows="2" required placeholder="Rejection reasonâ€¦"
                                               style="width:180px;padding:4px 6px;border:1px solid #e5e7eb;border-radius:4px;font-size:0.75rem;resize:vertical;"></textarea>
                                     <div style="display:flex;gap:4px;margin-top:3px;">
                                         <button type="submit" class="btn btn--danger btn--xs" style="font-size:0.72rem;padding:2px 8px;">Confirm Reject</button>

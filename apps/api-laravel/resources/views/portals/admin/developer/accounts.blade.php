@@ -1,5 +1,5 @@
-@extends('layouts.portal')
-@section('title', 'Developer Accounts — Admin')
+﻿@extends('layouts.portal')
+@section('title', 'Developer Accounts â€” Admin')
 @section('sidebar') @include('portals.admin.connect._sidebar') @endsection
 
 @section('content')
@@ -7,17 +7,17 @@
 
     <div class="portal-page-header">
         <div>
-            <a href="{{ route('portals.admin.connect.index') }}" style="font-size:0.83rem;color:#6b7280;text-decoration:none;">← Connect Suite</a>
+            <a href="{{ route('portals.admin.connect') }}" style="font-size:0.83rem;color:#6b7280;text-decoration:none;">â† Connect Suite</a>
             <h1 class="portal-page-title" style="margin-top:4px;">Developer Accounts</h1>
             <p class="portal-page-subtitle">Manage external developer accounts and sandbox access</p>
         </div>
     </div>
 
     @if(session('success'))
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;">✓ {{ session('success') }}</div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;">âœ“ {{ session('success') }}</div>
     @endif
     @if(session('error'))
-    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#991b1b;font-size:0.88rem;">✗ {{ session('error') }}</div>
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#991b1b;font-size:0.88rem;">âœ— {{ session('error') }}</div>
     @endif
 
     {{-- Stats strip --}}
@@ -37,7 +37,7 @@
 
     @if($accounts->isEmpty())
     <div class="portal-card" style="padding:40px;text-align:center;color:#9ca3af;">
-        <div style="font-size:1.8rem;margin-bottom:12px;">👥</div>
+        <div style="font-size:1.8rem;margin-bottom:12px;">ðŸ‘¥</div>
         <p style="font-size:0.88rem;">No developer accounts registered yet.</p>
     </div>
     @else
@@ -58,13 +58,13 @@
                 @foreach($accounts as $account)
                 <tr>
                     <td>
-                        <div style="font-weight:600;">{{ $account->display_name ?? '—' }}</div>
+                        <div style="font-weight:600;">{{ $account->display_name ?? 'â€”' }}</div>
                         @if($account->website_url)
                         <div style="font-size:0.72rem;"><a href="{{ $account->website_url }}" target="_blank" style="color:#6b7280;">{{ Str::limit($account->website_url, 30) }}</a></div>
                         @endif
                     </td>
                     <td style="font-family:monospace;font-size:0.76rem;color:#374151;">{{ $account->email }}</td>
-                    <td style="color:#6b7280;">{{ $account->company_name ?? '—' }}</td>
+                    <td style="color:#6b7280;">{{ $account->company_name ?? 'â€”' }}</td>
                     <td style="text-align:center;">
                         <span style="background:#f3f4f6;border-radius:12px;padding:2px 10px;font-size:0.75rem;">
                             {{ $account->integrationClients_count ?? 0 }}
@@ -101,7 +101,7 @@
                         <div id="suspend-form-{{ $account->id }}" style="display:none;margin-top:4px;">
                             <form method="POST" action="{{ route('portals.admin.developer.accounts.suspend', $account->id) }}">
                                 @csrf
-                                <textarea name="reason" rows="2" required placeholder="Suspension reason…"
+                                <textarea name="reason" rows="2" required placeholder="Suspension reasonâ€¦"
                                           style="width:180px;padding:4px 6px;border:1px solid #e5e7eb;border-radius:4px;font-size:0.75rem;resize:vertical;"></textarea>
                                 <div style="display:flex;gap:4px;margin-top:3px;">
                                     <button type="submit" class="btn btn--danger btn--xs" style="font-size:0.72rem;padding:2px 8px;">Confirm</button>
