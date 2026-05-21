@@ -1,9 +1,8 @@
 @extends('layouts.portal')
 @section('title', 'Request Production Access')
-@section('sidebar') @include('portals.developer._sidebar') @endsection
+@section('sidebar_nav') @include('portals.developer._sidebar') @endsection
 
 @section('content')
-<div class="portal-content">
 
     <div class="portal-page-header">
         <div>
@@ -120,5 +119,4 @@
         </div>
     </div>
 
-</div>
 @endsection

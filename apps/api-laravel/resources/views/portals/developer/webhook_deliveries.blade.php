@@ -1,9 +1,8 @@
 @extends('layouts.portal')
 @section('title', 'Webhook Delivery Logs')
-@section('sidebar') @include('portals.developer._sidebar') @endsection
+@section('sidebar_nav') @include('portals.developer._sidebar') @endsection
 
 @section('content')
-<div class="portal-content">
 
     <div class="portal-page-header">
         <div>
@@ -51,5 +50,4 @@
         @endif
     </div>
 
-</div>
 @endsection
