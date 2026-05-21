@@ -1,6 +1,6 @@
 @php $l = app()->getLocale(); @endphp
 @auth
-@if(auth()->user()->is_demo)
+@if(auth()->user()->is_demo && !request()->routeIs('portals.developer.*'))
 <div id="portal-demo-banner" style="
     position: sticky;
     top: 0;

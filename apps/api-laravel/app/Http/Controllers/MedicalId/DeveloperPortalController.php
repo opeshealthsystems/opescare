@@ -33,12 +33,13 @@ class DeveloperPortalController extends Controller
 
     private function demoActorId(): string
     {
-        return session('auth_email') ?: 'developer-demo';
+        return session('auth_email')
+            ?? (auth()->check() ? auth()->user()->email : 'developer-demo');
     }
 
     private function currentDeveloper(): ?DeveloperAccount
     {
-        $email = session('auth_email');
+        $email = session('auth_email') ?? (auth()->check() ? auth()->user()->email : null);
         if (!$email) {
             return null;
         }

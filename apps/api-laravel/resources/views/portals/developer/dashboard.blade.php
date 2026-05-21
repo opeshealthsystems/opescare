@@ -138,7 +138,7 @@
                 <div style="font-size:1.4rem;">🚀</div>
                 <div style="font-size:0.8rem;font-weight:600;margin-top:6px;color:#374151;">Production Access</div>
             </a>
-            <a href="{{ route('public.developers') }}" style="text-decoration:none;padding:12px;background:#f9fafb;border-radius:8px;text-align:center;border:1px solid #e5e7eb;">
+            <a href="{{ route('docs.index') }}" target="_blank" style="text-decoration:none;padding:12px;background:#f9fafb;border-radius:8px;text-align:center;border:1px solid #e5e7eb;">
                 <div style="font-size:1.4rem;">📖</div>
                 <div style="font-size:0.8rem;font-weight:600;margin-top:6px;color:#374151;">API Docs</div>
             </a>

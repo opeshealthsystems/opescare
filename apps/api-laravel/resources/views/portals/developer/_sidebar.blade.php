@@ -5,6 +5,6 @@
     <a href="{{ route('portals.developer.production_requests') }}" class="portal-sidebar__link {{ request()->routeIs('portals.developer.production_requests*') ? 'active' : '' }}">Production Access</a>
 
     <div class="portal-sidebar__section-title" style="margin-top:16px;">Resources</div>
-    <a href="{{ route('public.developers') }}" class="portal-sidebar__link">API Documentation</a>
-    <a href="{{ route('portals.developer.dashboard') }}" class="portal-sidebar__link">Sandbox Environment</a>
+    <a href="{{ route('docs.index') }}" class="portal-sidebar__link" target="_blank">API Documentation ↗</a>
+    <a href="{{ route('docs.playground') }}" class="portal-sidebar__link" target="_blank">API Playground ↗</a>
 </nav>

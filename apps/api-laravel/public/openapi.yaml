@@ -1,0 +1,636 @@
+openapi: 3.1.0
+info:
+  title: OpesCare Connect API
+  version: "1.0.0"
+  description: |
+    OpesCare's interoperability API suite — enabling hospitals, pharmacies,
+    labs, insurers, and third-party systems to securely access and push
+    patient health data with full consent and audit controls.
+
+    **Base URL (Sandbox):** `https://opescare.test/api/v1`
+
+    **Authentication:**
+    - Connect API → OAuth 2.0 client_credentials → Bearer token
+    - SDK → Static bearer token from developer portal
+    - Bridge Agent → `X-Bridge-Token` header
+
+  contact:
+    name: OpesCare Developer Support
+    email: developers@opescare.test
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://opescare.test/api/v1
+    description: Sandbox / Local Dev
+  - url: https://api.opescare.health/v1
+    description: Production (requires approved account)
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: OAuth 2.0 access token for Connect API
+    SdkToken:
+      type: http
+      scheme: bearer
+      description: SDK static bearer token from developer portal
+    BridgeToken:
+      type: apiKey
+      in: header
+      name: X-Bridge-Token
+      description: Bridge Agent authentication token
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "unauthenticated"
+        message:
+          type: string
+          example: "Invalid or expired token."
+        status:
+          type: integer
+          example: 401
+
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+        token_type:
+          type: string
+          example: "Bearer"
+        expires_in:
+          type: integer
+          example: 3600
+        scope:
+          type: string
+          example: "patient:profile:read pharmacy:stock:read"
+
+    Patient:
+      type: object
+      properties:
+        health_id:
+          type: string
+          example: "OPC-2024-XK7T9"
+        name:
+          type: string
+          example: "Jean Dupont"
+        date_of_birth:
+          type: string
+          format: date
+          example: "1990-05-15"
+        blood_type:
+          type: string
+          example: "O+"
+        allergies:
+          type: array
+          items:
+            type: string
+          example: ["Penicillin", "Aspirin"]
+
+paths:
+  # ── Connect API — Auth ─────────────────────────────────────────────
+
+  /connect/auth/token:
+    post:
+      tags: [Connect API - Auth]
+      summary: Get access token
+      description: |
+        OAuth 2.0 client_credentials grant. Returns a Bearer token valid for 1 hour.
+        Use `client_id` and `client_secret` from your integration client in the developer portal.
+
+        **Sandbox credentials:** `client_id: demo_dev_sandbox` / `client_secret: demo_secret_sandbox_2026`
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [grant_type, client_id, client_secret]
+              properties:
+                grant_type:
+                  type: string
+                  enum: [client_credentials]
+                  example: client_credentials
+                client_id:
+                  type: string
+                  example: demo_dev_sandbox
+                client_secret:
+                  type: string
+                  example: demo_secret_sandbox_2026
+                scope:
+                  type: string
+                  example: "patient:profile:read pharmacy:stock:read"
+      responses:
+        "200":
+          description: Token issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ── Connect API — Patient ──────────────────────────────────────────
+
+  /connect/patient/search:
+    get:
+      tags: [Connect API - Patient]
+      summary: Search patient by Health ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: health_id
+          in: query
+          required: true
+          schema:
+            type: string
+          example: OPC-2024-XK7T9
+          description: OpesCare Health ID (format OPC-YYYY-XXXXX)
+      responses:
+        "200":
+          description: Patient found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        "404":
+          description: Patient not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ── Connect API — Consent ──────────────────────────────────────────
+
+  /connect/patient/{health_id}/consent:
+    get:
+      tags: [Connect API - Consent]
+      summary: Get patient consent status
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: health_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: OPC-2024-XK7T9
+      responses:
+        "200":
+          description: Consent status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  health_id:
+                    type: string
+                  consent_status:
+                    type: string
+                    enum: [granted, pending, denied]
+                  granted_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+
+  /connect/patient/{health_id}/consent/grant:
+    post:
+      tags: [Connect API - Consent]
+      summary: Grant consent for a patient record
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: health_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                consent_type:
+                  type: string
+                  example: "full_record"
+                expires_at:
+                  type: string
+                  format: date-time
+                  example: "2026-12-31T23:59:59Z"
+      responses:
+        "200":
+          description: Consent granted
+
+  # ── Connect API — Records ──────────────────────────────────────────
+
+  /connect/patient/{health_id}/records:
+    get:
+      tags: [Connect API - Records]
+      summary: Get patient medical records
+      description: Requires active patient consent and appropriate scope.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: health_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [diagnoses, prescriptions, lab_results, vitals, all]
+          example: all
+      responses:
+        "200":
+          description: Patient records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  health_id:
+                    type: string
+                  records:
+                    type: object
+        "403":
+          description: Consent required or insufficient scope
+
+  # ── Connect API — Inventory ────────────────────────────────────────
+
+  /connect/inventory/pharmacy/{facility_id}:
+    get:
+      tags: [Connect API - Inventory]
+      summary: Get pharmacy inventory for a facility
+      description: |
+        Returns current pharmacy stock levels. Requires `pharmacy:stock:read` scope.
+        **Note:** Availability is indicative only and not a guarantee of supply.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: facility_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "00000000-0000-0000-0000-100000000001"
+      responses:
+        "200":
+          description: Pharmacy inventory list
+
+  /connect/inventory/blood/{facility_id}:
+    get:
+      tags: [Connect API - Inventory]
+      summary: Get blood bank inventory for a facility
+      description: |
+        Returns blood inventory by blood group and component (whole blood, plasma, platelets, packed cells).
+        **Note:** Blood availability is indicative only and not a guarantee of supply.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: facility_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Blood inventory
+
+  # ── Connect API — Webhooks ─────────────────────────────────────────
+
+  /connect/webhooks/subscriptions:
+    get:
+      tags: [Connect API - Webhooks]
+      summary: List webhook subscriptions
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: List of webhook subscriptions
+    post:
+      tags: [Connect API - Webhooks]
+      summary: Create webhook subscription
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [endpoint_url, events]
+              properties:
+                endpoint_url:
+                  type: string
+                  example: "https://your-system.example.com/opescare/webhook"
+                events:
+                  type: array
+                  items:
+                    type: string
+                  example: ["appointment.created", "lab_result.ready"]
+                secret:
+                  type: string
+                  description: Shared secret for HMAC-SHA256 signature verification
+                  example: "your-webhook-signing-secret"
+      responses:
+        "201":
+          description: Subscription created
+
+  /connect/webhooks/subscriptions/{id}:
+    delete:
+      tags: [Connect API - Webhooks]
+      summary: Delete a webhook subscription
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Subscription deleted
+
+  # ── Connect API — Reconciliation ───────────────────────────────────
+
+  /connect/reconciliation:
+    get:
+      tags: [Connect API - Reconciliation]
+      summary: Get payment reconciliation records
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+          example: "2026-05-20"
+      responses:
+        "200":
+          description: Reconciliation records for the given date
+
+  # ── SDK API ────────────────────────────────────────────────────────
+
+  /sdk/patient/{health_id}:
+    get:
+      tags: [SDK]
+      summary: Get patient profile
+      security:
+        - SdkToken: []
+      parameters:
+        - name: health_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: OPC-2024-DEMO1
+      responses:
+        "200":
+          description: Patient profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+
+  /sdk/facility/{facility_id}:
+    get:
+      tags: [SDK]
+      summary: Get facility details
+      security:
+        - SdkToken: []
+      parameters:
+        - name: facility_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Facility details
+
+  /sdk/appointments:
+    get:
+      tags: [SDK]
+      summary: List appointments
+      security:
+        - SdkToken: []
+      parameters:
+        - name: facility_id
+          in: query
+          schema:
+            type: string
+          example: "00000000-0000-0000-0000-100000000001"
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+          example: "2026-05-20"
+      responses:
+        "200":
+          description: Appointment list
+
+  /sdk/webhooks:
+    post:
+      tags: [SDK]
+      summary: Subscribe to events via SDK token
+      security:
+        - SdkToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                endpoint_url:
+                  type: string
+                events:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "201":
+          description: Subscription created
+
+  /sdk/introspect:
+    get:
+      tags: [SDK]
+      summary: Introspect SDK token
+      description: Returns token validity, scopes, and expiry.
+      security:
+        - SdkToken: []
+      responses:
+        "200":
+          description: Token introspection result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  active:
+                    type: boolean
+                    example: true
+                  scopes:
+                    type: array
+                    items:
+                      type: string
+                    example: ["patient:profile:read", "pharmacy:stock:read"]
+                  expires_at:
+                    type: string
+                    format: date-time
+
+  # ── Bridge Agent API ───────────────────────────────────────────────
+
+  /bridge/sync:
+    post:
+      tags: [Bridge Agent]
+      summary: Push HIS records to OpesCare
+      description: |
+        Sync visits, vitals, diagnoses, and lab results from your local
+        Hospital Information System (HIS) to OpesCare.
+
+        Use `sync_type: delta` for incremental pushes, `full` for a complete resync.
+      security:
+        - BridgeToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [agent_id, sync_type, records]
+              properties:
+                agent_id:
+                  type: string
+                  example: "BRIDGE-2024-DEMO-001"
+                sync_type:
+                  type: string
+                  enum: [full, delta]
+                  example: delta
+                records:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        enum: [visit, vital, diagnosis, lab_result, prescription]
+                      data:
+                        type: object
+                  example:
+                    - type: visit
+                      data:
+                        patient_health_id: "OPC-2024-DEMO1"
+                        visit_date: "2026-05-20"
+                        chief_complaint: "Chest pain"
+                        attending_doctor: "Dr. Nguyen"
+                    - type: vital
+                      data:
+                        patient_health_id: "OPC-2024-DEMO1"
+                        recorded_at: "2026-05-20T09:15:00Z"
+                        systolic_bp: 120
+                        diastolic_bp: 80
+                        heart_rate: 72
+                        temperature: 36.8
+      responses:
+        "200":
+          description: Sync accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accepted:
+                    type: integer
+                    example: 42
+                  rejected:
+                    type: integer
+                    example: 0
+                  sync_id:
+                    type: string
+                    example: "sync_a8f3k12x"
+        "401":
+          description: Invalid bridge token
+
+  /bridge/heartbeat:
+    post:
+      tags: [Bridge Agent]
+      summary: Send agent heartbeat
+      description: Call every 5 minutes. Agents silent for 15+ minutes are marked offline.
+      security:
+        - BridgeToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [agent_id, status]
+              properties:
+                agent_id:
+                  type: string
+                  example: "BRIDGE-2024-DEMO-001"
+                status:
+                  type: string
+                  enum: [online, degraded, offline]
+                  example: online
+                queue_depth:
+                  type: integer
+                  example: 0
+      responses:
+        "200":
+          description: Heartbeat acknowledged
+
+  /bridge/status:
+    get:
+      tags: [Bridge Agent]
+      summary: Get bridge agent status
+      security:
+        - BridgeToken: []
+      parameters:
+        - name: agent_id
+          in: query
+          required: true
+          schema:
+            type: string
+          example: "BRIDGE-2024-DEMO-001"
+      responses:
+        "200":
+          description: Agent status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  agent_id:
+                    type: string
+                  status:
+                    type: string
+                    enum: [online, degraded, offline]
+                  last_sync_at:
+                    type: string
+                    format: date-time
+                  last_heartbeat_at:
+                    type: string
+                    format: date-time
+                  records_synced_today:
+                    type: integer
+                    example: 127

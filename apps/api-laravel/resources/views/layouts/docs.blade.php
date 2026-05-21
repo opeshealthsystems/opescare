@@ -41,7 +41,7 @@
         <a href="{{ route('docs.playground') }}">Playground</a>
         <a href="{{ route('docs.changelog') }}">Changelog</a>
         <a href="{{ route('public.developers') }}">Developer Hub</a>
-        <a href="{{ asset('docs/openapi.yaml') }}" target="_blank">OpenAPI Spec</a>
+        <a href="{{ asset('openapi.yaml') }}" target="_blank">OpenAPI Spec</a>
     </nav>
 </header>
 
