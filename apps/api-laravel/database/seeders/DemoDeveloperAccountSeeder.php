@@ -87,7 +87,7 @@ class DemoDeveloperAccountSeeder extends Seeder
                 'id'            => $prodClientId,
                 'name'          => 'OpesCare HIS — Production Client',
                 'client_id'     => 'opeshisos_production',
-                'client_secret' => \Illuminate\Support\Facades\Hash::make('prod_secret_opeshisos_2026'),
+                'client_secret' => hash('sha256', 'prod_secret_opeshisos_2026'),
                 'facility_id'   => $facilityId,
                 'scopes'        => json_encode(['health_id:verify', 'patient:read', 'encounter:push', 'lab:push', 'prescription:push', 'facility:sync']),
                 'status'        => 'active',

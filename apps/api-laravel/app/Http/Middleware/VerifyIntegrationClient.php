@@ -27,10 +27,12 @@ class VerifyIntegrationClient
             return $next($request);
         }
 
-        // Try searching standard DB
+        // All real secrets are stored as SHA-256 hashes (set by DeveloperPortalController::storeApp)
         try {
+            $hashedSecret = hash('sha256', $clientSecret);
+
             $client = IntegrationClient::where('client_id', $clientId)
-                ->where('client_secret', $clientSecret)
+                ->where('client_secret', $hashedSecret)
                 ->first();
 
             if (!$client || $client->status !== 'active') {
@@ -38,8 +40,9 @@ class VerifyIntegrationClient
             }
 
             $request->attributes->add([
-                'integration_client' => $client,
-                'facility_id' => $client->facility_id,
+                'integration_client'    => $client,
+                'integration_client_id' => $client->client_id,
+                'facility_id'           => $client->facility_id,
             ]);
         } catch (\Exception $e) {
             // DB table may not exist yet in local setup before migrations are run

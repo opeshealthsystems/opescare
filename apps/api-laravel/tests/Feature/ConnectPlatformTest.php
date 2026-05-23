@@ -34,7 +34,40 @@ class ConnectPlatformTest extends TestCase
             'phone' => '+237 600-000-000'
         ];
         $patient->save();
+
+        // Real integration client — secret stored as SHA-256 (as DeveloperPortalController::storeApp does)
+        \App\Models\IntegrationClient::create([
+            'client_id'     => 'real_client_001',
+            'client_secret' => hash('sha256', 'real_secret_abc123'),
+            'facility_id'   => '00000000-0000-0000-0000-000000000001',
+            'name'          => 'Test Real Client',
+            'environment'   => 'sandbox',
+            'scopes'        => json_encode(['health_id:read', 'patients:read']),
+            'status'        => 'active',
+        ]);
+
+        // Active consent grant for the test patient at the test facility
+        $consentReq = \App\Models\ConsentRequest::create([
+            'patient_id'             => '00000000-0000-0000-0000-000000000003',
+            'requesting_facility_id' => '00000000-0000-0000-0000-000000000001',
+            'purpose'                => 'treatment',
+            'requested_scope'        => ['patients:read', 'patients:write', 'labs:write', 'prescriptions:write'],
+            'duration_minutes'       => 1440,
+            'status'                 => 'approved',
+        ]);
+
+        \App\Models\ConsentGrant::create([
+            'id'                 => 'cgt_test_active_01',
+            'consent_request_id' => $consentReq->id,
+            'patient_id'         => '00000000-0000-0000-0000-000000000003',
+            'facility_id'        => '00000000-0000-0000-0000-000000000001',
+            'authorizing_actor'  => 'patient',
+            'scope'              => ['patients:read', 'patients:write', 'labs:write', 'prescriptions:write'],
+            'status'             => 'active',
+            'expires_at'         => now()->addDay(),
+        ]);
     }
+
     /**
      * Test B2B OAuth token issuing endpoint.
      */
@@ -249,5 +282,58 @@ class ConnectPlatformTest extends TestCase
                      'health_id' => 'OC-CMR-7KQ9-MP42-X8D1',
                      'display_name' => 'John D.'
                  ]);
+    }
+
+    /**
+     * Real integration client authenticates correctly via SHA-256 secret.
+     */
+    public function test_real_client_can_authenticate_with_correct_secret(): void
+    {
+        $response = $this->withHeaders([
+            'X-Client-ID'     => 'real_client_001',
+            'X-Client-Secret' => 'real_secret_abc123',
+        ])->postJson('/api/v1/connect/patients/search', [
+            'search_type' => 'health_id',
+            'query'       => 'OC-CMR-7KQ9-MP42-X8D1',
+            'purpose'     => 'treatment',
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    /**
+     * Real integration client is blocked with wrong secret.
+     */
+    public function test_real_client_blocked_with_wrong_secret(): void
+    {
+        $response = $this->withHeaders([
+            'X-Client-ID'     => 'real_client_001',
+            'X-Client-Secret' => 'wrong_secret',
+        ])->postJson('/api/v1/connect/patients/search', [
+            'search_type' => 'health_id',
+            'query'       => 'OC-CMR-7KQ9-MP42-X8D1',
+            'purpose'     => 'treatment',
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    /**
+     * Rate-limit headers are present on Connect API responses.
+     */
+    public function test_rate_limit_headers_present_on_connect_response(): void
+    {
+        $response = $this->withHeaders([
+            'X-Client-ID'     => 'test_client_id',
+            'X-Client-Secret' => 'test_client_secret',
+        ])->postJson('/api/v1/connect/patients/search', [
+            'search_type' => 'health_id',
+            'query'       => 'OC-CMR-7KQ9-MP42-X8D1',
+            'purpose'     => 'treatment',
+        ]);
+
+        $response->assertStatus(200)
+                 ->assertHeader('X-RateLimit-Limit')
+                 ->assertHeader('X-RateLimit-Remaining');
     }
 }
