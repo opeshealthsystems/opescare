@@ -91,6 +91,7 @@ class ConsentService
         $now = Carbon::now();
 
         $grants = ConsentGrant::where('consent_grants.patient_id', $patientId)
+            ->where('consent_grants.facility_id', $facilityId)   // scope to requesting facility
             ->where('consent_grants.status', 'active')
             ->where('consent_grants.expires_at', '>=', $now)
             ->join('consent_requests', 'consent_grants.consent_request_id', '=', 'consent_requests.id')
