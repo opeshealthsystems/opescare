@@ -86,8 +86,8 @@ Route::prefix('v1/connect')->group(function () {
     // Auth token request endpoint (unprotected by client middleware, uses POST body credentials)
     Route::post('/auth/token', [\App\Http\Controllers\Api\V1\Connect\AuthController::class, 'issueToken']);
 
-    // Authenticated B2B routes group
-    Route::middleware(VerifyIntegrationClient::class)->group(function () {
+    // Authenticated B2B routes group (per-client rate limit: 200 req/min)
+    Route::middleware([VerifyIntegrationClient::class, 'throttle.client:200,1'])->group(function () {
         
         // Widget session
         Route::post('/widget/sessions', [\App\Http\Controllers\Api\V1\Connect\AuthController::class, 'createWidgetSession']);
@@ -105,15 +105,19 @@ Route::prefix('v1/connect')->group(function () {
         Route::post('/emergency-access/request', [\App\Http\Controllers\Api\V1\Connect\ConnectGovernanceController::class, 'requestEmergencyAccess']);
         Route::get('/patients/{health_id}/emergency-profile', [\App\Http\Controllers\Api\V1\Connect\ConnectGovernanceController::class, 'getEmergencyProfile']);
 
-        // Record pulls
-        Route::get('/patients/{health_id}/summary', [\App\Http\Controllers\Api\V1\Connect\RecordController::class, 'pullSummary']);
+        // Record pulls (consent required — grant must include patients:read scope)
+        Route::get('/patients/{health_id}/summary', [\App\Http\Controllers\Api\V1\Connect\RecordController::class, 'pullSummary'])
+            ->middleware('consent.grant:patients:read');
         Route::get('/patients/{health_id}/legacy-emergency-profile', [\App\Http\Controllers\Api\V1\Connect\RecordController::class, 'pullEmergencyProfile']);
 
-        // Record writes (Protected by B2B Client Credentials + Idempotency middleware)
+        // Record writes (Protected by: B2B auth → Idempotency key → Consent grant)
         Route::middleware(IdempotencyProtection::class)->group(function () {
-            Route::post('/records/encounters', [\App\Http\Controllers\Api\V1\Connect\RecordController::class, 'pushEncounter']);
-            Route::post('/records/lab-results', [\App\Http\Controllers\Api\V1\Connect\RecordController::class, 'pushLabResult']);
-            Route::post('/records/prescriptions', [\App\Http\Controllers\Api\V1\Connect\RecordController::class, 'pushPrescription']);
+            Route::post('/records/encounters', [\App\Http\Controllers\Api\V1\Connect\RecordController::class, 'pushEncounter'])
+                ->middleware('consent.grant:patients:write');
+            Route::post('/records/lab-results', [\App\Http\Controllers\Api\V1\Connect\RecordController::class, 'pushLabResult'])
+                ->middleware('consent.grant:labs:write');
+            Route::post('/records/prescriptions', [\App\Http\Controllers\Api\V1\Connect\RecordController::class, 'pushPrescription'])
+                ->middleware('consent.grant:prescriptions:write');
         });
 
         // Inventory Stock Sync

@@ -56,7 +56,9 @@ class ConnectPlatformTest extends TestCase
             'status'                 => 'approved',
         ]);
 
-        \App\Models\ConsentGrant::create([
+        // forceCreate bypasses mass-assignment so the explicit id is stored
+        // (HasUuids only auto-generates when id is empty, so our value is kept)
+        \App\Models\ConsentGrant::forceCreate([
             'id'                 => 'cgt_test_active_01',
             'consent_request_id' => $consentReq->id,
             'patient_id'         => '00000000-0000-0000-0000-000000000003',
@@ -151,11 +153,12 @@ class ConnectPlatformTest extends TestCase
      */
     public function test_writes_block_duplicate_idempotency_keys_and_retrieve_cache_hits()
     {
-        // 1. Initial write
+        // 1. Initial write — consent grant required on write routes
         $response = $this->withHeaders([
-            'X-Client-ID' => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret',
-            'Idempotency-Key' => 'idm_key_test_1002'
+            'X-Client-ID'       => 'test_client_id',
+            'X-Client-Secret'   => 'test_client_secret',
+            'Idempotency-Key'   => 'idm_key_test_1002',
+            'X-Consent-Grant-Id' => 'cgt_test_active_01',
         ])->postJson('/api/v1/connect/records/encounters', [
             'health_id' => 'OC-CMR-7KQ9-MP42-X8D1',
             'external_encounter_id' => 'ENC-9001'
@@ -174,9 +177,10 @@ class ConnectPlatformTest extends TestCase
 
         // 2. Duplicate request with EXACT same key and body returns CACHE HIT response
         $response2 = $this->withHeaders([
-            'X-Client-ID' => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret',
-            'Idempotency-Key' => 'idm_key_test_1002'
+            'X-Client-ID'       => 'test_client_id',
+            'X-Client-Secret'   => 'test_client_secret',
+            'Idempotency-Key'   => 'idm_key_test_1002',
+            'X-Consent-Grant-Id' => 'cgt_test_active_01',
         ])->postJson('/api/v1/connect/records/encounters', [
             'health_id' => 'OC-CMR-7KQ9-MP42-X8D1',
             'external_encounter_id' => 'ENC-9001'
@@ -187,9 +191,10 @@ class ConnectPlatformTest extends TestCase
 
         // 3. Request with same key but DIFFERENT body throws 409 conflict
         $response3 = $this->withHeaders([
-            'X-Client-ID' => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret',
-            'Idempotency-Key' => 'idm_key_test_1002'
+            'X-Client-ID'       => 'test_client_id',
+            'X-Client-Secret'   => 'test_client_secret',
+            'Idempotency-Key'   => 'idm_key_test_1002',
+            'X-Consent-Grant-Id' => 'cgt_test_active_01',
         ])->postJson('/api/v1/connect/records/encounters', [
             'health_id' => 'OC-CMR-7KQ9-MP42-X8D1',
             'external_encounter_id' => 'ENC-9002_DIFFERENT'
@@ -249,9 +254,10 @@ class ConnectPlatformTest extends TestCase
     public function test_reconciliation_case_creation_on_matching_conflicts()
     {
         $response = $this->withHeaders([
-            'X-Client-ID' => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret',
-            'Idempotency-Key' => 'idm_recon_key_01'
+            'X-Client-ID'       => 'test_client_id',
+            'X-Client-Secret'   => 'test_client_secret',
+            'Idempotency-Key'   => 'idm_recon_key_01',
+            'X-Consent-Grant-Id' => 'cgt_test_active_01',
         ])->postJson('/api/v1/connect/records/encounters', [
             'health_id' => 'OC-CMR-RECON-REQUIRED',
             'external_encounter_id' => 'ENC-RECON-001'

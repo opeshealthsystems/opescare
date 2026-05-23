@@ -19,32 +19,12 @@ class RecordController extends Controller
 {
     public function pullSummary(Request $request, $healthId)
     {
-        $purpose = $request->header('X-Purpose-Of-Use');
-        $consentGrantId = $request->header('X-Consent-Grant-Id');
-
-        if (!$purpose || !$consentGrantId) {
-            return response()->json([
-                'status' => 'rejected',
-                'error_code' => OpesCareErrorCode::PURPOSE_REQUIRED->value,
-                'message' => 'Missing X-Purpose-Of-Use or X-Consent-Grant-Id headers.'
-            ], 400);
-        }
+        // Consent validation is handled by RequireConsentGrant middleware (consent.grant:patients:read).
+        // The resolved ConsentGrant is available via $request->attributes->get('consent_grant').
+        $purpose = $request->header('X-Purpose-Of-Use', 'treatment');
 
         // Query Patient from database
         $patient = Patient::where('health_id', $healthId)->first();
-
-        // Local sandbox fallback for unit testing
-        if (!$patient && $healthId === 'OC-CMR-7KQ9-MP42-X8D1') {
-            $patient = new Patient([
-                'id' => 'test_patient_uuid_01',
-                'health_id' => 'OC-CMR-7KQ9-MP42-X8D1',
-                'first_name' => 'John',
-                'last_name' => 'Doe',
-                'sex' => 'male',
-                'date_of_birth' => '1990-04-12',
-                'identity_status' => 'verified_by_facility'
-            ]);
-        }
 
         if (!$patient) {
             return response()->json([
@@ -52,29 +32,6 @@ class RecordController extends Controller
                 'error_code' => OpesCareErrorCode::PATIENT_NOT_FOUND->value,
                 'message' => 'No patient was found with this health ID.'
             ], 404);
-        }
-
-        // Validate consent grant
-        $isConsentValid = false;
-        if ($consentGrantId === 'cgt_test_active_01') {
-            $isConsentValid = true;
-        } else {
-            $grant = ConsentGrant::where('id', $consentGrantId)
-                ->where('patient_id', $patient->id)
-                ->where('status', 'active')
-                ->first();
-            if ($grant && (!$grant->expires_at || !$grant->expires_at->isPast())) {
-                $isConsentValid = true;
-            }
-        }
-
-        if (!$isConsentValid) {
-            return response()->json([
-                'status' => 'rejected',
-                'error_code' => OpesCareErrorCode::CONSENT_REQUIRED->value,
-                'message' => 'No active consent grant matches this token.',
-                'required_action' => 'request_consent'
-            ], 403);
         }
 
         AuditLogger::log(

@@ -27,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'bridge.agent'     => \App\Http\Middleware\VerifyBridgeAgent::class,
             'portal.access'    => \App\Http\Middleware\EnsurePortalAccess::class,
             'facility.context' => \App\Http\Middleware\RequireFacilityContext::class,
+            'consent.grant'    => \App\Http\Middleware\RequireConsentGrant::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
