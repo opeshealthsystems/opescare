@@ -30,12 +30,14 @@ class Patient extends Model
         'verified_at',
         'is_demo',
         'pin_hash',
+        'privacy_preferences',
     ];
 
     protected $casts = [
         'date_of_birth' => 'date',
         'is_dob_estimated' => 'boolean',
         'emergency_contact' => 'array',
+        'privacy_preferences' => 'array',
         'verified_at' => 'datetime',
     ];
 

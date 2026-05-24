@@ -286,6 +286,81 @@ class PatientPortalController extends Controller
     }
 
     /**
+     * Patient Profile & Privacy Settings
+     */
+    public function profile(Request $request)
+    {
+        $patient = $this->resolvePatient();
+
+        if ($patient) {
+            $this->ctx->auditPatientAccess(
+                actionType:   'patient_profile_view',
+                resourceType: 'Patient',
+                resourceId:   $patient->id,
+                patientId:    $patient->id,
+            );
+        }
+
+        return view('portals.patient.profile', compact('patient'));
+    }
+
+    /**
+     * Update Patient Profile & Privacy Settings
+     */
+    public function updateProfile(Request $request)
+    {
+        $patient = $this->resolvePatient();
+        abort_if(!$patient, 403);
+
+        $validated = $request->validate([
+            'phone_number'                   => 'sometimes|nullable|string|max:30',
+            'email'                          => 'sometimes|nullable|email|max:255',
+            'address'                        => 'sometimes|nullable|string|max:500',
+            'emergency_contact.name'         => 'sometimes|nullable|string|max:100',
+            'emergency_contact.phone'        => 'sometimes|nullable|string|max:30',
+            'emergency_contact.relationship' => 'sometimes|nullable|string|max:50',
+            'privacy_require_consent'        => 'sometimes|boolean',
+            'privacy_emergency_access'       => 'sometimes|boolean',
+        ]);
+
+        $updateData = [];
+
+        foreach (['phone_number', 'email', 'address'] as $field) {
+            if (array_key_exists($field, $validated)) {
+                $updateData[$field] = $validated[$field];
+            }
+        }
+
+        if (isset($validated['emergency_contact'])) {
+            $updateData['emergency_contact'] = $validated['emergency_contact'];
+        }
+
+        $privacyPrefs = $patient->privacy_preferences ?? [];
+        if (array_key_exists('privacy_require_consent', $validated)) {
+            $privacyPrefs['require_consent_for_full_record'] = (bool) $validated['privacy_require_consent'];
+        }
+        if (array_key_exists('privacy_emergency_access', $validated)) {
+            $privacyPrefs['emergency_access_allowed'] = (bool) $validated['privacy_emergency_access'];
+        }
+        if ($privacyPrefs !== ($patient->privacy_preferences ?? [])) {
+            $updateData['privacy_preferences'] = $privacyPrefs;
+        }
+
+        if (!empty($updateData)) {
+            $patient->update($updateData);
+        }
+
+        $this->ctx->auditPatientAccess(
+            actionType:   'patient_profile_updated',
+            resourceType: 'Patient',
+            resourceId:   $patient->id,
+            patientId:    $patient->id,
+        );
+
+        return redirect()->route('portals.patient.profile')->with('success', 'Profile updated successfully.');
+    }
+
+    /**
      * View Access Logs
      */
     public function accessLogs(Request $request)
