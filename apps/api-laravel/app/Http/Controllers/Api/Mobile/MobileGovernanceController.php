@@ -82,6 +82,15 @@ class MobileGovernanceController extends Controller
 
     public function createCorrectionRequest(Request $request)
     {
+        $request->validate([
+            'patient_id'            => 'required|string|max:255',
+            'user_id'               => 'required|string|max:255',
+            'resource_type'         => 'required|string|max:100',
+            'resource_id'           => 'required|string|max:255',
+            'reason'                => 'required|string|max:2000',
+            'supporting_document_id' => 'nullable|string|max:255',
+        ]);
+
         $patientId = $request->input('patient_id');
         $userId = $request->input('user_id');
         $resourceType = $request->input('resource_type');

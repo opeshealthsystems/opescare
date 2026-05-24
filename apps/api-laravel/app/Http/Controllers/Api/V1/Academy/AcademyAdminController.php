@@ -45,6 +45,12 @@ class AcademyAdminController extends Controller
      */
     public function approveTrainerSignoff(Request $request)
     {
+        $request->validate([
+            'learner_id' => 'required|string|max:255',
+            'course_id'  => 'required|string|max:255',
+            'trainer_id' => 'required|string|max:255',
+        ]);
+
         $learnerId = $request->input('learner_id');
         $courseId = $request->input('course_id');
         $trainerId = $request->input('trainer_id');
@@ -90,6 +96,12 @@ class AcademyAdminController extends Controller
      */
     public function registerGate(Request $request)
     {
+        $request->validate([
+            'role_name'       => 'required|string|max:100',
+            'course_code'     => 'required|string|max:100',
+            'permission_name' => 'nullable|string|max:100',
+        ]);
+
         $roleName = $request->input('role_name');
         $courseCode = $request->input('course_code');
         $permissionName = $request->input('permission_name');

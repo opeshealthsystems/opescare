@@ -61,6 +61,10 @@ class AcademyController extends Controller
      */
     public function enroll(Request $request, string $id)
     {
+        $request->validate([
+            'user_id' => 'required|string|max:255',
+        ]);
+
         $userId = $request->input('user_id');
         if (!$userId) {
             return response()->json(['error' => 'USER_ID_REQUIRED'], 400);
@@ -79,6 +83,10 @@ class AcademyController extends Controller
      */
     public function completeLesson(Request $request, string $id)
     {
+        $request->validate([
+            'user_id' => 'required|string|max:255',
+        ]);
+
         $userId = $request->input('user_id');
         if (!$userId) {
             return response()->json(['error' => 'USER_ID_REQUIRED'], 400);
@@ -93,6 +101,10 @@ class AcademyController extends Controller
      */
     public function startQuiz(Request $request, string $id)
     {
+        $request->validate([
+            'user_id' => 'required|string|max:255',
+        ]);
+
         $userId = $request->input('user_id');
         if (!$userId) {
             return response()->json(['error' => 'USER_ID_REQUIRED'], 400);
@@ -111,6 +123,10 @@ class AcademyController extends Controller
      */
     public function submitQuiz(Request $request, string $id)
     {
+        $request->validate([
+            'answers' => 'nullable|array',
+        ]);
+
         $answers = $request->input('answers', []);
 
         try {
@@ -152,6 +168,11 @@ class AcademyController extends Controller
      */
     public function startSimulation(Request $request, string $courseId)
     {
+        $request->validate([
+            'user_id'         => 'required|string|max:255',
+            'simulation_type' => 'nullable|string|max:50',
+        ]);
+
         $userId = $request->input('user_id');
         $type = $request->input('simulation_type', 'EMR');
         if (!$userId) {
@@ -167,6 +188,10 @@ class AcademyController extends Controller
      */
     public function submitSimulation(Request $request, string $id)
     {
+        $request->validate([
+            'actions' => 'nullable|array',
+        ]);
+
         $actions = $request->input('actions', []);
 
         try {
@@ -204,6 +229,11 @@ class AcademyController extends Controller
      */
     public function verifyCertificate(Request $request)
     {
+        $request->validate([
+            'verification_code' => 'nullable|string|max:255',
+            'token'             => 'nullable|string|max:500',
+        ]);
+
         $code = $request->input('verification_code');
         $token = $request->input('token');
 

@@ -47,6 +47,12 @@ class AdminGovernanceController extends Controller
 
     public function reviewEmergencyAccess(Request $request, $id)
     {
+        $request->validate([
+            'reviewer_id'   => 'nullable|string|max:255',
+            'review_status' => 'required|in:approved,rejected,suspected_abuse,confirmed_abuse,cleared',
+            'comment'       => 'nullable|string|max:2000',
+        ]);
+
         $reviewerId = $request->input('reviewer_id', '00000000-0000-0000-0000-000000000001');
         $status = $request->input('review_status');
         $comment = $request->input('comment');
@@ -110,6 +116,13 @@ class AdminGovernanceController extends Controller
 
     public function createSecurityIncident(Request $request)
     {
+        $request->validate([
+            'incident_type' => 'required|string|max:100',
+            'severity'      => 'required|in:low,medium,high,critical',
+            'summary'       => 'required|string|max:5000',
+            'created_by'    => 'nullable|string|max:255',
+        ]);
+
         $type = $request->input('incident_type');
         $severity = $request->input('severity');
         $summary = $request->input('summary');
