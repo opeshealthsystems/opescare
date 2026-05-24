@@ -7,6 +7,7 @@ use App\Models\Appointment;
 use App\Models\LabResult;
 use App\Models\MedicalIdAccessEvent;
 use App\Models\Patient;
+use App\Models\Prescription;
 use App\Services\Identity\QrTokenService;
 use App\Services\Portal\PortalContextService;
 use Illuminate\Http\Request;
@@ -136,6 +137,33 @@ class PatientPortalController extends Controller
         }
 
         return view('portals.patient.labs', compact('patient', 'labs'));
+    }
+
+    /**
+     * Patient Prescriptions
+     */
+    public function prescriptions(Request $request)
+    {
+        $patient = $this->resolvePatient();
+
+        $prescriptions = $patient
+            ? Prescription::where('patient_id', $patient->id)
+                ->with(['items', 'facility'])
+                ->orderByDesc('prescribed_at')
+                ->limit(50)
+                ->get()
+            : collect([]);
+
+        if ($patient) {
+            $this->ctx->auditPatientAccess(
+                actionType:   'patient_prescriptions_view',
+                resourceType: 'Prescription',
+                resourceId:   null,
+                patientId:    $patient->id,
+            );
+        }
+
+        return view('portals.patient.prescriptions', compact('patient', 'prescriptions'));
     }
 
     /**
