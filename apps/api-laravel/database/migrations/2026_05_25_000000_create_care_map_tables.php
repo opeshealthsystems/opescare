@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('partner_id')->nullable();
             $table->uuid('organization_id')->nullable();
+            $table->uuid('facility_id')->nullable(); // link to internal facilities table for slot lookup
             $table->string('facility_name');
             $table->string('facility_type'); // hospital, clinic, pharmacy, laboratory, blood_bank, etc.
             $table->string('ownership_type')->nullable(); // public, private, faith-based, ngo

@@ -104,17 +104,31 @@ class MobileFacilityController extends Controller
     }
 
     /**
-     * GET /api/mobile/facilities/{id}/slots
-     * Returns upcoming open appointment slots for the given Facility (facilities table) ID.
-     * Query: ?date=2026-05-24 (optional, defaults to today onward)
+     * GET /api/mobile/facilities/{careFacilityId}/slots
+     *
+     * Lists upcoming open appointment slots for a care facility from the directory.
+     * The care_facilities record must have a linked facility_id (facilities table)
+     * for slots to appear. Returns empty data if no link exists.
+     *
+     * Query: ?date=YYYY-MM-DD  (optional, defaults to today onward)
      */
-    public function slots(Request $request, string $facilityId): JsonResponse
+    public function slots(Request $request, string $careFacilityId): JsonResponse
     {
+        $request->validate(['date' => 'nullable|date']);
+
+        $careFacility = CareFacility::where('listing_status', 'active')
+            ->findOrFail($careFacilityId);
+
+        // No linked internal facility — return empty gracefully
+        if (!$careFacility->facility_id) {
+            return response()->json(['data' => []]);
+        }
+
         $from = $request->query('date')
             ? \Carbon\Carbon::parse($request->query('date'))->startOfDay()
             : now();
 
-        $slots = AppointmentSlot::where('facility_id', $facilityId)
+        $slots = AppointmentSlot::where('facility_id', $careFacility->facility_id)
             ->where('status', 'open')
             ->where('starts_at', '>=', $from)
             ->whereRaw('booked_count < capacity')

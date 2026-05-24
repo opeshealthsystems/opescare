@@ -42,6 +42,9 @@ class PatientBookingTest extends TestCase
             'status' => 'active',
         ]);
 
+        // Link the CareFacility directory entry to the internal Facility record
+        $this->facility->update(['facility_id' => $facilityRow->id]);
+
         $provider = User::factory()->create();
 
         $this->slot = AppointmentSlot::create([
@@ -99,23 +102,51 @@ class PatientBookingTest extends TestCase
 
     public function test_get_facility_detail_returns_services_and_hours(): void
     {
+        \App\Models\CareFacilityService::create([
+            'facility_id'         => $this->facility->id,
+            'service_name'        => 'General Consultation',
+            'service_category'    => 'outpatient',
+            'availability_status' => 'available',
+            'appointment_required' => true,
+            'walk_in_allowed'     => false,
+        ]);
+
+        \App\Models\CareFacilityHour::create([
+            'facility_id' => $this->facility->id,
+            'day_of_week' => 1, // Monday
+            'opens_at'    => '08:00',
+            'closes_at'   => '17:00',
+            'is_closed'   => false,
+            'is_24_hours' => false,
+        ]);
+
         $response = $this->getJson('/api/mobile/facilities/' . $this->facility->id);
 
         $response->assertStatus(200)
                  ->assertJsonStructure(['data' => ['id', 'facility_name', 'services', 'hours']])
                  ->assertJsonFragment(['facility_name' => 'City Medical Centre']);
+
+        $data = $response->json('data');
+        $this->assertNotEmpty($data['services'], 'services should not be empty');
+        $this->assertNotEmpty($data['hours'], 'hours should not be empty');
+        $this->assertEquals('General Consultation', $data['services'][0]['service_name']);
     }
 
     // ── Task 2 tests (slot listing) ──────────────────────────────────
 
     public function test_list_slots_returns_open_future_slots(): void
     {
-        $facilityRow = \App\Models\Facility::first();
-
-        $response = $this->getJson('/api/mobile/facilities/' . $facilityRow->id . '/slots');
+        // Use the care_facility ID (as a patient would from the directory)
+        $response = $this->getJson('/api/mobile/facilities/' . $this->facility->id . '/slots');
 
         $response->assertStatus(200)
                  ->assertJsonStructure(['data' => [['id', 'starts_at', 'ends_at', 'available_count']]]);
+
+        $slotIds = collect($response->json('data'))->pluck('id')->all();
+        $this->assertContains($this->slot->id, $slotIds, 'The setUp slot should appear in the response');
+
+        $slotData = collect($response->json('data'))->firstWhere('id', $this->slot->id);
+        $this->assertEquals(2, $slotData['available_count']); // capacity(2) - booked_count(0)
     }
 
     // ── Task 3 tests (booking) ───────────────────────────────────────

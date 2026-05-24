@@ -14,6 +14,7 @@ class CareFacility extends Model
     protected $fillable = [
         'partner_id',
         'organization_id',
+        'facility_id',
         'facility_name',
         'facility_type',
         'ownership_type',
