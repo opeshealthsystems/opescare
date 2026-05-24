@@ -3,6 +3,7 @@
 namespace Tests\Feature\Notifications;
 
 use Tests\TestCase;
+use Tests\Traits\WithMobileAuth;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Modules\Notifications\Services\SmsNotificationService;
 use Illuminate\Support\Facades\Log;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Mail;
 
 class NotificationDispatchTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithMobileAuth;
 
     public function test_sms_logs_message_when_twilio_not_configured(): void
     {
@@ -78,12 +79,12 @@ class NotificationDispatchTest extends TestCase
             'status'       => 'open',
         ]);
 
-        $response = $this->postJson('/api/mobile/appointments', [
-            '_patient_id'         => $patient->id,
-            'facility_id'         => $facilityRow->id,
-            'appointment_slot_id' => $slot->id,
-            'appointment_type'    => 'consultation',
-        ]);
+        $response = $this->withHeaders($this->mobileAuthHeaders($patient))
+            ->postJson('/api/mobile/appointments', [
+                'facility_id'         => $facilityRow->id,
+                'appointment_slot_id' => $slot->id,
+                'appointment_type'    => 'consultation',
+            ]);
 
         $response->assertStatus(201);
 

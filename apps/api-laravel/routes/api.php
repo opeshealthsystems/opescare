@@ -140,70 +140,73 @@ Route::prefix('v1/connect')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::prefix('mobile')->group(function () {
-    
-    // Auth & OTP verification
-    Route::post('/auth/login', [\App\Http\Controllers\Api\Mobile\MobileAuthController::class, 'login']);
-    Route::post('/auth/otp/verify', [\App\Http\Controllers\Api\Mobile\MobileAuthController::class, 'verifyOtp']);
-    Route::post('/devices/register', [\App\Http\Controllers\Api\Mobile\MobileAuthController::class, 'registerDevice']);
 
-    // Mock authenticated Patient scope
-    Route::get('/me', [\App\Http\Controllers\Api\Mobile\MobilePatientController::class, 'getMe']);
-    Route::get('/timeline', [\App\Http\Controllers\Api\Mobile\MobilePatientController::class, 'getTimeline']);
+    // Public auth endpoints — no middleware
+    Route::prefix('auth')->group(function () {
+        Route::post('/login', [\App\Http\Controllers\Api\Mobile\MobileAuthController::class, 'login']);
+        Route::post('/otp/verify', [\App\Http\Controllers\Api\Mobile\MobileAuthController::class, 'verifyOtp']);
+    });
 
-    // Patient Consent loop approvals
-    Route::get('/consent-requests', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'listConsentRequests']);
-    Route::post('/consent-requests/{id}/approve', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'approveConsent']);
-    Route::post('/consent-requests/{id}/deny', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'denyConsent']);
-    Route::post('/consents/{id}/revoke', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'revokeConsent']);
+    // Protected mobile endpoints — require valid patient Bearer token
+    Route::middleware('auth.mobile')->group(function () {
 
-    // Access Logs B2C view
-    Route::get('/access-logs', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'listAccessLogs']);
+        // Patient profile
+        Route::get('/me', [\App\Http\Controllers\Api\Mobile\MobilePatientController::class, 'getMe']);
+        Route::get('/timeline', [\App\Http\Controllers\Api\Mobile\MobilePatientController::class, 'getTimeline']);
 
-    // Limited encrypted offline mode
-    Route::post('/offline/policies', [\App\Http\Controllers\Api\Mobile\OfflineSyncController::class, 'createPolicy']);
-    Route::post('/offline/policies/{policy}/queue', [\App\Http\Controllers\Api\Mobile\OfflineSyncController::class, 'queue']);
+        // Patient Consent loop approvals
+        Route::get('/consent-requests', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'listConsentRequests']);
+        Route::post('/consent-requests/{id}/approve', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'approveConsent']);
+        Route::post('/consent-requests/{id}/deny', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'denyConsent']);
+        Route::post('/consents/{id}/revoke', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'revokeConsent']);
 
-    // Patient Correction filings
-    Route::post('/correction-requests', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'createCorrectionRequest']);
+        // Access Logs B2C view
+        Route::get('/access-logs', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'listAccessLogs']);
 
-    // Patient data exports B2C
-    Route::post('/data-export-requests', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'createExportRequest']);
-    Route::get('/data-export-requests', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'listExportRequests']);
-    Route::get('/data-exports/{id}/download', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'downloadExport']);
+        // Limited encrypted offline mode
+        Route::post('/offline/policies', [\App\Http\Controllers\Api\Mobile\OfflineSyncController::class, 'createPolicy']);
+        Route::post('/offline/policies/{policy}/queue', [\App\Http\Controllers\Api\Mobile\OfflineSyncController::class, 'queue']);
 
-    // Health-ID card (digital wallet)
-    Route::get('/health-id-card', [\App\Http\Controllers\Api\Mobile\MobilePatientController::class, 'getHealthIdCard']);
+        // Patient Correction filings
+        Route::post('/correction-requests', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'createCorrectionRequest']);
 
-    // Lab orders & results
-    Route::get('/labs', [\App\Http\Controllers\Api\Mobile\MobileLabController::class, 'index']);
-    Route::get('/labs/{id}', [\App\Http\Controllers\Api\Mobile\MobileLabController::class, 'show']);
+        // Patient data exports B2C
+        Route::post('/data-export-requests', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'createExportRequest']);
+        Route::get('/data-export-requests', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'listExportRequests']);
+        Route::get('/data-exports/{id}/download', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'downloadExport']);
 
-    // Prescriptions
-    Route::get('/prescriptions', [\App\Http\Controllers\Api\Mobile\MobilePrescriptionController::class, 'index']);
-    Route::get('/prescriptions/{id}', [\App\Http\Controllers\Api\Mobile\MobilePrescriptionController::class, 'show']);
+        // Health-ID card (digital wallet)
+        Route::get('/health-id-card', [\App\Http\Controllers\Api\Mobile\MobilePatientController::class, 'getHealthIdCard']);
 
-    // Appointments (read-only from patient side)
-    Route::get('/appointments', [\App\Http\Controllers\Api\Mobile\MobileAppointmentController::class, 'index']);
-    Route::get('/appointments/{id}', [\App\Http\Controllers\Api\Mobile\MobileAppointmentController::class, 'show']);
+        // Lab orders & results
+        Route::get('/labs', [\App\Http\Controllers\Api\Mobile\MobileLabController::class, 'index']);
+        Route::get('/labs/{id}', [\App\Http\Controllers\Api\Mobile\MobileLabController::class, 'show']);
 
-    // Care facility directory — public browsable listings
-    Route::get('/facilities', [\App\Http\Controllers\Api\Mobile\MobileFacilityController::class, 'index']);
-    Route::get('/facilities/{id}', [\App\Http\Controllers\Api\Mobile\MobileFacilityController::class, 'show']);
-    Route::get('/facilities/{id}/slots', [\App\Http\Controllers\Api\Mobile\MobileFacilityController::class, 'slots']);
+        // Prescriptions
+        Route::get('/prescriptions', [\App\Http\Controllers\Api\Mobile\MobilePrescriptionController::class, 'index']);
+        Route::get('/prescriptions/{id}', [\App\Http\Controllers\Api\Mobile\MobilePrescriptionController::class, 'show']);
 
-    // Patient appointment self-booking + cancellation
-    Route::post('/appointments', [\App\Http\Controllers\Api\Mobile\MobileAppointmentController::class, 'book']);
-    Route::post('/appointments/{id}/cancel', [\App\Http\Controllers\Api\Mobile\MobileAppointmentController::class, 'cancel']);
+        // Appointments
+        Route::get('/appointments', [\App\Http\Controllers\Api\Mobile\MobileAppointmentController::class, 'index']);
+        Route::get('/appointments/{id}', [\App\Http\Controllers\Api\Mobile\MobileAppointmentController::class, 'show']);
+        Route::post('/appointments', [\App\Http\Controllers\Api\Mobile\MobileAppointmentController::class, 'book']);
+        Route::post('/appointments/{id}/cancel', [\App\Http\Controllers\Api\Mobile\MobileAppointmentController::class, 'cancel']);
 
-    // Official documents
-    Route::get('/documents', [\App\Http\Controllers\Api\Mobile\MobileDocumentController::class, 'index']);
-    Route::get('/documents/{id}', [\App\Http\Controllers\Api\Mobile\MobileDocumentController::class, 'show']);
+        // Care facility directory
+        Route::get('/facilities', [\App\Http\Controllers\Api\Mobile\MobileFacilityController::class, 'index']);
+        Route::get('/facilities/{id}', [\App\Http\Controllers\Api\Mobile\MobileFacilityController::class, 'show']);
+        Route::get('/facilities/{id}/slots', [\App\Http\Controllers\Api\Mobile\MobileFacilityController::class, 'slots']);
 
-    // App settings & push tokens
-    Route::get('/settings', [\App\Http\Controllers\Api\Mobile\MobileSettingsController::class, 'show']);
-    Route::patch('/settings', [\App\Http\Controllers\Api\Mobile\MobileSettingsController::class, 'update']);
-    Route::post('/push-tokens', [\App\Http\Controllers\Api\Mobile\MobileSettingsController::class, 'registerPushToken']);
-    Route::delete('/push-tokens/{id}', [\App\Http\Controllers\Api\Mobile\MobileSettingsController::class, 'revokePushToken']);
+        // Official documents
+        Route::get('/documents', [\App\Http\Controllers\Api\Mobile\MobileDocumentController::class, 'index']);
+        Route::get('/documents/{id}', [\App\Http\Controllers\Api\Mobile\MobileDocumentController::class, 'show']);
+
+        // App settings & push tokens
+        Route::get('/settings', [\App\Http\Controllers\Api\Mobile\MobileSettingsController::class, 'show']);
+        Route::patch('/settings', [\App\Http\Controllers\Api\Mobile\MobileSettingsController::class, 'update']);
+        Route::post('/push-tokens', [\App\Http\Controllers\Api\Mobile\MobileSettingsController::class, 'registerPushToken']);
+        Route::delete('/push-tokens/{id}', [\App\Http\Controllers\Api\Mobile\MobileSettingsController::class, 'revokePushToken']);
+    });
 });
 
 /*

@@ -3,6 +3,7 @@
 namespace Tests\Feature\Mobile;
 
 use Tests\TestCase;
+use Tests\Traits\WithMobileAuth;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\CareFacility;
 use App\Models\AppointmentSlot;
@@ -13,11 +14,12 @@ use App\Models\User;
 
 class PatientBookingTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithMobileAuth;
 
     private CareFacility $facility;
     private AppointmentSlot $slot;
     private string $patientId;
+    private Patient $patient;
 
     protected function setUp(): void
     {
@@ -57,21 +59,22 @@ class PatientBookingTest extends TestCase
             'status'      => 'open',
         ]);
 
-        $this->patientId = Patient::create([
+        $this->patient = Patient::create([
             'health_id'     => 'OC-TST-9999-0001-01',
             'first_name'    => 'Alice',
             'last_name'     => 'Patient',
             'sex'           => 'female',
             'date_of_birth' => '1990-01-01',
             'is_demo'       => false,
-        ])->id;
+        ]);
+        $this->patientId = $this->patient->id;
     }
 
     // ── Task 1 tests ────────────────────────────────────────────────
 
     public function test_list_facilities_returns_active_listings(): void
     {
-        $response = $this->getJson('/api/mobile/facilities');
+        $response = $this->mobileGetJson($this->patient, '/api/mobile/facilities');
 
         $response->assertStatus(200)
                  ->assertJsonStructure(['data' => [['id', 'facility_name', 'facility_type', 'city']]])
@@ -90,7 +93,7 @@ class PatientBookingTest extends TestCase
             'phone_primary'  => '+237600000002',
         ]);
 
-        $response = $this->getJson('/api/mobile/facilities?type=clinic');
+        $response = $this->mobileGetJson($this->patient, '/api/mobile/facilities?type=clinic');
 
         $response->assertStatus(200)
                  ->assertJsonFragment(['facility_name' => 'Quick Clinic']);
@@ -120,7 +123,7 @@ class PatientBookingTest extends TestCase
             'is_24_hours' => false,
         ]);
 
-        $response = $this->getJson('/api/mobile/facilities/' . $this->facility->id);
+        $response = $this->mobileGetJson($this->patient, '/api/mobile/facilities/' . $this->facility->id);
 
         $response->assertStatus(200)
                  ->assertJsonStructure(['data' => ['id', 'facility_name', 'services', 'hours']])
@@ -137,7 +140,7 @@ class PatientBookingTest extends TestCase
     public function test_list_slots_returns_open_future_slots(): void
     {
         // Use the care_facility ID (as a patient would from the directory)
-        $response = $this->getJson('/api/mobile/facilities/' . $this->facility->id . '/slots');
+        $response = $this->mobileGetJson($this->patient, '/api/mobile/facilities/' . $this->facility->id . '/slots');
 
         $response->assertStatus(200)
                  ->assertJsonStructure(['data' => [['id', 'starts_at', 'ends_at', 'available_count']]]);
@@ -153,8 +156,7 @@ class PatientBookingTest extends TestCase
 
     public function test_book_appointment_creates_appointment_and_decrements_slot(): void
     {
-        $response = $this->postJson('/api/mobile/appointments', [
-            '_patient_id'         => $this->patientId,
+        $response = $this->mobilePostJson($this->patient, '/api/mobile/appointments', [
             'facility_id'         => \App\Models\Facility::first()->id,
             'appointment_slot_id' => $this->slot->id,
             'appointment_type'    => 'consultation',
@@ -182,8 +184,7 @@ class PatientBookingTest extends TestCase
         // Fill the slot to capacity
         $this->slot->update(['booked_count' => 2]);
 
-        $response = $this->postJson('/api/mobile/appointments', [
-            '_patient_id'         => $this->patientId,
+        $response = $this->mobilePostJson($this->patient, '/api/mobile/appointments', [
             'facility_id'         => \App\Models\Facility::first()->id,
             'appointment_slot_id' => $this->slot->id,
             'appointment_type'    => 'consultation',
@@ -208,9 +209,8 @@ class PatientBookingTest extends TestCase
         ]);
         $this->slot->increment('booked_count');
 
-        $response = $this->postJson('/api/mobile/appointments/' . $appointment->id . '/cancel', [
-            '_patient_id' => $this->patientId,
-            'reason'      => 'Schedule conflict',
+        $response = $this->mobilePostJson($this->patient, '/api/mobile/appointments/' . $appointment->id . '/cancel', [
+            'reason' => 'Schedule conflict',
         ]);
 
         $response->assertStatus(200)
@@ -229,26 +229,26 @@ class PatientBookingTest extends TestCase
 
     public function test_cancel_non_owned_appointment_is_rejected(): void
     {
-        $otherPatientId = Patient::create([
+        $otherPatient = Patient::create([
             'health_id'     => 'OC-TST-9999-0002-01',
             'first_name'    => 'Bob',
             'last_name'     => 'Other',
             'sex'           => 'male',
             'date_of_birth' => '1985-06-15',
             'is_demo'       => false,
-        ])->id;
+        ]);
 
         $appointment = Appointment::create([
-            'patient_id'   => $otherPatientId,
+            'patient_id'   => $otherPatient->id,
             'facility_id'  => $this->slot->facility_id,
             'appointment_type' => 'consultation',
             'status'       => 'booked',
             'scheduled_at' => now()->addDay(),
         ]);
 
-        $response = $this->postJson('/api/mobile/appointments/' . $appointment->id . '/cancel', [
-            '_patient_id' => $this->patientId, // wrong patient
-            'reason'      => 'Attempt to cancel another patient appointment',
+        // Alice (this->patient) tries to cancel Bob's appointment
+        $response = $this->mobilePostJson($this->patient, '/api/mobile/appointments/' . $appointment->id . '/cancel', [
+            'reason' => 'Attempt to cancel another patient appointment',
         ]);
 
         $response->assertStatus(403);

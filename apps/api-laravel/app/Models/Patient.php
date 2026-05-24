@@ -29,6 +29,7 @@ class Patient extends Model
         'verified_by_facility_id',
         'verified_at',
         'is_demo',
+        'pin_hash',
     ];
 
     protected $casts = [

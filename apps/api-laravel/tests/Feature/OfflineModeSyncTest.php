@@ -9,10 +9,11 @@ use App\Modules\Offline\Services\SyncService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Crypt;
 use Tests\TestCase;
+use Tests\Traits\WithMobileAuth;
 
 class OfflineModeSyncTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithMobileAuth;
 
     public function test_offline_policy_requires_encryption_and_blocks_full_emr_scope()
     {
@@ -124,22 +125,26 @@ class OfflineModeSyncTest extends TestCase
     {
         [$facility, $patient, $user] = $this->offlineActors();
 
-        $created = $this->postJson('/api/mobile/offline/policies', [
-            'patient_id' => $patient->id,
-            'facility_id' => $facility->id,
-            'device_id' => 'device-005',
-            'allowed_scopes' => ['demographics'],
-            'actor_id' => $user->id,
-        ]);
+        $mobileHeaders = $this->mobileAuthHeaders($patient);
+
+        $created = $this->withHeaders($mobileHeaders)
+            ->postJson('/api/mobile/offline/policies', [
+                'patient_id' => $patient->id,
+                'facility_id' => $facility->id,
+                'device_id' => 'device-005',
+                'allowed_scopes' => ['demographics'],
+                'actor_id' => $user->id,
+            ]);
 
         $created->assertCreated()
             ->assertJsonPath('data.encryption_required', true)
             ->assertJsonPath('data.allowed_scopes.0', 'demographics');
 
-        $queued = $this->postJson('/api/mobile/offline/policies/'.$created->json('data.id').'/queue', [
-            'payload' => ['health_id' => 'OPC-API-OFFLINE'],
-            'actor_id' => $user->id,
-        ]);
+        $queued = $this->withHeaders($mobileHeaders)
+            ->postJson('/api/mobile/offline/policies/'.$created->json('data.id').'/queue', [
+                'payload' => ['health_id' => 'OPC-API-OFFLINE'],
+                'actor_id' => $user->id,
+            ]);
 
         $queued->assertCreated()
             ->assertJsonMissing(['health_id' => 'OPC-API-OFFLINE'])

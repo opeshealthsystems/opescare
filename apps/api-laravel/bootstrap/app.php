@@ -28,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'portal.access'    => \App\Http\Middleware\EnsurePortalAccess::class,
             'facility.context' => \App\Http\Middleware\RequireFacilityContext::class,
             'consent.grant'    => \App\Http\Middleware\RequireConsentGrant::class,
+            'auth.mobile'      => \App\Http\Middleware\AuthenticateMobilePatient::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

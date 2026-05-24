@@ -23,10 +23,11 @@ use App\Models\Visit;
 use App\Modules\Governance\Services\CountryPolicyService;
 use App\Modules\Governance\Services\EmergencyAccessService;
 use Carbon\Carbon;
+use Tests\Traits\WithMobileAuth;
 
 class DataGovernancePrivacyTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithMobileAuth;
 
     private $patient;
     private $facility;
@@ -135,9 +136,10 @@ class DataGovernancePrivacyTest extends TestCase
         ]);
 
         // 2. Approve consent via Patient B2C Mobile App
-        $appResponse = $this->postJson("/api/mobile/consent-requests/{$requestId}/approve", [
-            'user_id' => $this->user->id
-        ]);
+        $appResponse = $this->withHeaders($this->mobileAuthHeaders($this->patient))
+            ->postJson("/api/mobile/consent-requests/{$requestId}/approve", [
+                'user_id' => $this->user->id
+            ]);
         $appResponse->assertStatus(200);
         $grantId = $appResponse->json('consent_grant_id');
 
@@ -156,9 +158,10 @@ class DataGovernancePrivacyTest extends TestCase
         $this->assertTrue($verifyResponse->json('is_valid'));
 
         // 4. Revoke consent via Mobile B2C App
-        $revResponse = $this->postJson("/api/mobile/consents/{$grantId}/revoke", [
-            'user_id' => $this->user->id
-        ]);
+        $revResponse = $this->withHeaders($this->mobileAuthHeaders($this->patient))
+            ->postJson("/api/mobile/consents/{$grantId}/revoke", [
+                'user_id' => $this->user->id
+            ]);
         $revResponse->assertStatus(200);
 
         // 5. Verify access is now rejected
@@ -302,13 +305,14 @@ class DataGovernancePrivacyTest extends TestCase
         $note->save();
 
         // 1. Submit Correction request from Mobile App B2C
-        $corrResponse = $this->postJson('/api/mobile/correction-requests', [
-            'patient_id' => $this->patient->id,
-            'user_id' => $this->user->id,
-            'resource_type' => 'clinical_note',
-            'resource_id' => $note->id,
-            'reason' => 'Incorrect chief complaint recorded.'
-        ]);
+        $corrResponse = $this->withHeaders($this->mobileAuthHeaders($this->patient))
+            ->postJson('/api/mobile/correction-requests', [
+                'patient_id' => $this->patient->id,
+                'user_id' => $this->user->id,
+                'resource_type' => 'clinical_note',
+                'resource_id' => $note->id,
+                'reason' => 'Incorrect chief complaint recorded.'
+            ]);
         $corrResponse->assertStatus(201);
         $requestId = $corrResponse->json('id');
 
@@ -326,11 +330,13 @@ class DataGovernancePrivacyTest extends TestCase
     public function test_it_enforces_expiring_download_limits_on_patient_data_exports()
     {
         // 1. Request export
-        $expResponse = $this->postJson('/api/mobile/data-export-requests', [
-            'patient_id' => $this->patient->id,
-            'user_id' => $this->user->id,
-            'export_type' => 'full_profile'
-        ]);
+        $mobileHeaders = $this->mobileAuthHeaders($this->patient);
+        $expResponse = $this->withHeaders($mobileHeaders)
+            ->postJson('/api/mobile/data-export-requests', [
+                'patient_id' => $this->patient->id,
+                'user_id' => $this->user->id,
+                'export_type' => 'full_profile'
+            ]);
         $expResponse->assertStatus(201);
         $requestId = $expResponse->json('id');
 
@@ -341,7 +347,8 @@ class DataGovernancePrivacyTest extends TestCase
         $appResponse->assertStatus(200);
 
         // 3. Download successfully
-        $dlResponse = $this->getJson("/api/mobile/data-exports/{$requestId}/download?user_id={$this->user->id}");
+        $dlResponse = $this->withHeaders($mobileHeaders)
+            ->getJson("/api/mobile/data-exports/{$requestId}/download?user_id={$this->user->id}");
         $dlResponse->assertStatus(200);
         $this->assertEquals('downloaded', DataExportRequest::find($requestId)->status);
 
@@ -351,7 +358,8 @@ class DataGovernancePrivacyTest extends TestCase
         $export->expires_at = Carbon::now()->subMinutes(10);
         $export->save();
 
-        $dlExpiredResponse = $this->getJson("/api/mobile/data-exports/{$requestId}/download?user_id={$this->user->id}");
+        $dlExpiredResponse = $this->withHeaders($mobileHeaders)
+            ->getJson("/api/mobile/data-exports/{$requestId}/download?user_id={$this->user->id}");
         $dlExpiredResponse->assertStatus(403);
         $this->assertEquals('expired', DataExportRequest::find($requestId)->status);
     }

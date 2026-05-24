@@ -3,11 +3,12 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use Tests\Traits\WithMobileAuth;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ConnectPlatformTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithMobileAuth;
 
     protected function setUp(): void
     {
@@ -281,7 +282,9 @@ class ConnectPlatformTest extends TestCase
      */
     public function test_mobile_me_endpoint_returns_demographic_profiles()
     {
-        $response = $this->getJson('/api/mobile/me');
+        $patient = \App\Models\Patient::find('00000000-0000-0000-0000-000000000003');
+        $response = $this->withHeaders($this->mobileAuthHeaders($patient))
+                         ->getJson('/api/mobile/me');
 
         $response->assertStatus(200)
                  ->assertJsonFragment([
