@@ -124,8 +124,9 @@ Route::prefix('v1/connect')->group(function () {
         Route::post('/inventory/pharmacy-stock/sync', [\App\Http\Controllers\Api\V1\Connect\InventoryController::class, 'syncPharmacyStock']);
         Route::post('/inventory/blood-stock/sync', [\App\Http\Controllers\Api\V1\Connect\InventoryController::class, 'syncBloodStock']);
 
-        // Webhooks registration
+        // Webhooks
         Route::post('/webhooks/subscriptions', [\App\Http\Controllers\Api\V1\Connect\WebhookController::class, 'createSubscription']);
+        Route::post('/webhooks/events/{eventId}/replay', [\App\Http\Controllers\Api\V1\Connect\WebhookController::class, 'replayEvent']);
 
         // Reconciliation cases
         Route::get('/reconciliation/cases', [\App\Http\Controllers\Api\V1\Connect\ReconciliationController::class, 'listCases']);
