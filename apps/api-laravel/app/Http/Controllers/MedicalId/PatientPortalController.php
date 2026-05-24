@@ -4,6 +4,8 @@ namespace App\Http\Controllers\MedicalId;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use App\Models\ConsentGrant;
+use App\Models\ConsentRequest;
 use App\Models\LabResult;
 use App\Models\MedicalIdAccessEvent;
 use App\Models\Patient;
@@ -164,6 +166,95 @@ class PatientPortalController extends Controller
         }
 
         return view('portals.patient.prescriptions', compact('patient', 'prescriptions'));
+    }
+
+    /**
+     * Patient Consent Requests
+     */
+    public function consentRequests(Request $request)
+    {
+        $patient = $this->resolvePatient();
+
+        $consentRequests = $patient
+            ? ConsentRequest::where('patient_id', $patient->id)
+                ->with('requestingFacility')
+                ->orderByDesc('created_at')
+                ->limit(50)
+                ->get()
+            : collect([]);
+
+        if ($patient) {
+            $this->ctx->auditPatientAccess(
+                actionType:   'patient_consent_view',
+                resourceType: 'ConsentRequest',
+                resourceId:   null,
+                patientId:    $patient->id,
+            );
+        }
+
+        return view('portals.patient.consent', compact('patient', 'consentRequests'));
+    }
+
+    /**
+     * Approve a consent request
+     */
+    public function approveConsent(Request $request, string $id)
+    {
+        $patient = $this->resolvePatient();
+        abort_if(!$patient, 403);
+
+        $req = ConsentRequest::where('id', $id)
+            ->where('patient_id', $patient->id)
+            ->firstOrFail();
+
+        abort_if($req->status !== 'pending', 422, 'Request is not pending.');
+
+        $req->update(['status' => 'approved']);
+
+        ConsentGrant::create([
+            'patient_id'         => $patient->id,
+            'facility_id'        => $req->requesting_facility_id,
+            'consent_request_id' => $req->id,
+            'authorizing_actor'  => 'patient',
+            'scope'              => $req->requested_scope ?? [],
+            'status'             => 'active',
+            'expires_at'         => now()->addMinutes($req->duration_minutes ?? 1440),
+        ]);
+
+        $this->ctx->auditPatientAccess(
+            actionType:   'patient_consent_approved',
+            resourceType: 'ConsentRequest',
+            resourceId:   $req->id,
+            patientId:    $patient->id,
+        );
+
+        return redirect()->route('portals.patient.consent')->with('success', 'Consent approved.');
+    }
+
+    /**
+     * Deny a consent request
+     */
+    public function denyConsent(Request $request, string $id)
+    {
+        $patient = $this->resolvePatient();
+        abort_if(!$patient, 403);
+
+        $req = ConsentRequest::where('id', $id)
+            ->where('patient_id', $patient->id)
+            ->firstOrFail();
+
+        abort_if($req->status !== 'pending', 422, 'Request is not pending.');
+
+        $req->update(['status' => 'denied']);
+
+        $this->ctx->auditPatientAccess(
+            actionType:   'patient_consent_denied',
+            resourceType: 'ConsentRequest',
+            resourceId:   $req->id,
+            patientId:    $patient->id,
+        );
+
+        return redirect()->route('portals.patient.consent')->with('success', 'Consent denied.');
     }
 
     /**

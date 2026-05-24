@@ -168,6 +168,9 @@ Route::middleware(['web', 'auth', 'portal.access', 'facility.context'])->group(f
     Route::get('/portals/patient/appointments', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'appointments'])->name('portals.patient.appointments');
     Route::get('/portals/patient/labs', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'labResults'])->name('portals.patient.labs');
     Route::get('/portals/patient/prescriptions', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'prescriptions'])->name('portals.patient.prescriptions');
+    Route::get('/portals/patient/consent', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'consentRequests'])->name('portals.patient.consent');
+    Route::post('/portals/patient/consent/{id}/approve', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'approveConsent'])->name('portals.patient.consent.approve');
+    Route::post('/portals/patient/consent/{id}/deny', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'denyConsent'])->name('portals.patient.consent.deny');
 
     // ── Staff: Visit Flow ────────────────────────────────────────
     Route::get('/portals/staff/visits', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'index'])->name('portals.staff.visits');
