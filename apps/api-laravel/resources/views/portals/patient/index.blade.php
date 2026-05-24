@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     + ' style="width:8rem;height:8rem;border-radius:4px;" />';
                                 var container = document.getElementById('temp-qr-container');
                                 container.style.display = 'flex';
-                                startCountdown(3600);
+                                startCountdown(data.expires_in || 3600);
                             }
                         }
                     );

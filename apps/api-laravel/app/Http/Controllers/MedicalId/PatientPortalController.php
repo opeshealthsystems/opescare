@@ -78,8 +78,8 @@ class PatientPortalController extends Controller
         );
 
         return response()->json([
-            'raw_token'  => $tokenData['raw_token'],
-            'expires_in' => 60,
+            'url'        => route('verify.qr', ['token' => $tokenData['raw_token']]),
+            'expires_in' => 3600,
         ]);
     }
 
