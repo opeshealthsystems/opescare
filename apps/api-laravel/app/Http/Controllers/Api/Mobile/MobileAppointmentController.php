@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Mobile;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\AppointmentSlot;
+use App\Modules\Notifications\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\DB;
  */
 class MobileAppointmentController extends Controller
 {
+    public function __construct(private NotificationService $notificationService) {}
+
     /**
      * List appointments.
      *
@@ -117,6 +120,24 @@ class MobileAppointmentController extends Controller
                 'reason'              => $validated['reason'] ?? null,
             ]);
         });
+
+        // Fire booking notification — non-fatal (never rolls back a successful booking)
+        try {
+            $this->notificationService->sendNotification(
+                $appointment->patient_id,
+                'appointment.booked',
+                [
+                    'patient_name'     => 'Patient',
+                    'facility_name'    => $appointment->facility?->name ?? 'the facility',
+                    'scheduled_at'     => $appointment->scheduled_at?->format('D d M Y, H:i'),
+                    'appointment_type' => $appointment->appointment_type,
+                ],
+                'high',
+                'appointments'
+            );
+        } catch (\Throwable) {
+            // Notification failure must not affect the booking response
+        }
 
         return response()->json(['data' => $this->formatAppointmentDetail($appointment)], 201);
     }

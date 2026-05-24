@@ -310,6 +310,21 @@ class RecordController extends Controller
             'patient_health_id' => $healthId
         ]);
 
+        // Notify patient that their lab result is available
+        try {
+            if ($patient) {
+                app(\App\Modules\Notifications\Services\NotificationService::class)->sendNotification(
+                    $patient->id,
+                    'lab.result.ready',
+                    ['patient_name' => $patient->first_name],
+                    'high',
+                    'health_updates'
+                );
+            }
+        } catch (\Throwable) {
+            // Non-fatal — lab result accepted regardless of notification status
+        }
+
         return response()->json([
             'status' => 'accepted',
             'opescare_record_id' => 'lab_' . bin2hex(random_bytes(8)),

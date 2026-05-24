@@ -5,10 +5,13 @@ namespace App\Modules\Governance\Services;
 use App\Models\ConsentRequest;
 use App\Models\ConsentGrant;
 use App\Models\ConsentRevocation;
+use App\Modules\Notifications\Services\NotificationService;
 use Carbon\Carbon;
 
 class ConsentService
 {
+    public function __construct(private NotificationService $notificationService) {}
+
     public function requestConsent(
         string $patientId,
         string $facilityId,
@@ -26,6 +29,22 @@ class ConsentService
         $request->duration_minutes = $durationMinutes;
         $request->status = 'pending_patient_approval';
         $request->save();
+
+        // Notify patient that a consent request is pending their approval (non-fatal)
+        try {
+            $this->notificationService->sendNotification(
+                $patientId,
+                'consent.request.pending',
+                [
+                    'facility_name' => 'A facility',
+                    'purpose'       => $purpose,
+                ],
+                'urgent',
+                'account_and_security'
+            );
+        } catch (\Throwable) {
+            // Never block consent request creation due to notification failure
+        }
 
         return $request;
     }
