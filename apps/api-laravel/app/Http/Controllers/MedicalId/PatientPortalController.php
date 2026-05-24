@@ -8,6 +8,7 @@ use App\Models\ConsentGrant;
 use App\Models\ConsentRequest;
 use App\Models\LabResult;
 use App\Models\MedicalIdAccessEvent;
+use App\Models\OfficialDocument;
 use App\Models\Patient;
 use App\Models\Prescription;
 use App\Services\Identity\QrTokenService;
@@ -255,6 +256,33 @@ class PatientPortalController extends Controller
         );
 
         return redirect()->route('portals.patient.consent')->with('success', 'Consent denied.');
+    }
+
+    /**
+     * Patient Official Documents
+     */
+    public function documents(Request $request)
+    {
+        $patient = $this->resolvePatient();
+
+        $documents = $patient
+            ? OfficialDocument::where('patient_id', $patient->id)
+                ->select(['id', 'title', 'document_type', 'document_number', 'status', 'issued_at', 'expires_at', 'sensitivity_level'])
+                ->orderByDesc('issued_at')
+                ->limit(50)
+                ->get()
+            : collect([]);
+
+        if ($patient) {
+            $this->ctx->auditPatientAccess(
+                actionType:   'patient_documents_view',
+                resourceType: 'OfficialDocument',
+                resourceId:   null,
+                patientId:    $patient->id,
+            );
+        }
+
+        return view('portals.patient.documents', compact('patient', 'documents'));
     }
 
     /**

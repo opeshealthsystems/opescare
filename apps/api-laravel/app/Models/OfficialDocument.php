@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class OfficialDocument extends Model
 {
     use \App\Traits\IsDemoRecord;
+    use HasFactory;
     use HasUuids;
 
     protected $table = 'official_documents';
