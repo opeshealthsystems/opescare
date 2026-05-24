@@ -2,38 +2,52 @@
 
 namespace App\Modules\CareMap\Services;
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
 class GeocodingService
 {
     /**
-     * Translate address string into coordinates
+     * Translate address string into coordinates.
+     * Uses Nominatim (OpenStreetMap) — free, no API key required.
+     * Falls back gracefully when unavailable.
      */
-    public function geocodeAddress($addressString)
+    public function geocodeAddress(string $addressString): array
     {
-        // For testing/mocking/stable setups, provide regional coordinates fallback
-        if (str_contains(strtolower($addressString), 'paris')) {
-            return [
-                'latitude' => 48.8566,
-                'longitude' => 2.3522,
-                'accuracy' => 'city_level',
-                'source' => 'mock_resolver',
-            ];
+        try {
+            $response = Http::timeout(5)
+                ->withHeaders([
+                    'User-Agent' => 'OpesCare-HealthPlatform/1.0 (opescare@example.com)',
+                    'Accept-Language' => 'en',
+                ])
+                ->get('https://nominatim.openstreetmap.org/search', [
+                    'q'              => $addressString,
+                    'format'         => 'json',
+                    'limit'          => 1,
+                    'addressdetails' => 0,
+                ]);
+
+            if ($response->successful()) {
+                $results = $response->json();
+                if (!empty($results)) {
+                    return [
+                        'latitude'  => (float) $results[0]['lat'],
+                        'longitude' => (float) $results[0]['lon'],
+                        'accuracy'  => 'address_level',
+                        'source'    => 'nominatim',
+                    ];
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Geocoding failed', ['address' => $addressString, 'error' => $e->getMessage()]);
         }
 
-        if (str_contains(strtolower($addressString), 'london')) {
-            return [
-                'latitude' => 51.5074,
-                'longitude' => -0.1278,
-                'accuracy' => 'city_level',
-                'source' => 'mock_resolver',
-            ];
-        }
-
-        // Safe fallback coordinates
+        // Return null coordinates with explicit fallback marker so callers know it's unresolved
         return [
-            'latitude' => 38.9072,
-            'longitude' => -77.0369,
-            'accuracy' => 'area_level',
-            'source' => 'mock_resolver',
+            'latitude'  => null,
+            'longitude' => null,
+            'accuracy'  => 'unresolved',
+            'source'    => 'fallback',
         ];
     }
 }

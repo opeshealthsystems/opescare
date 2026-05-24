@@ -39,9 +39,14 @@ class TriageService
                     'triage_record_id' => $triage->id,
                 ]));
 
-                // Extremely basic critical alert generation placeholder
-                if (isset($vitalsData['oxygen_saturation']) && $vitalsData['oxygen_saturation'] < 90) {
+                $alerts = self::assessVitals($vitalsData);
+                $criticalAlerts = array_filter($alerts, fn($a) => $a['status'] === 'critical');
+                $warningAlerts  = array_filter($alerts, fn($a) => $a['status'] === 'warning');
+
+                if (!empty($criticalAlerts)) {
                     $triage->update(['acuity_score' => 'critical']);
+                } elseif (!empty($warningAlerts) && !in_array($triage->acuity_score, ['critical', 'resuscitation'])) {
+                    $triage->update(['acuity_score' => 'urgent']);
                 }
             }
 

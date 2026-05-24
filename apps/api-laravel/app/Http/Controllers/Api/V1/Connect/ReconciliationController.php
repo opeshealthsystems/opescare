@@ -23,20 +23,6 @@ class ReconciliationController extends Controller
 
         $cases = ReconciliationCase::all();
 
-        // Local sandbox fallback for tests to always pass
-        if ($cases->isEmpty()) {
-            $cases = collect([
-                new ReconciliationCase([
-                    'id' => 'rec_case_001',
-                    'status' => 'pending',
-                    'mismatch_reason' => 'patient_not_found',
-                    'external_reference' => 'HOSP-12345',
-                    'submitted_payload' => ['mock' => true],
-                    'created_at' => now()->subHour()
-                ])
-            ]);
-        }
-
         return response()->json([
             'cases' => $cases->map(function ($c) {
                 return [
@@ -53,16 +39,13 @@ class ReconciliationController extends Controller
 
     public function resolveCase(Request $request, $caseId)
     {
+        $request->validate([
+            'resolution'          => 'required|in:match,no_match,manual_override',
+            'confirmed_health_id' => 'required|string|max:64',
+        ]);
+
         $resolution = $request->input('resolution');
         $confirmedHealthId = $request->input('confirmed_health_id');
-
-        if (!$resolution || !$confirmedHealthId) {
-            return response()->json([
-                'status' => 'rejected',
-                'error_code' => OpesCareErrorCode::VALIDATION_FAILED->value,
-                'message' => 'Missing resolution or confirmed_health_id parameters.'
-            ], 400);
-        }
 
         // Query real case
         $case = ReconciliationCase::find($caseId);
