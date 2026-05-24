@@ -17,6 +17,7 @@ class HealthIdQrToken extends Model
     protected $fillable = [
         'patient_id',
         'token_hash',
+        'lookup_id',
         'token_type',
         'status',
         'expires_at',

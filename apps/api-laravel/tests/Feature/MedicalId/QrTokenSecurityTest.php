@@ -35,18 +35,25 @@ class QrTokenSecurityTest extends TestCase
 
     public function test_qr_payload_does_not_contain_clinical_data_and_is_stored_hashed()
     {
-        $result = $this->qrService->generateToken($this->patient->id);
-        
+        $result   = $this->qrService->generateToken($this->patient->id);
         $rawToken = $result['raw_token'];
-        $model = $result['model'];
+        $model    = $result['model'];
 
-        // Token should not be the UUID or patient data
+        // Token must not embed patient identity data
         $this->assertStringNotContainsString($this->patient->health_id, $rawToken);
         $this->assertStringNotContainsString('John', $rawToken);
 
-        // Database token_hash should not equal raw token
+        // Token format: qrx_{lookupId}_{secret}
+        $this->assertStringStartsWith('qrx_', $rawToken);
+        $parts = explode('_', $rawToken, 3);
+        $this->assertCount(3, $parts);
+        $secret = $parts[2];
+
+        // DB stores lookup_id plaintext and hashes only the secret half
+        $this->assertNotNull($model->lookup_id);
         $this->assertNotEquals($rawToken, $model->token_hash);
-        $this->assertTrue(Hash::check($rawToken, $model->token_hash));
+        // Only the secret portion hashes to token_hash — not the full token
+        $this->assertTrue(Hash::check($secret, $model->token_hash));
     }
 
     public function test_qr_token_can_be_revoked()
