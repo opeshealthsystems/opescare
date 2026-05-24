@@ -217,7 +217,6 @@ class MobileAppointmentController extends Controller
 
     private function resolvePatientId(Request $request): string
     {
-        // In test/non-production environments, allow explicit override
         if (app()->environment('testing') && $request->has('_patient_id')) {
             return $request->input('_patient_id');
         }
@@ -225,11 +224,6 @@ class MobileAppointmentController extends Controller
         $patientId = $request->attributes->get('patient_id');
         if ($patientId) {
             return $patientId;
-        }
-
-        // Fallback for non-production
-        if (!app()->isProduction() && $request->has('_patient_id')) {
-            return $request->input('_patient_id');
         }
 
         abort(401, 'Unauthenticated.');
