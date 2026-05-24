@@ -42,9 +42,10 @@ class RequireFacilityContext
         }
 
         // No facility context available — for routes that strictly need one,
-        // redirect to the facility selector. Exempt the selector route itself
-        // and the admin governance portal (platform-level, no facility required).
-        if ($request->is('select-facility*') || $request->is('portals/admin*')) {
+        // redirect to the facility selector. Exempt the selector route itself,
+        // the admin governance portal (platform-level, no facility required),
+        // and the patient portal (patients are identified by patient_id, not facility).
+        if ($request->is('select-facility*') || $request->is('portals/admin*') || $request->is('portals/patient*')) {
             return $next($request);
         }
 

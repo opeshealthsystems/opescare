@@ -14,12 +14,32 @@
         <i data-lucide="calendar-check-2"></i>
         <span>{{ __('public.portal.nav_appointments', [], $l) ?: 'Appointments' }}</span>
     </a>
+    <a href="{{ route('portals.patient.labs') }}" class="sidebar-link">
+        <i data-lucide="flask-conical"></i>
+        <span>{{ __('public.portal.nav_labs', [], $l) ?: 'Lab Results' }}</span>
+    </a>
+    <a href="{{ route('portals.patient.prescriptions') }}" class="sidebar-link">
+        <i data-lucide="pill"></i>
+        <span>{{ __('public.portal.nav_prescriptions', [], $l) ?: 'Prescriptions' }}</span>
+    </a>
+    <a href="{{ route('portals.patient.documents') }}" class="sidebar-link">
+        <i data-lucide="file-text"></i>
+        <span>{{ __('public.portal.nav_documents', [], $l) ?: 'Documents' }}</span>
+    </a>
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_privacy', [], $l) ?: 'Privacy & Access' }}</div>
+    <a href="{{ route('portals.patient.consent') }}" class="sidebar-link">
+        <i data-lucide="shield-check"></i>
+        <span>{{ __('public.portal.nav_consent', [], $l) ?: 'Consent Requests' }}</span>
+    </a>
     <a href="{{ route('portals.patient.logs') }}" class="sidebar-link">
         <i data-lucide="history"></i>
         <span>{{ __('public.portal.nav_access_logs', [], $l) ?: 'Access Logs' }}</span>
+    </a>
+    <a href="{{ route('portals.patient.profile') }}" class="sidebar-link">
+        <i data-lucide="user-cog"></i>
+        <span>{{ __('public.portal.nav_profile', [], $l) ?: 'My Profile' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
