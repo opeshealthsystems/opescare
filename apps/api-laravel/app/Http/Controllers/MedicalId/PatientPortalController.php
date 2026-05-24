@@ -67,7 +67,7 @@ class PatientPortalController extends Controller
         }
 
         $qrService = new QrTokenService();
-        $tokenData = $qrService->generateToken($patient->id, 'temporary_consent_qr', 60);
+        $tokenData = $qrService->generateToken($patient->id, 'temporary_consent_qr', 60); // 60-minute TTL; secret stored as SHA-256 hash
 
         // Audit: temporary QR generated
         $this->ctx->auditPatientAccess(

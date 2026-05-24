@@ -22,6 +22,12 @@ class PatientQrTest extends TestCase
         $response->assertJsonStructure(['url', 'expires_in']);
         $this->assertStringContainsString('/verify/qr/', $response->json('url'));
         $this->assertEquals(3600, $response->json('expires_in'));
+
+        // Ensure token is path-based (not a query param) — tokens in query strings are logged by most servers
+        $url = $response->json('url');
+        $parsed = parse_url($url);
+        $this->assertArrayNotHasKey('query', $parsed, 'Token must be in path, not query string');
+        $this->assertStringNotContainsString('token=', $url);
     }
 
     public function test_generate_temp_qr_requires_auth(): void
