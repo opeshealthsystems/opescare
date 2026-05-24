@@ -31,5 +31,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->renderable(function (\App\Exceptions\SlotFullException $e, $request) {
+            return response()->json([
+                'error_code' => 'SLOT_FULL',
+                'message'    => $e->getMessage(),
+            ], 409);
+        });
     })->create();
