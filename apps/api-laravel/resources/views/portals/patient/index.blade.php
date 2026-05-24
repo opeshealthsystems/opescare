@@ -57,17 +57,33 @@
         <div class="quick-action-icon"><i data-lucide="calendar-check-2"></i></div>
         <span class="quick-action-label">{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
     </a>
+    <a href="{{ route('portals.patient.labs') }}" class="quick-action-btn">
+        <div class="quick-action-icon"><i data-lucide="flask-conical"></i></div>
+        <span class="quick-action-label">{{ __('public.portal.nav_labs', [], app()->getLocale()) ?: 'Lab Results' }}</span>
+    </a>
+    <a href="{{ route('portals.patient.prescriptions') }}" class="quick-action-btn">
+        <div class="quick-action-icon"><i data-lucide="pill"></i></div>
+        <span class="quick-action-label">{{ __('public.portal.nav_prescriptions', [], app()->getLocale()) ?: 'Prescriptions' }}</span>
+    </a>
+    <a href="{{ route('portals.patient.consent') }}" class="quick-action-btn">
+        <div class="quick-action-icon"><i data-lucide="shield-check"></i></div>
+        <span class="quick-action-label">{{ __('public.portal.nav_consent', [], app()->getLocale()) ?: 'Consent' }}</span>
+    </a>
+    <a href="{{ route('portals.patient.documents') }}" class="quick-action-btn">
+        <div class="quick-action-icon"><i data-lucide="file-text"></i></div>
+        <span class="quick-action-label">{{ __('public.portal.nav_documents', [], app()->getLocale()) ?: 'Documents' }}</span>
+    </a>
     <a href="{{ route('portals.patient.logs') }}" class="quick-action-btn">
         <div class="quick-action-icon"><i data-lucide="history"></i></div>
         <span class="quick-action-label">{{ __('public.medical_id.access_logs', [], app()->getLocale()) ?: 'Access Logs' }}</span>
     </a>
+    <a href="{{ route('portals.patient.profile') }}" class="quick-action-btn">
+        <div class="quick-action-icon"><i data-lucide="user-cog"></i></div>
+        <span class="quick-action-label">{{ __('public.portal.nav_profile', [], app()->getLocale()) ?: 'My Profile' }}</span>
+    </a>
     <a href="{{ route('public.care-map') }}" class="quick-action-btn">
         <div class="quick-action-icon"><i data-lucide="map-pin"></i></div>
         <span class="quick-action-label">{{ __('public.portal.nav_care_map', [], app()->getLocale()) ?: 'Care Map' }}</span>
-    </a>
-    <a href="{{ route('public.help') }}" class="quick-action-btn">
-        <div class="quick-action-icon"><i data-lucide="help-circle"></i></div>
-        <span class="quick-action-label">{{ __('public.portal.nav_help', [], app()->getLocale()) ?: 'Help' }}</span>
     </a>
 </div>
 
@@ -111,46 +127,16 @@
         </div>
     </div>
 
-    <!-- Right: Privacy Settings + Disclaimer -->
+    <!-- Right: Profile prompt + Disclaimer -->
     <div style="display:flex;flex-direction:column;gap:var(--p-space-5);">
 
+        <!-- Profile prompt -->
         <div class="panel">
-            <div class="panel-header">
-                <h2 class="panel-title">
-                    <i data-lucide="shield-check"></i>
-                    {{ __('public.portal.privacy_settings', [], app()->getLocale()) ?: 'Privacy Settings' }}
-                </h2>
-            </div>
-            <div class="panel-body" style="display:flex;flex-direction:column;gap:var(--p-space-4);">
-
-                <label style="display:flex;align-items:flex-start;gap:var(--p-space-4);padding:var(--p-space-4);background:var(--p-surface-2);border:1px solid var(--p-border);border-radius:var(--p-radius);cursor:pointer;transition:border-color 0.15s;"
-                       onmouseover="this.style.borderColor='var(--p-primary-light)'"
-                       onmouseout="this.style.borderColor='var(--p-border)'">
-                    <input type="checkbox" checked style="width:1.1rem;height:1.1rem;accent-color:var(--p-primary);margin-top:1px;flex-shrink:0;">
-                    <div>
-                        <div style="font-size:0.875rem;font-weight:700;color:var(--p-text);margin-bottom:3px;">
-                            {{ __('public.portal.require_consent', [], app()->getLocale()) ?: 'Require Consent for Full Record' }}
-                        </div>
-                        <div style="font-size:0.8125rem;color:var(--p-text-muted);line-height:1.45;">
-                            {{ __('public.portal.require_consent_desc', [], app()->getLocale()) ?: 'Providers can only see a masked preview without your explicit consent.' }}
-                        </div>
-                    </div>
-                </label>
-
-                <label style="display:flex;align-items:flex-start;gap:var(--p-space-4);padding:var(--p-space-4);background:var(--p-surface-2);border:1px solid var(--p-border);border-radius:var(--p-radius);cursor:pointer;transition:border-color 0.15s;"
-                       onmouseover="this.style.borderColor='var(--p-danger-light)'"
-                       onmouseout="this.style.borderColor='var(--p-border)'">
-                    <input type="checkbox" checked style="width:1.1rem;height:1.1rem;accent-color:var(--p-danger);margin-top:1px;flex-shrink:0;">
-                    <div>
-                        <div style="font-size:0.875rem;font-weight:700;color:var(--p-text);margin-bottom:3px;">
-                            {{ __('public.portal.emergency_access', [], app()->getLocale()) ?: 'Emergency Access Allowed' }}
-                        </div>
-                        <div style="font-size:0.8125rem;color:var(--p-text-muted);line-height:1.45;">
-                            {{ __('public.portal.emergency_access_desc', [], app()->getLocale()) ?: 'Permit audited "break-glass" access during emergencies without standard consent.' }}
-                        </div>
-                    </div>
-                </label>
-
+            <div class="panel-body" style="text-align:center;">
+                <p style="font-size:0.8125rem;color:var(--p-text-muted);margin-bottom:var(--p-space-3);">Manage your privacy preferences, contact details and emergency contacts in your profile.</p>
+                <a href="{{ route('portals.patient.profile') }}" class="btn btn-primary" style="font-size:0.8125rem;">
+                    <i data-lucide="user-cog"></i> Go to Profile
+                </a>
             </div>
         </div>
 
