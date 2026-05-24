@@ -161,7 +161,10 @@ class BillingPaymentsTest extends TestCase
         $this->invoiceFor($patient, $facility, 3000);
         $this->invoiceFor($otherPatient, $facility, 4000);
 
-        $response = $this->getJson('/api/v1/billing/invoices?scope=patient&patient_id='.$patient->id);
+        $response = $this->withHeaders([
+            'X-Client-ID'     => 'test_client_id',
+            'X-Client-Secret' => 'test_client_secret',
+        ])->getJson('/api/v1/billing/invoices?scope=patient&patient_id='.$patient->id);
 
         $response->assertOk()->assertJsonCount(1, 'data');
         $this->assertSame($patient->id, $response->json('data.0.patient_id'));

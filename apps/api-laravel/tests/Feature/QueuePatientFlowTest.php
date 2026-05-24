@@ -130,7 +130,10 @@ class QueuePatientFlowTest extends TestCase
             'actor_id' => $staff->id,
         ]);
 
-        $response = $this->getJson('/api/v1/queues/display?facility_id='.$facility->id.'&queue_name=triage');
+        $response = $this->withHeaders([
+            'X-Client-ID'     => 'test_client_id',
+            'X-Client-Secret' => 'test_client_secret',
+        ])->getJson('/api/v1/queues/display?facility_id='.$facility->id.'&queue_name=triage');
 
         $response->assertOk()->assertJsonPath('data.0.masked_patient_name', 'A*** Q***');
         $this->assertStringNotContainsString('Amina', json_encode($response->json('data')));
@@ -160,7 +163,10 @@ class QueuePatientFlowTest extends TestCase
             'checked_in_at' => now(),
         ]);
 
-        $response = $this->getJson('/api/v1/queues/tickets?facility_id='.$facility->id);
+        $response = $this->withHeaders([
+            'X-Client-ID'     => 'test_client_id',
+            'X-Client-Secret' => 'test_client_secret',
+        ])->getJson('/api/v1/queues/tickets?facility_id='.$facility->id);
 
         $response->assertOk()->assertJsonCount(1, 'data');
         $this->assertSame($facility->id, $response->json('data.0.facility_id'));

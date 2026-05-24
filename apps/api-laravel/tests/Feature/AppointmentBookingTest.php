@@ -221,7 +221,10 @@ class AppointmentBookingTest extends TestCase
             'scheduled_at' => '2026-06-01 10:00:00',
         ]);
 
-        $response = $this->getJson('/api/v1/appointments?patient_id='.$patient->id.'&scope=patient');
+        $response = $this->withHeaders([
+            'X-Client-ID'     => 'test_client_id',
+            'X-Client-Secret' => 'test_client_secret',
+        ])->getJson('/api/v1/appointments?patient_id='.$patient->id.'&scope=patient');
 
         $response->assertOk()->assertJsonCount(1, 'data');
         $this->assertSame($patient->id, $response->json('data.0.patient_id'));
@@ -250,7 +253,10 @@ class AppointmentBookingTest extends TestCase
             'scheduled_at' => '2026-06-01 10:00:00',
         ]);
 
-        $response = $this->getJson('/api/v1/appointments?facility_id='.$facility->id.'&provider_id='.$provider->id);
+        $response = $this->withHeaders([
+            'X-Client-ID'     => 'test_client_id',
+            'X-Client-Secret' => 'test_client_secret',
+        ])->getJson('/api/v1/appointments?facility_id='.$facility->id.'&provider_id='.$provider->id);
 
         $response->assertOk()->assertJsonCount(1, 'data');
         $this->assertSame($facility->id, $response->json('data.0.facility_id'));

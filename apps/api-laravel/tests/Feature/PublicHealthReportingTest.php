@@ -122,7 +122,10 @@ class PublicHealthReportingTest extends TestCase
             'status' => 'active'
         ]);
 
-        $response = $this->postJson('/api/v1/public-health/reports/generate-drafts', [
+        $response = $this->withHeaders([
+            'X-Client-ID'     => 'test_client_id',
+            'X-Client-Secret' => 'test_client_secret',
+        ])->postJson('/api/v1/public-health/reports/generate-drafts', [
             'facility_id' => $this->facility->id,
             'period_start' => now()->subDays(3)->toDateString(),
             'period_end' => now()->addDay()->toDateString()
@@ -168,7 +171,10 @@ class PublicHealthReportingTest extends TestCase
             'is_expired' => true // Expired items should be excluded from shortages
         ]);
 
-        $response = $this->postJson('/api/v1/public-health/reports/generate-drafts', [
+        $response = $this->withHeaders([
+            'X-Client-ID'     => 'test_client_id',
+            'X-Client-Secret' => 'test_client_secret',
+        ])->postJson('/api/v1/public-health/reports/generate-drafts', [
             'facility_id' => $this->facility->id,
             'period_start' => now()->subDays(3)->toDateString(),
             'period_end' => now()->addDay()->toDateString()
@@ -197,13 +203,15 @@ class PublicHealthReportingTest extends TestCase
         $report->status = 'draft';
         $report->save();
 
+        $clientHeaders = ['X-Client-ID' => 'test_client_id', 'X-Client-Secret' => 'test_client_secret'];
+
         // Submit for review
-        $response = $this->postJson("/api/v1/public-health/reports/{$report->id}/submit-for-review");
+        $response = $this->withHeaders($clientHeaders)->postJson("/api/v1/public-health/reports/{$report->id}/submit-for-review");
         $response->assertStatus(200);
         $response->assertJsonPath('status', 'pending_review');
 
         // Approve
-        $response = $this->postJson("/api/v1/public-health/reports/{$report->id}/approve", [
+        $response = $this->withHeaders($clientHeaders)->postJson("/api/v1/public-health/reports/{$report->id}/approve", [
             'comment' => 'Validated.'
         ]);
         $response->assertStatus(200);
@@ -228,7 +236,8 @@ class PublicHealthReportingTest extends TestCase
         $report->payload_json = ['disease' => 'malaria', 'count' => 1];
         $report->save();
 
-        $response = $this->postJson("/api/v1/public-health/reports/{$report->id}/correct", [
+        $response = $this->withHeaders(['X-Client-ID' => 'test_client_id', 'X-Client-Secret' => 'test_client_secret'])
+            ->postJson("/api/v1/public-health/reports/{$report->id}/correct", [
             'payload' => ['disease' => 'malaria', 'count' => 3],
             'reason' => 'Updated clinical counts.'
         ]);
@@ -264,7 +273,8 @@ class PublicHealthReportingTest extends TestCase
             'value' => 3
         ]);
 
-        $response = $this->postJson("/api/v1/public-health/reports/{$report->id}/export");
+        $response = $this->withHeaders(['X-Client-ID' => 'test_client_id', 'X-Client-Secret' => 'test_client_secret'])
+            ->postJson("/api/v1/public-health/reports/{$report->id}/export");
         $response->assertStatus(200);
 
         $exportId = $response->json('export_id');
@@ -310,7 +320,10 @@ class PublicHealthReportingTest extends TestCase
         ]);
 
         // 3. Trigger Outbreak Signal Detection
-        $response = $this->postJson('/api/v1/public-health/signals/trigger-detection', [
+        $response = $this->withHeaders([
+            'X-Client-ID'     => 'test_client_id',
+            'X-Client-Secret' => 'test_client_secret',
+        ])->postJson('/api/v1/public-health/signals/trigger-detection', [
             'facility_id' => $this->facility->id,
             'indicator_code' => 'DISEASE_CHOLERA'
         ]);

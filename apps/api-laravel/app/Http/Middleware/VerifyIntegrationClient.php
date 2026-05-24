@@ -18,8 +18,8 @@ class VerifyIntegrationClient
             return response()->json(['error' => 'Missing integration credentials.'], 401);
         }
 
-        // Sandbox/Testing Bypass credentials to allow deterministic unit & integration tests
-        if ($clientId === 'test_client_id' && $clientSecret === 'test_client_secret') {
+        // Sandbox/Testing Bypass credentials — only active in test environment
+        if (app()->environment('testing') && $clientId === 'test_client_id' && $clientSecret === 'test_client_secret') {
             $request->attributes->add([
                 'integration_client_id' => 'test_client_id',
                 'facility_id' => '00000000-0000-0000-0000-000000000001',

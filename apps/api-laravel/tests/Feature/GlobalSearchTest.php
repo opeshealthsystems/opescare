@@ -83,7 +83,10 @@ class GlobalSearchTest extends TestCase
     {
         $this->seedSearchRecords();
 
-        $response = $this->getJson('/api/v1/admin/global-search?q=malaria&actor_id=doctor_1&authorized_message_user_id=doctor_1');
+        $response = $this->withHeaders([
+            'X-Client-ID'     => 'test_client_id',
+            'X-Client-Secret' => 'test_client_secret',
+        ])->getJson('/api/v1/admin/global-search?q=malaria&actor_id=doctor_1&authorized_message_user_id=doctor_1');
 
         $response->assertOk()
             ->assertJsonPath('query', 'malaria')

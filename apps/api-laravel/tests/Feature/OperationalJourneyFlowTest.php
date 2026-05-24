@@ -72,7 +72,10 @@ class OperationalJourneyFlowTest extends TestCase
     {
         [$patient, $facility, $provider, $slot] = $this->journeyActors();
 
-        $response = $this->postJson('/api/v1/operational-flow/patient-journey', [
+        $response = $this->withHeaders([
+            'X-Client-ID'     => 'test_client_id',
+            'X-Client-Secret' => 'test_client_secret',
+        ])->postJson('/api/v1/operational-flow/patient-journey', [
             'patient_id' => $patient->id,
             'facility_id' => $facility->id,
             'provider_id' => $provider->id,

@@ -9,7 +9,7 @@ use App\Http\Middleware\IdempotencyProtection;
 | OpesCare Operational Flow API Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/operational-flow')->group(function () {
+Route::prefix('v1/operational-flow')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::post('/patient-journey', [\App\Http\Controllers\Api\V1\OperationalFlowController::class, 'patientJourney']);
 });
 
@@ -18,7 +18,7 @@ Route::prefix('v1/operational-flow')->group(function () {
 | OpesCare Support and Helpdesk API Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/support')->group(function () {
+Route::prefix('v1/support')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::get('/tickets', [\App\Http\Controllers\Api\V1\SupportController::class, 'index']);
     Route::post('/tickets', [\App\Http\Controllers\Api\V1\SupportController::class, 'store']);
     Route::post('/tickets/{ticket}/messages', [\App\Http\Controllers\Api\V1\SupportController::class, 'addMessage']);
@@ -35,7 +35,7 @@ Route::prefix('v1/support')->group(function () {
 | OpesCare Billing and Cashier API Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/billing')->group(function () {
+Route::prefix('v1/billing')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::get('/invoices', [\App\Http\Controllers\Api\V1\BillingController::class, 'invoices']);
     Route::post('/invoices', [\App\Http\Controllers\Api\V1\BillingController::class, 'createInvoice']);
     Route::post('/invoices/{invoice}/payments', [\App\Http\Controllers\Api\V1\BillingController::class, 'recordPayment']);
@@ -50,7 +50,7 @@ Route::prefix('v1/billing')->group(function () {
 | OpesCare Queue and Patient Flow API Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/queues')->group(function () {
+Route::prefix('v1/queues')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::get('/tickets', [\App\Http\Controllers\Api\V1\QueueController::class, 'index']);
     Route::post('/check-ins', [\App\Http\Controllers\Api\V1\QueueController::class, 'checkIn']);
     Route::post('/call-next', [\App\Http\Controllers\Api\V1\QueueController::class, 'callNext']);
@@ -67,7 +67,7 @@ Route::prefix('v1/queues')->group(function () {
 | OpesCare Appointment Booking API Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/appointments')->group(function () {
+Route::prefix('v1/appointments')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::get('/', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'index']);
     Route::post('/', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'store']);
     Route::post('/no-shows', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'noShow']);
@@ -216,26 +216,26 @@ Route::prefix('mobile')->group(function () {
 */
 Route::prefix('provider-mobile')->group(function () {
 
-    // Auth & session management
+    // Public auth endpoints
     Route::post('/auth/login', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileAuthController::class, 'login']);
     Route::post('/auth/otp/verify', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileAuthController::class, 'verifyOtp']);
     Route::post('/auth/push-token', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileAuthController::class, 'registerPushToken']);
     Route::post('/auth/logout', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileAuthController::class, 'logout']);
 
-    // Facility context switching
-    Route::get('/facilities', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileFacilityController::class, 'index']);
-    Route::get('/facilities/current', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileFacilityController::class, 'current']);
-    Route::post('/facilities/{id}/switch', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileFacilityController::class, 'switchFacility']);
+    // Protected provider routes — require integration client credentials
+    Route::middleware(VerifyIntegrationClient::class)->group(function () {
+        Route::get('/facilities', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileFacilityController::class, 'index']);
+        Route::get('/facilities/current', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileFacilityController::class, 'current']);
+        Route::post('/facilities/{id}/switch', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileFacilityController::class, 'switchFacility']);
 
-    // Patient lookup & Health ID scan
-    Route::get('/patients/scan', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobilePatientController::class, 'scan']);
-    Route::get('/patients/search', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobilePatientController::class, 'search']);
-    Route::get('/patients/{id}', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobilePatientController::class, 'show']);
+        Route::get('/patients/scan', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobilePatientController::class, 'scan']);
+        Route::get('/patients/search', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobilePatientController::class, 'search']);
+        Route::get('/patients/{id}', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobilePatientController::class, 'show']);
 
-    // Tasks: queue + appointments
-    Route::get('/tasks', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileTaskController::class, 'index']);
-    Route::post('/tasks/queue/{id}/call', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileTaskController::class, 'callQueueEntry']);
-    Route::post('/tasks/queue/{id}/complete', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileTaskController::class, 'completeQueueEntry']);
+        Route::get('/tasks', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileTaskController::class, 'index']);
+        Route::post('/tasks/queue/{id}/call', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileTaskController::class, 'callQueueEntry']);
+        Route::post('/tasks/queue/{id}/complete', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileTaskController::class, 'completeQueueEntry']);
+    });
 });
 
 /*
@@ -243,7 +243,7 @@ Route::prefix('provider-mobile')->group(function () {
 | OpesCare Public Health Reporting API Routes (Phases 1-4)
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/public-health')->group(function () {
+Route::prefix('v1/public-health')->middleware(VerifyIntegrationClient::class)->group(function () {
     // Phase 1: Drafts & Dashboards
     Route::get('/report-types', [\App\Http\Controllers\Api\V1\PublicHealth\PublicHealthController::class, 'getReportTypes']);
     Route::get('/reports', [\App\Http\Controllers\Api\V1\PublicHealth\PublicHealthController::class, 'getReports']);
@@ -288,7 +288,7 @@ Route::prefix('v1/public-health')->group(function () {
 | OpesCare Admin Data Governance & Compliance Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/admin')->group(function () {
+Route::prefix('v1/admin')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::get('/global-search', \App\Http\Controllers\Api\V1\Admin\GlobalSearchController::class);
     Route::get('/facilities/{facility}/go-live-readiness', [\App\Http\Controllers\Api\V1\Admin\FacilityGoLiveReadinessController::class, 'show']);
     Route::post('/facilities/{facility}/go-live-readiness', [\App\Http\Controllers\Api\V1\Admin\FacilityGoLiveReadinessController::class, 'store']);
@@ -362,7 +362,7 @@ require __DIR__.'/academy.php';
 | OpesCare Referral Network API Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/referrals')->group(function () {
+Route::prefix('v1/referrals')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::get('/', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'index']);
     Route::post('/', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'store']);
     Route::post('/expire-stale', [\App\Http\Controllers\Api\V1\Referral\ReferralController::class, 'expireStale']);
@@ -379,7 +379,7 @@ Route::prefix('v1/referrals')->group(function () {
 | OpesCare Immunization API Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/immunizations')->group(function () {
+Route::prefix('v1/immunizations')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::get('/', [\App\Http\Controllers\Api\V1\Immunization\ImmunizationController::class, 'index']);
     Route::post('/', [\App\Http\Controllers\Api\V1\Immunization\ImmunizationController::class, 'store']);
     Route::post('/schedule', [\App\Http\Controllers\Api\V1\Immunization\ImmunizationController::class, 'scheduleVaccines']);
@@ -393,14 +393,16 @@ Route::prefix('v1/immunizations')->group(function () {
 | OpesCare Verifiable Document Template System V2 API Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/v1/documents', [\App\Http\Controllers\Api\V1\DocumentController::class, 'index']);
-Route::post('/v1/documents', [\App\Http\Controllers\Api\V1\DocumentController::class, 'store']);
-Route::get('/v1/documents/{id}', [\App\Http\Controllers\Api\V1\DocumentController::class, 'show']);
-Route::post('/v1/documents/{id}/amend', [\App\Http\Controllers\Api\V1\DocumentController::class, 'amend']);
-Route::post('/v1/documents/{id}/revoke', [\App\Http\Controllers\Api\V1\DocumentController::class, 'revoke']);
-Route::post('/v1/documents/{id}/entered-in-error', [\App\Http\Controllers\Api\V1\DocumentController::class, 'enteredInError']);
-Route::post('/v1/document-verification/verify-code', [\App\Http\Controllers\Api\V1\DocumentController::class, 'verifyCode']);
-Route::post('/v1/documents/{id}/share-links', [\App\Http\Controllers\Api\V1\DocumentController::class, 'share']);
+Route::middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::get('/v1/documents', [\App\Http\Controllers\Api\V1\DocumentController::class, 'index']);
+    Route::post('/v1/documents', [\App\Http\Controllers\Api\V1\DocumentController::class, 'store']);
+    Route::get('/v1/documents/{id}', [\App\Http\Controllers\Api\V1\DocumentController::class, 'show']);
+    Route::post('/v1/documents/{id}/amend', [\App\Http\Controllers\Api\V1\DocumentController::class, 'amend']);
+    Route::post('/v1/documents/{id}/revoke', [\App\Http\Controllers\Api\V1\DocumentController::class, 'revoke']);
+    Route::post('/v1/documents/{id}/entered-in-error', [\App\Http\Controllers\Api\V1\DocumentController::class, 'enteredInError']);
+    Route::post('/v1/document-verification/verify-code', [\App\Http\Controllers\Api\V1\DocumentController::class, 'verifyCode']);
+    Route::post('/v1/documents/{id}/share-links', [\App\Http\Controllers\Api\V1\DocumentController::class, 'share']);
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -499,7 +501,7 @@ Route::prefix('v1/bridge')
 | OpesCare Lite Sync API Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/lite')->group(function () {
+Route::prefix('v1/lite')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::post('/register-device',  [\App\Http\Controllers\Api\V1\LiteApiController::class, 'registerDevice']);
     Route::get('/config',            [\App\Http\Controllers\Api\V1\LiteApiController::class, 'config']);
     Route::post('/sync/push',        [\App\Http\Controllers\Api\V1\LiteApiController::class, 'syncPush']);
@@ -514,9 +516,11 @@ Route::prefix('v1/lite')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::prefix('fhir/R4')->group(function () {
-
-    // CapabilityStatement (no auth required — standard FHIR metadata endpoint)
+    // CapabilityStatement — public per FHIR spec
     Route::get('/metadata', [\App\Http\Controllers\Api\Fhir\FhirController::class, 'metadata']);
+});
+
+Route::prefix('fhir/R4')->middleware(VerifyIntegrationClient::class)->group(function () {
 
     // Patient resource
     Route::get('/Patient',                [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchPatient']);
@@ -535,23 +539,23 @@ Route::prefix('fhir/R4')->group(function () {
     Route::get('/MedicationRequest',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchMedicationRequest']);
     Route::get('/MedicationRequest/{id}', [\App\Http\Controllers\Api\Fhir\FhirController::class, 'medicationRequest']);
 
-    // Practitioner (Phase 30)
+    // Practitioner
     Route::get('/Practitioner',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchPractitioner']);
     Route::get('/Practitioner/{id}',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'practitioner']);
 
-    // Organization (Phase 30)
+    // Organization
     Route::get('/Organization',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchOrganization']);
     Route::get('/Organization/{id}',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'organization']);
 
-    // DocumentReference (Phase 30)
+    // DocumentReference
     Route::get('/DocumentReference',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchDocumentReference']);
     Route::get('/DocumentReference/{id}', [\App\Http\Controllers\Api\Fhir\FhirController::class, 'documentReference']);
 
-    // Consent (Phase 30)
+    // Consent
     Route::get('/Consent',                [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchConsent']);
     Route::get('/Consent/{id}',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'consent']);
 
-    // Coverage (Phase 30)
+    // Coverage
     Route::get('/Coverage',               [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchCoverage']);
     Route::get('/Coverage/{id}',          [\App\Http\Controllers\Api\Fhir\FhirController::class, 'coverage']);
 });
@@ -561,7 +565,7 @@ Route::prefix('fhir/R4')->group(function () {
 | Insurance Claims & Preauthorization
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/insurance')->group(function () {
+Route::prefix('v1/insurance')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::post('/eligibility/check', [\App\Http\Controllers\Api\V1\InsuranceController::class, 'checkEligibility']);
     Route::post('/preauth', [\App\Http\Controllers\Api\V1\InsuranceController::class, 'requestPreauth']);
     Route::post('/preauth/{id}/decide', [\App\Http\Controllers\Api\V1\InsuranceController::class, 'decidePreauth']);
@@ -577,7 +581,7 @@ Route::prefix('v1/insurance')->group(function () {
 | Triage & Emergency Workflow
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/triage')->group(function () {
+Route::prefix('v1/triage')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::get('/', [\App\Http\Controllers\Api\V1\TriageController::class, 'listActive']);
     Route::post('/', [\App\Http\Controllers\Api\V1\TriageController::class, 'store']);
     Route::post('/{triageId}/score', [\App\Http\Controllers\Api\V1\TriageController::class, 'score']);
@@ -590,7 +594,7 @@ Route::prefix('v1/triage')->group(function () {
 | Inventory & Supply Chain
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/inventory')->group(function () {
+Route::prefix('v1/inventory')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::get('/', [\App\Http\Controllers\Api\V1\InventoryController::class, 'index']);
     Route::patch('/{itemId}/stock', [\App\Http\Controllers\Api\V1\InventoryController::class, 'updateStock']);
     Route::get('/low-stock', [\App\Http\Controllers\Api\V1\InventoryController::class, 'getLowStockItems']);
@@ -605,7 +609,7 @@ Route::prefix('v1/inventory')->group(function () {
 | Analytics & Reporting
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/analytics')->group(function () {
+Route::prefix('v1/analytics')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::get('/facilities/{facilityId}/dashboard', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'facilityDashboard']);
     Route::get('/appointments', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'appointmentStats']);
     Route::get('/queues', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'queueStats']);
@@ -619,7 +623,7 @@ Route::prefix('v1/analytics')->group(function () {
 | Staff, HR & Shift Management
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/staff')->group(function () {
+Route::prefix('v1/staff')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::get('/', [\App\Http\Controllers\Api\V1\StaffController::class, 'index']);
     Route::get('/{staffId}', [\App\Http\Controllers\Api\V1\StaffController::class, 'show']);
     Route::patch('/{staffId}', [\App\Http\Controllers\Api\V1\StaffController::class, 'updateProfile']);
@@ -636,7 +640,7 @@ Route::prefix('v1/staff')->group(function () {
 | Telemedicine
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/telemedicine')->group(function () {
+Route::prefix('v1/telemedicine')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::post('/consultations', [\App\Http\Controllers\Api\V1\TelemedicineController::class, 'book']);
     Route::get('/consultations/{consultId}', [\App\Http\Controllers\Api\V1\TelemedicineController::class, 'show']);
     Route::post('/consultations/{consultId}/cancel', [\App\Http\Controllers\Api\V1\TelemedicineController::class, 'cancel']);
@@ -651,7 +655,7 @@ Route::prefix('v1/telemedicine')->group(function () {
 | Ward, Admission & Bed Management
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/ward')->group(function () {
+Route::prefix('v1/ward')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::post('/admissions', [\App\Http\Controllers\Api\V1\WardController::class, 'admit']);
     Route::post('/admissions/{admissionId}/assign-bed', [\App\Http\Controllers\Api\V1\WardController::class, 'assignBed']);
     Route::post('/admissions/{admissionId}/transfer', [\App\Http\Controllers\Api\V1\WardController::class, 'transferBed']);
@@ -666,7 +670,7 @@ Route::prefix('v1/ward')->group(function () {
 | Security Operations Center
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/security')->group(function () {
+Route::prefix('v1/security')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::get('/audit-log', [\App\Http\Controllers\Api\V1\SecurityOperationsController::class, 'searchAuditLog']);
     Route::get('/suspicious-flags', [\App\Http\Controllers\Api\V1\SecurityOperationsController::class, 'listSuspiciousFlags']);
     Route::post('/suspicious-flags/{flagId}/review', [\App\Http\Controllers\Api\V1\SecurityOperationsController::class, 'reviewFlag']);
@@ -683,7 +687,7 @@ Route::prefix('v1/security')->group(function () {
 | Subscription & SaaS Billing
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/subscriptions')->group(function () {
+Route::prefix('v1/subscriptions')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::get('/plans', [\App\Http\Controllers\Api\V1\SubscriptionController::class, 'listPlans']);
     Route::get('/plans/{planId}', [\App\Http\Controllers\Api\V1\SubscriptionController::class, 'showPlan']);
     Route::get('/my', [\App\Http\Controllers\Api\V1\SubscriptionController::class, 'getMySubscription']);

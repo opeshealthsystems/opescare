@@ -102,7 +102,7 @@ class DataGovernancePrivacyTest extends TestCase
     /** @test */
     public function test_it_asserts_immutable_access_logs()
     {
-        $response = $this->postJson('/api/v1/admin/security-incidents', [
+        $response = $this->withHeaders($this->headers)->postJson('/api/v1/admin/security-incidents', [
             'incident_type' => 'unauthorized_access',
             'severity' => 'critical',
             'summary' => 'Suspicious patient timeline pull',
@@ -203,7 +203,7 @@ class DataGovernancePrivacyTest extends TestCase
         ]);
 
         // 3. Review override and flag abuse -> Spawns Security Incident Alarm case automatically
-        $reviewResponse = $this->postJson("/api/v1/admin/emergency-access/{$eventId}/review", [
+        $reviewResponse = $this->withHeaders($this->headers)->postJson("/api/v1/admin/emergency-access/{$eventId}/review", [
             'reviewer_id' => $this->user->id,
             'review_status' => 'confirmed_abuse',
             'comment' => 'Physician queried timeline for non-emergency patient.'
@@ -317,7 +317,7 @@ class DataGovernancePrivacyTest extends TestCase
         $requestId = $corrResponse->json('id');
 
         // 2. Approve correction request via Admin plane
-        $approveResponse = $this->postJson("/api/v1/admin/correction-requests/{$requestId}/approve", [
+        $approveResponse = $this->withHeaders($this->headers)->postJson("/api/v1/admin/correction-requests/{$requestId}/approve", [
             'reviewer_id' => $this->user->id
         ]);
         $approveResponse->assertStatus(200);
@@ -341,7 +341,7 @@ class DataGovernancePrivacyTest extends TestCase
         $requestId = $expResponse->json('id');
 
         // 2. Approve export by Admin
-        $appResponse = $this->postJson("/api/v1/admin/data-export-requests/{$requestId}/approve", [
+        $appResponse = $this->withHeaders($this->headers)->postJson("/api/v1/admin/data-export-requests/{$requestId}/approve", [
             'approver_id' => $this->user->id
         ]);
         $appResponse->assertStatus(200);
@@ -377,13 +377,13 @@ class DataGovernancePrivacyTest extends TestCase
         $incident->save();
 
         // 2. Contain incident
-        $containResponse = $this->postJson("/api/v1/admin/security-incidents/{$incident->id}/contain");
+        $containResponse = $this->withHeaders($this->headers)->postJson("/api/v1/admin/security-incidents/{$incident->id}/contain");
         $containResponse->assertStatus(200);
         $this->assertEquals('contained', SecurityIncident::find($incident->id)->status);
         $this->assertNotNull(SecurityIncident::find($incident->id)->contained_at);
 
         // 3. Resolve incident
-        $resolveResponse = $this->postJson("/api/v1/admin/security-incidents/{$incident->id}/resolve");
+        $resolveResponse = $this->withHeaders($this->headers)->postJson("/api/v1/admin/security-incidents/{$incident->id}/resolve");
         $resolveResponse->assertStatus(200);
         $this->assertEquals('resolved', SecurityIncident::find($incident->id)->status);
         $this->assertNotNull(SecurityIncident::find($incident->id)->resolved_at);

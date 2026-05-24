@@ -71,7 +71,12 @@ class FacilityGoLiveReadinessTest extends TestCase
     {
         [$facility, $admin] = $this->readinessActors();
 
-        $created = $this->postJson('/api/v1/admin/facilities/'.$facility->id.'/go-live-readiness', [
+        $clientHeaders = [
+            'X-Client-ID'     => 'test_client_id',
+            'X-Client-Secret' => 'test_client_secret',
+        ];
+
+        $created = $this->withHeaders($clientHeaders)->postJson('/api/v1/admin/facilities/'.$facility->id.'/go-live-readiness', [
             'actor_id' => $admin->id,
         ]);
 
@@ -81,13 +86,13 @@ class FacilityGoLiveReadinessTest extends TestCase
 
         $items = array_keys($created->json('data.checklist'));
         foreach ($items as $item) {
-            $this->patchJson('/api/v1/admin/facilities/'.$facility->id.'/go-live-readiness/items/'.$item, [
+            $this->withHeaders($clientHeaders)->patchJson('/api/v1/admin/facilities/'.$facility->id.'/go-live-readiness/items/'.$item, [
                 'complete' => true,
                 'actor_id' => $admin->id,
             ])->assertOk();
         }
 
-        $approved = $this->postJson('/api/v1/admin/facilities/'.$facility->id.'/go-live-readiness/approve', [
+        $approved = $this->withHeaders($clientHeaders)->postJson('/api/v1/admin/facilities/'.$facility->id.'/go-live-readiness/approve', [
             'actor_id' => $admin->id,
             'approval_note' => 'Pilot approved',
         ]);

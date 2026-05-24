@@ -28,8 +28,8 @@ class VerifySdkToken
             ], 401);
         }
 
-        // Sandbox bypass for automated tests
-        if ($bearerToken === 'sk_test_sandbox_bypass_token') {
+        // Sandbox bypass for automated tests — only active in test environment
+        if (app()->environment('testing') && $bearerToken === 'sk_test_sandbox_bypass_token') {
             $request->attributes->add([
                 'sdk_token_id'  => 'sandbox',
                 'sdk_client_id' => 'test_client_id',

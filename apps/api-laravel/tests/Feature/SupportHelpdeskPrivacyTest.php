@@ -43,7 +43,12 @@ class SupportHelpdeskPrivacyTest extends TestCase
     {
         [$facility, $patient, $agent] = $this->supportActors();
 
-        $facilityTicket = $this->postJson('/api/v1/support/tickets', [
+        $clientHeaders = [
+            'X-Client-ID'     => 'test_client_id',
+            'X-Client-Secret' => 'test_client_secret',
+        ];
+
+        $facilityTicket = $this->withHeaders($clientHeaders)->postJson('/api/v1/support/tickets', [
             'requester_type' => 'facility',
             'requester_id' => $facility->id,
             'facility_id' => $facility->id,
@@ -61,7 +66,7 @@ class SupportHelpdeskPrivacyTest extends TestCase
 
         $this->assertNotNull($facilityTicket->json('data.sla_due_at'));
 
-        $developerTicket = $this->postJson('/api/v1/support/tickets', [
+        $developerTicket = $this->withHeaders($clientHeaders)->postJson('/api/v1/support/tickets', [
             'requester_type' => 'developer',
             'requester_id' => $agent->id,
             'category' => 'api',
