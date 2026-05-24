@@ -277,12 +277,107 @@ class NotificationTemplateSeeder extends Seeder
         ];
 
         foreach ($templates as $t) {
-            NotificationTemplate::create(array_merge($t, [
-                'uuid' => Str::uuid(),
-                'version' => 1,
-                'approval_status' => 'published',
-                'communication_class' => 'optional'
-            ]));
+            NotificationTemplate::firstOrCreate(
+                [
+                    'event_type' => $t['event_type'],
+                    'channel'    => $t['channel'],
+                    'language'   => $t['language'],
+                ],
+                array_merge($t, [
+                    'uuid'                => (string) Str::uuid(),
+                    'version'             => 1,
+                    'approval_status'     => $t['approval_status'] ?? 'published',
+                    'communication_class' => $t['communication_class'] ?? 'optional',
+                    'template_text'       => $t['template_text'] ?? $t['body'],
+                ])
+            );
+        }
+
+        // ── SP-4: real delivery templates (sms + email) for transactional events ──
+        $transactionalTemplates = [
+            [
+                'event_type'          => 'appointment.booked',
+                'channel'             => 'sms',
+                'language'            => 'en',
+                'subject'             => 'Appointment Confirmed',
+                'title'               => 'Appointment Confirmed',
+                'body'                => 'Your appointment at {{ facility_name }} is confirmed for {{ scheduled_at }}.',
+                'template_text'       => 'Your appointment at {{ facility_name }} is confirmed for {{ scheduled_at }}.',
+                'priority'            => 'high',
+                'communication_class' => 'transactional',
+                'approval_status'     => 'approved',
+            ],
+            [
+                'event_type'          => 'appointment.booked',
+                'channel'             => 'email',
+                'language'            => 'en',
+                'subject'             => 'Appointment Confirmed — {{ facility_name }}',
+                'title'               => 'Your OpesCare Appointment is Confirmed',
+                'body'                => "Hello {{ patient_name }},\n\nYour appointment at {{ facility_name }} has been confirmed.\n\nDate & Time: {{ scheduled_at }}\nType: {{ appointment_type }}\n\nLog in to OpesCare to view or manage your appointment.",
+                'template_text'       => "Hello {{ patient_name }},\n\nYour appointment at {{ facility_name }} has been confirmed.\n\nDate & Time: {{ scheduled_at }}\nType: {{ appointment_type }}\n\nLog in to OpesCare to view or manage your appointment.",
+                'priority'            => 'high',
+                'communication_class' => 'transactional',
+                'approval_status'     => 'approved',
+            ],
+            [
+                'event_type'          => 'lab.result.ready',
+                'channel'             => 'sms',
+                'language'            => 'en',
+                'subject'             => 'Lab Result Ready',
+                'title'               => 'Your Lab Result is Ready',
+                'body'                => 'Your lab result is now available in OpesCare. Log in to view it securely.',
+                'template_text'       => 'Your lab result is now available in OpesCare. Log in to view it securely.',
+                'priority'            => 'high',
+                'communication_class' => 'transactional',
+                'approval_status'     => 'approved',
+            ],
+            [
+                'event_type'          => 'lab.result.ready',
+                'channel'             => 'email',
+                'language'            => 'en',
+                'subject'             => 'Your Lab Result is Ready',
+                'title'               => 'Lab Result Available',
+                'body'                => "Hello {{ patient_name }},\n\nA new lab result has been added to your OpesCare health record.\n\nFor privacy, result details are only visible inside the secure OpesCare app. Log in to view them.",
+                'template_text'       => "Hello {{ patient_name }},\n\nA new lab result has been added to your OpesCare health record.\n\nFor privacy, result details are only visible inside the secure OpesCare app. Log in to view them.",
+                'priority'            => 'high',
+                'communication_class' => 'transactional',
+                'approval_status'     => 'approved',
+            ],
+            [
+                'event_type'          => 'consent.request.pending',
+                'channel'             => 'sms',
+                'language'            => 'en',
+                'subject'             => 'Consent Request',
+                'title'               => 'A Facility Wants to Access Your Records',
+                'body'                => '{{ facility_name }} has requested access to your health records. Open OpesCare to approve or deny.',
+                'template_text'       => '{{ facility_name }} has requested access to your health records. Open OpesCare to approve or deny.',
+                'priority'            => 'urgent',
+                'communication_class' => 'transactional',
+                'approval_status'     => 'approved',
+            ],
+            [
+                'event_type'          => 'consent.request.pending',
+                'channel'             => 'email',
+                'language'            => 'en',
+                'subject'             => 'Action Required: Health Record Access Request',
+                'title'               => 'Consent Request',
+                'body'                => "Hello,\n\n{{ facility_name }} has requested access to your health records for the purpose of: {{ purpose }}.\n\nLog in to OpesCare to approve or deny this request. You can revoke access at any time.",
+                'template_text'       => "Hello,\n\n{{ facility_name }} has requested access to your health records for the purpose of: {{ purpose }}.\n\nLog in to OpesCare to approve or deny this request. You can revoke access at any time.",
+                'priority'            => 'urgent',
+                'communication_class' => 'transactional',
+                'approval_status'     => 'approved',
+            ],
+        ];
+
+        foreach ($transactionalTemplates as $tpl) {
+            NotificationTemplate::firstOrCreate(
+                [
+                    'event_type' => $tpl['event_type'],
+                    'channel'    => $tpl['channel'],
+                    'language'   => $tpl['language'],
+                ],
+                array_merge($tpl, ['uuid' => (string) Str::uuid(), 'version' => 1])
+            );
         }
     }
 }

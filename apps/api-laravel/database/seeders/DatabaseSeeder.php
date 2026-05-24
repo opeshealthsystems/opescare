@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             AccountCategoriesSeeder::class,
             DashboardProfilesSeeder::class,
             RolesSeeder::class,
+            NotificationTemplateSeeder::class,
         ]);
 
         // When demo mode is enabled, seed all demo data automatically so that
