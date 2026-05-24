@@ -17,8 +17,10 @@ class User extends Authenticatable
         'email',
         'password',
         'primary_facility_id',
+        'patient_id',
         'role_id',
         'status',
+        'is_demo',
     ];
 
     protected $hidden = [
@@ -31,7 +33,13 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_demo' => 'boolean',
         ];
+    }
+
+    public function patient(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Patient::class);
     }
 
     public function primaryFacility()
