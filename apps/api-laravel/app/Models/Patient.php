@@ -21,6 +21,7 @@ class Patient extends Model
         'is_dob_estimated',
         'sex',
         'phone_number',
+        'email',
         'address',
         'emergency_contact',
         'identity_status',
