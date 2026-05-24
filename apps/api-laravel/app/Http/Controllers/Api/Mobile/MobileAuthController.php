@@ -25,8 +25,9 @@ class MobileAuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         $request->validate([
-            'phone_number' => 'required|string',
-            'pin'          => 'required|string|min:4|max:8',
+            'phone_number'  => 'required|string',
+            'pin'           => 'required|string|min:4|max:8',
+            'date_of_birth' => 'sometimes|date_format:Y-m-d',
         ]);
 
         $patient = Patient::where('phone_number', $request->phone_number)->first();
@@ -35,8 +36,11 @@ class MobileAuthController extends Controller
             return response()->json(['message' => 'Patient not found.'], 404);
         }
 
-        // Bootstrap: set PIN on first login if none stored yet
         if (is_null($patient->pin_hash)) {
+            // Bootstrap: require date_of_birth to verify identity before setting PIN
+            if (!$request->has('date_of_birth') || $request->date_of_birth !== $patient->date_of_birth->format('Y-m-d')) {
+                return response()->json(['message' => 'Identity verification required. Please provide your date of birth.'], 422);
+            }
             $patient->update(['pin_hash' => Hash::make($request->pin)]);
         } elseif (!Hash::check($request->pin, $patient->pin_hash)) {
             return response()->json(['message' => 'Invalid credentials.'], 401);
@@ -56,8 +60,11 @@ class MobileAuthController extends Controller
                 $patient->phone_number,
                 "Your OpesCare verification code is: {$otp}. Valid for 10 minutes."
             );
-        } catch (\Throwable) {
-            // SMS failure is non-fatal in development; OTP is stored regardless
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('OpesCare SMS delivery failed', [
+                'phone' => $patient->phone_number,
+                'error' => $e->getMessage(),
+            ]);
         }
 
         return response()->json(['message' => 'OTP sent to your registered phone number.'], 200);
@@ -97,9 +104,10 @@ class MobileAuthController extends Controller
         // Issue a 24-hour access token
         $rawToken = 'pat_' . Str::random(40);
         PatientAccessToken::create([
-            'patient_id' => $patient->id,
-            'token_hash' => Hash::make($rawToken),
-            'expires_at' => Carbon::now()->addHours(24),
+            'patient_id'   => $patient->id,
+            'token_hash'   => Hash::make($rawToken),
+            'token_prefix' => substr($rawToken, 0, 12),
+            'expires_at'   => Carbon::now()->addHours(24),
         ]);
 
         return response()->json([

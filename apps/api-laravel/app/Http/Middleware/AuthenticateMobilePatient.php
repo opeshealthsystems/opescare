@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Models\PatientAccessToken;
-use Carbon\Carbon;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -19,13 +18,13 @@ class AuthenticateMobilePatient
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
-        // Find by iterating active tokens — we use a prefix check to narrow the scan
-        // In production, consider storing a lookup_id prefix like QR tokens do.
-        $token = PatientAccessToken::where('expires_at', '>', Carbon::now())
-            ->get()
-            ->first(fn($t) => Hash::check($bearer, $t->token_hash));
+        $prefix = substr($bearer, 0, 12);
 
-        if (!$token) {
+        $token = PatientAccessToken::where('token_prefix', $prefix)
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (!$token || !Hash::check($bearer, $token->token_hash)) {
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 

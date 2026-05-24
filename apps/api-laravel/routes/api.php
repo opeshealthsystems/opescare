@@ -141,8 +141,8 @@ Route::prefix('v1/connect')->group(function () {
 */
 Route::prefix('mobile')->group(function () {
 
-    // Public auth endpoints — no middleware
-    Route::prefix('auth')->group(function () {
+    // Public auth endpoints — rate-limited to 5 requests per minute
+    Route::prefix('auth')->middleware('throttle:5,1')->group(function () {
         Route::post('/login', [\App\Http\Controllers\Api\Mobile\MobileAuthController::class, 'login']);
         Route::post('/otp/verify', [\App\Http\Controllers\Api\Mobile\MobileAuthController::class, 'verifyOtp']);
     });

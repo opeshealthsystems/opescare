@@ -15,6 +15,7 @@ class PatientAccessToken extends Model
     protected $fillable = [
         'patient_id',
         'token_hash',
+        'token_prefix',
         'expires_at',
     ];
 

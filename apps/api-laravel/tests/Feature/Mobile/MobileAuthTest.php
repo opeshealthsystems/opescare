@@ -131,12 +131,13 @@ class MobileAuthTest extends TestCase
 
     public function test_authenticated_mobile_route_works_with_valid_token(): void
     {
-        // Create a valid access token
+        // Create a valid access token (with token_prefix for O(1) lookup)
         $rawToken = 'pat_' . str_repeat('a', 40);
         PatientAccessToken::create([
-            'patient_id' => $this->patient->id,
-            'token_hash' => Hash::make($rawToken),
-            'expires_at' => Carbon::now()->addHours(24),
+            'patient_id'   => $this->patient->id,
+            'token_hash'   => Hash::make($rawToken),
+            'token_prefix' => substr($rawToken, 0, 12),
+            'expires_at'   => Carbon::now()->addHours(24),
         ]);
 
         $response = $this->withHeaders(['Authorization' => "Bearer {$rawToken}"])
@@ -144,5 +145,66 @@ class MobileAuthTest extends TestCase
 
         // Should not be 401 (may be 200 or another code depending on facility data)
         $this->assertNotEquals(401, $response->status());
+    }
+
+    public function test_otp_cannot_be_reused(): void
+    {
+        $otp = '112233';
+        PatientOtpCode::create([
+            'phone_number' => '0700000001',
+            'code_hash'    => Hash::make($otp),
+            'expires_at'   => Carbon::now()->addMinutes(10),
+        ]);
+
+        // First use — should succeed
+        $this->postJson('/api/mobile/auth/otp/verify', [
+            'phone_number' => '0700000001',
+            'otp'          => $otp,
+        ])->assertStatus(200);
+
+        // Second use — should fail (used_at is now set)
+        $this->postJson('/api/mobile/auth/otp/verify', [
+            'phone_number' => '0700000001',
+            'otp'          => $otp,
+        ])->assertStatus(401);
+    }
+
+    public function test_pin_bootstrap_requires_date_of_birth(): void
+    {
+        // Patient with no PIN set
+        $patient = Patient::forceCreate([
+            'health_id'     => 'CM-HID-NPIN-0001',
+            'first_name'    => 'New',
+            'last_name'     => 'Patient',
+            'date_of_birth' => '1985-03-20',
+            'sex'           => 'male',
+            'phone_number'  => '0700000099',
+            'pin_hash'      => null,
+            'is_demo'       => false,
+        ]);
+
+        // Without date_of_birth — should be rejected
+        $this->postJson('/api/mobile/auth/login', [
+            'phone_number' => '0700000099',
+            'pin'          => '5678',
+        ])->assertStatus(422);
+
+        // Wrong date_of_birth — should be rejected
+        $this->postJson('/api/mobile/auth/login', [
+            'phone_number'  => '0700000099',
+            'pin'           => '5678',
+            'date_of_birth' => '2000-01-01',
+        ])->assertStatus(422);
+
+        // Correct date_of_birth — PIN bootstrap should succeed and OTP sent
+        $this->postJson('/api/mobile/auth/login', [
+            'phone_number'  => '0700000099',
+            'pin'           => '5678',
+            'date_of_birth' => '1985-03-20',
+        ])->assertStatus(200);
+
+        // Verify PIN was persisted
+        $patient->refresh();
+        $this->assertTrue(Hash::check('5678', $patient->pin_hash));
     }
 }

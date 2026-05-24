@@ -14,11 +14,12 @@ trait WithMobileAuth
      */
     protected function mobileAuthHeaders(Patient $patient): array
     {
-        $rawToken = 'pat_test_' . $patient->id;
+        $rawToken = 'pat_' . \Illuminate\Support\Str::random(40);
         PatientAccessToken::create([
-            'patient_id' => $patient->id,
-            'token_hash' => Hash::make($rawToken),
-            'expires_at' => Carbon::now()->addHours(24),
+            'patient_id'   => $patient->id,
+            'token_hash'   => Hash::make($rawToken),
+            'token_prefix' => substr($rawToken, 0, 12),
+            'expires_at'   => Carbon::now()->addHours(24),
         ]);
         return ['Authorization' => "Bearer {$rawToken}"];
     }
