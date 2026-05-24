@@ -27,6 +27,7 @@ class PortalNavigationTest extends TestCase
         $response->assertSee(route('portals.patient.profile'));
         $response->assertSee(route('portals.patient.appointments'));
         $response->assertSee(route('portals.patient.logs'));
+        $response->assertSee(route('public.care-map'));
     }
 
     public function test_dashboard_does_not_show_demo_banner_for_real_user(): void

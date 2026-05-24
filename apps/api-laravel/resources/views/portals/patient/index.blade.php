@@ -133,9 +133,9 @@
         <!-- Profile prompt -->
         <div class="panel">
             <div class="panel-body" style="text-align:center;">
-                <p style="font-size:0.8125rem;color:var(--p-text-muted);margin-bottom:var(--p-space-3);">Manage your privacy preferences, contact details and emergency contacts in your profile.</p>
+                <p style="font-size:0.8125rem;color:var(--p-text-muted);margin-bottom:var(--p-space-3);">{{ __('public.portal.profile_prompt_desc', [], app()->getLocale()) ?: 'Manage your privacy preferences, contact details and emergency contacts in your profile.' }}</p>
                 <a href="{{ route('portals.patient.profile') }}" class="btn btn-primary" style="font-size:0.8125rem;">
-                    <i data-lucide="user-cog"></i> Go to Profile
+                    <i data-lucide="user-cog"></i> {{ __('public.portal.profile_prompt_btn', [], app()->getLocale()) ?: 'Go to Profile' }}
                 </a>
             </div>
         </div>
@@ -197,6 +197,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var lblGenerating  = @json(__('public.portal.generating', [], app()->getLocale()) ?: 'Generating…');
     var lblRegenerateQr = @json(__('public.portal.regenerate_qr', [], app()->getLocale()) ?: 'Regenerate QR');
 
+    var countdownInterval = null;
+
     var btnGen = document.getElementById('generate-temp-qr');
     if (btnGen) {
         btnGen.addEventListener('click', async function () {
@@ -209,6 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
                 });
+                if (!response.ok) throw new Error('QR generation failed (' + response.status + ')');
                 var data = await response.json();
                 if (data.url && typeof QRCode !== 'undefined') {
                     QRCode.toDataURL(data.url,
@@ -236,9 +239,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function startCountdown(seconds) {
+        if (countdownInterval) clearInterval(countdownInterval);
         var el = document.getElementById('countdown');
-        var interval = setInterval(function () {
-            if (seconds <= 0) { clearInterval(interval); if (el) el.textContent = 'Expired'; return; }
+        countdownInterval = setInterval(function () {
+            if (seconds <= 0) { clearInterval(countdownInterval); countdownInterval = null; if (el) el.textContent = 'Expired'; return; }
             seconds--;
             var m = Math.floor(seconds / 60).toString().padStart(2, '0');
             var s = (seconds % 60).toString().padStart(2, '0');

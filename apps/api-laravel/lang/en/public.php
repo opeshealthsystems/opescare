@@ -108,6 +108,11 @@ return [
         'nav_appointments'       => 'Appointments',
         'nav_privacy'            => 'Privacy & Access',
         'nav_care_map'           => 'Care Map',
+        'nav_labs'               => 'Lab Results',
+        'nav_prescriptions'      => 'Prescriptions',
+        'nav_consent'            => 'Consent Requests',
+        'nav_documents'          => 'Documents',
+        'nav_profile'            => 'My Profile',
         'nav_help'               => 'Help',
         'nav_dashboard'          => 'Dashboard',
         'nav_queue'              => 'Patient Queue',
@@ -221,6 +226,10 @@ return [
         'reason_required'        => 'Reason (required)',
         'reason_placeholder'     => 'Explain why this action is necessary…',
         'select_facility'        => 'Select Facility',
+
+        // Profile prompt panel
+        'profile_prompt_desc'    => 'Manage your privacy preferences, contact details and emergency contacts in your profile.',
+        'profile_prompt_btn'     => 'Go to Profile',
     ],
 
     /* ── Demo Access Page ───────────────────────────── */
