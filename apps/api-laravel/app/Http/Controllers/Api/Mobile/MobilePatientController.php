@@ -148,7 +148,7 @@ class MobilePatientController extends Controller
 
         // Prescriptions
         $prescriptions = Prescription::where('patient_id', $patientId)
-            ->with('facility:id,name')
+            ->with(['facility:id,name', 'items'])
             ->latest('prescribed_at')
             ->take($limit)
             ->get();
