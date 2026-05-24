@@ -4,6 +4,7 @@ namespace App\Http\Controllers\MedicalId;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use App\Models\LabResult;
 use App\Models\MedicalIdAccessEvent;
 use App\Models\Patient;
 use App\Services\Identity\QrTokenService;
@@ -108,6 +109,33 @@ class PatientPortalController extends Controller
         }
 
         return view('portals.patient.appointments', compact('patient', 'appointments'));
+    }
+
+    /**
+     * Patient Lab Results
+     */
+    public function labResults(Request $request)
+    {
+        $patient = $this->resolvePatient();
+
+        $labs = $patient
+            ? LabResult::where('patient_id', $patient->id)
+                ->with('labOrder')
+                ->orderByDesc('resulted_at')
+                ->limit(100)
+                ->get()
+            : collect([]);
+
+        if ($patient) {
+            $this->ctx->auditPatientAccess(
+                actionType:   'patient_labs_view',
+                resourceType: 'LabResult',
+                resourceId:   null,
+                patientId:    $patient->id,
+            );
+        }
+
+        return view('portals.patient.labs', compact('patient', 'labs'));
     }
 
     /**
