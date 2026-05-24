@@ -18,21 +18,16 @@ class PatientPortalController extends Controller
     /**
      * Resolve the patient record for the authenticated user.
      *
-     * For real patient users, the patient is linked via the user account.
-     * Falls back to first available patient (demo compatibility) if no
-     * direct relationship exists yet.
+     * Only returns a patient if the authenticated user has a direct patient_id link.
+     * Returns null if the user is not linked to any patient.
      */
     private function resolvePatient(): ?Patient
     {
         $user = Auth::user();
-
-        // Preferred: user has a directly linked patient record
-        if ($user && method_exists($user, 'patient') && $user->patient) {
-            return $user->patient;
+        if (!$user) {
+            return null;
         }
-
-        // Demo fallback: first available patient with a Health ID
-        return Patient::whereNotNull('health_id')->first();
+        return $user->patient ?? null;
     }
 
     /**
