@@ -93,6 +93,7 @@
             <div class="panel-body" style="display:flex;flex-direction:column;gap:var(--p-space-4);">
 
                 <label style="display:flex;align-items:flex-start;gap:var(--p-space-4);padding:var(--p-space-4);background:var(--p-surface-2);border:1px solid var(--p-border);border-radius:var(--p-radius);cursor:pointer;">
+                    <input type="hidden" name="privacy_require_consent" value="0">
                     <input type="checkbox" name="privacy_require_consent" value="1"
                         {{ ($patient->privacy_preferences['require_consent_for_full_record'] ?? true) ? 'checked' : '' }}
                         style="width:1.1rem;height:1.1rem;accent-color:var(--p-primary);margin-top:1px;flex-shrink:0;">
@@ -103,6 +104,7 @@
                 </label>
 
                 <label style="display:flex;align-items:flex-start;gap:var(--p-space-4);padding:var(--p-space-4);background:var(--p-surface-2);border:1px solid var(--p-border);border-radius:var(--p-radius);cursor:pointer;">
+                    <input type="hidden" name="privacy_emergency_access" value="0">
                     <input type="checkbox" name="privacy_emergency_access" value="1"
                         {{ ($patient->privacy_preferences['emergency_access_allowed'] ?? true) ? 'checked' : '' }}
                         style="width:1.1rem;height:1.1rem;accent-color:#DC2626;margin-top:1px;flex-shrink:0;">

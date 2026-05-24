@@ -76,6 +76,25 @@ class ProfilePageTest extends TestCase
         $this->assertTrue($prefs['emergency_access_allowed']);
     }
 
+    public function test_patient_can_disable_privacy_preference(): void
+    {
+        $patient = \App\Models\Patient::factory()->create([
+            'privacy_preferences' => ['require_consent_for_full_record' => true],
+        ]);
+        $user = \App\Models\User::factory()->create(['patient_id' => $patient->id]);
+
+        $this->actingAs($user)
+            ->withSession(['active_facility_id' => 'test-facility'])
+            ->post(route('portals.patient.profile.update'), [
+                'privacy_require_consent' => '0',
+            ])
+            ->assertRedirect();
+
+        $patient->refresh();
+        $prefs = $patient->privacy_preferences ?? [];
+        $this->assertFalse((bool) ($prefs['require_consent_for_full_record'] ?? true));
+    }
+
     public function test_unlinked_user_sees_no_profile_state(): void
     {
         $user = User::factory()->create(['patient_id' => null]);

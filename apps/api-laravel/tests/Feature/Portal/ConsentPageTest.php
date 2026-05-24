@@ -69,4 +69,21 @@ class ConsentPageTest extends TestCase
             ->post(route('portals.patient.consent.approve', $req->id))
             ->assertStatus(404);
     }
+
+    public function test_patient_cannot_deny_other_patients_consent(): void
+    {
+        $otherPatient = \App\Models\Patient::factory()->create();
+        $consentReq = \App\Models\ConsentRequest::factory()->create([
+            'patient_id' => $otherPatient->id,
+            'status'     => 'pending',
+        ]);
+
+        $myPatient = \App\Models\Patient::factory()->create();
+        $user = \App\Models\User::factory()->create(['patient_id' => $myPatient->id]);
+
+        $this->actingAs($user)
+            ->withSession(['active_facility_id' => 'test-facility'])
+            ->post(route('portals.patient.consent.deny', $consentReq->id))
+            ->assertStatus(404);
+    }
 }

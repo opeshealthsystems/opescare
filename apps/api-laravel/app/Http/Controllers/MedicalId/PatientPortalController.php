@@ -210,17 +210,19 @@ class PatientPortalController extends Controller
 
         abort_if($req->status !== 'pending', 422, 'Request is not pending.');
 
-        $req->update(['status' => 'approved']);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($req, $patient) {
+            $req->update(['status' => 'approved']);
 
-        ConsentGrant::create([
-            'patient_id'         => $patient->id,
-            'facility_id'        => $req->requesting_facility_id,
-            'consent_request_id' => $req->id,
-            'authorizing_actor'  => 'patient',
-            'scope'              => $req->requested_scope ?? [],
-            'status'             => 'active',
-            'expires_at'         => now()->addMinutes($req->duration_minutes ?? 1440),
-        ]);
+            ConsentGrant::create([
+                'patient_id'         => $patient->id,
+                'facility_id'        => $req->requesting_facility_id,
+                'consent_request_id' => $req->id,
+                'authorizing_actor'  => 'patient',
+                'scope'              => $req->requested_scope ?? [],
+                'status'             => 'active',
+                'expires_at'         => now()->addMinutes($req->duration_minutes ?? 1440),
+            ]);
+        });
 
         $this->ctx->auditPatientAccess(
             actionType:   'patient_consent_approved',
@@ -319,8 +321,8 @@ class PatientPortalController extends Controller
             'emergency_contact.name'         => 'sometimes|nullable|string|max:100',
             'emergency_contact.phone'        => 'sometimes|nullable|string|max:30',
             'emergency_contact.relationship' => 'sometimes|nullable|string|max:50',
-            'privacy_require_consent'        => 'sometimes|boolean',
-            'privacy_emergency_access'       => 'sometimes|boolean',
+            'privacy_require_consent'        => 'nullable|boolean',
+            'privacy_emergency_access'       => 'nullable|boolean',
         ]);
 
         $updateData = [];
