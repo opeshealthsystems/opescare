@@ -65,7 +65,7 @@ class DuplicateMergeController extends Controller
 
                 // 3. Mark case as merged
                 $mergeCase->status = 'merged';
-                $mergeCase->reviewed_by = Str::uuid(); // Mocking admin UUID
+                $mergeCase->reviewed_by = auth()->id() ?? Str::uuid();
                 $mergeCase->review_reason = $request->input('review_reason');
                 $mergeCase->save();
 
@@ -75,7 +75,7 @@ class DuplicateMergeController extends Controller
             } else {
                 // Reject Merge
                 $mergeCase->status = 'rejected';
-                $mergeCase->reviewed_by = Str::uuid();
+                $mergeCase->reviewed_by = auth()->id() ?? Str::uuid();
                 $mergeCase->review_reason = $request->input('review_reason');
                 $mergeCase->save();
 
