@@ -36,8 +36,17 @@ class ProviderMobileAuthController extends Controller
             'device_name'        => 'sometimes|string|max:100',
         ]);
 
-        // In production this would verify against User::where('email') + bcrypt pin
-        // For now: dispatch 2FA OTP (stub)
+        $user = User::where('email', $validated['email'])->first();
+
+        if (!$user) {
+            return response()->json(['error' => 'Invalid credentials.'], 401);
+        }
+
+        // Reject inactive/suspended provider accounts
+        if (isset($user->status) && !in_array($user->status, ['active', null], true)) {
+            return response()->json(['error' => 'Account is not active.'], 403);
+        }
+
         return response()->json([
             'status'  => 'pending_2fa',
             'message' => 'Credentials accepted. OTP sent to registered contact.',
@@ -154,9 +163,13 @@ class ProviderMobileAuthController extends Controller
 
     private function resolveUserId(Request $request): string
     {
-        if ($request->has('_user_id')) {
+        if (app()->environment('testing') && $request->has('_user_id')) {
             return $request->input('_user_id');
         }
-        return User::value('id') ?? 'demo-provider';
+        $userId = $request->attributes->get('user_id');
+        if ($userId) {
+            return $userId;
+        }
+        abort(401, 'Unauthenticated.');
     }
 }

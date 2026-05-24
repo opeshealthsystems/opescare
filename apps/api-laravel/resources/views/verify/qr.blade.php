@@ -249,7 +249,15 @@
                 {{ Str::limit($token, 36, '…') }}
             </div>
 
-            @if($result === null)
+            @if($error ?? null)
+                <div class="state-invalid" role="alert">
+                    <i data-lucide="x-circle" style="width:1.125rem;height:1.125rem;flex-shrink:0;"></i>
+                    <div>
+                        <strong style="display:block;margin-bottom:0.2rem;">{{ __('verify.qr_invalid_title', [], app()->getLocale()) ?: 'Invalid Token' }}</strong>
+                        {{ $error }}
+                    </div>
+                </div>
+            @elseif($result === null)
                 {{-- Stub / pending state --}}
                 <div class="state-loading" role="status" aria-live="polite">
                     <div class="spinner" aria-hidden="true"></div>
@@ -328,9 +336,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 
-    // Auto-reload spinner after 1.5s if result is still null
+    // Auto-reload spinner after 1.5s if result is still null and no error
     // (in production this would be a real API call from the controller)
-    @if($result === null)
+    @if($result === null && !($error ?? null))
     setTimeout(function() {
         var spinner = document.querySelector('.state-loading');
         if (spinner) {
