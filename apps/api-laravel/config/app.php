@@ -65,6 +65,8 @@ return [
     |
     */
 
+    // Store all timestamps in UTC. Display timezone is resolved per-facility at the view layer.
+    // National deployment (Cameroon): WAT = UTC+1. Use Carbon::setTimezone() in Blade views.
     'timezone' => 'UTC',
 
     /*
