@@ -194,18 +194,28 @@ class FamilyController extends Controller
             ->firstOrFail();
 
         $data = $request->validate([
-            'relationship'                => 'required|in:parent,grandparent,spouse,sibling,caregiver,legal_guardian,other',
-            'access_level'                => 'required|in:full,read_only',
-            'notification_prefs'          => 'nullable|array',
-            'notification_prefs.*.portal' => 'nullable|boolean',
-            'notification_prefs.*.email'  => 'nullable|boolean',
-            'notification_prefs.*.sms'    => 'nullable|boolean',
+            'relationship' => 'required|in:parent,grandparent,spouse,sibling,caregiver,legal_guardian,other',
+            'access_level' => 'required|in:full,read_only',
         ]);
+
+        // Normalize checkbox prefs: absent key = unchecked = false.
+        // HTML checkboxes don't submit when unchecked, so we must fill in explicit false
+        // for all missing event/channel combinations to avoid silently reverting to defaults.
+        $allEventKeys = ['lab_result', 'appointment', 'consent_request', 'age_transition'];
+        $allChannels  = ['portal', 'email', 'sms'];
+        $rawPrefs     = $request->input('notification_prefs', []);
+
+        $normalizedPrefs = [];
+        foreach ($allEventKeys as $eventKey) {
+            foreach ($allChannels as $channel) {
+                $normalizedPrefs[$eventKey][$channel] = (bool) ($rawPrefs[$eventKey][$channel] ?? false);
+            }
+        }
 
         $link->update([
             'relationship'       => $data['relationship'],
             'access_level'       => $data['access_level'],
-            'notification_prefs' => $data['notification_prefs'] ?? [],
+            'notification_prefs' => $normalizedPrefs,
         ]);
 
         return redirect()->route('portals.patient.family')

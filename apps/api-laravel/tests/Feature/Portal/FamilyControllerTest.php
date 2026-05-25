@@ -306,4 +306,45 @@ class FamilyControllerTest extends TestCase
             \App\Notifications\FamilyEventNotification::class
         );
     }
+
+    public function test_update_saves_false_for_unchecked_notification_channels(): void
+    {
+        $guardian  = User::factory()->create();
+        $dependent = Patient::factory()->create(['is_demo' => false]);
+        $link = \App\Models\FamilyLink::factory()->create([
+            'guardian_user_id'    => $guardian->id,
+            'dependent_patient_id'=> $dependent->id,
+            'status'              => 'active',
+            'notification_prefs'  => [],
+        ]);
+
+        // Submit with all lab_result channels absent (unchecked)
+        // appointment portal checked, email/sms unchecked
+        $this->actingAs($guardian)
+            ->withSession($this->session)
+            ->post(route('portals.patient.family.update', $link->id), [
+                'relationship'       => 'parent',
+                'access_level'       => 'full',
+                'notification_prefs' => [
+                    'appointment' => ['portal' => '1'],
+                    // lab_result entirely absent (all unchecked)
+                    // appointment email/sms absent (unchecked)
+                ],
+            ]);
+
+        $link->refresh();
+        $prefs = $link->notification_prefs;
+
+        // lab_result: all channels should be stored as false (not missing)
+        $this->assertFalse((bool) ($prefs['lab_result']['portal'] ?? 'MISSING'), 'lab_result portal should be false');
+        $this->assertFalse((bool) ($prefs['lab_result']['email']  ?? 'MISSING'), 'lab_result email should be false');
+        $this->assertFalse((bool) ($prefs['lab_result']['sms']    ?? 'MISSING'), 'lab_result sms should be false');
+
+        // appointment portal: checked → true
+        $this->assertTrue((bool) ($prefs['appointment']['portal'] ?? false), 'appointment portal should be true');
+
+        // appointment email/sms: unchecked → false (not missing)
+        $this->assertFalse((bool) ($prefs['appointment']['email'] ?? 'MISSING'), 'appointment email should be false');
+        $this->assertFalse((bool) ($prefs['appointment']['sms']   ?? 'MISSING'), 'appointment sms should be false');
+    }
 }
