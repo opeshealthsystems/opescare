@@ -64,24 +64,10 @@ class RecordController extends Controller
                 'demographics' => [
                     'display_name' => $patient->first_name . ' ' . substr($patient->last_name, 0, 1) . '.',
                     'sex' => $patient->sex,
-                    'date_of_birth' => $patient->date_of_birth ? $patient->date_of_birth->toDateString() : '1990-04-12'
+                    'date_of_birth' => $patient->date_of_birth ? $patient->date_of_birth->toDateString() : null
                 ],
-                'allergies' => [
-                    [
-                        'substance' => 'Penicillin',
-                        'severity' => 'severe',
-                        'status' => 'active',
-                        'source_facility' => 'St. Jude Clinical Research Hospital'
-                    ]
-                ],
-                'active_medications' => [
-                    [
-                        'generic_name' => 'Amoxicillin',
-                        'dose' => '500mg',
-                        'frequency' => 'twice daily',
-                        'source_facility' => 'Metro Emergency General Clinic'
-                    ]
-                ],
+                'allergies' => [], // Populated from AllergyRecord model when implemented
+                'active_medications' => [], // Populated from Prescription model when implemented
                 'recent_lab_results' => [],
                 'recent_visits' => $sectionsVisits
             ]
@@ -124,18 +110,12 @@ class RecordController extends Controller
                     'display_name' => $patient ? $patient->first_name . ' ' . substr($patient->last_name, 0, 1) . '.' : 'John D.',
                     'sex' => $patient ? $patient->sex : 'male'
                 ],
-                'emergency_contacts' => [
-                    [
-                        'name' => 'Mary Doe',
-                        'relation' => 'Spouse',
-                        'phone' => '+237 600-000-000'
-                    ]
-                ],
+                'emergency_contacts' => [], // Populated from EmergencyContact model when implemented
                 'clinical_safety' => [
-                    'blood_group' => 'O Positive',
-                    'critical_allergies' => ['Penicillin', 'Peanuts'],
-                    'chronic_conditions' => ['Type 1 Diabetes Mellitus'],
-                    'high_risk_medications' => ['Insulin Glargine']
+                    'blood_group'         => null, // From patient record when implemented
+                    'critical_allergies'  => [], // Populated from AllergyRecord model when implemented
+                    'chronic_conditions'  => [], // Populated from Diagnosis model when implemented
+                    'high_risk_medications' => [] // Populated from Prescription model when implemented
                 ]
             ]
         ], 200);
@@ -173,18 +153,6 @@ class RecordController extends Controller
         }
 
         $patient = Patient::where('health_id', $healthId)->first();
-
-        // Safe fallback for unit testing
-        if (!$patient && $healthId === 'OC-CMR-7KQ9-MP42-X8D1') {
-            $patient = Patient::create([
-                'health_id' => 'OC-CMR-7KQ9-MP42-X8D1',
-                'first_name' => 'John',
-                'last_name' => 'Doe',
-                'sex' => 'male',
-                'date_of_birth' => '1990-04-12',
-                'identity_status' => 'verified_by_facility'
-            ]);
-        }
 
         // If patient not found in database, automatically create matching reconciliation case
         if (!$patient) {
