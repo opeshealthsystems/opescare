@@ -17,7 +17,7 @@ class VerifyPartnerTrustLevel
     {
         // 1. Resolve Partner ID from header (X-Partner-ID) or Token (for testing/demo)
         $partnerId = $request->header('X-Partner-ID');
-        
+
         if (!$partnerId) {
             return response()->json([
                 'status' => 'error',
@@ -45,9 +45,33 @@ class VerifyPartnerTrustLevel
             ], 403);
         }
 
-        // 3. Inject Partner into request so controllers can use it
+        // 3. Verify trust level meets minimum requirement
+        $requiredLevel = (int) ($minTrustLevel ?? 1);
+        $partnerLevel = $this->extractTrustLevelNumber($partner->trust_level);
+
+        if ($partnerLevel < $requiredLevel) {
+            return response()->json([
+                'status' => 'error',
+                'error_code' => 'INSUFFICIENT_TRUST_LEVEL',
+                'message' => 'Partner trust level is insufficient for this operation.'
+            ], 403);
+        }
+
+        // 4. Inject Partner into request so controllers can use it
         $request->attributes->set('partner', $partner);
 
         return $next($request);
+    }
+
+    /**
+     * Extract the numeric portion from a trust level string.
+     * E.g. 'level_3_operational_verified' -> 3
+     */
+    private function extractTrustLevelNumber(string $trustLevel): int
+    {
+        if (preg_match('/level_(\d+)/', $trustLevel, $matches)) {
+            return (int) $matches[1];
+        }
+        return 0;
     }
 }
