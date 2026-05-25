@@ -68,12 +68,22 @@ class DemoAccessController extends Controller
             'demo_role' => $request->role,
             'demo_user_id' => $user->id,
             'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
+            'user_agent' => $this->sanitizeUserAgent($request->userAgent()),
             'session_expires_at' => now()->addMinutes($lifetime)
         ]);
 
         $url = app(DashboardProfileService::class)->landingUrlForUser($user);
 
         return redirect($url);
+    }
+
+    private function sanitizeUserAgent(?string $ua): string
+    {
+        if ($ua === null) {
+            return 'unknown';
+        }
+        // Strip newlines (log injection prevention) and truncate to 255 chars
+        $ua = str_replace(["\n", "\r"], '', $ua);
+        return substr($ua, 0, 255);
     }
 }
