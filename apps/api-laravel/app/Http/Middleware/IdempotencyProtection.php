@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use App\Enums\OpesCareErrorCode;
 use App\Models\IdempotencyRecord;
@@ -37,7 +38,7 @@ class IdempotencyProtection
                 ], 409);
             }
 
-            $hash = md5(json_encode($request->all()));
+            $hash = $this->hashPayload(json_encode($request->all()));
 
             // 1. Check if record already exists in database
             try {
@@ -62,7 +63,10 @@ class IdempotencyProtection
                     return $response;
                 }
             } catch (\Exception $e) {
-                // Table might not exist yet before migrations
+                Log::error('idempotency_key_store_failed', [
+                    'key'       => $idempotencyKey ?? $key ?? 'unknown',
+                    'exception' => $e->getMessage(),
+                ]);
             }
 
             // 2. Process request
@@ -80,7 +84,10 @@ class IdempotencyProtection
                         'expires_at' => now()->addHours(24)
                     ]);
                 } catch (\Exception $e) {
-                    // Database write issues
+                    Log::error('idempotency_key_store_failed', [
+                        'key'       => $idempotencyKey ?? $key ?? 'unknown',
+                        'exception' => $e->getMessage(),
+                    ]);
                 }
             }
 
@@ -88,5 +95,10 @@ class IdempotencyProtection
         }
 
         return $next($request);
+    }
+
+    protected function hashPayload(string $payload): string
+    {
+        return hash('sha256', $payload);
     }
 }
