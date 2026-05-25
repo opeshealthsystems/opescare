@@ -96,4 +96,36 @@ class GuardianPortalViewTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewHas('patient', fn($p) => $p->id === $dependent->id);
     }
+
+    public function test_dependent_can_see_and_deny_pending_guardian_consent(): void
+    {
+        // Dependent has a user account
+        $guardian  = User::factory()->create();
+        $dependent = Patient::factory()->create(['is_demo' => false]);
+        $depUser   = User::factory()->create(['patient_id' => $dependent->id]);
+
+        $link = \App\Models\FamilyLink::factory()->create([
+            'guardian_user_id'          => $guardian->id,
+            'dependent_patient_id'      => $dependent->id,
+            'status'                    => 'active',
+            'age_transition_expires_at' => now()->addDays(20),
+        ]);
+
+        // Family index page for the DEPENDENT (not the guardian)
+        $response = $this->actingAs($depUser)
+            ->withSession(['active_facility_id' => 'test-facility'])
+            ->get(route('portals.patient.family'));
+
+        $response->assertStatus(200);
+        $response->assertSee('guardian-consent'); // the data-section attribute
+
+        // Deny action
+        $deny = $this->actingAs($depUser)
+            ->withSession(['active_facility_id' => 'test-facility'])
+            ->post(route('portals.patient.family.guardian_consent.deny', $link->id));
+
+        $deny->assertRedirect(route('portals.patient'));
+        $link->refresh();
+        $this->assertEquals('revoked', $link->status);
+    }
 }

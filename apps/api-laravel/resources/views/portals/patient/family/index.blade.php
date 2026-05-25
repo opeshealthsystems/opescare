@@ -79,4 +79,35 @@
     @endforeach
 </div>
 @endif
+
+@if($incomingConsent->isNotEmpty())
+<div data-section="guardian-consent" style="margin-top:var(--p-space-8);">
+    <h2 style="font-size:1rem;font-weight:700;color:var(--p-text);margin-bottom:var(--p-space-4);">
+        <i data-lucide="shield-alert"></i> Guardian Access — Your Approval Needed
+    </h2>
+    @foreach($incomingConsent as $cl)
+    <div class="panel" style="margin-bottom:var(--p-space-4);border-left:3px solid #F59E0B;">
+        <div class="panel-body">
+            <p style="font-size:0.875rem;margin-bottom:var(--p-space-3);">
+                <strong>{{ $cl->guardianUser->name ?? $cl->guardianUser->email }}</strong>
+                has guardian access to your records. This access will expire on
+                <strong>{{ $cl->age_transition_expires_at->format('M d, Y') }}</strong>
+                unless you approve continued access.
+            </p>
+            <div style="display:flex;gap:var(--p-space-3);">
+                <form method="POST" action="{{ route('portals.patient.family.guardian_consent.approve', $cl->id) }}">
+                    @csrf
+                    <button type="submit" class="btn btn-primary" style="font-size:0.8125rem;">Keep Access</button>
+                </form>
+                <form method="POST" action="{{ route('portals.patient.family.guardian_consent.deny', $cl->id) }}"
+                      onsubmit="return confirm('Remove this guardian\'s access?')">
+                    @csrf
+                    <button type="submit" class="btn" style="font-size:0.8125rem;background:#FEE2E2;color:#991B1B;">Remove Access</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endforeach
+</div>
+@endif
 @endsection

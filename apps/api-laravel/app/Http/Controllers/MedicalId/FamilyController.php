@@ -17,13 +17,25 @@ class FamilyController extends Controller
 
     public function index()
     {
+        // Links this user manages as guardian (outgoing)
         $links = FamilyLink::where('guardian_user_id', Auth::id())
             ->whereIn('status', ['active', 'pending_invite'])
             ->with('dependentPatient')
             ->orderByDesc('created_at')
             ->get();
 
-        return view('portals.patient.family.index', compact('links'));
+        // Links where this user's patient record is the dependent AND grace period is active (incoming consent needed)
+        $myPatientId = Auth::user()?->patient_id;
+        $incomingConsent = $myPatientId
+            ? FamilyLink::where('dependent_patient_id', $myPatientId)
+                ->where('status', 'active')
+                ->whereNotNull('age_transition_expires_at')
+                ->where('age_transition_expires_at', '>', now())
+                ->with('guardianUser')
+                ->get()
+            : collect([]);
+
+        return view('portals.patient.family.index', compact('links', 'incomingConsent'));
     }
 
     public function addForm()
