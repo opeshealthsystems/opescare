@@ -527,7 +527,8 @@ Route::prefix('fhir/R4')->middleware(VerifyIntegrationClient::class)->group(func
     // Patient resource
     Route::get('/Patient',                [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchPatient']);
     Route::get('/Patient/{id}',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'patient']);
-    Route::get('/Patient/{id}/\$everything', [\App\Http\Controllers\Api\Fhir\FhirController::class, 'patientEverything']);
+    Route::get('/Patient/{id}/\$everything', [\App\Http\Controllers\Api\Fhir\FhirController::class, 'patientEverything'])
+        ->middleware('consent.grant:patients:read');
 
     // Encounter resource
     Route::get('/Encounter',              [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchEncounter']);

@@ -21,6 +21,9 @@ class RecordController extends Controller
     {
         // Consent validation is handled by RequireConsentGrant middleware (consent.grant:patients:read).
         // The resolved ConsentGrant is available via $request->attributes->get('consent_grant').
+        $consentGrant = $request->attributes->get('consent_grant');
+        $grantScopes  = $consentGrant ? ($consentGrant->scopes ?? ['patients:read']) : ['patients:read'];
+
         $purpose = $request->header('X-Purpose-Of-Use', 'treatment');
 
         // Query Patient from database
