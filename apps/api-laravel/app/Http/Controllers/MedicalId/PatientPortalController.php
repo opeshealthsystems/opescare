@@ -15,7 +15,7 @@ use App\Services\Identity\QrTokenService;
 use App\Services\Portal\PortalContextService;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
-use chillerlan\QRCode\Output\QRGdImagePNG;
+use chillerlan\QRCode\Output\QRMarkupSVG;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,11 +26,11 @@ class PatientPortalController extends Controller
     private function buildQrDataUri(string $url): string
     {
         $options = new QROptions([
-            'outputInterface' => QRGdImagePNG::class,
+            'outputInterface' => QRMarkupSVG::class,
             'outputBase64'    => true,
-            'scale'           => 8,
             'addQuietzone'    => true,
             'quietzoneSize'   => 2,
+            'scale'           => 5,
         ]);
 
         return (new QRCode($options))->render($url);
@@ -58,15 +58,19 @@ class PatientPortalController extends Controller
     {
         $patient = $this->resolvePatient();
 
-        $qrToken       = null;
+        $qrToken         = null;
         $staticQrDataUri = null;
         if ($patient) {
             $qrService = new QrTokenService();
             $tokenData = $qrService->generateToken($patient->id);
             $qrToken   = $tokenData['raw_token'];
 
-            $verifyUrl     = route('verify.qr', ['token' => $qrToken]);
-            $staticQrDataUri = $this->buildQrDataUri($verifyUrl);
+            try {
+                $verifyUrl       = route('verify.qr', ['token' => $qrToken]);
+                $staticQrDataUri = $this->buildQrDataUri($verifyUrl);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('QR generation failed', ['error' => $e->getMessage()]);
+            }
 
             // Audit: patient loaded their own health record dashboard
             $this->ctx->auditPatientAccess(
@@ -95,7 +99,12 @@ class PatientPortalController extends Controller
         $tokenData = $qrService->generateToken($patient->id, 'temporary_consent_qr', 60); // 60-minute TTL; secret stored as SHA-256 hash
 
         $verifyUrl = route('verify.qr', ['token' => $tokenData['raw_token']]);
-        $qrImage   = $this->buildQrDataUri($verifyUrl);
+        try {
+            $qrImage = $this->buildQrDataUri($verifyUrl);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Temp QR generation failed', ['error' => $e->getMessage()]);
+            $qrImage = null;
+        }
 
         // Audit: temporary QR generated
         $this->ctx->auditPatientAccess(
