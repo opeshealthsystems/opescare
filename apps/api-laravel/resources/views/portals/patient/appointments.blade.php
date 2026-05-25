@@ -7,6 +7,10 @@
 @section('breadcrumb_section', __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments')
 
 
+@section('patient_banner')
+    @include('partials.guardian-context-banner')
+@endsection
+
 @section('content')
 
 <div class="page-header">

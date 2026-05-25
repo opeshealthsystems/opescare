@@ -5,6 +5,10 @@
 @section('breadcrumb_home_url', route('portals.patient'))
 @section('breadcrumb_section', 'Consent Requests')
 
+@section('patient_banner')
+    @include('partials.guardian-context-banner')
+@endsection
+
 @section('content')
 
 <div class="page-header">

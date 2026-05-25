@@ -6,6 +6,9 @@
 @section('breadcrumb_home_url', route('portals.patient'))
 @section('breadcrumb_section', __('public.medical_id.access_logs', [], app()->getLocale()) ?: 'Access Logs')
 
+@section('patient_banner')
+    @include('partials.guardian-context-banner')
+@endsection
 
 @section('content')
 

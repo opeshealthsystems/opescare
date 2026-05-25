@@ -53,3 +53,21 @@
         <span>{{ __('public.portal.nav_help', [], $l) ?: 'Help' }}</span>
     </a>
 </div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.portal.nav_family', [], $l) ?: 'My Family' }}</div>
+    <a href="{{ route('portals.patient.family') }}"
+       class="sidebar-link {{ request()->routeIs('portals.patient.family*') ? 'active' : '' }}">
+        <i data-lucide="users"></i>
+        <span>{{ __('public.portal.nav_family_dashboard', [], $l) ?: 'Family Dashboard' }}</span>
+    </a>
+    <a href="{{ route('portals.patient.family.add') }}"
+       class="sidebar-link {{ request()->routeIs('portals.patient.family.add') ? 'active' : '' }}">
+        <i data-lucide="user-plus"></i>
+        <span>{{ __('public.portal.nav_family_add', [], $l) ?: 'Add Dependent' }}</span>
+    </a>
+    <a href="{{ route('portals.patient.family.invite') }}"
+       class="sidebar-link {{ request()->routeIs('portals.patient.family.invite') ? 'active' : '' }}">
+        <i data-lucide="mail"></i>
+        <span>{{ __('public.portal.nav_family_invite', [], $l) ?: 'Invite Member' }}</span>
+    </a>
+</div>
