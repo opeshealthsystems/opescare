@@ -7,6 +7,7 @@ use App\Models\Patient;
 use App\Services\Identity\HealthIdGeneratorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class FamilyController extends Controller
@@ -40,26 +41,29 @@ class FamilyController extends Controller
 
         $gen         = new HealthIdGeneratorService();
         $countryCode = Auth::user()?->patient?->country_code ?? 'CM';
-        $healthId    = $gen->generate($countryCode);
 
-        $patient = Patient::create([
-            'health_id'       => $healthId,
-            'first_name'      => $data['first_name'],
-            'last_name'       => $data['last_name'],
-            'date_of_birth'   => $data['date_of_birth'],
-            'sex'             => $data['sex'],
-            'identity_status' => 'provisional',
-            'is_demo'         => false,
-        ]);
+        DB::transaction(function () use ($data, $gen, $countryCode) {
+            $healthId = $gen->generate($countryCode);
 
-        FamilyLink::create([
-            'guardian_user_id'     => Auth::id(),
-            'dependent_patient_id' => $patient->id,
-            'relationship'         => $data['relationship'],
-            'access_level'         => $data['access_level'],
-            'status'               => 'active',
-            'created_by'           => 'self_registered',
-        ]);
+            $patient = Patient::create([
+                'health_id'       => $healthId,
+                'first_name'      => $data['first_name'],
+                'last_name'       => $data['last_name'],
+                'date_of_birth'   => $data['date_of_birth'],
+                'sex'             => $data['sex'],
+                'identity_status' => 'provisional',
+                'is_demo'         => false,
+            ]);
+
+            FamilyLink::create([
+                'guardian_user_id'     => Auth::id(),
+                'dependent_patient_id' => $patient->id,
+                'relationship'         => $data['relationship'],
+                'access_level'         => $data['access_level'],
+                'status'               => 'active',
+                'created_by'           => 'self_registered',
+            ]);
+        });
 
         return redirect()->route('portals.patient.family')
             ->with('success', 'Dependent added successfully.');
