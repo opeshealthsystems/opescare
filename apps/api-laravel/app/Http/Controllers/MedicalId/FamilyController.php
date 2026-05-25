@@ -148,10 +148,21 @@ class FamilyController extends Controller
 
     public function confirmInvite(Request $request, string $token)
     {
+        // Must be authenticated to accept a family invite
+        if (!Auth::check()) {
+            return redirect()->route('login')
+                ->with('error', 'Please log in to accept this family invite.');
+        }
+
         $link = $this->findPendingByToken($token);
         if (!$link) {
             return redirect()->route('login')
                 ->with('error', 'Invite link is invalid or expired.');
+        }
+
+        // Only the dependent patient (the person being linked) may accept
+        if (Auth::user()->patient_id !== $link->dependent_patient_id) {
+            abort(403, 'You are not the patient this invite was sent to.');
         }
 
         $link->update([

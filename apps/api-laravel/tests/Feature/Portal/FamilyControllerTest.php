@@ -194,6 +194,57 @@ class FamilyControllerTest extends TestCase
         ]);
     }
 
+    public function test_unauthenticated_user_cannot_confirm_invite(): void
+    {
+        $guardian  = User::factory()->create();
+        $patient   = Patient::factory()->create(['is_demo' => false]);
+        $rawToken  = \Illuminate\Support\Str::random(64);
+        \App\Models\FamilyLink::factory()->create([
+            'guardian_user_id'     => $guardian->id,
+            'dependent_patient_id' => $patient->id,
+            'status'               => 'pending_invite',
+            'invite_token'         => hash('sha256', $rawToken),
+            'invite_expires_at'    => now()->addHours(24),
+            'created_by'           => 'guardian_invited',
+        ]);
+
+        // POST without being logged in
+        $response = $this->post(route('portals.patient.family.invite.confirm', $rawToken));
+
+        // Must redirect (to login), not activate the link
+        $response->assertRedirect();
+        $this->assertDatabaseHas('family_links', [
+            'guardian_user_id'     => $guardian->id,
+            'dependent_patient_id' => $patient->id,
+            'status'               => 'pending_invite', // must remain pending
+        ]);
+    }
+
+    public function test_wrong_user_cannot_confirm_invite_for_another_patient(): void
+    {
+        $guardian  = User::factory()->create();
+        $patient   = Patient::factory()->create(['is_demo' => false]);
+        $wrongUser = User::factory()->create(); // has no patient_id link
+        $rawToken  = \Illuminate\Support\Str::random(64);
+        \App\Models\FamilyLink::factory()->create([
+            'guardian_user_id'     => $guardian->id,
+            'dependent_patient_id' => $patient->id,
+            'status'               => 'pending_invite',
+            'invite_token'         => hash('sha256', $rawToken),
+            'invite_expires_at'    => now()->addHours(24),
+            'created_by'           => 'guardian_invited',
+        ]);
+
+        // POST as a different (wrong) user who is not the patient
+        $response = $this->actingAs($wrongUser)
+            ->post(route('portals.patient.family.invite.confirm', $rawToken));
+
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('family_links', [
+            'status' => 'pending_invite', // must remain pending
+        ]);
+    }
+
     public function test_appointment_updated_listener_checks_wasChanged_not_isDirty(): void
     {
         \Illuminate\Support\Facades\Notification::fake();
