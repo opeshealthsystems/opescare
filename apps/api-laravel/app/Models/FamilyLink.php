@@ -31,12 +31,12 @@ class FamilyLink extends Model
         'age_transition_expires_at'  => 'datetime',
     ];
 
-    public function guardianUser()
+    public function guardianUser(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class, 'guardian_user_id');
     }
 
-    public function dependentPatient()
+    public function dependentPatient(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Patient::class, 'dependent_patient_id');
     }

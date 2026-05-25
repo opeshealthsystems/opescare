@@ -80,4 +80,31 @@ class FamilyLinkModelTest extends TestCase
             'dependent_patient_id'=> $dependent->id,
         ]);
     }
+
+    public function test_notification_pref_for_returns_default_when_prefs_empty(): void
+    {
+        $link = FamilyLink::factory()->make(['notification_prefs' => []]);
+        $this->assertTrue($link->notificationPrefFor('lab_result', 'portal'));
+        $this->assertTrue($link->notificationPrefFor('lab_result', 'email'));
+        $this->assertFalse($link->notificationPrefFor('lab_result', 'sms'));
+        $this->assertTrue($link->notificationPrefFor('consent_request', 'sms'));
+    }
+
+    public function test_notification_pref_for_returns_override_when_set(): void
+    {
+        $link = FamilyLink::factory()->make([
+            'notification_prefs' => ['lab_result' => ['portal' => false, 'email' => false, 'sms' => true]],
+        ]);
+        $this->assertFalse($link->notificationPrefFor('lab_result', 'portal'));
+        $this->assertFalse($link->notificationPrefFor('lab_result', 'email'));
+        $this->assertTrue($link->notificationPrefFor('lab_result', 'sms'));
+        // Unoverridded event still uses default
+        $this->assertTrue($link->notificationPrefFor('appointment', 'portal'));
+    }
+
+    public function test_notification_pref_for_returns_false_for_unknown_event(): void
+    {
+        $link = FamilyLink::factory()->make(['notification_prefs' => []]);
+        $this->assertFalse($link->notificationPrefFor('unknown_event', 'email'));
+    }
 }

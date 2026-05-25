@@ -7,10 +7,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('family_links')) {
-            return;
-        }
-
         Schema::create('family_links', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('guardian_user_id')->constrained('users')->cascadeOnDelete();
