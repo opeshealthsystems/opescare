@@ -28,10 +28,13 @@ class Patient extends Model
         'verification_status',
         'verified_by_facility_id',
         'verified_at',
-        'is_demo',
         'pin_hash',
         'privacy_preferences',
     ];
+
+    // is_demo is intentionally excluded from $fillable.
+    // Demo status is managed exclusively via forceFill() or direct DB assignment in migrations/seeders.
+    // This prevents attackers from mass-assigning demo mode to real patient records via API.
 
     protected $casts = [
         'date_of_birth' => 'date',
