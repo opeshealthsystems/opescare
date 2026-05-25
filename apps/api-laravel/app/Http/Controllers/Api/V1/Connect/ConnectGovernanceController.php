@@ -100,16 +100,19 @@ class ConnectGovernanceController extends Controller
         $purpose = $request->header('X-Purpose-Of-Use');
         $emergencyReason = $request->header('X-Emergency-Reason');
 
+        // Always audit emergency profile access — regardless of headers or purpose
+        \App\Services\AuditLogger::log(
+            $request,
+            'emergency_profile_pulled',
+            'patient',
+            $patient->id,
+            $patient->id,
+            true,
+            $emergencyReason
+        );
+
         if ($purpose === 'emergency' && $emergencyReason) {
-            \App\Services\AuditLogger::log(
-                $request,
-                'emergency_profile_pulled',
-                'patient',
-                $patient->id,
-                $patient->id,
-                true,
-                $emergencyReason
-            );
+            // other emergency logic
         }
 
         $profile = $this->emergencyService->buildEmergencyProfile($patient->id);
