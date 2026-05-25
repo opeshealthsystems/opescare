@@ -13,12 +13,28 @@ use App\Models\Patient;
 use App\Models\Prescription;
 use App\Services\Identity\QrTokenService;
 use App\Services\Portal\PortalContextService;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
+use chillerlan\QRCode\Output\QRGdImagePNG;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PatientPortalController extends Controller
 {
     public function __construct(private readonly PortalContextService $ctx) {}
+
+    private function buildQrDataUri(string $url): string
+    {
+        $options = new QROptions([
+            'outputInterface' => QRGdImagePNG::class,
+            'outputBase64'    => true,
+            'scale'           => 8,
+            'addQuietzone'    => true,
+            'quietzoneSize'   => 2,
+        ]);
+
+        return (new QRCode($options))->render($url);
+    }
 
     /**
      * Resolve the patient record for the authenticated user.
@@ -42,11 +58,15 @@ class PatientPortalController extends Controller
     {
         $patient = $this->resolvePatient();
 
-        $qrToken = null;
+        $qrToken       = null;
+        $staticQrDataUri = null;
         if ($patient) {
             $qrService = new QrTokenService();
             $tokenData = $qrService->generateToken($patient->id);
             $qrToken   = $tokenData['raw_token'];
+
+            $verifyUrl     = route('verify.qr', ['token' => $qrToken]);
+            $staticQrDataUri = $this->buildQrDataUri($verifyUrl);
 
             // Audit: patient loaded their own health record dashboard
             $this->ctx->auditPatientAccess(
@@ -57,7 +77,7 @@ class PatientPortalController extends Controller
             );
         }
 
-        return view('portals.patient.index', compact('patient', 'qrToken'));
+        return view('portals.patient.index', compact('patient', 'qrToken', 'staticQrDataUri'));
     }
 
     /**
@@ -74,6 +94,9 @@ class PatientPortalController extends Controller
         $qrService = new QrTokenService();
         $tokenData = $qrService->generateToken($patient->id, 'temporary_consent_qr', 60); // 60-minute TTL; secret stored as SHA-256 hash
 
+        $verifyUrl = route('verify.qr', ['token' => $tokenData['raw_token']]);
+        $qrImage   = $this->buildQrDataUri($verifyUrl);
+
         // Audit: temporary QR generated
         $this->ctx->auditPatientAccess(
             actionType:   'temporary_qr_generated',
@@ -83,7 +106,8 @@ class PatientPortalController extends Controller
         );
 
         return response()->json([
-            'url'        => route('verify.qr', ['token' => $tokenData['raw_token']]),
+            'url'        => $verifyUrl,
+            'qr_image'   => $qrImage,
             'expires_in' => 3600,
         ]);
     }

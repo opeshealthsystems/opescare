@@ -41,11 +41,17 @@
             </div>
         </div>
 
-        <!-- Static QR -->
-        <div class="health-id-qr" id="staticQrWrapper" aria-label="{{ __('public.medical_id.scan_qr', [], app()->getLocale()) ?: 'Scan QR' }}">
-            <div id="static-qr" style="width:5rem;height:5rem;display:flex;align-items:center;justify-content:center;background:#F1F5F9;border-radius:var(--p-radius-sm);">
-                <i data-lucide="qr-code" style="width:3rem;height:3rem;color:var(--p-text);"></i>
-            </div>
+        <!-- Static QR (server-rendered) -->
+        <div class="health-id-qr" aria-label="{{ __('public.medical_id.scan_qr', [], app()->getLocale()) ?: 'Scan QR' }}">
+            @if($staticQrDataUri)
+                <img src="{{ $staticQrDataUri }}"
+                     alt="{{ __('public.medical_id.health_id_qr_alt', [], app()->getLocale()) ?: 'Health ID QR Code' }}"
+                     style="width:5rem;height:5rem;border-radius:var(--p-radius-sm);" />
+            @else
+                <div style="width:5rem;height:5rem;display:flex;align-items:center;justify-content:center;background:#F1F5F9;border-radius:var(--p-radius-sm);">
+                    <i data-lucide="qr-code" style="width:3rem;height:3rem;color:var(--p-text);"></i>
+                </div>
+            @endif
             <span>{{ __('public.medical_id.scan_qr', [], app()->getLocale()) ?: 'Scan QR' }}</span>
         </div>
     </div>
@@ -110,7 +116,9 @@
 
             <div id="temp-qr-container" style="margin-top:var(--p-space-6);display:none;flex-direction:column;align-items:center;" aria-live="polite">
                 <div style="background:white;padding:var(--p-space-3);border-radius:var(--p-radius);border:1px solid var(--p-border);">
-                    <div id="temp-qr" style="width:8rem;height:8rem;display:flex;align-items:center;justify-content:center;background:#F1F5F9;border-radius:var(--p-radius-sm);">
+                    <img id="temp-qr-img" src="" alt="{{ __('public.portal.temp_qr_alt', [], app()->getLocale()) ?: 'Temporary Access QR Code' }}"
+                         style="width:8rem;height:8rem;border-radius:var(--p-radius-sm);display:none;" />
+                    <div id="temp-qr-placeholder" style="width:8rem;height:8rem;display:flex;align-items:center;justify-content:center;background:#F1F5F9;border-radius:var(--p-radius-sm);">
                         <i data-lucide="qr-code" style="width:4rem;height:4rem;color:var(--p-text);"></i>
                     </div>
                 </div>
@@ -175,28 +183,10 @@
 @endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    @if(isset($qrToken) && $qrToken)
-    var staticQrUrl = "{{ route('verify.qr', ['token' => $qrToken]) }}";
-    var staticQrEl  = document.getElementById('static-qr');
-    if (staticQrEl && typeof QRCode !== 'undefined') {
-        QRCode.toDataURL(staticQrUrl,
-            { width: 80, margin: 1, color: { dark: '#0F172A', light: '#FFFFFF' } },
-            function (err, url) {
-                if (!err && url) {
-                    staticQrEl.innerHTML = '<img src="' + url + '" alt="Health ID QR Code"'
-                        + ' style="width:5rem;height:5rem;border-radius:4px;" />';
-                }
-            }
-        );
-    }
-    @endif
-
-    var lblGenerating  = @json(__('public.portal.generating', [], app()->getLocale()) ?: 'Generating…');
+    var lblGenerating   = @json(__('public.portal.generating', [], app()->getLocale()) ?: 'Generating…');
     var lblRegenerateQr = @json(__('public.portal.regenerate_qr', [], app()->getLocale()) ?: 'Regenerate QR');
-
     var countdownInterval = null;
 
     var btnGen = document.getElementById('generate-temp-qr');
@@ -213,23 +203,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
                 if (!response.ok) throw new Error('QR generation failed (' + response.status + ')');
                 var data = await response.json();
-                if (data.url && typeof QRCode !== 'undefined') {
-                    QRCode.toDataURL(data.url,
-                        { width: 128, margin: 1, color: { dark: '#0F172A', light: '#FFFFFF' } },
-                        function (err, imgUrl) {
-                            if (!err && imgUrl) {
-                                var qrEl = document.getElementById('temp-qr');
-                                qrEl.innerHTML = '<img src="' + imgUrl + '" alt="Temporary QR Code"'
-                                    + ' style="width:8rem;height:8rem;border-radius:4px;" />';
-                                var container = document.getElementById('temp-qr-container');
-                                container.style.display = 'flex';
-                                startCountdown(data.expires_in || 3600);
-                            }
-                        }
-                    );
+                if (data.qr_image) {
+                    var img         = document.getElementById('temp-qr-img');
+                    var placeholder = document.getElementById('temp-qr-placeholder');
+                    var container   = document.getElementById('temp-qr-container');
+                    img.src         = data.qr_image;
+                    img.style.display       = 'block';
+                    placeholder.style.display = 'none';
+                    container.style.display = 'flex';
+                    startCountdown(data.expires_in || 3600);
                 }
             } catch (e) {
-                console.error(e);
+                console.error('Temp QR error:', e);
             } finally {
                 btnGen.disabled = false;
                 btnGen.innerHTML = '<i data-lucide="refresh-cw" style="width:1rem;height:1rem;"></i> ' + lblRegenerateQr;
@@ -242,7 +227,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (countdownInterval) clearInterval(countdownInterval);
         var el = document.getElementById('countdown');
         countdownInterval = setInterval(function () {
-            if (seconds <= 0) { clearInterval(countdownInterval); countdownInterval = null; if (el) el.textContent = 'Expired'; return; }
+            if (seconds <= 0) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+                if (el) el.textContent = 'Expired';
+                return;
+            }
             seconds--;
             var m = Math.floor(seconds / 60).toString().padStart(2, '0');
             var s = (seconds % 60).toString().padStart(2, '0');
