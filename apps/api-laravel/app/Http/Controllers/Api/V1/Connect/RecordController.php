@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Api\V1\Connect;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Enums\OpesCareErrorCode;
 use App\Models\Patient;
 use App\Models\ConsentGrant;
 use App\Models\Visit;
 use App\Models\ClinicalNote;
 use App\Models\Diagnosis;
-use App\Models\User;
 use App\Models\ReconciliationCase;
+use App\Models\User;
 use App\Services\AuditLogger;
 use App\Services\WebhookService;
 
@@ -102,7 +103,7 @@ class RecordController extends Controller
         }
 
         $patient = Patient::where('health_id', $healthId)->first();
-        $patientId = $patient ? $patient->id : 'test_patient_uuid_01';
+        $patientId = $patient?->id;
 
         // Dispatch audited emergency override
         AuditLogger::log(
@@ -203,24 +204,29 @@ class RecordController extends Controller
             ], 202);
         }
 
-        // Fetch a valid system clinician/user to satisfy FK constraints
-        $provider = User::first();
-        if (!$provider) {
-            $provider = User::create([
-                'id' => '00000000-0000-0000-0000-000000000001',
-                'name' => 'Dr. Jane Smith',
-                'email' => 'dr.jane@opescare.com',
-                'password' => bcrypt('password'),
+        // Use system provider ID for B2B integrated records (non-interactive facility sync)
+        $systemProviderId = config('opescare.system_provider_id', '00000000-0000-0000-0000-000000000001');
+
+        // Ensure system provider exists for FK constraints
+        \DB::table('users')->updateOrInsert(
+            ['id' => $systemProviderId],
+            [
+                'name' => 'System Provider',
+                'email' => $systemProviderId . '@system.opescare.local',
+                'password' => bcrypt('system'),
                 'primary_facility_id' => $facilityId,
-                'status' => 'active'
-            ]);
-        }
+                'status' => 'active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+        $providerId = $systemProviderId;
 
         // Write Encounter (Visit) to database!
         $visit = Visit::create([
             'patient_id' => $patient->id,
             'facility_id' => $facilityId,
-            'provider_id' => $provider->id,
+            'provider_id' => $providerId,
             'visit_type' => 'outpatient',
             'status' => 'completed',
             'started_at' => now()
@@ -229,7 +235,7 @@ class RecordController extends Controller
         // Write Clinical Notes to database!
         ClinicalNote::create([
             'visit_id' => $visit->id,
-            'provider_id' => $provider->id,
+            'provider_id' => $providerId,
             'history_of_present_illness' => $request->input('encounter.chief_complaint', 'Outpatient consult'),
             'examination_findings' => 'B2B integration import',
             'treatment_plan' => 'B2B integration import',
@@ -243,7 +249,7 @@ class RecordController extends Controller
             Diagnosis::create([
                 'patient_id' => $patient->id,
                 'visit_id' => $visit->id,
-                'provider_id' => $provider->id,
+                'provider_id' => $providerId,
                 'code_system' => $diag['system'] ?? 'ICD-10',
                 'code' => $diag['code'] ?? 'R50.9',
                 'display_name' => $diag['display'] ?? 'Fever',
@@ -292,7 +298,7 @@ class RecordController extends Controller
         }
 
         $patient = Patient::where('health_id', $healthId)->first();
-        $patientId = $patient ? $patient->id : 'test_patient_uuid_01';
+        $patientId = $patient?->id;
 
         AuditLogger::log(
             $request,
@@ -345,7 +351,7 @@ class RecordController extends Controller
         }
 
         $patient = Patient::where('health_id', $healthId)->first();
-        $patientId = $patient ? $patient->id : 'test_patient_uuid_01';
+        $patientId = $patient?->id;
 
         AuditLogger::log(
             $request,

@@ -1,0 +1,15 @@
+<?php
+
+return [
+    'system_provider_id' => env('OPESCARE_SYSTEM_PROVIDER_ID', '00000000-0000-0000-0000-000000000001'),
+    'demo' => [
+        'enabled'     => env('OPESCARE_DEMO_MODE', false),
+        'allowed_ips' => env('DEMO_ALLOWED_IPS', ''),
+    ],
+    'family' => [
+        'invite_ttl_hours' => env('FAMILY_INVITE_TTL_HOURS', 48),
+    ],
+    'health_id' => [
+        'default_country' => env('OPESCARE_DEFAULT_COUNTRY', 'CM'),
+    ],
+];
