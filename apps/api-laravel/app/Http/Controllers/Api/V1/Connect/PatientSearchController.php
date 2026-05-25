@@ -32,18 +32,6 @@ class PatientSearchController extends Controller
             $patient = Patient::where('health_id', $query)->first();
         }
 
-        // 2. Local sandbox fallback for unit testing
-        if (!$patient && $query === 'OC-CMR-7KQ9-MP42-X8D1') {
-            $patient = new Patient([
-                'health_id' => 'OC-CMR-7KQ9-MP42-X8D1',
-                'first_name' => 'John',
-                'last_name' => 'Doe',
-                'sex' => 'male',
-                'date_of_birth' => '1990-04-12',
-                'identity_status' => 'verified_by_facility'
-            ]);
-        }
-
         // 3. Log audit event
         AuditLogger::log(
             $request,
@@ -70,38 +58,6 @@ class PatientSearchController extends Controller
                 ],
                 'next_action' => 'request_consent'
             ], 200);
-        }
-
-        // 4. Handle possible duplicate match reconciliation case creation
-        if ($query === 'John Doe') {
-            $case = ReconciliationCase::create([
-                'mismatch_reason' => 'multiple_candidates',
-                'external_reference' => 'HOSP-SEARCH-CONFLICT',
-                'submitted_payload' => ['search_query' => $query],
-                'status' => 'pending'
-            ]);
-
-            return response()->json([
-                'status' => 'possible_matches',
-                'error_code' => OpesCareErrorCode::MULTIPLE_PATIENT_MATCHES->value,
-                'message' => 'Multiple possible patient matches found. Reconciliation case created.',
-                'reconciliation_case_id' => $case->id,
-                'candidates' => [
-                    [
-                        'candidate_id' => 'cand_9001_a',
-                        'display_name' => 'John D.',
-                        'sex' => 'male',
-                        'year_of_birth' => 1990
-                    ],
-                    [
-                        'candidate_id' => 'cand_9001_b',
-                        'display_name' => 'John R. Doe',
-                        'sex' => 'male',
-                        'year_of_birth' => 1985
-                    ]
-                ],
-                'next_action' => 'confirm_patient_identity'
-            ], 300);
         }
 
         return response()->json([
