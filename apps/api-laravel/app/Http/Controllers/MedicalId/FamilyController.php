@@ -83,13 +83,19 @@ class FamilyController extends Controller
         ]);
 
         $search  = $data['health_id_or_email'];
-        $patient = Patient::where('health_id', $search)
-            ->orWhere('email', $search)
-            ->where('is_demo', false)
+        $patient = Patient::where('is_demo', false)
+            ->where(function ($q) use ($search) {
+                $q->where('health_id', $search)
+                  ->orWhere('email', $search);
+            })
             ->first();
 
         if (!$patient) {
             return back()->withErrors(['health_id_or_email' => 'No patient found with that Health ID or email.']);
+        }
+
+        if ($patient->id === Auth::user()?->patient_id) {
+            return back()->withErrors(['health_id_or_email' => 'You cannot link yourself as a dependent.']);
         }
 
         $existing = FamilyLink::where('guardian_user_id', Auth::id())
@@ -108,7 +114,7 @@ class FamilyController extends Controller
             'relationship'         => $data['relationship'],
             'access_level'         => $data['access_level'],
             'status'               => 'pending_invite',
-            'created_by'           => 'invite_accepted',
+            'created_by'           => 'guardian_invited',
             'invite_token'         => hash('sha256', $rawToken),
             'invite_expires_at'    => now()->addHours(config('family.invite_ttl_hours', 48)),
         ]);

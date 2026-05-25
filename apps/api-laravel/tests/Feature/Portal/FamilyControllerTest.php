@@ -138,4 +138,59 @@ class FamilyControllerTest extends TestCase
 
         $response->assertStatus(403);
     }
+
+    public function test_send_invite_cannot_link_demo_patient_by_health_id(): void
+    {
+        $guardian = User::factory()->create();
+        $demo     = Patient::factory()->create(['is_demo' => true, 'email' => null]);
+
+        $response = $this->actingAs($guardian)
+            ->withSession($this->session)
+            ->post(route('portals.patient.family.invite.send'), [
+                'health_id_or_email' => $demo->health_id,
+                'relationship'       => 'parent',
+                'access_level'       => 'full',
+            ]);
+
+        $response->assertSessionHasErrors('health_id_or_email');
+        $this->assertDatabaseMissing('family_links', ['guardian_user_id' => $guardian->id]);
+    }
+
+    public function test_send_invite_cannot_link_self(): void
+    {
+        $guardian = User::factory()->create();
+        $patient  = Patient::factory()->create(['is_demo' => false]);
+        $guardian->update(['patient_id' => $patient->id]);
+
+        $response = $this->actingAs($guardian)
+            ->withSession($this->session)
+            ->post(route('portals.patient.family.invite.send'), [
+                'health_id_or_email' => $patient->health_id,
+                'relationship'       => 'parent',
+                'access_level'       => 'full',
+            ]);
+
+        $response->assertSessionHasErrors('health_id_or_email');
+        $this->assertDatabaseMissing('family_links', ['guardian_user_id' => $guardian->id]);
+    }
+
+    public function test_send_invite_sets_created_by_guardian_invited(): void
+    {
+        $guardian = User::factory()->create();
+        $patient  = Patient::factory()->create(['is_demo' => false]);
+
+        $this->actingAs($guardian)
+            ->withSession($this->session)
+            ->post(route('portals.patient.family.invite.send'), [
+                'health_id_or_email' => $patient->health_id,
+                'relationship'       => 'parent',
+                'access_level'       => 'full',
+            ]);
+
+        $this->assertDatabaseHas('family_links', [
+            'guardian_user_id'     => $guardian->id,
+            'dependent_patient_id' => $patient->id,
+            'created_by'           => 'guardian_invited',
+        ]);
+    }
 }
