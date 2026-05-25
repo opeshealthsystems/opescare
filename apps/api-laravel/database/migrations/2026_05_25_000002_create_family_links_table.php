@@ -21,13 +21,24 @@ return new class extends Migration
             $table->string('created_by', 30);
             $table->string('invite_token', 64)->nullable();
             $table->timestamp('invite_expires_at')->nullable();
-            $table->json('notification_prefs')->default('[]');
+            $table->json('notification_prefs')->default('{}');
             $table->timestamp('age_transition_notified_at')->nullable();
             $table->timestamp('age_transition_expires_at')->nullable();
             $table->timestamps();
 
             $table->unique(['guardian_user_id', 'dependent_patient_id']);
+            $table->index('guardian_user_id', 'idx_family_links_guardian');
+            $table->index('dependent_patient_id', 'idx_family_links_dependent');
         });
+
+        if (Schema::getConnection()->getDriverName() === 'pgsql') {
+            \Illuminate\Support\Facades\DB::statement(
+                "ALTER TABLE family_links ALTER COLUMN notification_prefs TYPE jsonb USING notification_prefs::jsonb"
+            );
+            \Illuminate\Support\Facades\DB::statement(
+                "CREATE INDEX IF NOT EXISTS idx_family_links_invite ON family_links (invite_token) WHERE invite_token IS NOT NULL"
+            );
+        }
     }
 
     public function down(): void
