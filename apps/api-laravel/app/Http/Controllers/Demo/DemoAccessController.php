@@ -41,6 +41,12 @@ class DemoAccessController extends Controller
             abort(403, 'Demo mode disabled.');
         }
 
+        // IP allowlist check — empty means any IP is allowed
+        $allowedIps = array_filter(array_map('trim', explode(',', config('demo.allowed_ips', ''))));
+        if (!empty($allowedIps) && !in_array($request->ip(), $allowedIps, true)) {
+            abort(403, 'Access denied from your IP address.');
+        }
+
         $request->validate([
             'role' => 'required|string',
             'email' => 'required|email'
