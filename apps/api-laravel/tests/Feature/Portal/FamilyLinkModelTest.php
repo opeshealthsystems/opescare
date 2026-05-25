@@ -5,6 +5,7 @@ use App\Models\FamilyLink;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class FamilyLinkModelTest extends TestCase
@@ -79,6 +80,35 @@ class FamilyLinkModelTest extends TestCase
             'guardian_user_id'    => $guardian->id,
             'dependent_patient_id'=> $dependent->id,
         ]);
+    }
+
+    public function test_can_relink_after_revoke(): void
+    {
+        if (Schema::getConnection()->getDriverName() === 'sqlite') {
+            $this->markTestSkipped('Partial unique index not supported on SQLite — constraint only lifted on PostgreSQL via migration.');
+        }
+
+        $guardian  = User::factory()->create();
+        $dependent = Patient::factory()->create(['is_demo' => false]);
+
+        // Create and revoke a link
+        FamilyLink::factory()->create([
+            'guardian_user_id'    => $guardian->id,
+            'dependent_patient_id'=> $dependent->id,
+            'status'              => 'revoked',
+        ]);
+
+        // Re-linking the same pair after revoke must succeed
+        $newLink = FamilyLink::create([
+            'guardian_user_id'     => $guardian->id,
+            'dependent_patient_id' => $dependent->id,
+            'relationship'         => 'caregiver',
+            'access_level'         => 'full',
+            'status'               => 'active',
+            'created_by'           => 'self_registered',
+        ]);
+
+        $this->assertDatabaseHas('family_links', ['id' => $newLink->id, 'status' => 'active']);
     }
 
     public function test_notification_pref_for_returns_default_when_prefs_empty(): void
