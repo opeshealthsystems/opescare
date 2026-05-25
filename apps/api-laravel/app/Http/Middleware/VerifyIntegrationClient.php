@@ -46,7 +46,12 @@ class VerifyIntegrationClient
             ]);
         } catch (\Exception $e) {
             // DB table may not exist yet in local setup before migrations are run
-            return response()->json(['error' => 'Database integration integrity error: ' . $e->getMessage()], 500);
+            // Log the actual error but return generic message to prevent information disclosure
+            \Log::error('integration_client_verification_failed', ['error' => $e->getMessage()]);
+            return response()->json([
+                'error' => 'authentication_error',
+                'message' => 'An internal error occurred during client authentication. Please try again.'
+            ], 500);
         }
 
         return $next($request);
