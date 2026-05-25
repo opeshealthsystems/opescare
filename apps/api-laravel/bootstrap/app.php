@@ -39,4 +39,8 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message'    => $e->getMessage(),
             ], 409);
         });
-    })->create();
+    })
+    ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
+        $schedule->command('family:check-age-transitions')->daily();
+    })
+    ->create();
