@@ -31,12 +31,20 @@ class EmergencyAccessEndpointTest extends TestCase
         ]);
     }
 
+    private function clientHeaders(): array
+    {
+        return [
+            'X-Client-ID'     => 'test_client_id',
+            'X-Client-Secret' => 'test_client_secret',
+        ];
+    }
+
     public function test_emergency_access_requires_reason()
     {
         $response = $this->postJson('/api/v1/connect/patients/emergency-profile', [
             'health_id' => $this->patient->health_id,
             // reason is intentionally missing
-        ]);
+        ], $this->clientHeaders());
 
         $response->assertStatus(400)
                  ->assertJsonPath('error_code', 'INVALID_PAYLOAD');
@@ -47,7 +55,7 @@ class EmergencyAccessEndpointTest extends TestCase
         $response = $this->postJson('/api/v1/connect/patients/emergency-profile', [
             'health_id' => $this->patient->health_id,
             'reason' => 'Unconscious patient arrived at ER after car accident'
-        ]);
+        ], $this->clientHeaders());
 
         $response->assertStatus(200)
                  ->assertJsonPath('status', 'success')
@@ -75,7 +83,7 @@ class EmergencyAccessEndpointTest extends TestCase
         $response = $this->postJson('/api/v1/connect/patients/emergency-profile', [
             'health_id' => 'CM-HID-XXXX-YYYY-ZZZZ',
             'reason' => 'Unconscious patient arrived at ER after car accident'
-        ]);
+        ], $this->clientHeaders());
 
         $response->assertStatus(404)
                  ->assertJsonPath('error_code', 'HEALTH_ID_NOT_FOUND');

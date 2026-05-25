@@ -328,7 +328,8 @@ Route::prefix('v1/connect')->middleware(['api', 'throttle:verify'])->group(funct
     
     // Medical ID Phase 3
     Route::post('/consents/request-medical-id', [\App\Http\Controllers\Api\V1\Connect\ConsentController::class, 'requestConsent']);
-    Route::post('/patients/emergency-profile', [\App\Http\Controllers\Api\V1\Connect\EmergencyAccessController::class, 'pullEmergencyProfile']);
+    Route::post('/patients/emergency-profile', [\App\Http\Controllers\Api\V1\Connect\EmergencyAccessController::class, 'pullEmergencyProfile'])
+        ->middleware(VerifyIntegrationClient::class);
 
     // Medical ID Phase 4 - Duplicate Merge
     Route::get('/admin/merge-cases', [\App\Http\Controllers\Api\V1\Connect\DuplicateMergeController::class, 'listCases']);

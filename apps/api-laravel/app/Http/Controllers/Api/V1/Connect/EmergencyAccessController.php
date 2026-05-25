@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\Patient;
 use App\Models\MedicalIdAccessEvent;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class EmergencyAccessController extends Controller
 {
@@ -72,12 +71,15 @@ class EmergencyAccessController extends Controller
 
     private function logAccess(string $healthId, ?string $patientId, string $purpose, string $accessType, string $result, Request $request)
     {
+        $clientId  = $request->attributes->get('integration_client_id');
+        $facilityId = $request->attributes->get('facility_id');
+
         MedicalIdAccessEvent::create([
             'patient_id' => $patientId,
             'health_id' => $healthId,
-            'actor_id' => Str::uuid(), 
+            'actor_id' => $clientId,
             'actor_type' => 'facility_staff',
-            'facility_id' => Str::uuid(), 
+            'facility_id' => $facilityId,
             'access_type' => $accessType,
             'purpose' => $purpose,
             'result' => $result,
