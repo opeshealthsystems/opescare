@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 /**
  * RequireFacilityContext
@@ -28,6 +29,20 @@ class RequireFacilityContext
 
         if (!$user) {
             return redirect()->route('login');
+        }
+
+        // Explicit bypass for super-admin, platform-admin, and system-admin roles.
+        // These roles operate at the platform level without facility context.
+        // Log the bypass for audit trail.
+        $platformAdminRoles = ['super_admin', 'platform_admin', 'system_admin', 'product_admin'];
+        if ($user->role && in_array($user->role->name, $platformAdminRoles, true)) {
+            Log::info('super_admin_facility_bypass', [
+                'user_id'    => $user->id,
+                'role'       => $user->role->name,
+                'path'       => $request->path(),
+                'ip_address' => $request->ip(),
+            ]);
+            return $next($request);
         }
 
         // Already resolved for this session
