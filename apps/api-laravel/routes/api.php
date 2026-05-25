@@ -344,13 +344,6 @@ Route::prefix('demo')->group(function () {
         \Illuminate\Support\Facades\Artisan::call('opescare:demo:reset');
         return response()->json(['message' => 'Demo reset successfully']);
     });
-    
-    Route::post('/api/generate-temporary-secret', function () {
-        if (!config('demo.enabled')) {
-            abort(403, 'Demo mode disabled');
-        }
-        return response()->json(['secret' => 'demo_temp_secret_' . str()->random(16)]);
-    });
 });
 
 require __DIR__.'/partners.php';
