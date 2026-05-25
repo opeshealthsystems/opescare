@@ -62,4 +62,29 @@ class User extends Authenticatable
     {
         return $this->role?->dashboardProfile;
     }
+
+    public function facilityRoleAssignments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(FacilityRoleAssignment::class);
+    }
+
+    /**
+     * Get the role for this user at a specific facility.
+     * Falls back to global role_id for backward compatibility.
+     */
+    public function roleAtFacility(string $facilityId): ?Role
+    {
+        $assignment = $this->facilityRoleAssignments()
+            ->active()
+            ->where('facility_id', $facilityId)
+            ->with('role')
+            ->first();
+
+        if ($assignment) {
+            return $assignment->role;
+        }
+
+        // Backward compatibility fallback
+        return $this->role ?? null;
+    }
 }
