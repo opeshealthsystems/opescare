@@ -77,4 +77,38 @@ class GuardianAccessMiddlewareTest extends TestCase
 
         $response->assertRedirect(route('portals.patient'));
     }
+
+    public function test_guardian_cannot_view_unlinked_patient(): void
+    {
+        // Guardian A has a link to dependentA
+        [$guardianA] = $this->makeGuardianWithDependent();
+        // Guardian B has a link to dependentB — different dependent
+        [$guardianB, $dependentOfB] = $this->makeGuardianWithDependent();
+
+        // Guardian A sets session to dependentB's ID (injection attempt)
+        $response = $this->actingAs($guardianA)
+            ->withSession([
+                'active_facility_id'          => 'test-facility',
+                'guardian_viewing_patient_id' => $dependentOfB->id,
+            ])
+            ->get(route('portals.patient.appointments'));
+
+        // No link exists for guardianA → dependentB, so must redirect
+        $response->assertRedirect(route('portals.patient'));
+    }
+
+    public function test_guardian_with_stale_session_for_nonexistent_patient_is_redirected(): void
+    {
+        $guardian = User::factory()->create();
+        $fakePatientId = (string) \Illuminate\Support\Str::uuid();
+
+        $response = $this->actingAs($guardian)
+            ->withSession([
+                'active_facility_id'          => 'test-facility',
+                'guardian_viewing_patient_id' => $fakePatientId,
+            ])
+            ->get(route('portals.patient.appointments'));
+
+        $response->assertRedirect(route('portals.patient'));
+    }
 }

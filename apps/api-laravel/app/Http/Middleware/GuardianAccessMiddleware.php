@@ -12,17 +12,19 @@ class GuardianAccessMiddleware
     {
         $patientId = session('guardian_viewing_patient_id');
 
-        if (!$patientId) {
+        // Pass through if no guardian session or user is not authenticated
+        if (!$patientId || !Auth::check()) {
             return $next($request);
         }
 
-        $link = FamilyLink::where('guardian_user_id', Auth::id())
+        $link = FamilyLink::active()
+            ->where('guardian_user_id', Auth::id())
             ->where('dependent_patient_id', $patientId)
-            ->where('status', 'active')
             ->with('dependentPatient')
             ->first();
 
-        if (!$link || $link->isExpiredByAge()) {
+        // Reject if: no link found, age-expired, or dependent patient record missing
+        if (!$link || $link->isExpiredByAge() || !$link->dependentPatient) {
             session()->forget('guardian_viewing_patient_id');
             return redirect()->route('portals.patient')
                 ->with('error', 'Guardian access is no longer active for this dependent.');
