@@ -89,7 +89,7 @@
     <div class="panel" style="margin-bottom:var(--p-space-4);border-left:3px solid #F59E0B;">
         <div class="panel-body">
             <p style="font-size:0.875rem;margin-bottom:var(--p-space-3);">
-                <strong>{{ $cl->guardianUser->name ?? $cl->guardianUser->email }}</strong>
+                <strong>{{ $cl->guardianUser?->name ?? $cl->guardianUser?->email ?? 'Unknown guardian' }}</strong>
                 has guardian access to your records. This access will expire on
                 <strong>{{ $cl->age_transition_expires_at->format('M d, Y') }}</strong>
                 unless you approve continued access.
