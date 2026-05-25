@@ -161,7 +161,8 @@ class FamilyController extends Controller
         }
 
         // Only the dependent patient (the person being linked) may accept
-        if (Auth::user()->patient_id !== $link->dependent_patient_id) {
+        $userPatientId = Auth::user()->patient_id;
+        if (!$userPatientId || $userPatientId !== $link->dependent_patient_id) {
             abort(403, 'You are not the patient this invite was sent to.');
         }
 

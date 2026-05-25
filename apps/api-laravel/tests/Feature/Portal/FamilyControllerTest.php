@@ -245,6 +245,28 @@ class FamilyControllerTest extends TestCase
         ]);
     }
 
+    public function test_user_with_no_patient_record_cannot_confirm_invite(): void
+    {
+        $guardian   = User::factory()->create();
+        $patient    = Patient::factory()->create(['is_demo' => false]);
+        $noPatient  = User::factory()->create(['patient_id' => null]); // no patient linked
+        $rawToken   = \Illuminate\Support\Str::random(64);
+        \App\Models\FamilyLink::factory()->create([
+            'guardian_user_id'     => $guardian->id,
+            'dependent_patient_id' => $patient->id,
+            'status'               => 'pending_invite',
+            'invite_token'         => hash('sha256', $rawToken),
+            'invite_expires_at'    => now()->addHours(24),
+            'created_by'           => 'guardian_invited',
+        ]);
+
+        $response = $this->actingAs($noPatient)
+            ->post(route('portals.patient.family.invite.confirm', $rawToken));
+
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('family_links', ['status' => 'pending_invite']);
+    }
+
     public function test_appointment_updated_listener_checks_wasChanged_not_isDirty(): void
     {
         \Illuminate\Support\Facades\Notification::fake();

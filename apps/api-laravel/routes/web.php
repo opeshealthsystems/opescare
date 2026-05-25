@@ -578,6 +578,7 @@ Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
     Route::post('/portals/admin/onboarding/{facility}/approve',              [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'approve'])->name('portals.admin.onboarding.approve');
 });
 
-// Public — no auth required
+// Public — no auth required (GET lets unauthenticated patients view the invite page)
 Route::get('/family/invite/accept/{token}',  [\App\Http\Controllers\MedicalId\FamilyController::class, 'acceptInvite'])->name('portals.patient.family.invite.accept');
-Route::post('/family/invite/accept/{token}', [\App\Http\Controllers\MedicalId\FamilyController::class, 'confirmInvite'])->name('portals.patient.family.invite.confirm');
+// POST requires auth — patient must be logged in to confirm acceptance
+Route::post('/family/invite/accept/{token}', [\App\Http\Controllers\MedicalId\FamilyController::class, 'confirmInvite'])->middleware('auth')->name('portals.patient.family.invite.confirm');
