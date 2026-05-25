@@ -85,17 +85,21 @@ class EnsurePortalAccess
         $user     = Auth::user();
         $roleName = $user->role?->name;
 
-        // No role assigned yet → allow through (will show empty dashboard)
-        // A future gate can restrict further once roles are seeded.
-        if (!$roleName) {
-            return $next($request);
-        }
-
         $requestedPrefix = $this->detectPortalPrefix($request->path());
 
         // Not a portal path we manage — skip
         if ($requestedPrefix === null) {
             return $next($request);
+        }
+
+        // No role assigned: the patient portal is accessible without a role because
+        // patients, guardians, and caregivers may not have a system role record.
+        // All other portals (staff, admin, insurance, developer, lite) require a role.
+        if (!$roleName) {
+            if ($requestedPrefix === 'portals/patient') {
+                return $next($request);
+            }
+            abort(403, 'Your account has no role assigned. Contact your administrator.');
         }
 
         $allowedRoles = self::PORTAL_ROLES[$requestedPrefix] ?? [];
