@@ -18,6 +18,12 @@ class DuplicateMergeEndpointTest extends TestCase
     private Patient $secondary;
     private IdentityMergeCase $mergeCase;
 
+    /** Integration client headers required by VerifyIntegrationClient middleware */
+    private array $clientHeaders = [
+        'X-Client-ID'     => 'test_client_id',
+        'X-Client-Secret' => 'test_client_secret',
+    ];
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -53,7 +59,7 @@ class DuplicateMergeEndpointTest extends TestCase
 
     public function test_can_list_pending_merge_cases()
     {
-        $response = $this->getJson('/api/v1/connect/admin/merge-cases');
+        $response = $this->withHeaders($this->clientHeaders)->getJson('/api/v1/connect/admin/merge-cases');
 
         $response->assertStatus(200)
                  ->assertJsonPath('status', 'success')
@@ -71,7 +77,7 @@ class DuplicateMergeEndpointTest extends TestCase
 
     public function test_can_approve_merge_case_and_create_alias()
     {
-        $response = $this->postJson('/api/v1/connect/admin/merge-cases/' . $this->mergeCase->uuid . '/resolve', [
+        $response = $this->withHeaders($this->clientHeaders)->postJson('/api/v1/connect/admin/merge-cases/' . $this->mergeCase->uuid . '/resolve', [
             'resolution' => 'approve',
             'review_reason' => 'Confirmed same person based on national ID'
         ]);
@@ -110,7 +116,7 @@ class DuplicateMergeEndpointTest extends TestCase
 
     public function test_can_reject_merge_case()
     {
-        $response = $this->postJson('/api/v1/connect/admin/merge-cases/' . $this->mergeCase->uuid . '/resolve', [
+        $response = $this->withHeaders($this->clientHeaders)->postJson('/api/v1/connect/admin/merge-cases/' . $this->mergeCase->uuid . '/resolve', [
             'resolution' => 'reject',
             'review_reason' => 'Different persons'
         ]);

@@ -332,8 +332,10 @@ Route::prefix('v1/connect')->middleware(['api', 'throttle:verify'])->group(funct
         ->middleware(VerifyIntegrationClient::class);
 
     // Medical ID Phase 4 - Duplicate Merge
-    Route::get('/admin/merge-cases', [\App\Http\Controllers\Api\V1\Connect\DuplicateMergeController::class, 'listCases']);
-    Route::post('/admin/merge-cases/{id}/resolve', [\App\Http\Controllers\Api\V1\Connect\DuplicateMergeController::class, 'resolveCase']);
+    Route::get('/admin/merge-cases', [\App\Http\Controllers\Api\V1\Connect\DuplicateMergeController::class, 'listCases'])
+        ->middleware(VerifyIntegrationClient::class);
+    Route::post('/admin/merge-cases/{id}/resolve', [\App\Http\Controllers\Api\V1\Connect\DuplicateMergeController::class, 'resolveCase'])
+        ->middleware(VerifyIntegrationClient::class);
 });
 
 /*
