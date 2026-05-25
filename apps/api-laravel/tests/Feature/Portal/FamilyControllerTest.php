@@ -307,6 +307,46 @@ class FamilyControllerTest extends TestCase
         );
     }
 
+    public function test_guardian_switch_creates_audit_log_entry(): void
+    {
+        $guardian  = User::factory()->create();
+        $dependent = Patient::factory()->create(['is_demo' => false]);
+        \App\Models\FamilyLink::factory()->create([
+            'guardian_user_id'    => $guardian->id,
+            'dependent_patient_id'=> $dependent->id,
+            'status'              => 'active',
+        ]);
+
+        $this->actingAs($guardian)
+            ->withSession($this->session)
+            ->post(route('portals.patient.family.switch', $dependent->id));
+
+        $this->assertDatabaseHas('audit_events', [
+            'patient_id'  => $dependent->id,
+            'action_type' => 'guardian_switch_to',
+        ]);
+    }
+
+    public function test_revoke_creates_audit_log_entry(): void
+    {
+        $guardian  = User::factory()->create();
+        $dependent = Patient::factory()->create(['is_demo' => false]);
+        $link = \App\Models\FamilyLink::factory()->create([
+            'guardian_user_id'    => $guardian->id,
+            'dependent_patient_id'=> $dependent->id,
+            'status'              => 'active',
+        ]);
+
+        $this->actingAs($guardian)
+            ->withSession($this->session)
+            ->post(route('portals.patient.family.revoke', $link->id));
+
+        $this->assertDatabaseHas('audit_events', [
+            'patient_id'  => $dependent->id,
+            'action_type' => 'guardian_link_revoked',
+        ]);
+    }
+
     public function test_update_saves_false_for_unchecked_notification_channels(): void
     {
         $guardian  = User::factory()->create();

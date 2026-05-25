@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FamilyLink;
 use App\Models\Patient;
 use App\Services\Identity\HealthIdGeneratorService;
+use App\Services\Portal\PortalContextService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +13,8 @@ use Illuminate\Support\Str;
 
 class FamilyController extends Controller
 {
+    public function __construct(private readonly PortalContextService $ctx) {}
+
     public function index()
     {
         $links = FamilyLink::where('guardian_user_id', Auth::id())
@@ -63,6 +66,13 @@ class FamilyController extends Controller
                 'status'               => 'active',
                 'created_by'           => 'self_registered',
             ]);
+
+            $this->ctx->auditPatientAccess(
+                actionType:   'guardian_link_created',
+                resourceType: 'FamilyLink',
+                resourceId:   null,
+                patientId:    $patient->id,
+            );
         });
 
         return redirect()->route('portals.patient.family')
@@ -229,6 +239,14 @@ class FamilyController extends Controller
         abort_if($link->guardian_user_id !== Auth::id(), 403);
 
         $link->update(['status' => 'revoked']);
+
+        $this->ctx->auditPatientAccess(
+            actionType:   'guardian_link_revoked',
+            resourceType: 'FamilyLink',
+            resourceId:   $link->id,
+            patientId:    $link->dependent_patient_id,
+        );
+
         session()->forget('guardian_viewing_patient_id');
 
         return redirect()->route('portals.patient.family')
@@ -245,6 +263,13 @@ class FamilyController extends Controller
         abort_if(!$link, 403);
 
         session(['guardian_viewing_patient_id' => $patientId]);
+
+        $this->ctx->auditPatientAccess(
+            actionType:   'guardian_switch_to',
+            resourceType: 'FamilyLink',
+            resourceId:   $link->id,
+            patientId:    $patientId,
+        );
 
         return redirect()->route('portals.patient.appointments');
     }
