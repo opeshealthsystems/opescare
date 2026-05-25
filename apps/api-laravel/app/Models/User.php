@@ -12,14 +12,17 @@ class User extends Authenticatable
     use \App\Traits\IsDemoRecord;
     use HasFactory, Notifiable, HasUuids;
 
+    // role_id and is_demo are intentionally excluded from $fillable.
+    // Assign roles via: $user->role_id = $roleId; $user->save();
+    // Toggle demo via: $user->forceFill(['is_demo' => true])->save();
     protected $fillable = [
         'name',
         'email',
         'password',
         'primary_facility_id',
         'patient_id',
-        'role_id',
         'status',
+        // NOT: role_id, is_demo
     ];
 
     protected $hidden = [
