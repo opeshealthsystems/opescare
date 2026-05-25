@@ -64,7 +64,7 @@ class IdempotencyProtection
                 }
             } catch (\Exception $e) {
                 Log::error('idempotency_key_store_failed', [
-                    'key'       => $idempotencyKey ?? $key ?? 'unknown',
+                    'key'       => $key ?? 'unknown',
                     'exception' => $e->getMessage(),
                 ]);
             }
@@ -85,7 +85,7 @@ class IdempotencyProtection
                     ]);
                 } catch (\Exception $e) {
                     Log::error('idempotency_key_store_failed', [
-                        'key'       => $idempotencyKey ?? $key ?? 'unknown',
+                        'key'       => $key ?? 'unknown',
                         'exception' => $e->getMessage(),
                     ]);
                 }
