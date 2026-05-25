@@ -26,7 +26,7 @@ class NotifyGuardiansOfPatientEvent
 
     public function handleAppointmentUpdated(object $appointment): void
     {
-        if (!$appointment->isDirty('status')) {
+        if (!$appointment->wasChanged('status')) {
             return;
         }
         $this->dispatch(

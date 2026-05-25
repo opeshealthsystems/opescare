@@ -193,4 +193,44 @@ class FamilyControllerTest extends TestCase
             'created_by'           => 'guardian_invited',
         ]);
     }
+
+    public function test_appointment_updated_listener_checks_wasChanged_not_isDirty(): void
+    {
+        \Illuminate\Support\Facades\Notification::fake();
+
+        $guardian  = User::factory()->create();
+        $dependent = Patient::factory()->create(['is_demo' => false]);
+        FamilyLink::factory()->create([
+            'guardian_user_id'    => $guardian->id,
+            'dependent_patient_id'=> $dependent->id,
+            'status'              => 'active',
+        ]);
+
+        $listener = new \App\Listeners\NotifyGuardiansOfPatientEvent();
+
+        // Create a mock appointment object that has wasChanged method
+        $appointment = new class {
+            public string $patient_id = '';
+            public bool $statusChanged = false;
+
+            public function wasChanged(string $attr): bool
+            {
+                return $attr === 'status' && $this->statusChanged;
+            }
+        };
+        $appointment->patient_id = $dependent->id;
+
+        // Test 1: When status was NOT changed, no notification should be sent
+        $appointment->statusChanged = false;
+        $listener->handleAppointmentUpdated($appointment);
+        \Illuminate\Support\Facades\Notification::assertNothingSent();
+
+        // Test 2: When status WAS changed, notification should be sent
+        $appointment->statusChanged = true;
+        $listener->handleAppointmentUpdated($appointment);
+        \Illuminate\Support\Facades\Notification::assertSentTo(
+            $guardian,
+            \App\Notifications\FamilyEventNotification::class
+        );
+    }
 }
