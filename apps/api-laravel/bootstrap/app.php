@@ -29,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'facility.context' => \App\Http\Middleware\RequireFacilityContext::class,
             'consent.grant'    => \App\Http\Middleware\RequireConsentGrant::class,
             'auth.mobile'      => \App\Http\Middleware\AuthenticateMobilePatient::class,
+            'guardian.context' => \App\Http\Middleware\GuardianAccessMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
