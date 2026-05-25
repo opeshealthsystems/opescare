@@ -74,7 +74,11 @@ class ConnectGovernanceController extends Controller
     {
         $patientId = $request->input('patient_id');
         $facilityId = $request->attributes->get('facility_id', '00000000-0000-0000-0000-000000000002');
-        $actorId = $request->input('actor_id', '00000000-0000-0000-0000-000000000001');
+        // actor_id must come from the authenticated integration client, not caller-supplied input
+        $actorId = $request->attributes->get('provider_id')
+                ?? $request->attributes->get('integration_client_id')
+                ?? $request->attributes->get('client_id')
+                ?? null;
         $reason = $request->input('reason');
 
         if (!$patientId || !$reason) {

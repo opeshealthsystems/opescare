@@ -22,6 +22,7 @@ class VerifyIntegrationClient
         if (app()->environment('testing') && $clientId === 'test_client_id' && $clientSecret === 'test_client_secret') {
             $request->attributes->add([
                 'integration_client_id' => 'test_client_id',
+                'provider_id' => '00000000-0000-0000-0000-000000000001', // System B2B account for testing
                 'facility_id' => '00000000-0000-0000-0000-000000000001',
             ]);
             return $next($request);
@@ -43,6 +44,7 @@ class VerifyIntegrationClient
                 'integration_client'    => $client,
                 'integration_client_id' => $client->client_id,
                 'facility_id'           => $client->facility_id,
+                'provider_id'           => $client->created_by, // Map to user who created/owns this integration
             ]);
         } catch (\Exception $e) {
             // DB table may not exist yet in local setup before migrations are run
