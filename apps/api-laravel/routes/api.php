@@ -216,9 +216,13 @@ Route::prefix('mobile')->group(function () {
 */
 Route::prefix('provider-mobile')->group(function () {
 
-    // Public auth endpoints
-    Route::post('/auth/login', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileAuthController::class, 'login']);
-    Route::post('/auth/otp/verify', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileAuthController::class, 'verifyOtp']);
+    // Rate-limited auth endpoints (5 per minute = brute-force protection)
+    Route::middleware('throttle:5,1')->group(function () {
+        Route::post('/auth/login', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileAuthController::class, 'login']);
+        Route::post('/auth/otp/verify', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileAuthController::class, 'verifyOtp']);
+    });
+
+    // Public auth endpoints (no rate limiting)
     Route::post('/auth/push-token', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileAuthController::class, 'registerPushToken']);
     Route::post('/auth/logout', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileAuthController::class, 'logout']);
 
