@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\CashierSession;
+use App\Models\ConsentGrant;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Modules\Billing\Services\BillingService;
 use App\Modules\Billing\Services\PaymentService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class BillingController extends Controller
@@ -15,6 +17,32 @@ class BillingController extends Controller
     public function invoices(Request $request)
     {
         $query = Invoice::query()->orderByDesc('issued_at');
+
+        // Security: verify the calling integration client holds a consent grant
+        // for the requested patient before filtering — prevents IDOR enumeration.
+        // Accepts the grant either from request attributes (set by RequireConsentGrant middleware
+        // if applied) or directly from the X-Consent-Grant-Id header for this unauthenticated route.
+        if ($request->filled('patient_id')) {
+            $patientId    = $request->query('patient_id');
+
+            // Prefer middleware-resolved grant; fall back to header-based lookup
+            $consentGrant = $request->attributes->get('consent_grant');
+
+            if (!$consentGrant && $request->header('X-Consent-Grant-Id')) {
+                $consentGrant = ConsentGrant::withoutGlobalScopes()
+                    ->where('id', $request->header('X-Consent-Grant-Id'))
+                    ->where('status', 'active')
+                    ->where('expires_at', '>=', Carbon::now())
+                    ->first();
+            }
+
+            if (!$consentGrant || $consentGrant->patient_id !== $patientId) {
+                return response()->json([
+                    'error'   => 'forbidden',
+                    'message' => 'You do not have a consent grant to access billing records for this patient.',
+                ], 403);
+            }
+        }
 
         if ($request->query('scope') === 'patient') {
             abort_unless($request->filled('patient_id'), 403, 'PATIENT_SCOPE_REQUIRES_PATIENT_ID');
