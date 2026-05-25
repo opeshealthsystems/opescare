@@ -27,19 +27,7 @@ class MobilePatientController extends Controller
         $patient   = Patient::find($patientId);
 
         if (!$patient) {
-            // Demo fallback
-            return response()->json([
-                'health_id'            => 'OC-CMR-7KQ9-MP42-X8D1',
-                'display_name'         => 'John D.',
-                'first_name'           => 'John',
-                'last_name'            => 'Doe',
-                'phone'                => '+237 600-000-000',
-                'email'                => null,
-                'dob'                  => '1990-04-12',
-                'sex'                  => 'male',
-                'digital_qr_reference' => 'qr_ref_opescare_johndoe_1002',
-                'status'               => 'active',
-            ]);
+            return response()->json(['message' => 'Patient not found.'], 404);
         }
 
         return response()->json([
@@ -66,16 +54,7 @@ class MobilePatientController extends Controller
         $patient   = Patient::find($patientId);
 
         if (!$patient) {
-            return response()->json([
-                'health_id'      => 'OC-CMR-7KQ9-MP42-X8D1',
-                'display_name'   => 'John D.',
-                'sex'            => 'male',
-                'dob'            => '1990-04-12',
-                'blood_type'     => null,
-                'qr_payload'     => base64_encode('{"hid":"OC-CMR-7KQ9-MP42-X8D1","ts":"' . now()->toIso8601String() . '"}'),
-                'card_issued_at' => now()->subYear()->toDateString(),
-                'status'         => 'active',
-            ]);
+            return response()->json(['message' => 'Patient not found.'], 404);
         }
 
         $qrPayload = base64_encode(json_encode([
@@ -171,11 +150,11 @@ class MobilePatientController extends Controller
 
     // -------------------------------------------------------------------------
 
-    private function resolvePatientId(Request $request): string
+    private function resolvePatientId(Request $request): ?string
     {
         if ($request->has('_patient_id')) {
             return $request->input('_patient_id');
         }
-        return Patient::value('id') ?? 'demo';
+        return $request->attributes->get('patient_id');
     }
 }
