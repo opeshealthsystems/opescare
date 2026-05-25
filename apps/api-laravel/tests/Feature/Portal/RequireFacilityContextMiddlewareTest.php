@@ -131,7 +131,8 @@ class RequireFacilityContextMiddlewareTest extends TestCase
         session()->forget('active_facility_id');
 
         $middleware = new \App\Http\Middleware\RequireFacilityContext();
-        $request    = \Illuminate\Http\Request::create('/portals/patient');
+        // Use a path that requires facility context (provider portal, not patient portal)
+        $request    = \Illuminate\Http\Request::create('/portals/provider');
         $request->setLaravelSession(app('session.store'));
 
         $response = $middleware->handle($request, function () {
