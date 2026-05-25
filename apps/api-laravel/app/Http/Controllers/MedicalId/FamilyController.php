@@ -58,7 +58,7 @@ class FamilyController extends Controller
                 'is_demo'         => false,
             ]);
 
-            FamilyLink::create([
+            $link = FamilyLink::create([
                 'guardian_user_id'     => Auth::id(),
                 'dependent_patient_id' => $patient->id,
                 'relationship'         => $data['relationship'],
@@ -70,7 +70,7 @@ class FamilyController extends Controller
             $this->ctx->auditPatientAccess(
                 actionType:   'guardian_link_created',
                 resourceType: 'FamilyLink',
-                resourceId:   null,
+                resourceId:   $link->id,
                 patientId:    $patient->id,
             );
         });

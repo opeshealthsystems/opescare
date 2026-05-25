@@ -307,6 +307,30 @@ class FamilyControllerTest extends TestCase
         );
     }
 
+    public function test_store_dependent_creates_audit_log_entry(): void
+    {
+        $guardian = User::factory()->create();
+        // Give guardian a patient record so country_code resolution works
+        $guardianPatient = Patient::factory()->create(['is_demo' => false]);
+        $guardian->update(['patient_id' => $guardianPatient->id]);
+
+        $this->actingAs($guardian)
+            ->withSession($this->session)
+            ->post(route('portals.patient.family.store'), [
+                'first_name'   => 'Junior',
+                'last_name'    => 'Test',
+                'date_of_birth'=> '2015-01-01',
+                'sex'          => 'male',
+                'relationship' => 'parent',
+                'access_level' => 'full',
+            ]);
+
+        $this->assertDatabaseHas('audit_events', [
+            'actor_id'    => $guardian->id,
+            'action_type' => 'guardian_link_created',
+        ]);
+    }
+
     public function test_guardian_switch_creates_audit_log_entry(): void
     {
         $guardian  = User::factory()->create();
