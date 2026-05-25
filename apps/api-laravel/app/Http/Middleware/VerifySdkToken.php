@@ -72,10 +72,8 @@ class VerifySdkToken
             $missing = array_diff($requiredScopes, $tokenScopes);
             if (!empty($missing) && !in_array('*', $tokenScopes)) {
                 return response()->json([
-                    'error'    => 'insufficient_scope',
-                    'message'  => 'Token lacks required scope(s): ' . implode(', ', $missing),
-                    'required' => $requiredScopes,
-                    'granted'  => $tokenScopes,
+                    'error'   => 'insufficient_scope',
+                    'message' => 'Token does not have the required permissions for this operation.',
                 ], 403);
             }
         }
