@@ -82,8 +82,7 @@ class EnsurePortalAccess
             return redirect()->route('login');
         }
 
-        $user     = Auth::user();
-        $roleName = $user->role?->name;
+        $user = Auth::user();
 
         $requestedPrefix = $this->detectPortalPrefix($request->path());
 
@@ -92,14 +91,31 @@ class EnsurePortalAccess
             return $next($request);
         }
 
-        // No role assigned: the patient portal is accessible without a role because
-        // patients, guardians, and caregivers may not have a system role record.
-        // All other portals (staff, admin, insurance, developer, lite) require a role.
+        // Patient portal: patients, guardians, and caregivers may not have a system role
+        // record or a facility assignment — let them through for their own portal.
+        if ($requestedPrefix === 'portals/patient') {
+            return $next($request);
+        }
+
+        // Resolve the facility-scoped role (W6T2: per-facility RBAC).
+        // Use the active_facility_id from the session (set by RequireFacilityContext),
+        // with a backward-compatible fallback to the user's primary facility and then
+        // the global role record.
+        $facilityId = session('active_facility_id') ?? $user->primary_facility_id ?? null;
+
+        $role = null;
+        if ($facilityId && method_exists($user, 'roleAtFacility')) {
+            $role = $user->roleAtFacility($facilityId);
+        } else {
+            // Fallback: global role (backward compatibility for users without facility context)
+            $role = $user->role ?? null;
+        }
+
+        $roleName = $role?->name;
+
+        // No role assigned at this facility (or globally): abort for all non-patient portals.
         if (!$roleName) {
-            if ($requestedPrefix === 'portals/patient') {
-                return $next($request);
-            }
-            abort(403, 'Your account has no role assigned. Contact your administrator.');
+            abort(403, 'Your account has no role assigned at this facility. Contact your administrator.');
         }
 
         $allowedRoles = self::PORTAL_ROLES[$requestedPrefix] ?? [];
