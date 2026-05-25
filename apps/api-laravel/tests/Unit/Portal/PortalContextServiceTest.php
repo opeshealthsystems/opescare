@@ -33,9 +33,9 @@ class PortalContextServiceTest extends TestCase
 
     // ── actorId ─────────────────────────────────────────────────────────────
 
-    public function test_actor_id_returns_anonymous_when_unauthenticated(): void
+    public function test_actor_id_returns_null_when_unauthenticated(): void
     {
-        $this->assertEquals('anonymous', $this->svc->actorId());
+        $this->assertNull($this->svc->actorId());
     }
 
     public function test_actor_id_returns_user_id_when_authenticated(): void

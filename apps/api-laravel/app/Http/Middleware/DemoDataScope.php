@@ -24,6 +24,17 @@ class DemoDataScope
 {
     public function handle(Request $request, Closure $next)
     {
+        // OCTANE/SWOOLE INCOMPATIBILITY WARNING:
+        // This middleware sets a global config value that persists across requests in long-running
+        // Octane/Swoole workers, which WILL cause demo data to leak into non-demo requests.
+        // DO NOT use Octane with demo mode enabled.
+        if (config('octane.server') !== null && config('demo.enabled', false)) {
+            \Illuminate\Support\Facades\Log::critical('demo_data_scope_octane_conflict', [
+                'message' => 'DemoDataScope middleware is incompatible with Octane. Aborting demo session.',
+            ]);
+            abort(503, 'Demo mode is not supported in this server configuration.');
+        }
+
         if (Auth::check() && Auth::user()->is_demo) {
             // Force demo isolation: IsDemoRecord global scope will restrict
             // all model queries to is_demo = true rows.

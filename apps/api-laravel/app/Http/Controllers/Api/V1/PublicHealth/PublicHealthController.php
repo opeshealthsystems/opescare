@@ -94,8 +94,16 @@ class PublicHealthController extends Controller
         ]);
     }
 
-    public function getFacilityDashboard($facilityId)
+    public function getFacilityDashboard(Request $request, $facilityId)
     {
+        $clientFacilityId = $request->attributes->get('facility_id');
+        if ($clientFacilityId && $clientFacilityId !== $facilityId) {
+            return response()->json([
+                'error'   => 'forbidden',
+                'message' => 'You do not have access to analytics for this facility.',
+            ], 403);
+        }
+
         $reports = PublicHealthReport::where('facility_id', $facilityId)->get();
         return response()->json([
             'facility_id' => $facilityId,

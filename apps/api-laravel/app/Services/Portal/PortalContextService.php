@@ -23,9 +23,9 @@ class PortalContextService
     /**
      * The authenticated user's UUID (actor for audit events and write operations).
      */
-    public function actorId(): string
+    public function actorId(): ?string
     {
-        return Auth::id() ?? 'anonymous';
+        return Auth::id(); // Returns null if unauthenticated — callers handle null via audit schema
     }
 
     /**

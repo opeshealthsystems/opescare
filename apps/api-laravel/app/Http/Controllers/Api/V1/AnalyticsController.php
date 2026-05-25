@@ -27,6 +27,14 @@ class AnalyticsController extends Controller
 
     public function facilityDashboard(Request $request, string $facilityId): JsonResponse
     {
+        $clientFacilityId = $request->attributes->get('facility_id');
+        if ($clientFacilityId && $clientFacilityId !== $facilityId) {
+            return response()->json([
+                'error'   => 'forbidden',
+                'message' => 'You do not have access to analytics for this facility.',
+            ], 403);
+        }
+
         return response()->json(
             $this->analytics->getFacilityDashboard($facilityId, $request->all())
         );
