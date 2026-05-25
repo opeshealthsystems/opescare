@@ -12,7 +12,6 @@ use App\Models\Visit;
 use App\Models\ClinicalNote;
 use App\Models\Diagnosis;
 use App\Models\ReconciliationCase;
-use App\Models\User;
 use App\Services\AuditLogger;
 use App\Services\WebhookService;
 
