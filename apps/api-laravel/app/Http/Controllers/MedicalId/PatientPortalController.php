@@ -52,6 +52,28 @@ class PatientPortalController extends Controller
     }
 
     /**
+     * Returns the dependent patient if guardian context is active, otherwise own patient.
+     */
+    private function resolveViewingPatient(): ?Patient
+    {
+        if (request()->attributes->has('viewing_patient')) {
+            return request()->attributes->get('viewing_patient');
+        }
+        return $this->resolvePatient();
+    }
+
+    /**
+     * Aborts 403 if the guardian is in read_only mode and attempting a write action.
+     */
+    private function assertWriteAllowed(): void
+    {
+        $link = request()->attributes->get('guardian_link');
+        if ($link && $link->access_level === 'read_only') {
+            abort(403, 'Read-only guardian access does not permit this action.');
+        }
+    }
+
+    /**
      * Dashboard / My Health ID
      */
     public function index(Request $request)
@@ -126,7 +148,7 @@ class PatientPortalController extends Controller
      */
     public function appointments(Request $request)
     {
-        $patient = $this->resolvePatient();
+        $patient = $this->resolveViewingPatient();
 
         $appointments = $patient
             ? Appointment::where('patient_id', $patient->id)
@@ -153,7 +175,7 @@ class PatientPortalController extends Controller
      */
     public function labResults(Request $request)
     {
-        $patient = $this->resolvePatient();
+        $patient = $this->resolveViewingPatient();
 
         $labs = $patient
             ? LabResult::where('patient_id', $patient->id)
@@ -180,7 +202,7 @@ class PatientPortalController extends Controller
      */
     public function prescriptions(Request $request)
     {
-        $patient = $this->resolvePatient();
+        $patient = $this->resolveViewingPatient();
 
         $prescriptions = $patient
             ? Prescription::where('patient_id', $patient->id)
@@ -207,7 +229,7 @@ class PatientPortalController extends Controller
      */
     public function consentRequests(Request $request)
     {
-        $patient = $this->resolvePatient();
+        $patient = $this->resolveViewingPatient();
 
         $consentRequests = $patient
             ? ConsentRequest::where('patient_id', $patient->id)
@@ -234,7 +256,8 @@ class PatientPortalController extends Controller
      */
     public function approveConsent(Request $request, string $id)
     {
-        $patient = $this->resolvePatient();
+        $this->assertWriteAllowed();
+        $patient = $this->resolveViewingPatient();
         abort_if(!$patient, 403);
 
         $req = ConsentRequest::where('id', $id)
@@ -272,7 +295,8 @@ class PatientPortalController extends Controller
      */
     public function denyConsent(Request $request, string $id)
     {
-        $patient = $this->resolvePatient();
+        $this->assertWriteAllowed();
+        $patient = $this->resolveViewingPatient();
         abort_if(!$patient, 403);
 
         $req = ConsentRequest::where('id', $id)
@@ -298,7 +322,7 @@ class PatientPortalController extends Controller
      */
     public function documents(Request $request)
     {
-        $patient = $this->resolvePatient();
+        $patient = $this->resolveViewingPatient();
 
         $documents = $patient
             ? OfficialDocument::where('patient_id', $patient->id)
@@ -325,7 +349,7 @@ class PatientPortalController extends Controller
      */
     public function profile(Request $request)
     {
-        $patient = $this->resolvePatient();
+        $patient = $this->resolveViewingPatient();
 
         if ($patient) {
             $this->ctx->auditPatientAccess(
@@ -344,7 +368,8 @@ class PatientPortalController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        $patient = $this->resolvePatient();
+        $this->assertWriteAllowed();
+        $patient = $this->resolveViewingPatient();
         abort_if(!$patient, 403);
 
         $validated = $request->validate([
@@ -400,7 +425,7 @@ class PatientPortalController extends Controller
      */
     public function accessLogs(Request $request)
     {
-        $patient = $this->resolvePatient();
+        $patient = $this->resolveViewingPatient();
 
         $logs = [];
         if ($patient) {
