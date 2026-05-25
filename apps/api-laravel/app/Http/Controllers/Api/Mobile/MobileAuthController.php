@@ -30,7 +30,8 @@ class MobileAuthController extends Controller
             'date_of_birth' => 'sometimes|date_format:Y-m-d',
         ]);
 
-        $patient = Patient::where('phone_number', $request->phone_number)->first();
+        // phone_number is stored encrypted; use the keyed hash for DB lookup
+        $patient = Patient::findByPhone($request->phone_number);
 
         if (!$patient) {
             return response()->json(['message' => 'Patient not found.'], 404);
@@ -38,7 +39,7 @@ class MobileAuthController extends Controller
 
         if (is_null($patient->pin_hash)) {
             // Bootstrap: require date_of_birth to verify identity before setting PIN
-            if (!$request->has('date_of_birth') || $request->date_of_birth !== $patient->date_of_birth->format('Y-m-d')) {
+            if (!$request->has('date_of_birth') || $request->date_of_birth !== $patient->date_of_birth?->format('Y-m-d')) {
                 return response()->json(['message' => 'Identity verification required. Please provide your date of birth.'], 422);
             }
             $patient->update(['pin_hash' => Hash::make($request->pin)]);
@@ -81,7 +82,8 @@ class MobileAuthController extends Controller
             'otp'          => 'required|string|size:6',
         ]);
 
-        $patient = Patient::where('phone_number', $request->phone_number)->first();
+        // phone_number is stored encrypted; use the keyed hash for DB lookup
+        $patient = Patient::findByPhone($request->phone_number);
 
         if (!$patient) {
             return response()->json(['message' => 'Patient not found.'], 404);

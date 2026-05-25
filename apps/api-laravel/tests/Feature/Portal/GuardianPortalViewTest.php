@@ -72,7 +72,8 @@ class GuardianPortalViewTest extends TestCase
             ->post(route('portals.patient.profile.update'), ['phone_number' => '555-1234']);
 
         $response->assertRedirect(route('portals.patient.profile'));
-        $this->assertDatabaseHas('patients', ['id' => $dependent->id, 'phone_number' => '555-1234']);
+        // phone_number is now encrypted in the DB — verify via model decryption
+        $this->assertEquals('555-1234', $dependent->fresh()->phone_number);
     }
 
     public function test_guardian_views_dependent_data_not_own_data(): void

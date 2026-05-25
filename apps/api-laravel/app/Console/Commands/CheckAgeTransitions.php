@@ -28,53 +28,60 @@ class CheckAgeTransitions extends Command
             $this->line("Expired link {$link->id}");
         }
 
-        // 2. Set grace period for patients who turn majority age today
-        $birthdayToday = now()->subYears($majorityAge)->toDateString();
-        $patients18Today = Patient::whereDate('date_of_birth', $birthdayToday)->get();
+        // 2. Set grace period for patients who turn majority age today.
+        //    date_of_birth is encrypted — we cannot use whereDate() on the DB column.
+        //    Instead, load active FamilyLinks with their dependent patient and compare in PHP.
+        $birthdayToday = now()->subYears($majorityAge)->startOfDay();
 
-        foreach ($patients18Today as $patient) {
-            $links = FamilyLink::active()
-                ->where('dependent_patient_id', $patient->id)
-                ->whereNull('age_transition_expires_at')
-                ->with('guardianUser', 'dependentPatient')
-                ->get();
+        FamilyLink::active()
+            ->whereNull('age_transition_expires_at')
+            ->with(['dependentPatient', 'guardianUser'])
+            ->chunkById(200, function ($links) use ($birthdayToday, $graceDays, $majorityAge) {
+                foreach ($links as $link) {
+                    $patient = $link->dependentPatient;
+                    if (!$patient || !$patient->date_of_birth) {
+                        continue;
+                    }
+                    if ($patient->date_of_birth->isSameDay($birthdayToday)) {
+                        $link->update(['age_transition_expires_at' => now()->addDays($graceDays)]);
+                        $link->guardianUser?->notify(
+                            new FamilyEventNotification(
+                                $link,
+                                'age_transition',
+                                "{$patient->first_name} has turned {$majorityAge}. Guardian access enters a {$graceDays}-day grace period."
+                            )
+                        );
+                        $this->line("Grace period set for link {$link->id}");
+                    }
+                }
+            });
 
-            foreach ($links as $link) {
-                $link->update(['age_transition_expires_at' => now()->addDays($graceDays)]);
-                $link->guardianUser?->notify(
-                    new FamilyEventNotification(
-                        $link,
-                        'age_transition',
-                        "{$patient->first_name} has turned {$majorityAge}. Guardian access enters a {$graceDays}-day grace period."
-                    )
-                );
-                $this->line("Grace period set for link {$link->id}");
-            }
-        }
+        // 3. Send 60-day warning for patients approaching majority age.
+        //    Same reason — date_of_birth is encrypted, compare in PHP.
+        $warningBirthday = now()->subYears($majorityAge)->addDays($warningDays)->startOfDay();
 
-        // 3. Send 60-day warning for patients approaching majority age
-        $warningBirthday = now()->subYears($majorityAge)->addDays($warningDays)->toDateString();
-        $patientsApproaching = Patient::whereDate('date_of_birth', $warningBirthday)->get();
-
-        foreach ($patientsApproaching as $patient) {
-            $links = FamilyLink::active()
-                ->where('dependent_patient_id', $patient->id)
-                ->whereNull('age_transition_notified_at')
-                ->with('guardianUser', 'dependentPatient')
-                ->get();
-
-            foreach ($links as $link) {
-                $link->update(['age_transition_notified_at' => now()]);
-                $link->guardianUser?->notify(
-                    new FamilyEventNotification(
-                        $link,
-                        'age_transition',
-                        "{$patient->first_name} will turn {$majorityAge} in {$warningDays} days. Guardian access will require re-consent."
-                    )
-                );
-                $this->line("60-day warning sent for link {$link->id}");
-            }
-        }
+        FamilyLink::active()
+            ->whereNull('age_transition_notified_at')
+            ->with(['dependentPatient', 'guardianUser'])
+            ->chunkById(200, function ($links) use ($warningBirthday, $warningDays, $majorityAge) {
+                foreach ($links as $link) {
+                    $patient = $link->dependentPatient;
+                    if (!$patient || !$patient->date_of_birth) {
+                        continue;
+                    }
+                    if ($patient->date_of_birth->isSameDay($warningBirthday)) {
+                        $link->update(['age_transition_notified_at' => now()]);
+                        $link->guardianUser?->notify(
+                            new FamilyEventNotification(
+                                $link,
+                                'age_transition',
+                                "{$patient->first_name} will turn {$majorityAge} in {$warningDays} days. Guardian access will require re-consent."
+                            )
+                        );
+                        $this->line("60-day warning sent for link {$link->id}");
+                    }
+                }
+            });
 
         $this->info('Age transition check complete.');
         return self::SUCCESS;

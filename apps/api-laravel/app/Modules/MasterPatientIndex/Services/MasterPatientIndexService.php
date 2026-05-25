@@ -26,12 +26,14 @@ class MasterPatientIndexService
 
         if (!empty($data['first_name']) && !empty($data['last_name']) && !empty($data['phone_number']) && !empty($data['date_of_birth']) && !empty($data['sex'])) {
             $formattedDob = \Carbon\Carbon::parse($data['date_of_birth'])->format('Y-m-d');
+            // phone_number is encrypted — use phone_number_hash for the DB query,
+            // then verify date_of_birth in PHP (also encrypted, not queryable).
             $matches = Patient::where('first_name', $data['first_name'])
                 ->where('last_name', $data['last_name'])
-                ->where('phone_number', $data['phone_number'])
-                ->whereDate('date_of_birth', $formattedDob)
+                ->where('phone_number_hash', Patient::phoneHash($data['phone_number']))
                 ->where('sex', $data['sex'])
-                ->get();
+                ->get()
+                ->filter(fn ($p) => $p->date_of_birth?->format('Y-m-d') === $formattedDob);
             $candidates = $candidates->merge($matches);
         }
 
