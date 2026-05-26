@@ -283,14 +283,19 @@ class Wave10FinalHardeningTest extends TestCase
     }
 
     /** @test */
-    public function document_controller_has_no_fake_license_number(): void
+    public function document_files_have_no_fake_license_number(): void
     {
-        $source = file_get_contents(app_path('Http/Controllers/Api/V1/DocumentController.php'));
-        $this->assertStringNotContainsString(
-            'LIC-2026-88002',
-            $source,
-            'DocumentController still contains hardcoded fake license number — regulatory violation on official documents'
-        );
+        // Check controller
+        $controller = file_get_contents(app_path('Http/Controllers/Api/V1/DocumentController.php'));
+        $this->assertStringNotContainsString('LIC-2026-88002', $controller,
+            'DocumentController still contains hardcoded fake license number');
+
+        // Check blade views
+        $bladeFiles = glob(resource_path('views/documents/*.blade.php'));
+        foreach ($bladeFiles as $blade) {
+            $this->assertStringNotContainsString('LIC-2026-88002', file_get_contents($blade),
+                "Blade file " . basename($blade) . " still contains hardcoded fake license number");
+        }
     }
 
     /** @test */

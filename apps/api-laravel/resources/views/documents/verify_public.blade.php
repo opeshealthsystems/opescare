@@ -350,7 +350,11 @@
                     <span class="detail-label">Patient Ref</span>
                     <span class="detail-value">
                         <!-- Masked Patient Initials for Privacy Compliance -->
-                        {{ substr($patient_name ?? 'John Doe', 0, 1) }}***{{ substr($patient_name ?? 'John Doe', -1) }}
+                        @if($patient_name)
+                            {{ substr($patient_name, 0, 1) }}***{{ substr($patient_name, -1) }}
+                        @else
+                            N/A
+                        @endif
                     </span>
                 </div>
             </div>

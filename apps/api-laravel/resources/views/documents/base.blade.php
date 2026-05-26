@@ -307,7 +307,11 @@
             <div class="facility-logo">OC</div>
             <div class="facility-details">
                 <h2>{{ $facility_name ?? 'OpesCare Partner General Hospital' }}</h2>
-                <p>License No: {{ $facility_license ?? 'LIC-2026-88002' }} | Tel: +237 600-000-000</p>
+                @if($facility_license)
+                <p>License No: {{ $facility_license }} | Tel: +237 600-000-000</p>
+                @else
+                <p>Tel: +237 600-000-000</p>
+                @endif
                 <p>Address: Bonanjo, Douala, Cameroon</p>
             </div>
         </div>
