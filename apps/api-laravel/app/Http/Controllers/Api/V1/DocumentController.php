@@ -299,8 +299,8 @@ class DocumentController extends Controller
         $qrSvg = $this->qrService->generateSvg($token);
 
         // Map facility name & patient display variables
-        $facilityName = $document ? ($document->payload_json['facility_name'] ?? 'OpesCare Partner Clinic') : 'N/A';
-        $patientName = $document ? ($document->payload_json['patient_name'] ?? 'John Doe') : 'N/A';
+        $facilityName = $document ? ($document->payload_json['facility_name'] ?? '[Facility Not Available]') : 'N/A';
+        $patientName = $document ? ($document->payload_json['patient_name'] ?? '[Name Not Available]') : 'N/A';
 
         return view('documents.verify_public', [
             'status' => $result['status'],
@@ -345,13 +345,13 @@ class DocumentController extends Controller
             'document_number' => $document->document_number,
             'verification_code' => $document->verification_code,
             'issued_at' => $document->issued_at ? $document->issued_at->format('d M Y, H:i') : 'N/A',
-            'patient_name' => $document->payload_json['patient_name'] ?? 'John Doe',
+            'patient_name' => $document->payload_json['patient_name'] ?? '[Name Not Available]',
             'health_id' => $document->health_id,
             'patient_sex' => $document->payload_json['patient_sex'] ?? 'M',
             'issuer_name' => $document->payload_json['issuer_name'] ?? 'Clinical Officer',
             'issuer_role' => $document->payload_json['issuer_role'] ?? 'Physician',
-            'facility_name' => $document->payload_json['facility_name'] ?? 'OpesCare General Hospital',
-            'facility_license' => $document->payload_json['facility_license'] ?? 'LIC-2026-88002',
+            'facility_name' => $document->payload_json['facility_name'] ?? '[Facility Not Available]',
+            'facility_license' => $document->payload_json['facility_license'] ?? null,
             'payload' => $document->payload_json,
             'qr_svg' => $qrSvg
         ]);

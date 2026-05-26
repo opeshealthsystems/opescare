@@ -268,4 +268,39 @@ class Wave10FinalHardeningTest extends TestCase
 
         $this->assertNotEquals(403, $response->status());
     }
+
+    // ── Task 5: DocumentController — no hardcoded fallbacks in official docs ──
+
+    /** @test */
+    public function document_controller_has_no_john_doe_fallback(): void
+    {
+        $source = file_get_contents(app_path('Http/Controllers/Api/V1/DocumentController.php'));
+        $this->assertStringNotContainsString(
+            "'John Doe'",
+            $source,
+            'DocumentController still contains hardcoded "John Doe" fallback — wrong patient name on official documents'
+        );
+    }
+
+    /** @test */
+    public function document_controller_has_no_fake_license_number(): void
+    {
+        $source = file_get_contents(app_path('Http/Controllers/Api/V1/DocumentController.php'));
+        $this->assertStringNotContainsString(
+            'LIC-2026-88002',
+            $source,
+            'DocumentController still contains hardcoded fake license number — regulatory violation on official documents'
+        );
+    }
+
+    /** @test */
+    public function document_controller_has_no_hardcoded_facility_name(): void
+    {
+        $source = file_get_contents(app_path('Http/Controllers/Api/V1/DocumentController.php'));
+        $this->assertStringNotContainsString(
+            "'OpesCare General Hospital'",
+            $source,
+            'DocumentController still contains hardcoded facility name fallback'
+        );
+    }
 }
