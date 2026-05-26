@@ -214,23 +214,26 @@ class CareMapRegistryIntegrationTest extends TestCase
         );
     }
 
-    // ── Test 7: Approval activates existing stub, not a new duplicate ─────────
+    // ── Test 7: Approval activates NULL-facility_id stub without duplicating it ─
 
-    public function test_approve_registry_claim_activates_existing_stub(): void
+    public function test_approve_registry_claim_activates_existing_stub_without_duplicate(): void
     {
         $this->seed(CameroonFacilityRegistrySeeder::class);
         $this->seed(CareMapRegistryStubSeeder::class);
 
+        // The stub seeder creates entries with facility_id = NULL (no operational link yet)
         $registryEntry = FacilityRegistry::whereNotNull('gps_lat')->first();
-        $facility      = Facility::create(['name' => 'Approved Clinic', 'type' => 'clinic']);
-        $claimant      = $this->makeUser();
-        $admin         = $this->makeUser();
 
-        // Manually link the pre-existing stub to this facility so upsert finds it
-        CareFacility::where('facility_name', $registryEntry->name)
+        $stub = CareFacility::where('facility_name', $registryEntry->name)
             ->where('city', $registryEntry->city)
             ->where('country_code', 'CM')
-            ->update(['facility_id' => $facility->id]);
+            ->whereNull('facility_id')
+            ->first();
+        $this->assertNotNull($stub, 'A NULL-facility_id stub must exist from CareMapRegistryStubSeeder');
+
+        $facility = Facility::create(['name' => 'Approving Clinic', 'type' => 'clinic']);
+        $claimant = $this->makeUser();
+        $admin    = $this->makeUser();
 
         $claim = $this->service->submitClaim(
             $facility->id,
@@ -239,14 +242,19 @@ class CareMapRegistryIntegrationTest extends TestCase
             $registryEntry->id,
         );
 
-        $countBefore = CareFacility::where('facility_id', $facility->id)->count();
+        $totalBefore = CareFacility::where('country_code', 'CM')->count();
+
         $this->service->approveClaim($claim->id, $admin->id);
-        $countAfter = CareFacility::where('facility_id', $facility->id)->count();
 
-        $this->assertEquals($countBefore, $countAfter,
-            'Approval should activate the existing stub — not create a second listing');
+        // Total CM listings must not grow — stub activated, not duplicated
+        $totalAfter = CareFacility::where('country_code', 'CM')->count();
+        $this->assertEquals($totalBefore, $totalAfter,
+            'Approval must activate the existing stub — not create a second care_facilities entry');
 
-        $stub = CareFacility::where('facility_id', $facility->id)->first();
+        // The stub must now be linked to the operational Facility
+        $stub->refresh();
+        $this->assertEquals($facility->id,     $stub->facility_id,
+            'Stub facility_id must be set to the operational Facility on approval');
         $this->assertEquals('partner_verified', $stub->verification_status);
         $this->assertEquals('active',           $stub->listing_status);
     }

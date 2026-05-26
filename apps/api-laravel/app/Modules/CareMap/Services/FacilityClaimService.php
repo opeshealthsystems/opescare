@@ -127,18 +127,34 @@ class FacilityClaimService
 
     /**
      * Create or activate a care_facilities listing from a facility_registry entry.
-     * Called on registry claim approval. Never overwrites an active, partner-verified listing.
+     * Called on registry claim approval. Lookup order:
+     *
+     *   1. Existing listing already linked to this operational Facility (facility_id match).
+     *   2. Unlinked stub created by CareMapRegistryStubSeeder (name + city + 'CM', facility_id IS NULL).
+     *   3. Create a brand-new listing from the registry entry data.
+     *
+     * This prevents duplicate listings when a stub was pre-seeded before the facility claimed itself.
      */
     private function upsertCareFacilityFromRegistry(
         FacilityRegistry $reg,
         string $facilityId,
         string $partnerId
     ): CareFacility {
-        // Check for an existing care_facilities listing linked to this operational Facility
+        // 1. Already linked to this operational Facility?
         $existing = CareFacility::where('facility_id', $facilityId)->first();
+
+        // 2. Unlinked stub from CareMapRegistryStubSeeder (facility_id IS NULL)?
+        if (!$existing) {
+            $existing = CareFacility::where('facility_name', $reg->name)
+                ->where('city', $reg->city)
+                ->where('country_code', 'CM')
+                ->whereNull('facility_id')
+                ->first();
+        }
 
         if ($existing) {
             $existing->update([
+                'facility_id'         => $facilityId,   // link stub → operational Facility
                 'partner_id'          => $partnerId,
                 'listing_status'      => 'active',
                 'verification_status' => 'partner_verified',
@@ -148,25 +164,25 @@ class FacilityClaimService
             return $existing;
         }
 
-        // Create a new care_facilities listing from the registry entry
+        // 3. No stub exists — create a new listing from the registry entry
         return CareFacility::create([
-            'facility_id'          => $facilityId,
-            'partner_id'           => $partnerId,
-            'facility_name'        => $reg->name,
-            'facility_type'        => $reg->type,
-            'ownership_type'       => $reg->ownership,
-            'country_code'         => 'CM',
-            'region'               => $reg->region,
-            'city'                 => $reg->city ?? '',
-            'address'              => $reg->address ?? (($reg->city ?? '') . ', Cameroon'),
-            'latitude'             => $reg->gps_lat,
-            'longitude'            => $reg->gps_lng,
-            'phone_primary'        => $reg->phone ?? 'N/A',
-            'email'                => $reg->email,
-            'website'              => $reg->website,
-            'listing_status'       => 'active',
-            'verification_status'  => 'partner_verified',
-            'last_verified_at'     => now(),
+            'facility_id'            => $facilityId,
+            'partner_id'             => $partnerId,
+            'facility_name'          => $reg->name,
+            'facility_type'          => $reg->type,
+            'ownership_type'         => $reg->ownership,
+            'country_code'           => 'CM',
+            'region'                 => $reg->region,
+            'city'                   => $reg->city ?? '',
+            'address'                => $reg->address ?? (($reg->city ?? '') . ', Cameroon'),
+            'latitude'               => $reg->gps_lat,
+            'longitude'              => $reg->gps_lng,
+            'phone_primary'          => $reg->phone ?? 'N/A',
+            'email'                  => $reg->email,
+            'website'                => $reg->website,
+            'listing_status'         => 'active',
+            'verification_status'    => 'partner_verified',
+            'last_verified_at'       => now(),
             'last_profile_update_at' => now(),
         ]);
     }
