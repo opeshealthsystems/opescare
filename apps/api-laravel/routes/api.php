@@ -628,14 +628,15 @@ Route::prefix('v1/analytics')->middleware(VerifyIntegrationClient::class)->group
 */
 Route::prefix('v1/staff')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::get('/', [\App\Http\Controllers\Api\V1\StaffController::class, 'index']);
-    Route::get('/{staffId}', [\App\Http\Controllers\Api\V1\StaffController::class, 'show']);
-    Route::patch('/{staffId}', [\App\Http\Controllers\Api\V1\StaffController::class, 'updateProfile']);
+    // Static paths must be declared before wildcard /{staffId} to avoid shadowing
     Route::get('/rosters', [\App\Http\Controllers\Api\V1\StaffController::class, 'getRoster']);
     Route::post('/shifts', [\App\Http\Controllers\Api\V1\StaffController::class, 'assignShift']);
     Route::delete('/shifts/{shiftId}', [\App\Http\Controllers\Api\V1\StaffController::class, 'removeShift']);
     Route::post('/leave', [\App\Http\Controllers\Api\V1\StaffController::class, 'requestLeave']);
     Route::post('/leave/{leaveId}/approve', [\App\Http\Controllers\Api\V1\StaffController::class, 'approveLeave']);
     Route::post('/leave/{leaveId}/reject', [\App\Http\Controllers\Api\V1\StaffController::class, 'rejectLeave']);
+    Route::get('/{staffId}', [\App\Http\Controllers\Api\V1\StaffController::class, 'show']);
+    Route::patch('/{staffId}', [\App\Http\Controllers\Api\V1\StaffController::class, 'updateProfile']);
 });
 
 /*

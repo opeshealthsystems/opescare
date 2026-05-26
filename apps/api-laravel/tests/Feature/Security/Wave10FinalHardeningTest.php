@@ -177,8 +177,7 @@ class Wave10FinalHardeningTest extends TestCase
 
     // ── Task 3: PublicHealth — no User::first() actor fallback ───────────────
 
-    /** @test */
-    public function public_health_operator_id_is_not_random_db_user(): void
+    public function test_public_health_operator_id_is_not_random_db_user(): void
     {
         // Verify the source code does not contain the User::first() fallback pattern
         $source = file_get_contents(
@@ -198,5 +197,75 @@ class Wave10FinalHardeningTest extends TestCase
             $source2,
             'IntelligenceController still contains User::first() — operator attribution is broken for B2B calls'
         );
+    }
+
+    // ── Task 4: StaffController roster — facility ownership ──────────────────
+
+    /**
+     * Create a real IntegrationClient with the given attributes.
+     * The client_secret is stored as SHA-256(rawToken) to match VerifyIntegrationClient.
+     */
+    private function makeClient(array $attributes): \App\Models\IntegrationClient
+    {
+        return \App\Models\IntegrationClient::create(array_merge([
+            'client_id'   => 'test_client_' . Str::random(8),
+            'name'        => 'Test Client',
+            'environment' => 'sandbox',
+            'status'      => 'active',
+            'scopes'      => [],
+        ], $attributes));
+    }
+
+    /**
+     * Return headers that authenticate as the given real IntegrationClient.
+     */
+    private function integrationClientHeaders(\App\Models\IntegrationClient $client, string $rawToken): array
+    {
+        return [
+            'X-Client-ID'     => $client->client_id,
+            'X-Client-Secret' => $rawToken,
+        ];
+    }
+
+    public function test_get_roster_rejects_request_for_different_facility(): void
+    {
+        $rawToken         = Str::random(40);
+        $clientFacilityId = (string) Str::uuid();
+        $otherFacilityId  = (string) Str::uuid();
+
+        $client = $this->makeClient([
+            'client_secret' => hash('sha256', $rawToken),
+            'facility_id'   => $clientFacilityId,
+            'scopes'        => ['read_staff'],
+        ]);
+
+        // Request roster for a DIFFERENT facility — must be rejected with 403
+        $response = $this->getJson(
+            '/api/v1/staff/rosters?facility_id=' . $otherFacilityId,
+            $this->integrationClientHeaders($client, $rawToken)
+        );
+
+        $response->assertStatus(403);
+        $response->assertJsonFragment(['error' => 'ACCESS_DENIED']);
+    }
+
+    public function test_get_roster_allows_request_for_own_facility(): void
+    {
+        $rawToken         = Str::random(40);
+        $clientFacilityId = (string) Str::uuid();
+
+        $client = $this->makeClient([
+            'client_secret' => hash('sha256', $rawToken),
+            'facility_id'   => $clientFacilityId,
+            'scopes'        => ['read_staff'],
+        ]);
+
+        // Request roster for OWN facility — must not be 403
+        $response = $this->getJson(
+            '/api/v1/staff/rosters?facility_id=' . $clientFacilityId,
+            $this->integrationClientHeaders($client, $rawToken)
+        );
+
+        $this->assertNotEquals(403, $response->status());
     }
 }

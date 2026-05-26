@@ -52,9 +52,24 @@ class StaffController extends Controller
 
     public function getRoster(Request $request): JsonResponse
     {
+        $requestedFacilityId  = $request->input('facility_id');
+        $authorizedFacilityId = $request->attributes->get('facility_id');
+
+        // Enforce facility ownership: if the middleware has scoped this client to a
+        // specific facility, the requested facility_id must match.
+        if ($authorizedFacilityId && $requestedFacilityId && $requestedFacilityId !== $authorizedFacilityId) {
+            return response()->json([
+                'error'   => 'ACCESS_DENIED',
+                'message' => 'You are not authorised to view the roster for this facility.',
+            ], 403);
+        }
+
+        // Fall back to the authorized facility if none supplied
+        $facilityId = $requestedFacilityId ?? $authorizedFacilityId;
+
         return response()->json(
             $this->roster->getRoster(
-                $request->input('facility_id'),
+                $facilityId,
                 $request->input('department_id'),
                 $request->input('from'),
                 $request->input('to')
