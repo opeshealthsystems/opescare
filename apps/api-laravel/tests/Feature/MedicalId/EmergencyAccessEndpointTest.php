@@ -62,7 +62,6 @@ class EmergencyAccessEndpointTest extends TestCase
                  ->assertJsonStructure([
                      'profile' => [
                          'identity',
-                         'blood_type',
                          'allergies',
                          'chronic_conditions'
                      ]

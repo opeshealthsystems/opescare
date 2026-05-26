@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\V1\Connect;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Patient;
+use App\Models\AllergyRecord;
+use App\Models\Diagnosis;
 use App\Models\MedicalIdAccessEvent;
 use Illuminate\Support\Facades\Validator;
 
@@ -42,8 +44,18 @@ class EmergencyAccessController extends Controller
         // 2. Audit Log (Critical for emergency access)
         $this->logAccess($validated['health_id'], $patient->id, 'emergency_access', 'pull_emergency_profile', 'success', $request);
 
-        // 3. Construct Emergency Profile
-        // Returning mock clinical data strictly attached to the identity validation process.
+        // 3. Fetch real clinical data from the database
+        $allergies = AllergyRecord::where('patient_id', $patient->id)
+            ->where('status', 'active')
+            ->get(['substance', 'severity', 'status'])
+            ->toArray();
+
+        $chronicConditions = Diagnosis::where('patient_id', $patient->id)
+            ->where('status', 'active')
+            ->get(['code', 'display_name'])
+            ->toArray();
+
+        // 4. Construct Emergency Profile
         $emergencyProfile = [
             'identity' => [
                 'health_id' => $patient->health_id,
@@ -52,14 +64,9 @@ class EmergencyAccessController extends Controller
                 'sex' => $patient->sex,
                 'date_of_birth' => $patient->date_of_birth,
             ],
-            'emergency_contact' => $patient->emergency_contact ?? 'Not provided',
-            'blood_type' => 'O+', // Mocked
-            'allergies' => [
-                ['substance' => 'Penicillin', 'severity' => 'High', 'status' => 'active']
-            ],
-            'chronic_conditions' => [
-                ['code' => 'E11.9', 'display_name' => 'Type 2 diabetes mellitus']
-            ]
+            'emergency_contact'  => $patient->emergency_contact ?? 'Not provided',
+            'allergies'          => $allergies,
+            'chronic_conditions' => $chronicConditions,
         ];
 
         return response()->json([
