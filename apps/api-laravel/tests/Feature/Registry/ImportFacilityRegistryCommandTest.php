@@ -82,4 +82,47 @@ class ImportFacilityRegistryCommandTest extends TestCase
 
         $this->assertDatabaseMissing('facility_registry', ['name' => 'Bad Facility']);
     }
+
+    public function test_replace_mode_only_deletes_unclaimed_rows(): void
+    {
+        // Seed an unclaimed row
+        \DB::table('facility_registry')->insert([
+            'id'         => (string) \Illuminate\Support\Str::uuid(),
+            'name'       => 'Stale Hospital',
+            'type'       => 'hospital',
+            'region'     => 'Centre',
+            'city'       => 'Yaoundé',
+            'status'     => 'unverified',
+            'source'     => 'test',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // Seed a claimed row
+        $facility = \App\Models\Facility::create(['name' => 'Claimed Hospital', 'type' => 'hospital']);
+        \DB::table('facility_registry')->insert([
+            'id'                  => (string) \Illuminate\Support\Str::uuid(),
+            'name'                => 'Claimed Hospital',
+            'type'                => 'hospital',
+            'region'              => 'Centre',
+            'city'                => 'Yaoundé',
+            'status'              => 'verified',
+            'claimed_facility_id' => $facility->id,
+            'source'              => 'test',
+            'created_at'          => now(),
+            'updated_at'          => now(),
+        ]);
+
+        // Import with replace mode (empty CSV)
+        $csv = "name,type,ownership,region,division,city,address,phone,email,website,ministry_code,accreditation_level,bed_capacity,gps_lat,gps_lng,services\n";
+        $path = $this->writeCsv($csv);
+
+        $this->artisan('registry:import-facilities', ['--file' => $path, '--mode' => 'replace'])
+             ->assertSuccessful();
+
+        // Unclaimed row should be deleted
+        $this->assertDatabaseMissing('facility_registry', ['name' => 'Stale Hospital']);
+        // Claimed row must survive
+        $this->assertDatabaseHas('facility_registry', ['name' => 'Claimed Hospital', 'status' => 'verified']);
+    }
 }
