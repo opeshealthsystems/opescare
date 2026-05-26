@@ -41,4 +41,8 @@ return [
         'from'  => env('TWILIO_FROM'),
     ],
 
+    'kms' => [
+        'driver' => env('KMS_DRIVER', 'local'),
+    ],
+
 ];
