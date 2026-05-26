@@ -119,4 +119,59 @@ class Wave10FinalHardeningTest extends TestCase
         // Hardcoded E11.9 must NOT be present
         $this->assertNotContains('E11.9', $codes);
     }
+
+    // ── Task 2: RecordController system account — no bcrypt reset per push ────
+
+    public function test_push_encounter_does_not_overwrite_system_account_password(): void
+    {
+        // Bypass IdempotencyProtection and RequireConsentGrant so the request
+        // reaches the updateOrInsert block inside pushEncounter. VerifyIntegrationClient
+        // is kept (its test-env bypass sets facility_id / provider_id attributes).
+        $this->withoutMiddleware([
+            \App\Http\Middleware\IdempotencyProtection::class,
+            \App\Http\Middleware\RequireConsentGrant::class,
+        ]);
+
+        // Create a real facility row so updateOrInsert (the buggy path) can satisfy
+        // the users.primary_facility_id FK — this ensures the update actually runs
+        // and overwrites the password, giving us a true red-before-fix signal.
+        $facilityId = '00000000-0000-0000-0000-000000000001';
+        \DB::table('facilities')->insertOrIgnore([
+            'id'         => $facilityId,
+            'name'       => 'Test Facility',
+            'type'       => 'hospital',
+            'status'     => 'active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $patient = Patient::factory()->create(['is_demo' => false]);
+
+        // Pre-create the system account with a secure random password
+        $systemId       = config('opescare.system_provider_id', '00000000-0000-0000-0000-000000000001');
+        $securePassword = bcrypt(Str::random(64));
+        \DB::table('users')->insertOrIgnore([
+            'id'         => $systemId,
+            'name'       => 'System Provider',
+            'email'      => $systemId . '@system.opescare.local',
+            'password'   => $securePassword,
+            'status'     => 'active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // Call pushEncounter — response status doesn't matter for this assertion
+        $this->postJson('/api/v1/connect/records/encounters', [
+            'health_id'             => $patient->health_id,
+            'encounter'             => ['chief_complaint' => 'Fever'],
+            'external_encounter_id' => (string) Str::uuid(),
+        ], $this->clientHeaders());
+
+        // Password must NOT have been changed to bcrypt('system')
+        $systemUser = \DB::table('users')->where('id', $systemId)->first();
+        $this->assertFalse(
+            \Hash::check('system', $systemUser->password),
+            'System account password was reset to bcrypt("system") — updateOrInsert is resetting it on every push'
+        );
+    }
 }

@@ -177,19 +177,18 @@ class RecordController extends Controller
         // Use system provider ID for B2B integrated records (non-interactive facility sync)
         $systemProviderId = config('opescare.system_provider_id', '00000000-0000-0000-0000-000000000001');
 
-        // Ensure system provider exists for FK constraints
-        \DB::table('users')->updateOrInsert(
-            ['id' => $systemProviderId],
-            [
-                'name' => 'System Provider',
-                'email' => $systemProviderId . '@system.opescare.local',
-                'password' => bcrypt('system'),
-                'primary_facility_id' => $facilityId,
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
-        );
+        // Ensure system provider exists for FK constraints.
+        // insertOrIgnore: creates only if missing. Never updates — the SystemAccountSeeder
+        // sets a secure random password at deploy time; we must not overwrite it here.
+        \DB::table('users')->insertOrIgnore([
+            'id'         => $systemProviderId,
+            'name'       => 'System Provider',
+            'email'      => $systemProviderId . '@system.opescare.local',
+            'password'   => bcrypt(\Illuminate\Support\Str::random(64)),
+            'status'     => 'active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
         $providerId = $systemProviderId;
 
         // Write Encounter (Visit) to database!
