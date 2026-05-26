@@ -24,21 +24,13 @@ class CameroonFacilityRegistrySeeder extends Seeder
 
     private function insertIfMissing(array $row): void
     {
-        $exists = DB::table('facility_registry')
-            ->where('name', $row['name'])
-            ->where('region', $row['region'])
-            ->where('city', $row['city'] ?? null)
-            ->exists();
-
-        if (!$exists) {
-            DB::table('facility_registry')->insert(array_merge($row, [
-                'id'         => (string) Str::uuid(),
-                'source'     => 'initial_seed_2026',
-                'status'     => 'unverified',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]));
-        }
+        DB::table('facility_registry')->insertOrIgnore(array_merge($row, [
+            'id'         => (string) Str::uuid(),
+            'source'     => 'initial_seed_2026',
+            'status'     => 'unverified',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]));
     }
 
     private function facilities(): array
