@@ -7,6 +7,8 @@ use App\Models\Patient;
 use App\Models\AllergyRecord;
 use App\Models\Diagnosis;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class Wave10FinalHardeningTest extends TestCase
 {
@@ -50,7 +52,7 @@ class Wave10FinalHardeningTest extends TestCase
         $this->assertNotContains('Penicillin', $substances);
     }
 
-    public function test_emergency_profile_has_no_hardcoded_blood_type(): void
+    public function test_emergency_profile_blood_type_is_null_not_hardcoded(): void
     {
         $patient = Patient::factory()->create(['is_demo' => false]);
 
@@ -60,12 +62,46 @@ class Wave10FinalHardeningTest extends TestCase
         ], $this->clientHeaders());
 
         $response->assertStatus(200);
-        $this->assertNotEquals('O+', $response->json('profile.blood_type'));
+        // blood_type is not in the patient schema — must be explicitly null,
+        // not the hardcoded 'O+' that was previously fabricated.
+        $this->assertNull($response->json('profile.blood_type'));
     }
 
-    public function test_emergency_profile_has_no_hardcoded_chronic_conditions(): void
+    public function test_emergency_profile_returns_real_diagnosis_data_not_hardcoded_e119(): void
     {
-        $patient = Patient::factory()->create(['is_demo' => false]);
+        $patient  = Patient::factory()->create(['is_demo' => false]);
+        $provider = \App\Models\User::factory()->create();
+        $facility = \App\Models\Facility::factory()->create();
+
+        // Create a visit row to satisfy the diagnoses.visit_id FK constraint
+        $visitId = (string) \Illuminate\Support\Str::uuid();
+        \Illuminate\Support\Facades\DB::table('visits')->insert([
+            'id'          => $visitId,
+            'patient_id'  => $patient->id,
+            'facility_id' => $facility->id,
+            'provider_id' => $provider->id,
+            'visit_type'  => 'emergency',
+            'status'      => 'open',
+            'started_at'  => now(),
+            'created_at'  => now(),
+            'updated_at'  => now(),
+        ]);
+
+        // Seed a specific real diagnosis — NOT E11.9
+        \Illuminate\Support\Facades\DB::table('diagnoses')->insert([
+            'id'           => (string) \Illuminate\Support\Str::uuid(),
+            'patient_id'   => $patient->id,
+            'visit_id'     => $visitId,
+            'provider_id'  => $provider->id,
+            'code_system'  => 'ICD-10',
+            'code'         => 'J45.20',
+            'display_name' => 'Mild intermittent asthma',
+            'status'       => 'active',
+            'is_primary'   => 1,
+            'is_demo'      => 0,
+            'created_at'   => now(),
+            'updated_at'   => now(),
+        ]);
 
         $response = $this->postJson('/api/v1/connect/patients/emergency-profile', [
             'health_id' => $patient->health_id,
@@ -73,8 +109,14 @@ class Wave10FinalHardeningTest extends TestCase
         ], $this->clientHeaders());
 
         $response->assertStatus(200);
+
         $conditions = $response->json('profile.chronic_conditions');
-        $codes = array_column($conditions ?? [], 'code');
+        $this->assertNotEmpty($conditions, 'Expected real diagnosis data but got empty array');
+        $codes = array_column($conditions, 'code');
+
+        // Real seeded diagnosis must be present
+        $this->assertContains('J45.20', $codes);
+        // Hardcoded E11.9 must NOT be present
         $this->assertNotContains('E11.9', $codes);
     }
 }

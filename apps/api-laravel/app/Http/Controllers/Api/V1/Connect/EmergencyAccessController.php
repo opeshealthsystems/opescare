@@ -65,6 +65,10 @@ class EmergencyAccessController extends Controller
                 'date_of_birth' => $patient->date_of_birth,
             ],
             'emergency_contact'  => $patient->emergency_contact ?? 'Not provided',
+            // blood_type is not stored per patient in this schema.
+            // Returning null rather than fabricating a value — a wrong blood type
+            // in an emergency is lethal. Store in PatientIdentityProfile when available.
+            'blood_type'         => null,
             'allergies'          => $allergies,
             'chronic_conditions' => $chronicConditions,
         ];
