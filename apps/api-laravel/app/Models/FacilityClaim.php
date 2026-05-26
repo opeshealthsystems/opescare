@@ -29,7 +29,7 @@ class FacilityClaim extends Model
 
     public function facility()
     {
-        return $this->belongsTo(CareFacility::class, 'facility_id');
+        return $this->belongsTo(Facility::class, 'facility_id');
     }
 
     public function claimant()
