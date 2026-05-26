@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
             DashboardProfilesSeeder::class,
             RolesSeeder::class,
             NotificationTemplateSeeder::class,
+            CameroonFacilityRegistrySeeder::class,
+            CameroonInsuranceSeeder::class,
         ]);
 
         // When demo mode is enabled, seed all demo data automatically so that
