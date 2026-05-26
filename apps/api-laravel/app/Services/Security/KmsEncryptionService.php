@@ -13,6 +13,7 @@ use RuntimeException;
 class KmsEncryptionService
 {
     private string $driver;
+    private ?object $awsClientInstance = null;
 
     public function __construct()
     {
@@ -92,9 +93,16 @@ class KmsEncryptionService
 
     private function localKey(): string
     {
-        $appKey = config('app.key');
-        $raw    = base64_decode(str_replace('base64:', '', $appKey));
-        return hash('sha256', $raw, true);
+        $appKey = config('app.key', '');
+        if ($appKey === '' || !str_starts_with($appKey, 'base64:')) {
+            throw new RuntimeException(
+                'KmsEncryptionService: app.key is missing or not base64-encoded. ' .
+                'Run: php artisan key:generate'
+            );
+        }
+        $raw = base64_decode(str_replace('base64:', '', $appKey));
+        // HMAC with a domain label gives key-separation from session/cookie keys
+        return hash_hmac('sha256', 'opescare:kms:field-encryption:v1', $raw, true);
     }
 
     // ── AWS Driver ────────────────────────────────────────────────────────────
@@ -111,6 +119,10 @@ class KmsEncryptionService
 
         $cipher = openssl_encrypt($plaintext, 'aes-256-gcm', $dataKey, OPENSSL_RAW_DATA, $iv, $tag, '', 16);
         sodium_memzero($dataKey);
+
+        if ($cipher === false) {
+            throw new RuntimeException('KmsEncryptionService: AWS envelope encryption failed: ' . openssl_error_string());
+        }
 
         $encKeyLen = strlen($encDataKey);
         $packed    = pack('N', $encKeyLen) . $encDataKey . $iv . $tag . $cipher;
@@ -145,14 +157,17 @@ class KmsEncryptionService
         return $plain;
     }
 
-    private function awsClient(): \Aws\Kms\KmsClient
+    private function awsClient(): object
     {
         if (!class_exists(\Aws\Kms\KmsClient::class)) {
             throw new RuntimeException('AWS SDK not installed. Run: composer require aws/aws-sdk-php');
         }
-        return new \Aws\Kms\KmsClient([
-            'version' => config('kms.aws.version', 'latest'),
-            'region'  => config('kms.aws.region', 'eu-west-1'),
-        ]);
+        if ($this->awsClientInstance === null) {
+            $this->awsClientInstance = new \Aws\Kms\KmsClient([
+                'version' => config('kms.aws.version', 'latest'),
+                'region'  => config('kms.aws.region', 'eu-west-1'),
+            ]);
+        }
+        return $this->awsClientInstance;
     }
 }

@@ -45,9 +45,16 @@ class RotateSecretsCommand extends Command
                 $status    = 'UNKNOWN — never recorded';
                 $daysSince = '?';
             } else {
-                $dt        = Carbon::parse($lastRotated);
-                $daysSince = (int) $dt->diffInDays(now());
-                $overdue   = $daysSince >= $maxDays;
+                try {
+                    $dt        = Carbon::parse($lastRotated);
+                    $daysSince = (int) $dt->diffInDays(now());
+                    $overdue   = $daysSince >= $maxDays;
+                } catch (\Throwable $e) {
+                    $status    = 'ERROR — cached value unreadable';
+                    $daysSince = '?';
+                    $rows[]    = [$secret, $maxDays . 'd', $daysSince, $status];
+                    continue;
+                }
 
                 if ($overdue) {
                     $status = "OVERDUE ({$daysSince} / {$maxDays} days)";
