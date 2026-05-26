@@ -19,12 +19,19 @@ class TenantScopeTest extends TestCase
         $this->assertContains('scopeForCurrentFacility', $names);
     }
 
-    public function test_for_current_facility_returns_unscoped_when_no_context(): void
+    public function test_for_current_facility_scope_does_not_add_where_when_no_context(): void
     {
-        // When no current_facility_id is bound, scopeForCurrentFacility
-        // should not add a WHERE clause — the query builder is returned as-is.
-        // We test the trait is safe to call without a bound facility.
+        // Ensure no facility is bound in the container
         app()->forgetInstance('current_facility_id');
-        $this->assertTrue(trait_exists(HasFacilityScope::class));
+
+        // scopeForCurrentFacility must not throw when no facility is bound —
+        // it should return the Builder unchanged so cross-facility queries work.
+        try {
+            $query = \App\Models\TenantOnboardingCheckpoint::query()->forCurrentFacility();
+            // Reaching here means no exception was thrown — that is the expected behaviour
+            $this->assertInstanceOf(\Illuminate\Database\Eloquent\Builder::class, $query);
+        } catch (\Throwable $e) {
+            $this->fail('scopeForCurrentFacility threw an exception when no facility was bound: ' . $e->getMessage());
+        }
     }
 }

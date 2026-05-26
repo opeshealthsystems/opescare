@@ -16,6 +16,11 @@ class LogApiUsage
 
         $clientId = $request->header('X-Integration-Client-Id');
         if ($clientId) {
+            // Sanitize: truncate and strip non-printable chars to prevent log poisoning
+            $clientId   = substr(preg_replace('/[^\x20-\x7E]/', '', $clientId), 0, 100);
+            $facilityId = $request->header('X-Facility-Id');
+            $facilityId = $facilityId ? substr(preg_replace('/[^\x20-\x7E]/', '', $facilityId), 0, 36) : null;
+
             try {
                 ApiUsageLog::create([
                     'integration_client_id' => $clientId,
@@ -24,8 +29,8 @@ class LogApiUsage
                     'response_status'       => $response->getStatusCode(),
                     'response_time_ms'      => $ms,
                     'ip_address'            => $request->ip(),
-                    'facility_id'           => $request->header('X-Facility-Id'),
-                    'logged_at'             => now(),
+                    'facility_id'           => $facilityId,
+                    // logged_at set by DB default (useCurrent)
                 ]);
             } catch (\Throwable $e) {
                 // Never let analytics logging break the request

@@ -18,7 +18,6 @@ class ApiUsageLog extends Model
         'response_time_ms',
         'ip_address',
         'facility_id',
-        'logged_at',
     ];
 
     protected $casts = [
@@ -29,5 +28,14 @@ class ApiUsageLog extends Model
     public function update(array $attributes = [], array $options = []): bool
     {
         throw new \LogicException('ApiUsageLog is append-only and cannot be updated.');
+    }
+
+    /** Append-only — direct save after mutation is also blocked */
+    public function save(array $options = []): bool
+    {
+        if ($this->exists) {
+            throw new \LogicException('ApiUsageLog is append-only and cannot be saved after creation.');
+        }
+        return parent::save($options);
     }
 }

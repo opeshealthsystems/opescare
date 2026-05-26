@@ -11,11 +11,12 @@ class ApiUsageAnalyticsService
             ->selectRaw('
                 integration_client_id,
                 COUNT(*) as request_count,
-                ROUND(AVG(response_time_ms), 2) as avg_response_ms,
+                AVG(response_time_ms) as avg_response_ms,
                 SUM(CASE WHEN response_status >= 500 THEN 1 ELSE 0 END) as error_5xx_count,
                 SUM(CASE WHEN response_status = 429 THEN 1 ELSE 0 END) as rate_limited_count
             ')
-            ->whereBetween(DB::raw('DATE(logged_at)'), [$fromDate, $toDate])
+            ->whereDate('logged_at', '>=', $fromDate)
+            ->whereDate('logged_at', '<=', $toDate)
             ->groupBy('integration_client_id')
             ->orderByDesc('request_count')
             ->get()

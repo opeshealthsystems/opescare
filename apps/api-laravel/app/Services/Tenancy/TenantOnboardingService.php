@@ -57,7 +57,8 @@ class TenantOnboardingService
             'total_steps'      => $total,
             'completed_steps'  => $completed,
             'percent_complete' => $percent,
-            'is_complete'      => $checkpoints->where('required', true)->where('completed', false)->isEmpty(),
+            'is_complete'      => $checkpoints->where('required', true)->count() > 0
+                && $checkpoints->where('required', true)->where('completed', false)->isEmpty(),
             'steps'            => $checkpoints->values()->toArray(),
         ];
     }
