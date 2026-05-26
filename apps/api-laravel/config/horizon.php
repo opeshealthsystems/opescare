@@ -183,7 +183,7 @@ return [
     |
     */
 
-    'memory_limit' => 64,
+    'memory_limit' => env('HORIZON_MEMORY_LIMIT', 256),
 
     /*
     |--------------------------------------------------------------------------
@@ -222,7 +222,8 @@ return [
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
                 'tries'           => 3,
-                'timeout'         => 60,
+                // Jobs that need longer timeouts should define $timeout on the job class itself.
+                'timeout'         => env('HORIZON_SUPERVISOR_TIMEOUT', 60),
             ],
         ],
 
