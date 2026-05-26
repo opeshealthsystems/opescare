@@ -89,15 +89,30 @@ return [
         ],
 
         'papertrail' => [
-            'driver' => 'monolog',
-            'level' => env('LOG_LEVEL', 'debug'),
-            'handler' => env('LOG_PAPERTRAIL_HANDLER', SyslogUdpHandler::class),
+            'driver'       => 'monolog',
+            'level'        => env('LOG_LEVEL', 'warning'),
+            'handler'      => \Monolog\Handler\SyslogUdpHandler::class,
             'handler_with' => [
-                'host' => env('PAPERTRAIL_URL'),
+                'host' => env('PAPERTRAIL_HOST'),
                 'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
             ],
-            'processors' => [PsrLogMessageProcessor::class],
+        ],
+
+        'datadog' => [
+            'driver'       => 'monolog',
+            'handler'      => \Monolog\Handler\SyslogUdpHandler::class,
+            'handler_with' => [
+                'host' => env('DATADOG_HOST', 'intake.logs.datadoghq.eu'),
+                'port' => env('DATADOG_PORT', 10518),
+            ],
+            'formatter' => \Monolog\Formatter\JsonFormatter::class,
+            'level'     => env('LOG_LEVEL', 'warning'),
+        ],
+
+        'production_stack' => [
+            'driver'            => 'stack',
+            'channels'          => ['daily', env('EXTERNAL_LOG_CHANNEL', 'null')],
+            'ignore_exceptions' => false,
         ],
 
         'stderr' => [
