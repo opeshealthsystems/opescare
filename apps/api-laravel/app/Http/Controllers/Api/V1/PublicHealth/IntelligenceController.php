@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api\V1\PublicHealth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Models\PublicHealthSignal;
 use App\Models\SignalReview;
 use App\Models\PublicHealthBaseline;
-use App\Models\User;
 use App\Modules\PublicHealth\Services\SignalDetectionService;
 
 class IntelligenceController extends Controller
@@ -68,7 +68,13 @@ class IntelligenceController extends Controller
 
         $action = $request->input('action'); // confirm, dismiss, escalate, resolve
         $comment = $request->input('comment', 'Reviewed.');
-        $operatorId = $request->user()?->id ?? User::first()?->id ?? '00000000-0000-0000-0000-000000000001';
+        if ($id = $request->user()?->id) {
+            $operatorId = $id;
+        } elseif (($clientId = $request->attributes->get('integration_client_id')) && Str::isUuid($clientId)) {
+            $operatorId = $clientId;
+        } else {
+            $operatorId = config('opescare.system_provider_id', '00000000-0000-0000-0000-000000000001');
+        }
 
         // Map action to signal status
         $statusMap = [

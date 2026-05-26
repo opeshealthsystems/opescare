@@ -174,4 +174,29 @@ class Wave10FinalHardeningTest extends TestCase
             'System account password was reset to bcrypt("system") — updateOrInsert is resetting it on every push'
         );
     }
+
+    // ── Task 3: PublicHealth — no User::first() actor fallback ───────────────
+
+    /** @test */
+    public function public_health_operator_id_is_not_random_db_user(): void
+    {
+        // Verify the source code does not contain the User::first() fallback pattern
+        $source = file_get_contents(
+            base_path('app/Http/Controllers/Api/V1/PublicHealth/PublicHealthController.php')
+        );
+        $this->assertStringNotContainsString(
+            'User::first()',
+            $source,
+            'PublicHealthController still contains User::first() — operator attribution is broken for B2B calls'
+        );
+
+        $source2 = file_get_contents(
+            base_path('app/Http/Controllers/Api/V1/PublicHealth/IntelligenceController.php')
+        );
+        $this->assertStringNotContainsString(
+            'User::first()',
+            $source2,
+            'IntelligenceController still contains User::first() — operator attribution is broken for B2B calls'
+        );
+    }
 }

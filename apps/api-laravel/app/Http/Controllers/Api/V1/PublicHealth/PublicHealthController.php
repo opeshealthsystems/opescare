@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\PublicHealth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Models\ReportType;
 use App\Models\PublicHealthReport;
 use App\Models\ReportItem;
@@ -14,7 +15,6 @@ use App\Models\ReportAssignment;
 use App\Models\SubmissionProfile;
 use App\Models\ReportSubmission;
 use App\Models\ExportFile;
-use App\Models\User;
 use App\Modules\PublicHealth\Services\DraftGenerationService;
 use App\Modules\PublicHealth\Services\DataQualityCheckService;
 use App\Modules\PublicHealth\Services\ExportService;
@@ -126,7 +126,7 @@ class PublicHealthController extends Controller
             'report_id' => $report->id,
             'old_status' => 'draft',
             'new_status' => 'pending_review',
-            'changed_by' => $request->user()?->id ?? User::first()?->id ?? '00000000-0000-0000-0000-000000000001',
+            'changed_by' => $this->operatorId($request),
             'reason' => 'Submitted for public health review.',
             'changed_at' => now()
         ]);
@@ -141,7 +141,7 @@ class PublicHealthController extends Controller
         if (!$report) return response()->json(['error' => 'Report not found.'], 404);
 
         $assigneeId = $request->input('assigned_to');
-        $operatorId = $request->user()?->id ?? User::first()?->id ?? '00000000-0000-0000-0000-000000000001';
+        $operatorId = $this->operatorId($request);
 
         ReportAssignment::create([
             'report_id' => $report->id,
@@ -163,7 +163,7 @@ class PublicHealthController extends Controller
         $report->status = 'approved_for_submission';
         $report->save();
 
-        $operatorId = $request->user()?->id ?? User::first()?->id ?? '00000000-0000-0000-0000-000000000001';
+        $operatorId = $this->operatorId($request);
 
         ReportReview::create([
             'report_id' => $report->id,
@@ -196,7 +196,7 @@ class PublicHealthController extends Controller
         $report->requires_correction = true;
         $report->save();
 
-        $operatorId = $request->user()?->id ?? User::first()?->id ?? '00000000-0000-0000-0000-000000000001';
+        $operatorId = $this->operatorId($request);
         $reason = $request->input('reason');
 
         ReportReview::create([
@@ -229,7 +229,7 @@ class PublicHealthController extends Controller
         $report->status = 'rejected';
         $report->save();
 
-        $operatorId = $request->user()?->id ?? User::first()?->id ?? '00000000-0000-0000-0000-000000000001';
+        $operatorId = $this->operatorId($request);
         $reason = $request->input('reason');
 
         ReportReview::create([
@@ -262,7 +262,7 @@ class PublicHealthController extends Controller
         $report->status = 'cancelled';
         $report->save();
 
-        $operatorId = $request->user()?->id ?? User::first()?->id ?? '00000000-0000-0000-0000-000000000001';
+        $operatorId = $this->operatorId($request);
         $reason = $request->input('reason');
 
         ReportStatusHistory::create([
@@ -287,7 +287,7 @@ class PublicHealthController extends Controller
         $report = PublicHealthReport::find($id);
         if (!$report) return response()->json(['error' => 'Report not found.'], 404);
 
-        $operatorId = $request->user()?->id ?? User::first()?->id ?? '00000000-0000-0000-0000-000000000001';
+        $operatorId = $this->operatorId($request);
         $reason = $request->input('reason');
 
         // Increment version number and save version history payload
@@ -374,7 +374,7 @@ class PublicHealthController extends Controller
         $profile = SubmissionProfile::find($request->input('profile_id'));
         if (!$profile) return response()->json(['error' => 'Submission profile not found.'], 404);
 
-        $operatorId = $request->user()?->id ?? User::first()?->id ?? '00000000-0000-0000-0000-000000000001';
+        $operatorId = $this->operatorId($request);
 
         $submission = ReportSubmission::create([
             'report_id' => $report->id,
@@ -404,7 +404,7 @@ class PublicHealthController extends Controller
         $report = PublicHealthReport::find($id);
         if (!$report) return response()->json(['error' => 'Report not found.'], 404);
 
-        $operatorId = $request->user()?->id ?? User::first()?->id ?? '00000000-0000-0000-0000-000000000001';
+        $operatorId = $this->operatorId($request);
 
         $service = new ExportService();
         $export = $service->exportCsv($report, $operatorId);
@@ -444,5 +444,23 @@ class PublicHealthController extends Controller
         $export->save();
 
         return response()->download($export->file_path);
+    }
+
+    /**
+     * Derive the operator ID for audit fields in B2B contexts.
+     * VerifyIntegrationClient sets 'integration_client_id' on request attributes.
+     * Never falls back to a random DB user lookup — that attributes governance
+     * actions to an arbitrary row with no forensic value.
+     */
+    private function operatorId(Request $request): string
+    {
+        if ($id = $request->user()?->id) {
+            return $id;
+        }
+        $clientId = $request->attributes->get('integration_client_id');
+        if ($clientId && Str::isUuid($clientId)) {
+            return $clientId;
+        }
+        return config('opescare.system_provider_id', '00000000-0000-0000-0000-000000000001');
     }
 }
