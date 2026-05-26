@@ -6,6 +6,13 @@ use App\Http\Middleware\IdempotencyProtection;
 
 /*
 |--------------------------------------------------------------------------
+| Health Check — no authentication required
+|--------------------------------------------------------------------------
+*/
+Route::get('/health', \App\Http\Controllers\Api\HealthCheckController::class);
+
+/*
+|--------------------------------------------------------------------------
 | OpesCare Operational Flow API Routes
 |--------------------------------------------------------------------------
 */
