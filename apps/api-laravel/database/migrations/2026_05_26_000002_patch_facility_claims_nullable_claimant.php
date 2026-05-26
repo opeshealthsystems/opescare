@@ -20,6 +20,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Critical #1: Guard against missing table on fresh installs.
+        if (!Schema::hasTable('facility_claims')) {
+            return;
+        }
+
         $driver = DB::getDriverName();
 
         if ($driver === 'sqlite') {
@@ -44,20 +49,41 @@ return new class extends Migration
             });
             DB::statement('PRAGMA foreign_keys = ON');
         } else {
-            // PostgreSQL / MySQL: patch in place
-            // 1. Drop the old FK constraint on facility_id (points to care_facilities)
-            DB::statement('ALTER TABLE facility_claims DROP CONSTRAINT IF EXISTS facility_claims_facility_id_foreign');
-            // 2. Add new FK pointing to facilities
-            DB::statement('ALTER TABLE facility_claims ADD CONSTRAINT facility_claims_facility_id_foreign FOREIGN KEY (facility_id) REFERENCES facilities(id) ON DELETE CASCADE');
-            // 3. Drop and re-add FK for claimant_user_id to make it nullable + set null on delete
-            DB::statement('ALTER TABLE facility_claims DROP CONSTRAINT IF EXISTS facility_claims_claimant_user_id_foreign');
-            // 4. Make claimant_user_id nullable
-            Schema::table('facility_claims', function (Blueprint $table) {
-                $table->uuid('claimant_user_id')->nullable()->change();
-                $table->text('claim_reason')->nullable()->change();
-                $table->timestamp('submitted_at')->nullable()->change();
+            // PostgreSQL / MySQL: patch in place, wrapped in a transaction for atomicity.
+            // Critical #3: Wrap all ALTER TABLE statements in a transaction to prevent
+            // partial failures leaving the schema in an inconsistent state.
+            DB::transaction(function () {
+                // Critical #2: Drop old FK to care_facilities if it exists, then add FK
+                // to facilities only if it does not already exist — making this idempotent.
+                // 1. Drop the old FK constraint on facility_id (points to care_facilities)
+                DB::statement('ALTER TABLE facility_claims DROP CONSTRAINT IF EXISTS facility_claims_facility_id_foreign');
+                // 2. Add new FK pointing to facilities only if it doesn't already exist
+                DB::statement("
+                    DO $$
+                    BEGIN
+                        IF NOT EXISTS (
+                            SELECT 1 FROM information_schema.table_constraints
+                            WHERE table_name = 'facility_claims'
+                              AND constraint_name = 'facility_claims_facility_id_foreign'
+                              AND constraint_type = 'FOREIGN KEY'
+                        ) THEN
+                            ALTER TABLE facility_claims
+                                ADD CONSTRAINT facility_claims_facility_id_foreign
+                                FOREIGN KEY (facility_id) REFERENCES facilities(id) ON DELETE CASCADE;
+                        END IF;
+                    END
+                    $$
+                ");
+                // 3. Drop and re-add FK for claimant_user_id to make it nullable + set null on delete
+                DB::statement('ALTER TABLE facility_claims DROP CONSTRAINT IF EXISTS facility_claims_claimant_user_id_foreign');
+                // 4. Make claimant_user_id nullable
+                Schema::table('facility_claims', function (Blueprint $table) {
+                    $table->uuid('claimant_user_id')->nullable()->change();
+                    $table->text('claim_reason')->nullable()->change();
+                    $table->timestamp('submitted_at')->nullable()->change();
+                });
+                DB::statement('ALTER TABLE facility_claims ADD CONSTRAINT facility_claims_claimant_user_id_foreign FOREIGN KEY (claimant_user_id) REFERENCES users(id) ON DELETE SET NULL');
             });
-            DB::statement('ALTER TABLE facility_claims ADD CONSTRAINT facility_claims_claimant_user_id_foreign FOREIGN KEY (claimant_user_id) REFERENCES users(id) ON DELETE SET NULL');
         }
     }
 
