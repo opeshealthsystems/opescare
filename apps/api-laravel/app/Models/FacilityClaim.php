@@ -13,6 +13,7 @@ class FacilityClaim extends Model
 
     protected $fillable = [
         'facility_id',
+        'registry_entry_id',
         'claimant_user_id',
         'claim_status',
         'claim_reason',
@@ -30,6 +31,11 @@ class FacilityClaim extends Model
     public function facility()
     {
         return $this->belongsTo(Facility::class, 'facility_id');
+    }
+
+    public function registryEntry()
+    {
+        return $this->belongsTo(FacilityRegistry::class, 'registry_entry_id');
     }
 
     public function claimant()
