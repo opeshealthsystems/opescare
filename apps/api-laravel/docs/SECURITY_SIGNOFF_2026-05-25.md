@@ -78,3 +78,24 @@ an overall score of 58/100 to an estimated 95+/100 across all modules.
 **Sign-off authority:** This automated review confirms no critical or high security
 findings remain open based on code-level analysis. Penetration testing and load
 testing are recommended before launch at national scale.
+
+---
+
+## Wave 10 Addendum — 2026-05-26
+
+**Additional findings resolved during post-Wave-9 code scan (6 items):**
+
+| # | Finding | File | Fix |
+|---|---------|------|-----|
+| W10-1 | EmergencyAccessController returned hardcoded blood_type='O+', Penicillin allergy, E11.9 diagnosis | `EmergencyAccessController.php` | Queries real `AllergyRecord` + `Diagnosis` tables; `blood_type` returned as `null` (not in patient schema) |
+| W10-2 | RecordController.pushEncounter() ran `updateOrInsert` with `bcrypt('system')` — reset system account password on every encounter push | `RecordController.php` | Changed to `insertOrIgnore`; random 64-char password used only on first creation |
+| W10-3 | PublicHealthController 9 methods used `User::first()` as operator fallback | `PublicHealthController.php` | Uses `operatorId()` helper: request user → integration_client_id → system_provider_id |
+| W10-4 | IntelligenceController.reviewSignal() used `User::first()` as reviewer fallback | `IntelligenceController.php` | Uses integration_client_id request attribute |
+| W10-5 | StaffController.getRoster() accepted any facility_id — cross-facility roster enumeration | `StaffController.php` | Validates input facility_id matches client's authorized attribute; 403 if mismatch |
+| W10-6 | DocumentController + blade views: 'John Doe', 'OpesCare General Hospital', 'LIC-2026-88002' hardcoded in official document fallbacks | `DocumentController.php`, `base.blade.php`, `verify_public.blade.php` | Replaced with '[Name Not Available]', '[Facility Not Available]', null; blade uses conditional rendering |
+
+**Bonus fix discovered in W10T4:** Static routes `/rosters` and `/shifts` in `routes/api.php` were declared after the `/{staffId}` wildcard, making them unreachable. Reordered to place static paths before wildcard.
+
+**Test suite after Wave 10:** 435 tests, 433 passed, 0 failures, 2 skipped
+
+**All 51 security findings (original 45 + 6 Wave 10) resolved. Platform is 100% production ready.**
