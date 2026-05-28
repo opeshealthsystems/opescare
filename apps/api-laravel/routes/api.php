@@ -511,11 +511,15 @@ Route::prefix('v1/bridge')
 |--------------------------------------------------------------------------
 */
 Route::prefix('v1/lite')->middleware(VerifyIntegrationClient::class)->group(function () {
-    Route::post('/register-device',  [\App\Http\Controllers\Api\V1\LiteApiController::class, 'registerDevice']);
-    Route::get('/config',            [\App\Http\Controllers\Api\V1\LiteApiController::class, 'config']);
-    Route::post('/sync/push',        [\App\Http\Controllers\Api\V1\LiteApiController::class, 'syncPush']);
-    Route::get('/sync/pull',         [\App\Http\Controllers\Api\V1\LiteApiController::class, 'syncPull']);
-    Route::post('/offline-events',   [\App\Http\Controllers\Api\V1\LiteApiController::class, 'offlineEvent']);
+    Route::post('/register-device',              [\App\Http\Controllers\Api\V1\LiteApiController::class, 'registerDevice']);
+    Route::get('/config',                        [\App\Http\Controllers\Api\V1\LiteApiController::class, 'config']);
+    Route::post('/sync/push',                    [\App\Http\Controllers\Api\V1\LiteApiController::class, 'syncPush']);
+    Route::get('/sync/pull',                     [\App\Http\Controllers\Api\V1\LiteApiController::class, 'syncPull']);
+    Route::post('/offline-events',               [\App\Http\Controllers\Api\V1\LiteApiController::class, 'offlineEvent']);
+    // Gap 11 — conflict resolution endpoint
+    Route::patch('/conflicts/{conflict}/resolve', [\App\Http\Controllers\Api\V1\LiteApiController::class, 'resolveConflict']);
+    // Gap 12 — offline formulary download for prescription cache
+    Route::get('/formulary',                     [\App\Http\Controllers\Api\V1\LiteApiController::class, 'formulary']);
 });
 
 /*

@@ -184,6 +184,92 @@ class LiteApiController extends Controller
         ], 201);
     }
 
+    /**
+     * PATCH /api/v1/lite/conflicts/{conflict}/resolve
+     *
+     * Let the Lite client resolve an open conflict by declaring which version wins,
+     * or by dismissing it. Only the owning device may resolve its own conflicts.
+     *
+     * Resolution values:
+     *   accept_server  — overwrite device-side record with the server version
+     *   accept_device  — server will adopt the device-side version on next push
+     *   dismiss        — conflict acknowledged, no data change (used for non-clinical conflicts)
+     */
+    public function resolveConflict(Request $request, LiteConflict $conflict): JsonResponse
+    {
+        $device = $this->resolveDevice($request);
+        if (! $device) {
+            return response()->json(['message' => 'Device not found, not active, or invalid signature.'], 403);
+        }
+
+        // A device may only resolve conflicts that belong to it
+        if ($conflict->lite_device_id !== $device->id) {
+            return response()->json(['message' => 'Conflict does not belong to this device.'], 403);
+        }
+
+        if (! $conflict->isOpen()) {
+            return response()->json(['message' => 'Conflict is already resolved or dismissed.'], 409);
+        }
+
+        $data = $request->validate([
+            'resolution'      => 'required|in:accept_server,accept_device,dismiss',
+            'resolution_note' => 'nullable|string|max:500',
+        ]);
+
+        $resolved = $this->liteService->resolveConflict(
+            conflict:   $conflict,
+            resolvedBy: $device->id,
+            resolution: $data['resolution'],
+            note:       $data['resolution_note'] ?? '',
+        );
+
+        return response()->json([
+            'message'  => 'Conflict resolved.',
+            'conflict' => [
+                'id'              => $resolved->id,
+                'status'          => $resolved->status,
+                'resolved_at'     => $resolved->resolved_at?->toIso8601String(),
+                'resolution_note' => $resolved->resolution_note,
+            ],
+        ]);
+    }
+
+    /**
+     * GET /api/v1/lite/formulary
+     *
+     * Download the current drug formulary for the authenticated device's facility.
+     *
+     * Returns only available drugs — intended as the offline prescription cache
+     * for Lite devices operating without network access. Clients should refresh
+     * this list on every successful pull-sync and store locally (e.g. SQLite).
+     *
+     * Response is intentionally lightweight: no prescription history, no prices.
+     * Controlled substances are flagged via `is_controlled` so the UI can enforce
+     * additional confirmation steps before offline prescribing.
+     */
+    public function formulary(Request $request): JsonResponse
+    {
+        $device = $this->resolveDevice($request);
+        if (! $device) {
+            return response()->json(['message' => 'Device not found, not active, or invalid signature.'], 403);
+        }
+
+        $formulary = \App\Models\DrugFormulary::where('facility_id', $device->facility_id)
+            ->where('is_available', true)
+            ->orderBy('generic_name')
+            ->get([
+                'id', 'generic_name', 'brand_names', 'drug_code', 'drug_class',
+                'form', 'strength', 'unit', 'is_controlled', 'requires_prior_auth',
+            ]);
+
+        return response()->json([
+            'facility_id'     => $device->facility_id,
+            'as_of'           => now()->toIso8601String(),
+            'formulary_count' => $formulary->count(),
+            'formulary'       => $formulary,
+        ]);
+    }
+
     // ──────────────────────────────────────────────────────────────────────────
     // Private helpers
     // ──────────────────────────────────────────────────────────────────────────
