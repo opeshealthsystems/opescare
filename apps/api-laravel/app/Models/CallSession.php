@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class CallSession extends Model
 {
     use HasUuids;
+    use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
         'teleconsultation_id',

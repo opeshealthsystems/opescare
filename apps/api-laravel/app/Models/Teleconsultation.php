@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Teleconsultation extends Model
 {
     use HasUuids;
+    use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
         'visit_id',

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ReferralCase extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
+    use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
         'patient_id',
