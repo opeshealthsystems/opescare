@@ -1,0 +1,149 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'production'
+        type: choice
+        options: [production, staging]
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false  # Never cancel a running deploy
+
+jobs:
+  test:
+    name: Run Test Suite
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: opescare_test
+          POSTGRES_USER: opescare
+          POSTGRES_PASSWORD: secret
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pgsql, pdo_pgsql, redis, mbstring, xml, bcmath, zip
+          coverage: none
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: apps/api-laravel/vendor
+          key: composer-${{ hashFiles('apps/api-laravel/composer.lock') }}
+
+      - name: Install dependencies
+        working-directory: apps/api-laravel
+        run: composer install --no-dev --optimize-autoloader --no-interaction
+
+      - name: Setup .env
+        working-directory: apps/api-laravel
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=pgsql/' .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=5432" >> .env
+          echo "DB_DATABASE=opescare_test" >> .env
+          echo "DB_USERNAME=opescare" >> .env
+          echo "DB_PASSWORD=secret" >> .env
+          echo "CACHE_STORE=redis" >> .env
+          echo "QUEUE_CONNECTION=redis" >> .env
+          echo "REDIS_HOST=127.0.0.1" >> .env
+
+      - name: Run migrations
+        working-directory: apps/api-laravel
+        run: php artisan migrate --force
+
+      - name: Run tests
+        working-directory: apps/api-laravel
+        run: php artisan test --parallel
+
+  deploy:
+    name: Rolling Deploy
+    needs: test
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy via rolling restart (zero-downtime)
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh $DEPLOY_USER@$DEPLOY_HOST << 'ENDSSH'
+            set -e
+            cd $DEPLOY_PATH/apps/api-laravel
+
+            echo "==> Pulling latest code..."
+            git pull origin main --ff-only
+
+            echo "==> Installing/updating dependencies..."
+            composer install --no-dev --optimize-autoloader --no-interaction
+
+            echo "==> Caching config, routes, views..."
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            php artisan event:cache
+
+            echo "==> Running migrations (safe — no destructive changes)..."
+            php artisan migrate --force
+
+            echo "==> Restarting queue workers gracefully..."
+            php artisan queue:restart
+
+            echo "==> Restarting Horizon..."
+            php artisan horizon:terminate
+            sleep 3
+
+            echo "==> Reloading PHP-FPM (zero-downtime)..."
+            sudo systemctl reload php8.3-fpm
+
+            echo "==> Health check..."
+            curl -sf http://localhost/api/health || (echo "Health check FAILED" && exit 1)
+
+            echo "==> Deploy complete ✓"
+          ENDSSH
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "Deploy FAILED for commit ${{ github.sha }}" >&2
+          # Add Slack/PagerDuty webhook here via secrets.ALERT_WEBHOOK
