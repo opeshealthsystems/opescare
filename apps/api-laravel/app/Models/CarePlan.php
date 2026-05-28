@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class CarePlan extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
+    use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
         'patient_id',
