@@ -8,12 +8,28 @@ use App\Models\LiteDevice;
 use App\Modules\OpesCareLite\Services\OpesCareLiteService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 /**
  * OpesCare Lite Sync & Device API
  *
  * Provides endpoints for Lite client device registration, config fetch,
  * offline event push/pull, and conflict management.
+ *
+ * ## Request Authentication (HMAC-SHA256)
+ *
+ * After registration, every request to authenticated Lite endpoints must include:
+ *
+ *   X-Lite-Device-Id:  <device_uuid>
+ *   X-Lite-Timestamp:  <unix_timestamp>   (UTC, 5-minute replay window)
+ *   X-Lite-Signature:  HMAC-SHA256(<device_id>.<timestamp>.<sha256(body)>, device_secret)
+ *
+ * The device_secret is returned ONCE in the registration response and must be
+ * stored securely on the device (e.g. in platform secure storage / Keychain).
+ * It is never returned again after the initial registration call.
+ *
+ * Devices registered before HMAC authentication was introduced (device_secret = null)
+ * are allowed through with a warning log until secrets are rotated.
  */
 class LiteApiController extends Controller
 {
@@ -23,6 +39,7 @@ class LiteApiController extends Controller
      * POST /api/v1/lite/register-device
      *
      * Register a new Lite device for a facility.
+     * Returns the device_secret ONCE — store it securely; it is never shown again.
      */
     public function registerDevice(Request $request): JsonResponse
     {
@@ -38,7 +55,7 @@ class LiteApiController extends Controller
             'offline_allowed'     => 'nullable|boolean',
         ]);
 
-        // Duplicate fingerprint guard
+        // Duplicate fingerprint guard — return existing device (without secret)
         if (LiteDevice::where('device_fingerprint', $data['device_fingerprint'])->exists()) {
             $device = LiteDevice::where('device_fingerprint', $data['device_fingerprint'])->first();
             return response()->json([
@@ -53,21 +70,23 @@ class LiteApiController extends Controller
         $actorId = $request->input('authorized_by', 'api');
 
         $device = $this->liteService->registerDevice(
-            facilityId:       $data['facility_id'],
-            deviceName:       $data['device_name'],
+            facilityId:        $data['facility_id'],
+            deviceName:        $data['device_name'],
             deviceFingerprint: $data['device_fingerprint'],
-            authorizedBy:     $actorId,
-            platform:         $data['platform'] ?? 'web',
-            extraModules:     $data['extra_modules'] ?? [],
-            offlineAllowed:   (bool) ($data['offline_allowed'] ?? false),
+            authorizedBy:      $actorId,
+            platform:          $data['platform'] ?? 'web',
+            extraModules:      $data['extra_modules'] ?? [],
+            offlineAllowed:    (bool) ($data['offline_allowed'] ?? false),
         );
 
         return response()->json([
             'message' => 'Device registered. Awaiting activation.',
             'device'  => [
-                'id'          => $device->id,
-                'status'      => $device->status,
-                'config'      => $this->liteService->getConfig($device),
+                'id'            => $device->id,
+                'status'        => $device->status,
+                'config'        => $this->liteService->getConfig($device),
+                // ONE-TIME secret — must be stored securely; never returned again
+                'device_secret' => $device->device_secret,
             ],
         ], 201);
     }
@@ -75,13 +94,13 @@ class LiteApiController extends Controller
     /**
      * GET /api/v1/lite/config
      *
-     * Fetch current config for the authenticated/identified device.
+     * Fetch current config for the authenticated device.
      */
     public function config(Request $request): JsonResponse
     {
         $device = $this->resolveDevice($request);
         if (!$device) {
-            return response()->json(['message' => 'Device not found or not active.'], 403);
+            return response()->json(['message' => 'Device not found, not active, or invalid signature.'], 403);
         }
 
         $device->touchSeen();
@@ -100,15 +119,15 @@ class LiteApiController extends Controller
     {
         $device = $this->resolveDevice($request);
         if (!$device) {
-            return response()->json(['message' => 'Device not found or not active.'], 403);
+            return response()->json(['message' => 'Device not found, not active, or invalid signature.'], 403);
         }
 
         $data = $request->validate([
-            'events'                     => 'required|array|min:1|max:200',
-            'events.*.event_type'        => 'required|string|max:80',
-            'events.*.client_id'         => 'required|string|max:64',
-            'events.*.payload'           => 'required|array',
-            'events.*.captured_at'       => 'nullable|date',
+            'events'               => 'required|array|min:1|max:200',
+            'events.*.event_type'  => 'required|string|max:80',
+            'events.*.client_id'   => 'required|string|max:64',
+            'events.*.payload'     => 'required|array',
+            'events.*.captured_at' => 'nullable|date',
         ]);
 
         $result = $this->liteService->pushOfflineEvents($device, $data['events']);
@@ -128,7 +147,7 @@ class LiteApiController extends Controller
     {
         $device = $this->resolveDevice($request);
         if (!$device) {
-            return response()->json(['message' => 'Device not found or not active.'], 403);
+            return response()->json(['message' => 'Device not found, not active, or invalid signature.'], 403);
         }
 
         $since = $request->query('since'); // ISO8601 timestamp
@@ -147,7 +166,7 @@ class LiteApiController extends Controller
     {
         $device = $this->resolveDevice($request);
         if (!$device) {
-            return response()->json(['message' => 'Device not found or not active.'], 403);
+            return response()->json(['message' => 'Device not found, not active, or invalid signature.'], 403);
         }
 
         $data = $request->validate([
@@ -165,13 +184,23 @@ class LiteApiController extends Controller
         ], 201);
     }
 
-    // ------------------------------------------------------------------
-    // Helpers
-    // ------------------------------------------------------------------
+    // ──────────────────────────────────────────────────────────────────────────
+    // Private helpers
+    // ──────────────────────────────────────────────────────────────────────────
 
     /**
-     * Resolve the device from X-Lite-Device-Id header or query param.
-     * In a production auth system this would validate a signed token.
+     * Resolve and authenticate the device making the request.
+     *
+     * Authentication flow:
+     * 1. Read X-Lite-Device-Id (or device_id query/body param).
+     * 2. Load device from DB; verify it is active.
+     * 3. If device has a device_secret → validate HMAC-SHA256 signature:
+     *      message   = device_id . "." . timestamp . "." . sha256(request_body)
+     *      signature = HMAC-SHA256(message, device_secret)
+     *      Reject if timestamp is > 5 minutes old (replay protection).
+     * 4. If device_secret is null (legacy/pre-auth device) → allow but warn.
+     *
+     * Returns null on any authentication failure.
      */
     private function resolveDevice(Request $request): ?LiteDevice
     {
@@ -179,14 +208,58 @@ class LiteApiController extends Controller
             ?? $request->query('device_id')
             ?? $request->input('device_id');
 
-        if (!$deviceId) {
+        if (! $deviceId) {
             return null;
         }
 
         $device = LiteDevice::find($deviceId);
 
-        if (!$device || !$device->isActive()) {
+        if (! $device || ! $device->isActive()) {
             return null;
+        }
+
+        // ── HMAC-SHA256 signature validation ──────────────────────────────────
+        if ($device->device_secret !== null) {
+            $timestamp = $request->header('X-Lite-Timestamp');
+            $signature = $request->header('X-Lite-Signature');
+
+            if (! $timestamp || ! $signature) {
+                Log::warning('Lite device request missing HMAC headers', [
+                    'device_id' => $deviceId,
+                    'ip'        => $request->ip(),
+                ]);
+                return null;
+            }
+
+            // Replay protection: reject requests older than 5 minutes
+            if (abs(time() - (int) $timestamp) > 300) {
+                Log::warning('Lite device request timestamp out of window (possible replay)', [
+                    'device_id' => $deviceId,
+                    'timestamp' => $timestamp,
+                    'ip'        => $request->ip(),
+                ]);
+                return null;
+            }
+
+            // Compute expected HMAC:
+            //   message = device_id . "." . unix_timestamp . "." . sha256(raw_request_body)
+            $bodyHash = hash('sha256', $request->getContent());
+            $message  = $deviceId . '.' . $timestamp . '.' . $bodyHash;
+            $expected = hash_hmac('sha256', $message, $device->device_secret);
+
+            if (! hash_equals($expected, strtolower($signature))) {
+                Log::warning('Lite device HMAC signature mismatch', [
+                    'device_id' => $deviceId,
+                    'ip'        => $request->ip(),
+                ]);
+                return null;
+            }
+        } else {
+            // Legacy device without secret — allow but log for rotation tracking
+            Log::warning('Lite device authenticated WITHOUT HMAC secret (legacy device — rotate secret)', [
+                'device_id' => $deviceId,
+                'ip'        => $request->ip(),
+            ]);
         }
 
         return $device;

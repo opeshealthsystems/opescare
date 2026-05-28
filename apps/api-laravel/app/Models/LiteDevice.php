@@ -16,7 +16,7 @@ class LiteDevice extends Model
         'facility_id', 'device_name', 'device_fingerprint', 'environment',
         'status', 'platform', 'os_info', 'app_version', 'authorized_by',
         'last_seen_at', 'activated_at', 'revoked_at', 'revoke_reason',
-        'allowed_modes',
+        'allowed_modes', 'device_secret',
     ];
 
     protected $casts = [

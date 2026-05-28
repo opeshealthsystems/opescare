@@ -25,6 +25,7 @@ class Patient extends Model
         'date_of_birth',
         'is_dob_estimated',
         'sex',
+        'blood_group',
         'phone_number',
         'email',
         'address',
