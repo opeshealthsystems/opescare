@@ -1,0 +1,9 @@
+# Snyk (https://snyk.io) policy file
+# See: https://docs.snyk.io/snyk-cli/test-for-vulnerabilities/the-.snyk-file
+version: v1.25.0
+
+# Vulnerabilities to ignore with justification
+ignore: {}
+
+# Patches to apply
+patch: {}
