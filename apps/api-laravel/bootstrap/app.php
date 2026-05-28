@@ -25,6 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\AddSecurityHeaders::class,
             \App\Http\Middleware\LogApiUsage::class,
         ]);
+        $middleware->append(\App\Http\Middleware\DatabaseHealthMiddleware::class);
+
         $middleware->alias([
             'sdk.token'        => \App\Http\Middleware\VerifySdkToken::class,
             'throttle.client'  => \App\Http\Middleware\ThrottleByClient::class,
