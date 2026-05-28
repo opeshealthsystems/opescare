@@ -10,6 +10,7 @@ class ClinicalNote extends Model
 {
     use \App\Traits\IsDemoRecord;
     use HasFactory, HasUuids;
+    use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
         'visit_id',

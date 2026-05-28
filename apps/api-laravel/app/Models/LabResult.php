@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class LabResult extends Model
 {
     use HasFactory, HasUuids;
+    use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
         'lab_order_id',

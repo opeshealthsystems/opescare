@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class VitalSign extends Model
 {
     use HasFactory, HasUuids;
+    use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
         'triage_record_id',

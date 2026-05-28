@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class TriageVitalSign extends Model
 {
     use HasUuids;
+    use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
         'triage_record_id',

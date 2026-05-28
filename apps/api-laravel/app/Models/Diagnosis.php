@@ -10,6 +10,7 @@ class Diagnosis extends Model
 {
     use \App\Traits\IsDemoRecord;
     use HasFactory, HasUuids;
+    use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
         'patient_id',
@@ -17,6 +18,8 @@ class Diagnosis extends Model
         'provider_id',
         'code_system',
         'code',
+        'snomed_code',
+        'snomed_display',
         'display_name',
         'status',
         'is_primary',

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class PrescriptionItem extends Model
 {
     use HasFactory, HasUuids;
+    use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
         'prescription_id',
