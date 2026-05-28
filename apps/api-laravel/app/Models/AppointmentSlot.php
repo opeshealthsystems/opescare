@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class AppointmentSlot extends Model
 {
     use HasFactory, HasUuids;
+    use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
         'facility_id',

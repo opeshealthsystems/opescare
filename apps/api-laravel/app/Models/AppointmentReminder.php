@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class AppointmentReminder extends Model
 {
     use HasUuids;
+    use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
         'appointment_id',
