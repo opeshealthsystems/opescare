@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class EligibilityCheck extends Model
 {
     use HasUuids;
+    use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
         'patient_insurance_policy_id',

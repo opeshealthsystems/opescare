@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class InsurancePlan extends Model
 {
-    use HasUuids;
+    use HasUuids, HasFactory;
+    use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
         'insurance_provider_id',
