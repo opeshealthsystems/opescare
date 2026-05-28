@@ -569,6 +569,18 @@ Route::prefix('fhir/R4')->middleware(VerifyIntegrationClient::class)->group(func
     Route::get('/Coverage',               [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchCoverage']);
     Route::get('/Coverage/{id}',          [\App\Http\Controllers\Api\Fhir\FhirController::class, 'coverage']);
 
+    // FHIR Immunization (ImmunizationRecord → FHIR Immunization)
+    Route::get('/Immunization',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchImmunization']);
+    Route::get('/Immunization/{id}',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'immunization']);
+
+    // FHIR AllergyIntolerance (AllergyRecord → FHIR AllergyIntolerance)
+    Route::get('/AllergyIntolerance',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchAllergyIntolerance']);
+    Route::get('/AllergyIntolerance/{id}',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'allergyIntolerance']);
+
+    // FHIR Condition (Diagnosis → FHIR Condition)
+    Route::get('/Condition',              [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchCondition']);
+    Route::get('/Condition/{id}',         [\App\Http\Controllers\Api\Fhir\FhirController::class, 'condition']);
+
     // FHIR Subscriptions (Item 11)
     Route::get('/Subscription',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'subscriptionIndex']);
     Route::post('/Subscription',          [\App\Http\Controllers\Api\Fhir\FhirController::class, 'subscriptionCreate']);

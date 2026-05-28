@@ -12,11 +12,17 @@ use App\Models\Prescription;
 use App\Models\User;
 use App\Models\Visit;
 use App\Models\VitalSign;
+use App\Models\AllergyRecord;
+use App\Models\Diagnosis;
+use App\Models\ImmunizationRecord;
+use App\Modules\Fhir\Mappers\FhirAllergyIntoleranceMapper;
+use App\Modules\Fhir\Mappers\FhirConditionMapper;
 use App\Modules\Fhir\Mappers\FhirConsentMapper;
 use App\Modules\Fhir\Mappers\FhirCoverageMapper;
 use App\Modules\Fhir\Mappers\FhirDiagnosticReportMapper;
 use App\Modules\Fhir\Mappers\FhirDocumentReferenceMapper;
 use App\Modules\Fhir\Mappers\FhirEncounterMapper;
+use App\Modules\Fhir\Mappers\FhirImmunizationMapper;
 use App\Modules\Fhir\Mappers\FhirMedicationRequestMapper;
 use App\Modules\Fhir\Mappers\FhirObservationMapper;
 use App\Modules\Fhir\Mappers\FhirOrganizationMapper;
@@ -36,16 +42,19 @@ use App\Modules\Fhir\Mappers\FhirPractitionerMapper;
 class FhirService
 {
     public function __construct(
-        private readonly FhirPatientMapper            $patientMapper,
-        private readonly FhirEncounterMapper          $encounterMapper,
-        private readonly FhirObservationMapper        $observationMapper,
-        private readonly FhirMedicationRequestMapper  $medicationMapper,
-        private readonly FhirDiagnosticReportMapper   $diagnosticMapper,
-        private readonly FhirPractitionerMapper       $practitionerMapper,
-        private readonly FhirOrganizationMapper       $organizationMapper,
-        private readonly FhirDocumentReferenceMapper  $documentReferenceMapper,
-        private readonly FhirConsentMapper            $consentMapper,
-        private readonly FhirCoverageMapper           $coverageMapper,
+        private readonly FhirPatientMapper             $patientMapper,
+        private readonly FhirEncounterMapper           $encounterMapper,
+        private readonly FhirObservationMapper         $observationMapper,
+        private readonly FhirMedicationRequestMapper   $medicationMapper,
+        private readonly FhirDiagnosticReportMapper    $diagnosticMapper,
+        private readonly FhirPractitionerMapper        $practitionerMapper,
+        private readonly FhirOrganizationMapper        $organizationMapper,
+        private readonly FhirDocumentReferenceMapper   $documentReferenceMapper,
+        private readonly FhirConsentMapper             $consentMapper,
+        private readonly FhirCoverageMapper            $coverageMapper,
+        private readonly FhirImmunizationMapper        $immunizationMapper,
+        private readonly FhirAllergyIntoleranceMapper  $allergyIntoleranceMapper,
+        private readonly FhirConditionMapper           $conditionMapper,
     ) {}
 
     // -------------------------------------------------------------------------
@@ -188,6 +197,48 @@ class FhirService
     }
 
     // -------------------------------------------------------------------------
+    // Immunization
+    // -------------------------------------------------------------------------
+
+    public function immunization(ImmunizationRecord $record): array
+    {
+        return $this->immunizationMapper->toFhir($record);
+    }
+
+    public function immunizationBundle(\Illuminate\Support\Collection $records): array
+    {
+        return $this->immunizationMapper->toBundle($records);
+    }
+
+    // -------------------------------------------------------------------------
+    // AllergyIntolerance
+    // -------------------------------------------------------------------------
+
+    public function allergyIntolerance(AllergyRecord $allergy): array
+    {
+        return $this->allergyIntoleranceMapper->toFhir($allergy);
+    }
+
+    public function allergyIntoleranceBundle(\Illuminate\Support\Collection $allergies): array
+    {
+        return $this->allergyIntoleranceMapper->toBundle($allergies);
+    }
+
+    // -------------------------------------------------------------------------
+    // Condition
+    // -------------------------------------------------------------------------
+
+    public function condition(Diagnosis $diagnosis): array
+    {
+        return $this->conditionMapper->toFhir($diagnosis);
+    }
+
+    public function conditionBundle(\Illuminate\Support\Collection $diagnoses): array
+    {
+        return $this->conditionMapper->toBundle($diagnoses);
+    }
+
+    // -------------------------------------------------------------------------
     // FHIR CapabilityStatement
     // -------------------------------------------------------------------------
 
@@ -210,16 +261,19 @@ class FhirService
                 [
                     'mode'     => 'server',
                     'resource' => [
-                        ['type' => 'Patient',             'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
-                        ['type' => 'Encounter',           'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
-                        ['type' => 'Observation',         'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
-                        ['type' => 'MedicationRequest',   'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
-                        ['type' => 'DiagnosticReport',    'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
-                        ['type' => 'Practitioner',        'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
-                        ['type' => 'Organization',        'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
-                        ['type' => 'DocumentReference',   'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
-                        ['type' => 'Consent',             'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
-                        ['type' => 'Coverage',            'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'Patient',              'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'Encounter',            'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'Observation',          'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'MedicationRequest',    'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'DiagnosticReport',     'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'Practitioner',         'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'Organization',         'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'DocumentReference',    'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'Consent',              'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'Coverage',             'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'Immunization',         'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'AllergyIntolerance',   'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
+                        ['type' => 'Condition',            'interaction' => [['code' => 'read'], ['code' => 'search-type']]],
                     ],
                 ],
             ],

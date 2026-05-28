@@ -49,5 +49,27 @@ class AppServiceProvider extends ServiceProvider
         \App\Models\Appointment::created(fn($m) => $familyListener->handleAppointment($m));
         \App\Models\Appointment::updated(fn($m) => $familyListener->handleAppointmentUpdated($m));
         \App\Models\ConsentRequest::created(fn($m) => $familyListener->handleConsentRequest($m));
+
+        // FHIR Subscriptions: dispatch async notifications when clinical resources change.
+        // Uses Laravel's Eloquent closure-based observers to avoid a proliferation of
+        // observer class registrations. The job is queued (fhir-notifications queue)
+        // so delivery never blocks the originating request.
+        $fhirObserver = new \App\Observers\FhirSubscriptionObserver(
+            app(\App\Modules\Fhir\Services\FhirService::class)
+        );
+        \App\Models\Patient::created([$fhirObserver, 'created']);
+        \App\Models\Patient::updated([$fhirObserver, 'updated']);
+        \App\Models\Visit::created([$fhirObserver, 'created']);
+        \App\Models\Visit::updated([$fhirObserver, 'updated']);
+        \App\Models\LabOrder::created([$fhirObserver, 'created']);
+        \App\Models\LabOrder::updated([$fhirObserver, 'updated']);
+        \App\Models\Prescription::created([$fhirObserver, 'created']);
+        \App\Models\Prescription::updated([$fhirObserver, 'updated']);
+        \App\Models\ImmunizationRecord::created([$fhirObserver, 'created']);
+        \App\Models\ImmunizationRecord::updated([$fhirObserver, 'updated']);
+        \App\Models\AllergyRecord::created([$fhirObserver, 'created']);
+        \App\Models\AllergyRecord::updated([$fhirObserver, 'updated']);
+        \App\Models\Diagnosis::created([$fhirObserver, 'created']);
+        \App\Models\Diagnosis::updated([$fhirObserver, 'updated']);
     }
 }
