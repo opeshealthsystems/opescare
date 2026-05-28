@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class IncidentReport extends Model
 {
     use HasFactory, HasUuids;
+    use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
         'support_ticket_id',

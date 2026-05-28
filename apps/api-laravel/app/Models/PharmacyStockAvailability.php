@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PharmacyStockAvailability extends Model
 {
     use HasUuids;
+    use \App\Traits\HasFacilityScope;
 
     protected $table = 'pharmacy_stock_availability';
 

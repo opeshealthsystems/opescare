@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class IncidentEscalation extends Model
 {
     use HasUuids;
+    use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
         'incident_report_id',
