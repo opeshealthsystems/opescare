@@ -16,6 +16,8 @@ class Patient extends Model
 
     protected $fillable = [
         'health_id',
+        'cnamgs_id',
+        'national_id_number',
         'country_code',
         'first_name',
         'last_name',
@@ -143,5 +145,45 @@ class Patient extends Model
     public function identifiers()
     {
         return $this->hasMany(PatientIdentifier::class);
+    }
+
+    public function allergies()
+    {
+        return $this->hasMany(AllergyRecord::class);
+    }
+
+    public function diagnoses()
+    {
+        return $this->hasMany(Diagnosis::class);
+    }
+
+    public function prescriptions()
+    {
+        return $this->hasMany(Prescription::class);
+    }
+
+    public function vitals()
+    {
+        return $this->hasMany(TriageVitalSign::class)->orderByDesc('created_at');
+    }
+
+    public function labResults()
+    {
+        return $this->hasMany(LabResult::class)->orderByDesc('created_at');
+    }
+
+    public function immunizations()
+    {
+        return $this->hasMany(ImmunizationRecord::class);
+    }
+
+    public function carePlans()
+    {
+        return $this->hasMany(CarePlan::class);
+    }
+
+    public function surveys()
+    {
+        return $this->hasMany(PatientSurvey::class);
     }
 }

@@ -568,6 +568,16 @@ Route::prefix('fhir/R4')->middleware(VerifyIntegrationClient::class)->group(func
     // Coverage
     Route::get('/Coverage',               [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchCoverage']);
     Route::get('/Coverage/{id}',          [\App\Http\Controllers\Api\Fhir\FhirController::class, 'coverage']);
+
+    // FHIR Subscriptions (Item 11)
+    Route::get('/Subscription',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'subscriptionIndex']);
+    Route::post('/Subscription',          [\App\Http\Controllers\Api\Fhir\FhirController::class, 'subscriptionCreate']);
+    Route::get('/Subscription/{id}',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'subscriptionShow']);
+    Route::delete('/Subscription/{id}',   [\App\Http\Controllers\Api\Fhir\FhirController::class, 'subscriptionDelete']);
+
+    // FHIR Bulk Export (Item 11)
+    Route::get('/\$export',               [\App\Http\Controllers\Api\Fhir\FhirController::class, 'bulkExport']);
+    Route::get('/Patient/{id}/\$export',  [\App\Http\Controllers\Api\Fhir\FhirController::class, 'patientBulkExport']);
 });
 
 /*
@@ -707,4 +717,142 @@ Route::prefix('v1/subscriptions')->middleware(VerifyIntegrationClient::class)->g
     Route::post('/cancel', [\App\Http\Controllers\Api\V1\SubscriptionController::class, 'cancel']);
     Route::get('/usage', [\App\Http\Controllers\Api\V1\SubscriptionController::class, 'getUsage']);
     Route::get('/limits/{featureKey}', [\App\Http\Controllers\Api\V1\SubscriptionController::class, 'checkLimit']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Maternity & Antenatal Care
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/maternity')->middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::get('patients/{patientId}/pregnancies',   [\App\Http\Controllers\Api\V1\MaternityController::class, 'index']);
+    Route::post('patients/{patientId}/pregnancies',  [\App\Http\Controllers\Api\V1\MaternityController::class, 'store']);
+    Route::get('pregnancies/{id}',                   [\App\Http\Controllers\Api\V1\MaternityController::class, 'show']);
+    Route::get('pregnancies/{id}/antenatal-visits',  [\App\Http\Controllers\Api\V1\MaternityController::class, 'antenatalVisits']);
+    Route::post('pregnancies/{id}/antenatal-visits', [\App\Http\Controllers\Api\V1\MaternityController::class, 'storeAntenatalVisit']);
+    Route::get('pregnancies/{id}/deliveries',        [\App\Http\Controllers\Api\V1\MaternityController::class, 'deliveries']);
+    Route::post('pregnancies/{id}/deliveries',       [\App\Http\Controllers\Api\V1\MaternityController::class, 'storeDelivery']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Provider Performance Reports
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/reports/providers')->middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::get('{providerId}/performance',          [\App\Http\Controllers\Api\V1\Reports\ProviderPerformanceController::class, 'summary']);
+    Route::get('{providerId}/top-diagnoses',        [\App\Http\Controllers\Api\V1\Reports\ProviderPerformanceController::class, 'topDiagnoses']);
+    Route::get('facility/{facilityId}/performance', [\App\Http\Controllers\Api\V1\Reports\ProviderPerformanceController::class, 'facilitySummary']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Revenue Cycle Reports
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/reports/revenue-cycle')->middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::get('summary', [\App\Http\Controllers\Api\V1\Reports\RevenueCycleController::class, 'summary']);
+    Route::get('aging',   [\App\Http\Controllers\Api\V1\Reports\RevenueCycleController::class, 'aging']);
+    Route::get('denials', [\App\Http\Controllers\Api\V1\Reports\RevenueCycleController::class, 'denials']);
+    Route::get('trend',   [\App\Http\Controllers\Api\V1\Reports\RevenueCycleController::class, 'trend']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Patient Payment Plans
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1')->middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::post('payment-plans',                                          [\App\Http\Controllers\Api\V1\PatientPaymentPlanController::class, 'store']);
+    Route::get('payment-plans/{id}',                                      [\App\Http\Controllers\Api\V1\PatientPaymentPlanController::class, 'show']);
+    Route::post('payment-plans/{id}/installments/{installmentId}/pay',   [\App\Http\Controllers\Api\V1\PatientPaymentPlanController::class, 'recordPayment']);
+    Route::get('patients/{patientId}/payment-plans',                      [\App\Http\Controllers\Api\V1\PatientPaymentPlanController::class, 'forPatient']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Radiology Reports
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/radiology')->middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::post('reports',                                          [\App\Http\Controllers\Api\V1\RadiologyReportController::class, 'store']);
+    Route::get('reports/{id}',                                      [\App\Http\Controllers\Api\V1\RadiologyReportController::class, 'show']);
+    Route::patch('reports/{id}/finalize',                           [\App\Http\Controllers\Api\V1\RadiologyReportController::class, 'finalize']);
+    Route::patch('reports/{id}/amend',                              [\App\Http\Controllers\Api\V1\RadiologyReportController::class, 'amend']);
+    Route::post('reports/{id}/distribute',                          [\App\Http\Controllers\Api\V1\RadiologyReportController::class, 'distribute']);
+    Route::get('facilities/{facilityId}/reports/pending',           [\App\Http\Controllers\Api\V1\RadiologyReportController::class, 'pending']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Drug Formulary
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/pharmacy/formulary')->middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::get('search',              [\App\Http\Controllers\Api\V1\DrugFormularyController::class, 'search']);
+    Route::get('controlled',          [\App\Http\Controllers\Api\V1\DrugFormularyController::class, 'controlled']);
+    Route::post('/',                  [\App\Http\Controllers\Api\V1\DrugFormularyController::class, 'store']);
+    Route::patch('{id}/availability', [\App\Http\Controllers\Api\V1\DrugFormularyController::class, 'toggleAvailability']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Controlled Substance Dispensing & Inventory
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/pharmacy/controlled-substances')->middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::post('dispense',          [\App\Http\Controllers\Api\V1\ControlledSubstanceController::class, 'dispense']);
+    Route::post('{id}/witness',      [\App\Http\Controllers\Api\V1\ControlledSubstanceController::class, 'confirmWitness']);
+    Route::post('reconcile',         [\App\Http\Controllers\Api\V1\ControlledSubstanceController::class, 'reconcile']);
+    Route::get('log',                [\App\Http\Controllers\Api\V1\ControlledSubstanceController::class, 'log']);
+    Route::get('inventory',          [\App\Http\Controllers\Api\V1\ControlledSubstanceController::class, 'inventory']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| USSD — Africa's Talking webhook (no auth required)
+|--------------------------------------------------------------------------
+*/
+Route::post('/ussd/callback', [\App\Http\Controllers\Api\Ussd\UssdController::class, 'callback']);
+
+/*
+|--------------------------------------------------------------------------
+| Care Plans — clinician routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::post('v1/care-plans',                                        [\App\Http\Controllers\Api\V1\CarePlanController::class, 'store']);
+    Route::get('v1/care-plans/{id}',                                    [\App\Http\Controllers\Api\V1\CarePlanController::class, 'show']);
+    Route::post('v1/care-plans/{id}/goals',                             [\App\Http\Controllers\Api\V1\CarePlanController::class, 'storeGoal']);
+    Route::patch('v1/care-plans/{id}/goals/{goalId}',                   [\App\Http\Controllers\Api\V1\CarePlanController::class, 'updateGoal']);
+    Route::post('v1/care-plans/{id}/interventions',                     [\App\Http\Controllers\Api\V1\CarePlanController::class, 'storeIntervention']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Patient Satisfaction Survey — report endpoint
+|--------------------------------------------------------------------------
+*/
+Route::middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::get('v1/reports/surveys/satisfaction', [\App\Http\Controllers\Api\V1\Reports\SurveyReportController::class, 'satisfaction']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Mobile: Care Plans, Surveys, Medical Record Export (patient-facing)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('mobile')->middleware('auth:sanctum')->group(function () {
+    // Care plans (read-only for patient)
+    Route::get('care-plans',      [\App\Http\Controllers\Api\Mobile\MobileCarePlanController::class, 'index']);
+    Route::get('care-plans/{id}', [\App\Http\Controllers\Api\Mobile\MobileCarePlanController::class, 'show']);
+
+    // Satisfaction surveys
+    Route::get('surveys',                  [\App\Http\Controllers\Api\Mobile\MobileSurveyController::class, 'index']);
+    Route::get('surveys/{id}',             [\App\Http\Controllers\Api\Mobile\MobileSurveyController::class, 'show']);
+    Route::post('surveys/{id}/submit',     [\App\Http\Controllers\Api\Mobile\MobileSurveyController::class, 'submit']);
+
+    // Medical record export
+    Route::post('medical-records/export/pdf',  [\App\Http\Controllers\Api\Mobile\MedicalRecordExportController::class, 'exportPdf']);
+    Route::post('medical-records/export/fhir', [\App\Http\Controllers\Api\Mobile\MedicalRecordExportController::class, 'exportFhir']);
 });
