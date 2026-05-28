@@ -47,5 +47,23 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
         $schedule->command('family:check-age-transitions')->daily();
+
+        // DHIS2 monthly push — 1st of each month at 04:00 (Item 16)
+        $schedule->command('opescare:push-dhis2 --month=' . now()->subMonth()->format('Y-m'))
+                 ->monthlyOn(1, '04:00')
+                 ->withoutOverlapping()
+                 ->onSuccess(function () { \Log::info('DHIS2 monthly push completed'); })
+                 ->onFailure(function () { \Log::error('DHIS2 monthly push failed'); });
+
+        // Data retention purge — daily at 03:00 (Item 53)
+        $schedule->command('opescare:purge-expired-data')
+                 ->dailyAt('03:00')
+                 ->withoutOverlapping()
+                 ->runInBackground();
+
+        // Notify expiring provider credentials — every Monday at 08:00 (Item 45)
+        $schedule->command('opescare:notify-expiring-credentials --days=30')
+                 ->weeklyOn(1, '08:00')
+                 ->withoutOverlapping();
     })
     ->create();

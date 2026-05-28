@@ -842,6 +842,32 @@ Route::middleware(VerifyIntegrationClient::class)->group(function () {
 | Mobile: Care Plans, Surveys, Medical Record Export (patient-facing)
 |--------------------------------------------------------------------------
 */
+/*
+|--------------------------------------------------------------------------
+| Advance Directives — clinician/admin
+|--------------------------------------------------------------------------
+*/
+Route::middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::get('v1/patients/{patientId}/advance-directives',         [\App\Http\Controllers\Api\V1\AdvanceDirectiveController::class, 'index']);
+    Route::post('v1/patients/{patientId}/advance-directives',        [\App\Http\Controllers\Api\V1\AdvanceDirectiveController::class, 'store']);
+    Route::get('v1/patients/{patientId}/advance-directives/{id}',    [\App\Http\Controllers\Api\V1\AdvanceDirectiveController::class, 'show']);
+    Route::delete('v1/patients/{patientId}/advance-directives/{id}', [\App\Http\Controllers\Api\V1\AdvanceDirectiveController::class, 'destroy']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Pen Test Tracker — security/admin
+|--------------------------------------------------------------------------
+*/
+Route::middleware(VerifyIntegrationClient::class)->prefix('v1/security')->group(function () {
+    Route::get('pen-tests',                                     [\App\Http\Controllers\Api\V1\Security\PenTestController::class, 'index']);
+    Route::post('pen-tests',                                    [\App\Http\Controllers\Api\V1\Security\PenTestController::class, 'store']);
+    Route::get('pen-tests/open-findings',                       [\App\Http\Controllers\Api\V1\Security\PenTestController::class, 'openFindings']);
+    Route::get('pen-tests/{id}',                                [\App\Http\Controllers\Api\V1\Security\PenTestController::class, 'show']);
+    Route::post('pen-tests/{id}/findings',                      [\App\Http\Controllers\Api\V1\Security\PenTestController::class, 'storeFinding']);
+    Route::patch('pen-tests/{id}/findings/{findingId}',         [\App\Http\Controllers\Api\V1\Security\PenTestController::class, 'updateFinding']);
+});
+
 Route::prefix('mobile')->middleware('auth:sanctum')->group(function () {
     // Care plans (read-only for patient)
     Route::get('care-plans',      [\App\Http\Controllers\Api\Mobile\MobileCarePlanController::class, 'index']);
