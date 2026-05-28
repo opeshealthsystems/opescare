@@ -12,10 +12,12 @@ class AllergyAlertRule extends Model
     protected $fillable = [
         'drug_code', 'drug_name', 'allergen_code', 'allergen_name',
         'cross_reactivity_group', 'severity', 'alert_message', 'is_active',
+        'is_hard_stop', 'facility_id',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        'is_active'    => 'boolean',
+        'is_hard_stop' => 'boolean',
     ];
 
     /**

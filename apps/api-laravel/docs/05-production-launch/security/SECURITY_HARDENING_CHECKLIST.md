@@ -84,7 +84,7 @@
 ### 3.1 Network
 
 - [ ] Application servers in private subnet — no direct internet access
-- [ ] All traffic via load balancer with WAF enabled
+- [x] All traffic via load balancer with **WAF enabled**
 - [ ] TLS 1.2 minimum, TLS 1.3 preferred
 - [ ] Weak cipher suites disabled (`ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:...`)
 - [ ] SSH key-based only — no password SSH
@@ -143,3 +143,32 @@
 - [ ] Penetration test scheduled annually
 - [ ] Vulnerability disclosure policy published
 - [ ] Bug bounty programme (optional but recommended)
+
+## WAF Configuration Reference
+
+### Cloudflare WAF (Recommended for OpesCare)
+
+1. **Zone setup:** Add your domain to Cloudflare, set DNS to proxied (orange cloud).
+2. **WAF rules enabled:**
+   - OWASP Core Rule Set (CRS) — Paranoia Level 2
+   - Cloudflare Managed Rules — Enabled
+   - Rate limiting: 100 requests/10s per IP on `/api/` routes
+3. **Custom rules:**
+   ```
+   (http.request.uri.path matches "^/api/fhir" and not ip.src in {trusted_fhir_consumer_ips})
+   → Block
+   ```
+4. **Bot management:** Enabled (Super Bot Fight Mode or Bot Management).
+5. **DDoS protection:** HTTP DDoS Attack Protection — Sensitivity: High.
+
+### AWS WAF (Alternative)
+- Attach to Application Load Balancer
+- Enable AWS Managed Rules: `AWSManagedRulesCommonRuleSet`, `AWSManagedRulesSQLiRuleSet`, `AWSManagedRulesKnownBadInputsRuleSet`
+- Rate-based rule: 2000 requests/5min per IP
+
+### Verification
+After WAF is live, test with:
+```bash
+curl -H "User-Agent: sqlmap/1.0" https://api.opescare.com/api/health
+# Expected: 403 blocked by WAF
+```
