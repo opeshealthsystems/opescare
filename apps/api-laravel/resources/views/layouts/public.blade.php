@@ -31,7 +31,7 @@
     <link rel="stylesheet" href="{{ asset('css/public.css') }}">
     
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
     @yield('head_scripts')
 </head>
 <body>

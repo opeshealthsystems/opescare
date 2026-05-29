@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
     
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
 </head>
 <body class="auth-body">
 

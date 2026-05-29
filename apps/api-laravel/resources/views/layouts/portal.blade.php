@@ -140,7 +140,7 @@
 </div><!-- /.portal-wrap -->
 
 <!-- Lucide Icons -->
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
 <script>
 if (typeof lucide !== 'undefined') lucide.createIcons();
 </script>
