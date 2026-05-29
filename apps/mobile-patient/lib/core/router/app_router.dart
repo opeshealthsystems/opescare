@@ -16,6 +16,11 @@ import '../../features/labs/presentation/labs_screen.dart';
 import '../../features/labs/presentation/lab_detail_screen.dart';
 import '../../features/prescriptions/presentation/prescriptions_screen.dart';
 import '../../features/prescriptions/presentation/prescription_detail_screen.dart';
+import '../../features/appointments/presentation/appointments_screen.dart';
+import '../../features/appointments/presentation/appointment_detail_screen.dart';
+import '../../features/access_logs/presentation/access_logs_screen.dart';
+import '../../features/documents/presentation/documents_screen.dart';
+import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/shell/presentation/main_shell.dart';
 
 abstract final class Routes {
@@ -70,54 +75,58 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     refreshListenable: notifier,
     redirect: notifier.redirect,
     routes: [
+      // Auth
       GoRoute(path: Routes.login, builder: (_, __) => const LoginScreen()),
       GoRoute(path: Routes.otp,   builder: (_, __) => const OtpScreen()),
 
-      // Labs — list + detail
+      // Labs (standalone with nested detail)
       GoRoute(
         path: Routes.labs,
         builder: (_, __) => const LabsScreen(),
         routes: [
           GoRoute(
             path: ':id',
-            builder: (_, state) =>
-                LabDetailScreen(id: state.pathParameters['id']!),
+            builder: (_, s) => LabDetailScreen(id: s.pathParameters['id']!),
           ),
         ],
       ),
 
-      // Prescriptions — list + detail
+      // Prescriptions (standalone with nested detail)
       GoRoute(
         path: Routes.prescriptions,
         builder: (_, __) => const PrescriptionsScreen(),
         routes: [
           GoRoute(
             path: ':id',
-            builder: (_, state) => PrescriptionDetailScreen(
-                id: state.pathParameters['id']!),
+            builder: (_, s) =>
+                PrescriptionDetailScreen(id: s.pathParameters['id']!),
           ),
         ],
       ),
 
-      // Appointments — placeholder until Phase 4
+      // Appointments (standalone with nested detail)
       GoRoute(
         path: Routes.appointments,
-        builder: (_, __) =>
-            const _PlaceholderScreen('Appointments', LucideIcons.calendar),
+        builder: (_, __) => const AppointmentsScreen(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            builder: (_, s) =>
+                AppointmentDetailScreen(id: s.pathParameters['id']!),
+          ),
+        ],
       ),
 
-      // Access Logs — placeholder until Phase 4
+      // Access Logs
       GoRoute(
         path: Routes.accessLogs,
-        builder: (_, __) =>
-            const _PlaceholderScreen('Access Logs', LucideIcons.eye),
+        builder: (_, __) => const AccessLogsScreen(),
       ),
 
-      // Documents — placeholder until Phase 4
+      // Documents
       GoRoute(
         path: Routes.documents,
-        builder: (_, __) =>
-            const _PlaceholderScreen('Documents', LucideIcons.fileText),
+        builder: (_, __) => const DocumentsScreen(),
       ),
 
       // Shell — 5-tab bottom navigation
@@ -126,58 +135,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             MainShell(navigationShell: shell),
         branches: [
           StatefulShellBranch(routes: [
-            GoRoute(
-              path: Routes.home,
-              builder: (_, __) => const HomeScreen(),
-            ),
+            GoRoute(path: Routes.home,
+                builder: (_, __) => const HomeScreen()),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(
-              path: Routes.healthId,
-              builder: (_, __) => const HealthIdScreen(),
-            ),
+            GoRoute(path: Routes.healthId,
+                builder: (_, __) => const HealthIdScreen()),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(
-              path: Routes.consent,
-              builder: (_, __) => const ConsentScreen(),
-            ),
+            GoRoute(path: Routes.consent,
+                builder: (_, __) => const ConsentScreen()),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(
-              path: Routes.timeline,
-              builder: (_, __) => const TimelineScreen(),
-            ),
+            GoRoute(path: Routes.timeline,
+                builder: (_, __) => const TimelineScreen()),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(
-              path: Routes.settings,
-              builder: (_, __) =>
-                  const _PlaceholderScreen('Settings', LucideIcons.settings),
-            ),
+            GoRoute(path: Routes.settings,
+                builder: (_, __) => const SettingsScreen()),
           ]),
         ],
       ),
     ],
   );
 });
-
-class _PlaceholderScreen extends StatelessWidget {
-  const _PlaceholderScreen(this.name, this.icon);
-  final String name;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(name)),
-      body: Center(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(icon, size: 48, color: AppColors.neutral300),
-          const SizedBox(height: 12),
-          Text('$name — coming in Phase 4', style: AppTextStyles.bodySm),
-        ]),
-      ),
-    );
-  }
-}
