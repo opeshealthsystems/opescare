@@ -35,27 +35,30 @@ class ApiClient {
     try {
       final res = await _dio.get(url, queryParameters: params);
       return res.data as Map<String, dynamic>;
-    } on DioException catch (e) { throw e.error as ApiException; }
+    } on DioException catch (e) { _rethrow(e); }
   }
 
   Future<Map<String, dynamic>> post(String url, {Map<String, dynamic>? body}) async {
     try {
       final res = await _dio.post(url, data: body);
       return res.data as Map<String, dynamic>;
-    } on DioException catch (e) { throw e.error as ApiException; }
+    } on DioException catch (e) { _rethrow(e); }
   }
 
   Future<Map<String, dynamic>> patch(String url, {Map<String, dynamic>? body}) async {
     try {
       final res = await _dio.patch(url, data: body);
       return res.data as Map<String, dynamic>;
-    } on DioException catch (e) { throw e.error as ApiException; }
+    } on DioException catch (e) { _rethrow(e); }
   }
 
   Future<void> delete(String url) async {
     try { await _dio.delete(url); }
-    on DioException catch (e) { throw e.error as ApiException; }
+    on DioException catch (e) { _rethrow(e); }
   }
+
+  Never _rethrow(DioException e) =>
+      throw (e.error is ApiException ? e.error as ApiException : _mapError(e));
 
   ApiException _mapError(DioException e) {
     if (e.type == DioExceptionType.connectionError ||
