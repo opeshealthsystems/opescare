@@ -7,7 +7,9 @@
     <meta name="theme-color" content="#090D16">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <style>
+        @verbatim
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+        @endverbatim
         
         body {
             font-family: 'Inter', sans-serif;
@@ -168,9 +170,9 @@
     <!-- Regulatory safety warning -->
     <div class="disclaimer-bar">
         <strong>⚠️ {{ $locale === 'fr' ? 'Avis clinique de sécurité :' : 'Clinical Safety Notice :' }}</strong>
-        {{ $locale === 'fr' 
-            ? 'Les données de disponibilité ne sont que signalées et peuvent changer rapidement. Toujours contacter l’établissement avant de prendre des décisions médicales.' 
-            : 'Medicine or blood availability is reported by the facility and may change. Always confirm with the provider beforehand.' }}
+        @if($locale === ‘fr’)Les données de disponibilité ne sont que signalées et peuvent changer rapidement. Toujours contacter l’établissement avant de prendre des décisions médicales.
+@else Medicine or blood availability is reported by the facility and may change. Always confirm with the provider beforehand.
+@endif
     </div>
 
     <div class="grid">

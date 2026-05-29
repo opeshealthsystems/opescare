@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@if($locale === ‘fr’)Carte vérifiée d’accès aux soins@else OpesCare Verified Care Access Map@endif</title>
+    <title>@if($locale === ‘fr’)Carte vérifiée d’accès aux soins
+@else OpesCare Verified Care Access Map
+@endif</title>
     <meta name="theme-color" content="#090D16">
     <link rel="icon" type="image/svg+xml" href="{{ asset(‘favicon.svg’) }}">
     <link rel="manifest" href="{{ asset(‘site.webmanifest’) }}">
@@ -334,7 +336,9 @@
     <div class="header">
         <div class="brand">
             <div class="logo">CM</div>
-            <h1 class="title">@if($locale === ‘fr’)Carte d’accès aux soins OpesCare@else OpesCare Verified Care Access Map@endif</h1>
+            <h1 class="title">@if($locale === ‘fr’)Carte d’accès aux soins OpesCare
+@else OpesCare Verified Care Access Map
+@endif</h1>
         </div>
         <div style="display: flex; align-items: center; gap: 4mm;">
             <a href="{{ route('public.care-map.emergency') }}" style="background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); font-weight: 700; padding: 2mm 5mm; border-radius: 6px; text-decoration: none; font-size: 13px;">

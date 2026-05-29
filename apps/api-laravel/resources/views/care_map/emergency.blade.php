@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚨 {{ $locale === ‘fr’ ? ‘Services d\’urgence’ : ‘Emergency Service Navigation’ }}</title>
+    <title>🚨 @if($locale === ‘fr’)Services d’urgence
+@else Emergency Service Navigation
+@endif</title>
     <meta name="theme-color" content="#090D16">
     <link rel="icon" type="image/svg+xml" href="{{ asset(‘favicon.svg’) }}">
     <style>
+        @verbatim
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+        @endverbatim
         
         body {
             font-family: 'Inter', sans-serif;
@@ -116,21 +120,29 @@
 
 <div class="container">
     <div class="header">
-        <h1 class="emergency-title">🚨 {{ $locale === 'fr' ? 'Services d’urgence OpesCare' : 'OpesCare Emergency Care Access' }}</h1>
+        <h1 class="emergency-title">🚨 @if($locale === ‘fr’)Services d’urgence OpesCare
+@else OpesCare Emergency Care Access
+@endif</h1>
         <p style="margin: 0; font-size: 14px; color: #FCA5A5;">
-            {{ $locale === 'fr' ? 'Localisateur de centres de traumatologie et d’urgence ouverts 24/7' : '24/7 Active Trauma & Emergency Center Locator' }}
+            @if($locale === ‘fr’)Localisateur de centres de traumatologie et d’urgence ouverts 24/7
+@else 24/7 Active Trauma & Emergency Center Locator
+@endif
         </p>
     </div>
 
     <!-- Red alarm mandatory regulatory disclosure -->
     <div class="red-alert-box">
-        <strong>⚠️ {{ $locale === 'fr' ? 'AVIS D’URGEnCE CRITIQUE :' : 'CRITICAL EMERGENCY WARNING :' }}</strong><br>
-        {{ $locale === 'fr' 
-            ? 'S’il s’agit d’une urgence vitale, composez immédiatement le 15, le 112 ou rendez-vous au centre de secours le plus proche. Les données cartographiques ne remplacent pas les services de secours officiels.' 
-            : 'If this is a life-threatening emergency, contact local emergency services or go to the nearest emergency facility immediately. OpesCare does not guarantee immediate treatment availability.' }}
+        <strong>⚠️ @if($locale === ‘fr’)AVIS D’URGENCE CRITIQUE :
+@else CRITICAL EMERGENCY WARNING :
+@endif</strong><br>
+        @if($locale === ‘fr’)S’il s’agit d’une urgence vitale, composez immédiatement le 15, le 112 ou rendez-vous au centre de secours le plus proche. Les données cartographiques ne remplacent pas les services de secours officiels.
+@else If this is a life-threatening emergency, contact local emergency services or go to the nearest emergency facility immediately. OpesCare does not guarantee immediate treatment availability.
+@endif
     </div>
 
-    <h2 class="section-title">{{ $locale === 'fr' ? 'Centres d’urgence les plus proches' : 'Closest Verified Emergency Facilities' }}</h2>
+    <h2 class="section-title">@if($locale === ‘fr’)Centres d’urgence les plus proches
+@else Closest Verified Emergency Facilities
+@endif</h2>
 
     <div class="emergency-list">
         @forelse($facilities as $facility)
@@ -150,7 +162,9 @@
             </div>
         @empty
             <div class="emergency-card" style="justify-content: center; text-align: center; color: #94A3B8;">
-                {{ $locale === 'fr' ? 'Aucun hôpital d’urgence actif trouvé à proximité.' : 'No active emergency hospitals found nearby.' }}
+                @if($locale === ‘fr’)Aucun hôpital d’urgence actif trouvé à proximité.
+@else No active emergency hospitals found nearby.
+@endif
             </div>
         @endforelse
     </div>

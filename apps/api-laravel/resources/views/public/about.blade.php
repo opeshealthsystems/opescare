@@ -82,7 +82,7 @@
             <div class="card-grid">
                 @foreach([
                     ['icon'=>'id-card','title'=>'Digital Health ID','desc'=>'Every patient receives a secure Health ID and QR code that uniquely identifies them across all connected facilities.'],
-                    ['icon'=>'history','title'=>'Clinical Timeline','desc'=>'A patient's complete approved medical history — visits, diagnoses, prescriptions, lab results, referrals — in one place.'],
+                    ['icon'=>'history','title'=>'Clinical Timeline','desc'=>"A patient's complete approved medical history — visits, diagnoses, prescriptions, lab results, referrals — in one place."],
                     ['icon'=>'shield-check','title'=>'Consent and Access Control','desc'=>'Patients decide who can access their data, for what purpose, and for how long. All access is audited.'],
                     ['icon'=>'network','title'=>'Interoperability Layer','desc'=>'Hospitals, labs, pharmacies, and insurers connect via API, SDK, widget, Bridge Agent, or OpesCare Lite.'],
                     ['icon'=>'pill','title'=>'Medication & Blood Availability','desc'=>'Verified facilities can publish medicine and blood availability so patients and providers find critical resources faster.'],
