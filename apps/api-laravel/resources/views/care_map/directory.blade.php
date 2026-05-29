@@ -334,7 +334,7 @@
     <div class="header">
         <div class="brand">
             <div class="logo">CM</div>
-            <h1 class="title">{{ $locale === 'fr' ? 'Carte d’accès aux soins OpesCare' : 'OpesCare Verified Care Access Map' }}</h1>
+            <h1 class="title">@if($locale === ‘fr’)Carte d’accès aux soins OpesCare@else OpesCare Verified Care Access Map@endif</h1>
         </div>
         <div style="display: flex; align-items: center; gap: 4mm;">
             <a href="{{ route('public.care-map.emergency') }}" style="background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); font-weight: 700; padding: 2mm 5mm; border-radius: 6px; text-decoration: none; font-size: 13px;">
@@ -404,9 +404,7 @@
             <div class="safety-bar">
                 <div>
                     <strong>🛡️ {{ $locale === 'fr' ? 'Clause de non-responsabilité :' : 'Clinical Safety Disclaimer :' }}</strong>
-                    {{ $locale === 'fr' 
-                        ? 'La disponibilité indiquée est purement informative et ne constitue pas une garantie de stock ou de traitement. Veuillez appeler l’établissement avant de vous déplacer.' 
-                        : 'Information may change. Please contact the facility before travelling or making medical decisions.' }}
+                    @if($locale === ‘fr’)La disponibilité indiquée est purement informative et ne constitue pas une garantie de stock ou de traitement. Veuillez appeler l’établissement avant de vous déplacer.@else Information may change. Please contact the facility before travelling or making medical decisions.@endif
                 </div>
             </div>
         </div>
