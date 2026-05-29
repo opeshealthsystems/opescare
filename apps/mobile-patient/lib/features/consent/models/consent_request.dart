@@ -32,7 +32,7 @@ class ConsentRequest extends Equatable {
     final facility = json['requesting_facility'] as Map? ?? {};
     final rawScopes = json['scope_labels'] as List? ?? [];
     return ConsentRequest(
-      id:                   json['id'].toString(),
+      id:                   json['id']?.toString() ?? '',
       requestingFacility:   facility['name']?.toString() ?? 'Unknown Facility',
       requestingRole:       json['requesting_role']?.toString() ?? '',
       purpose:              json['purpose']?.toString() ?? '',

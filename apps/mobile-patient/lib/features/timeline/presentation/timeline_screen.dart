@@ -217,11 +217,11 @@ class _TimelineItem extends StatelessWidget {
   }
 
   IconData _typeIcon(String type) => switch (type) {
-        'encounter'    => LucideIcons.stethoscope,
+        'encounter'    => LucideIcons.heartPulse,
         'lab'          => LucideIcons.flaskConical,
         'prescription' => LucideIcons.pill,
-        'immunization' => LucideIcons.syringe,
-        'admission'    => LucideIcons.bed,
+        'immunization' => LucideIcons.droplets,
+        'admission'    => LucideIcons.building2,
         'document'     => LucideIcons.fileText,
         _              => LucideIcons.activity,
       };

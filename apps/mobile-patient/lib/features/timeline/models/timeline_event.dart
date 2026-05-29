@@ -22,7 +22,7 @@ class TimelineEvent {
   factory TimelineEvent.fromJson(Map<String, dynamic> json) {
     final facility = json['facility'] as Map? ?? {};
     return TimelineEvent(
-      id:               json['id'].toString(),
+      id:               json['id']?.toString() ?? '',
       type:             json['type']?.toString() ?? 'event',
       title:            json['title']?.toString() ?? '',
       description:      json['description']?.toString() ?? '',
