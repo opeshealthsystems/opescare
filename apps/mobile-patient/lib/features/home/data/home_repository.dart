@@ -39,12 +39,12 @@ class HomeRepository {
       patientName:             patient['display_name']?.toString() ?? 'Patient',
       healthId:                patient['health_id']?.toString() ?? '',
       isVerified:              patient['is_verified'] == true,
-      pendingConsentCount:     (consentMeta['total'] as int?) ?? 0,
-      unreadLabCount:          (labMeta['total'] as int?) ?? 0,
-      activeRxCount:           (rxMeta['total'] as int?) ?? 0,
+      pendingConsentCount:     (consentMeta['total'] as num?)?.toInt() ?? 0,
+      unreadLabCount:          (labMeta['total'] as num?)?.toInt() ?? 0,
+      activeRxCount:           (rxMeta['total'] as num?)?.toInt() ?? 0,
       nextAppointmentDate:     nextAppt?['scheduled_at']?.toString(),
       nextAppointmentFacility: (nextAppt?['facility'] as Map?)?['name']?.toString(),
-      recentAccessCount:       (logMeta['total'] as int?) ?? 0,
+      recentAccessCount:       (logMeta['total'] as num?)?.toInt() ?? 0,
     );
   }
 }

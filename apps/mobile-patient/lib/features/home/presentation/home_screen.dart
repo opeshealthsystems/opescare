@@ -128,7 +128,10 @@ class _HomeBody extends StatelessWidget {
             onSeeAll: () => context.push(Routes.accessLogs),
           ),
           const SizedBox(height: 10),
-          _AccessLogBanner(count: summary.recentAccessCount),
+          GestureDetector(
+            onTap: () => context.push(Routes.accessLogs),
+            child: _AccessLogBanner(count: summary.recentAccessCount),
+          ),
           const SizedBox(height: 20),
         ],
 
