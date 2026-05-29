@@ -6,25 +6,40 @@
 <div style="margin-bottom:var(--p-space-3);"></div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_my_health', [], $l) ?: 'My Health' }}</div>
-    <a href="{{ route('portals.patient') }}" class="sidebar-link">
+    <a href="{{ route('portals.patient') }}" class="sidebar-link {{ request()->routeIs('portals.patient') ? 'active' : '' }}">
         <i data-lucide="id-card"></i>
         <span>{{ __('public.medical_id.health_id', [], $l) ?: 'My Health ID' }}</span>
     </a>
-    <a href="{{ route('portals.patient.appointments') }}" class="sidebar-link">
+    <a href="{{ route('portals.patient.appointments') }}" class="sidebar-link {{ request()->routeIs('portals.patient.appointments') ? 'active' : '' }}">
         <i data-lucide="calendar-check-2"></i>
         <span>{{ __('public.portal.nav_appointments', [], $l) ?: 'Appointments' }}</span>
     </a>
-    <a href="{{ route('portals.patient.labs') }}" class="sidebar-link">
+    <a href="{{ route('portals.patient.labs') }}" class="sidebar-link {{ request()->routeIs('portals.patient.labs') ? 'active' : '' }}">
         <i data-lucide="flask-conical"></i>
         <span>{{ __('public.portal.nav_labs', [], $l) ?: 'Lab Results' }}</span>
     </a>
-    <a href="{{ route('portals.patient.prescriptions') }}" class="sidebar-link">
+    <a href="{{ route('portals.patient.prescriptions') }}" class="sidebar-link {{ request()->routeIs('portals.patient.prescriptions') ? 'active' : '' }}">
         <i data-lucide="pill"></i>
         <span>{{ __('public.portal.nav_prescriptions', [], $l) ?: 'Prescriptions' }}</span>
     </a>
-    <a href="{{ route('portals.patient.documents') }}" class="sidebar-link">
+    <a href="{{ route('portals.patient.documents') }}" class="sidebar-link {{ request()->routeIs('portals.patient.documents') ? 'active' : '' }}">
         <i data-lucide="file-text"></i>
         <span>{{ __('public.portal.nav_documents', [], $l) ?: 'Documents' }}</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">Clinical</div>
+    <a href="{{ route('portals.patient.allergies') }}" class="sidebar-link {{ request()->routeIs('portals.patient.allergies') ? 'active' : '' }}">
+        <i data-lucide="zap"></i>
+        <span>Allergies</span>
+    </a>
+    <a href="{{ route('portals.patient.clinical') }}" class="sidebar-link {{ request()->routeIs('portals.patient.clinical') ? 'active' : '' }}">
+        <i data-lucide="stethoscope"></i>
+        <span>Conditions</span>
+    </a>
+    <a href="{{ route('portals.patient.immunizations') }}" class="sidebar-link {{ request()->routeIs('portals.patient.immunizations') ? 'active' : '' }}">
+        <i data-lucide="syringe"></i>
+        <span>Immunizations</span>
     </a>
 </div>
 <div class="sidebar-nav-section">

@@ -379,6 +379,19 @@ class PatientPortalController extends Controller
     {
         $patient = $this->resolveViewingPatient();
 
+        $allergies = $patient
+            ? AllergyRecord::where('patient_id', $patient->id)
+                ->orderByDesc('created_at')
+                ->get(['id', 'substance', 'severity', 'status'])
+            : collect();
+
+        $conditions = $patient
+            ? Diagnosis::where('patient_id', $patient->id)
+                ->whereIn('status', ['active', 'chronic'])
+                ->orderByDesc('created_at')
+                ->get(['id', 'display_name', 'code', 'status'])
+            : collect();
+
         if ($patient) {
             $this->ctx->auditPatientAccess(
                 actionType:   'patient_profile_view',
@@ -388,7 +401,7 @@ class PatientPortalController extends Controller
             );
         }
 
-        return view('portals.patient.profile', compact('patient'));
+        return view('portals.patient.profile', compact('patient', 'allergies', 'conditions'));
     }
 
     /**
@@ -404,6 +417,7 @@ class PatientPortalController extends Controller
             'phone_number'                   => 'sometimes|nullable|string|max:30',
             'email'                          => 'sometimes|nullable|email|max:255',
             'address'                        => 'sometimes|nullable|string|max:500',
+            'blood_group'                    => 'sometimes|nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
             'emergency_contact.name'         => 'sometimes|nullable|string|max:100',
             'emergency_contact.phone'        => 'sometimes|nullable|string|max:30',
             'emergency_contact.relationship' => 'sometimes|nullable|string|max:50',
@@ -413,7 +427,7 @@ class PatientPortalController extends Controller
 
         $updateData = [];
 
-        foreach (['phone_number', 'email', 'address'] as $field) {
+        foreach (['phone_number', 'email', 'address', 'blood_group'] as $field) {
             if (array_key_exists($field, $validated)) {
                 $updateData[$field] = $validated[$field];
             }
