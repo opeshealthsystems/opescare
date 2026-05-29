@@ -260,18 +260,22 @@
 
         .map-pin {
             position: absolute;
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             background: #0DF2C9;
-            border: 3px solid #fff;
+            border: 2.5px solid rgba(255,255,255,0.9);
             border-radius: 50%;
-            box-shadow: 0 0 12px #0DF2C9;
+            box-shadow: 0 0 10px #0DF2C9;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: block;
+            text-decoration: none;
         }
 
         .map-pin:hover {
-            transform: scale(1.3);
+            transform: scale(1.5);
+            box-shadow: 0 0 18px currentColor;
+            z-index: 10;
         }
 
         .safety-bar {
@@ -359,8 +363,27 @@
                 <form action="{{ route('public.care-map') }}" method="GET" style="display: flex; flex-direction: column; gap: 3mm;">
                     <input type="text" name="query" class="search-input" placeholder="{{ $locale === 'fr' ? 'Médicament, service, hôpital...' : 'Medicine, service, hospital...' }}" value="{{ request('query') }}">
                     <input type="text" name="city" class="search-input" placeholder="{{ $locale === 'fr' ? 'Ville ou région' : 'City or Region' }}" value="{{ request('city') }}">
+                    <select name="facility_type" class="search-input" style="cursor:pointer;">
+                        <option value="">{{ $locale === 'fr' ? 'Tous les types' : 'All facility types' }}</option>
+                        <option value="hospital"    {{ request('facility_type') === 'hospital'    ? 'selected' : '' }}>{{ $locale === 'fr' ? 'Hôpital' : 'Hospital' }}</option>
+                        <option value="pharmacy"    {{ request('facility_type') === 'pharmacy'    ? 'selected' : '' }}>{{ $locale === 'fr' ? 'Pharmacie' : 'Pharmacy' }}</option>
+                        <option value="laboratory"  {{ request('facility_type') === 'laboratory'  ? 'selected' : '' }}>{{ $locale === 'fr' ? 'Laboratoire' : 'Laboratory' }}</option>
+                        <option value="clinic"      {{ request('facility_type') === 'clinic'      ? 'selected' : '' }}>{{ $locale === 'fr' ? 'Clinique' : 'Clinic' }}</option>
+                        <option value="blood_bank"  {{ request('facility_type') === 'blood_bank'  ? 'selected' : '' }}>{{ $locale === 'fr' ? 'Banque de Sang' : 'Blood Bank' }}</option>
+                        <option value="dental"      {{ request('facility_type') === 'dental'      ? 'selected' : '' }}>{{ $locale === 'fr' ? 'Cabinet Dentaire' : 'Dental' }}</option>
+                        <option value="imaging"     {{ request('facility_type') === 'imaging'     ? 'selected' : '' }}>{{ $locale === 'fr' ? 'Imagerie Médicale' : 'Imaging' }}</option>
+                    </select>
                     <button type="submit" class="btn-search">{{ $locale === 'fr' ? 'Rechercher' : 'Search' }}</button>
                 </form>
+            </div>
+
+            <div style="font-size:12px;color:#64748B;margin-bottom:3mm;padding-left:1mm;">
+                {{ $facilities->count() }} {{ $locale === 'fr' ? 'établissement(s) trouvé(s)' : 'facility/facilities found' }}
+                @if(request()->hasAny(['query','city','facility_type']))
+                    — <a href="{{ route('public.care-map') }}" style="color:#0DF2C9;text-decoration:none;">
+                        {{ $locale === 'fr' ? 'Effacer les filtres' : 'Clear filters' }}
+                    </a>
+                @endif
             </div>
 
             <div class="facilities-list">
@@ -397,12 +420,75 @@
         </div>
 
         <div class="map-pane">
-            <div class="vector-map">
+            <div class="vector-map" id="map-pane">
                 <div class="vector-grid"></div>
-                <!-- Interactive Pins Mockup -->
-                <div class="map-pin" style="top: 25%; left: 40%;" title="Verified Hospital"></div>
-                <div class="map-pin" style="top: 55%; left: 65%;" title="Verified Pharmacy"></div>
-                <div class="map-pin" style="top: 40%; left: 20%;" title="Clinical Center"></div>
+                @if($facilities->isEmpty())
+                    <div style="color:#64748B;font-size:14px;z-index:2;position:relative;">
+                        {{ $locale === 'fr' ? 'Aucun établissement à afficher.' : 'No facilities to display.' }}
+                    </div>
+                @else
+                    @php
+                        // Compute bounding box for normalisation; fall back to spread-by-index
+                        $withCoords = $facilities->filter(fn($f) => $f->latitude && $f->longitude);
+                        $useCoords  = $withCoords->count() >= 2;
+                        if ($useCoords) {
+                            $minLat = $withCoords->min('latitude');
+                            $maxLat = $withCoords->max('latitude');
+                            $minLon = $withCoords->min('longitude');
+                            $maxLon = $withCoords->max('longitude');
+                            $latRange = max($maxLat - $minLat, 0.01);
+                            $lonRange = max($maxLon - $minLon, 0.01);
+                        }
+                        $total = min($facilities->count(), 20); // render at most 20 pins
+                    @endphp
+                    @foreach($facilities->take(20) as $idx => $fac)
+                        @php
+                            if ($useCoords && $fac->latitude && $fac->longitude) {
+                                // Normalise to 8%–88% of the map pane
+                                $top  = 88 - (($fac->latitude  - $minLat) / $latRange) * 80;
+                                $left = 8  + (($fac->longitude - $minLon) / $lonRange) * 80;
+                            } else {
+                                // Deterministic spread across grid when no coords available
+                                $cols = max(ceil(sqrt($total)), 1);
+                                $row  = floor($idx / $cols);
+                                $col  = $idx % $cols;
+                                $top  = 15 + ($row / max(ceil($total / $cols), 1)) * 70;
+                                $left = 10 + ($col / max($cols - 1, 1)) * 80;
+                            }
+                            $typeColor = match($fac->facility_type) {
+                                'hospital'   => '#0DF2C9',
+                                'pharmacy'   => '#F59E0B',
+                                'laboratory' => '#818CF8',
+                                'blood_bank' => '#EF4444',
+                                'clinic'     => '#34D399',
+                                default      => '#94A3B8',
+                            };
+                        @endphp
+                        <a href="{{ route('public.care-map.profile', ['id' => $fac->id]) }}"
+                           class="map-pin"
+                           style="top:{{ round($top, 1) }}%;left:{{ round($left, 1) }}%;background:{{ $typeColor }};box-shadow:0 0 10px {{ $typeColor }};"
+                           title="{{ $fac->facility_name }} — {{ ucfirst(str_replace('_', ' ', $fac->facility_type)) }}">
+                        </a>
+                    @endforeach
+                @endif
+            </div>
+
+            <!-- Pin colour legend -->
+            <div style="position:absolute;top:4mm;right:4mm;background:rgba(11,17,30,0.88);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:3mm 4mm;font-size:10.5px;color:#94A3B8;backdrop-filter:blur(8px);z-index:5;">
+                <div style="font-weight:700;color:#E2E8F0;margin-bottom:2mm;">{{ $locale === 'fr' ? 'Légende' : 'Legend' }}</div>
+                @foreach([
+                    ['color'=>'#0DF2C9', 'en'=>'Hospital',   'fr'=>'Hôpital'],
+                    ['color'=>'#F59E0B', 'en'=>'Pharmacy',   'fr'=>'Pharmacie'],
+                    ['color'=>'#818CF8', 'en'=>'Laboratory', 'fr'=>'Laboratoire'],
+                    ['color'=>'#EF4444', 'en'=>'Blood Bank', 'fr'=>'Banque de Sang'],
+                    ['color'=>'#34D399', 'en'=>'Clinic',     'fr'=>'Clinique'],
+                    ['color'=>'#94A3B8', 'en'=>'Other',      'fr'=>'Autre'],
+                ] as $leg)
+                    <div style="display:flex;align-items:center;gap:2mm;margin-bottom:1.5mm;">
+                        <div style="width:9px;height:9px;border-radius:50%;background:{{ $leg['color'] }};flex-shrink:0;"></div>
+                        <span>{{ $leg[$locale] ?? $leg['en'] }}</span>
+                    </div>
+                @endforeach
             </div>
 
             <div class="safety-bar">

@@ -157,6 +157,9 @@
             <span class="badge-verified">
                 {{ $locale === 'fr' ? 'Établissement Agréé' : 'Authorized Provider' }}
             </span>
+            <span style="background:rgba(13,242,201,0.08);color:#0DF2C9;border:1px solid rgba(13,242,201,0.25);font-size:11px;font-weight:700;padding:1.5mm 3.5mm;border-radius:6px;display:inline-block;margin-bottom:3mm;margin-left:2mm;text-transform:uppercase;letter-spacing:0.5px;">
+                {{ ucfirst(str_replace('_', ' ', $facility->facility_type)) }}
+            </span>
             <h1 class="facility-title">{{ $facility->facility_name }}</h1>
             <p style="margin: 0; color: #94A3B8; font-size: 14px;">
                 {{ ucfirst($facility->facility_type) }} &bull; {{ $facility->city }}, {{ $facility->address }}
@@ -218,6 +221,30 @@
                 </div>
             @endif
 
+            @if($facility->labTests->isNotEmpty())
+                <h2 class="section-title">{{ $locale === 'fr' ? 'Tests de Laboratoire Disponibles' : 'Available Lab Tests' }}</h2>
+                <div class="card">
+                    @foreach($facility->labTests as $test)
+                        <div class="catalog-item">
+                            <div>
+                                <span style="font-weight:700;color:#fff;">{{ $test->test_name }}</span><br>
+                                @if($test->loinc_code)
+                                    <span style="font-size:11px;color:#64748B;">LOINC: {{ $test->loinc_code }}</span>
+                                @endif
+                            </div>
+                            <div style="text-align:right;">
+                                @if($test->turnaround_time)
+                                    <span style="color:#0DF2C9;font-weight:700;font-size:12px;">{{ $test->turnaround_time }}</span><br>
+                                @endif
+                                @if($test->price)
+                                    <span style="font-size:11px;color:#94A3B8;">XAF {{ number_format($test->price, 0) }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
             @if($facility->facility_type === 'blood_bank' || $facility->facility_type === 'hospital')
                 <h2 class="section-title">{{ $locale === 'fr' ? 'Disponibilité des Produits Sanguins' : 'Blood Bank Availability' }}</h2>
                 <div class="card">
@@ -253,14 +280,16 @@
                     <span class="label">Website</span>
                     <span class="value">{{ $facility->website ?? 'N/A' }}</span>
                 </div>
+                @if($facility->latitude && $facility->longitude)
                 <div class="contact-row">
-                    <span class="label">Latitude</span>
-                    <span class="value">{{ $facility->latitude ?? 'N/A' }}</span>
+                    <span class="label">{{ $locale === 'fr' ? 'Itinéraire' : 'Directions' }}</span>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination={{ $facility->latitude }},{{ $facility->longitude }}"
+                       target="_blank" rel="noopener"
+                       style="color:#0DF2C9;font-weight:600;font-size:13px;text-decoration:none;">
+                        🗺 {{ $locale === 'fr' ? 'Ouvrir dans Maps' : 'Open in Maps' }}
+                    </a>
                 </div>
-                <div class="contact-row">
-                    <span class="label">Longitude</span>
-                    <span class="value">{{ $facility->longitude ?? 'N/A' }}</span>
-                </div>
+                @endif
             </div>
 
             <h2 class="section-title">{{ $locale === 'fr' ? 'Assurances Acceptées' : 'Accepted Insurances' }}</h2>
@@ -278,6 +307,40 @@
                     </div>
                 @endforelse
             </div>
+
+            @if($facility->hours->isNotEmpty())
+            <h2 class="section-title">{{ $locale === 'fr' ? 'Horaires d\'ouverture' : 'Opening Hours' }}</h2>
+            <div class="card">
+                @php
+                    $dayNames = [
+                        0 => ['en' => 'Sunday',    'fr' => 'Dimanche'],
+                        1 => ['en' => 'Monday',    'fr' => 'Lundi'],
+                        2 => ['en' => 'Tuesday',   'fr' => 'Mardi'],
+                        3 => ['en' => 'Wednesday', 'fr' => 'Mercredi'],
+                        4 => ['en' => 'Thursday',  'fr' => 'Jeudi'],
+                        5 => ['en' => 'Friday',    'fr' => 'Vendredi'],
+                        6 => ['en' => 'Saturday',  'fr' => 'Samedi'],
+                    ];
+                    $today = (int) now()->dayOfWeek;
+                @endphp
+                @foreach($facility->hours->sortBy('day_of_week') as $hour)
+                @php $isToday = (int)$hour->day_of_week === $today; @endphp
+                <div class="contact-row" style="{{ $isToday ? 'background:rgba(13,242,201,0.05);border-radius:4px;padding-left:3px;padding-right:3px;' : '' }}">
+                    <span class="label" style="{{ $isToday ? 'color:#0DF2C9;font-weight:700;' : '' }}">
+                        {{ $dayNames[$hour->day_of_week][$locale] ?? $dayNames[$hour->day_of_week]['en'] }}
+                        @if($isToday) ← {{ $locale === 'fr' ? 'Aujourd\'hui' : 'Today' }} @endif
+                    </span>
+                    <span class="value" style="font-size:13px;">
+                        @if($hour->is_closed)
+                            <span style="color:#EF4444;">{{ $locale === 'fr' ? 'Fermé' : 'Closed' }}</span>
+                        @else
+                            {{ substr($hour->opens_at, 0, 5) }} – {{ substr($hour->closes_at, 0, 5) }}
+                        @endif
+                    </span>
+                </div>
+                @endforeach
+            </div>
+            @endif
         </div>
     </div>
 </div>

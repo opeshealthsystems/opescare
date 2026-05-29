@@ -12,77 +12,92 @@ class CareMapSearchService
      */
     public function searchNearby(array $params)
     {
-        $lat = $params['latitude'] ?? null;
-        $lon = $params['longitude'] ?? null;
-        $radius = $params['radius'] ?? 50; // in km
-        $type = $params['facility_type'] ?? null;
+        $lat       = $params['latitude']      ?? null;
+        $lon       = $params['longitude']     ?? null;
+        $radius    = $params['radius']        ?? 50;   // km
+        $type      = $params['facility_type'] ?? null;
         $insurance = $params['insurance_name'] ?? null;
-        $emergency = $params['emergency'] ?? false;
-        
-        $query = CareFacility::query();
+        $emergency = $params['emergency']     ?? false;
+        $queryText = trim($params['query']    ?? '');
+        $city      = trim($params['city']     ?? '');
 
-        // 1. Exclude suspended or inactive listings unless admin requests them
-        $query->where('listing_status', 'active');
+        $builder = CareFacility::query();
 
-        // 2. Hide unverified listings if strict compliance is toggled
+        // 1. Only active listings
+        $builder->where('listing_status', 'active');
+
+        // 2. Unverified filter
         if (!($params['include_unverified'] ?? true)) {
-            $query->where('verification_status', '!=', 'unverified');
+            $builder->where('verification_status', '!=', 'unverified');
         }
 
-        // 3. Filter by type
+        // 3. Facility type
         if ($type) {
-            $query->where('facility_type', $type);
+            $builder->where('facility_type', $type);
         }
 
-        // 4. Emergency Filter
+        // 4. Emergency (hospitals with an emergency contact)
         if ($emergency) {
-            $query->where('facility_type', 'hospital')
-                  ->where('emergency_contact', '!=', '');
+            $builder->where('facility_type', 'hospital')
+                    ->where('emergency_contact', '!=', '');
         }
 
-        // 5. Insurance Network mapping filter
+        // 5. Insurance network
         if ($insurance) {
-            $query->whereHas('insurances', function ($q) use ($insurance) {
+            $builder->whereHas('insurances', function ($q) use ($insurance) {
                 $q->where('insurance_name', 'like', "%{$insurance}%")
                   ->where('status', 'active');
             });
         }
 
-        // 6. Geospatial Haversine calculation if coordinates are provided
+        // 6. Full-text query across name / type / city / description
+        if ($queryText !== '') {
+            $builder->where(function ($q) use ($queryText) {
+                $q->where('facility_name', 'like', "%{$queryText}%")
+                  ->orWhere('facility_type', 'like', "%{$queryText}%")
+                  ->orWhere('city',          'like', "%{$queryText}%")
+                  ->orWhere('description',   'like', "%{$queryText}%");
+            });
+        }
+
+        // 7. City filter
+        if ($city !== '') {
+            $builder->where('city', 'like', "%{$city}%");
+        }
+
+        // 8. Geospatial: Haversine distance filter + ordering
         if ($lat !== null && $lon !== null) {
-            $query->whereNotNull('latitude')
-                  ->whereNotNull('longitude');
+            $builder->whereNotNull('latitude')->whereNotNull('longitude');
 
             if (DB::getDriverName() === 'sqlite') {
-                $results = $query->with(['services', 'hours', 'insurances'])->get();
+                // SQLite has no trig functions — calculate distance in PHP
+                $results  = $builder->with(['services', 'hours', 'insurances'])->get();
                 $filtered = [];
                 foreach ($results as $facility) {
-                    $distance = $this->calculatePhpDistance($lat, $lon, $facility->latitude, $facility->longitude);
-                    if ($distance <= $radius) {
-                        $facility->distance = $distance;
+                    $d = $this->calculatePhpDistance($lat, $lon, $facility->latitude, $facility->longitude);
+                    if ($d <= $radius) {
+                        $facility->distance = round($d, 1);
                         $filtered[] = $facility;
                     }
                 }
-                usort($filtered, function ($a, $b) {
-                    return $a->distance <=> $b->distance;
-                });
+                usort($filtered, fn ($a, $b) => $a->distance <=> $b->distance);
                 return collect($filtered);
             }
 
-            // Haversine formula
-            $query->select('*')
-                ->selectRaw(
-                    "(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance",
-                    [$lat, $lon, $lat]
-                );
+            // PostgreSQL / MySQL — use whereRaw so the distance expression is in the
+            // WHERE clause, not HAVING. PostgreSQL disallows column aliases in HAVING
+            // but allows them in ORDER BY.
+            $formula  = "(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude))))";
+            $bindings = [$lat, $lon, $lat];
 
-            $query->havingRaw("distance <= ?", [$radius]);
-            $query->orderBy('distance');
+            $builder->selectRaw("*, {$formula} AS distance", $bindings)
+                    ->whereRaw("{$formula} <= ?", [...$bindings, $radius])
+                    ->orderBy('distance');
         } else {
-            $query->orderBy('facility_name');
+            $builder->orderBy('facility_name');
         }
 
-        return $query->with(['services', 'hours', 'insurances'])->get();
+        return $builder->with(['services', 'hours', 'insurances'])->get();
     }
 
     private function calculatePhpDistance($lat1, $lon1, $lat2, $lon2)

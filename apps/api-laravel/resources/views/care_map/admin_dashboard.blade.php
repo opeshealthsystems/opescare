@@ -7,7 +7,9 @@
     <meta name="theme-color" content="#090D16">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <style>
+        @verbatim
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+        @endverbatim
         
         body {
             font-family: 'Inter', sans-serif;
