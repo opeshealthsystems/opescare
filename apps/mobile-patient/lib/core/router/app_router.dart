@@ -10,6 +10,12 @@ import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/otp_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/health_id/presentation/health_id_screen.dart';
+import '../../features/consent/presentation/consent_screen.dart';
+import '../../features/timeline/presentation/timeline_screen.dart';
+import '../../features/labs/presentation/labs_screen.dart';
+import '../../features/labs/presentation/lab_detail_screen.dart';
+import '../../features/prescriptions/presentation/prescriptions_screen.dart';
+import '../../features/prescriptions/presentation/prescription_detail_screen.dart';
 import '../../features/shell/presentation/main_shell.dart';
 
 abstract final class Routes {
@@ -67,17 +73,52 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.login, builder: (_, __) => const LoginScreen()),
       GoRoute(path: Routes.otp,   builder: (_, __) => const OtpScreen()),
 
-      // Standalone routes pushed from home stats (outside shell nav)
-      GoRoute(path: Routes.labs,
-          builder: (_, __) => const _PlaceholderScreen('Labs', LucideIcons.flaskConical)),
-      GoRoute(path: Routes.prescriptions,
-          builder: (_, __) => const _PlaceholderScreen('Prescriptions', LucideIcons.pill)),
-      GoRoute(path: Routes.appointments,
-          builder: (_, __) => const _PlaceholderScreen('Appointments', LucideIcons.calendar)),
-      GoRoute(path: Routes.accessLogs,
-          builder: (_, __) => const _PlaceholderScreen('Access Logs', LucideIcons.eye)),
-      GoRoute(path: Routes.documents,
-          builder: (_, __) => const _PlaceholderScreen('Documents', LucideIcons.fileText)),
+      // Labs — list + detail
+      GoRoute(
+        path: Routes.labs,
+        builder: (_, __) => const LabsScreen(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            builder: (_, state) =>
+                LabDetailScreen(id: state.pathParameters['id']!),
+          ),
+        ],
+      ),
+
+      // Prescriptions — list + detail
+      GoRoute(
+        path: Routes.prescriptions,
+        builder: (_, __) => const PrescriptionsScreen(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            builder: (_, state) => PrescriptionDetailScreen(
+                id: state.pathParameters['id']!),
+          ),
+        ],
+      ),
+
+      // Appointments — placeholder until Phase 4
+      GoRoute(
+        path: Routes.appointments,
+        builder: (_, __) =>
+            const _PlaceholderScreen('Appointments', LucideIcons.calendar),
+      ),
+
+      // Access Logs — placeholder until Phase 4
+      GoRoute(
+        path: Routes.accessLogs,
+        builder: (_, __) =>
+            const _PlaceholderScreen('Access Logs', LucideIcons.eye),
+      ),
+
+      // Documents — placeholder until Phase 4
+      GoRoute(
+        path: Routes.documents,
+        builder: (_, __) =>
+            const _PlaceholderScreen('Documents', LucideIcons.fileText),
+      ),
 
       // Shell — 5-tab bottom navigation
       StatefulShellRoute.indexedStack(
@@ -99,15 +140,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(routes: [
             GoRoute(
               path: Routes.consent,
-              builder: (_, __) =>
-                  const _PlaceholderScreen('Consent', LucideIcons.shield),
+              builder: (_, __) => const ConsentScreen(),
             ),
           ]),
           StatefulShellBranch(routes: [
             GoRoute(
               path: Routes.timeline,
-              builder: (_, __) =>
-                  const _PlaceholderScreen('Timeline', LucideIcons.activity),
+              builder: (_, __) => const TimelineScreen(),
             ),
           ]),
           StatefulShellBranch(routes: [
@@ -136,7 +175,7 @@ class _PlaceholderScreen extends StatelessWidget {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Icon(icon, size: 48, color: AppColors.neutral300),
           const SizedBox(height: 12),
-          Text('$name — coming soon', style: AppTextStyles.bodySm),
+          Text('$name — coming in Phase 4', style: AppTextStyles.bodySm),
         ]),
       ),
     );
