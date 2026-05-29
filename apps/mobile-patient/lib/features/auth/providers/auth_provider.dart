@@ -5,6 +5,9 @@ import '../data/auth_repository.dart';
 
 enum AuthStatus { unknown, authenticated, unauthenticated }
 
+// Sentinel for "field not provided" in copyWith
+const _keep = Object();
+
 class AuthState {
   const AuthState({
     this.status = AuthStatus.unknown,
@@ -23,16 +26,22 @@ class AuthState {
   AuthState copyWith({
     AuthStatus? status,
     bool? isLoading,
-    String? errorMessage,
-    String? pendingPhone,
-    String? pendingRequestId,
+    Object? errorMessage = _keep,
+    Object? pendingPhone = _keep,
+    Object? pendingRequestId = _keep,
   }) =>
       AuthState(
         status: status ?? this.status,
         isLoading: isLoading ?? this.isLoading,
-        errorMessage: errorMessage,
-        pendingPhone: pendingPhone ?? this.pendingPhone,
-        pendingRequestId: pendingRequestId ?? this.pendingRequestId,
+        errorMessage: errorMessage == _keep
+            ? this.errorMessage
+            : errorMessage as String?,
+        pendingPhone: pendingPhone == _keep
+            ? this.pendingPhone
+            : pendingPhone as String?,
+        pendingRequestId: pendingRequestId == _keep
+            ? this.pendingRequestId
+            : pendingRequestId as String?,
       );
 }
 
