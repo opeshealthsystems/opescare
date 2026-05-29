@@ -109,6 +109,33 @@ class Patient extends Model
     }
 
     /**
+     * Decrypt address on read.
+     *
+     * The 'encrypted' cast throws DecryptException when the ciphertext was produced
+     * with a different APP_KEY (e.g. a newly generated key in dev, or a key rotation
+     * without re-encrypting old rows). Guard identically to phone_number: return the
+     * raw value when decryption fails so the page renders rather than crashing.
+     */
+    public function getAddressAttribute(mixed $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $raw = (string) $value;
+        if (str_starts_with($raw, 'eyJ')) {
+            try {
+                return Crypt::decryptString($raw);
+            } catch (\Throwable) {
+                // Ciphertext unreadable with current APP_KEY — return null rather than crash.
+                return null;
+            }
+        }
+
+        return $raw;
+    }
+
+    /**
      * When phone_number is set, automatically maintain phone_number_hash for DB lookups.
      * phone_number itself is encrypted (cannot be queried), so the hash enables O(1) lookup
      * by phone number (e.g. mobile auth login) without exposing the plaintext.
