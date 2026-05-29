@@ -87,10 +87,92 @@
         <div class="quick-action-icon"><i data-lucide="user-cog"></i></div>
         <span class="quick-action-label">{{ __('public.portal.nav_profile', [], app()->getLocale()) ?: 'My Profile' }}</span>
     </a>
+    <a href="{{ route('portals.patient.allergies') }}" class="quick-action-btn">
+        <div class="quick-action-icon"><i data-lucide="zap"></i></div>
+        <span class="quick-action-label">Allergies</span>
+    </a>
+    <a href="{{ route('portals.patient.clinical') }}" class="quick-action-btn">
+        <div class="quick-action-icon"><i data-lucide="stethoscope"></i></div>
+        <span class="quick-action-label">Conditions</span>
+    </a>
+    <a href="{{ route('portals.patient.immunizations') }}" class="quick-action-btn">
+        <div class="quick-action-icon"><i data-lucide="syringe"></i></div>
+        <span class="quick-action-label">Immunizations</span>
+    </a>
     <a href="{{ route('public.care-map') }}" class="quick-action-btn">
         <div class="quick-action-icon"><i data-lucide="map-pin"></i></div>
         <span class="quick-action-label">{{ __('public.portal.nav_care_map', [], app()->getLocale()) ?: 'Care Map' }}</span>
     </a>
+</div>
+
+<!-- Clinical Safety Banner -->
+<div class="panel mb-6" style="margin-bottom:var(--p-space-6);border-left:4px solid #DC2626;">
+    <div class="panel-header">
+        <h2 class="panel-title" style="color:#DC2626;">
+            <i data-lucide="shield-alert"></i> Clinical Safety Summary
+        </h2>
+    </div>
+    <div class="panel-body">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--p-space-4);">
+
+            {{-- Blood Group --}}
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <span style="font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.05em;">Blood Group</span>
+                <span style="font-size:1.25rem;font-weight:800;color:var(--p-text);">
+                    {{ $patient->blood_group ?? '—' }}
+                </span>
+                @if(!$patient->blood_group)
+                    <a href="{{ route('portals.patient.profile') }}" style="font-size:0.75rem;color:var(--p-primary);">Add in profile →</a>
+                @endif
+            </div>
+
+            {{-- Critical Allergies --}}
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <span style="font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.05em;">Critical Allergies</span>
+                @if($criticalAllergies->isEmpty())
+                    <span style="font-size:0.875rem;color:#16A34A;font-weight:600;">None on record</span>
+                @else
+                    @foreach($criticalAllergies->take(3) as $a)
+                        <span style="font-size:0.8125rem;font-weight:700;color:#DC2626;">⚠ {{ $a->substance }}</span>
+                    @endforeach
+                    @if($criticalAllergies->count() > 3)
+                        <a href="{{ route('portals.patient.allergies') }}" style="font-size:0.75rem;color:var(--p-primary);">+{{ $criticalAllergies->count() - 3 }} more →</a>
+                    @endif
+                @endif
+            </div>
+
+            {{-- All Active Allergies count --}}
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <span style="font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.05em;">Active Allergies</span>
+                <span style="font-size:1.25rem;font-weight:800;color:{{ $activeAllergies->isEmpty() ? 'var(--p-text-muted)' : '#F59E0B' }};">
+                    {{ $activeAllergies->count() }}
+                </span>
+                <a href="{{ route('portals.patient.allergies') }}" style="font-size:0.75rem;color:var(--p-primary);">View all →</a>
+            </div>
+
+            {{-- Active Conditions --}}
+            <div style="display:flex;flex-direction:column;gap:4px;">
+                <span style="font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.05em;">Active Conditions</span>
+                <span style="font-size:1.25rem;font-weight:800;color:var(--p-text);">
+                    {{ $activeConditions->count() }}
+                </span>
+                @if($activeConditions->isNotEmpty())
+                    <a href="{{ route('portals.patient.clinical') }}" style="font-size:0.75rem;color:var(--p-primary);">View all →</a>
+                @endif
+            </div>
+
+        </div>
+
+        @if($activeAllergies->isNotEmpty() || $activeConditions->isNotEmpty())
+        <div class="alert alert-warning" style="margin-top:var(--p-space-4);">
+            <i data-lucide="alert-triangle"></i>
+            <div style="font-size:0.8125rem;">
+                Ensure your care team has your up-to-date allergy and condition list before any procedure or prescription.
+                <a href="{{ route('portals.patient.allergies') }}" style="font-weight:700;">View full allergy list</a>.
+            </div>
+        </div>
+        @endif
+    </div>
 </div>
 
 <!-- Main Two-Column Layout -->

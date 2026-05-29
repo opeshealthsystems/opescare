@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Api\ProviderMobile;
 
 use App\Http\Controllers\Controller;
+use App\Models\AllergyRecord;
+use App\Models\Diagnosis;
+use App\Models\ImmunizationRecord;
 use App\Models\MobileFacilityContext;
 use App\Models\Patient;
+use App\Models\Prescription;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -106,21 +110,110 @@ class ProviderMobilePatientController extends Controller
         ]);
     }
 
+    /**
+     * GET /api/provider-mobile/patients/{id}/clinical
+     *
+     * Full clinical safety profile for a patient — for provider use.
+     * Returns blood group, all active allergies, chronic/active conditions,
+     * active prescriptions summary, and recent immunizations.
+     */
+    public function clinicalProfile(Request $request, string $id): JsonResponse
+    {
+        $patient = Patient::where('id', $id)
+            ->orWhere('health_id', $id)
+            ->firstOrFail();
+
+        $allergies = AllergyRecord::where('patient_id', $patient->id)
+            ->where('status', 'active')
+            ->orderByDesc('created_at')
+            ->get(['id', 'substance', 'severity', 'status']);
+
+        $conditions = Diagnosis::where('patient_id', $patient->id)
+            ->whereIn('status', ['active', 'chronic'])
+            ->orderByDesc('created_at')
+            ->get(['id', 'display_name', 'code', 'status']);
+
+        $activePrescriptions = Prescription::where('patient_id', $patient->id)
+            ->where('status', 'active')
+            ->with('items:id,prescription_id,drug_name,dose,frequency')
+            ->orderByDesc('prescribed_at')
+            ->take(5)
+            ->get();
+
+        $immunizations = ImmunizationRecord::where('patient_id', $patient->id)
+            ->orderByDesc('administered_at')
+            ->take(10)
+            ->get(['id', 'vaccine_name', 'dose_number', 'administered_at', 'lot_number']);
+
+        $criticalAllergies = $allergies->whereIn('severity', ['severe', 'high', 'life-threatening']);
+
+        return response()->json([
+            'patient'             => $this->formatPatientSummary($patient),
+            'blood_group'         => $patient->blood_group,
+            'critical_allergies'  => $criticalAllergies->values()->map(fn ($a) => [
+                'substance' => $a->substance,
+                'severity'  => $a->severity,
+            ]),
+            'all_active_allergies'=> $allergies->map(fn ($a) => [
+                'substance' => $a->substance,
+                'severity'  => $a->severity,
+            ]),
+            'active_conditions'   => $conditions->map(fn ($c) => [
+                'display_name' => $c->display_name,
+                'code'         => $c->code,
+                'status'       => $c->status,
+            ]),
+            'active_prescriptions'=> $activePrescriptions->map(fn ($rx) => [
+                'id'    => $rx->id,
+                'items' => $rx->items->map(fn ($i) => [
+                    'drug_name' => $i->drug_name,
+                    'dose'      => $i->dose,
+                    'frequency' => $i->frequency,
+                ]),
+            ]),
+            'immunizations'       => $immunizations->map(fn ($i) => [
+                'vaccine_name'    => $i->vaccine_name,
+                'dose_number'     => $i->dose_number,
+                'administered_at' => $i->administered_at?->toDateString(),
+            ]),
+            'safety_alert'        => $criticalAllergies->isNotEmpty()
+                ? '⚠ CRITICAL ALLERGY: ' . $criticalAllergies->pluck('substance')->join(', ')
+                : null,
+        ]);
+    }
+
     // -------------------------------------------------------------------------
 
     private function formatPatientSummary(Patient $p): array
     {
+        $criticalAllergies = AllergyRecord::where('patient_id', $p->id)
+            ->where('status', 'active')
+            ->whereIn('severity', ['severe', 'high', 'life-threatening'])
+            ->pluck('substance')
+            ->toArray();
+
+        $chronicConditions = Diagnosis::where('patient_id', $p->id)
+            ->whereIn('status', ['active', 'chronic'])
+            ->pluck('display_name')
+            ->toArray();
+
         return [
-            'id'               => $p->id,
-            'health_id'        => $p->health_id,
-            'display_name'     => $p->first_name . ' ' . $p->last_name,
-            'sex'              => $p->sex,
-            'dob'              => $p->date_of_birth?->toDateString(),
-            'age'              => $p->date_of_birth
+            'id'                  => $p->id,
+            'health_id'           => $p->health_id,
+            'display_name'        => $p->first_name . ' ' . $p->last_name,
+            'sex'                 => $p->sex,
+            'dob'                 => $p->date_of_birth?->toDateString(),
+            'age'                 => $p->date_of_birth
                 ? (int) $p->date_of_birth->diffInYears(now())
                 : null,
-            'phone'            => $p->phone_number,
-            'identity_status'  => $p->identity_status ?? 'unknown',
+            'blood_group'         => $p->blood_group,
+            'phone'               => $p->phone_number,
+            'identity_status'     => $p->identity_status ?? 'unknown',
+            'critical_allergies'  => $criticalAllergies,
+            'chronic_conditions'  => $chronicConditions,
+            'safety_alert'        => ! empty($criticalAllergies)
+                ? '⚠ CRITICAL ALLERGY: ' . implode(', ', $criticalAllergies)
+                : null,
         ];
     }
 

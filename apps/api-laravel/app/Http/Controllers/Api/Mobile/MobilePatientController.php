@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api\Mobile;
 
 use App\Http\Controllers\Controller;
+use App\Models\AllergyRecord;
 use App\Models\Appointment;
+use App\Models\Diagnosis;
+use App\Models\ImmunizationRecord;
 use App\Models\LabOrder;
 use App\Models\Patient;
 use App\Models\Prescription;
@@ -30,16 +33,22 @@ class MobilePatientController extends Controller
             return response()->json(['message' => 'Patient not found.'], 404);
         }
 
+        $allergiesCount   = AllergyRecord::where('patient_id', $patient->id)->where('status', 'active')->count();
+        $conditionsCount  = Diagnosis::where('patient_id', $patient->id)->whereIn('status', ['active', 'chronic'])->count();
+
         return response()->json([
-            'health_id'    => $patient->health_id,
-            'display_name' => trim($patient->first_name . ' ' . substr($patient->last_name, 0, 1) . '.'),
-            'first_name'   => $patient->first_name,
-            'last_name'    => $patient->last_name,
-            'phone'        => $patient->phone_number,
-            'email'        => $patient->email ?? null,
-            'dob'          => $patient->date_of_birth?->toDateString(),
-            'sex'          => $patient->sex,
-            'status'       => $patient->identity_status ?? 'active',
+            'health_id'         => $patient->health_id,
+            'display_name'      => trim($patient->first_name . ' ' . substr($patient->last_name, 0, 1) . '.'),
+            'first_name'        => $patient->first_name,
+            'last_name'         => $patient->last_name,
+            'phone'             => $patient->phone_number,
+            'email'             => $patient->email ?? null,
+            'dob'               => $patient->date_of_birth?->toDateString(),
+            'sex'               => $patient->sex,
+            'blood_group'       => $patient->blood_group,
+            'status'            => $patient->identity_status ?? 'active',
+            'allergies_count'   => $allergiesCount,
+            'conditions_count'  => $conditionsCount,
         ]);
     }
 
@@ -71,7 +80,7 @@ class MobilePatientController extends Controller
             'display_name' => $patient->first_name . ' ' . $patient->last_name,
             'sex'          => $patient->sex,
             'dob'          => $patient->date_of_birth?->toDateString(),
-            'blood_type'   => null, // populated from allergy/clinical records when available
+            'blood_type'   => $patient->blood_group,
             'qr_payload'   => $qrPayload,
             'status'       => $patient->identity_status ?? 'active',
         ]);
@@ -146,6 +155,88 @@ class MobilePatientController extends Controller
         $timeline = $events->sortByDesc('occurred_at')->take($limit)->values();
 
         return response()->json(['timeline' => $timeline]);
+    }
+
+    /**
+     * GET /api/mobile/allergies
+     * Patient's active allergy list for mobile display.
+     */
+    public function getAllergies(Request $request): JsonResponse
+    {
+        $patientId = $this->resolvePatientId($request);
+        if (! $patientId) {
+            return response()->json(['message' => 'Patient not found.'], 404);
+        }
+
+        $allergies = AllergyRecord::where('patient_id', $patientId)
+            ->where('status', 'active')
+            ->orderByDesc('created_at')
+            ->get(['id', 'substance', 'severity', 'status', 'created_at']);
+
+        return response()->json([
+            'blood_group' => Patient::find($patientId)?->blood_group,
+            'allergies'   => $allergies->map(fn ($a) => [
+                'id'        => $a->id,
+                'substance' => $a->substance,
+                'severity'  => $a->severity,
+                'status'    => $a->status,
+                'recorded'  => $a->created_at?->toDateString(),
+            ]),
+        ]);
+    }
+
+    /**
+     * GET /api/mobile/clinical
+     * Patient's active diagnoses and chronic conditions.
+     */
+    public function getClinical(Request $request): JsonResponse
+    {
+        $patientId = $this->resolvePatientId($request);
+        if (! $patientId) {
+            return response()->json(['message' => 'Patient not found.'], 404);
+        }
+
+        $conditions = Diagnosis::where('patient_id', $patientId)
+            ->orderByDesc('created_at')
+            ->get(['id', 'display_name', 'code', 'code_system', 'snomed_code', 'status', 'created_at']);
+
+        return response()->json([
+            'conditions' => $conditions->map(fn ($c) => [
+                'id'           => $c->id,
+                'display_name' => $c->display_name,
+                'code'         => $c->code,
+                'code_system'  => $c->code_system,
+                'status'       => $c->status,
+                'recorded'     => $c->created_at?->toDateString(),
+            ]),
+        ]);
+    }
+
+    /**
+     * GET /api/mobile/immunizations
+     * Patient's vaccination history.
+     */
+    public function getImmunizations(Request $request): JsonResponse
+    {
+        $patientId = $this->resolvePatientId($request);
+        if (! $patientId) {
+            return response()->json(['message' => 'Patient not found.'], 404);
+        }
+
+        $immunizations = ImmunizationRecord::where('patient_id', $patientId)
+            ->orderByDesc('administered_at')
+            ->get(['id', 'vaccine_name', 'lot_number', 'dose_number', 'administered_at', 'status']);
+
+        return response()->json([
+            'immunizations' => $immunizations->map(fn ($i) => [
+                'id'              => $i->id,
+                'vaccine_name'    => $i->vaccine_name,
+                'lot_number'      => $i->lot_number,
+                'dose_number'     => $i->dose_number,
+                'administered_at' => $i->administered_at?->toDateString(),
+                'status'          => $i->status ?? 'completed',
+            ]),
+        ]);
     }
 
     // -------------------------------------------------------------------------

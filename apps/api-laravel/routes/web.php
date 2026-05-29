@@ -174,7 +174,11 @@ Route::middleware(['web', 'auth', 'portal.access', 'facility.context'])->group(f
         Route::get('/portals/patient/documents', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'documents'])->name('portals.patient.documents');
         Route::get('/portals/patient/profile', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'profile'])->name('portals.patient.profile');
         Route::post('/portals/patient/profile', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'updateProfile'])->name('portals.patient.profile.update');
-        Route::get('/portals/patient/logs', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'accessLogs'])->name('portals.patient.logs');
+        Route::get('/portals/patient/logs',          [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'accessLogs'])->name('portals.patient.logs');
+        // Clinical data pages (blood group visible on dashboard; detail pages here)
+        Route::get('/portals/patient/allergies',     [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'allergies'])->name('portals.patient.allergies');
+        Route::get('/portals/patient/clinical',      [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'clinicalHistory'])->name('portals.patient.clinical');
+        Route::get('/portals/patient/immunizations', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'immunizations'])->name('portals.patient.immunizations');
     });
 
     // ── Staff: Visit Flow ────────────────────────────────────────

@@ -183,7 +183,12 @@ Route::prefix('mobile')->group(function () {
         Route::get('/data-exports/{id}/download', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'downloadExport']);
 
         // Health-ID card (digital wallet)
-        Route::get('/health-id-card', [\App\Http\Controllers\Api\Mobile\MobilePatientController::class, 'getHealthIdCard']);
+        Route::get('/health-id-card',    [\App\Http\Controllers\Api\Mobile\MobilePatientController::class, 'getHealthIdCard']);
+
+        // Clinical data (blood group, allergies, conditions, immunizations)
+        Route::get('/allergies',         [\App\Http\Controllers\Api\Mobile\MobilePatientController::class, 'getAllergies']);
+        Route::get('/clinical',          [\App\Http\Controllers\Api\Mobile\MobilePatientController::class, 'getClinical']);
+        Route::get('/immunizations',     [\App\Http\Controllers\Api\Mobile\MobilePatientController::class, 'getImmunizations']);
 
         // Lab orders & results
         Route::get('/labs', [\App\Http\Controllers\Api\Mobile\MobileLabController::class, 'index']);
@@ -239,9 +244,10 @@ Route::prefix('provider-mobile')->group(function () {
         Route::get('/facilities/current', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileFacilityController::class, 'current']);
         Route::post('/facilities/{id}/switch', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileFacilityController::class, 'switchFacility']);
 
-        Route::get('/patients/scan', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobilePatientController::class, 'scan']);
-        Route::get('/patients/search', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobilePatientController::class, 'search']);
-        Route::get('/patients/{id}', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobilePatientController::class, 'show']);
+        Route::get('/patients/scan',              [\App\Http\Controllers\Api\ProviderMobile\ProviderMobilePatientController::class, 'scan']);
+        Route::get('/patients/search',            [\App\Http\Controllers\Api\ProviderMobile\ProviderMobilePatientController::class, 'search']);
+        Route::get('/patients/{id}/clinical',     [\App\Http\Controllers\Api\ProviderMobile\ProviderMobilePatientController::class, 'clinicalProfile']);
+        Route::get('/patients/{id}',              [\App\Http\Controllers\Api\ProviderMobile\ProviderMobilePatientController::class, 'show']);
 
         Route::get('/tasks', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileTaskController::class, 'index']);
         Route::post('/tasks/queue/{id}/call', [\App\Http\Controllers\Api\ProviderMobile\ProviderMobileTaskController::class, 'callQueueEntry']);

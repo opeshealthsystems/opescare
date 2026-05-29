@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Sdk;
 
 use App\Http\Controllers\Controller;
+use App\Models\AllergyRecord;
 use App\Models\MedicalRecord;
 use App\Models\Patient;
 use Illuminate\Http\JsonResponse;
@@ -21,14 +22,19 @@ class SdkPatientController extends Controller
             return response()->json(['error' => 'patient_not_found', 'message' => 'No patient with that Health ID.'], 404);
         }
 
+        $allergies = AllergyRecord::where('patient_id', $patient->id)
+            ->where('status', 'active')
+            ->get(['substance', 'severity'])
+            ->map(fn ($a) => ['substance' => $a->substance, 'severity' => $a->severity]);
+
         return response()->json([
-            'health_id'    => $patient->health_id,
-            'full_name'    => $patient->full_name ?? ($patient->first_name . ' ' . $patient->last_name),
-            'date_of_birth'=> $patient->date_of_birth?->toDateString(),
-            'gender'       => $patient->gender,
-            'blood_group'  => $patient->blood_group ?? null,
-            'allergies'    => $patient->allergies ?? [],
-            'retrieved_at' => now()->toIso8601String(),
+            'health_id'     => $patient->health_id,
+            'full_name'     => $patient->full_name ?? ($patient->first_name . ' ' . $patient->last_name),
+            'date_of_birth' => $patient->date_of_birth?->toDateString(),
+            'sex'           => $patient->sex,
+            'blood_group'   => $patient->blood_group,
+            'allergies'     => $allergies,
+            'retrieved_at'  => now()->toIso8601String(),
         ]);
     }
 

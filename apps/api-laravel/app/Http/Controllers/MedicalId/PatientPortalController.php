@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\MedicalId;
 
 use App\Http\Controllers\Controller;
+use App\Models\AllergyRecord;
 use App\Models\Appointment;
 use App\Models\ConsentGrant;
 use App\Models\ConsentRequest;
+use App\Models\Diagnosis;
+use App\Models\ImmunizationRecord;
 use App\Models\LabResult;
 use App\Models\MedicalIdAccessEvent;
 use App\Models\OfficialDocument;
@@ -103,7 +106,32 @@ class PatientPortalController extends Controller
             );
         }
 
-        return view('portals.patient.index', compact('patient', 'qrToken', 'staticQrDataUri'));
+        // Clinical safety summary for dashboard widgets
+        $criticalAllergies = $patient
+            ? AllergyRecord::where('patient_id', $patient->id)
+                ->where('status', 'active')
+                ->whereIn('severity', ['severe', 'high', 'life-threatening'])
+                ->get(['id', 'substance', 'severity'])
+            : collect();
+
+        $activeAllergies = $patient
+            ? AllergyRecord::where('patient_id', $patient->id)
+                ->where('status', 'active')
+                ->orderByDesc('created_at')
+                ->get(['id', 'substance', 'severity'])
+            : collect();
+
+        $activeConditions = $patient
+            ? Diagnosis::where('patient_id', $patient->id)
+                ->whereIn('status', ['active', 'chronic'])
+                ->orderByDesc('created_at')
+                ->get(['id', 'display_name', 'code', 'status'])
+            : collect();
+
+        return view('portals.patient.index', compact(
+            'patient', 'qrToken', 'staticQrDataUri',
+            'criticalAllergies', 'activeAllergies', 'activeConditions'
+        ));
     }
 
     /**
@@ -418,6 +446,81 @@ class PatientPortalController extends Controller
         );
 
         return redirect()->route('portals.patient.profile')->with('success', 'Profile updated successfully.');
+    }
+
+    /**
+     * Patient Allergies
+     */
+    public function allergies(Request $request)
+    {
+        $patient = $this->resolveViewingPatient();
+
+        $allergies = $patient
+            ? AllergyRecord::where('patient_id', $patient->id)
+                ->orderByDesc('created_at')
+                ->get()
+            : collect();
+
+        if ($patient) {
+            $this->ctx->auditPatientAccess(
+                actionType:   'patient_allergies_view',
+                resourceType: 'AllergyRecord',
+                resourceId:   null,
+                patientId:    $patient->id,
+            );
+        }
+
+        return view('portals.patient.allergies', compact('patient', 'allergies'));
+    }
+
+    /**
+     * Patient Clinical History (Diagnoses / Conditions)
+     */
+    public function clinicalHistory(Request $request)
+    {
+        $patient = $this->resolveViewingPatient();
+
+        $conditions = $patient
+            ? Diagnosis::where('patient_id', $patient->id)
+                ->orderByDesc('created_at')
+                ->get()
+            : collect();
+
+        if ($patient) {
+            $this->ctx->auditPatientAccess(
+                actionType:   'patient_clinical_history_view',
+                resourceType: 'Diagnosis',
+                resourceId:   null,
+                patientId:    $patient->id,
+            );
+        }
+
+        return view('portals.patient.clinical', compact('patient', 'conditions'));
+    }
+
+    /**
+     * Patient Immunization History
+     */
+    public function immunizations(Request $request)
+    {
+        $patient = $this->resolveViewingPatient();
+
+        $immunizations = $patient
+            ? ImmunizationRecord::where('patient_id', $patient->id)
+                ->orderByDesc('administered_at')
+                ->get()
+            : collect();
+
+        if ($patient) {
+            $this->ctx->auditPatientAccess(
+                actionType:   'patient_immunizations_view',
+                resourceType: 'ImmunizationRecord',
+                resourceId:   null,
+                patientId:    $patient->id,
+            );
+        }
+
+        return view('portals.patient.immunizations', compact('patient', 'immunizations'));
     }
 
     /**
