@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $locale === ‘fr’ ? "Carte vérifiée d’accès aux soins" : ‘OpesCare Verified Care Access Map’ }}</title>
+    <title>@if($locale === ‘fr’)Carte vérifiée d’accès aux soins@else OpesCare Verified Care Access Map@endif</title>
     <meta name="theme-color" content="#090D16">
     <link rel="icon" type="image/svg+xml" href="{{ asset(‘favicon.svg’) }}">
     <link rel="manifest" href="{{ asset(‘site.webmanifest’) }}">
