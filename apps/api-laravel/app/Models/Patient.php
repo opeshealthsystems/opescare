@@ -51,12 +51,16 @@ class Patient extends Model
     // - pin_hash → bcrypt hash, NOT encrypted cast (already a one-way hash, not recoverable)
     // - health_id → NOT encrypted (it is a searchable lookup key, not sensitive in isolation)
     protected $casts = [
-        'date_of_birth'      => 'encrypted',
+        // date_of_birth and address are NOT listed here — their encryption is handled
+        // entirely by dedicated get/set accessor+mutator pairs below, matching the
+        // phone_number pattern.  Listing them in $casts causes Eloquent to call the
+        // encrypted cast before old-style accessors (Laravel 13 priority order), which
+        // means a DecryptException from a key-mismatch crashes before our try/catch runs.
+        // Removing the cast lets our accessor/mutator own the full encrypt→decrypt cycle.
         'is_dob_estimated'   => 'boolean',
         'emergency_contact'  => 'array',
         'privacy_preferences' => 'array',
         'verified_at'        => 'datetime',
-        'address'            => 'encrypted',
     ];
 
     /**
@@ -133,6 +137,29 @@ class Patient extends Model
         }
 
         return $raw;
+    }
+
+    /**
+     * Encrypt address on write.
+     */
+    public function setAddressAttribute(?string $value): void
+    {
+        $this->attributes['address'] = $value !== null ? Crypt::encryptString($value) : null;
+    }
+
+    /**
+     * Return date_of_birth as a Carbon instance, handling encrypted storage.
+     * Removed from $casts so this accessor fires before any encryption attempt.
+     */
+    public function setDateOfBirthAttribute(mixed $value): void
+    {
+        if ($value === null || $value === '') {
+            $this->attributes['date_of_birth'] = null;
+            return;
+        }
+        // Accept Carbon, DateTime, or date string — normalize to Y-m-d then encrypt
+        $date = $value instanceof \Carbon\Carbon ? $value : \Carbon\Carbon::parse($value);
+        $this->attributes['date_of_birth'] = Crypt::encryptString($date->format('Y-m-d'));
     }
 
     /**
