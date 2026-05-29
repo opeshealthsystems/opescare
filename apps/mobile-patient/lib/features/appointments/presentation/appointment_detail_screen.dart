@@ -6,7 +6,6 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/error_view.dart';
 import '../../../shared/widgets/loading_skeleton.dart';
-import '../data/appointments_repository.dart';
 import '../providers/appointments_provider.dart';
 
 class AppointmentDetailScreen extends ConsumerWidget {

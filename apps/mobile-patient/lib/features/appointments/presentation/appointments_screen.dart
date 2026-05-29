@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/error_view.dart';
@@ -73,7 +72,6 @@ class _ApptCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dt = _tryParse(appt.scheduledAt);
-    final date = DateFormat('EEE, d MMM yyyy').format(dt);
     final time = DateFormat('h:mm a').format(dt);
     final isUpcoming = appt.status == 'confirmed' || appt.status == 'pending';
     final badge = _badge(appt.status);
