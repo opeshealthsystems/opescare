@@ -18,6 +18,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       List.generate(6, (_) => TextEditingController());
   final List<FocusNode> _focusNodes =
       List.generate(6, (_) => FocusNode());
+  bool _isSubmitting = false;
 
   String get _otp => _controllers.map((c) => c.text).join();
 
@@ -29,8 +30,11 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   }
 
   Future<void> _submit() async {
-    if (_otp.length < 6) return;
+    if (_otp.length < 6 || _isSubmitting) return;
+    setState(() => _isSubmitting = true);
     await ref.read(authProvider.notifier).verifyOtp(_otp);
+    if (!mounted) return;
+    setState(() => _isSubmitting = false);
   }
 
   void _onDigitChanged(int index, String value) {
@@ -118,6 +122,11 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                   label: const Text('Resend OTP'),
                   onPressed: () {
                     if (phone.isNotEmpty) {
+                      // Clear stale OTP digits before resend
+                      for (final c in _controllers) {
+                        c.clear();
+                      }
+                      _isSubmitting = false;
                       ref.read(authProvider.notifier).login(phone);
                     }
                   },
