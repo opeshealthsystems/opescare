@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../core/api/api_exception.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 
@@ -8,10 +9,16 @@ class ErrorView extends StatelessWidget {
     super.key,
     required this.message,
     this.onRetry,
+    this.error,
   });
 
   final String message;
   final VoidCallback? onRetry;
+  final Object? error; // pass the raw error to auto-detect network errors
+
+  bool get _isNetwork =>
+      error is ApiException &&
+      (error as ApiException).type == ApiErrorType.network;
 
   @override
   Widget build(BuildContext context) {
@@ -23,18 +30,33 @@ class ErrorView extends StatelessWidget {
           children: [
             Container(
               width: 64, height: 64,
-              decoration: const BoxDecoration(
-                color: AppColors.dangerLight,
+              decoration: BoxDecoration(
+                color: _isNetwork
+                    ? AppColors.warningLight
+                    : AppColors.dangerLight,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(LucideIcons.wifiOff,
-                  color: AppColors.danger, size: 28),
+              child: Icon(
+                LucideIcons.wifiOff,
+                color: _isNetwork
+                    ? AppColors.warningDark
+                    : AppColors.danger,
+                size: 28,
+              ),
             ),
             const SizedBox(height: 16),
-            Text('Something went wrong', style: AppTextStyles.h4),
+            Text(
+              _isNetwork ? 'No internet connection' : 'Something went wrong',
+              style: AppTextStyles.h4,
+            ),
             const SizedBox(height: 8),
-            Text(message,
-                style: AppTextStyles.bodySm, textAlign: TextAlign.center),
+            Text(
+              _isNetwork
+                  ? 'Check your network and try again.'
+                  : message,
+              style: AppTextStyles.bodySm,
+              textAlign: TextAlign.center,
+            ),
             if (onRetry != null) ...[
               const SizedBox(height: 24),
               OutlinedButton.icon(
