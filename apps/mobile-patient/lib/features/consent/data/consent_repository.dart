@@ -11,7 +11,7 @@ class ConsentRepository {
       ApiEndpoints.consentRequests,
       params: status != null ? {'status': status} : null,
     );
-    final list = res['data'] as List? ?? [];
+    final list = res['requests'] as List? ?? res['data'] as List? ?? [];
     return list
         .map((j) => ConsentRequest.fromJson(j as Map<String, dynamic>))
         .toList();

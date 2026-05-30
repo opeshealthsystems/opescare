@@ -29,11 +29,19 @@ class ConsentRequest extends Equatable {
       (s) => s.name == rawStatus,
       orElse: () => ConsentStatus.pending,
     );
-    final facility = json['requesting_facility'] as Map? ?? {};
-    final rawScopes = json['scope_labels'] as List? ?? [];
+
+    // Backend sends requesting_facility as a plain string or nested {name: ...} map
+    final facilityRaw = json['requesting_facility'];
+    final facilityName = facilityRaw is Map
+        ? facilityRaw['name']?.toString() ?? 'Unknown Facility'
+        : facilityRaw?.toString() ?? 'Unknown Facility';
+
+    // Backend uses requested_scopes; scope_labels is the legacy key
+    final rawScopes = (json['requested_scopes'] ?? json['scope_labels']) as List? ?? [];
+
     return ConsentRequest(
-      id:                   json['id']?.toString() ?? '',
-      requestingFacility:   facility['name']?.toString() ?? 'Unknown Facility',
+      id:                   (json['consent_request_id'] ?? json['id'])?.toString() ?? '',
+      requestingFacility:   facilityName,
       requestingRole:       json['requesting_role']?.toString() ?? '',
       purpose:              json['purpose']?.toString() ?? '',
       scopeLabels:          rawScopes.map((s) => s.toString()).toList(),

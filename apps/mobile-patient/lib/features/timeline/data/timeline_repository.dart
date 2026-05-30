@@ -11,7 +11,8 @@ class TimelineRepository {
       ApiEndpoints.timeline,
       params: type != null ? {'type': type} : null,
     );
-    final list = res['data'] as List? ?? [];
+    // Backend returns {'timeline': [...]} not {'data': [...]}
+    final list = res['timeline'] as List? ?? res['data'] as List? ?? [];
     return list
         .map((j) => TimelineEvent.fromJson(j as Map<String, dynamic>))
         .toList();

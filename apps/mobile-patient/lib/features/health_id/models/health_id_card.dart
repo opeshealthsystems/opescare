@@ -30,10 +30,13 @@ class HealthIdCard extends Equatable {
     return HealthIdCard(
       healthId:         data['health_id']?.toString() ?? '',
       displayName:      data['display_name']?.toString() ?? '',
-      dateOfBirth:      data['date_of_birth']?.toString() ?? '',
+      // Backend uses 'dob'; older shape used 'date_of_birth'
+      dateOfBirth:      (data['dob'] ?? data['date_of_birth'])?.toString() ?? '',
       sex:              data['sex']?.toString() ?? '',
-      bloodGroup:       data['blood_group']?.toString() ?? '',
-      isVerified:       data['is_verified'] == true,
+      // Backend uses 'blood_type'; older shape used 'blood_group'
+      bloodGroup:       (data['blood_type'] ?? data['blood_group'])?.toString() ?? '',
+      // Backend sends 'status'; treat 'active' as verified
+      isVerified:       data['is_verified'] == true || data['status']?.toString() == 'active',
       issuedAt:         data['issued_at']?.toString() ?? '',
       photoUrl:         data['photo_url']?.toString(),
       allergySummary:   data['allergy_summary']?.toString(),
