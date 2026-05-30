@@ -42,6 +42,8 @@ class _OpesCareAppState extends ConsumerState<OpesCareApp> {
     return MaterialApp.router(
       title: 'OpesCare',
       theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.system,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
     );
