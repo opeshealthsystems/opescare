@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,7 +33,10 @@ class HealthIdScreen extends ConsumerWidget {
           message: e.toString(),
           onRetry: () => ref.invalidate(healthIdCardProvider),
         ),
-        data: (card) => _HealthIdBody(card: card),
+        data: (card) {
+          FirebaseAnalytics.instance.logEvent(name: 'view_health_id');
+          return _HealthIdBody(card: card);
+        },
       ),
     );
   }

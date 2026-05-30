@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../storage/secure_storage.dart';
 import 'api_exception.dart';
+import 'token_refresh_interceptor.dart';
 
 class ApiClient {
   ApiClient(this._storage) {
@@ -9,6 +11,10 @@ class ApiClient {
       connectTimeout: const Duration(seconds: 15),
       receiveTimeout: const Duration(seconds: 30),
       headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+    ));
+    _dio.interceptors.add(TokenRefreshInterceptor(
+      storage: _storage,
+      onUnauthenticated: () => onUnauthenticated?.call(),
     ));
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
@@ -30,6 +36,10 @@ class ApiClient {
 
   final SecureStorage _storage;
   late final Dio _dio;
+
+  /// Set by the provider after construction to break the circular dependency.
+  /// Called when a 401 refresh attempt fails — should trigger [AuthNotifier.forceLogout].
+  VoidCallback? onUnauthenticated;
 
   Future<Map<String, dynamic>> get(String url, {Map<String, dynamic>? params}) async {
     try {
@@ -82,6 +92,13 @@ class ApiClient {
 }
 
 final secureStorageProvider = Provider<SecureStorage>((ref) => SecureStorage());
+
+/// Provides the [ApiClient] instance.
+///
+/// NOTE: [ApiClient.onUnauthenticated] is wired by [authClientWiringProvider]
+/// in auth_provider.dart, which runs on first read of [authProvider].
+/// This keeps api_client.dart free of any import from the auth layer,
+/// preventing a circular dependency.
 final apiClientProvider = Provider<ApiClient>((ref) {
   return ApiClient(ref.watch(secureStorageProvider));
 });

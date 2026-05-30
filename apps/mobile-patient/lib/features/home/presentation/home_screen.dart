@@ -128,9 +128,13 @@ class _HomeBody extends StatelessWidget {
             onSeeAll: () => context.push(Routes.accessLogs),
           ),
           const SizedBox(height: 10),
-          GestureDetector(
-            onTap: () => context.push(Routes.accessLogs),
-            child: _AccessLogBanner(count: summary.recentAccessCount),
+          Semantics(
+            button: true,
+            label: '${summary.recentAccessCount} recent health record access${summary.recentAccessCount > 1 ? 'es' : ''}. Tap to view details.',
+            child: GestureDetector(
+              onTap: () => context.push(Routes.accessLogs),
+              child: _AccessLogBanner(count: summary.recentAccessCount),
+            ),
           ),
           const SizedBox(height: 20),
         ],
@@ -163,57 +167,61 @@ class _HealthIdBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.cardGradientStart, AppColors.cardGradientEnd],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'HEALTH ID',
-                  style: AppTextStyles.label.copyWith(
-                    color: AppColors.textOnPrimary.withOpacity(0.75),
-                    fontSize: 10,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(healthId, style: AppTextStyles.healthId),
-                const SizedBox(height: 8),
-                if (isVerified)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(mainAxisSize: MainAxisSize.min, children: [
-                      const Icon(LucideIcons.checkCircle,
-                          size: 11, color: Colors.white),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Verified',
-                        style: AppTextStyles.caption
-                            .copyWith(color: Colors.white),
-                      ),
-                    ]),
-                  ),
-              ],
+    return Semantics(
+      button: true,
+      label: 'Health ID $healthId, ${isVerified ? 'verified' : 'unverified'}. Tap to view.',
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [AppColors.cardGradientStart, AppColors.cardGradientEnd],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
+            borderRadius: BorderRadius.circular(16),
           ),
-          const Icon(LucideIcons.creditCard, size: 36, color: Colors.white54),
-        ]),
+          child: Row(children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'HEALTH ID',
+                    style: AppTextStyles.label.copyWith(
+                      color: AppColors.textOnPrimary.withOpacity(0.75),
+                      fontSize: 10,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(healthId, style: AppTextStyles.healthId),
+                  const SizedBox(height: 8),
+                  if (isVerified)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        const Icon(LucideIcons.checkCircle,
+                            size: 11, color: Colors.white),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Verified',
+                          style: AppTextStyles.caption
+                              .copyWith(color: Colors.white),
+                        ),
+                      ]),
+                    ),
+                ],
+              ),
+            ),
+            const Icon(LucideIcons.creditCard, size: 36, color: Colors.white54),
+          ]),
+        ),
       ),
     );
   }
@@ -273,29 +281,33 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.divider),
-          ),
-          child: Column(children: [
-            Icon(icon, size: 20, color: color),
-            const SizedBox(height: 6),
-            Text(
-              value,
-              style: AppTextStyles.h3
-                  .copyWith(color: color, fontSize: 20),
+    return Semantics(
+      button: true,
+      label: '$label: $value',
+      child: Expanded(
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.divider),
             ),
-            const SizedBox(height: 2),
-            Text(label,
-                style: AppTextStyles.caption,
-                textAlign: TextAlign.center),
-          ]),
+            child: Column(children: [
+              Icon(icon, size: 20, color: color),
+              const SizedBox(height: 6),
+              Text(
+                value,
+                style: AppTextStyles.h3
+                    .copyWith(color: color, fontSize: 20),
+              ),
+              const SizedBox(height: 2),
+              Text(label,
+                  style: AppTextStyles.caption,
+                  textAlign: TextAlign.center),
+            ]),
+          ),
         ),
       ),
     );
@@ -312,47 +324,51 @@ class _ConsentAlert extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppColors.warningLight,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-              color: AppColors.warning.withOpacity(0.3)),
+    return Semantics(
+      button: true,
+      label: '$count pending consent request${count > 1 ? 's' : ''}. Tap to review.',
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.warningLight,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+                color: AppColors.warning.withOpacity(0.3)),
+          ),
+          child: Row(children: [
+            Container(
+              width: 36, height: 36,
+              decoration: BoxDecoration(
+                color: AppColors.warning.withOpacity(0.15),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(LucideIcons.bell,
+                  size: 18, color: AppColors.warningDark),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$count consent request${count > 1 ? 's' : ''} pending',
+                    style: AppTextStyles.body.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.warningDark),
+                  ),
+                  Text(
+                    'A facility wants to access your health records.',
+                    style: AppTextStyles.bodySm,
+                  ),
+                ],
+              ),
+            ),
+            const Icon(LucideIcons.chevronRight,
+                size: 16, color: AppColors.warningDark),
+          ]),
         ),
-        child: Row(children: [
-          Container(
-            width: 36, height: 36,
-            decoration: BoxDecoration(
-              color: AppColors.warning.withOpacity(0.15),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(LucideIcons.bell,
-                size: 18, color: AppColors.warningDark),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '$count consent request${count > 1 ? 's' : ''} pending',
-                  style: AppTextStyles.body.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.warningDark),
-                ),
-                Text(
-                  'A facility wants to access your health records.',
-                  style: AppTextStyles.bodySm,
-                ),
-              ],
-            ),
-          ),
-          const Icon(LucideIcons.chevronRight,
-              size: 16, color: AppColors.warningDark),
-        ]),
       ),
     );
   }

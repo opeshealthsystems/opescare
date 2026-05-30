@@ -59,4 +59,34 @@ class AuthRepository {
   }
 
   Future<void> logout() => _storage.clearAll();
+
+  /// Register FCM device token with backend. Returns the server-side token record ID.
+  Future<String?> registerPushToken(String fcmToken) async {
+    try {
+      final res = await _client.post(
+        ApiEndpoints.pushTokens,
+        body: {'token': fcmToken, 'platform': _platform()},
+      );
+      return res['data']?['id']?.toString();
+    } catch (_) {
+      return null; // Push token registration is best-effort
+    }
+  }
+
+  /// Deregister push token on logout.
+  Future<void> deregisterPushToken(String tokenId) async {
+    try {
+      await _client.delete(ApiEndpoints.pushToken(tokenId));
+    } catch (_) {} // Best-effort
+  }
+
+  String _platform() {
+    try {
+      // ignore: do_not_use_environment
+      const isAndroid = bool.fromEnvironment('dart.library.html');
+      return isAndroid ? 'web' : 'android';
+    } catch (_) {
+      return 'android';
+    }
+  }
 }

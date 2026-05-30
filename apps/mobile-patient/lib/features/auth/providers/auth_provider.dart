@@ -1,5 +1,9 @@
+import 'dart:async' show unawaited;
+
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_client.dart';
+import '../../../core/notifications/notification_service.dart';
 import '../../../core/storage/secure_storage.dart';
 import '../data/auth_repository.dart';
 
@@ -69,6 +73,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
         status: AuthStatus.authenticated,
       );
+      try {
+        FirebaseAnalytics.instance.logEvent(
+            name: 'login_success', parameters: {'method': 'email'});
+      } catch (_) {} // no-op if Firebase not initialized (tests / CI)
+      unawaited(_registerFcmToken().catchError((_) {})); // fire-and-forget
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -102,6 +111,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         status: AuthStatus.authenticated,
         pendingPhone: null,
       );
+      unawaited(_registerFcmToken().catchError((_) {})); // fire-and-forget
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -113,8 +123,26 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // ── Logout ──────────────────────────────────────────────────────────────────
 
   Future<void> logout() async {
+    final tokenId = await _storage.getPushTokenId();
+    if (tokenId != null) await _repo.deregisterPushToken(tokenId);
     await _repo.logout();
     state = const AuthState(status: AuthStatus.unauthenticated);
+  }
+
+  /// Called by TokenRefreshInterceptor when refresh fails — skips push token deregistration.
+  Future<void> forceLogout() async {
+    await _storage.clearAll();
+    state = const AuthState(status: AuthStatus.unauthenticated);
+  }
+
+  // ── FCM ─────────────────────────────────────────────────────────────────────
+
+  // fire-and-forget: best-effort push token registration
+  Future<void> _registerFcmToken() async {
+    final fcmToken = await NotificationService.instance.getToken();
+    if (fcmToken == null) return;
+    final tokenId = await _repo.registerPushToken(fcmToken);
+    if (tokenId != null) await _storage.savePushTokenId(tokenId);
   }
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -138,4 +166,14 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
     ref.watch(authRepositoryProvider),
     ref.watch(secureStorageProvider),
   );
+});
+
+/// Wires [ApiClient.onUnauthenticated] → [AuthNotifier.forceLogout].
+///
+/// Must be read (or watched) once at app startup — [AppWidget] does this.
+/// Placed here (not in api_client.dart) to avoid a circular import.
+final authClientWiringProvider = Provider<void>((ref) {
+  ref.read(apiClientProvider).onUnauthenticated = () {
+    ref.read(authProvider.notifier).forceLogout();
+  };
 });

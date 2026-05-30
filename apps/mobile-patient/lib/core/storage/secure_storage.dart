@@ -11,6 +11,7 @@ class SecureStorage {
   static const _keyToken = 'auth_token';
   static const _keyPhone = 'last_phone';
   static const _keyEmail = 'last_email';
+  static const _keyPushTokenId = 'push_token_id';
 
   Future<void> saveToken(String token) => _storage.write(key: _keyToken, value: token);
   Future<String?> getToken() => _storage.read(key: _keyToken);
@@ -20,5 +21,11 @@ class SecureStorage {
   Future<String?> getPhone() => _storage.read(key: _keyPhone);
   Future<void> saveEmail(String email) => _storage.write(key: _keyEmail, value: email);
   Future<String?> getEmail() => _storage.read(key: _keyEmail);
+
+  Future<void> savePushTokenId(String id) =>
+      _storage.write(key: _keyPushTokenId, value: id);
+  Future<String?> getPushTokenId() => _storage.read(key: _keyPushTokenId);
+  Future<void> deletePushTokenId() => _storage.delete(key: _keyPushTokenId);
+
   Future<void> clearAll() => _storage.deleteAll();
 }

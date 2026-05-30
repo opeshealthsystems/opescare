@@ -89,13 +89,51 @@ class _SettingsBody extends ConsumerWidget {
           _NavRow(
             icon: LucideIcons.download,
             label: 'Request data export',
-            onTap: () {},
+            onTap: () async {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text('Request data export?'),
+                  content: const Text(
+                      'We will prepare a copy of all your health data. '
+                      'You will be notified when it is ready to download.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Request'),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmed == true && context.mounted) {
+                try {
+                  await ref.read(settingsRepositoryProvider).requestDataExport();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text(
+                          "Export requested. You'll be notified when it's ready."),
+                    ));
+                  }
+                } catch (_) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Failed to request export. Please try again.'),
+                      backgroundColor: AppColors.danger,
+                    ));
+                  }
+                }
+              }
+            },
           ),
           const Divider(height: 1),
           _NavRow(
             icon: LucideIcons.fileEdit,
             label: 'File a correction request',
-            onTap: () {},
+            onTap: () => _showCorrectionSheet(context, ref),
           ),
         ]),
         const SizedBox(height: 20),
@@ -224,20 +262,85 @@ class _NavRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        child: Row(children: [
-          Icon(icon, size: 18, color: iconColor ?? AppColors.neutral500),
-          const SizedBox(width: 12),
-          Expanded(child: Text(label,
-              style: AppTextStyles.body.copyWith(color: labelColor))),
-          Icon(LucideIcons.chevronRight,
-              size: 16, color: labelColor ?? AppColors.neutral400),
-        ]),
+    return Semantics(
+      button: true,
+      label: label,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          child: Row(children: [
+            Icon(icon, size: 18, color: iconColor ?? AppColors.neutral500),
+            const SizedBox(width: 12),
+            Expanded(child: Text(label,
+                style: AppTextStyles.body.copyWith(color: labelColor))),
+            Icon(LucideIcons.chevronRight,
+                size: 16, color: labelColor ?? AppColors.neutral400),
+          ]),
+        ),
       ),
     );
   }
+}
+
+void _showCorrectionSheet(BuildContext context, WidgetRef ref) {
+  final controller = TextEditingController();
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (_) => Padding(
+      padding: EdgeInsets.only(
+        left: 20, right: 20, top: 20,
+        bottom: MediaQuery.viewInsetsOf(context).bottom + 20,
+      ),
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Text('File a Correction Request', style: AppTextStyles.h4),
+        const SizedBox(height: 4),
+        Text(
+          'Describe the information that needs to be corrected.',
+          style: AppTextStyles.bodySm,
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          controller: controller,
+          maxLines: 4,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'Describe what needs to be corrected...',
+          ),
+        ),
+        const SizedBox(height: 16),
+        ElevatedButton(
+          onPressed: () async {
+            final desc = controller.text.trim();
+            if (desc.isEmpty) return;
+            Navigator.pop(context);
+            try {
+              await ref
+                  .read(settingsRepositoryProvider)
+                  .submitCorrectionRequest(desc);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Correction request submitted.'),
+                ));
+              }
+            } catch (_) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Failed to submit. Please try again.'),
+                  backgroundColor: AppColors.danger,
+                ));
+              }
+            }
+          },
+          child: const Text('Submit Request'),
+        ),
+        const SizedBox(height: 8),
+      ]),
+    ),
+  );
 }
