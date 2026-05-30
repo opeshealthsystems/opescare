@@ -12,7 +12,7 @@ class MainShell extends StatelessWidget {
 
   static const _tabs = [
     _TabItem(icon: LucideIcons.home,     label: 'Home',      index: 0),
-    _TabItem(icon: LucideIcons.creditCard, label: 'Health ID', index: 1),
+    _TabItem(icon: LucideIcons.fingerprint, label: 'Health ID', index: 1),
     _TabItem(icon: LucideIcons.shield,   label: 'Consent',   index: 2),
     _TabItem(icon: LucideIcons.activity, label: 'Timeline',  index: 3),
     _TabItem(icon: LucideIcons.settings, label: 'Settings',  index: 4),

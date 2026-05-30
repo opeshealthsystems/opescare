@@ -42,7 +42,7 @@ class _SettingsBody extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        _SectionTitle(icon: LucideIcons.bell, title: 'Notifications'),
+        _SectionTitle(icon: LucideIcons.bellRing, title: 'Notifications'),
         _Card(children: [
           _SwitchRow(
             icon: LucideIcons.bell,

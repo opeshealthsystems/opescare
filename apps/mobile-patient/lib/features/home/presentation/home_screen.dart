@@ -219,7 +219,7 @@ class _HealthIdBanner extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(LucideIcons.creditCard, size: 36, color: Colors.white54),
+            const Icon(LucideIcons.fingerprint, size: 36, color: Colors.white54),
           ]),
         ),
       ),
