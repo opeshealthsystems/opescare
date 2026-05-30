@@ -133,7 +133,7 @@ class _SettingsBody extends ConsumerWidget {
           _NavRow(
             icon: LucideIcons.fileEdit,
             label: 'File a correction request',
-            onTap: () {},
+            onTap: () => _showCorrectionSheet(context, ref),
           ),
         ]),
         const SizedBox(height: 20),
@@ -278,4 +278,65 @@ class _NavRow extends StatelessWidget {
       ),
     );
   }
+}
+
+void _showCorrectionSheet(BuildContext context, WidgetRef ref) {
+  final controller = TextEditingController();
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (_) => Padding(
+      padding: EdgeInsets.only(
+        left: 20, right: 20, top: 20,
+        bottom: MediaQuery.viewInsetsOf(context).bottom + 20,
+      ),
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Text('File a Correction Request', style: AppTextStyles.h4),
+        const SizedBox(height: 4),
+        Text(
+          'Describe the information that needs to be corrected.',
+          style: AppTextStyles.bodySm,
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          controller: controller,
+          maxLines: 4,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'Describe what needs to be corrected...',
+          ),
+        ),
+        const SizedBox(height: 16),
+        ElevatedButton(
+          onPressed: () async {
+            final desc = controller.text.trim();
+            if (desc.isEmpty) return;
+            Navigator.pop(context);
+            try {
+              await ref
+                  .read(settingsRepositoryProvider)
+                  .submitCorrectionRequest(desc);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Correction request submitted.'),
+                ));
+              }
+            } catch (_) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Failed to submit. Please try again.'),
+                  backgroundColor: AppColors.danger,
+                ));
+              }
+            }
+          },
+          child: const Text('Submit Request'),
+        ),
+        const SizedBox(height: 8),
+      ]),
+    ),
+  );
 }
