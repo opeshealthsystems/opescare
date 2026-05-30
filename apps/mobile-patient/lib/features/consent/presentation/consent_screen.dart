@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -217,6 +218,8 @@ class _ConsentCard extends ConsumerWidget {
                             await ref
                                 .read(consentActionProvider.notifier)
                                 .deny(request.id, ref);
+                            FirebaseAnalytics.instance
+                                .logEvent(name: 'consent_denied');
                           }
                         },
                   icon: const Icon(LucideIcons.x, size: 16),
@@ -237,6 +240,8 @@ class _ConsentCard extends ConsumerWidget {
                           await ref
                               .read(consentActionProvider.notifier)
                               .approve(request.id, ref);
+                          FirebaseAnalytics.instance
+                              .logEvent(name: 'consent_approved');
                         },
                   icon: const Icon(LucideIcons.check, size: 16),
                   label: const Text('Approve'),

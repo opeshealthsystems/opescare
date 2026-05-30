@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -23,7 +24,10 @@ class LabDetailScreen extends ConsumerWidget {
           message: e.toString(),
           onRetry: () => ref.invalidate(labDetailProvider(id)),
         ),
-        data: (lab) => ListView(
+        data: (lab) {
+          FirebaseAnalytics.instance.logEvent(name: 'lab_result_viewed',
+              parameters: {'lab_id': id});
+          return ListView(
           padding: const EdgeInsets.all(16),
           children: [
             if (lab.isCritical == true)
@@ -116,7 +120,8 @@ class LabDetailScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 32),
           ],
-        ),
+        );
+        },
       ),
     );
   }

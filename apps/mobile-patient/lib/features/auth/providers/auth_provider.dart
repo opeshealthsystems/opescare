@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_client.dart';
 import '../../../core/notifications/notification_service.dart';
@@ -70,6 +71,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
         status: AuthStatus.authenticated,
       );
+      FirebaseAnalytics.instance.logEvent(name: 'login_success',
+          parameters: {'method': 'email'});
       _registerFcmToken(); // fire-and-forget
     } catch (e) {
       state = state.copyWith(
