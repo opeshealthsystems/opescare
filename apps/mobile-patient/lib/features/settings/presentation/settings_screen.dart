@@ -78,6 +78,28 @@ class _SettingsBody extends ConsumerWidget {
         ]),
         const SizedBox(height: 20),
 
+        _SectionTitle(icon: LucideIcons.heartPulse, title: 'Your Health'),
+        _Card(children: [
+          _NavRow(
+            icon: LucideIcons.userCircle,
+            label: 'My Profile',
+            onTap: () => context.push(Routes.profile),
+          ),
+          const Divider(height: 1),
+          _NavRow(
+            icon: LucideIcons.clipboardList,
+            label: 'Care Plans',
+            onTap: () => context.push(Routes.carePlans),
+          ),
+          const Divider(height: 1),
+          _NavRow(
+            icon: LucideIcons.clipboardCheck,
+            label: 'Health Surveys',
+            onTap: () => context.push(Routes.surveys),
+          ),
+        ]),
+        const SizedBox(height: 20),
+
         _SectionTitle(icon: LucideIcons.lock, title: 'Privacy & Data'),
         _Card(children: [
           _NavRow(
@@ -134,6 +156,12 @@ class _SettingsBody extends ConsumerWidget {
             icon: LucideIcons.fileEdit,
             label: 'File a correction request',
             onTap: () => _showCorrectionSheet(context, ref),
+          ),
+          const Divider(height: 1),
+          _NavRow(
+            icon: LucideIcons.fileDown,
+            label: 'Export Medical Records',
+            onTap: () => context.push(Routes.medExport),
           ),
         ]),
         const SizedBox(height: 20),

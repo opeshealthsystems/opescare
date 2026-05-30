@@ -18,6 +18,12 @@ import '../../features/appointments/presentation/book_appointment_screen.dart';
 import '../../features/access_logs/presentation/access_logs_screen.dart';
 import '../../features/documents/presentation/documents_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
+import '../../features/profile/presentation/profile_screen.dart';
+import '../../features/care_plans/presentation/care_plans_screen.dart';
+import '../../features/care_plans/presentation/care_plan_detail_screen.dart';
+import '../../features/surveys/presentation/surveys_screen.dart';
+import '../../features/surveys/presentation/survey_wizard_screen.dart';
+import '../../features/medical_export/presentation/medical_export_screen.dart';
 import '../../features/shell/presentation/main_shell.dart';
 
 abstract final class Routes {
@@ -34,6 +40,10 @@ abstract final class Routes {
   static const accessLogs      = '/access-logs';
   static const documents       = '/documents';
   static const settings        = '/settings';
+  static const profile         = '/profile';
+  static const carePlans       = '/care-plans';
+  static const surveys         = '/surveys';
+  static const medExport       = '/export-records';
 }
 
 class _RouterNotifier extends ChangeNotifier {
@@ -129,6 +139,44 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.documents,
         builder: (_, __) => const DocumentsScreen(),
+      ),
+
+      // Profile
+      GoRoute(
+        path: Routes.profile,
+        builder: (_, __) => const ProfileScreen(),
+      ),
+
+      // Care Plans (with nested detail)
+      GoRoute(
+        path: Routes.carePlans,
+        builder: (_, __) => const CarePlansScreen(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            builder: (_, s) =>
+                CarePlanDetailScreen(id: s.pathParameters['id']!),
+          ),
+        ],
+      ),
+
+      // Surveys (with nested wizard)
+      GoRoute(
+        path: Routes.surveys,
+        builder: (_, __) => const SurveysScreen(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            builder: (_, s) =>
+                SurveyWizardScreen(id: s.pathParameters['id']!),
+          ),
+        ],
+      ),
+
+      // Medical Export
+      GoRoute(
+        path: Routes.medExport,
+        builder: (_, __) => const MedicalExportScreen(),
       ),
 
       // Shell — 5-tab bottom navigation
