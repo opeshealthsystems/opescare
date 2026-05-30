@@ -19,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\DemoDataScope::class,
             \App\Http\Middleware\AddSecurityHeaders::class,
         ]);
+        $middleware->api(prepend: [
+            \Illuminate\Http\Middleware\HandleCors::class,
+        ]);
         $middleware->api(append: [
             \App\Http\Middleware\DemoSessionMiddleware::class,
             \App\Http\Middleware\DemoDataScope::class,
