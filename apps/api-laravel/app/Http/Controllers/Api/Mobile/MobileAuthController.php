@@ -104,20 +104,20 @@ class MobileAuthController extends Controller
         // Mark OTP as used
         $otpRecord->update(['used_at' => Carbon::now()]);
 
-        // Issue a 24-hour access token
+        // Issue a 30-day access token
         $rawToken = 'pat_' . Str::random(40);
         PatientAccessToken::create([
             'patient_id'   => $patient->id,
             'token_hash'   => Hash::make($rawToken),
             'token_prefix' => substr($rawToken, 0, 12),
-            'expires_at'   => Carbon::now()->addHours(24),
+            'expires_at'   => Carbon::now()->addDays(30),
         ]);
 
         return response()->json([
             'status'       => 'authenticated',
             'access_token' => $rawToken,
             'token_type'   => 'Bearer',
-            'expires_in'   => 86400,
+            'expires_in'   => 2592000,
             'patient_id'   => $patient->id,
         ], 200);
     }
@@ -154,22 +154,69 @@ class MobileAuthController extends Controller
             ], 404);
         }
 
-        // Step 3: Issue a 24-hour mobile access token
+        // Step 3: Issue a 30-day mobile access token
         $rawToken = 'pat_' . Str::random(40);
 
         PatientAccessToken::create([
             'patient_id'   => $patient->id,
             'token_hash'   => Hash::make($rawToken),
             'token_prefix' => substr($rawToken, 0, 12),
-            'expires_at'   => Carbon::now()->addHours(24),
+            'expires_at'   => Carbon::now()->addDays(30),
         ]);
 
         return response()->json([
             'status'       => 'authenticated',
             'access_token' => $rawToken,
             'token_type'   => 'Bearer',
-            'expires_in'   => 86400,
+            'expires_in'   => 2592000,
             'patient_id'   => $patient->id,
+        ], 200);
+    }
+
+    /**
+     * Refresh an existing token, issuing a new 30-day token.
+     * Accepts both valid and recently-expired tokens (up to 7 days grace).
+     *
+     * POST /mobile/auth/refresh
+     * Body: { token } or Authorization: Bearer <token>
+     */
+    public function refresh(Request $request): JsonResponse
+    {
+        $bearer = $request->bearerToken() ?? $request->input('token');
+
+        if (!$bearer) {
+            return response()->json(['message' => 'No token provided.'], 401);
+        }
+
+        $prefix = substr($bearer, 0, 12);
+
+        // Allow tokens expired within the last 7 days (grace period for refresh)
+        $token = PatientAccessToken::where('token_prefix', $prefix)
+            ->where('expires_at', '>', Carbon::now()->subDays(7))
+            ->first();
+
+        if (!$token || !Hash::check($bearer, $token->token_hash)) {
+            return response()->json(['message' => 'Token invalid or too old to refresh.'], 401);
+        }
+
+        // Revoke old token
+        $token->delete();
+
+        // Issue a fresh 30-day token
+        $rawToken = 'pat_' . Str::random(40);
+        PatientAccessToken::create([
+            'patient_id'   => $token->patient_id,
+            'token_hash'   => Hash::make($rawToken),
+            'token_prefix' => substr($rawToken, 0, 12),
+            'expires_at'   => Carbon::now()->addDays(30),
+        ]);
+
+        return response()->json([
+            'status'       => 'refreshed',
+            'access_token' => $rawToken,
+            'token_type'   => 'Bearer',
+            'expires_in'   => 2592000,
+            'patient_id'   => $token->patient_id,
         ], 200);
     }
 }
