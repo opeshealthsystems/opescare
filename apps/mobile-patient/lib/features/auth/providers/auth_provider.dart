@@ -1,3 +1,5 @@
+import 'dart:async' show unawaited;
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_client.dart';
@@ -71,9 +73,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
         status: AuthStatus.authenticated,
       );
-      FirebaseAnalytics.instance.logEvent(name: 'login_success',
-          parameters: {'method': 'email'});
-      _registerFcmToken(); // fire-and-forget
+      try {
+        FirebaseAnalytics.instance.logEvent(
+            name: 'login_success', parameters: {'method': 'email'});
+      } catch (_) {} // no-op if Firebase not initialized (tests / CI)
+      unawaited(_registerFcmToken().catchError((_) {})); // fire-and-forget
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -107,7 +111,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         status: AuthStatus.authenticated,
         pendingPhone: null,
       );
-      _registerFcmToken(); // fire-and-forget
+      unawaited(_registerFcmToken().catchError((_) {})); // fire-and-forget
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
