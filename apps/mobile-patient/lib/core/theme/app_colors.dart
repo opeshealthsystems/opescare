@@ -50,6 +50,15 @@ abstract final class AppColors {
   static const Color surfaceMuted = Color(0xFFF9FAFB);
   static const Color divider      = Color(0xFFE5E7EB);
 
+  // Opacity variants — pre-computed to avoid runtime withOpacity() calls
+  static const Color dangerBorder    = Color(0x66EF4444); // danger   @ 40%
+  static const Color dangerSurface   = Color(0x4DEF4444); // danger   @ 30%
+  static const Color primarySurface  = Color(0x4D1565C0); // primary  @ 30%
+  static const Color onPrimarySubtle = Color(0xBFFFFFFF); // white    @ 75%
+  static const Color whiteOverlay    = Color(0x26FFFFFF); // white    @ 15%
+  static const Color warningBorder   = Color(0x4DF59E0B); // warning  @ 30%
+  static const Color warningSurface  = Color(0x26F59E0B); // warning  @ 15%
+
   // Text
   static const Color textPrimary   = Color(0xFF111827);
   static const Color textSecondary = Color(0xFF6B7280);
