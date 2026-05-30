@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/error_view.dart';
@@ -72,7 +73,7 @@ class _PlanCard extends StatelessWidget {
     final progress = total > 0 ? achieved / total : 0.0;
 
     return GestureDetector(
-      onTap: () => context.push('/care-plans/${plan.id}'),
+      onTap: () => context.push('${Routes.carePlans}/${plan.id}'),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
