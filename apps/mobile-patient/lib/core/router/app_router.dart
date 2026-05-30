@@ -14,6 +14,7 @@ import '../../features/prescriptions/presentation/prescriptions_screen.dart';
 import '../../features/prescriptions/presentation/prescription_detail_screen.dart';
 import '../../features/appointments/presentation/appointments_screen.dart';
 import '../../features/appointments/presentation/appointment_detail_screen.dart';
+import '../../features/appointments/presentation/book_appointment_screen.dart';
 import '../../features/access_logs/presentation/access_logs_screen.dart';
 import '../../features/documents/presentation/documents_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
@@ -110,6 +111,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: ':id',
             builder: (_, s) =>
                 AppointmentDetailScreen(id: s.pathParameters['id']!),
+          ),
+          GoRoute(
+            path: 'book',
+            builder: (_, __) => const BookAppointmentScreen(),
           ),
         ],
       ),
