@@ -25,8 +25,7 @@ class LabDetailScreen extends ConsumerWidget {
           onRetry: () => ref.invalidate(labDetailProvider(id)),
         ),
         data: (lab) {
-          FirebaseAnalytics.instance.logEvent(name: 'lab_result_viewed',
-              parameters: {'lab_id': id});
+          try { FirebaseAnalytics.instance.logEvent(name: 'lab_result_viewed', parameters: {'lab_id': id}); } catch (_) {}
           return ListView(
           padding: const EdgeInsets.all(16),
           children: [

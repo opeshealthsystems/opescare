@@ -34,7 +34,7 @@ class HealthIdScreen extends ConsumerWidget {
           onRetry: () => ref.invalidate(healthIdCardProvider),
         ),
         data: (card) {
-          FirebaseAnalytics.instance.logEvent(name: 'view_health_id');
+          try { FirebaseAnalytics.instance.logEvent(name: 'view_health_id'); } catch (_) {}
           return _HealthIdBody(card: card);
         },
       ),

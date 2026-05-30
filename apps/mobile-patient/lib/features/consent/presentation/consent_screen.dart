@@ -218,8 +218,7 @@ class _ConsentCard extends ConsumerWidget {
                             await ref
                                 .read(consentActionProvider.notifier)
                                 .deny(request.id, ref);
-                            FirebaseAnalytics.instance
-                                .logEvent(name: 'consent_denied');
+                            try { FirebaseAnalytics.instance.logEvent(name: 'consent_denied'); } catch (_) {}
                           }
                         },
                   icon: const Icon(LucideIcons.x, size: 16),
@@ -240,8 +239,7 @@ class _ConsentCard extends ConsumerWidget {
                           await ref
                               .read(consentActionProvider.notifier)
                               .approve(request.id, ref);
-                          FirebaseAnalytics.instance
-                              .logEvent(name: 'consent_approved');
+                          try { FirebaseAnalytics.instance.logEvent(name: 'consent_approved'); } catch (_) {}
                         },
                   icon: const Icon(LucideIcons.check, size: 16),
                   label: const Text('Approve'),
