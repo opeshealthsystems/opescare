@@ -34,5 +34,8 @@ class ApiException extends Equatable implements Exception {
       );
 
   @override
+  String toString() => message;
+
+  @override
   List<Object?> get props => [type, message, statusCode, errors];
 }
