@@ -113,15 +113,10 @@ class MobileLabController extends Controller
      * Resolve patient ID from mobile auth context.
      *
      * In a full auth implementation this would read from the JWT/session.
-     * Kept flexible so a real mobile auth middleware can set request->patient_id.
+     * Resolved from the auth.mobile middleware attribute.
      */
     private function resolvePatientId(Request $request): string
     {
-        // Set by mobile auth middleware (to be wired in production auth)
-        if ($request->has('_patient_id')) {
-            return $request->input('_patient_id');
-        }
-        // Fallback: use first patient (demo mode)
-        return \App\Models\Patient::value('id') ?? 'demo';
+        return $request->attributes->get('patient_id') ?? '';
     }
 }

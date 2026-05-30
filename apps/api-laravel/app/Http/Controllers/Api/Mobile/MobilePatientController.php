@@ -243,9 +243,6 @@ class MobilePatientController extends Controller
 
     private function resolvePatientId(Request $request): ?string
     {
-        if ($request->has('_patient_id')) {
-            return $request->input('_patient_id');
-        }
         return $request->attributes->get('patient_id');
     }
 }
