@@ -127,7 +127,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                         c.clear();
                       }
                       _isSubmitting = false;
-                      ref.read(authProvider.notifier).login(phone);
+                      // Resend requires phone+PIN — prompt user back to login
+                      // For now we just navigate back to allow re-entry
+                      Navigator.of(context).pop();
                     }
                   },
                 ),

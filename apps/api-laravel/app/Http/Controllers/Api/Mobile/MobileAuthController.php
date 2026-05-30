@@ -10,6 +10,7 @@ use App\Modules\Notifications\Services\SmsNotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -105,6 +106,57 @@ class MobileAuthController extends Controller
 
         // Issue a 24-hour access token
         $rawToken = 'pat_' . Str::random(40);
+        PatientAccessToken::create([
+            'patient_id'   => $patient->id,
+            'token_hash'   => Hash::make($rawToken),
+            'token_prefix' => substr($rawToken, 0, 12),
+            'expires_at'   => Carbon::now()->addHours(24),
+        ]);
+
+        return response()->json([
+            'status'       => 'authenticated',
+            'access_token' => $rawToken,
+            'token_type'   => 'Bearer',
+            'expires_in'   => 86400,
+            'patient_id'   => $patient->id,
+        ], 200);
+    }
+
+    /**
+     * Email + password login — uses the same credentials as the patient portal.
+     * Finds the patient record by email match, verifies the portal password,
+     * then issues a 24-hour mobile access token directly (no OTP step).
+     *
+     * POST /mobile/auth/login-email
+     * Body: { email, password }
+     */
+    public function loginWithCredentials(Request $request): JsonResponse
+    {
+        $request->validate([
+            'email'    => 'required|email|max:180',
+            'password' => 'required|string|min:4',
+        ]);
+
+        // Step 1: Verify credentials against the users table (same as web portal)
+        if (! Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            return response()->json(['message' => 'Invalid email or password.'], 401);
+        }
+
+        $user = Auth::user();
+        Auth::logout(); // We only used Auth to verify — mobile uses its own token system
+
+        // Step 2: Find the matching patient record by email
+        $patient = Patient::where('email', $request->email)->first();
+
+        if (! $patient) {
+            return response()->json([
+                'message' => 'No patient record found for this account. Please contact your healthcare provider.',
+            ], 404);
+        }
+
+        // Step 3: Issue a 24-hour mobile access token
+        $rawToken = 'pat_' . Str::random(40);
+
         PatientAccessToken::create([
             'patient_id'   => $patient->id,
             'token_hash'   => Hash::make($rawToken),

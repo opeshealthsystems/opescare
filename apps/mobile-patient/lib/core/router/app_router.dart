@@ -52,9 +52,10 @@ class _RouterNotifier extends ChangeNotifier {
     if (status == AuthStatus.unknown) return null;
     if (!isAuth && !isLoggingIn) return Routes.login;
     if (isAuth && isLoggingIn) return Routes.home;
+    // Guard: OTP screen requires a pending phone from the phone+PIN flow
     if (state.matchedLocation == Routes.otp &&
         status == AuthStatus.unauthenticated &&
-        auth.pendingRequestId == null) {
+        auth.pendingPhone == null) {
       return Routes.login;
     }
     return null;

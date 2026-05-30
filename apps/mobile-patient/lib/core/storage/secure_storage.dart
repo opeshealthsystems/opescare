@@ -10,12 +10,15 @@ class SecureStorage {
   final FlutterSecureStorage _storage;
   static const _keyToken = 'auth_token';
   static const _keyPhone = 'last_phone';
+  static const _keyEmail = 'last_email';
 
   Future<void> saveToken(String token) => _storage.write(key: _keyToken, value: token);
   Future<String?> getToken() => _storage.read(key: _keyToken);
   Future<void> deleteToken() => _storage.delete(key: _keyToken);
-  Future<bool> hasToken() async => (await _storage.read(key: _keyToken)) != null;
+  Future<bool> hasToken() => _storage.containsKey(key: _keyToken);
   Future<void> savePhone(String phone) => _storage.write(key: _keyPhone, value: phone);
   Future<String?> getPhone() => _storage.read(key: _keyPhone);
+  Future<void> saveEmail(String email) => _storage.write(key: _keyEmail, value: email);
+  Future<String?> getEmail() => _storage.read(key: _keyEmail);
   Future<void> clearAll() => _storage.deleteAll();
 }

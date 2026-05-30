@@ -8,26 +8,53 @@ class AuthRepository {
   final ApiClient _client;
   final SecureStorage _storage;
 
-  /// Sends OTP to phone number. Returns request_id for verification step.
-  Future<String> login({required String phone}) async {
-    final res = await _client.post(ApiEndpoints.login, body: {'phone': phone});
-    return res['request_id'].toString();
+  /// Primary login: email + password → direct 24-hour token.
+  /// Uses the same credentials as the OpesCare patient portal.
+  Future<String> loginWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    final res = await _client.post(
+      ApiEndpoints.loginEmail,
+      body: {'email': email, 'password': password},
+    );
+    final token = res['access_token'].toString();
+    await _storage.saveToken(token);
+    await _storage.saveEmail(email);
+    return token;
   }
 
-  /// Verifies OTP, saves returned Bearer token, returns it.
-  Future<String> verifyOtp({
-    required String phone,
-    required String otp,
-    required String requestId,
+  /// Legacy login step 1: phone_number + pin → OTP sent by SMS.
+  Future<void> loginWithPhone({
+    required String phoneNumber,
+    required String pin,
+    String? dateOfBirth,
   }) async {
-    final res = await _client.post(ApiEndpoints.verifyOtp, body: {
-      'phone': phone,
-      'otp': otp,
-      'request_id': requestId,
-    });
-    final token = res['token'].toString();
+    await _client.post(
+      ApiEndpoints.loginPhone,
+      body: {
+        'phone_number': phoneNumber,
+        'pin': pin,
+        if (dateOfBirth != null) 'date_of_birth': dateOfBirth,
+      },
+    );
+    await _storage.savePhone(phoneNumber);
+  }
+
+  /// Legacy login step 2: verify OTP → issues token.
+  Future<String> verifyOtp({
+    required String phoneNumber,
+    required String otp,
+  }) async {
+    final res = await _client.post(
+      ApiEndpoints.verifyOtp,
+      body: {
+        'phone_number': phoneNumber,
+        'otp': otp,
+      },
+    );
+    final token = res['access_token'].toString();
     await _storage.saveToken(token);
-    await _storage.savePhone(phone);
     return token;
   }
 

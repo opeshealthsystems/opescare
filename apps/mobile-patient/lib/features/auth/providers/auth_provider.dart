@@ -5,7 +5,7 @@ import '../data/auth_repository.dart';
 
 enum AuthStatus { unknown, authenticated, unauthenticated }
 
-// Sentinel for "field not provided" in copyWith
+// Sentinel — distinguishes "caller passed null" from "caller didn't pass field"
 const _keep = Object();
 
 class AuthState {
@@ -13,35 +13,25 @@ class AuthState {
     this.status = AuthStatus.unknown,
     this.isLoading = false,
     this.errorMessage,
-    this.pendingPhone,
-    this.pendingRequestId,
+    this.pendingPhone, // set during phone+OTP flow only
   });
 
   final AuthStatus status;
   final bool isLoading;
   final String? errorMessage;
   final String? pendingPhone;
-  final String? pendingRequestId;
 
   AuthState copyWith({
     AuthStatus? status,
     bool? isLoading,
     Object? errorMessage = _keep,
     Object? pendingPhone = _keep,
-    Object? pendingRequestId = _keep,
   }) =>
       AuthState(
-        status: status ?? this.status,
-        isLoading: isLoading ?? this.isLoading,
-        errorMessage: errorMessage == _keep
-            ? this.errorMessage
-            : errorMessage as String?,
-        pendingPhone: pendingPhone == _keep
-            ? this.pendingPhone
-            : pendingPhone as String?,
-        pendingRequestId: pendingRequestId == _keep
-            ? this.pendingRequestId
-            : pendingRequestId as String?,
+        status:       status       ?? this.status,
+        isLoading:    isLoading    ?? this.isLoading,
+        errorMessage: errorMessage == _keep ? this.errorMessage : errorMessage as String?,
+        pendingPhone: pendingPhone == _keep ? this.pendingPhone  : pendingPhone  as String?,
       );
 }
 
@@ -67,43 +57,79 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
   }
 
-  Future<void> login(String phone) async {
+  // ── Primary auth: email + password ─────────────────────────────────────────
+
+  /// Login with patient portal credentials (email + password).
+  /// Issues a token directly — no OTP step required.
+  Future<void> loginWithEmail(String email, String password) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
-      final requestId = await _repo.login(phone: phone);
+      await _repo.loginWithEmail(email: email, password: password);
       state = state.copyWith(
         isLoading: false,
-        pendingPhone: phone,
-        pendingRequestId: requestId,
+        status: AuthStatus.authenticated,
       );
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: _friendlyError(e.toString()),
+      );
+    }
+  }
+
+  // ── Legacy auth: phone + PIN + OTP ─────────────────────────────────────────
+
+  Future<void> loginWithPhone(String phoneNumber, String pin) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      await _repo.loginWithPhone(phoneNumber: phoneNumber, pin: pin);
+      state = state.copyWith(isLoading: false, pendingPhone: phoneNumber);
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: _friendlyError(e.toString()),
+      );
     }
   }
 
   Future<void> verifyOtp(String otp) async {
-    if (state.pendingPhone == null || state.pendingRequestId == null) return;
+    if (state.pendingPhone == null) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
-      await _repo.verifyOtp(
-        phone: state.pendingPhone!,
-        otp: otp,
-        requestId: state.pendingRequestId!,
-      );
+      await _repo.verifyOtp(phoneNumber: state.pendingPhone!, otp: otp);
       state = state.copyWith(
         isLoading: false,
         status: AuthStatus.authenticated,
         pendingPhone: null,
-        pendingRequestId: null,
       );
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: _friendlyError(e.toString()),
+      );
     }
   }
+
+  // ── Logout ──────────────────────────────────────────────────────────────────
 
   Future<void> logout() async {
     await _repo.logout();
     state = const AuthState(status: AuthStatus.unauthenticated);
+  }
+
+  // ── Helpers ─────────────────────────────────────────────────────────────────
+
+  String _friendlyError(String raw) {
+    if (raw.contains('401') || raw.contains('Invalid email') || raw.contains('Invalid credentials')) {
+      return 'Incorrect email or password. Please try again.';
+    }
+    if (raw.contains('404') || raw.contains('not found')) {
+      return 'No patient account found for this email. Contact your healthcare provider.';
+    }
+    if (raw.contains('network') || raw.contains('connection')) {
+      return 'No internet connection. Check your network and try again.';
+    }
+    return 'Something went wrong. Please try again.';
   }
 }
 

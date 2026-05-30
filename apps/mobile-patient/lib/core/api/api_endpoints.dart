@@ -4,7 +4,10 @@ abstract final class ApiEndpoints {
 
   static String get baseUrl => _base;
 
-  static String get login         => '$_base/mobile/auth/login';
+  // Primary login: email + password (same credentials as patient portal)
+  static String get loginEmail    => '$_base/mobile/auth/login-email';
+  // Legacy phone + PIN + OTP flow
+  static String get loginPhone    => '$_base/mobile/auth/login';
   static String get verifyOtp     => '$_base/mobile/auth/otp/verify';
   static String get me            => '$_base/mobile/me';
   static String get timeline      => '$_base/mobile/timeline';

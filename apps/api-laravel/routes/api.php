@@ -150,8 +150,11 @@ Route::prefix('mobile')->group(function () {
 
     // Public auth endpoints — rate-limited to 5 requests per minute
     Route::prefix('auth')->middleware('throttle:5,1')->group(function () {
+        // Legacy: phone + PIN → OTP flow
         Route::post('/login', [\App\Http\Controllers\Api\Mobile\MobileAuthController::class, 'login']);
         Route::post('/otp/verify', [\App\Http\Controllers\Api\Mobile\MobileAuthController::class, 'verifyOtp']);
+        // Primary: email + password → direct token (same credentials as patient portal)
+        Route::post('/login-email', [\App\Http\Controllers\Api\Mobile\MobileAuthController::class, 'loginWithCredentials']);
     });
 
     // Protected mobile endpoints — require valid patient Bearer token
