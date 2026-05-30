@@ -38,7 +38,7 @@ class LabDetailScreen extends ConsumerWidget {
                   color: AppColors.dangerLight,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                      color: AppColors.danger.withOpacity(0.3)),
+                      color: AppColors.dangerSurface),
                 ),
                 child: Row(children: [
                   const Icon(LucideIcons.alertTriangle,
