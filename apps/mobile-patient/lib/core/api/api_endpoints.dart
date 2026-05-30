@@ -1,6 +1,6 @@
 abstract final class ApiEndpoints {
   static const String _base =
-      String.fromEnvironment('API_BASE_URL', defaultValue: 'http://10.0.2.2/api');
+      String.fromEnvironment('API_BASE_URL', defaultValue: 'http://opescare.test/api');
 
   static String get baseUrl => _base;
 
