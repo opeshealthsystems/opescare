@@ -28,7 +28,11 @@ void main() async {
     // Firebase not configured yet — run flutterfire configure (see Task 8)
   }
 
-  await NotificationService.instance.init();
+  try {
+    await NotificationService.instance.init();
+  } catch (_) {
+    // Notifications unavailable (Firebase not configured or unsupported platform)
+  }
 
   runApp(const ProviderScope(child: OpesCareApp()));
 }
