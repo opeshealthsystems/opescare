@@ -17,7 +17,7 @@ class MobileSurveyController extends Controller
     /** GET /api/mobile/surveys — pending surveys for the authenticated patient */
     public function index(Request $request): JsonResponse
     {
-        $patientId = $request->user()->patient?->id;
+        $patientId = $request->attributes->get('patient_id');
         $surveys   = PatientSurvey::where('patient_id', $patientId)
             ->where('status', 'sent')
             ->with('responses')

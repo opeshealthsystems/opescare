@@ -16,7 +16,7 @@ class MobileCarePlanController extends Controller
     /** GET /api/mobile/care-plans — patient's own active plans */
     public function index(Request $request): JsonResponse
     {
-        $patientId = $request->user()->patient?->id;
+        $patientId = $request->attributes->get('patient_id');
 
         if (! $patientId) {
             return response()->json(['message' => 'No patient record linked to account.'], 404);

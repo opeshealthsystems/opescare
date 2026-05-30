@@ -19,7 +19,7 @@ class MedicalRecordExportController extends Controller
      */
     public function exportPdf(Request $request): JsonResponse
     {
-        $patientId = $request->user()->patient?->id;
+        $patientId = $request->attributes->get('patient_id');
 
         if (! $patientId) {
             return response()->json(['message' => 'No patient record linked to account.'], 404);
@@ -48,7 +48,7 @@ class MedicalRecordExportController extends Controller
      */
     public function exportFhir(Request $request): JsonResponse
     {
-        $patientId = $request->user()->patient?->id;
+        $patientId = $request->attributes->get('patient_id');
 
         if (! $patientId) {
             return response()->json(['message' => 'No patient record linked to account.'], 404);

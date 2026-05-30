@@ -893,7 +893,7 @@ Route::middleware(VerifyIntegrationClient::class)->prefix('v1/security')->group(
     Route::patch('pen-tests/{id}/findings/{findingId}',         [\App\Http\Controllers\Api\V1\Security\PenTestController::class, 'updateFinding']);
 });
 
-Route::prefix('mobile')->middleware('auth:sanctum')->group(function () {
+Route::prefix('mobile')->middleware('auth.mobile')->group(function () {
     // Care plans (read-only for patient)
     Route::get('care-plans',      [\App\Http\Controllers\Api\Mobile\MobileCarePlanController::class, 'index']);
     Route::get('care-plans/{id}', [\App\Http\Controllers\Api\Mobile\MobileCarePlanController::class, 'show']);
