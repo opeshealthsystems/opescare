@@ -262,19 +262,23 @@ class _NavRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        child: Row(children: [
-          Icon(icon, size: 18, color: iconColor ?? AppColors.neutral500),
-          const SizedBox(width: 12),
-          Expanded(child: Text(label,
-              style: AppTextStyles.body.copyWith(color: labelColor))),
-          Icon(LucideIcons.chevronRight,
-              size: 16, color: labelColor ?? AppColors.neutral400),
-        ]),
+    return Semantics(
+      button: true,
+      label: label,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          child: Row(children: [
+            Icon(icon, size: 18, color: iconColor ?? AppColors.neutral500),
+            const SizedBox(width: 12),
+            Expanded(child: Text(label,
+                style: AppTextStyles.body.copyWith(color: labelColor))),
+            Icon(LucideIcons.chevronRight,
+                size: 16, color: labelColor ?? AppColors.neutral400),
+          ]),
+        ),
       ),
     );
   }

@@ -104,14 +104,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     hintText: '••••••••',
                     prefixIcon: const Icon(LucideIcons.lock,
                         color: AppColors.neutral400, size: 20),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword ? LucideIcons.eyeOff : LucideIcons.eye,
-                        color: AppColors.neutral400,
-                        size: 20,
+                    suffixIcon: Semantics(
+                      label: _obscurePassword
+                          ? 'Show password'
+                          : 'Hide password',
+                      child: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? LucideIcons.eyeOff
+                              : LucideIcons.eye,
+                          color: AppColors.neutral400,
+                          size: 20,
+                        ),
+                        onPressed: () =>
+                            setState(() => _obscurePassword = !_obscurePassword),
                       ),
-                      onPressed: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
                     ),
                   ),
                   validator: (v) {
