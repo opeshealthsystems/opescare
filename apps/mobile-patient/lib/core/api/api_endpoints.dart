@@ -39,4 +39,17 @@ abstract final class ApiEndpoints {
   static String get pushTokens       => '$_base/mobile/push-tokens';
   static String pushToken(String id) => '$_base/mobile/push-tokens/$id';
   static String get offlinePolicies  => '$_base/mobile/offline/policies';
+
+  // Care Plans (read-only for patient)
+  static String get carePlans           => '$_base/mobile/care-plans';
+  static String carePlan(String id)     => '$_base/mobile/care-plans/$id';
+
+  // Patient Surveys
+  static String get surveys                   => '$_base/mobile/surveys';
+  static String survey(String id)             => '$_base/mobile/surveys/$id';
+  static String submitSurvey(String id)       => '$_base/mobile/surveys/$id/submit';
+
+  // Medical Record Export
+  static String get exportRecordsPdf   => '$_base/mobile/medical-records/export/pdf';
+  static String get exportRecordsFhir  => '$_base/mobile/medical-records/export/fhir';
 }
