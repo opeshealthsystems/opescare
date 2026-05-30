@@ -281,10 +281,10 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: '$label: $value',
-      child: Expanded(
+    return Expanded(
+      child: Semantics(
+        button: true,
+        label: '$label: $value',
         child: GestureDetector(
           onTap: onTap,
           child: Container(
