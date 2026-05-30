@@ -177,7 +177,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(LucideIcons.shield,
+                    const Icon(LucideIcons.lock,
                         color: AppColors.neutral400, size: 14),
                     const SizedBox(width: 6),
                     Text('Secured with end-to-end encryption.',

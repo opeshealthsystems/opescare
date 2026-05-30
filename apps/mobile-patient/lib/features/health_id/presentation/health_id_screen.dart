@@ -63,7 +63,7 @@ class _HealthIdBody extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary500.withOpacity(0.3),
+                color: AppColors.primarySurface,
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),

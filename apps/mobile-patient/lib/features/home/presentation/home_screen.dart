@@ -190,7 +190,7 @@ class _HealthIdBanner extends StatelessWidget {
                   Text(
                     'HEALTH ID',
                     style: AppTextStyles.label.copyWith(
-                      color: AppColors.textOnPrimary.withOpacity(0.75),
+                      color: AppColors.onPrimarySubtle,
                       fontSize: 10,
                     ),
                   ),
@@ -202,7 +202,7 @@ class _HealthIdBanner extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
+                        color: AppColors.whiteOverlay,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(mainAxisSize: MainAxisSize.min, children: [
@@ -219,7 +219,7 @@ class _HealthIdBanner extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(LucideIcons.creditCard, size: 36, color: Colors.white54),
+            const Icon(LucideIcons.fingerprint, size: 36, color: Colors.white54),
           ]),
         ),
       ),
@@ -335,13 +335,13 @@ class _ConsentAlert extends StatelessWidget {
             color: AppColors.warningLight,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-                color: AppColors.warning.withOpacity(0.3)),
+                color: AppColors.warningBorder),
           ),
           child: Row(children: [
             Container(
               width: 36, height: 36,
               decoration: BoxDecoration(
-                color: AppColors.warning.withOpacity(0.15),
+                color: AppColors.warningSurface,
                 shape: BoxShape.circle,
               ),
               child: const Icon(LucideIcons.bell,

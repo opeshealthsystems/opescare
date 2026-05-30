@@ -84,7 +84,7 @@ class _LabCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isCritical
-                ? AppColors.danger.withOpacity(0.4)
+                ? AppColors.dangerBorder
                 : AppColors.divider,
           ),
         ),

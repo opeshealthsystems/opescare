@@ -143,7 +143,7 @@ class _TimelineItem extends StatelessWidget {
             Container(
               width: 36, height: 36,
               decoration: BoxDecoration(
-                color: _typeColor(event.type).withOpacity(0.1),
+                color: _typeColor(event.type).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(_typeIcon(event.type),

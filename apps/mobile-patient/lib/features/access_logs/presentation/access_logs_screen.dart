@@ -90,7 +90,7 @@ class _LogCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: log.isEmergency
-              ? AppColors.danger.withOpacity(0.4)
+              ? AppColors.dangerBorder
               : AppColors.divider,
         ),
       ),

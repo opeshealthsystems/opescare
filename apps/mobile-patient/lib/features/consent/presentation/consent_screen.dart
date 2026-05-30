@@ -132,7 +132,7 @@ class _ConsentCard extends ConsumerWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isPending
-              ? AppColors.warning.withOpacity(0.4)
+              ? AppColors.warningBorder
               : AppColors.divider,
         ),
       ),
