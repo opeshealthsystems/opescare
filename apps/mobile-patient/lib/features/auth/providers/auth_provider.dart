@@ -163,3 +163,13 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
     ref.watch(secureStorageProvider),
   );
 });
+
+/// Wires [ApiClient.onUnauthenticated] → [AuthNotifier.forceLogout].
+///
+/// Must be read (or watched) once at app startup — [AppWidget] does this.
+/// Placed here (not in api_client.dart) to avoid a circular import.
+final authClientWiringProvider = Provider<void>((ref) {
+  ref.read(apiClientProvider).onUnauthenticated = () {
+    ref.read(authProvider.notifier).forceLogout();
+  };
+});

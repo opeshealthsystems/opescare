@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/notifications/notification_service.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'features/auth/providers/auth_provider.dart';
 
 class OpesCareApp extends ConsumerStatefulWidget {
   const OpesCareApp({super.key});
@@ -15,6 +16,9 @@ class _OpesCareAppState extends ConsumerState<OpesCareApp> {
   @override
   void initState() {
     super.initState();
+    // Wire ApiClient.onUnauthenticated → AuthNotifier.forceLogout.
+    // Must be called once before any authenticated API requests.
+    ref.read(authClientWiringProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final router = ref.read(appRouterProvider);
       // Handle tap from terminated state
