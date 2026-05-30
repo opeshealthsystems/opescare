@@ -16,4 +16,11 @@ class SettingsRepository {
         ApiEndpoints.settings, body: settings.toJson());
     return AppSettings.fromJson(res);
   }
+
+  Future<void> requestDataExport() =>
+      _client.post(ApiEndpoints.dataExportRequests);
+
+  Future<void> submitCorrectionRequest(String description) =>
+      _client.post(ApiEndpoints.correctionRequests,
+          body: {'description': description});
 }

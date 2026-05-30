@@ -89,7 +89,45 @@ class _SettingsBody extends ConsumerWidget {
           _NavRow(
             icon: LucideIcons.download,
             label: 'Request data export',
-            onTap: () {},
+            onTap: () async {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text('Request data export?'),
+                  content: const Text(
+                      'We will prepare a copy of all your health data. '
+                      'You will be notified when it is ready to download.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Request'),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmed == true && context.mounted) {
+                try {
+                  await ref.read(settingsRepositoryProvider).requestDataExport();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text(
+                          "Export requested. You'll be notified when it's ready."),
+                    ));
+                  }
+                } catch (_) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Failed to request export. Please try again.'),
+                      backgroundColor: AppColors.danger,
+                    ));
+                  }
+                }
+              }
+            },
           ),
           const Divider(height: 1),
           _NavRow(
