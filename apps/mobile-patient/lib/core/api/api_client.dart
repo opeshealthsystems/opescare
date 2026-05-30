@@ -64,7 +64,10 @@ class ApiClient {
   Future<Map<String, dynamic>> patch(String url, {Map<String, dynamic>? body}) async {
     try {
       final res = await _dio.patch(url, data: body);
-      return res.data as Map<String, dynamic>;
+      final data = res.data;
+      if (data is Map<String, dynamic>) return data;
+      if (data is List) return {'data': data};
+      return {};
     } on DioException catch (e) { _rethrow(e); }
   }
 

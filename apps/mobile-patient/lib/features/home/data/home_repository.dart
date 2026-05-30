@@ -7,18 +7,20 @@ class HomeRepository {
   final ApiClient _client;
 
   Future<DashboardSummary> fetchSummary() async {
-    // Parallel fetch for speed
+    final empty = <String, dynamic>{};
+
+    // Each call has its own fallback so one failure never crashes the whole screen
     final results = await Future.wait([
-      _client.get(ApiEndpoints.me),
+      _client.get(ApiEndpoints.me).catchError((_) => empty),
       _client.get(ApiEndpoints.consentRequests,
-          params: {'status': 'pending', 'per_page': '1'}),
+          params: {'status': 'pending', 'per_page': '1'}).catchError((_) => empty),
       _client.get(ApiEndpoints.labs,
-          params: {'status': 'released', 'per_page': '1'}),
+          params: {'status': 'released', 'per_page': '1'}).catchError((_) => empty),
       _client.get(ApiEndpoints.prescriptions,
-          params: {'status': 'active', 'per_page': '1'}),
+          params: {'status': 'active', 'per_page': '1'}).catchError((_) => empty),
       _client.get(ApiEndpoints.appointments,
-          params: {'upcoming': '1', 'per_page': '1'}),
-      _client.get(ApiEndpoints.accessLogs, params: {'per_page': '1'}),
+          params: {'upcoming': '1', 'per_page': '1'}).catchError((_) => empty),
+      _client.get(ApiEndpoints.accessLogs, params: {'per_page': '1'}).catchError((_) => empty),
     ]);
 
     final me = results[0];
@@ -31,7 +33,7 @@ class HomeRepository {
     final logMeta     = (results[5]['meta'] as Map<String, dynamic>?) ?? {};
 
     Map<String, dynamic>? nextAppt;
-    if (apptList.isNotEmpty) {
+    if (apptList.isNotEmpty && apptList.first is Map) {
       nextAppt = apptList.first as Map<String, dynamic>;
     }
 
