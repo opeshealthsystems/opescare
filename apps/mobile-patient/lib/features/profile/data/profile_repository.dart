@@ -10,4 +10,9 @@ class ProfileRepository {
     final res = await _client.get(ApiEndpoints.me);
     return PatientProfile.fromJson(res);
   }
+
+  Future<PatientProfile> updateProfile(Map<String, dynamic> fields) async {
+    final res = await _client.patch(ApiEndpoints.me, body: fields);
+    return PatientProfile.fromJson(res);
+  }
 }

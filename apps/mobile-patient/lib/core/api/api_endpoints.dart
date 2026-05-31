@@ -52,4 +52,14 @@ abstract final class ApiEndpoints {
   // Medical Record Export
   static String get exportRecordsPdf   => '$_base/mobile/medical-records/export/pdf';
   static String get exportRecordsFhir  => '$_base/mobile/medical-records/export/fhir';
+
+  // Referrals
+  static String get referrals          => '$_base/mobile/referrals';
+
+  // Insurance
+  static String get insurancePolicies  => '$_base/mobile/insurance/policies';
+  static String get insurance          => '$_base/mobile/insurance';
+
+  // QR temporary
+  static String get generateTemporaryQr => '$_base/mobile/qr/temporary';
 }

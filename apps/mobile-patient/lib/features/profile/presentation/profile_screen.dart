@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'edit_profile_screen.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/error_view.dart';
@@ -15,7 +16,26 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(profileProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('My Profile')),
+      appBar: AppBar(
+        title: const Text('My Profile'),
+        actions: [
+          IconButton(
+            icon: const Icon(LucideIcons.pencil),
+            tooltip: 'Edit profile',
+            onPressed: () {
+              final profile = ref.read(profileProvider).valueOrNull;
+              if (profile != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EditProfileScreen(profile: profile),
+                  ),
+                );
+              }
+            },
+          ),
+        ],
+      ),
       body: profileAsync.when(
         loading: () => ListView(padding: const EdgeInsets.all(16), children: const [
           LoadingSkeleton(height: 120, borderRadius: 12),

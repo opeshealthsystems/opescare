@@ -12,6 +12,7 @@ class HealthIdCard extends Equatable {
     this.photoUrl,
     this.allergySummary,
     this.emergencyContact,
+    this.qrPayload,
   });
 
   final String healthId;
@@ -24,6 +25,7 @@ class HealthIdCard extends Equatable {
   final String? photoUrl;
   final String? allergySummary;
   final String? emergencyContact;
+  final String? qrPayload;
 
   factory HealthIdCard.fromJson(Map<String, dynamic> json) {
     final data = json['data'] as Map<String, dynamic>? ?? json;
@@ -41,9 +43,10 @@ class HealthIdCard extends Equatable {
       photoUrl:         data['photo_url']?.toString(),
       allergySummary:   data['allergy_summary']?.toString(),
       emergencyContact: data['emergency_contact']?.toString(),
+      qrPayload:        data['qr_payload']?.toString(),
     );
   }
 
   @override
-  List<Object?> get props => [healthId, displayName, isVerified];
+  List<Object?> get props => [healthId, displayName, isVerified, qrPayload];
 }

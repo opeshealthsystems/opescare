@@ -97,6 +97,18 @@ class _SettingsBody extends ConsumerWidget {
             label: 'Health Surveys',
             onTap: () => context.push(Routes.surveys),
           ),
+          const Divider(height: 1),
+          _NavRow(
+            icon: LucideIcons.shield,
+            label: 'Insurance',
+            onTap: () => context.push(Routes.insurance),
+          ),
+          const Divider(height: 1),
+          _NavRow(
+            icon: LucideIcons.arrowRightLeft,
+            label: 'Referrals',
+            onTap: () => context.push(Routes.referrals),
+          ),
         ]),
         const SizedBox(height: 20),
 

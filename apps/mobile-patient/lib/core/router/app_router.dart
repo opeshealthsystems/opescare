@@ -24,6 +24,8 @@ import '../../features/care_plans/presentation/care_plan_detail_screen.dart';
 import '../../features/surveys/presentation/surveys_screen.dart';
 import '../../features/surveys/presentation/survey_wizard_screen.dart';
 import '../../features/medical_export/presentation/medical_export_screen.dart';
+import '../../features/referrals/presentation/referrals_screen.dart';
+import '../../features/insurance/presentation/insurance_screen.dart';
 import '../../features/shell/presentation/main_shell.dart';
 
 abstract final class Routes {
@@ -44,6 +46,8 @@ abstract final class Routes {
   static const carePlans       = '/care-plans';
   static const surveys         = '/surveys';
   static const medExport       = '/export-records';
+  static const referrals       = '/referrals';
+  static const insurance       = '/insurance';
 }
 
 class _RouterNotifier extends ChangeNotifier {
@@ -177,6 +181,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.medExport,
         builder: (_, __) => const MedicalExportScreen(),
+      ),
+
+      // Referrals
+      GoRoute(
+        path: Routes.referrals,
+        builder: (_, __) => const ReferralsScreen(),
+      ),
+
+      // Insurance
+      GoRoute(
+        path: Routes.insurance,
+        builder: (_, __) => const InsuranceScreen(),
       ),
 
       // Shell — 5-tab bottom navigation

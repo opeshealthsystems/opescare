@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/error_view.dart';
@@ -155,6 +156,33 @@ class _HealthIdBody extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
+
+        // QR Code
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.divider),
+          ),
+          child: Column(children: [
+            Text('Scan to verify identity', style: AppTextStyles.bodySm),
+            const SizedBox(height: 12),
+            if (card.qrPayload != null && card.qrPayload!.isNotEmpty)
+              QrImageView(
+                data: card.qrPayload!,
+                version: QrVersions.auto,
+                size: 180,
+                backgroundColor: Colors.white,
+              )
+            else
+              const SizedBox(
+                height: 180,
+                child: Center(child: Text('QR not available')),
+              ),
+          ]),
+        ),
+        const SizedBox(height: 16),
 
         // Clinical Summary
         _InfoSection(
