@@ -239,6 +239,48 @@ class MobilePatientController extends Controller
         ]);
     }
 
+    /**
+     * Update the authenticated patient's own profile fields.
+     * PATCH /api/mobile/me
+     */
+    public function updateMe(Request $request): JsonResponse
+    {
+        $patientId = $this->resolvePatientId($request);
+        $patient   = Patient::find($patientId);
+
+        if (!$patient) {
+            return response()->json(['message' => 'Patient not found.'], 404);
+        }
+
+        $validated = $request->validate([
+            'first_name'   => 'sometimes|string|max:100',
+            'last_name'    => 'sometimes|string|max:100',
+            'blood_group'  => 'sometimes|nullable|string|max:10|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
+            'sex'          => 'sometimes|nullable|string|in:male,female,other',
+            'address'      => 'sometimes|nullable|string|max:500',
+        ]);
+
+        $patient->update($validated);
+
+        $allergiesCount  = \App\Models\AllergyRecord::where('patient_id', $patient->id)->where('status', 'active')->count();
+        $conditionsCount = \App\Models\Diagnosis::where('patient_id', $patient->id)->whereIn('status', ['active', 'chronic'])->count();
+
+        return response()->json([
+            'health_id'       => $patient->health_id,
+            'display_name'    => trim($patient->first_name . ' ' . substr($patient->last_name, 0, 1) . '.'),
+            'first_name'      => $patient->first_name,
+            'last_name'       => $patient->last_name,
+            'phone'           => $patient->phone_number,
+            'email'           => $patient->email,
+            'dob'             => $patient->date_of_birth?->toDateString() ?? null,
+            'sex'             => $patient->sex,
+            'blood_group'     => $patient->blood_group,
+            'status'          => $patient->identity_status ?? 'active',
+            'allergies_count' => $allergiesCount,
+            'conditions_count'=> $conditionsCount,
+        ]);
+    }
+
     // -------------------------------------------------------------------------
 
     private function resolvePatientId(Request $request): ?string

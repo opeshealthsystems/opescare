@@ -164,7 +164,17 @@ Route::prefix('mobile')->group(function () {
 
         // Patient profile
         Route::get('/me', [\App\Http\Controllers\Api\Mobile\MobilePatientController::class, 'getMe']);
+        Route::patch('/me', [\App\Http\Controllers\Api\Mobile\MobilePatientController::class, 'updateMe']);
         Route::get('/timeline', [\App\Http\Controllers\Api\Mobile\MobilePatientController::class, 'getTimeline']);
+
+        // QR Code
+        Route::post('/qr/temporary', [\App\Http\Controllers\Api\Mobile\MobileQrController::class, 'generateTemporary']);
+
+        // Insurance
+        Route::get('/insurance', [\App\Http\Controllers\Api\Mobile\MobileInsuranceController::class, 'index']);
+
+        // Referrals
+        Route::get('/referrals', [\App\Http\Controllers\Api\Mobile\MobileReferralController::class, 'index']);
 
         // Patient Consent loop approvals
         Route::get('/consent-requests', [\App\Http\Controllers\Api\Mobile\MobileGovernanceController::class, 'listConsentRequests']);
