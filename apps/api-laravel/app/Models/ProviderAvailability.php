@@ -16,6 +16,7 @@ class ProviderAvailability extends Model
         'day_of_week',
         'starts_at',
         'ends_at',
+        'slot_duration_minutes',
         'is_active',
     ];
 

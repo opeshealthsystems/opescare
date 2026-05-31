@@ -15,11 +15,13 @@ class ProviderShift extends Model
     protected $fillable = [
         'provider_id', 'facility_id', 'shift_date', 'start_time', 'end_time',
         'shift_type', 'is_confirmed', 'swap_requested_with', 'notes',
+        'is_on_call', 'department',
     ];
 
     protected $casts = [
         'shift_date'   => 'date',
         'is_confirmed' => 'boolean',
+        'is_on_call'   => 'boolean',
     ];
 
     public function provider(): BelongsTo
