@@ -12,7 +12,7 @@ class RadiologyReport extends Model {
     use \App\Traits\HasFacilityScope;
 
     protected $fillable = [
-        'patient_id','facility_id','imaging_order_id','ordered_by','reported_by',
+        'patient_id','facility_id','imaging_order_id','dicom_study_id','ordered_by','reported_by',
         'modality','body_part','study_date','clinical_indication','findings','impression',
         'recommendation','status','finalized_at','amended_at','amendment_reason',
         'distributed_to','distributed_at',

@@ -82,6 +82,12 @@ return [
         'server_key'           => env('FCM_SERVER_KEY'), // Legacy — kept for backward compat
     ],
 
+    'pacs' => [
+        'wado_url' => env('PACS_WADO_URL', ''),
+        'stow_url' => env('PACS_STOW_URL', ''),
+        'auth'     => env('PACS_AUTH_TOKEN', ''),
+    ],
+
     'dhis2' => [
         'url'      => env('DHIS2_URL', 'https://dhis2.minsante.cm'),
         'username' => env('DHIS2_USERNAME'),
