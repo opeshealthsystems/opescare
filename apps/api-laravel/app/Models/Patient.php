@@ -39,6 +39,8 @@ class Patient extends Model
         'privacy_preferences',
         'cnamgs_verified_at',
         'national_id_type',
+        'push_token',
+        'push_platform',
     ];
 
     // is_demo is intentionally excluded from $fillable.
