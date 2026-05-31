@@ -11,9 +11,10 @@ class HandoffNote extends Model
     use HasUuids, HasFactory;
 
     protected $fillable = [
-        'visit_id', 'from_provider_id', 'to_provider_id', 'facility_id',
-        'summary', 'active_problems', 'pending_orders',
+        'visit_id', 'patient_id', 'from_provider_id', 'to_provider_id', 'from_provider', 'to_provider',
+        'facility_id', 'summary', 'content', 'active_problems', 'pending_orders',
         'patient_status', 'flag_for_follow_up', 'handed_off_at',
+        'priority', 'acknowledged', 'acknowledged_at',
     ];
 
     protected $casts = [
@@ -21,6 +22,8 @@ class HandoffNote extends Model
         'pending_orders'     => 'array',
         'flag_for_follow_up' => 'boolean',
         'handed_off_at'      => 'datetime',
+        'acknowledged'       => 'boolean',
+        'acknowledged_at'    => 'datetime',
     ];
 
     public function fromProvider(): BelongsTo

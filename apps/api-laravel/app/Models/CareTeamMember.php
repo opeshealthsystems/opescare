@@ -11,12 +11,13 @@ class CareTeamMember extends Model
     use HasUuids, HasFactory;
 
     protected $fillable = [
-        'patient_id', 'visit_id', 'provider_id',
-        'role', 'is_primary', 'joined_at', 'left_at',
+        'patient_id', 'visit_id', 'provider_id', 'facility_id',
+        'role', 'is_primary', 'is_active', 'joined_at', 'left_at',
     ];
 
     protected $casts = [
         'is_primary' => 'boolean',
+        'is_active'  => 'boolean',
         'joined_at'  => 'datetime',
         'left_at'    => 'datetime',
     ];

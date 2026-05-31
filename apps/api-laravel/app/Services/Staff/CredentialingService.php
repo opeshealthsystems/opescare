@@ -80,4 +80,18 @@ class CredentialingService
             'expiring_soon'      => $expiringSoon,
         ];
     }
+
+    public function getExpiredCredentials(): Collection
+    {
+        return ProviderCredential::where('status', 'active')
+            ->whereNotNull('expiry_date')
+            ->where('expiry_date', '<', Carbon::now()->toDateString())
+            ->with('provider')
+            ->get();
+    }
+
+    public function getExpiringWithin(int $days): Collection
+    {
+        return $this->getExpiringCredentials($days);
+    }
 }
