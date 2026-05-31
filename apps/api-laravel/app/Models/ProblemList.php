@@ -12,6 +12,7 @@ class ProblemList extends Model
         'patient_id', 'provider_id', 'icd_code', 'icd_version',
         'description', 'onset_date', 'resolved_date', 'status',
         'priority', 'notes',
+        'snomed_code', 'snomed_display',
     ];
 
     protected $casts = [

@@ -82,4 +82,10 @@ return [
         'server_key'           => env('FCM_SERVER_KEY'), // Legacy — kept for backward compat
     ],
 
+    'dhis2' => [
+        'url'      => env('DHIS2_URL', 'https://dhis2.minsante.cm'),
+        'username' => env('DHIS2_USERNAME'),
+        'password' => env('DHIS2_PASSWORD'),
+    ],
+
 ];

@@ -36,6 +36,8 @@ class Patient extends Model
         'verified_at',
         'pin_hash',
         'privacy_preferences',
+        'cnamgs_verified_at',
+        'national_id_type',
     ];
 
     // is_demo is intentionally excluded from $fillable.
@@ -61,6 +63,7 @@ class Patient extends Model
         'emergency_contact'  => 'array',
         'privacy_preferences' => 'array',
         'verified_at'        => 'datetime',
+        'cnamgs_verified_at' => 'datetime',
     ];
 
     /**

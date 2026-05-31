@@ -22,6 +22,8 @@ class LabResult extends Model
         'notes',
         'verified_by',
         'resulted_at',
+        'loinc_code',
+        'loinc_display',
     ];
 
     protected $casts = [
