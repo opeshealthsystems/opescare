@@ -12,3 +12,6 @@ Artisan::command('inspire', function () {
 Schedule::command('backup:run')->dailyAt('01:00');
 Schedule::command('backup:monitor')->dailyAt('09:00');
 Schedule::command('backup:clean')->daily();
+
+// OpesCare: data retention enforcement (PR-9 Task 2)
+Schedule::command('opescare:enforce-data-retention')->dailyAt('02:00');
