@@ -28,6 +28,7 @@ class Prescription extends Model
         'prescribed_at',
         'dispensed_at',
         'expires_at',
+        'pharmacy_route_id',
     ];
 
     protected $casts = [
