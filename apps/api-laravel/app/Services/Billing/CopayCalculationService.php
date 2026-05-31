@@ -91,6 +91,48 @@ class CopayCalculationService
         return (float) ($plan->copay_amount ?? 0);
     }
 
+    /**
+     * Pure-math copay calculation — no DB lookup required.
+     * Useful for quick point-of-care estimates without a policy record.
+     *
+     * @param  int    $billedAmount   Total billed in XAF
+     * @param  int    $insurancePct   Coverage percentage (0-100)
+     * @param  string $copayType      'fixed' or 'percentage'
+     * @param  int    $copayValue     Fixed XAF or percentage integer
+     * @param  int    $deductible     Annual deductible remaining in XAF
+     * @return array  patient_copay, insurance_portion, total_billed, deductible_applied
+     */
+    public function calculateRaw(
+        int    $billedAmount,
+        int    $insurancePct,
+        string $copayType,
+        int    $copayValue,
+        int    $deductible = 0,
+    ): array {
+        $deductibleApplied = min($deductible, $billedAmount);
+        $remainingBilled   = $billedAmount - $deductibleApplied;
+
+        if ($copayType === 'percentage') {
+            $patientShare     = (int) round($remainingBilled * $copayValue / 100);
+            $insurancePortion = $remainingBilled - $patientShare;
+        } elseif ($copayValue > 0) {
+            // Fixed flat copay: patient pays the flat fee, insurance covers the rest
+            $patientShare     = $copayValue;
+            $insurancePortion = $remainingBilled - $copayValue;
+        } else {
+            // No copay: apply insurance percentage to remaining (deductible-only scenario)
+            $insurancePortion = (int) round($remainingBilled * $insurancePct / 100);
+            $patientShare     = $remainingBilled - $insurancePortion;
+        }
+
+        return [
+            'total_billed'       => $billedAmount,
+            'deductible_applied' => $deductibleApplied,
+            'patient_copay'      => $deductibleApplied + $patientShare,
+            'insurance_portion'  => max(0, $insurancePortion),
+        ];
+    }
+
     private function fullPayResult(float $amount): array
     {
         return [
