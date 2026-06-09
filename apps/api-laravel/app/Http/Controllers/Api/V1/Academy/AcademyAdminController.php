@@ -46,9 +46,9 @@ class AcademyAdminController extends Controller
     public function approveTrainerSignoff(Request $request)
     {
         $request->validate([
-            'learner_id' => 'required|string|max:255',
-            'course_id'  => 'required|string|max:255',
-            'trainer_id' => 'required|string|max:255',
+            'learner_id' => 'required|uuid',
+            'course_id'  => 'required|uuid',
+            'trainer_id' => 'required|uuid',
         ]);
 
         $learnerId = $request->input('learner_id');
@@ -132,7 +132,12 @@ class AcademyAdminController extends Controller
      */
     public function revokeCertificate(Request $request, string $id)
     {
-        $reason = $request->input('reason', 'Administrative revocation');
+        $validated = $request->validate([
+            'reason'   => ['required', 'string', 'min:10', 'max:1000'],
+            'actor_id' => ['required', 'uuid'],
+        ]);
+
+        $reason = $validated['reason'];
         try {
             $cert = $this->certificateService->revokeCertificate($id, $reason);
             return response()->json($cert);

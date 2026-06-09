@@ -131,10 +131,10 @@ class RecordController extends Controller
 
     public function pullEmergencyProfile(Request $request, $healthId)
     {
-        $purpose       = $request->header('X-Purpose-Of-Use');
+        $purpose         = $request->header('X-Purpose-Of-Use');
         $emergencyReason = $request->header('X-Emergency-Reason');
 
-        if ($purpose !== 'emergency' || !$emergencyReason) {
+        if ($purpose !== 'emergency' || ! $emergencyReason) {
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => OpesCareErrorCode::PURPOSE_REQUIRED->value,
@@ -155,6 +155,26 @@ class RecordController extends Controller
             true,
             $emergencyReason
         );
+
+        // [FIX H-4] Notify patient of emergency access — required by Cameroon Law No. 2010/012.
+        // EmergencyAccessController already does this; this legacy endpoint was missing it.
+        if ($patient?->user_id) {
+            try {
+                $patient->notify(new \App\Notifications\EmergencyAccessAlertNotification(
+                    patientHealthId: $patient->health_id,
+                    patientName:     trim($patient->first_name . ' ' . $patient->last_name),
+                    accessedAt:      now()->toDateTimeString(),
+                    facilityId:      $request->attributes->get('facility_id', 'unknown'),
+                    emergencyReason: $emergencyReason,
+                    ipAddress:       $request->ip(),
+                ));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('legacy_emergency_notification_failed', [
+                    'patient_id' => $patientId,
+                    'error'      => $e->getMessage(),
+                ]);
+            }
+        }
 
         if (!$patient) {
             return response()->json([
@@ -245,7 +265,17 @@ class RecordController extends Controller
     {
         $healthId            = $request->input('health_id');
         $externalEncounterId = $request->input('external_encounter_id');
-        $facilityId          = $request->attributes->get('facility_id', '00000000-0000-0000-0000-000000000001');
+
+        // [FIX M-3] Never fall back to a hardcoded UUID — an absent facility_id means
+        // the auth middleware failed and records must not be created under a phantom facility.
+        $facilityId = $request->attributes->get('facility_id');
+        if (empty($facilityId)) {
+            return response()->json([
+                'status'     => 'rejected',
+                'error_code' => OpesCareErrorCode::AUTHENTICATION_FAILED->value,
+                'message'    => 'facility_id could not be resolved from bearer token. Encounter rejected.',
+            ], 403);
+        }
 
         if (!$healthId || !$externalEncounterId) {
             return response()->json([
@@ -293,18 +323,22 @@ class RecordController extends Controller
         // Use system provider ID for B2B integrated records (non-interactive facility sync)
         $systemProviderId = config('opescare.system_provider_id', '00000000-0000-0000-0000-000000000001');
 
-        // Ensure system provider exists for FK constraints.
-        // insertOrIgnore: creates only if missing. Never updates — the SystemAccountSeeder
-        // sets a secure random password at deploy time; we must not overwrite it here.
-        DB::table('users')->insertOrIgnore([
-            'id'         => $systemProviderId,
-            'name'       => 'System Provider',
-            'email'      => $systemProviderId . '@system.opescare.local',
-            'password'   => bcrypt(\Illuminate\Support\Str::random(64)),
-            'status'     => 'active',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // [FIX M-2] bcrypt() was called here on every request — intentionally slow (100ms+)
+        // making this endpoint a CPU-exhaustion DoS vector. Replaced with a pre-hashed
+        // sentinel value. The system provider account is created by SystemAccountSeeder at
+        // deploy time with a proper Argon2id hash; this code only needs the row to exist.
+        // insertOrIgnore with a cheap locked-hash placeholder avoids the bcrypt call entirely.
+        if (! DB::table('users')->where('id', $systemProviderId)->exists()) {
+            DB::table('users')->insertOrIgnore([
+                'id'         => $systemProviderId,
+                'name'       => 'System Provider',
+                'email'      => $systemProviderId . '@system.opescare.local',
+                'password'   => '$argon2id$v=19$m=65536,t=4,p=1$SYSTEM_ACCOUNT_LOCKED_NOT_LOGINABLE',
+                'status'     => 'active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         $visit = Visit::create([
             'patient_id'  => $patient->id,

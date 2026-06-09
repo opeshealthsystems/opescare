@@ -14,6 +14,7 @@ class InsuranceProvider extends Model
         'name',
         'code',
         'country_code',
+        'logo_url',
         'contact_email',
         'contact_phone',
         'portal_url',

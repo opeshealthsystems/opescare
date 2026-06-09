@@ -37,29 +37,30 @@ class AdminGovernanceController extends Controller
 
     public function listAccessLogs(Request $request)
     {
-        return response()->json(AccessLog::all(), 200);
+        $paginated = AccessLog::latest()->paginate(50);
+        return response()->json(['data' => $paginated->items(), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
     }
 
     public function listEmergencyAccessReviews(Request $request)
     {
-        return response()->json(EmergencyAccessEvent::all(), 200);
+        $paginated = EmergencyAccessEvent::latest()->paginate(50);
+        return response()->json(['data' => $paginated->items(), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
     }
 
     public function reviewEmergencyAccess(Request $request, $id)
     {
         $request->validate([
-            'reviewer_id'   => 'nullable|string|max:255',
             'review_status' => 'required|in:approved,rejected,suspected_abuse,confirmed_abuse,cleared',
             'comment'       => 'nullable|string|max:2000',
         ]);
 
-        $reviewerId = $request->input('reviewer_id', '00000000-0000-0000-0000-000000000001');
+        $reviewerId = $request->attributes->get('integration_client_id') ?? $request->attributes->get('provider_id');
+        if (!$reviewerId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
+
         $status = $request->input('review_status');
         $comment = $request->input('comment');
-
-        if (!$status) {
-            return response()->json(['message' => 'review_status is required.'], 400);
-        }
 
         $event = $this->emergencyService->reviewEmergencyAccess($id, $reviewerId, $status, $comment);
 
@@ -68,12 +69,17 @@ class AdminGovernanceController extends Controller
 
     public function listCorrectionRequests(Request $request)
     {
-        return response()->json(CorrectionRequest::all(), 200);
+        $paginated = CorrectionRequest::latest()->paginate(50);
+        return response()->json(['data' => $paginated->items(), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
     }
 
     public function approveCorrectionRequest(Request $request, $id)
     {
-        $reviewerId = $request->input('reviewer_id', '00000000-0000-0000-0000-000000000001');
+        $reviewerId = $request->attributes->get('integration_client_id') ?? $request->attributes->get('provider_id');
+        if (!$reviewerId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
+
         $corr = $this->correctionService->approveRequest($id, $reviewerId);
 
         return response()->json($corr, 200);
@@ -81,7 +87,11 @@ class AdminGovernanceController extends Controller
 
     public function rejectCorrectionRequest(Request $request, $id)
     {
-        $reviewerId = $request->input('reviewer_id', '00000000-0000-0000-0000-000000000001');
+        $reviewerId = $request->attributes->get('integration_client_id') ?? $request->attributes->get('provider_id');
+        if (!$reviewerId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
+
         $corr = $this->correctionService->rejectRequest($id, $reviewerId);
 
         return response()->json($corr, 200);
@@ -89,12 +99,17 @@ class AdminGovernanceController extends Controller
 
     public function listExportRequests(Request $request)
     {
-        return response()->json(DataExportRequest::all(), 200);
+        $paginated = DataExportRequest::latest()->paginate(50);
+        return response()->json(['data' => $paginated->items(), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
     }
 
     public function approveExportRequest(Request $request, $id)
     {
-        $approverId = $request->input('approver_id', '00000000-0000-0000-0000-000000000001');
+        $approverId = $request->attributes->get('integration_client_id') ?? $request->attributes->get('provider_id');
+        if (!$approverId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
+
         $exp = $this->exportService->approveExport($id, $approverId);
 
         return response()->json($exp, 200);
@@ -102,16 +117,25 @@ class AdminGovernanceController extends Controller
 
     public function rejectExportRequest(Request $request, $id)
     {
+        $actorId = $request->attributes->get('integration_client_id') ?? $request->attributes->get('provider_id');
+        if (!$actorId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
+
         $exp = DataExportRequest::findOrFail($id);
-        $exp->status = 'rejected';
-        $exp->save();
+        $exp->update([
+            'status'      => 'rejected',
+            'rejected_by' => $actorId,
+            'rejected_at' => now(),
+        ]);
 
         return response()->json($exp, 200);
     }
 
     public function listSecurityIncidents(Request $request)
     {
-        return response()->json(SecurityIncident::all(), 200);
+        $paginated = SecurityIncident::latest()->paginate(50);
+        return response()->json(['data' => $paginated->items(), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
     }
 
     public function createSecurityIncident(Request $request)
@@ -120,25 +144,14 @@ class AdminGovernanceController extends Controller
             'incident_type' => 'required|string|max:100',
             'severity'      => 'required|in:low,medium,high,critical',
             'summary'       => 'required|string|max:5000',
-            'created_by'    => 'nullable|string|max:255',
         ]);
 
-        $type = $request->input('incident_type');
-        $severity = $request->input('severity');
-        $summary = $request->input('summary');
-        $creatorId = $request->input('created_by');
-
-        if (!$type || !$severity || !$summary) {
-            return response()->json(['message' => 'Validation failed.'], 400);
-        }
-
         $inc = new SecurityIncident();
-        $inc->incident_type = $type;
-        $inc->severity = $severity;
-        $inc->summary = $summary;
+        $inc->incident_type = $request->input('incident_type');
+        $inc->severity = $request->input('severity');
+        $inc->summary = $request->input('summary');
         $inc->status = 'new';
         $inc->detected_at = Carbon::now();
-        $inc->created_by = $creatorId;
         $inc->save();
 
         return response()->json($inc, 201);
@@ -146,9 +159,15 @@ class AdminGovernanceController extends Controller
 
     public function containSecurityIncident(Request $request, $id)
     {
+        $actorId = $request->attributes->get('integration_client_id') ?? $request->attributes->get('provider_id');
+        if (!$actorId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
+
         $inc = SecurityIncident::findOrFail($id);
         $inc->status = 'contained';
         $inc->contained_at = Carbon::now();
+        $inc->contained_by = $actorId;
         $inc->save();
 
         return response()->json($inc, 200);
@@ -156,9 +175,15 @@ class AdminGovernanceController extends Controller
 
     public function resolveSecurityIncident(Request $request, $id)
     {
+        $actorId = $request->attributes->get('integration_client_id') ?? $request->attributes->get('provider_id');
+        if (!$actorId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
+
         $inc = SecurityIncident::findOrFail($id);
         $inc->status = 'resolved';
         $inc->resolved_at = Carbon::now();
+        $inc->resolved_by = $actorId;
         $inc->save();
 
         return response()->json($inc, 200);
@@ -166,26 +191,25 @@ class AdminGovernanceController extends Controller
 
     public function listCountryPolicies(Request $request)
     {
-        return response()->json(CountryPolicy::all(), 200);
+        $paginated = CountryPolicy::latest()->paginate(50);
+        return response()->json(['data' => $paginated->items(), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
     }
 
     public function createCountryPolicy(Request $request)
     {
-        $code = $request->input('country_code');
-        $name = $request->input('name');
-        $version = $request->input('version');
-        $settings = $request->input('settings_json', []);
-
-        if (!$code || !$name || !$version) {
-            return response()->json(['message' => 'Validation failed.'], 400);
-        }
+        $validated = $request->validate([
+            'country_code'  => 'required|string|size:2',
+            'name'          => 'required|string|max:255',
+            'version'       => 'required|string|max:50',
+            'settings_json' => 'nullable|array',
+        ]);
 
         $policy = new CountryPolicy();
-        $policy->country_code = strtoupper($code);
-        $policy->name = $name;
-        $policy->version = $version;
+        $policy->country_code = strtoupper($validated['country_code']);
+        $policy->name = $validated['name'];
+        $policy->version = $validated['version'];
         $policy->effective_from = Carbon::now();
-        $policy->settings_json = $settings;
+        $policy->settings_json = $validated['settings_json'] ?? [];
         $policy->status = 'draft';
         $policy->save();
 
@@ -194,8 +218,15 @@ class AdminGovernanceController extends Controller
 
     public function updateCountryPolicy(Request $request, $id)
     {
+        $validated = $request->validate([
+            'name'          => 'sometimes|string|max:255',
+            'version'       => 'sometimes|string|max:50',
+            'settings_json' => 'sometimes|array',
+            'status'        => 'sometimes|string|in:draft,active,archived',
+        ]);
+
         $policy = CountryPolicy::findOrFail($id);
-        $policy->update($request->only(['name', 'version', 'settings_json', 'status']));
+        $policy->update($validated);
 
         return response()->json($policy, 200);
     }

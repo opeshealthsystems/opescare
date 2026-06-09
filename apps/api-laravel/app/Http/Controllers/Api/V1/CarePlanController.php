@@ -4,20 +4,26 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Services\Clinical\CarePlanService;
+use App\Services\Documents\DocumentIssuanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CarePlanController extends Controller
 {
-    public function __construct(private readonly CarePlanService $service)
-    {
-    }
+    public function __construct(
+        private readonly CarePlanService       $service,
+        private readonly DocumentIssuanceService $issuance
+    ) {}
 
     public function store(Request $request): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['message' => 'Facility could not be resolved.', 'error_code' => 'FACILITY_UNRESOLVABLE'], 403);
+        }
+
         $validated = $request->validate([
             'patient_id'  => 'required|uuid|exists:patients,id',
-            'facility_id' => 'required|uuid|exists:facilities,id',
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
             'start_date'  => 'required|date',
@@ -26,9 +32,23 @@ class CarePlanController extends Controller
             'visit_id'    => 'nullable|uuid',
         ]);
 
+        $validated['facility_id'] = $facilityId;
         $validated['created_by'] = $request->user()->id;
 
         $plan = $this->service->create($validated);
+
+        try {
+            $planId = is_array($plan) ? ($plan['id'] ?? null) : ($plan->id ?? null);
+            $this->issuance->issueFromModel(
+                'CPL',
+                'Care Plan — ' . $validated['title'],
+                ['plan_id' => $planId, 'patient_id' => $validated['patient_id'], 'title' => $validated['title'], 'start_date' => $validated['start_date'], 'end_date' => $validated['end_date'] ?? null, 'status' => $validated['status'] ?? 'active'],
+                $facilityId,
+                $validated['patient_id'],
+                null,
+                $validated['created_by'] ?? null
+            );
+        } catch (\Throwable) {}
 
         return response()->json(['data' => $plan], 201);
     }

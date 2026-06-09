@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Facility;
+use App\Models\FacilityReadinessScore;
 use App\Modules\FacilityReadiness\Services\FacilityGoLiveService;
+use App\Modules\FacilityReadiness\Services\FacilityReadinessScoringService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
@@ -60,6 +62,65 @@ class FacilityGoLiveReadinessController extends Controller
         }
 
         return response()->json(['data' => $this->serialize($readiness, $service)]);
+    }
+
+    /**
+     * Compute and store a fresh readiness score for a facility.
+     * POST /v1/admin/facilities/{facility}/readiness-score
+     * Body: { computed_by?: uuid }
+     */
+    public function computeScore(Facility $facility, Request $request): JsonResponse
+    {
+        $request->validate([
+            'computed_by' => ['nullable', 'uuid'],
+        ]);
+
+        $scoringService = app(FacilityReadinessScoringService::class);
+        $score = $scoringService->calculateAndStore(
+            $facility->id,
+            $request->input('computed_by')
+        );
+
+        return response()->json([
+            'message' => 'Readiness score computed.',
+            'data'    => $this->serializeScore($score),
+        ], 201);
+    }
+
+    /**
+     * Retrieve the most recent readiness score for a facility.
+     * GET /v1/admin/facilities/{facility}/readiness-score
+     */
+    public function latestScore(Facility $facility): JsonResponse
+    {
+        $score = FacilityReadinessScore::where('facility_id', $facility->id)
+            ->latest()
+            ->first();
+
+        if (! $score) {
+            return response()->json([
+                'message' => 'No readiness score computed yet. POST to this endpoint to trigger calculation.',
+                'data'    => null,
+            ], 404);
+        }
+
+        return response()->json(['data' => $this->serializeScore($score)]);
+    }
+
+    private function serializeScore(FacilityReadinessScore $score): array
+    {
+        return [
+            'id'            => $score->id,
+            'facility_id'   => $score->facility_id,
+            'overall_score' => $score->overall_score,
+            'staff_score'   => $score->staff_score,
+            'config_score'  => $score->config_score,
+            'data_score'    => $score->data_score,
+            'support_score' => $score->support_score,
+            'is_ready'      => $score->is_ready,
+            'computed_by'   => $score->computed_by,
+            'computed_at'   => $score->created_at?->toISOString(),
+        ];
     }
 
     private function serialize($readiness, FacilityGoLiveService $service): array

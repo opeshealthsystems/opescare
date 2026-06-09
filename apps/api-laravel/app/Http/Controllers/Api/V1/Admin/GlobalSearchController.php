@@ -20,6 +20,14 @@ class GlobalSearchController extends Controller
 
         $includeSensitive = filter_var($validated['include_sensitive'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
+        if ($includeSensitive) {
+            $hasPermission = $request->attributes->get('admin_role') ||
+                             $request->attributes->get('permission_global_resolve');
+            if (!$hasPermission) {
+                $includeSensitive = false;
+            }
+        }
+
         return response()->json($service->search($validated['q'], [
             'actor_id' => $validated['actor_id'] ?? null,
             'include_sensitive' => $includeSensitive,

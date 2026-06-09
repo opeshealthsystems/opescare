@@ -7,6 +7,7 @@ use App\Models\AdverseReactionNote;
 use App\Models\ImmunizationRecord;
 use App\Models\VaccinationSchedule;
 use App\Modules\Immunization\Services\ImmunizationService;
+use App\Services\Documents\DocumentIssuanceService;
 use Illuminate\Http\Request;
 
 class ImmunizationController extends Controller
@@ -25,11 +26,15 @@ class ImmunizationController extends Controller
         ]);
     }
 
-    public function store(Request $request, ImmunizationService $service)
+    public function store(Request $request, ImmunizationService $service, DocumentIssuanceService $issuance)
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['message' => 'Facility could not be resolved.', 'error_code' => 'FACILITY_UNRESOLVABLE'], 403);
+        }
+
         $validated = $request->validate([
             'patient_id'         => ['required', 'uuid'],
-            'facility_id'        => ['required', 'uuid'],
             'administered_by_id' => ['nullable', 'uuid'],
             'encounter_id'       => ['nullable', 'uuid'],
             'vaccine_code'       => ['required', 'string', 'max:50'],
@@ -51,7 +56,20 @@ class ImmunizationController extends Controller
             'source_document_id' => ['nullable', 'uuid'],
         ]);
 
+        $validated['facility_id'] = $facilityId;
         $record = $service->record($validated);
+
+        try {
+            $issuance->issueFromModel(
+                'VAX',
+                'Immunization Certificate — ' . $validated['vaccine_name'],
+                ['record_id' => $record->id, 'patient_id' => $validated['patient_id'], 'vaccine_code' => $validated['vaccine_code'], 'vaccine_name' => $validated['vaccine_name'], 'dose_number' => $validated['dose_number'] ?? null, 'administered_at' => $validated['administered_at'] ?? now()->toDateString(), 'lot_number' => $validated['lot_number'] ?? null],
+                $facilityId,
+                $validated['patient_id'],
+                null,
+                $validated['administered_by_id'] ?? null
+            );
+        } catch (\Throwable) {}
 
         return response()->json(['data' => $this->serializeRecord($record)], 201);
     }

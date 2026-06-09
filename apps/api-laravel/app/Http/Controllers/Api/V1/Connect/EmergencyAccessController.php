@@ -2,49 +2,75 @@
 
 namespace App\Http\Controllers\Api\V1\Connect;
 
+use App\Enums\AuditEventType;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Patient;
+use App\Http\Requests\Connect\PullEmergencyProfileRequest;
 use App\Models\AllergyRecord;
 use App\Models\Diagnosis;
-use App\Models\MedicalIdAccessEvent;
-use Illuminate\Support\Facades\Validator;
+use App\Models\Patient;
+use App\Notifications\EmergencyAccessAlertNotification;
+use App\Services\Identity\HealthIdAuditLogger;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class EmergencyAccessController extends Controller
 {
-    public function pullEmergencyProfile(Request $request)
+    public function __construct(private readonly HealthIdAuditLogger $auditor) {}
+
+    public function pullEmergencyProfile(PullEmergencyProfileRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'health_id' => 'required|string',
-            'reason' => 'required|string|min:10',
-        ]);
+        $validated = $request->validated();
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'invalid',
-                'error_code' => 'INVALID_PAYLOAD',
-                'message' => $validator->errors()->first()
-            ], 400);
-        }
-
-        $validated = $validator->validated();
-
-        // 1. Verify Patient
+        // 1. Resolve patient
         $patient = Patient::where('health_id', $validated['health_id'])->first();
 
-        if (!$patient) {
-            $this->logAccess($validated['health_id'], null, 'emergency_access', 'pull_emergency_profile', 'denied', $request);
+        if (! $patient) {
+            $this->auditor->denied(
+                request:   $request,
+                eventType: AuditEventType::EmergencyAccessDenied,
+                healthId:  $validated['health_id'],
+                notes:     'HEALTH_ID_NOT_FOUND | reason: ' . $validated['reason'],
+            );
+
             return response()->json([
-                'status' => 'invalid',
+                'status'     => 'invalid',
                 'error_code' => 'HEALTH_ID_NOT_FOUND',
-                'message' => 'This Health ID could not be verified.'
+                'message'    => 'This Health ID could not be verified.',
             ], 404);
         }
 
-        // 2. Audit Log (Critical for emergency access)
-        $this->logAccess($validated['health_id'], $patient->id, 'emergency_access', 'pull_emergency_profile', 'success', $request);
+        // 2. Audit log — must fire BEFORE data is returned [MINSANTE CRITICAL]
+        $this->auditor->record(
+            request:   $request,
+            eventType: AuditEventType::PullEmergencyProfile,
+            result:    'success',
+            healthId:  $patient->health_id,
+            patientId: $patient->id,
+            purpose:   'emergency_access',
+            notes:     'Emergency reason: ' . $validated['reason'],
+        );
 
-        // 3. Fetch real clinical data from the database
+        // 3. Alert patient asynchronously (Law No. 2010/012 — patients must be informed)
+        $facilityId = $request->attributes->get('facility_id', 'unknown');
+        if ($patient->user_id) {
+            try {
+                $patient->notify(new EmergencyAccessAlertNotification(
+                    patientHealthId: $patient->health_id,
+                    patientName:     trim($patient->first_name . ' ' . $patient->last_name),
+                    accessedAt:      now()->toDateTimeString(),
+                    facilityId:      $facilityId,
+                    emergencyReason: $validated['reason'],
+                    ipAddress:       $request->ip(),
+                ));
+            } catch (\Throwable $e) {
+                Log::warning(AuditEventType::EmergencyAccessPatientNotified->value . '_failed', [
+                    'patient_id' => $patient->id,
+                    'error'      => $e->getMessage(),
+                ]);
+            }
+        }
+
+        // 4. Fetch clinical data
         $allergies = AllergyRecord::where('patient_id', $patient->id)
             ->where('status', 'active')
             ->get(['substance', 'severity', 'status'])
@@ -55,47 +81,25 @@ class EmergencyAccessController extends Controller
             ->get(['code', 'display_name'])
             ->toArray();
 
-        // 4. Construct Emergency Profile
-        $emergencyProfile = [
-            'identity' => [
-                'health_id' => $patient->health_id,
-                'first_name' => $patient->first_name,
-                'last_name' => $patient->last_name,
-                'sex' => $patient->sex,
-                'date_of_birth' => $patient->date_of_birth,
-            ],
-            'emergency_contact'  => $patient->emergency_contact ?? 'Not provided',
-            // blood_type is not stored per patient in this schema.
-            // Returning null rather than fabricating a value — a wrong blood type
-            // in an emergency is lethal. Store in PatientIdentityProfile when available.
-            'blood_type'         => null,
-            'allergies'          => $allergies,
-            'chronic_conditions' => $chronicConditions,
-        ];
-
+        // 5. Build and return profile
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'Emergency profile retrieved. This action has been audited.',
-            'profile' => $emergencyProfile
+            'profile' => [
+                'identity' => [
+                    'health_id'     => $patient->health_id,
+                    'first_name'    => $patient->first_name,
+                    'last_name'     => $patient->last_name,
+                    'sex'           => $patient->sex,
+                    'date_of_birth' => $patient->date_of_birth?->toDateString(),
+                ],
+                'emergency_contact'  => $patient->emergency_contact ?? 'Not provided',
+                // blood_type intentionally null — a wrong blood type in emergency is lethal.
+                // Store in PatientIdentityProfile when clinically confirmed.
+                'blood_type'         => null,
+                'allergies'          => $allergies,
+                'chronic_conditions' => $chronicConditions,
+            ],
         ], 200);
-    }
-
-    private function logAccess(string $healthId, ?string $patientId, string $purpose, string $accessType, string $result, Request $request)
-    {
-        $clientId  = $request->attributes->get('integration_client_id');
-        $facilityId = $request->attributes->get('facility_id');
-
-        MedicalIdAccessEvent::create([
-            'patient_id' => $patientId,
-            'health_id' => $healthId,
-            'actor_id' => $clientId,
-            'actor_type' => 'facility_staff',
-            'facility_id' => $facilityId,
-            'access_type' => $accessType,
-            'purpose' => $purpose,
-            'result' => $result,
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-        ]);
     }
 }

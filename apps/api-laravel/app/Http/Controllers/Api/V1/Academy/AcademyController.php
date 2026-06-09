@@ -62,7 +62,7 @@ class AcademyController extends Controller
     public function enroll(Request $request, string $id)
     {
         $request->validate([
-            'user_id' => 'required|string|max:255',
+            'user_id' => 'required|uuid',
         ]);
 
         $userId = $request->input('user_id');
@@ -84,7 +84,7 @@ class AcademyController extends Controller
     public function completeLesson(Request $request, string $id)
     {
         $request->validate([
-            'user_id' => 'required|string|max:255',
+            'user_id' => 'required|uuid',
         ]);
 
         $userId = $request->input('user_id');
@@ -102,7 +102,7 @@ class AcademyController extends Controller
     public function startQuiz(Request $request, string $id)
     {
         $request->validate([
-            'user_id' => 'required|string|max:255',
+            'user_id' => 'required|uuid',
         ]);
 
         $userId = $request->input('user_id');

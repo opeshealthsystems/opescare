@@ -33,58 +33,74 @@ class IntelligenceController extends Controller
 
     public function triggerDetection(Request $request)
     {
-        $request->validate([
-            'facility_id' => 'required|uuid',
-            'indicator_code' => 'required|string'
+        // [IDOR FIX] facility_id from middleware only — never from request body
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['error' => 'FACILITY_UNRESOLVABLE', 'message' => 'Facility could not be resolved from bearer token.'], 403);
+        }
+
+        $validated = $request->validate([
+            'indicator_code' => 'required|string|max:100',
         ]);
 
-        $service = new SignalDetectionService();
+        $service = app(SignalDetectionService::class);
         $signal = $service->detectSignals(
-            $request->input('facility_id'),
-            $request->input('indicator_code')
+            $facilityId,
+            $validated['indicator_code']
         );
 
         if ($signal) {
             return response()->json([
-                'status' => 'signal_detected',
+                'status'  => 'signal_detected',
                 'message' => 'Spike alert triggered. Public health signal registered.',
-                'signal' => $signal
+                'signal'  => $signal
             ], 201);
         }
 
         return response()->json([
-            'status' => 'normal',
+            'status'  => 'normal',
             'message' => 'No abnormal spikes detected above threshold baseline.'
         ], 200);
     }
 
     public function reviewSignal($id, Request $request)
     {
-        $request->validate(['action' => 'required|string']);
+        $request->validate([
+            'action'  => 'required|string|in:confirm,dismiss,escalate,resolve',
+            'comment' => 'nullable|string|max:2000',
+        ]);
+
         $signal = PublicHealthSignal::find($id);
         if (!$signal) {
             return response()->json(['error' => 'Signal not found.'], 404);
         }
 
-        $action = $request->input('action'); // confirm, dismiss, escalate, resolve
-        $comment = $request->input('comment', 'Reviewed.');
-        if ($id = $request->user()?->id) {
-            $operatorId = $id;
+        // Resolve operator identity from middleware-set attributes only
+        $operatorId = null;
+        if ($uid = $request->user()?->id) {
+            $operatorId = $uid;
         } elseif (($clientId = $request->attributes->get('integration_client_id')) && Str::isUuid($clientId)) {
             $operatorId = $clientId;
-        } else {
-            $operatorId = config('opescare.system_provider_id', '00000000-0000-0000-0000-000000000001');
+        } elseif (($providerId = $request->attributes->get('provider_id')) && Str::isUuid($providerId)) {
+            $operatorId = $providerId;
         }
+
+        if (!$operatorId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
+
+        $action  = $request->input('action');
+        $comment = $request->input('comment', 'Reviewed.');
 
         // Map action to signal status
         $statusMap = [
-            'confirm' => 'confirmed',
-            'dismiss' => 'dismissed',
+            'confirm'  => 'confirmed',
+            'dismiss'  => 'dismissed',
             'escalate' => 'escalated',
-            'resolve' => 'resolved'
+            'resolve'  => 'resolved',
         ];
 
-        $signal->status = $statusMap[$action] ?? 'under_review';
+        $signal->status = $statusMap[$action];
         if ($action === 'resolve') {
             $signal->resolved_at = now();
         }
@@ -92,15 +108,15 @@ class IntelligenceController extends Controller
         $signal->save();
 
         SignalReview::create([
-            'signal_id' => $signal->id,
+            'signal_id'   => $signal->id,
             'reviewer_id' => $operatorId,
-            'action' => $action,
-            'comment' => $comment,
+            'action'      => $action,
+            'comment'     => $comment,
             'reviewed_at' => now()
         ]);
 
         return response()->json([
-            'status' => $signal->status,
+            'status'  => $signal->status,
             'message' => 'Signal review registered successfully.'
         ]);
     }
@@ -108,9 +124,9 @@ class IntelligenceController extends Controller
     public function getIntelligenceDashboard()
     {
         return response()->json([
-            'active_signals' => PublicHealthSignal::whereIn('status', ['new_signal', 'under_review'])->count(),
+            'active_signals'      => PublicHealthSignal::whereIn('status', ['new_signal', 'under_review'])->count(),
             'confirmed_outbreaks' => PublicHealthSignal::where('status', 'confirmed')->count(),
-            'dismissed_signals' => PublicHealthSignal::where('status', 'dismissed')->count()
+            'dismissed_signals'   => PublicHealthSignal::where('status', 'dismissed')->count()
         ]);
     }
 

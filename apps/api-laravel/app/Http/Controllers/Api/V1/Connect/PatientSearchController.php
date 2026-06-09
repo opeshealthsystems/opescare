@@ -115,7 +115,8 @@ class PatientSearchController extends Controller
             'status'         => 'rejected',
             'error_code'     => OpesCareErrorCode::PATIENT_NOT_FOUND->value,
             'message'        => 'No patient matching these parameters was found on OpesCare.',
-            'correlation_id' => $request->header('X-Correlation-Id', 'req_' . uniqid()),
+            // [M-3 FIX] bin2hex(random_bytes) is cryptographically random; uniqid() was predictable
+            'correlation_id' => $request->header('X-Correlation-Id') ?? ('req_' . bin2hex(random_bytes(8))),
         ], 404);
     }
 

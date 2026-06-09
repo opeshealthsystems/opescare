@@ -27,8 +27,13 @@ class InventoryController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+        }
+
         return response()->json(
-            $this->supplyChain->listItems($request->input('facility_id'), $request->all())
+            $this->supplyChain->listItems($facilityId, $request->all())
         );
     }
 
@@ -51,21 +56,31 @@ class InventoryController extends Controller
 
     public function getLowStockItems(Request $request): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+        }
+
         return response()->json(
-            $this->supplyChain->getLowStockItems($request->input('facility_id'))
+            $this->supplyChain->getLowStockItems($facilityId)
         );
     }
 
     public function createPurchaseOrder(Request $request): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+        }
+
         $validated = $request->validate([
-            'facility_id' => ['required', 'uuid'],
             'supplier_id' => ['required', 'uuid'],
             'items'       => ['required', 'array', 'min:1'],
             'items.*.inventory_item_id' => ['required', 'uuid'],
             'items.*.quantity'          => ['required', 'numeric', 'min:0.01'],
             'items.*.unit_price'        => ['nullable', 'numeric', 'min:0'],
         ]);
+        $validated['facility_id'] = $facilityId;
 
         return response()->json(
             $this->supplyChain->createPurchaseOrder($validated, $request->user()->id),
@@ -92,9 +107,13 @@ class InventoryController extends Controller
 
     public function openAudit(Request $request): JsonResponse
     {
-        $validated = $request->validate(['facility_id' => ['required', 'uuid']]);
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+        }
+
         return response()->json(
-            $this->stockAudit->openAudit($validated['facility_id'], $request->user()->id),
+            $this->stockAudit->openAudit($facilityId, $request->user()->id),
             201
         );
     }

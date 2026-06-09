@@ -3,88 +3,131 @@
 namespace App\Http\Controllers\Api\V1\Connect;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Enums\OpesCareErrorCode;
 use App\Models\IntegrationClient;
 use App\Services\AuditLogger;
+use App\Services\JwtService;
+use App\Enums\OpesCareErrorCode;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    public function __construct(private readonly JwtService $jwt) {}
+
+    /**
+     * Exchange client credentials for a signed RS256 Bearer token.
+     *
+     * POST /api/v1/connect/auth/token
+     * Body: { client_id, client_secret, grant_type: "client_credentials" }
+     *
+     * FIX C-1 (audit 2026-06-07): Previously used hash('sha256', $clientSecret) for
+     * direct DB lookup, bypassing the Argon2 rolling migration entirely.
+     *
+     * Now uses the same dual-path verification as VerifyIntegrationClient middleware:
+     *   1. Try Argon2id (client_secret_argon) — fast path for migrated clients.
+     *   2. Fall back to timing-safe SHA-256 comparison (client_secret) — legacy clients.
+     *   3. On SHA-256 success: immediately upgrade to Argon2id (rolling migration).
+     *
+     * ISO 27001 A.9.4 / OWASP API2
+     */
     public function issueToken(Request $request)
     {
-        $clientId = $request->input('client_id');
+        $clientId     = $request->input('client_id');
         $clientSecret = $request->input('client_secret');
-        $grantType = $request->input('grant_type');
+        $grantType    = $request->input('grant_type');
 
-        if ($grantType !== 'client_credentials' || !$clientId || !$clientSecret) {
+        if ($grantType !== 'client_credentials' || ! $clientId || ! $clientSecret) {
             return response()->json([
-                'status' => 'rejected',
+                'status'     => 'rejected',
                 'error_code' => OpesCareErrorCode::AUTHENTICATION_FAILED->value,
-                'message' => 'Invalid grant type or client credentials.'
+                'message'    => 'grant_type must be client_credentials and client_id/client_secret are required.',
             ], 400);
         }
 
-        // 1. Query database for integration client credentials
+        // Load client by client_id only — do NOT hash-lookup here (unsafe for Argon2).
         $client = IntegrationClient::where('client_id', $clientId)
-            ->where('client_secret', $clientSecret)
+            ->where('status', 'active')
             ->first();
 
-        // 2. Fallback to sandbox mock client for deterministic unit testing
-        if (!$client && $clientId === 'test_client_id' && $clientSecret === 'test_client_secret') {
-            $client = new IntegrationClient([
-                'client_id' => 'test_client_id',
-                'client_secret' => 'test_client_secret',
-                'facility_id' => '00000000-0000-0000-0000-000000000001',
-                'scopes' => ['patients.search', 'records.pull', 'records.push', 'inventory.sync', 'webhooks.manage'],
-                'status' => 'active',
-                'environment' => 'sandbox'
+        if (! $client) {
+            return $this->rejected();
+        }
+
+        $authenticated = false;
+        $needsUpgrade  = false;
+
+        // ── Path 1: Argon2id (migrated clients) ──────────────────────────────
+        if ($client->client_secret_argon !== null) {
+            if (Hash::check($clientSecret, $client->client_secret_argon)) {
+                $authenticated = true;
+                if (Hash::needsRehash($client->client_secret_argon)) {
+                    $needsUpgrade = true;
+                }
+            }
+        }
+
+        // ── Path 2: SHA-256 fallback (legacy clients not yet migrated) ────────
+        if (! $authenticated && $client->client_secret !== null) {
+            if (hash_equals($client->client_secret, hash('sha256', $clientSecret))) {
+                $authenticated = true;
+                $needsUpgrade  = true; // Always upgrade from SHA-256 to Argon2id
+            }
+        }
+
+        if (! $authenticated) {
+            return $this->rejected();
+        }
+
+        // ── Rolling upgrade: write Argon2id on first SHA-256 success ─────────
+        if ($needsUpgrade) {
+            $client->updateQuietly([
+                'client_secret_argon' => Hash::make($clientSecret),
+                'secret_upgraded_at'  => now(),
             ]);
         }
 
-        if (!$client || $client->status !== 'active') {
-            return response()->json([
-                'status' => 'rejected',
-                'error_code' => OpesCareErrorCode::AUTHENTICATION_FAILED->value,
-                'message' => 'Invalid or suspended integration credentials.'
-            ], 401);
-        }
+        $scopes = is_array($client->scopes) ? $client->scopes : json_decode($client->scopes ?? '[]', true);
 
-        // Bind temporary variables for Audit logging context
-        $request->attributes->add([
-            'integration_client_id' => $client->client_id,
-            'facility_id' => $client->facility_id
+        $token = $this->jwt->issue([
+            'sub'         => $client->client_id,
+            'client_id'   => $client->client_id,
+            'facility_id' => $client->facility_id,
+            'environment' => $client->environment,
+            'scopes'      => $scopes,
         ]);
 
-        AuditLogger::log(
-            $request,
-            'api_token_issued',
-            'oauth_token',
-            null
-        );
+        $request->attributes->add([
+            'integration_client_id' => $client->client_id,
+            'facility_id'           => $client->facility_id,
+        ]);
+
+        AuditLogger::log($request, 'api_token_issued', 'oauth_token', null);
 
         return response()->json([
-            'access_token' => 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.opescare_connect_' . bin2hex(random_bytes(16)),
-            'token_type' => 'Bearer',
-            'expires_in' => 3600,
-            'scope' => implode(' ', $client->scopes)
-        ], 200);
+            'access_token' => $token,
+            'token_type'   => 'Bearer',
+            'expires_in'   => 3600,
+            'scope'        => implode(' ', $scopes),
+        ]);
     }
 
     public function createWidgetSession(Request $request)
     {
-        $clientId = $request->attributes->get('integration_client_id', 'unknown_client');
-
-        AuditLogger::log(
-            $request,
-            'widget_session_created',
-            'widget_session',
-            null
-        );
+        AuditLogger::log($request, 'widget_session_created', 'widget_session', null);
 
         return response()->json([
-            'session_token' => 'wgt_session_' . bin2hex(random_bytes(16)),
-            'expires_at' => date('Y-m-d\TH:i:s\Z', time() + 600),
-            'allowed_origins' => ['https://*.opescare.com', 'https://*.your-hospital.org']
-        ], 200);
+            'session_token'   => 'wgt_session_' . bin2hex(random_bytes(16)),
+            'expires_at'      => date('Y-m-d\TH:i:s\Z', time() + 600),
+            'allowed_origins' => ['https://*.opescare.com'],
+        ]);
+    }
+
+    private function rejected(): \Illuminate\Http\JsonResponse
+    {
+        return response()->json([
+            'status'     => 'rejected',
+            'error_code' => OpesCareErrorCode::AUTHENTICATION_FAILED->value,
+            'message'    => 'Invalid or inactive integration credentials.',
+        ], 401);
     }
 }

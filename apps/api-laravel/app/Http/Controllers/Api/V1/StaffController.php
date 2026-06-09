@@ -27,8 +27,13 @@ class StaffController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+        }
+
         return response()->json(
-            $this->staff->listForFacility($request->input('facility_id'), $request->all())
+            $this->staff->listForFacility($facilityId, $request->all())
         );
     }
 

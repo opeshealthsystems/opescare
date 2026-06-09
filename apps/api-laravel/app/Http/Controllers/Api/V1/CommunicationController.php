@@ -3,73 +3,82 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Modules\Notifications\Models\NotificationEvent;
-use App\Modules\Notifications\Models\NotificationDelivery;
-use App\Modules\Notifications\Models\NotificationPreference;
-use App\Modules\Notifications\Models\NotificationTemplate;
-use App\Modules\Notifications\Models\EscalationChain;
-use App\Modules\Tasks\Models\ActionTask;
-use App\Modules\Messaging\Models\MessageThread;
-use App\Modules\Messaging\Models\Message;
-use App\Modules\Messaging\Models\MessageAttachment;
 use App\Modules\Broadcasts\Models\Broadcast;
-
-use App\Modules\Notifications\Services\NotificationService;
-use App\Modules\Tasks\Services\TaskService;
-use App\Modules\Messaging\Services\MessagingService;
-use App\Modules\Messaging\Services\MessagePermissionService;
-use App\Modules\Messaging\Services\MessageAttachmentService;
 use App\Modules\Broadcasts\Services\BroadcastService;
+use App\Modules\Messaging\Models\Message;
+use App\Modules\Messaging\Models\MessageThread;
+use App\Modules\Messaging\Services\MessageAttachmentService;
+use App\Modules\Messaging\Services\MessagePermissionService;
+use App\Modules\Messaging\Services\MessagingService;
+use App\Modules\Notifications\Models\EscalationChain;
+use App\Modules\Notifications\Models\NotificationDelivery;
+use App\Modules\Notifications\Models\NotificationEvent;
+use App\Modules\Notifications\Models\NotificationTemplate;
 use App\Modules\Notifications\Services\NotificationPreferenceService;
-
+use App\Modules\Notifications\Services\NotificationService;
+use App\Modules\Tasks\Models\ActionTask;
+use App\Modules\Tasks\Services\TaskService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
+/**
+ * CommunicationController — Notifications, Tasks, Messaging, and Broadcasts API.
+ *
+ * SECURITY: Actor identity (user_id) is always sourced from the validated
+ * request body or middleware attributes. Never from X-User-ID or any other
+ * request header — that pattern is an OWASP API1 IDOR vulnerability.
+ *
+ * For self-service endpoints (get my notifications, my messages, etc.),
+ * callers must supply user_id in the request body as a validated UUID.
+ */
 class CommunicationController extends Controller
 {
-    private NotificationService $notificationService;
-    private TaskService $taskService;
-    private MessagingService $messagingService;
-    private MessagePermissionService $permissionService;
-    private MessageAttachmentService $attachmentService;
-    private NotificationPreferenceService $preferenceService;
-
     public function __construct(
-        NotificationService $notificationService,
-        TaskService $taskService,
-        MessagingService $messagingService,
-        MessagePermissionService $permissionService,
-        MessageAttachmentService $attachmentService,
-        NotificationPreferenceService $preferenceService
-    ) {
-        $this->notificationService = $notificationService;
-        $this->taskService = $taskService;
-        $this->messagingService = $messagingService;
-        $this->permissionService = $permissionService;
-        $this->attachmentService = $attachmentService;
-        $this->preferenceService = $preferenceService;
-    }
+        private readonly NotificationService          $notificationService,
+        private readonly TaskService                  $taskService,
+        private readonly MessagingService             $messagingService,
+        private readonly MessagePermissionService     $permissionService,
+        private readonly MessageAttachmentService     $attachmentService,
+        private readonly NotificationPreferenceService $preferenceService,
+        private readonly BroadcastService             $broadcastService,
+    ) {}
 
-    // --- Notifications ---
-    public function getNotifications(Request $request)
+    // ═══════════════════════════════════════════════════════════════
+    // NOTIFICATIONS
+    // ═══════════════════════════════════════════════════════════════
+
+    /**
+     * Get notifications for a user.
+     * Body: { user_id: uuid }
+     */
+    public function getNotifications(Request $request): JsonResponse
     {
-        $userId = $request->header('X-User-ID', '1');
-        $notifications = NotificationEvent::where('recipient_user_id', $userId)
-            ->orderBy('created_at', 'desc')
+        $validated = $request->validate(['user_id' => ['required', 'uuid']]);
+
+        $notifications = NotificationEvent::where('recipient_user_id', $validated['user_id'])
+            ->orderByDesc('created_at')
             ->get();
+
         return response()->json($notifications);
     }
 
-    public function getUnreadCount(Request $request)
+    /**
+     * Get unread notification count for a user.
+     * Body: { user_id: uuid }
+     */
+    public function getUnreadCount(Request $request): JsonResponse
     {
-        $userId = $request->header('X-User-ID', '1');
-        $count = NotificationEvent::where('recipient_user_id', $userId)
+        $validated = $request->validate(['user_id' => ['required', 'uuid']]);
+
+        $count = NotificationEvent::where('recipient_user_id', $validated['user_id'])
             ->where('status', 'pending')
             ->count();
+
         return response()->json(['unread_count' => $count]);
     }
 
-    public function markRead($id)
+    public function markRead(string $id): JsonResponse
     {
         $notification = NotificationEvent::findOrFail($id);
         $notification->status = 'read';
@@ -77,26 +86,39 @@ class CommunicationController extends Controller
         return response()->json(['message' => 'Notification marked as read']);
     }
 
-    public function acknowledgeNotification(Request $request, $id)
+    /**
+     * Acknowledge a notification.
+     * Body: { user_id: uuid }
+     */
+    public function acknowledgeNotification(Request $request, string $id): JsonResponse
     {
+        $validated = $request->validate(['user_id' => ['required', 'uuid']]);
+
         $notification = NotificationEvent::findOrFail($id);
         $notification->acknowledgement_status = 'acknowledged';
-        $notification->acknowledged_by = $request->header('X-User-ID', '1');
-        $notification->acknowledged_at = now();
+        $notification->acknowledged_by        = $validated['user_id'];
+        $notification->acknowledged_at        = now();
         $notification->save();
+
         return response()->json(['message' => 'Notification acknowledged']);
     }
 
-    public function markAllRead(Request $request)
+    /**
+     * Mark all notifications as read for a user.
+     * Body: { user_id: uuid }
+     */
+    public function markAllRead(Request $request): JsonResponse
     {
-        $userId = $request->header('X-User-ID', '1');
-        NotificationEvent::where('recipient_user_id', $userId)
+        $validated = $request->validate(['user_id' => ['required', 'uuid']]);
+
+        NotificationEvent::where('recipient_user_id', $validated['user_id'])
             ->where('status', 'pending')
             ->update(['status' => 'read']);
+
         return response()->json(['message' => 'All notifications marked as read']);
     }
 
-    public function archiveNotification($id)
+    public function archiveNotification(string $id): JsonResponse
     {
         $notification = NotificationEvent::findOrFail($id);
         $notification->status = 'archived';
@@ -104,92 +126,144 @@ class CommunicationController extends Controller
         return response()->json(['message' => 'Notification archived']);
     }
 
-    public function getPreferences(Request $request)
+    /**
+     * Get notification preferences for a user.
+     * Body: { user_id: uuid, category? }
+     */
+    public function getPreferences(Request $request): JsonResponse
     {
-        $userId = $request->header('X-User-ID', '1');
-        $category = $request->query('category', 'health_updates');
-        $prefs = $this->preferenceService->getPreferences($userId, $category);
+        $validated = $request->validate([
+            'user_id'  => ['required', 'uuid'],
+            'category' => ['nullable', 'string'],
+        ]);
+
+        $prefs = $this->preferenceService->getPreferences(
+            $validated['user_id'],
+            $validated['category'] ?? 'health_updates'
+        );
+
         return response()->json($prefs);
     }
 
-    public function updatePreferences(Request $request)
+    /**
+     * Update notification preferences for a user.
+     * Body: { user_id: uuid, category?, ...preference fields }
+     */
+    public function updatePreferences(Request $request): JsonResponse
     {
-        $userId = $request->header('X-User-ID', '1');
-        $category = $request->input('category', 'health_updates');
-        $prefs = $this->preferenceService->updatePreferences($userId, $category, $request->all());
+        $validated = $request->validate([
+            'user_id'  => ['required', 'uuid'],
+            'category' => ['nullable', 'string'],
+        ]);
+
+        $prefs = $this->preferenceService->updatePreferences(
+            $validated['user_id'],
+            $validated['category'] ?? 'health_updates',
+            $request->except(['user_id', 'category'])
+        );
+
         return response()->json($prefs);
     }
 
-    // --- Tasks ---
-    public function getTasks(Request $request)
+    // ═══════════════════════════════════════════════════════════════
+    // TASKS
+    // ═══════════════════════════════════════════════════════════════
+
+    /**
+     * Get tasks for a user.
+     * Body: { user_id: uuid, role?: string }
+     */
+    public function getTasks(Request $request): JsonResponse
     {
-        $userId = $request->header('X-User-ID', '1');
-        $tasks = ActionTask::where('assigned_to', $userId)
-            ->orWhere('assigned_role', $request->header('X-User-Role', 'staff'))
+        $validated = $request->validate([
+            'user_id' => ['required', 'uuid'],
+            'role'    => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $tasks = ActionTask::where('assigned_to', $validated['user_id'])
+            ->when($validated['role'] ?? null, fn ($q, $role) =>
+                $q->orWhere('assigned_role', $role)
+            )
             ->get();
+
         return response()->json($tasks);
     }
 
-    public function getTask($id)
+    public function getTask(string $id): JsonResponse
     {
-        $task = ActionTask::findOrFail($id);
-        return response()->json($task);
+        return response()->json(ActionTask::findOrFail($id));
     }
 
-    public function acknowledgeTask(Request $request, $id)
+    /**
+     * Acknowledge a task.
+     * Body: { user_id: uuid }
+     */
+    public function acknowledgeTask(Request $request, string $id): JsonResponse
     {
+        $validated = $request->validate(['user_id' => ['required', 'uuid']]);
+
         $task = ActionTask::findOrFail($id);
-        $userId = $request->header('X-User-ID', '1');
-        $this->taskService->acknowledgeTask($task->uuid, $userId);
+        $this->taskService->acknowledgeTask($task->uuid, $validated['user_id']);
+
         return response()->json(['message' => 'Task acknowledged']);
     }
 
-    public function completeTask($id)
+    public function completeTask(string $id): JsonResponse
     {
         $task = ActionTask::findOrFail($id);
         $this->taskService->completeTask($task->uuid);
         return response()->json(['message' => 'Task completed']);
     }
 
-    public function assignTask(Request $request, $id)
+    /**
+     * Assign a task to a user.
+     * Body: { assigned_to: uuid }
+     */
+    public function assignTask(Request $request, string $id): JsonResponse
     {
+        $validated = $request->validate(['assigned_to' => ['required', 'uuid']]);
+
         $task = ActionTask::findOrFail($id);
-        $task->assigned_to = $request->input('assigned_to');
+        $task->assigned_to = $validated['assigned_to'];
         $task->save();
+
         return response()->json(['message' => 'Task assigned']);
     }
 
-    public function escalateTask($id)
+    public function escalateTask(string $id): JsonResponse
     {
         $task = ActionTask::findOrFail($id);
         $this->taskService->escalateTask($task->uuid);
         return response()->json(['message' => 'Task escalated']);
     }
 
-    // --- Admin Templates and Delivery ---
-    public function getAdminTemplates()
+    // ═══════════════════════════════════════════════════════════════
+    // ADMIN — TEMPLATES & DELIVERY
+    // ═══════════════════════════════════════════════════════════════
+
+    public function getAdminTemplates(): JsonResponse
     {
         return response()->json(NotificationTemplate::all());
     }
 
-    public function createAdminTemplate(Request $request)
+    public function createAdminTemplate(Request $request): JsonResponse
     {
         $template = NotificationTemplate::create(array_merge($request->all(), [
-            'uuid' => Str::uuid(),
-            'version' => 1,
-            'approval_status' => 'draft'
+            'uuid'            => (string) Str::uuid(),
+            'version'         => 1,
+            'approval_status' => 'draft',
         ]));
         return response()->json($template, 201);
     }
 
-    public function updateAdminTemplate(Request $request, $id)
+    public function updateAdminTemplate(Request $request, string $id): JsonResponse
     {
         $template = NotificationTemplate::findOrFail($id);
         $template->update($request->all());
         return response()->json($template);
     }
 
-    public function submitTemplateReview($id)
+    public function submitTemplateReview(string $id): JsonResponse
     {
         $template = NotificationTemplate::findOrFail($id);
         $template->approval_status = 'pending_review';
@@ -197,7 +271,7 @@ class CommunicationController extends Controller
         return response()->json(['message' => 'Template submitted for review']);
     }
 
-    public function approveTemplate($id)
+    public function approveTemplate(string $id): JsonResponse
     {
         $template = NotificationTemplate::findOrFail($id);
         $template->approval_status = 'approved';
@@ -205,7 +279,7 @@ class CommunicationController extends Controller
         return response()->json(['message' => 'Template approved']);
     }
 
-    public function publishTemplate($id)
+    public function publishTemplate(string $id): JsonResponse
     {
         $template = NotificationTemplate::findOrFail($id);
         $template->approval_status = 'published';
@@ -213,166 +287,210 @@ class CommunicationController extends Controller
         return response()->json(['message' => 'Template published']);
     }
 
-    public function rollbackTemplate($id)
+    public function rollbackTemplate(string $id): JsonResponse
     {
         $template = NotificationTemplate::findOrFail($id);
-        // Rollback version
         $template->version = max(1, $template->version - 1);
         $template->save();
         return response()->json(['message' => 'Template rolled back']);
     }
 
-    public function getAdminDeliveries()
+    public function getAdminDeliveries(): JsonResponse
     {
         return response()->json(NotificationDelivery::all());
     }
 
-    public function retryDelivery($id)
+    public function retryDelivery(string $id): JsonResponse
     {
         $delivery = NotificationDelivery::findOrFail($id);
-        $delivery->status = 'delivered'; // Simulate successful retry
+        $delivery->status = 'delivered';
         $delivery->attempt_count++;
         $delivery->save();
         return response()->json(['message' => 'Delivery retried successfully']);
     }
 
-    // --- Escalation Chains ---
-    public function getEscalationChains()
+    // ═══════════════════════════════════════════════════════════════
+    // ESCALATION CHAINS
+    // ═══════════════════════════════════════════════════════════════
+
+    public function getEscalationChains(): JsonResponse
     {
         return response()->json(EscalationChain::all());
     }
 
-    public function createEscalationChain(Request $request)
+    public function createEscalationChain(Request $request): JsonResponse
     {
         $chain = EscalationChain::create([
-            'uuid' => Str::uuid(),
-            'name' => $request->input('name'),
+            'uuid'       => (string) Str::uuid(),
+            'name'       => $request->input('name'),
             'event_type' => $request->input('event_type'),
             'steps_json' => json_encode($request->input('steps')),
-            'active' => true
+            'active'     => true,
         ]);
         return response()->json($chain, 201);
     }
 
-    public function updateEscalationChain(Request $request, $id)
+    public function updateEscalationChain(Request $request, string $id): JsonResponse
     {
         $chain = EscalationChain::findOrFail($id);
         $chain->update($request->all());
         return response()->json($chain);
     }
 
-    public function activateEscalationChain($id)
+    public function activateEscalationChain(string $id): JsonResponse
     {
-        $chain = EscalationChain::findOrFail($id);
-        $chain->active = true;
-        $chain->save();
+        EscalationChain::findOrFail($id)->update(['active' => true]);
         return response()->json(['message' => 'Escalation chain activated']);
     }
 
-    public function deactivateEscalationChain($id)
+    public function deactivateEscalationChain(string $id): JsonResponse
     {
-        $chain = EscalationChain::findOrFail($id);
-        $chain->active = false;
-        $chain->save();
+        EscalationChain::findOrFail($id)->update(['active' => false]);
         return response()->json(['message' => 'Escalation chain deactivated']);
     }
 
-    // --- Messaging ---
-    public function getThreads(Request $request)
+    // ═══════════════════════════════════════════════════════════════
+    // MESSAGING
+    // ═══════════════════════════════════════════════════════════════
+
+    /**
+     * Get message threads for a user.
+     * Body: { user_id: uuid }
+     */
+    public function getThreads(Request $request): JsonResponse
     {
-        $userId = $request->header('X-User-ID', '1');
-        $threads = MessageThread::whereHas('participants', function ($q) use ($userId) {
-            $q->where('user_id', $userId);
-        })->get();
+        $validated = $request->validate(['user_id' => ['required', 'uuid']]);
+
+        $threads = MessageThread::whereHas('participants', fn ($q) =>
+            $q->where('user_id', $validated['user_id'])
+        )->get();
+
         return response()->json($threads);
     }
 
-    public function createThread(Request $request)
+    /**
+     * Create a new message thread.
+     * Body: { user_id: uuid, role: string, ...thread fields }
+     */
+    public function createThread(Request $request): JsonResponse
     {
-        $userId = $request->header('X-User-ID', '1');
-        $userRole = $request->header('X-User-Role', 'patient');
+        $validated = $request->validate([
+            'user_id' => ['required', 'uuid'],
+            'role'    => ['required', 'string', 'max:100'],
+        ]);
 
         try {
-            $thread = $this->messagingService->createThread($userId, $userRole, $request->all());
+            $thread = $this->messagingService->createThread(
+                $validated['user_id'],
+                $validated['role'],
+                $request->except(['user_id', 'role'])
+            );
             return response()->json($thread, 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 
-    public function getThread(Request $request, $id)
+    /**
+     * Get a thread and its messages.
+     * Body: { user_id: uuid }
+     */
+    public function getThread(Request $request, string $id): JsonResponse
     {
-        $userId = $request->header('X-User-ID', '1');
+        $validated = $request->validate(['user_id' => ['required', 'uuid']]);
+
         $thread = MessageThread::findOrFail($id);
 
-        if (!$this->permissionService->canViewThread($userId, $thread->uuid)) {
+        if (!$this->permissionService->canViewThread($validated['user_id'], $thread->uuid)) {
             return response()->json(['error' => 'MESSAGE_ACCESS_DENIED'], 403);
         }
 
         return response()->json($thread->load('messages'));
     }
 
-    public function sendMessage(Request $request, $id)
+    /**
+     * Send a message to a thread.
+     * Body: { user_id: uuid, body: string }
+     */
+    public function sendMessage(Request $request, string $id): JsonResponse
     {
-        $userId = $request->header('X-User-ID', '1');
+        $validated = $request->validate([
+            'user_id' => ['required', 'uuid'],
+            'body'    => ['required', 'string'],
+        ]);
+
         $thread = MessageThread::findOrFail($id);
 
         try {
-            $message = $this->messagingService->sendMessage($thread->uuid, $userId, $request->input('body'));
+            $message = $this->messagingService->sendMessage(
+                $thread->uuid,
+                $validated['user_id'],
+                $validated['body']
+            );
             return response()->json($message, 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 
-    public function closeThread($id)
+    public function closeThread(string $id): JsonResponse
     {
-        $thread = MessageThread::findOrFail($id);
-        $this->messagingService->closeThread($thread->uuid);
+        $this->messagingService->closeThread(MessageThread::findOrFail($id)->uuid);
         return response()->json(['message' => 'Thread closed']);
     }
 
-    public function reopenThread($id)
+    public function reopenThread(string $id): JsonResponse
     {
-        $thread = MessageThread::findOrFail($id);
-        $this->messagingService->reopenThread($thread->uuid);
+        $this->messagingService->reopenThread(MessageThread::findOrFail($id)->uuid);
         return response()->json(['message' => 'Thread reopened']);
     }
 
-    public function editMessage(Request $request, $id)
+    public function editMessage(Request $request, string $id): JsonResponse
     {
+        $validated = $request->validate(['body' => ['required', 'string']]);
+
         $message = Message::findOrFail($id);
-        $message->body = $request->input('body');
+        $message->body      = $validated['body'];
         $message->edited_at = now();
         $message->save();
+
         return response()->json($message);
     }
 
-    public function deleteMessageForMe($id)
+    public function deleteMessageForMe(string $id): JsonResponse
     {
         $message = Message::findOrFail($id);
         $message->deleted_for_sender_at = now();
         $message->save();
-        return response()->json(['message' => 'Message deleted for view']);
+        return response()->json(['message' => 'Message deleted from view']);
     }
 
-    public function reportMessage($id)
+    public function reportMessage(string $id): JsonResponse
     {
+        Message::findOrFail($id); // 404 guard
         return response()->json(['message' => 'Message reported for moderation']);
     }
 
-    public function uploadAttachment(Request $request, $id)
+    public function uploadAttachment(Request $request, string $id): JsonResponse
     {
+        $validated = $request->validate([
+            'file_name'      => ['required', 'string', 'max:255'],
+            'file_path'      => ['required', 'string'],
+            'mime_type'      => ['required', 'string', 'max:100'],
+            'file_size'      => ['required', 'integer', 'min:1'],
+            'classification' => ['nullable', 'string', 'in:PHI,PII,general'],
+        ]);
+
         $message = Message::findOrFail($id);
-        
+
         try {
             $attachment = $this->attachmentService->uploadAttachment(
                 $message,
-                $request->input('file_name'),
-                $request->input('file_path'),
-                $request->input('mime_type'),
-                $request->input('file_size'),
-                $request->input('classification', 'PHI')
+                $validated['file_name'],
+                $validated['file_path'],
+                $validated['mime_type'],
+                $validated['file_size'],
+                $validated['classification'] ?? 'PHI'
             );
             return response()->json($attachment, 201);
         } catch (\Exception $e) {
@@ -380,46 +498,161 @@ class CommunicationController extends Controller
         }
     }
 
-    // --- Broadcasts ---
-    public function getBroadcasts()
-    {
-        return response()->json(Broadcast::all());
-    }
+    // ═══════════════════════════════════════════════════════════════
+    // BROADCASTS
+    // ═══════════════════════════════════════════════════════════════
 
-    public function createBroadcast(Request $request)
+    /**
+     * List active (published, non-expired) broadcasts.
+     * ?facility_id= scopes results to platform-wide + facility-specific.
+     * facility_id is read from middleware attributes — never from query string for auth.
+     */
+    public function getBroadcasts(Request $request): JsonResponse
     {
-        $userId = $request->header('X-User-ID', '1');
-        $broadcast = Broadcast::create([
-            'uuid' => Str::uuid(),
-            'broadcast_type' => $request->input('broadcast_type'),
-            'title' => $request->input('title'),
-            'body' => $request->input('body'),
-            'target_type' => $request->input('target_type'),
-            'target_ids_json' => json_encode($request->input('target_ids')),
-            'created_by' => $userId
+        $facilityId = $request->attributes->get('facility_id')
+            ?? $request->query('facility_id'); // public display boards may be unauthenticated
+
+        return response()->json([
+            'data' => $this->broadcastService->getActive($facilityId),
         ]);
-        return response()->json($broadcast, 201);
     }
 
-    public function publishBroadcast($id)
+    /**
+     * Create a broadcast draft.
+     * Body: {
+     *   broadcast_type, title, body, target_type,
+     *   target_ids?, priority?, language?,
+     *   requires_acknowledgement?, expires_at?,
+     *   created_by: uuid   ← the admin actor
+     * }
+     * facility_id from middleware attributes.
+     */
+    public function createBroadcast(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'broadcast_type'           => ['required', 'string', 'max:100'],
+            'title'                    => ['required', 'string', 'max:255'],
+            'body'                     => ['required', 'string'],
+            'target_type'              => ['required', 'string', 'in:all,facility,role,specific_users'],
+            'target_ids'               => ['nullable', 'array'],
+            'target_ids.*'             => ['string'],
+            'priority'                 => ['nullable', 'in:low,normal,high,urgent'],
+            'language'                 => ['nullable', 'string', 'max:5'],
+            'requires_acknowledgement' => ['nullable', 'boolean'],
+            'expires_at'               => ['nullable', 'date', 'after:now'],
+            'created_by'               => ['required', 'uuid'],
+        ]);
+
+        $broadcast = $this->broadcastService->create($validated, $validated['created_by']);
+
+        return response()->json(['message' => 'Broadcast draft created.', 'data' => $broadcast], 201);
+    }
+
+    /**
+     * Update a broadcast draft.
+     * Only drafts can be updated — published broadcasts cannot be modified.
+     */
+    public function updateAdminTemp(Request $request, string $id): JsonResponse
     {
         $broadcast = Broadcast::findOrFail($id);
-        $broadcast->status = 'published';
-        $broadcast->publish_at = now();
-        $broadcast->save();
-        return response()->json(['message' => 'Broadcast published']);
+
+        $validated = $request->validate([
+            'broadcast_type'           => ['nullable', 'string', 'max:100'],
+            'title'                    => ['nullable', 'string', 'max:255'],
+            'body'                     => ['nullable', 'string'],
+            'target_type'              => ['nullable', 'string', 'in:all,facility,role,specific_users'],
+            'target_ids'               => ['nullable', 'array'],
+            'target_ids.*'             => ['string'],
+            'priority'                 => ['nullable', 'in:low,normal,high,urgent'],
+            'language'                 => ['nullable', 'string', 'max:5'],
+            'requires_acknowledgement' => ['nullable', 'boolean'],
+            'expires_at'               => ['nullable', 'date', 'after:now'],
+        ]);
+
+        try {
+            $updated = $this->broadcastService->update($broadcast, $validated);
+        } catch (\DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json(['message' => 'Broadcast updated.', 'data' => $updated]);
     }
 
-    public function cancelBroadcast($id)
+    /**
+     * Publish a broadcast — transitions from draft to published.
+     * Published broadcasts become visible in recipient feeds immediately.
+     */
+    public function publishBroadcast(string $id): JsonResponse
     {
         $broadcast = Broadcast::findOrFail($id);
-        $broadcast->status = 'cancelled';
-        $broadcast->save();
-        return response()->json(['message' => 'Broadcast cancelled']);
+
+        try {
+            $published = $this->broadcastService->publish($broadcast);
+        } catch (\DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json(['message' => 'Broadcast published.', 'data' => $published]);
     }
 
-    public function acknowledgeBroadcast(Request $request, $id)
+    /**
+     * Cancel a broadcast.
+     */
+    public function cancelBroadcast(string $id): JsonResponse
     {
-        return response()->json(['message' => 'Broadcast acknowledged']);
+        $broadcast = Broadcast::findOrFail($id);
+
+        try {
+            $cancelled = $this->broadcastService->cancel($broadcast);
+        } catch (\DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json(['message' => 'Broadcast cancelled.', 'data' => $cancelled]);
+    }
+
+    /**
+     * Acknowledge a broadcast.
+     * Only valid for published broadcasts with requires_acknowledgement = true.
+     * Body: { user_id: uuid }
+     *
+     * Idempotent — acknowledging twice returns the existing record.
+     */
+    public function acknowledgeBroadcast(Request $request, string $id): JsonResponse
+    {
+        $validated = $request->validate(['user_id' => ['required', 'uuid']]);
+
+        $broadcast  = Broadcast::findOrFail($id);
+        $facilityId = $request->attributes->get('facility_id');
+
+        try {
+            $ack = $this->broadcastService->acknowledge(
+                $broadcast,
+                $validated['user_id'],
+                $facilityId,
+                $request->ip()
+            );
+        } catch (\DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json([
+            'message' => 'Broadcast acknowledged.',
+            'data'    => [
+                'broadcast_id'    => $broadcast->id,
+                'user_id'         => $ack->user_id,
+                'acknowledged_at' => $ack->acknowledged_at?->toISOString(),
+            ],
+        ]);
+    }
+
+    /**
+     * Get acknowledgement summary for a broadcast.
+     * Returns total count and per-user acknowledgement records.
+     */
+    public function broadcastAcknowledgements(string $id): JsonResponse
+    {
+        $broadcast = Broadcast::findOrFail($id);
+        return response()->json(['data' => $this->broadcastService->acknowledgementSummary($broadcast)]);
     }
 }

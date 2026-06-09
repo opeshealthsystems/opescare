@@ -22,6 +22,40 @@ use App\Services\AuditLogger;
 
 class PublicHealthController extends Controller
 {
+    private DraftGenerationService $draftService;
+    private DataQualityCheckService $qualityService;
+    private ExportService $exportService;
+
+    public function __construct(
+        DraftGenerationService $draftService,
+        DataQualityCheckService $qualityService,
+        ExportService $exportService
+    ) {
+        $this->draftService   = $draftService;
+        $this->qualityService = $qualityService;
+        $this->exportService  = $exportService;
+    }
+
+    /**
+     * Resolve operator identity from middleware-set request attributes only.
+     * Returns null if no trusted actor can be found.
+     */
+    private function resolveOperatorId(Request $request): ?string
+    {
+        if ($id = $request->user()?->id) {
+            return $id;
+        }
+        $clientId = $request->attributes->get('integration_client_id');
+        if ($clientId && Str::isUuid($clientId)) {
+            return $clientId;
+        }
+        $providerId = $request->attributes->get('provider_id');
+        if ($providerId && Str::isUuid($providerId)) {
+            return $providerId;
+        }
+        return null;
+    }
+
     public function getReportTypes()
     {
         return response()->json(ReportType::where('is_active', true)->get());
@@ -48,23 +82,27 @@ class PublicHealthController extends Controller
 
     public function generateDrafts(Request $request)
     {
-        $request->validate([
-            'facility_id' => 'required|uuid',
+        // [IDOR FIX] facility_id from middleware only — never from request body
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['error' => 'FACILITY_UNRESOLVABLE', 'message' => 'Facility could not be resolved from bearer token.'], 403);
+        }
+
+        $validated = $request->validate([
             'period_start' => 'required|date',
-            'period_end' => 'required|date'
+            'period_end'   => 'required|date',
         ]);
 
-        $service = new DraftGenerationService();
-        $reports = $service->generateDrafts(
-            $request->input('facility_id'),
-            $request->input('period_start'),
-            $request->input('period_end')
+        $reports = $this->draftService->generateDrafts(
+            $facilityId,
+            $validated['period_start'],
+            $validated['period_end']
         );
 
         return response()->json([
-            'message' => 'Draft reports generation completed.',
+            'message'         => 'Draft reports generation completed.',
             'generated_count' => count($reports),
-            'reports' => $reports
+            'reports'         => $reports
         ]);
     }
 
@@ -79,17 +117,17 @@ class PublicHealthController extends Controller
 
     public function getDashboard(Request $request)
     {
-        $draftsCount = PublicHealthReport::where('status', 'draft')->count();
-        $pendingCount = PublicHealthReport::where('status', 'pending_review')->count();
-        $approvedCount = PublicHealthReport::where('status', 'approved_for_submission')->count();
+        $draftsCount    = PublicHealthReport::where('status', 'draft')->count();
+        $pendingCount   = PublicHealthReport::where('status', 'pending_review')->count();
+        $approvedCount  = PublicHealthReport::where('status', 'approved_for_submission')->count();
         $submittedCount = PublicHealthReport::where('status', 'submitted')->count();
 
         return response()->json([
             'metrics' => [
-                'draft_reports' => $draftsCount,
+                'draft_reports'          => $draftsCount,
                 'reports_pending_review' => $pendingCount,
-                'approved_for_submission' => $approvedCount,
-                'submitted_reports' => $submittedCount
+                'approved_for_submission'=> $approvedCount,
+                'submitted_reports'      => $submittedCount
             ]
         ]);
     }
@@ -106,9 +144,9 @@ class PublicHealthController extends Controller
 
         $reports = PublicHealthReport::where('facility_id', $facilityId)->get();
         return response()->json([
-            'facility_id' => $facilityId,
-            'total_reports' => $reports->count(),
-            'drafts' => $reports->where('status', 'draft')->count(),
+            'facility_id'       => $facilityId,
+            'total_reports'     => $reports->count(),
+            'drafts'            => $reports->where('status', 'draft')->count(),
             'requires_correction' => $reports->where('status', 'requires_correction')->count()
         ]);
     }
@@ -116,6 +154,11 @@ class PublicHealthController extends Controller
     // Phase 2: Governance & Workflow APIs
     public function submitForReview($id, Request $request)
     {
+        $operatorId = $this->resolveOperatorId($request);
+        if (!$operatorId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
+
         $report = PublicHealthReport::find($id);
         if (!$report) return response()->json(['error' => 'Report not found.'], 404);
 
@@ -123,11 +166,11 @@ class PublicHealthController extends Controller
         $report->save();
 
         ReportStatusHistory::create([
-            'report_id' => $report->id,
+            'report_id'  => $report->id,
             'old_status' => 'draft',
             'new_status' => 'pending_review',
-            'changed_by' => $this->operatorId($request),
-            'reason' => 'Submitted for public health review.',
+            'changed_by' => $operatorId,
+            'reason'     => 'Submitted for public health review.',
             'changed_at' => now()
         ]);
 
@@ -137,18 +180,23 @@ class PublicHealthController extends Controller
     public function assignReport($id, Request $request)
     {
         $request->validate(['assigned_to' => 'required|uuid']);
+
+        $operatorId = $this->resolveOperatorId($request);
+        if (!$operatorId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
+
         $report = PublicHealthReport::find($id);
         if (!$report) return response()->json(['error' => 'Report not found.'], 404);
 
         $assigneeId = $request->input('assigned_to');
-        $operatorId = $this->operatorId($request);
 
         ReportAssignment::create([
-            'report_id' => $report->id,
-            'assigned_to' => $assigneeId,
-            'assigned_by' => $operatorId,
+            'report_id'         => $report->id,
+            'assigned_to'       => $assigneeId,
+            'assigned_by'       => $operatorId,
             'assignment_status' => 'assigned',
-            'assigned_at' => now()
+            'assigned_at'       => now()
         ]);
 
         return response()->json(['message' => 'Report successfully assigned for review.']);
@@ -156,6 +204,11 @@ class PublicHealthController extends Controller
 
     public function approveReport($id, Request $request)
     {
+        $operatorId = $this->resolveOperatorId($request);
+        if (!$operatorId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
+
         $report = PublicHealthReport::find($id);
         if (!$report) return response()->json(['error' => 'Report not found.'], 404);
 
@@ -163,22 +216,20 @@ class PublicHealthController extends Controller
         $report->status = 'approved_for_submission';
         $report->save();
 
-        $operatorId = $this->operatorId($request);
-
         ReportReview::create([
-            'report_id' => $report->id,
+            'report_id'   => $report->id,
             'reviewer_id' => $operatorId,
-            'action' => 'approve',
-            'comment' => $request->input('comment', 'Approved.'),
+            'action'      => 'approve',
+            'comment'     => $request->input('comment', 'Approved.'),
             'reviewed_at' => now()
         ]);
 
         ReportStatusHistory::create([
-            'report_id' => $report->id,
+            'report_id'  => $report->id,
             'old_status' => $oldStatus,
             'new_status' => 'approved_for_submission',
             'changed_by' => $operatorId,
-            'reason' => $request->input('comment', 'Approved.'),
+            'reason'     => $request->input('comment', 'Approved.'),
             'changed_at' => now()
         ]);
 
@@ -188,6 +239,12 @@ class PublicHealthController extends Controller
     public function requestCorrection($id, Request $request)
     {
         $request->validate(['reason' => 'required|string']);
+
+        $operatorId = $this->resolveOperatorId($request);
+        if (!$operatorId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
+
         $report = PublicHealthReport::find($id);
         if (!$report) return response()->json(['error' => 'Report not found.'], 404);
 
@@ -196,23 +253,22 @@ class PublicHealthController extends Controller
         $report->requires_correction = true;
         $report->save();
 
-        $operatorId = $this->operatorId($request);
         $reason = $request->input('reason');
 
         ReportReview::create([
-            'report_id' => $report->id,
+            'report_id'   => $report->id,
             'reviewer_id' => $operatorId,
-            'action' => 'request_correction',
-            'comment' => $reason,
+            'action'      => 'request_correction',
+            'comment'     => $reason,
             'reviewed_at' => now()
         ]);
 
         ReportStatusHistory::create([
-            'report_id' => $report->id,
+            'report_id'  => $report->id,
             'old_status' => $oldStatus,
             'new_status' => 'requires_correction',
             'changed_by' => $operatorId,
-            'reason' => $reason,
+            'reason'     => $reason,
             'changed_at' => now()
         ]);
 
@@ -222,6 +278,12 @@ class PublicHealthController extends Controller
     public function rejectReport($id, Request $request)
     {
         $request->validate(['reason' => 'required|string']);
+
+        $operatorId = $this->resolveOperatorId($request);
+        if (!$operatorId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
+
         $report = PublicHealthReport::find($id);
         if (!$report) return response()->json(['error' => 'Report not found.'], 404);
 
@@ -229,23 +291,22 @@ class PublicHealthController extends Controller
         $report->status = 'rejected';
         $report->save();
 
-        $operatorId = $this->operatorId($request);
         $reason = $request->input('reason');
 
         ReportReview::create([
-            'report_id' => $report->id,
+            'report_id'   => $report->id,
             'reviewer_id' => $operatorId,
-            'action' => 'reject',
-            'comment' => $reason,
+            'action'      => 'reject',
+            'comment'     => $reason,
             'reviewed_at' => now()
         ]);
 
         ReportStatusHistory::create([
-            'report_id' => $report->id,
+            'report_id'  => $report->id,
             'old_status' => $oldStatus,
             'new_status' => 'rejected',
             'changed_by' => $operatorId,
-            'reason' => $reason,
+            'reason'     => $reason,
             'changed_at' => now()
         ]);
 
@@ -255,6 +316,12 @@ class PublicHealthController extends Controller
     public function cancelReport($id, Request $request)
     {
         $request->validate(['reason' => 'required|string']);
+
+        $operatorId = $this->resolveOperatorId($request);
+        if (!$operatorId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
+
         $report = PublicHealthReport::find($id);
         if (!$report) return response()->json(['error' => 'Report not found.'], 404);
 
@@ -262,15 +329,14 @@ class PublicHealthController extends Controller
         $report->status = 'cancelled';
         $report->save();
 
-        $operatorId = $this->operatorId($request);
         $reason = $request->input('reason');
 
         ReportStatusHistory::create([
-            'report_id' => $report->id,
+            'report_id'  => $report->id,
             'old_status' => $oldStatus,
             'new_status' => 'cancelled',
             'changed_by' => $operatorId,
-            'reason' => $reason,
+            'reason'     => $reason,
             'changed_at' => now()
         ]);
 
@@ -281,13 +347,17 @@ class PublicHealthController extends Controller
     {
         $request->validate([
             'payload' => 'required|array',
-            'reason' => 'required|string'
+            'reason'  => 'required|string'
         ]);
+
+        $operatorId = $this->resolveOperatorId($request);
+        if (!$operatorId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
 
         $report = PublicHealthReport::find($id);
         if (!$report) return response()->json(['error' => 'Report not found.'], 404);
 
-        $operatorId = $this->operatorId($request);
         $reason = $request->input('reason');
 
         // Increment version number and save version history payload
@@ -295,12 +365,12 @@ class PublicHealthController extends Controller
         $newVersion = $currentVersion + 1;
 
         ReportVersion::create([
-            'report_id' => $report->id,
+            'report_id'      => $report->id,
             'version_number' => $newVersion,
-            'payload_json' => $report->payload_json ?? [],
-            'change_reason' => $reason,
-            'created_by' => $operatorId,
-            'created_at' => now()
+            'payload_json'   => $report->payload_json ?? [],
+            'change_reason'  => $reason,
+            'created_by'     => $operatorId,
+            'created_at'     => now()
         ]);
 
         // Save new payload
@@ -310,11 +380,10 @@ class PublicHealthController extends Controller
         $report->save();
 
         // Re-run quality checks
-        $qualityService = new DataQualityCheckService();
-        $qualityService->runQualityChecks($report);
+        $this->qualityService->runQualityChecks($report);
 
         return response()->json([
-            'status' => 'draft',
+            'status'  => 'draft',
             'version' => $newVersion,
             'message' => 'Report updated and version preserved.'
         ]);
@@ -348,22 +417,28 @@ class PublicHealthController extends Controller
 
     public function createSubmissionProfile(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'report_type_id' => 'required|uuid',
-            'destination_type' => 'required|string',
-            'endpoint_url' => 'required|url',
-            'auth_method' => 'required|string',
-            'payload_format' => 'required|string'
+        $validated = $request->validate([
+            'name'             => 'required|string|max:255',
+            'report_type_id'   => 'required|uuid',
+            'destination_type' => 'required|string|max:100',
+            'endpoint_url'     => 'required|url',
+            'auth_method'      => 'required|string|max:100',
+            'payload_format'   => 'required|string|max:50',
         ]);
 
-        $profile = SubmissionProfile::create($request->all());
+        $profile = SubmissionProfile::create($validated);
         return response()->json($profile, 201);
     }
 
     public function submitReport($id, Request $request)
     {
         $request->validate(['profile_id' => 'required|uuid']);
+
+        $operatorId = $this->resolveOperatorId($request);
+        if (!$operatorId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
+
         $report = PublicHealthReport::find($id);
         if (!$report) return response()->json(['error' => 'Report not found.'], 404);
 
@@ -374,44 +449,44 @@ class PublicHealthController extends Controller
         $profile = SubmissionProfile::find($request->input('profile_id'));
         if (!$profile) return response()->json(['error' => 'Submission profile not found.'], 404);
 
-        $operatorId = $this->operatorId($request);
-
         $submission = ReportSubmission::create([
-            'report_id' => $report->id,
-            'submission_profile_id' => $profile->id,
-            'submission_method' => $profile->destination_type,
-            'payload_hash' => md5(json_encode($report->payload_json)),
-            'status' => 'submitted',
-            'external_reference' => 'EXT-' . bin2hex(random_bytes(4)),
-            'response_code' => 200,
-            'safe_response_summary' => 'Accepted by ' . $profile->name,
-            'submitted_by' => $operatorId,
-            'submitted_at' => now(),
-            'accepted_at' => now()
+            'report_id'              => $report->id,
+            'submission_profile_id'  => $profile->id,
+            'submission_method'      => $profile->destination_type,
+            'payload_hash'           => hash('sha256', json_encode($report->payload_json)),
+            'status'                 => 'submitted',
+            'external_reference'     => 'EXT-' . bin2hex(random_bytes(4)),
+            'response_code'          => 200,
+            'safe_response_summary'  => 'Accepted by ' . $profile->name,
+            'submitted_by'           => $operatorId,
+            'submitted_at'           => now(),
+            'accepted_at'            => now()
         ]);
 
         $report->status = 'submitted';
         $report->save();
 
         return response()->json([
-            'status' => 'submitted',
+            'status'     => 'submitted',
             'submission' => $submission
         ]);
     }
 
     public function exportReport($id, Request $request)
     {
+        $operatorId = $this->resolveOperatorId($request);
+        if (!$operatorId) {
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+        }
+
         $report = PublicHealthReport::find($id);
         if (!$report) return response()->json(['error' => 'Report not found.'], 404);
 
-        $operatorId = $this->operatorId($request);
-
-        $service = new ExportService();
-        $export = $service->exportCsv($report, $operatorId);
+        $export = $this->exportService->exportCsv($report, $operatorId);
 
         return response()->json([
-            'message' => 'Export successfully created with Small-Cell Suppression.',
-            'export_id' => $export->id,
+            'message'    => 'Export successfully created with Small-Cell Suppression.',
+            'export_id'  => $export->id,
             'expires_at' => $export->expires_at
         ]);
     }
@@ -424,7 +499,7 @@ class PublicHealthController extends Controller
     public function getIntegrationStatus()
     {
         return response()->json([
-            'status' => 'healthy',
+            'status'           => 'healthy',
             'active_endpoints' => SubmissionProfile::where('active', true)->count()
         ]);
     }
@@ -444,23 +519,5 @@ class PublicHealthController extends Controller
         $export->save();
 
         return response()->download($export->file_path);
-    }
-
-    /**
-     * Derive the operator ID for audit fields in B2B contexts.
-     * VerifyIntegrationClient sets 'integration_client_id' on request attributes.
-     * Never falls back to a random DB user lookup — that attributes governance
-     * actions to an arbitrary row with no forensic value.
-     */
-    private function operatorId(Request $request): string
-    {
-        if ($id = $request->user()?->id) {
-            return $id;
-        }
-        $clientId = $request->attributes->get('integration_client_id');
-        if ($clientId && Str::isUuid($clientId)) {
-            return $clientId;
-        }
-        return config('opescare.system_provider_id', '00000000-0000-0000-0000-000000000001');
     }
 }

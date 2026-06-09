@@ -14,10 +14,14 @@ class RevenueCycleController extends Controller
 
     public function summary(Request $request): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['message' => 'Facility could not be resolved.', 'code' => 'FACILITY_UNRESOLVABLE'], 403);
+        }
+
         $validated = $request->validate([
-            'facility_id' => ['required', 'uuid', 'exists:facilities,id'],
-            'from'        => ['sometimes', 'date_format:Y-m-d'],
-            'to'          => ['sometimes', 'date_format:Y-m-d', 'after_or_equal:from'],
+            'from' => ['sometimes', 'date_format:Y-m-d'],
+            'to'   => ['sometimes', 'date_format:Y-m-d', 'after_or_equal:from'],
         ]);
 
         $from = isset($validated['from'])
@@ -27,24 +31,29 @@ class RevenueCycleController extends Controller
             ? Carbon::parse($validated['to'])->endOfDay()
             : Carbon::now()->endOfDay();
 
-        return response()->json(['data' => $this->service->getSummary($validated['facility_id'], $from, $to)]);
+        return response()->json(['data' => $this->service->getSummary($facilityId, $from, $to)]);
     }
 
     public function aging(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'facility_id' => ['required', 'uuid', 'exists:facilities,id'],
-        ]);
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['message' => 'Facility could not be resolved.', 'code' => 'FACILITY_UNRESOLVABLE'], 403);
+        }
 
-        return response()->json(['data' => $this->service->getAgingReport($validated['facility_id'])]);
+        return response()->json(['data' => $this->service->getAgingReport($facilityId)]);
     }
 
     public function denials(Request $request): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['message' => 'Facility could not be resolved.', 'code' => 'FACILITY_UNRESOLVABLE'], 403);
+        }
+
         $validated = $request->validate([
-            'facility_id' => ['required', 'uuid', 'exists:facilities,id'],
-            'from'        => ['sometimes', 'date_format:Y-m-d'],
-            'to'          => ['sometimes', 'date_format:Y-m-d', 'after_or_equal:from'],
+            'from' => ['sometimes', 'date_format:Y-m-d'],
+            'to'   => ['sometimes', 'date_format:Y-m-d', 'after_or_equal:from'],
         ]);
 
         $from = isset($validated['from'])
@@ -54,19 +63,23 @@ class RevenueCycleController extends Controller
             ? Carbon::parse($validated['to'])->endOfDay()
             : Carbon::now()->endOfDay();
 
-        return response()->json(['data' => $this->service->getDenialReasons($validated['facility_id'], $from, $to)]);
+        return response()->json(['data' => $this->service->getDenialReasons($facilityId, $from, $to)]);
     }
 
     public function trend(Request $request): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['message' => 'Facility could not be resolved.', 'code' => 'FACILITY_UNRESOLVABLE'], 403);
+        }
+
         $validated = $request->validate([
-            'facility_id' => ['required', 'uuid', 'exists:facilities,id'],
-            'months'      => ['sometimes', 'integer', 'min:1', 'max:24'],
+            'months' => ['sometimes', 'integer', 'min:1', 'max:24'],
         ]);
 
         return response()->json([
             'data' => $this->service->getMonthlyTrend(
-                $validated['facility_id'],
+                $facilityId,
                 (int) ($validated['months'] ?? 6)
             ),
         ]);

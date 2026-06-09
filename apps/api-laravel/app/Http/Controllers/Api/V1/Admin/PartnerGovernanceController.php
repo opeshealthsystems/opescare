@@ -3,18 +3,24 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Modules\Partners\Models\Partner;
 use App\Modules\Partners\Services\PartnerApplicationService;
+use App\Modules\Partners\Services\PartnerRiskScoreService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class PartnerGovernanceController extends Controller
 {
     private PartnerApplicationService $applicationService;
+    private PartnerRiskScoreService   $riskScores;
 
-    public function __construct(PartnerApplicationService $applicationService)
-    {
+    public function __construct(
+        PartnerApplicationService $applicationService,
+        PartnerRiskScoreService   $riskScores
+    ) {
         $this->applicationService = $applicationService;
+        $this->riskScores         = $riskScores;
     }
 
     public function listPartners(Request $request)
@@ -144,5 +150,38 @@ class PartnerGovernanceController extends Controller
                 'message' => $e->getMessage()
             ], 400);
         }
+    }
+
+    /**
+     * Record a risk event against a partner.
+     * Automatically escalates to critical governance if score threshold exceeded.
+     * Body: { risk_factor, severity: low|medium|high|critical, score_delta, actor_id? }
+     */
+    public function recordRiskEvent(Request $request, string $id): JsonResponse
+    {
+        $partner = Partner::where('uuid', $id)->firstOrFail();
+
+        $validated = $request->validate([
+            'risk_factor'  => ['required', 'string', 'max:255'],
+            'severity'     => ['required', 'in:low,medium,high,critical'],
+            'score_delta'  => ['required', 'integer', 'min:1', 'max:100'],
+            'actor_id'     => ['nullable', 'string'],
+        ]);
+
+        $riskScore = $this->riskScores->recordRiskEvent(
+            $partner,
+            $validated['risk_factor'],
+            $validated['severity'],
+            $validated['score_delta'],
+            $validated['actor_id'] ?? $request->user()?->uuid ?? 'api'
+        );
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => $riskScore->risk_level === 'critical'
+                ? 'Risk event recorded. Partner escalated to critical — governance case opened and partner suspended.'
+                : 'Risk event recorded.',
+            'data'    => $riskScore,
+        ], 201);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\IdentityStatus;
+use App\Enums\VerificationStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class Patient extends Model
 {
@@ -41,6 +44,7 @@ class Patient extends Model
         'national_id_type',
         'push_token',
         'push_platform',
+        'facility_id',
     ];
 
     // is_demo is intentionally excluded from $fillable.
@@ -62,11 +66,20 @@ class Patient extends Model
         // encrypted cast before old-style accessors (Laravel 13 priority order), which
         // means a DecryptException from a key-mismatch crashes before our try/catch runs.
         // Removing the cast lets our accessor/mutator own the full encrypt→decrypt cycle.
-        'is_dob_estimated'   => 'boolean',
-        'emergency_contact'  => 'array',
+        'is_dob_estimated'    => 'boolean',
+        'emergency_contact'   => 'array',
         'privacy_preferences' => 'array',
-        'verified_at'        => 'datetime',
-        'cnamgs_verified_at' => 'datetime',
+        'verified_at'         => 'datetime',
+        'cnamgs_verified_at'  => 'datetime',
+        'expires_at'          => 'datetime',
+        'renewal_required_at' => 'datetime',
+        // Enum casts — values are stored as strings in the DB; the cast makes the
+        // PHP attribute a typed BackedEnum so code can compare with VerificationStatus::Verified
+        // rather than the string literal 'verified', preventing typo bugs.
+        // Laravel's enum cast calls ->value when writing, ->from() when reading,
+        // so existing string rows are automatically coerced on first access.
+        'verification_status' => VerificationStatus::class,
+        'identity_status'     => IdentityStatus::class,
     ];
 
     /**
@@ -83,17 +96,38 @@ class Patient extends Model
             return null;
         }
 
-        // If the value looks like an encrypted payload (base64-JSON), decrypt it first.
         $raw = (string) $value;
+
+        // If the value looks like an encrypted payload (base64-JSON), decrypt it.
         if (str_starts_with($raw, 'eyJ')) {
             try {
                 $raw = Crypt::decryptString($raw);
-            } catch (\Throwable) {
-                // Value was already plain text (e.g. during factory->make before save)
+            } catch (\Throwable $e) {
+                // Decryption failed — most likely an APP_KEY rotation without re-encrypting
+                // existing rows.  Log a warning so operations can detect and remediate.
+                // Return null rather than exposing ciphertext or a garbage parse result.
+                Log::warning('patient_dob_decrypt_failed', [
+                    'patient_id' => $this->attributes['id'] ?? 'unknown',
+                    'reason'     => 'DecryptException — possible APP_KEY rotation',
+                ]);
+                return null;
             }
         }
 
-        return Carbon::parse($raw);
+        // Validate the date before parsing to prevent Carbon accepting invalid dates
+        // (e.g. "2025-13-45") and silently rolling them forward.
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $raw) || !checkdate(
+            (int) substr($raw, 5, 2),
+            (int) substr($raw, 8, 2),
+            (int) substr($raw, 0, 4)
+        )) {
+            Log::warning('patient_dob_invalid_format', [
+                'patient_id' => $this->attributes['id'] ?? 'unknown',
+            ]);
+            return null;
+        }
+
+        return Carbon::createFromFormat('Y-m-d', $raw)->startOfDay();
     }
 
     /**
@@ -110,8 +144,13 @@ class Patient extends Model
             try {
                 return Crypt::decryptString($raw);
             } catch (\Throwable) {
-                // Value was plain text (e.g. pre-encryption legacy data)
-                return $raw;
+                // Decryption failed — APP_KEY rotation or corruption.
+                // Do NOT return the ciphertext as plaintext; return null.
+                Log::warning('patient_phone_decrypt_failed', [
+                    'patient_id' => $this->attributes['id'] ?? 'unknown',
+                    'reason'     => 'DecryptException — possible APP_KEY rotation',
+                ]);
+                return null;
             }
         }
 
@@ -137,7 +176,11 @@ class Patient extends Model
             try {
                 return Crypt::decryptString($raw);
             } catch (\Throwable) {
-                // Ciphertext unreadable with current APP_KEY — return null rather than crash.
+                // Ciphertext unreadable with current APP_KEY — log and return null.
+                Log::warning('patient_address_decrypt_failed', [
+                    'patient_id' => $this->attributes['id'] ?? 'unknown',
+                    'reason'     => 'DecryptException — possible APP_KEY rotation',
+                ]);
                 return null;
             }
         }
@@ -246,5 +289,14 @@ class Patient extends Model
     public function surveys()
     {
         return $this->hasMany(PatientSurvey::class);
+    }
+
+    /**
+     * Retired Health IDs that point to this patient (merge aliases).
+     * A canonical patient can have many aliases from merged duplicates.
+     */
+    public function mergeAliases()
+    {
+        return $this->hasMany(PatientMergeAlias::class, 'canonical_patient_id');
     }
 }

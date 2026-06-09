@@ -15,10 +15,14 @@ class PatientPaymentPlanController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['message' => 'Facility could not be resolved.', 'error_code' => 'FACILITY_UNRESOLVABLE'], 403);
+        }
+
         $validated = $request->validate([
             'patient_id'         => ['required', 'uuid', 'exists:patients,id'],
             'invoice_id'         => ['required', 'uuid', 'exists:invoices,id'],
-            'facility_id'        => ['required', 'uuid', 'exists:facilities,id'],
             'total_amount'       => ['required', 'numeric', 'min:0.01'],
             'down_payment'       => ['sometimes', 'numeric', 'min:0'],
             'installment_amount' => ['required', 'numeric', 'min:0.01'],
@@ -27,6 +31,8 @@ class PatientPaymentPlanController extends Controller
             'next_due_date'      => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
             'notes'              => ['sometimes', 'nullable', 'string', 'max:1000'],
         ]);
+
+        $validated['facility_id'] = $facilityId;
 
         try {
             $plan = $this->service->createPlan($validated);
@@ -66,9 +72,15 @@ class PatientPaymentPlanController extends Controller
         return response()->json(['data' => $installment]);
     }
 
-    public function forPatient(string $patientId): JsonResponse
+    public function forPatient(Request $request, string $patientId): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['message' => 'Facility could not be resolved.', 'error_code' => 'FACILITY_UNRESOLVABLE'], 403);
+        }
+
         $plans = PatientPaymentPlan::where('patient_id', $patientId)
+            ->where('facility_id', $facilityId)
             ->withCount('installments')
             ->orderByDesc('created_at')
             ->get();

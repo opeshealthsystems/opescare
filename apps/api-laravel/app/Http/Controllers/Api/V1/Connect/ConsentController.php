@@ -2,96 +2,122 @@
 
 namespace App\Http\Controllers\Api\V1\Connect;
 
+use App\Enums\AuditEventType;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Patient;
+use App\Http\Requests\Connect\RequestConsentRequest;
 use App\Models\ConsentRequest;
-use App\Models\MedicalIdAccessEvent;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
+use App\Models\Patient;
+use App\Services\Identity\HealthIdAuditLogger;
+use Illuminate\Http\Request;
 
+/**
+ * Consent Controller — B2B Connect API
+ *
+ * External integration clients (HIS, pharmacy, lab, insurance) use this
+ * endpoint to request patient consent before accessing clinical data.
+ *
+ * Security hardening (audit sprint):
+ * - Validator::make() replaced by RequestConsentRequest Form Request (Wave 4)
+ * - Private logAccess() retired; all writes go through HealthIdAuditLogger
+ * - Status checks use enum-safe isBlocked() — NOT raw string comparisons,
+ *   which silently fail after Wave 4 added enum casts to Patient::$casts
+ * - Checks extended to cover merged and erasure_pending statuses
+ * - facility_id and actor resolved exclusively from middleware attributes
+ */
 class ConsentController extends Controller
 {
-    public function requestConsent(Request $request)
+    public function __construct(private readonly HealthIdAuditLogger $auditor) {}
+
+    public function requestConsent(RequestConsentRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'health_id' => 'required|string',
-            'purpose' => 'required|string|in:treatment,pharmacy_dispense,lab_order,insurance_claim,consultation',
-            'requested_scope' => 'required|array',
-            'duration_minutes' => 'required|integer|min:15|max:1440',
-        ]);
+        $validated = $request->validated();
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'invalid',
-                'error_code' => 'INVALID_PAYLOAD',
-                'message' => $validator->errors()->first()
-            ], 400);
-        }
+        // ── Caller identity from VerifyIntegrationClient middleware ───────────
+        $clientId   = $request->attributes->get('integration_client_id');
+        $facilityId = $request->attributes->get('facility_id');
+        $actorId    = $request->attributes->get('actor_id', $clientId);
 
-        $validated = $validator->validated();
-
-        // 1. Verify Patient
+        // ── 1. Verify patient exists ──────────────────────────────────────────
         $patient = Patient::where('health_id', $validated['health_id'])->first();
 
-        if (!$patient) {
-            $this->logAccess($validated['health_id'], null, $validated['purpose'], 'request_consent', 'denied', $request);
+        if (! $patient) {
+            $this->auditor->denied(
+                request:   $request,
+                eventType: AuditEventType::ConsentDenied,
+                healthId:  $validated['health_id'],
+                patientId: null,
+                notes:     'HEALTH_ID_NOT_FOUND',
+                facilityId: $facilityId,
+            );
             return response()->json([
-                'status' => 'invalid',
+                'status'     => 'invalid',
                 'error_code' => 'HEALTH_ID_NOT_FOUND',
-                'message' => 'This Health ID could not be verified.'
+                'message'    => 'This Health ID could not be verified.',
             ], 404);
         }
 
-        // 2. Status Checks
-        if (in_array($patient->verification_status, ['suspended', 'deceased', 'entered_in_error']) || 
-            in_array($patient->identity_status, ['suspended', 'deceased', 'entered_in_error'])) {
-            $this->logAccess($validated['health_id'], $patient->id, $validated['purpose'], 'request_consent', 'denied', $request);
+        // ── 2. Status gate — enum-safe blocked check ──────────────────────────
+        // CRITICAL: After Wave 4 enum casts, $patient->verification_status is a
+        // VerificationStatus enum object. in_array($enum, ['suspended', ...])
+        // will ALWAYS return false. Use isBlocked() which compares by enum case.
+        if ($this->isBlocked($patient)) {
+            $this->auditor->denied(
+                request:   $request,
+                eventType: AuditEventType::ConsentDenied,
+                healthId:  $validated['health_id'],
+                patientId: $patient->id,
+                notes:     'BLOCKED_STATUS:' . ($patient->verification_status?->value ?? 'unknown'),
+                facilityId: $facilityId,
+            );
             return response()->json([
-                'status' => 'rejected',
+                'status'     => 'rejected',
                 'error_code' => 'HEALTH_ID_SUSPENDED',
-                'message' => 'Consent cannot be requested for this Health ID due to its status.'
+                'message'    => 'Consent cannot be requested for this Health ID due to its current status.',
             ], 403);
         }
 
-        // 3. Create Consent Request
-        // We auto-approve for the demo if 'is_demo' is true, otherwise it remains 'pending'.
-        $consentStatus = $patient->is_demo ? 'granted' : 'pending';
-
+        // ── 3. Create consent request (always 'pending' — patient must approve) ─
         $consentRequest = ConsentRequest::create([
-            'patient_id' => $patient->id,
-            'requesting_facility_id' => Str::uuid(), // Mocking facility ID
-            'requesting_user_id' => Str::uuid(),     // Mocking user ID
-            'purpose' => $validated['purpose'],
-            'requested_scope' => $validated['requested_scope'],
-            'duration_minutes' => $validated['duration_minutes'],
-            'status' => $consentStatus,
+            'patient_id'             => $patient->id,
+            'requesting_facility_id' => $facilityId,
+            'requesting_user_id'     => $actorId,
+            'purpose'                => $validated['purpose'],
+            'requested_scope'        => $validated['requested_scope'],
+            'duration_minutes'       => $validated['expires_in_days']
+                ? $validated['expires_in_days'] * 1440
+                : 1440,  // default 24h if not specified
+            'status'                 => 'pending',  // never auto-granted
         ]);
 
-        // 4. Audit Log
-        $this->logAccess($validated['health_id'], $patient->id, $validated['purpose'], 'request_consent', 'success', $request);
+        // ── 4. Audit ──────────────────────────────────────────────────────────
+        $this->auditor->record(
+            request:    $request,
+            eventType:  AuditEventType::ConsentGranted,
+            result:     'pending',
+            healthId:   $patient->health_id,
+            patientId:  $patient->id,
+            facilityId: $facilityId,
+            purpose:    $validated['purpose'],
+            notes:      'Consent request created — awaiting patient approval. consent_id=' . $consentRequest->id,
+        );
 
         return response()->json([
-            'status' => 'success',
-            'consent_id' => $consentRequest->id,
-            'consent_status' => $consentStatus,
-            'message' => $consentStatus === 'granted' ? 'Consent granted for demo purposes.' : 'Consent request sent to patient.'
+            'status'         => 'success',
+            'consent_id'     => $consentRequest->id,
+            'consent_status' => 'pending',
+            'message'        => 'Consent request sent to patient for approval.',
         ], 200);
     }
 
-    private function logAccess(string $healthId, ?string $patientId, string $purpose, string $accessType, string $result, Request $request)
+    // ── Private helpers ───────────────────────────────────────────────────────
+
+    /**
+     * Enum-safe blocked status check.
+     * Covers: suspended, deceased, entered_in_error, merged, erasure_pending, expired.
+     */
+    private function isBlocked(Patient $patient): bool
     {
-        MedicalIdAccessEvent::create([
-            'patient_id' => $patientId,
-            'health_id' => $healthId,
-            'actor_id' => Str::uuid(), // Authenticated user ID in real app
-            'actor_type' => 'facility_staff',
-            'facility_id' => Str::uuid(), // Authenticated facility ID
-            'access_type' => $accessType,
-            'purpose' => $purpose,
-            'result' => $result,
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-        ]);
+        return ($patient->verification_status?->isBlocked() ?? false)
+            || ($patient->identity_status?->isBlocked() ?? false);
     }
 }

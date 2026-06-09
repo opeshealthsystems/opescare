@@ -2,158 +2,243 @@
 
 namespace App\Http\Controllers\Api\V1\Connect;
 
+use App\Enums\AuditEventType;
+use App\Enums\MedicalIdErrorCode;
+use App\Enums\VerificationStatus;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Patient;
+use App\Services\Identity\HealthIdAuditLogger;
 use App\Services\Identity\HealthIdGeneratorService;
 use App\Services\Identity\QrTokenService;
-use App\Models\Patient;
-use App\Models\MedicalIdAccessEvent;
-use App\Enums\MedicalIdErrorCode;
-use App\Enums\AuditEventType;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
+/**
+ * Health ID Verification — B2B Connect API
+ *
+ * Used by external HIS, pharmacies, labs and insurance systems to verify
+ * a patient Health ID or a QR scan before requesting consent.
+ *
+ * Both endpoints are audited via HealthIdAuditLogger per ISO 27799 §8.4.
+ *
+ * Security posture:
+ * - All status comparisons use typed enum instances (not raw strings) to
+ *   prevent silent false-negatives introduced by Wave 4 enum casting.
+ * - facility_id is resolved exclusively from the verified bearer-token
+ *   attributes set by VerifyBearerToken middleware — never from request input.
+ * - The private logAccessEvent() pattern has been fully retired. All audit
+ *   writes go through HealthIdAuditLogger for consistent field mapping and
+ *   structured log emission.
+ */
 class MedicalIdVerificationController extends Controller
 {
-    protected $healthIdService;
-    protected $qrService;
+    public function __construct(
+        private readonly HealthIdGeneratorService $healthIdService,
+        private readonly QrTokenService           $qrService,
+        private readonly HealthIdAuditLogger      $auditor,
+    ) {}
 
-    public function __construct(HealthIdGeneratorService $healthIdService, QrTokenService $qrService)
-    {
-        $this->healthIdService = $healthIdService;
-        $this->qrService = $qrService;
-    }
+    // =========================================================================
+    // POST /api/v1/connect/medical-ids/verify
+    // =========================================================================
 
-    /**
-     * POST /api/v1/connect/medical-ids/verify
-     */
     public function verifyHealthId(Request $request)
     {
         $validated = $request->validate([
-            'health_id' => 'required|string',
-            'purpose' => 'required|string',
-            'requesting_user.external_user_id' => 'nullable|string',
-            'requesting_user.role' => 'nullable|string',
+            'health_id'                        => 'required|string|max:30',
+            'purpose'                          => 'required|string|max:200',
+            'requesting_user.external_user_id' => 'nullable|string|max:100',
+            'requesting_user.role'             => 'nullable|string|max:80',
         ]);
 
-        $healthId = strtoupper($validated['health_id']);
+        $healthId   = strtoupper(trim($validated['health_id']));
+        $purpose    = $validated['purpose'];
+        $facilityId = $request->attributes->get('facility_id');
 
-        // 1. Check format & checksum
-        if (!$this->healthIdService->isValid($healthId)) {
-            $this->logAccessEvent(null, $healthId, 'verify_health_id', $validated['purpose'], 'denied', $request, 'INVALID_HEALTH_ID_FORMAT');
+        // ── 1. Format + checksum validation ──────────────────────────────────
+        if (! $this->healthIdService->isValid($healthId)) {
+            $this->auditor->denied(
+                request:   $request,
+                eventType: AuditEventType::MedicalIdAccessDenied,
+                healthId:  $healthId,
+                patientId: null,
+                notes:     'INVALID_HEALTH_ID_FORMAT',
+                facilityId: $facilityId,
+            );
             return response()->json([
-                'status' => 'rejected',
+                'status'     => 'rejected',
                 'error_code' => MedicalIdErrorCode::INVALID_HEALTH_ID_FORMAT->value,
-                'message' => 'This Health ID could not be verified. Check the ID and try again.',
+                'message'    => 'This Health ID could not be verified. Check the ID and try again.',
             ], 400);
         }
 
-        // 2. Find Patient
+        // ── 2. Patient lookup ─────────────────────────────────────────────────
         $patient = Patient::where('health_id', $healthId)->first();
 
-        if (!$patient) {
-            $this->logAccessEvent(null, $healthId, 'verify_health_id', $validated['purpose'], 'denied', $request, 'HEALTH_ID_NOT_FOUND');
+        if (! $patient) {
+            $this->auditor->denied(
+                request:   $request,
+                eventType: AuditEventType::MedicalIdAccessDenied,
+                healthId:  $healthId,
+                patientId: null,
+                notes:     'HEALTH_ID_NOT_FOUND',
+                facilityId: $facilityId,
+            );
             return response()->json([
-                'status' => 'rejected',
+                'status'     => 'rejected',
                 'error_code' => MedicalIdErrorCode::HEALTH_ID_NOT_FOUND->value,
-                'message' => 'This Health ID could not be verified. Check the ID and try again.',
+                'message'    => 'This Health ID could not be verified. Check the ID and try again.',
             ], 404);
         }
 
-        // 3. Status Checks
-        if ($patient->verification_status === 'suspended' || $patient->identity_status === 'suspended') {
-            return $this->rejectVerification($patient, $validated['purpose'], $request, MedicalIdErrorCode::HEALTH_ID_SUSPENDED, 'suspended');
+        // ── 3. Status gate — enum-safe comparison ─────────────────────────────
+        // IMPORTANT: $patient->verification_status and identity_status are now
+        // typed VerificationStatus/IdentityStatus enum objects (Wave 4 casts).
+        // Raw string comparison (=== 'suspended') will always be FALSE.
+        // Always use ->isBlocked() or compare against enum instances.
+        if ($this->isBlocked($patient)) {
+            $statusValue = $patient->verification_status?->value ?? 'unknown';
+            $this->auditor->denied(
+                request:   $request,
+                eventType: AuditEventType::MedicalIdAccessDenied,
+                healthId:  $healthId,
+                patientId: $patient->id,
+                notes:     'BLOCKED_STATUS:' . $statusValue,
+                facilityId: $facilityId,
+            );
+            return response()->json([
+                'status'     => 'rejected',
+                'error_code' => $this->statusErrorCode($patient)->value,
+                'message'    => 'Access restricted due to identity status: ' . $statusValue,
+            ], 403);
         }
 
-        if ($patient->verification_status === 'deceased' || $patient->identity_status === 'deceased') {
-            return $this->rejectVerification($patient, $validated['purpose'], $request, MedicalIdErrorCode::HEALTH_ID_DECEASED, 'deceased');
-        }
+        // ── 4. Audit success ──────────────────────────────────────────────────
+        $this->auditor->record(
+            request:    $request,
+            eventType:  AuditEventType::ExternalSystemVerifiedHealthId,
+            result:     'success',
+            healthId:   $healthId,
+            patientId:  $patient->id,
+            facilityId: $facilityId,
+            purpose:    $purpose,
+        );
 
-        if ($patient->identity_status === 'entered_in_error' || $patient->verification_status === 'entered_in_error') {
-            return $this->rejectVerification($patient, $validated['purpose'], $request, MedicalIdErrorCode::HEALTH_ID_ENTERED_IN_ERROR, 'entered_in_error');
-        }
-
-        // 4. Create Audit Event
-        $this->logAccessEvent($patient, $healthId, 'verify_health_id', $validated['purpose'], 'success', $request);
-
-        // 5. Return Safe Identity Preview
+        // ── 5. Safe identity preview — never return full PII ─────────────────
         return response()->json([
-            'status' => 'valid',
-            'verification_status' => $patient->verification_status ?? 'provisional',
-            'patient_preview' => [
-                'display_name' => $this->maskName($patient),
-                'sex' => $patient->sex,
-                'year_of_birth' => $patient->date_of_birth ? $patient->date_of_birth->year : null,
-                'health_id' => $patient->health_id,
+            'status'              => 'valid',
+            'verification_status' => $patient->verification_status?->value ?? 'provisional',
+            'patient_preview'     => [
+                'display_name'  => $this->maskName($patient),
+                'sex'           => $patient->sex,
+                'year_of_birth' => $patient->date_of_birth?->year,
+                'health_id'     => $patient->health_id,
             ],
             'next_action' => 'request_consent',
         ]);
     }
 
-    /**
-     * POST /api/v1/connect/medical-ids/verify-qr
-     */
+    // =========================================================================
+    // POST /api/v1/connect/medical-ids/verify-qr
+    // =========================================================================
+
     public function verifyQr(Request $request)
     {
         $validated = $request->validate([
             'qr_token' => 'required|string',
-            'purpose' => 'required|string',
+            'purpose'  => 'required|string|max:200',
         ]);
 
+        $facilityId    = $request->attributes->get('facility_id');
         $qrTokenRecord = $this->qrService->verifyToken($validated['qr_token']);
 
-        if (!$qrTokenRecord) {
+        if (! $qrTokenRecord) {
             return response()->json([
-                'status' => 'rejected',
+                'status'     => 'rejected',
                 'error_code' => MedicalIdErrorCode::QR_TOKEN_INVALID->value,
-                'message' => 'This QR token is invalid, expired, or revoked.',
+                'message'    => 'This QR token is invalid, expired, or revoked.',
             ], 400);
         }
 
         $patient = $qrTokenRecord->patient;
 
-        // Verify patient status
-        if ($patient->verification_status === 'suspended' || $patient->identity_status === 'suspended') {
-            return $this->rejectVerification($patient, $validated['purpose'], $request, MedicalIdErrorCode::HEALTH_ID_SUSPENDED, 'suspended');
+        // Enum-safe status check — covers suspended, deceased, merged, erasure_pending, expired
+        if ($this->isBlocked($patient)) {
+            $statusValue = $patient->verification_status?->value ?? 'unknown';
+            $this->auditor->denied(
+                request:   $request,
+                eventType: AuditEventType::MedicalIdAccessDenied,
+                healthId:  $patient->health_id,
+                patientId: $patient->id,
+                notes:     'QR_BLOCKED_STATUS:' . $statusValue,
+                facilityId: $facilityId,
+            );
+            return response()->json([
+                'status'     => 'rejected',
+                'error_code' => $this->statusErrorCode($patient)->value,
+                'message'    => 'Access restricted due to identity status: ' . $statusValue,
+            ], 403);
         }
 
-        $this->logAccessEvent($patient, $patient->health_id, 'verify_qr', $validated['purpose'], 'success', $request);
+        $this->auditor->record(
+            request:    $request,
+            eventType:  AuditEventType::VerifyQr,
+            result:     'success',
+            healthId:   $patient->health_id,
+            patientId:  $patient->id,
+            facilityId: $facilityId,
+            purpose:    $validated['purpose'],
+        );
 
         return response()->json([
-            'status' => 'valid',
-            'verification_status' => $patient->verification_status ?? 'provisional',
-            'patient_preview' => [
-                'display_name' => $this->maskName($patient),
-                'sex' => $patient->sex,
-                'year_of_birth' => $patient->date_of_birth ? $patient->date_of_birth->year : null,
-                'health_id' => $patient->health_id,
+            'status'              => 'valid',
+            'verification_status' => $patient->verification_status?->value ?? 'provisional',
+            'patient_preview'     => [
+                'display_name'  => $this->maskName($patient),
+                'sex'           => $patient->sex,
+                'year_of_birth' => $patient->date_of_birth?->year,
+                'health_id'     => $patient->health_id,
             ],
             'next_action' => 'request_consent',
         ]);
     }
 
+    // ── Private helpers ───────────────────────────────────────────────────────
+
     /**
-     * Reject Verification Helper
+     * Returns true if the patient's verification OR identity status is
+     * in any blocked state (suspended, deceased, entered_in_error, merged,
+     * erasure_pending, expired).
+     *
+     * Uses the typed isBlocked() method from the enum (Wave 4) to avoid
+     * broken raw-string comparisons against enum objects.
      */
-    protected function rejectVerification($patient, $purpose, $request, MedicalIdErrorCode $errorCode, $reason)
+    private function isBlocked(Patient $patient): bool
     {
-        $this->logAccessEvent($patient, $patient->health_id ?? null, 'verify', $purpose, 'denied', $request, $errorCode->value);
-        
-        return response()->json([
-            'status' => 'rejected',
-            'error_code' => $errorCode->value,
-            'message' => 'Access restricted due to identity status: ' . $reason,
-        ], 403);
+        return ($patient->verification_status?->isBlocked() ?? false)
+            || ($patient->identity_status?->isBlocked() ?? false);
     }
 
     /**
-     * Mask Name
-     * e.g., "Marie Nfor T." -> "Marie N."
+     * Map the patient's verification status to an appropriate MedicalIdErrorCode.
      */
-    protected function maskName($patient): string
+    private function statusErrorCode(Patient $patient): MedicalIdErrorCode
+    {
+        return match ($patient->verification_status) {
+            VerificationStatus::Deceased      => MedicalIdErrorCode::HEALTH_ID_DECEASED,
+            VerificationStatus::EnteredInError => MedicalIdErrorCode::HEALTH_ID_ENTERED_IN_ERROR,
+            default                           => MedicalIdErrorCode::HEALTH_ID_SUSPENDED,
+        };
+    }
+
+    /**
+     * Return "FirstName L." — first name + first character of last name.
+     * Never expose full names through the B2B verification API.
+     */
+    private function maskName(Patient $patient): string
     {
         $firstName = $patient->first_name ?? '';
-        $lastName = $patient->last_name ?? '';
-        
+        $lastName  = $patient->last_name  ?? '';
+
         if (empty($firstName) && empty($lastName)) {
             return 'Unknown Patient';
         }
@@ -163,33 +248,5 @@ class MedicalIdVerificationController extends Controller
         }
 
         return $firstName . ' ' . mb_substr($lastName, 0, 1) . '.';
-    }
-
-    /**
-     * Log Access Event
-     */
-    protected function logAccessEvent($patient, $healthId, $type, $purpose, $result, $request, $reason = null)
-    {
-        MedicalIdAccessEvent::create([
-            'patient_id' => $patient ? $patient->id : null,
-            'health_id' => $healthId,
-            'actor_id' => $request->user() ? $request->user()->id : null,
-            'actor_type' => 'api_client',
-            'facility_id' => null, // Would be derived from API auth
-            'access_type' => $type,
-            'purpose' => $purpose,
-            'result' => $result,
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-        ]);
-
-        $eventType = $result === 'success' ? AuditEventType::EXTERNAL_SYSTEM_VERIFIED_HEALTH_ID : AuditEventType::MEDICAL_ID_ACCESS_DENIED;
-        
-        Log::info($eventType->value, [
-            'health_id' => $healthId,
-            'purpose' => $purpose,
-            'result' => $result,
-            'reason' => $reason
-        ]);
     }
 }

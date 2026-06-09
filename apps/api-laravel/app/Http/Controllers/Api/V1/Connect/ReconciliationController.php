@@ -8,11 +8,30 @@ use App\Enums\OpesCareErrorCode;
 use App\Models\ReconciliationCase;
 use App\Services\AuditLogger;
 
+/**
+ * ReconciliationController
+ *
+ * FIX H-1 (audit 2026-06-07): listCases() previously returned ReconciliationCase::all()
+ * with no facility scope — every authenticated client could enumerate every pending case
+ * from every facility (cross-facility IDOR, OWASP API1 / ISO 27001 A.9.1).
+ *
+ * Both listCases() and resolveCase() now scope exclusively to the requesting
+ * client's facility_id, resolved from bearer-token middleware attributes.
+ */
 class ReconciliationController extends Controller
 {
     public function listCases(Request $request)
     {
-        $clientId = $request->attributes->get('integration_client_id', 'unknown_client');
+        $facilityId = $request->attributes->get('facility_id');
+        $clientId   = $request->attributes->get('integration_client_id', 'unknown_client');
+
+        if (empty($facilityId)) {
+            return response()->json([
+                'status'     => 'rejected',
+                'error_code' => OpesCareErrorCode::AUTHENTICATION_FAILED->value,
+                'message'    => 'facility_id could not be resolved from bearer token.',
+            ], 403);
+        }
 
         AuditLogger::log(
             $request,
@@ -21,40 +40,62 @@ class ReconciliationController extends Controller
             null
         );
 
-        $cases = ReconciliationCase::all();
+        // [FIX H-1] Scope to the requesting facility — never return all cases.
+        $cases = ReconciliationCase::where('facility_id', $facilityId)
+            ->orderByDesc('created_at')
+            ->get();
 
         return response()->json([
-            'cases' => $cases->map(function ($c) {
-                return [
-                    'case_id' => $c->id,
-                    'status' => $c->status,
-                    'mismatch_reason' => $c->mismatch_reason,
-                    'external_reference' => $c->external_reference,
-                    'submitted_payload_hash' => md5(json_encode($c->submitted_payload)),
-                    'created_at' => $c->created_at ? $c->created_at->toIso8601String() : null
-                ];
-            })
+            'cases' => $cases->map(fn ($c) => [
+                'case_id'            => $c->id,
+                'status'             => $c->status,
+                'mismatch_reason'    => $c->mismatch_reason,
+                'external_reference' => $c->external_reference,
+                // [FIX] MD5 replaced with SHA-256 for payload integrity fingerprint
+                'submitted_payload_hash' => hash('sha256', json_encode($c->submitted_payload)),
+                'created_at'         => $c->created_at?->toIso8601String(),
+            ]),
         ], 200);
     }
 
     public function resolveCase(Request $request, $caseId)
     {
+        $facilityId = $request->attributes->get('facility_id');
+        $clientId   = $request->attributes->get('integration_client_id', 'unknown_client');
+
+        if (empty($facilityId)) {
+            return response()->json([
+                'status'     => 'rejected',
+                'error_code' => OpesCareErrorCode::AUTHENTICATION_FAILED->value,
+                'message'    => 'facility_id could not be resolved from bearer token.',
+            ], 403);
+        }
+
         $request->validate([
             'resolution'          => 'required|in:match,no_match,manual_override',
             'confirmed_health_id' => 'required|string|max:64',
         ]);
 
-        $resolution = $request->input('resolution');
+        $resolution        = $request->input('resolution');
         $confirmedHealthId = $request->input('confirmed_health_id');
 
-        // Query real case
-        $case = ReconciliationCase::find($caseId);
-        if ($case) {
-            $case->update([
-                'status' => 'resolved',
-                'resolved_at' => now()
-            ]);
+        // [FIX H-1] Scope to facility — a client may only resolve its own cases.
+        $case = ReconciliationCase::where('id', $caseId)
+            ->where('facility_id', $facilityId)
+            ->first();
+
+        if (! $case) {
+            return response()->json([
+                'status'     => 'not_found',
+                'error_code' => OpesCareErrorCode::RESOURCE_NOT_FOUND->value,
+                'message'    => 'Reconciliation case not found or does not belong to your facility.',
+            ], 404);
         }
+
+        $case->update([
+            'status'      => 'resolved',
+            'resolved_at' => now(),
+        ]);
 
         AuditLogger::log(
             $request,
@@ -64,15 +105,21 @@ class ReconciliationController extends Controller
             null,
             false,
             null,
-            ['case_id' => $caseId, 'resolution' => $resolution, 'confirmed_health_id' => $confirmedHealthId]
+            [
+                'case_id'              => $caseId,
+                'resolution'           => $resolution,
+                'confirmed_health_id'  => $confirmedHealthId,
+                'resolved_by_client'   => $clientId,
+                'facility_id'          => $facilityId,
+            ]
         );
 
         return response()->json([
-            'status' => 'resolved',
-            'case_id' => $caseId,
-            'resolved_at' => date('Y-m-d\TH:i:s\Z'),
+            'status'             => 'resolved',
+            'case_id'            => $caseId,
+            'resolved_at'        => now()->toIso8601String(),
             'attached_health_id' => $confirmedHealthId,
-            'message' => 'Reconciliation case marked resolved. Sync timeline events queued.'
+            'message'            => 'Reconciliation case marked resolved. Sync timeline events queued.',
         ], 200);
     }
 }

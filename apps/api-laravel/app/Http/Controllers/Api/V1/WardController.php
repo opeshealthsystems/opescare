@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admission;
 use App\Modules\WardManagement\Services\AdmissionService;
 use App\Modules\WardManagement\Services\WardService;
 use App\Modules\WardManagement\Services\DischargePlanningService;
+use App\Services\Documents\DocumentIssuanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -21,15 +23,18 @@ use Illuminate\Http\Request;
 class WardController extends Controller
 {
     public function __construct(
-        private AdmissionService        $admissions,
-        private WardService             $wards,
-        private DischargePlanningService $discharge
+        private AdmissionService         $admissions,
+        private WardService              $wards,
+        private DischargePlanningService $discharge,
+        private DocumentIssuanceService  $issuance
     ) {}
 
     // ── Admissions ─────────────────────────────────────────────────────────
 
     public function admit(Request $request): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+
         $validated = $request->validate([
             'patient_id'       => ['required', 'uuid'],
             'facility_id'      => ['required', 'uuid'],
@@ -40,10 +45,24 @@ class WardController extends Controller
             'admission_type'   => ['required', 'in:emergency,elective,transfer'],
         ]);
 
-        return response()->json(
-            $this->admissions->admit($validated, $request->user()->id),
-            201
-        );
+        $result = $this->admissions->admit($validated, $request->user()->id);
+
+        if ($facilityId) {
+            try {
+                $admissionId = is_array($result) ? ($result['id'] ?? null) : ($result->id ?? null);
+                $this->issuance->issueFromModel(
+                    'ADM',
+                    'Admission Form',
+                    ['admission_id' => $admissionId, 'patient_id' => $validated['patient_id'], 'admission_type' => $validated['admission_type'], 'admission_reason' => $validated['admission_reason'], 'admitting_doctor' => $validated['admitting_doctor']],
+                    $facilityId,
+                    $validated['patient_id'],
+                    null,
+                    $validated['admitting_doctor']
+                );
+            } catch (\Throwable) {}
+        }
+
+        return response()->json($result, 201);
     }
 
     public function assignBed(Request $request, string $admissionId): JsonResponse
@@ -74,8 +93,13 @@ class WardController extends Controller
 
     public function getBedAvailability(Request $request): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['message' => 'Facility could not be resolved.', 'error_code' => 'FACILITY_UNRESOLVABLE'], 403);
+        }
+
         return response()->json(
-            $this->wards->getBedAvailability($request->input('facility_id'), $request->input('ward_id'))
+            $this->wards->getBedAvailability($facilityId, $request->input('ward_id'))
         );
     }
 
@@ -113,14 +137,31 @@ class WardController extends Controller
 
     public function discharge(Request $request, string $admissionId): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+
         $validated = $request->validate([
             'discharge_summary' => ['required', 'string'],
             'discharge_type'    => ['required', 'in:home,transfer,against_advice,deceased'],
             'follow_up_date'    => ['nullable', 'date', 'after:today'],
         ]);
 
-        return response()->json(
-            $this->admissions->discharge($admissionId, $validated, $request->user()->id)
-        );
+        $result = $this->admissions->discharge($admissionId, $validated, $request->user()->id);
+
+        if ($facilityId) {
+            try {
+                $admission = Admission::find($admissionId);
+                $this->issuance->issueFromModel(
+                    'DIS',
+                    'Discharge Summary',
+                    ['admission_id' => $admissionId, 'discharge_type' => $validated['discharge_type'], 'discharge_summary' => $validated['discharge_summary'], 'follow_up_date' => $validated['follow_up_date'] ?? null],
+                    $facilityId,
+                    $admission?->patient_id,
+                    null,
+                    $request->user()?->id
+                );
+            } catch (\Throwable) {}
+        }
+
+        return response()->json($result);
     }
 }

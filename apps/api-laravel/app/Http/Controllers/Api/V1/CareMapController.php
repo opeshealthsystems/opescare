@@ -269,12 +269,16 @@ class CareMapController extends Controller
      */
     public function adminVerifyFacility(Request $request, $id)
     {
+        $adminClientId = $request->attributes->get('integration_client_id');
         $admin = Auth::user();
-        if (!$admin) {
-            return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+
+        if (!$adminClientId && !$admin) {
+            return response()->json(['status' => 'error', 'message' => 'Admin access required.', 'code' => 'ADMIN_ACCESS_REQUIRED'], 403);
         }
 
-        $facility = $this->verificationService->verifyFacility($id, $admin->id, $request->input('status', 'license_verified'));
+        $actorId = $adminClientId ?? $admin->id;
+
+        $facility = $this->verificationService->verifyFacility($id, $actorId, $request->input('status', 'license_verified'));
 
         return response()->json([
             'status' => 'success',
@@ -288,12 +292,16 @@ class CareMapController extends Controller
      */
     public function adminSuspendFacility(Request $request, $id)
     {
+        $adminClientId = $request->attributes->get('integration_client_id');
         $admin = Auth::user();
-        if (!$admin) {
-            return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+
+        if (!$adminClientId && !$admin) {
+            return response()->json(['status' => 'error', 'message' => 'Admin access required.', 'code' => 'ADMIN_ACCESS_REQUIRED'], 403);
         }
 
-        $facility = $this->verificationService->suspendFacility($id, $admin->id);
+        $actorId = $adminClientId ?? $admin->id;
+
+        $facility = $this->verificationService->suspendFacility($id, $actorId);
 
         return response()->json([
             'status' => 'success',
@@ -311,7 +319,7 @@ class CareMapController extends Controller
         $user = Auth::user();
 
         // Safe mock partner credentials check
-        if ($facility->partner_id && $facility->partner_id != $user->id) {
+        if ($facility->partner_id && $facility->partner_id !== $user->id) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized facility owner.'], 403);
         }
 

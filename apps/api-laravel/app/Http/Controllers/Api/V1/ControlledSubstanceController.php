@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Services\Documents\DocumentIssuanceService;
 use App\Services\Pharmacy\ControlledSubstanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -9,7 +10,10 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 
 class ControlledSubstanceController extends Controller {
-    public function __construct(private readonly ControlledSubstanceService $service) {}
+    public function __construct(
+        private readonly ControlledSubstanceService $service,
+        private readonly DocumentIssuanceService    $issuance
+    ) {}
 
     public function dispense(Request $request): JsonResponse {
         $validated = $request->validate([
@@ -30,6 +34,23 @@ class ControlledSubstanceController extends Controller {
             'notes'                => ['sometimes','nullable','string'],
         ]);
         $dispensing = $this->service->dispense($validated);
+
+        $facilityId = $request->attributes->get('facility_id');
+        if ($facilityId) {
+            try {
+                $dispensingId = is_array($dispensing) ? ($dispensing['id'] ?? null) : ($dispensing->id ?? null);
+                $this->issuance->issueFromModel(
+                    'NRX',
+                    'Narcotic Prescription — ' . $validated['drug_name'],
+                    ['dispensing_id' => $dispensingId, 'patient_id' => $validated['patient_id'], 'prescription_id' => $validated['prescription_id'], 'drug_name' => $validated['drug_name'], 'drug_code' => $validated['drug_code'], 'schedule' => $validated['schedule'], 'quantity_dispensed' => $validated['quantity_dispensed'], 'unit' => $validated['unit'], 'dispensed_by' => $validated['dispensed_by']],
+                    $facilityId,
+                    $validated['patient_id'],
+                    null,
+                    $validated['dispensed_by']
+                );
+            } catch (\Throwable) {}
+        }
+
         return response()->json(['data' => $dispensing], Response::HTTP_CREATED);
     }
 

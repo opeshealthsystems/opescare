@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\KnowledgeBaseArticle;
 use App\Models\SupportTicket;
+use App\Modules\Support\Services\KnowledgeBaseService;
 use App\Modules\Support\Services\SupportService;
+use App\Modules\Support\Services\TicketAssignmentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -13,10 +15,16 @@ class SupportController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['message' => 'Forbidden.'], 403);
+        }
+
         $tickets = SupportTicket::query()
-            ->when($request->query('facility_id'), fn ($query, $facilityId) => $query->where('facility_id', $facilityId))
+            ->where('facility_id', $facilityId)
             ->when($request->query('requester_type'), fn ($query, $type) => $query->where('requester_type', $type))
             ->when($request->query('status'), fn ($query, $status) => $query->where('status', $status))
+
             ->orderByDesc('created_at')
             ->limit(100)
             ->get();
@@ -106,6 +114,61 @@ class SupportController extends Controller
         return response()->json(['data' => $incident], 201);
     }
 
+    // ── Knowledge Base (KnowledgeBaseService) ────────────────────────────
+
+    /**
+     * Browse and search knowledge base articles.
+     * ?q=search term  OR  ?category=category_slug
+     * ?role=staff|patient — role-scoped results (optional)
+     */
+    public function listArticles(Request $request, KnowledgeBaseService $kb): JsonResponse
+    {
+        $q        = $request->query('q');
+        $category = $request->query('category');
+        $role     = $request->query('role');
+
+        if ($q) {
+            $articles = $kb->search($q, $role);
+        } elseif ($category) {
+            $articles = $kb->getByCategory($category);
+        } else {
+            // No filter — return all published (default browse)
+            $articles = KnowledgeBaseArticle::where('is_published', true)
+                ->orderByDesc('published_at')
+                ->get();
+        }
+
+        return response()->json([
+            'count' => $articles->count(),
+            'data'  => $articles,
+        ]);
+    }
+
+    /**
+     * Publish an existing knowledge base article.
+     * Body: { published_by: uuid }
+     */
+    public function publishKbArticle(KnowledgeBaseArticle $article, Request $request, KnowledgeBaseService $kb): JsonResponse
+    {
+        $validated = $request->validate([
+            'published_by' => ['required', 'uuid'],
+        ]);
+
+        $updated = $kb->publish($article->id, $validated['published_by']);
+
+        return response()->json(['message' => 'Article published.', 'data' => $updated]);
+    }
+
+    /**
+     * Unpublish a knowledge base article.
+     */
+    public function unpublishKbArticle(KnowledgeBaseArticle $article, KnowledgeBaseService $kb): JsonResponse
+    {
+        $updated = $kb->unpublish($article->id);
+
+        return response()->json(['message' => 'Article unpublished.', 'data' => $updated]);
+    }
+
     public function publishArticle(Request $request, SupportService $service): JsonResponse
     {
         $validated = $request->validate([
@@ -124,6 +187,20 @@ class SupportController extends Controller
     {
         return response()->json([
             'data' => $service->recordArticleView($article, $request->input('actor_id')),
+        ]);
+    }
+
+    /**
+     * List unassigned open support tickets.
+     * Used by the support queue dashboard to surface tickets needing assignment.
+     */
+    public function unassigned(TicketAssignmentService $service): JsonResponse
+    {
+        $tickets = $service->getUnassignedTickets();
+
+        return response()->json([
+            'count' => $tickets->count(),
+            'data'  => $tickets->map(fn ($t) => $this->serializeTicket($t))->values(),
         ]);
     }
 

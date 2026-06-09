@@ -84,8 +84,13 @@ class TriageController extends Controller
 
     public function listActive(Request $request): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['message' => 'Facility could not be resolved.', 'error_code' => 'FACILITY_UNRESOLVABLE'], 403);
+        }
+
         return response()->json(
-            $this->triage->listActiveForFacility($request->input('facility_id'))
+            $this->triage->listActiveForFacility($facilityId)
         );
     }
 }

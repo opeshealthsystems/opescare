@@ -14,17 +14,21 @@ class SurveyReportController extends Controller
     {
     }
 
-    /** GET /api/v1/reports/surveys/satisfaction?facility_id=&from=&to= */
+    /** GET /api/v1/reports/surveys/satisfaction?from=&to= */
     public function satisfaction(Request $request): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['message' => 'Facility could not be resolved.', 'code' => 'FACILITY_UNRESOLVABLE'], 403);
+        }
+
         $validated = $request->validate([
-            'facility_id' => 'required|uuid|exists:facilities,id',
-            'from'        => 'required|date',
-            'to'          => 'required|date|after_or_equal:from',
+            'from' => 'required|date',
+            'to'   => 'required|date|after_or_equal:from',
         ]);
 
         $scores = $this->service->getSatisfactionScore(
-            $validated['facility_id'],
+            $facilityId,
             Carbon::parse($validated['from']),
             Carbon::parse($validated['to']),
         );

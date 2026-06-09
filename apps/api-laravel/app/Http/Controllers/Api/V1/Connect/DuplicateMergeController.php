@@ -65,7 +65,11 @@ class DuplicateMergeController extends Controller
 
                 // 3. Mark case as merged
                 $mergeCase->status = 'merged';
-                $mergeCase->reviewed_by = auth()->id() ?? Str::uuid();
+                // [FIX M-4] auth()->id() is null for B2B API clients.
+                // Use the integration_client_id from the bearer token instead — meaningful audit trail.
+                $mergeCase->reviewed_by = auth()->id()
+                    ?? $request->attributes->get('integration_client_id')
+                    ?? 'api:unknown';
                 $mergeCase->review_reason = $request->input('review_reason');
                 $mergeCase->save();
 
@@ -75,7 +79,11 @@ class DuplicateMergeController extends Controller
             } else {
                 // Reject Merge
                 $mergeCase->status = 'rejected';
-                $mergeCase->reviewed_by = auth()->id() ?? Str::uuid();
+                // [FIX M-4] auth()->id() is null for B2B API clients.
+                // Use the integration_client_id from the bearer token instead — meaningful audit trail.
+                $mergeCase->reviewed_by = auth()->id()
+                    ?? $request->attributes->get('integration_client_id')
+                    ?? 'api:unknown';
                 $mergeCase->review_reason = $request->input('review_reason');
                 $mergeCase->save();
 
@@ -100,17 +108,24 @@ class DuplicateMergeController extends Controller
 
     private function logAction(string $patientId, string $healthId, string $accessType, string $result, Request $request)
     {
+        // [FIX M-4] actor_id and facility_id were both random Str::uuid() — no audit value.
+        // Now use the real identities from the bearer token attributes.
+        $actorId    = auth()->id()
+            ?? $request->attributes->get('integration_client_id')
+            ?? 'api:unknown';
+        $facilityId = $request->attributes->get('facility_id') ?? 'unknown';
+
         MedicalIdAccessEvent::create([
-            'patient_id' => $patientId,
-            'health_id' => $healthId,
-            'actor_id' => Str::uuid(), 
-            'actor_type' => 'admin',
-            'facility_id' => Str::uuid(), 
+            'patient_id'  => $patientId,
+            'health_id'   => $healthId,
+            'actor_id'    => $actorId,
+            'actor_type'  => auth()->check() ? 'admin' : 'integration_client',
+            'facility_id' => $facilityId,
             'access_type' => $accessType,
-            'purpose' => 'identity_reconciliation',
-            'result' => $result,
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
+            'purpose'     => 'identity_reconciliation',
+            'result'      => $result,
+            'ip_address'  => $request->ip(),
+            'user_agent'  => $request->userAgent(),
         ]);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -22,8 +23,32 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Clinical module routes (Group 3 + wired modules) — loaded here to
+        // avoid touching the sealed routes/api.php file.
+        Route::middleware('api')
+            ->group(base_path('routes/clinical.php'));
+
         RateLimiter::for('verify', function (Request $request) {
             return Limit::perMinute(30)->by($request->ip());
+        });
+
+        // Patient portal rate limit — prevents QR spam, profile-scrape, and enumeration.
+        // 120 requests per minute per authenticated user is generous for normal use
+        // while blocking automated abuse (a QR-flood attack would hit this instantly).
+        RateLimiter::for('portal', function (Request $request) {
+            $user = $request->user();
+            return $user
+                ? Limit::perMinute(120)->by('portal|' . $user->id)
+                : Limit::perMinute(20)->by('portal|' . $request->ip());
+        });
+
+        // Tighter limit specifically for QR generation — 10 per minute per user.
+        // A patient generating more than 10 QRs per minute is an abuse signal.
+        RateLimiter::for('portal.qr', function (Request $request) {
+            $user = $request->user();
+            return $user
+                ? Limit::perMinute(10)->by('qr|' . $user->id)
+                : Limit::perMinute(3)->by('qr|' . $request->ip());
         });
 
         // Per-tenant / per-API-key rate limiting:

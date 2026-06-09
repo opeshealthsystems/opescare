@@ -20,6 +20,11 @@ class ProviderPerformanceController extends Controller
      */
     public function summary(Request $request, string $providerId): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['message' => 'Facility could not be resolved.', 'code' => 'FACILITY_UNRESOLVABLE'], 403);
+        }
+
         $validated = $request->validate([
             'from' => ['nullable', 'date'],
             'to'   => ['nullable', 'date'],
@@ -51,6 +56,11 @@ class ProviderPerformanceController extends Controller
      */
     public function topDiagnoses(Request $request, string $providerId): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['message' => 'Facility could not be resolved.', 'code' => 'FACILITY_UNRESOLVABLE'], 403);
+        }
+
         $validated = $request->validate([
             'limit' => ['nullable', 'integer', 'min:1', 'max:50'],
         ]);
@@ -71,9 +81,21 @@ class ProviderPerformanceController extends Controller
      *
      * Returns per-provider performance summaries for all providers
      * who had activity at the given facility in the date range.
+     * The route {facilityId} param is cross-checked against the middleware-resolved
+     * facility_id to prevent cross-facility IDOR.
      */
     public function facilitySummary(Request $request, string $facilityId): JsonResponse
     {
+        $middlewareFacilityId = $request->attributes->get('facility_id');
+        if (!$middlewareFacilityId) {
+            return response()->json(['message' => 'Facility could not be resolved.', 'code' => 'FACILITY_UNRESOLVABLE'], 403);
+        }
+
+        // Cross-check route param against middleware-resolved facility
+        if ($facilityId !== $middlewareFacilityId) {
+            return response()->json(['message' => 'Access denied to this facility.', 'code' => 'FACILITY_ACCESS_DENIED'], 403);
+        }
+
         $validated = $request->validate([
             'from' => ['nullable', 'date'],
             'to'   => ['nullable', 'date'],
@@ -87,11 +109,11 @@ class ProviderPerformanceController extends Controller
             ? Carbon::parse($validated['to'])->endOfDay()
             : Carbon::now()->endOfDay();
 
-        $data = $this->service->getFacilitySummary($facilityId, $from, $to);
+        $data = $this->service->getFacilitySummary($middlewareFacilityId, $from, $to);
 
         return response()->json([
             'data'        => $data,
-            'facility_id' => $facilityId,
+            'facility_id' => $middlewareFacilityId,
             'from'        => $from->toDateString(),
             'to'          => $to->toDateString(),
         ]);

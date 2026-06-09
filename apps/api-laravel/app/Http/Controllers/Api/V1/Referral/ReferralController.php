@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1\Referral;
 use App\Http\Controllers\Controller;
 use App\Models\ReferralCase;
 use App\Modules\Referral\Services\ReferralService;
+use App\Services\Documents\DocumentIssuanceService;
 use Illuminate\Http\Request;
 
 class ReferralController extends Controller
@@ -58,18 +59,52 @@ class ReferralController extends Controller
         return response()->json(['data' => $this->serialize($referral)], 201);
     }
 
-    public function send(Request $request, ReferralCase $referral, ReferralService $service)
+    public function send(Request $request, ReferralCase $referral, ReferralService $service, DocumentIssuanceService $issuance)
     {
-        $validated = $request->validate(['actor_id' => ['nullable', 'uuid']]);
+        $facilityId = $request->attributes->get('facility_id');
+        $validated  = $request->validate(['actor_id' => ['nullable', 'uuid']]);
 
-        return response()->json(['data' => $this->serialize($service->send($referral, $validated['actor_id'] ?? null))]);
+        $result = $service->send($referral, $validated['actor_id'] ?? null);
+
+        if ($facilityId) {
+            try {
+                $issuance->issueFromModel(
+                    'REF',
+                    'Referral Letter',
+                    ['referral_id' => $referral->id, 'patient_id' => $referral->patient_id, 'urgency' => $referral->urgency, 'reason' => $referral->reason, 'receiving_specialty' => $referral->receiving_specialty, 'receiving_facility_id' => $referral->receiving_facility_id],
+                    $facilityId,
+                    $referral->patient_id,
+                    null,
+                    $validated['actor_id'] ?? null
+                );
+            } catch (\Throwable) {}
+        }
+
+        return response()->json(['data' => $this->serialize($result)]);
     }
 
-    public function accept(Request $request, ReferralCase $referral, ReferralService $service)
+    public function accept(Request $request, ReferralCase $referral, ReferralService $service, DocumentIssuanceService $issuance)
     {
-        $validated = $request->validate(['accepted_by_id' => ['required', 'uuid']]);
+        $facilityId = $request->attributes->get('facility_id');
+        $validated  = $request->validate(['accepted_by_id' => ['required', 'uuid']]);
 
-        return response()->json(['data' => $this->serialize($service->accept($referral, $validated['accepted_by_id']))]);
+        $result = $service->accept($referral, $validated['accepted_by_id']);
+
+        if ($facilityId) {
+            try {
+                $issuance->issueFromModel(
+                    'RAL',
+                    'Referral Acknowledgement',
+                    ['referral_id' => $referral->id, 'patient_id' => $referral->patient_id, 'accepted_by_id' => $validated['accepted_by_id'], 'accepted_at' => now()->toISOString()],
+                    $facilityId,
+                    $referral->patient_id,
+                    null,
+                    $validated['accepted_by_id']
+                );
+            } catch (\Throwable) {}
+        }
+
+        return response()->json(['data' => $this->serialize($result)]);
     }
 
     public function reject(Request $request, ReferralCase $referral, ReferralService $service)

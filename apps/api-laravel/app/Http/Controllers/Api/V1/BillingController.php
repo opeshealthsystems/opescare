@@ -8,8 +8,11 @@ use App\Models\ConsentGrant;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Modules\Billing\Services\BillingService;
+use App\Modules\Billing\Services\PaymentReconciliationService;
 use App\Modules\Billing\Services\PaymentService;
+use App\Services\Documents\DocumentIssuanceService;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class BillingController extends Controller
@@ -51,18 +54,24 @@ class BillingController extends Controller
             $query->where('patient_id', $request->query('patient_id'));
         }
 
-        if ($request->filled('facility_id')) {
-            $query->where('facility_id', $request->query('facility_id'));
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
         }
+        $query->where('facility_id', $facilityId);
 
         return response()->json(['data' => $query->get()->map(fn (Invoice $invoice) => $this->serializeInvoice($invoice))->values()]);
     }
 
-    public function createInvoice(Request $request, BillingService $service)
+    public function createInvoice(Request $request, BillingService $service, DocumentIssuanceService $issuance)
     {
-        $invoice = $service->createInvoice($request->validate([
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+        }
+
+        $validated = $request->validate([
             'patient_id' => ['required', 'uuid'],
-            'facility_id' => ['required', 'uuid'],
             'visit_id' => ['nullable', 'uuid'],
             'insurance_covered_amount' => ['nullable', 'numeric', 'min:0'],
             'actor_id' => ['nullable', 'uuid'],
@@ -72,13 +81,30 @@ class BillingController extends Controller
             'items.*.quantity' => ['required', 'numeric', 'min:0.01'],
             'items.*.unit_price' => ['required', 'numeric', 'min:0'],
             'items.*.discount_amount' => ['nullable', 'numeric', 'min:0'],
-        ]));
+        ]);
+        $validated['facility_id'] = $facilityId;
+
+        $invoice = $service->createInvoice($validated);
+
+        try {
+            $issuance->issueFromModel(
+                'INV',
+                'Invoice #' . ($invoice->invoice_number ?? $invoice->id),
+                ['invoice_id' => $invoice->id, 'patient_id' => $invoice->patient_id, 'total_amount' => $invoice->total_amount, 'items' => $validated['items']],
+                $facilityId,
+                $invoice->patient_id,
+                null,
+                $validated['actor_id'] ?? null
+            );
+        } catch (\Throwable) {}
 
         return response()->json(['data' => $this->serializeInvoice($invoice)], 201);
     }
 
-    public function recordPayment(Request $request, Invoice $invoice, PaymentService $service)
+    public function recordPayment(Request $request, Invoice $invoice, PaymentService $service, DocumentIssuanceService $issuance)
     {
+        $facilityId = $request->attributes->get('facility_id');
+
         $payment = $service->recordPayment($invoice, $request->validate([
             'amount' => ['required', 'numeric'],
             'method' => ['required', 'string'],
@@ -86,6 +112,18 @@ class BillingController extends Controller
             'cashier_session_id' => ['nullable', 'uuid'],
             'wallet_id' => ['nullable', 'uuid'],
         ]));
+
+        if ($facilityId) {
+            try {
+                $issuance->issueFromModel(
+                    'REC',
+                    'Receipt #' . ($payment->receipt_number ?? $payment->id),
+                    ['payment_id' => $payment->id, 'invoice_id' => $invoice->id, 'patient_id' => $invoice->patient_id, 'amount' => $payment->amount, 'method' => $payment->method],
+                    $facilityId,
+                    $invoice->patient_id
+                );
+            } catch (\Throwable) {}
+        }
 
         return response()->json(['data' => $this->serializePayment($payment)], 201);
     }
@@ -103,27 +141,35 @@ class BillingController extends Controller
 
     public function depositWallet(Request $request, PaymentService $service)
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+        }
+
         $validated = $request->validate([
             'patient_id' => ['required', 'uuid'],
-            'facility_id' => ['required', 'uuid'],
             'amount' => ['required', 'numeric'],
             'reason' => ['required', 'string'],
             'actor_id' => ['nullable', 'uuid'],
         ]);
 
-        $wallet = $service->depositToWallet($validated['patient_id'], $validated['facility_id'], (float) $validated['amount'], $validated['reason'], $validated['actor_id'] ?? null);
+        $wallet = $service->depositToWallet($validated['patient_id'], $facilityId, (float) $validated['amount'], $validated['reason'], $validated['actor_id'] ?? null);
 
         return response()->json(['data' => $wallet], 201);
     }
 
     public function openSession(Request $request, PaymentService $service)
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+        }
+
         $validated = $request->validate([
-            'facility_id' => ['required', 'uuid'],
             'cashier_id' => ['required', 'uuid'],
         ]);
 
-        return response()->json(['data' => $service->openCashierSession($validated['facility_id'], $validated['cashier_id'])], 201);
+        return response()->json(['data' => $service->openCashierSession($facilityId, $validated['cashier_id'])], 201);
     }
 
     public function closeSession(CashierSession $session, Request $request, PaymentService $service)
@@ -131,6 +177,55 @@ class BillingController extends Controller
         $validated = $request->validate(['actor_id' => ['required', 'uuid']]);
 
         return response()->json(['data' => $service->closeCashierSession($session, $validated['actor_id'])]);
+    }
+
+    /**
+     * Reconcile a cashier session at end of shift.
+     * Compares physical cash + electronic total against system expected total.
+     * Discrepancies are flagged for finance review.
+     *
+     * Body: { physical_cash_amount, electronic_total, closed_by, notes? }
+     */
+    public function reconcileSession(CashierSession $session, Request $request, PaymentReconciliationService $service): JsonResponse
+    {
+        $validated = $request->validate([
+            'physical_cash_amount' => ['required', 'numeric', 'min:0'],
+            'electronic_total'     => ['required', 'numeric', 'min:0'],
+            'closed_by'            => ['required', 'uuid'],
+            'notes'                => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        // Prevent reconciliation of already-closed session
+        if ($session->status === 'closed') {
+            return response()->json(['message' => 'This cashier session is already closed and reconciled.'], 422);
+        }
+
+        $reconciliation = $service->reconcile(
+            $session->id,
+            (float) $validated['physical_cash_amount'],
+            (float) $validated['electronic_total'],
+            $validated['closed_by'],
+            $validated['notes'] ?? null
+        );
+
+        return response()->json([
+            'message' => $reconciliation->status === 'balanced'
+                ? 'Session reconciled — balanced.'
+                : 'Session reconciled — discrepancy flagged for finance review.',
+            'data' => [
+                'id'              => $reconciliation->id,
+                'session_id'      => $reconciliation->cashier_session_id,
+                'expected_total'  => (float) $reconciliation->expected_total,
+                'physical_cash'   => (float) $reconciliation->physical_cash,
+                'electronic_total' => (float) $reconciliation->electronic_total,
+                'actual_total'    => (float) $reconciliation->actual_total,
+                'discrepancy'     => (float) $reconciliation->discrepancy,
+                'status'          => $reconciliation->status,
+                'reconciled_by'   => $reconciliation->reconciled_by,
+                'reconciled_at'   => $reconciliation->reconciled_at?->toISOString(),
+                'notes'           => $reconciliation->notes,
+            ],
+        ]);
     }
 
     private function serializeInvoice(Invoice $invoice): array
