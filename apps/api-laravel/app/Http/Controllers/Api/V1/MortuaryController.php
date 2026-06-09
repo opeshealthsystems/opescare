@@ -49,22 +49,47 @@ class MortuaryController extends Controller
             'status'      => 'admitted',
         ]);
 
-        $this->documentIssuanceService->issueFromModel(
-            'MSL',
-            'Mortuary Storage Log — ' . $bodyNumber,
-            [
-                'mortuary_record_id' => $record->id,
-                'body_number'        => $bodyNumber,
-                'full_name'          => $record->full_name,
-                'admission_date'     => $record->admission_date->toDateString(),
-                'storage_location'   => $record->storage_location,
-                'status'             => $record->status,
-            ],
-            $facilityId,
-            $validated['patient_id'] ?? null,
-            null,
-            $validated['admitted_by'] ?? null,
-        );
+        try {
+            $this->documentIssuanceService->issueFromModel(
+                'BRF',
+                'Mortuary Admission Form — ' . $bodyNumber,
+                [
+                    'mortuary_record_id'  => $record->id,
+                    'body_number'         => $bodyNumber,
+                    'full_name'           => $record->full_name,
+                    'sex'                 => $record->sex,
+                    'approximate_age'     => $record->approximate_age,
+                    'admission_date'      => $record->admission_date->toDateString(),
+                    'cause_of_death'      => $record->cause_of_death,
+                    'death_date'          => $record->death_date?->toDateString(),
+                    'next_of_kin_name'    => $record->next_of_kin_name,
+                    'next_of_kin_contact' => $record->next_of_kin_contact,
+                ],
+                $facilityId,
+                $validated['patient_id'] ?? null,
+                null,
+                $validated['admitted_by'] ?? null,
+            );
+        } catch (\Throwable) {}
+
+        try {
+            $this->documentIssuanceService->issueFromModel(
+                'MSL',
+                'Mortuary Storage Log — ' . $bodyNumber,
+                [
+                    'mortuary_record_id' => $record->id,
+                    'body_number'        => $bodyNumber,
+                    'full_name'          => $record->full_name,
+                    'admission_date'     => $record->admission_date->toDateString(),
+                    'storage_location'   => $record->storage_location,
+                    'status'             => $record->status,
+                ],
+                $facilityId,
+                $validated['patient_id'] ?? null,
+                null,
+                $validated['admitted_by'] ?? null,
+            );
+        } catch (\Throwable) {}
 
         return response()->json(['data' => $record], 201);
     }
