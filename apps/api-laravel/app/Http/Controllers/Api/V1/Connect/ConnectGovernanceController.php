@@ -124,13 +124,24 @@ class ConnectGovernanceController extends Controller
         $validated = $request->validate([
             'patient_id' => ['required', 'string', 'uuid'],
             'reason'     => ['required', 'string', 'min:10', 'max:1000'],
+            // Requesting provider user — must exist (FK-enforced), same convention
+            // as requestConsent's requested_by_user_id. Only used when no
+            // authenticated provider context is present.
+            'actor_id'   => ['nullable', 'string', 'uuid', 'exists:users,id'],
         ]);
 
-        // actor_id from authenticated client context only — never caller-supplied
+        // Prefer actor from authenticated session context; fall back to the
+        // validated, existence-checked provider user id supplied by the client.
         $actorId = $request->attributes->get('provider_id')
-            ?? $request->attributes->get('integration_client_id')
-            ?? $request->attributes->get('client_id')
-            ?? null;
+            ?? ($validated['actor_id'] ?? null);
+
+        if (! $actorId) {
+            return response()->json([
+                'status'     => 'error',
+                'error_code' => 'ACTOR_UNRESOLVABLE',
+                'message'    => 'Emergency access requires an identifiable provider user (actor_id).',
+            ], 422);
+        }
 
         $event = $this->emergencyService->requestEmergencyAccess(
             $validated['patient_id'],

@@ -33,6 +33,7 @@ class DataGovernancePrivacyTest extends TestCase
     private $facility;
     private $user;
     private $headers;
+    private $bearerToken;
 
     protected function setUp(): void
     {
@@ -43,6 +44,20 @@ class DataGovernancePrivacyTest extends TestCase
             'X-Client-ID' => 'test_client_id',
             'X-Client-Secret' => 'test_client_secret',
         ];
+
+        $this->bearerToken = null;
+
+        // Sandbox integration client — Connect B2B routes require a real
+        // Bearer token issued by /api/v1/connect/auth/token.
+        \App\Models\IntegrationClient::create([
+            'client_id'     => 'test_client_id',
+            'client_secret' => hash('sha256', 'test_client_secret'),
+            'facility_id'   => '00000000-0000-0000-0000-000000000001',
+            'name'          => 'Sandbox Test Client',
+            'environment'   => 'sandbox',
+            'scopes'        => json_encode(['*']),
+            'status'        => 'active',
+        ]);
 
         // 1. Setup mock patient
         $this->patient = new Patient();
@@ -73,7 +88,26 @@ class DataGovernancePrivacyTest extends TestCase
         $this->user->name = 'Dr. Jane PublicHealth';
         $this->user->email = 'jane@opescare.org';
         $this->user->password = bcrypt('secret');
+        $this->user->patient_id = $this->patient->id; // link so mobile auth resolves a user identity
         $this->user->save();
+    }
+
+    /**
+     * Obtain a real Bearer token for the sandbox client through the token endpoint.
+     */
+    private function bearerHeaders(array $extra = []): array
+    {
+        if ($this->bearerToken === null) {
+            $response = $this->postJson('/api/v1/connect/auth/token', [
+                'client_id'     => 'test_client_id',
+                'client_secret' => 'test_client_secret',
+                'grant_type'    => 'client_credentials',
+            ]);
+            $response->assertStatus(200);
+            $this->bearerToken = $response->json('access_token');
+        }
+
+        return array_merge(['Authorization' => 'Bearer ' . $this->bearerToken], $extra);
     }
 
     /** @test */
@@ -124,9 +158,9 @@ class DataGovernancePrivacyTest extends TestCase
             'patient_id' => $this->patient->id,
             'requested_by_user_id' => $this->user->id,
             'purpose' => 'treatment',
-            'requested_scopes' => ['patient.summary', 'allergies.read'],
+            'scopes' => ['patient.summary', 'allergies.read'],
             'duration_minutes' => 60
-        ], $this->headers);
+        ], $this->bearerHeaders());
         $reqResponse->assertStatus(202);
         $requestId = $reqResponse->json('consent_request_id');
 
@@ -153,7 +187,7 @@ class DataGovernancePrivacyTest extends TestCase
             'patient_id' => $this->patient->id,
             'scope' => 'patient.summary',
             'purpose' => 'treatment'
-        ], $this->headers);
+        ], $this->bearerHeaders());
         $verifyResponse->assertStatus(200);
         $this->assertTrue($verifyResponse->json('is_valid'));
 
@@ -169,7 +203,7 @@ class DataGovernancePrivacyTest extends TestCase
             'patient_id' => $this->patient->id,
             'scope' => 'patient.summary',
             'purpose' => 'treatment'
-        ], $this->headers);
+        ], $this->bearerHeaders());
         $verifyRevResponse->assertStatus(200);
         $this->assertFalse($verifyRevResponse->json('is_valid'));
     }
@@ -182,7 +216,7 @@ class DataGovernancePrivacyTest extends TestCase
             'patient_id' => $this->patient->id,
             'actor_id' => $this->user->id,
             'reason' => 'Patient in anaphylactic shock, unresponsive.'
-        ], $this->headers);
+        ], $this->bearerHeaders());
         $overrideResponse->assertStatus(201);
         $eventId = $overrideResponse->json('emergency_access_event_id');
 
@@ -335,7 +369,7 @@ class DataGovernancePrivacyTest extends TestCase
             ->postJson('/api/mobile/data-export-requests', [
                 'patient_id' => $this->patient->id,
                 'user_id' => $this->user->id,
-                'export_type' => 'full_profile'
+                'export_type' => 'full_record'
             ]);
         $expResponse->assertStatus(201);
         $requestId = $expResponse->json('id');

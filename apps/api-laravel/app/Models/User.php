@@ -74,6 +74,13 @@ class User extends Authenticatable
      */
     public function roleAtFacility(string $facilityId): ?Role
     {
+        // Guard: facility_id is a uuid column on Postgres — a malformed id
+        // (e.g. a tampered session value) would otherwise throw a 22P02 cast
+        // error and surface as a 500. Treat invalid ids as "no facility role".
+        if (! \Illuminate\Support\Str::isUuid($facilityId)) {
+            return $this->role ?? null;
+        }
+
         $assignment = $this->facilityRoleAssignments()
             ->active()
             ->where('facility_id', $facilityId)

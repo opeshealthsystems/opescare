@@ -36,7 +36,7 @@ class PatientIdentityServiceTest extends TestCase
         $this->assertNotNull($patient->id);
         $this->assertNotNull($patient->health_id);
         $this->assertEquals('John', $patient->first_name);
-        $this->assertEquals('provisional', $patient->identity_status);
+        $this->assertEquals('provisional', $patient->identity_status instanceof \BackedEnum ? $patient->identity_status->value : $patient->identity_status);
 
         $this->assertDatabaseHas('audit_events', [
             'action_type' => 'create',

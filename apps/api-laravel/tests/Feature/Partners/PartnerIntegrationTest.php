@@ -7,6 +7,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Modules\Partners\Models\Partner;
 use App\Modules\Partners\Models\PartnerIntegration;
 use App\Modules\Partners\Enums\TrustLevel;
+use App\Models\User;
+use App\Models\Role;
 use Illuminate\Support\Str;
 
 class PartnerIntegrationTest extends TestCase
@@ -15,11 +17,24 @@ class PartnerIntegrationTest extends TestCase
 
     private Partner $partner;
     private PartnerIntegration $integration;
+    private User $adminUser;
+
+    /** Integration-client headers honored by VerifyIntegrationClient's testing bypass. */
+    private array $clientHeaders = [
+        'X-Client-ID'     => 'test_client_id',
+        'X-Client-Secret' => 'test_client_secret',
+    ];
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
+        $adminRole = Role::firstOrCreate(
+            ['name' => 'platform_admin'],
+            ['label' => 'Platform Admin']
+        );
+        $this->adminUser = User::factory()->create(['role_id' => $adminRole->id]);
+
         $this->partner = Partner::create([
             'uuid' => Str::uuid(),
             'partner_type' => 'technology_and_interoperability',
@@ -40,7 +55,8 @@ class PartnerIntegrationTest extends TestCase
 
     public function test_can_certify_integration()
     {
-        $response = $this->postJson("/api/partner-governance/partners/{$this->partner->uuid}/integrations/{$this->integration->id}/certify");
+        $response = $this->actingAs($this->adminUser)
+            ->postJson("/api/partner-governance/partners/{$this->partner->uuid}/integrations/{$this->integration->id}/certify", [], $this->clientHeaders);
 
         $response->assertStatus(200);
         $this->assertEquals('certified', $this->integration->fresh()->status);
@@ -53,7 +69,8 @@ class PartnerIntegrationTest extends TestCase
 
     public function test_cannot_enable_production_if_not_certified()
     {
-        $response = $this->postJson("/api/partner-governance/partners/{$this->partner->uuid}/integrations/{$this->integration->id}/enable-production");
+        $response = $this->actingAs($this->adminUser)
+            ->postJson("/api/partner-governance/partners/{$this->partner->uuid}/integrations/{$this->integration->id}/enable-production", [], $this->clientHeaders);
 
         $response->assertStatus(400)
                  ->assertJsonPath('message', 'Integration must be certified before enabling production access.');
@@ -64,7 +81,8 @@ class PartnerIntegrationTest extends TestCase
         $this->integration->status = 'certified';
         $this->integration->save();
 
-        $response = $this->postJson("/api/partner-governance/partners/{$this->partner->uuid}/integrations/{$this->integration->id}/enable-production");
+        $response = $this->actingAs($this->adminUser)
+            ->postJson("/api/partner-governance/partners/{$this->partner->uuid}/integrations/{$this->integration->id}/enable-production", [], $this->clientHeaders);
 
         $response->assertStatus(200);
         

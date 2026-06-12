@@ -46,9 +46,11 @@ class GlobalSearchService
 
     private function patientResults(string $query, array $context): Collection
     {
-        return Patient::where('health_id', 'like', "%{$query}%")
-            ->orWhere('first_name', 'like', "%{$query}%")
-            ->orWhere('last_name', 'like', "%{$query}%")
+        $like = $this->likeTerm($query);
+
+        return Patient::whereRaw('LOWER(health_id) LIKE ?', [$like])
+            ->orWhereRaw('LOWER(first_name) LIKE ?', [$like])
+            ->orWhereRaw('LOWER(last_name) LIKE ?', [$like])
             ->limit(10)
             ->get()
             ->map(function (Patient $patient) use ($context, $query) {
@@ -77,8 +79,10 @@ class GlobalSearchService
 
     private function facilityResults(string $query): Collection
     {
-        $facilities = Facility::where('name', 'like', "%{$query}%")
-            ->orWhere('license_number', 'like', "%{$query}%")
+        $like = $this->likeTerm($query);
+
+        $facilities = Facility::whereRaw('LOWER(name) LIKE ?', [$like])
+            ->orWhereRaw('LOWER(license_number) LIKE ?', [$like])
             ->limit(10)
             ->get()
             ->map(fn (Facility $facility) => [
@@ -88,9 +92,9 @@ class GlobalSearchService
                 'metadata' => ['id' => $facility->id, 'status' => $facility->status],
             ]);
 
-        $careFacilities = CareFacility::where('facility_name', 'like', "%{$query}%")
-            ->orWhere('city', 'like', "%{$query}%")
-            ->orWhere('license_number', 'like', "%{$query}%")
+        $careFacilities = CareFacility::whereRaw('LOWER(facility_name) LIKE ?', [$like])
+            ->orWhereRaw('LOWER(city) LIKE ?', [$like])
+            ->orWhereRaw('LOWER(license_number) LIKE ?', [$like])
             ->limit(10)
             ->get()
             ->map(fn (CareFacility $facility) => [
@@ -105,9 +109,11 @@ class GlobalSearchService
 
     private function documentResults(string $query): Collection
     {
-        return OfficialDocument::where('verification_code', 'like', "%{$query}%")
-            ->orWhere('document_number', 'like', "%{$query}%")
-            ->orWhere('title', 'like', "%{$query}%")
+        $like = $this->likeTerm($query);
+
+        return OfficialDocument::whereRaw('LOWER(verification_code) LIKE ?', [$like])
+            ->orWhereRaw('LOWER(document_number) LIKE ?', [$like])
+            ->orWhereRaw('LOWER(title) LIKE ?', [$like])
             ->limit(10)
             ->get()
             ->map(fn (OfficialDocument $document) => [
@@ -125,9 +131,11 @@ class GlobalSearchService
 
     private function medicineResults(string $query): Collection
     {
-        return PharmacyStockAvailability::where('medicine_name', 'like', "%{$query}%")
-            ->orWhere('generic_name', 'like', "%{$query}%")
-            ->orWhere('brand_name', 'like', "%{$query}%")
+        $like = $this->likeTerm($query);
+
+        return PharmacyStockAvailability::whereRaw('LOWER(medicine_name) LIKE ?', [$like])
+            ->orWhereRaw('LOWER(generic_name) LIKE ?', [$like])
+            ->orWhereRaw('LOWER(brand_name) LIKE ?', [$like])
             ->limit(10)
             ->get()
             ->map(fn (PharmacyStockAvailability $stock) => [
@@ -140,8 +148,10 @@ class GlobalSearchService
 
     private function labTestResults(string $query): Collection
     {
-        return LabTestAvailability::where('test_name', 'like', "%{$query}%")
-            ->orWhere('loinc_code', 'like', "%{$query}%")
+        $like = $this->likeTerm($query);
+
+        return LabTestAvailability::whereRaw('LOWER(test_name) LIKE ?', [$like])
+            ->orWhereRaw('LOWER(loinc_code) LIKE ?', [$like])
             ->limit(10)
             ->get()
             ->map(fn (LabTestAvailability $test) => [
@@ -154,8 +164,10 @@ class GlobalSearchService
 
     private function partnerResults(string $query): Collection
     {
-        return Partner::where('legal_name', 'like', "%{$query}%")
-            ->orWhere('trade_name', 'like', "%{$query}%")
+        $like = $this->likeTerm($query);
+
+        return Partner::whereRaw('LOWER(legal_name) LIKE ?', [$like])
+            ->orWhereRaw('LOWER(trade_name) LIKE ?', [$like])
             ->limit(10)
             ->get()
             ->map(fn (Partner $partner) => [
@@ -174,7 +186,7 @@ class GlobalSearchService
         }
 
         return Message::query()
-            ->where('body', 'like', "%{$query}%")
+            ->whereRaw('LOWER(body) LIKE ?', [$this->likeTerm($query)])
             ->where(function ($messageQuery) use ($authorizedUser) {
                 $messageQuery->where('sender_id', $authorizedUser)
                     ->orWhereHas('thread', fn ($threadQuery) => $threadQuery->where('created_by', $authorizedUser)->orWhere('assigned_to', $authorizedUser));
@@ -187,5 +199,10 @@ class GlobalSearchService
                 'subtitle' => str($message->body)->limit(80)->toString(),
                 'metadata' => ['id' => $message->id, 'thread_id' => $message->thread_id],
             ]);
+    }
+
+    private function likeTerm(string $query): string
+    {
+        return '%'.mb_strtolower($query).'%';
     }
 }

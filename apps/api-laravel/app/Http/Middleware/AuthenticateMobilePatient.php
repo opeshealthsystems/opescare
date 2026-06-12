@@ -31,6 +31,14 @@ class AuthenticateMobilePatient
         $request->attributes->set('patient_id', $token->patient_id);
         $request->attributes->set('patient_token', $token);
 
+        // Resolve the patient's linked user account (users.patient_id) so
+        // downstream controllers can attribute actions to a user identity
+        // without ever trusting caller-supplied user_id values.
+        $linkedUserId = \App\Models\User::where('patient_id', $token->patient_id)->value('id');
+        if ($linkedUserId) {
+            $request->attributes->set('patient_user_id', $linkedUserId);
+        }
+
         return $next($request);
     }
 }

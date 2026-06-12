@@ -64,12 +64,9 @@ class DuplicateMergeController extends Controller
                 $secondary->save();
 
                 // 3. Mark case as merged
+                // reviewed_by is a uuid column — resolve a UUID actor or null.
                 $mergeCase->status = 'merged';
-                // [FIX M-4] auth()->id() is null for B2B API clients.
-                // Use the integration_client_id from the bearer token instead — meaningful audit trail.
-                $mergeCase->reviewed_by = auth()->id()
-                    ?? $request->attributes->get('integration_client_id')
-                    ?? 'api:unknown';
+                $mergeCase->reviewed_by = $this->resolveActorUuid($request);
                 $mergeCase->review_reason = $request->input('review_reason');
                 $mergeCase->save();
 
@@ -77,13 +74,9 @@ class DuplicateMergeController extends Controller
                 $this->logAction($primary->id, $primary->health_id, 'approve_merge', 'success', $request);
                 
             } else {
-                // Reject Merge
+                // Reject Merge — reviewed_by is a uuid column, resolve UUID actor or null.
                 $mergeCase->status = 'rejected';
-                // [FIX M-4] auth()->id() is null for B2B API clients.
-                // Use the integration_client_id from the bearer token instead — meaningful audit trail.
-                $mergeCase->reviewed_by = auth()->id()
-                    ?? $request->attributes->get('integration_client_id')
-                    ?? 'api:unknown';
+                $mergeCase->reviewed_by = $this->resolveActorUuid($request);
                 $mergeCase->review_reason = $request->input('review_reason');
                 $mergeCase->save();
 
@@ -109,11 +102,11 @@ class DuplicateMergeController extends Controller
     private function logAction(string $patientId, string $healthId, string $accessType, string $result, Request $request)
     {
         // [FIX M-4] actor_id and facility_id were both random Str::uuid() — no audit value.
-        // Now use the real identities from the bearer token attributes.
-        $actorId    = auth()->id()
-            ?? $request->attributes->get('integration_client_id')
-            ?? 'api:unknown';
-        $facilityId = $request->attributes->get('facility_id') ?? 'unknown';
+        // Both are nullable uuid columns: only UUID identities are stored, the
+        // actor_type column records the actor class (admin vs integration_client).
+        $actorId    = $this->resolveActorUuid($request);
+        $facilityId = $request->attributes->get('facility_id');
+        $facilityId = is_string($facilityId) && Str::isUuid($facilityId) ? $facilityId : null;
 
         MedicalIdAccessEvent::create([
             'patient_id'  => $patientId,
@@ -127,5 +120,26 @@ class DuplicateMergeController extends Controller
             'ip_address'  => $request->ip(),
             'user_agent'  => $request->userAgent(),
         ]);
+    }
+
+    /**
+     * Resolve a UUID actor for audit columns (uuid, nullable).
+     * Order: authenticated user → provider context → integration client id
+     * (only when it is itself a UUID). Non-UUID client slugs cannot be stored
+     * in uuid columns and would 500 the request.
+     */
+    private function resolveActorUuid(Request $request): ?string
+    {
+        foreach ([
+            auth()->id(),
+            $request->attributes->get('provider_id'),
+            $request->attributes->get('integration_client_id'),
+        ] as $candidate) {
+            if (is_string($candidate) && Str::isUuid($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return null;
     }
 }

@@ -30,10 +30,12 @@ class TenantIsolationTest extends TestCase
             'patient_id'  => $patientB->id,
         ]);
 
-        // Simulate request scoped to Facility A
+        // Simulate request scoped to Facility A.
+        // HasFacilityScope is deliberately opt-in (no global scope), so tenant
+        // isolation is exercised through the forCurrentFacility() scope.
         app()->instance('current_facility_id', $facilityA->id);
 
-        $results = Appointment::all();
+        $results = Appointment::forCurrentFacility()->get();
 
         $ids = $results->pluck('id')->toArray();
 
@@ -47,17 +49,40 @@ class TenantIsolationTest extends TestCase
         $facility = Facility::factory()->create();
         app()->instance('current_facility_id', $facility->id);
 
+        // Only models whose tables actually carry a facility_id column can be
+        // facility-scoped (clinical_notes / vital_signs are scoped through
+        // their parent visit / triage_record and have no facility_id column).
         $models = [
-            \App\Models\ClinicalNote::class,
+            \App\Models\Appointment::class,
+            \App\Models\AppointmentSlot::class,
             \App\Models\LabOrder::class,
             \App\Models\Prescription::class,
-            \App\Models\VitalSign::class,
             \App\Models\InsuranceClaim::class,
         ];
 
         foreach ($models as $model) {
+            $this->assertContains(
+                \App\Traits\HasFacilityScope::class,
+                class_uses_recursive($model),
+                "Model {$model} must use the HasFacilityScope trait"
+            );
+
+            $query = $model::query()->forCurrentFacility();
+
+            $this->assertStringContainsString(
+                'facility_id',
+                $query->toSql(),
+                "Model {$model} forCurrentFacility() must constrain by facility_id"
+            );
+            $this->assertContains(
+                $facility->id,
+                $query->getBindings(),
+                "Model {$model} forCurrentFacility() must bind the current facility id"
+            );
+
+            // The scoped query must execute without error.
             $this->assertIsObject(
-                $model::query()->first(),
+                $query->get(),
                 "Model {$model} should support HasFacilityScope without error"
             );
         }

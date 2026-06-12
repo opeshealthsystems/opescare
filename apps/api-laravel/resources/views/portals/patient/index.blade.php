@@ -27,7 +27,7 @@
                     <div class="health-id-meta-label">{{ __('public.portal.status', [], app()->getLocale()) ?: 'Status' }}</div>
                     <div class="health-id-meta-value" style="display:flex;align-items:center;gap:0.35rem;">
                         <span style="width:7px;height:7px;background:#34D399;border-radius:50%;display:inline-block;"></span>
-                        {{ ucfirst($patient->verification_status ?? 'Active') }}
+                        {{ ucfirst(($patient->verification_status instanceof \BackedEnum ? $patient->verification_status->value : $patient->verification_status) ?? 'Active') }}
                     </div>
                 </div>
                 <div>

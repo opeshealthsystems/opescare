@@ -172,9 +172,7 @@ class BillingPaymentsTest extends TestCase
             'expires_at'       => now()->addDay(),
         ]);
 
-        $response = $this->withHeaders([
-            'X-Client-ID'         => 'test_client_id',
-            'X-Client-Secret'     => 'test_client_secret',
+        $response = $this->withHeaders($this->clientHeadersFor($facility) + [
             'X-Consent-Grant-Id'  => $grant->id,
         ])->getJson('/api/v1/billing/invoices?scope=patient&patient_id='.$patient->id);
 
@@ -211,6 +209,22 @@ class BillingPaymentsTest extends TestCase
 
         $this->assertEquals('closed', $closed->status);
         $this->assertEquals(3000, (int) $closed->cash_total_amount);
+    }
+
+    /**
+     * Create an active IntegrationClient bound to the given facility so
+     * VerifyIntegrationClient resolves facility_id to the test's facility.
+     */
+    private function clientHeadersFor(Facility $facility): array
+    {
+        $clientId = 'client_' . \Illuminate\Support\Str::lower(\Illuminate\Support\Str::random(12));
+        \App\Models\IntegrationClient::factory()->create([
+            'client_id'     => $clientId,
+            'client_secret' => hash('sha256', 'integration_secret'),
+            'facility_id'   => $facility->id,
+        ]);
+
+        return ['X-Client-ID' => $clientId, 'X-Client-Secret' => 'integration_secret'];
     }
 
     private function billingActors(): array

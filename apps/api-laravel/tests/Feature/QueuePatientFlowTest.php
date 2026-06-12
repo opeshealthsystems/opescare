@@ -130,10 +130,8 @@ class QueuePatientFlowTest extends TestCase
             'actor_id' => $staff->id,
         ]);
 
-        $response = $this->withHeaders([
-            'X-Client-ID'     => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret',
-        ])->getJson('/api/v1/queues/display?facility_id='.$facility->id.'&queue_name=triage');
+        $response = $this->withHeaders($this->clientHeadersFor($facility))
+            ->getJson('/api/v1/queues/display?facility_id='.$facility->id.'&queue_name=triage');
 
         $response->assertOk()->assertJsonPath('data.0.masked_patient_name', 'A*** Q***');
         $this->assertStringNotContainsString('Amina', json_encode($response->json('data')));
@@ -163,10 +161,8 @@ class QueuePatientFlowTest extends TestCase
             'checked_in_at' => now(),
         ]);
 
-        $response = $this->withHeaders([
-            'X-Client-ID'     => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret',
-        ])->getJson('/api/v1/queues/tickets?facility_id='.$facility->id);
+        $response = $this->withHeaders($this->clientHeadersFor($facility))
+            ->getJson('/api/v1/queues/tickets?facility_id='.$facility->id);
 
         $response->assertOk()->assertJsonCount(1, 'data');
         $this->assertSame($facility->id, $response->json('data.0.facility_id'));
@@ -192,6 +188,22 @@ class QueuePatientFlowTest extends TestCase
             'resource_id' => $ticket->id,
             'action_type' => 'cancel',
         ]);
+    }
+
+    /**
+     * Create an active IntegrationClient bound to the given facility so
+     * VerifyIntegrationClient resolves facility_id to the test's facility.
+     */
+    private function clientHeadersFor(Facility $facility): array
+    {
+        $clientId = 'client_' . \Illuminate\Support\Str::lower(\Illuminate\Support\Str::random(12));
+        \App\Models\IntegrationClient::factory()->create([
+            'client_id'     => $clientId,
+            'client_secret' => hash('sha256', 'integration_secret'),
+            'facility_id'   => $facility->id,
+        ]);
+
+        return ['X-Client-ID' => $clientId, 'X-Client-Secret' => 'integration_secret'];
     }
 
     private function queueActors(): array

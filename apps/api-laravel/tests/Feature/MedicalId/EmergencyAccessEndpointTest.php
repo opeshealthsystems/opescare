@@ -46,8 +46,10 @@ class EmergencyAccessEndpointTest extends TestCase
             // reason is intentionally missing
         ], $this->clientHeaders());
 
-        $response->assertStatus(400)
-                 ->assertJsonPath('error_code', 'INVALID_PAYLOAD');
+        // Platform-wide convention: the global API exception handler renders all
+        // validation failures as 422 VALIDATION_FAILED (bootstrap/app.php).
+        $response->assertStatus(422)
+                 ->assertJsonPath('error_code', 'VALIDATION_FAILED');
     }
 
     public function test_emergency_access_with_reason_succeeds_and_audits()
@@ -87,11 +89,11 @@ class EmergencyAccessEndpointTest extends TestCase
         $response->assertStatus(404)
                  ->assertJsonPath('error_code', 'HEALTH_ID_NOT_FOUND');
 
-        // Verify the failed lookup was audited
+        // Verify the failed lookup was audited under the dedicated
+        // AuditEventType::EmergencyAccessDenied taxonomy.
         $this->assertDatabaseHas('medical_id_access_events', [
             'health_id' => 'CM-HID-XXXX-YYYY-ZZZZ',
-            'access_type' => 'pull_emergency_profile',
-            'purpose' => 'emergency_access',
+            'access_type' => 'emergency_access_denied',
             'result' => 'denied'
         ]);
     }

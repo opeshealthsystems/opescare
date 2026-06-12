@@ -9,6 +9,8 @@ use App\Modules\Partners\Models\PartnerDocument;
 use App\Modules\Partners\Models\PartnerAgreement;
 use App\Modules\Partners\Models\PartnerAuditLog;
 use App\Modules\Partners\Enums\TrustLevel;
+use App\Models\User;
+use App\Models\Role;
 use Illuminate\Support\Str;
 
 class PartnerGovernanceTest extends TestCase
@@ -16,11 +18,24 @@ class PartnerGovernanceTest extends TestCase
     use RefreshDatabase;
 
     private Partner $partner;
+    private User $adminUser;
+
+    /** Integration-client headers honored by VerifyIntegrationClient's testing bypass. */
+    private array $clientHeaders = [
+        'X-Client-ID'     => 'test_client_id',
+        'X-Client-Secret' => 'test_client_secret',
+    ];
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
+        $adminRole = Role::firstOrCreate(
+            ['name' => 'platform_admin'],
+            ['label' => 'Platform Admin']
+        );
+        $this->adminUser = User::factory()->create(['role_id' => $adminRole->id]);
+
         $this->partner = Partner::create([
             'uuid' => Str::uuid(),
             'partner_type' => 'healthcare_facility',
@@ -41,9 +56,10 @@ class PartnerGovernanceTest extends TestCase
             'status' => 'uploaded'
         ]);
 
-        $response = $this->postJson("/api/partner-governance/partners/{$this->partner->uuid}/documents/{$document->id}/verify", [
-            'notes' => 'Looks valid.'
-        ]);
+        $response = $this->actingAs($this->adminUser)
+            ->postJson("/api/partner-governance/partners/{$this->partner->uuid}/documents/{$document->id}/verify", [
+                'notes' => 'Looks valid.'
+            ], $this->clientHeaders);
 
         $response->assertStatus(200);
 
@@ -72,7 +88,8 @@ class PartnerGovernanceTest extends TestCase
             'status' => 'draft',
         ]);
 
-        $response = $this->postJson("/api/partner-governance/partners/{$this->partner->uuid}/agreements/{$agreement->id}/mark-signed");
+        $response = $this->actingAs($this->adminUser)
+            ->postJson("/api/partner-governance/partners/{$this->partner->uuid}/agreements/{$agreement->id}/mark-signed", [], $this->clientHeaders);
 
         $response->assertStatus(200);
 

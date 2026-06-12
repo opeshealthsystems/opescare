@@ -221,10 +221,8 @@ class AppointmentBookingTest extends TestCase
             'scheduled_at' => '2026-06-01 10:00:00',
         ]);
 
-        $response = $this->withHeaders([
-            'X-Client-ID'     => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret',
-        ])->getJson('/api/v1/appointments?patient_id='.$patient->id.'&scope=patient');
+        $response = $this->withHeaders($this->clientHeadersFor($facility))
+            ->getJson('/api/v1/appointments?patient_id='.$patient->id.'&scope=patient');
 
         $response->assertOk()->assertJsonCount(1, 'data');
         $this->assertSame($patient->id, $response->json('data.0.patient_id'));
@@ -253,14 +251,28 @@ class AppointmentBookingTest extends TestCase
             'scheduled_at' => '2026-06-01 10:00:00',
         ]);
 
-        $response = $this->withHeaders([
-            'X-Client-ID'     => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret',
-        ])->getJson('/api/v1/appointments?facility_id='.$facility->id.'&provider_id='.$provider->id);
+        $response = $this->withHeaders($this->clientHeadersFor($facility))
+            ->getJson('/api/v1/appointments?facility_id='.$facility->id.'&provider_id='.$provider->id);
 
         $response->assertOk()->assertJsonCount(1, 'data');
         $this->assertSame($facility->id, $response->json('data.0.facility_id'));
         $this->assertSame($provider->id, $response->json('data.0.provider_id'));
+    }
+
+    /**
+     * Create an active IntegrationClient bound to the given facility so
+     * VerifyIntegrationClient resolves facility_id to the test's facility.
+     */
+    private function clientHeadersFor(Facility $facility): array
+    {
+        $clientId = 'client_' . \Illuminate\Support\Str::lower(\Illuminate\Support\Str::random(12));
+        \App\Models\IntegrationClient::factory()->create([
+            'client_id'     => $clientId,
+            'client_secret' => hash('sha256', 'integration_secret'),
+            'facility_id'   => $facility->id,
+        ]);
+
+        return ['X-Client-ID' => $clientId, 'X-Client-Secret' => 'integration_secret'];
     }
 
     private function appointmentActors(): array

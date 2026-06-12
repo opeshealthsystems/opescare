@@ -16,7 +16,7 @@ class FormularyService {
 
             if ($driver === 'pgsql') {
                 $builder->orWhereRaw(
-                    "EXISTS (SELECT 1 FROM jsonb_array_elements_text(brand_names) AS bn WHERE LOWER(bn) LIKE ?)",
+                    "EXISTS (SELECT 1 FROM jsonb_array_elements_text(brand_names::jsonb) AS bn WHERE LOWER(bn) LIKE ?)",
                     [$like]
                 );
             } else {

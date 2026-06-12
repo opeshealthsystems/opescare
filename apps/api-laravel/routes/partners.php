@@ -18,6 +18,13 @@ use App\Http\Controllers\Api\V1\Admin\PartnerGovernanceController;
 |
 */
 
+// Partner trust-level smoke endpoint — authenticates via X-Partner-ID through
+// VerifyPartnerTrustLevel (a separate partner-facing mechanism), NOT via the
+// admin client-credential stack below. Intentionally outside the admin group.
+Route::get('/partner-governance/test-access', function () {
+    return response()->json(['status' => 'success']);
+})->middleware(\App\Http\Middleware\VerifyPartnerTrustLevel::class);
+
 Route::prefix('partner-governance')
     ->middleware(['verify.integration.client', 'api.admin'])
     ->group(function () {

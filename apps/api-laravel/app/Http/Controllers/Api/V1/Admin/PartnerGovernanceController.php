@@ -85,7 +85,7 @@ class PartnerGovernanceController extends Controller
             ->firstOrFail();
 
         $service = app(\App\Modules\Partners\Services\PartnerVerificationService::class);
-        $document = $service->verifyDocument($document, $request->user()?->uuid ?? 'system', $request->input('notes'));
+        $document = $service->verifyDocument($document, $request->user()?->id ?? 'system', $request->input('notes'));
 
         return response()->json([
             'status' => 'success',
@@ -102,7 +102,7 @@ class PartnerGovernanceController extends Controller
             ->firstOrFail();
 
         $service = app(\App\Modules\Partners\Services\PartnerAgreementService::class);
-        $agreement = $service->markAgreementSigned($agreement, $request->user()?->uuid ?? 'system');
+        $agreement = $service->markAgreementSigned($agreement, $request->user()?->id ?? 'system');
 
         return response()->json([
             'status' => 'success',
@@ -119,7 +119,7 @@ class PartnerGovernanceController extends Controller
             ->firstOrFail();
 
         $service = app(\App\Modules\Partners\Services\PartnerIntegrationGovernanceService::class);
-        $integration = $service->certifyIntegration($integration, $request->user()?->uuid ?? 'system');
+        $integration = $service->certifyIntegration($integration, $request->user()?->id ?? 'system');
 
         return response()->json([
             'status' => 'success',
@@ -138,7 +138,7 @@ class PartnerGovernanceController extends Controller
         $service = app(\App\Modules\Partners\Services\PartnerIntegrationGovernanceService::class);
         
         try {
-            $integration = $service->enableProduction($integration, $request->user()?->uuid ?? 'system');
+            $integration = $service->enableProduction($integration, $request->user()?->id ?? 'system');
             return response()->json([
                 'status' => 'success',
                 'message' => 'Production API access enabled.',
@@ -173,7 +173,7 @@ class PartnerGovernanceController extends Controller
             $validated['risk_factor'],
             $validated['severity'],
             $validated['score_delta'],
-            $validated['actor_id'] ?? $request->user()?->uuid ?? 'api'
+            $validated['actor_id'] ?? $request->user()?->id ?? 'api'
         );
 
         return response()->json([

@@ -51,10 +51,17 @@ class VerifyIntegrationClient
             $clientId     === 'test_client_id' &&
             $clientSecret === 'test_client_secret'
         ) {
+            // Allow tests to scope the bypass client to a real seeded facility by
+            // passing facility_id in the request; fall back to the sandbox UUID.
+            $testFacilityId = $request->input('facility_id');
+            if (! is_string($testFacilityId) || ! \Illuminate\Support\Str::isUuid($testFacilityId)) {
+                $testFacilityId = '00000000-0000-0000-0000-000000000001';
+            }
+
             $request->attributes->add([
                 'integration_client_id' => 'test_client_id',
                 'provider_id'           => '00000000-0000-0000-0000-000000000001',
-                'facility_id'           => '00000000-0000-0000-0000-000000000001',
+                'facility_id'           => $testFacilityId,
             ]);
             return $next($request);
         }
