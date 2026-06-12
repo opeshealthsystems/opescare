@@ -41,6 +41,18 @@ class RequireConsentGrant
             ], 403);
         }
 
+        // The consent_grants primary key is a Postgres uuid column — a malformed
+        // id would raise "invalid input syntax for type uuid" at the DB layer.
+        // Treat any non-UUID value as an invalid grant instead of erroring.
+        if (! \Illuminate\Support\Str::isUuid($grantId)) {
+            return response()->json([
+                'status'          => 'rejected',
+                'error_code'      => 'CONSENT_REQUIRED',
+                'message'         => 'The supplied consent grant is invalid, expired, or has been revoked.',
+                'required_action' => 'request_consent',
+            ], 403);
+        }
+
         // Resolve the requesting facility from the auth middleware
         $facilityId = $request->attributes->get('facility_id');
 

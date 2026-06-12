@@ -700,7 +700,7 @@ class FhirController extends Controller
             ]), 403, ['Content-Type' => 'application/fhir+json']);
         }
 
-        $everything = $this->fhirService->patientEverything($patient);
+        $everything = $this->fhirService->patientBundle($patient);
 
         $lines = collect($everything['entry'] ?? [])
             ->map(fn ($e) => json_encode($e['resource']))

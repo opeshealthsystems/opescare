@@ -60,7 +60,7 @@ class ConnectPlatformTest extends TestCase
         // forceCreate bypasses mass-assignment so the explicit id is stored
         // (HasUuids only auto-generates when id is empty, so our value is kept)
         \App\Models\ConsentGrant::forceCreate([
-            'id'                 => 'cgt_test_active_01',
+            'id'                 => '0c000000-0000-4000-8000-0000000cc001', // consent_grants.id is a Postgres uuid column
             'consent_request_id' => $consentReq->id,
             'patient_id'         => '00000000-0000-0000-0000-000000000003',
             'facility_id'        => '00000000-0000-0000-0000-000000000001',
@@ -159,7 +159,7 @@ class ConnectPlatformTest extends TestCase
             'X-Client-ID'       => 'test_client_id',
             'X-Client-Secret'   => 'test_client_secret',
             'Idempotency-Key'   => 'idm_key_test_1002',
-            'X-Consent-Grant-Id' => 'cgt_test_active_01',
+            'X-Consent-Grant-Id' => '0c000000-0000-4000-8000-0000000cc001',
         ])->postJson('/api/v1/connect/records/encounters', [
             'health_id' => 'OC-CMR-7KQ9-MP42-X8D1',
             'external_encounter_id' => 'ENC-9001'
@@ -181,7 +181,7 @@ class ConnectPlatformTest extends TestCase
             'X-Client-ID'       => 'test_client_id',
             'X-Client-Secret'   => 'test_client_secret',
             'Idempotency-Key'   => 'idm_key_test_1002',
-            'X-Consent-Grant-Id' => 'cgt_test_active_01',
+            'X-Consent-Grant-Id' => '0c000000-0000-4000-8000-0000000cc001',
         ])->postJson('/api/v1/connect/records/encounters', [
             'health_id' => 'OC-CMR-7KQ9-MP42-X8D1',
             'external_encounter_id' => 'ENC-9001'
@@ -195,7 +195,7 @@ class ConnectPlatformTest extends TestCase
             'X-Client-ID'       => 'test_client_id',
             'X-Client-Secret'   => 'test_client_secret',
             'Idempotency-Key'   => 'idm_key_test_1002',
-            'X-Consent-Grant-Id' => 'cgt_test_active_01',
+            'X-Consent-Grant-Id' => '0c000000-0000-4000-8000-0000000cc001',
         ])->postJson('/api/v1/connect/records/encounters', [
             'health_id' => 'OC-CMR-7KQ9-MP42-X8D1',
             'external_encounter_id' => 'ENC-9002_DIFFERENT'
@@ -258,7 +258,7 @@ class ConnectPlatformTest extends TestCase
             'X-Client-ID'       => 'test_client_id',
             'X-Client-Secret'   => 'test_client_secret',
             'Idempotency-Key'   => 'idm_recon_key_01',
-            'X-Consent-Grant-Id' => 'cgt_test_active_01',
+            'X-Consent-Grant-Id' => '0c000000-0000-4000-8000-0000000cc001',
         ])->postJson('/api/v1/connect/records/encounters', [
             'health_id' => 'OC-CMR-RECON-REQUIRED',
             'external_encounter_id' => 'ENC-RECON-001'

@@ -120,6 +120,71 @@ class TriageService
     }
 
     /**
+     * Reassess an existing triage record (additive).
+     * Optionally records new vitals and updates the acuity score.
+     */
+    public function reassess(string $triageId, array $data, ?string $actorId = null): TriageRecord
+    {
+        DB::beginTransaction();
+        try {
+            $triage = TriageRecord::findOrFail($triageId);
+
+            if (isset($data['vitals'])) {
+                $vitalsData = $data['vitals'];
+
+                if (isset($vitalsData['temperature']) && ($vitalsData['temperature'] < 20 || $vitalsData['temperature'] > 45)) {
+                    throw new Exception("Temperature value is out of logical human bounds (Celsius).");
+                }
+
+                VitalSign::create(array_merge($vitalsData, [
+                    'triage_record_id' => $triage->id,
+                ]));
+
+                $alerts = self::assessVitals($vitalsData);
+                $criticalAlerts = array_filter($alerts, fn($a) => $a['status'] === 'critical');
+
+                if (!empty($criticalAlerts) && !in_array($triage->acuity_score, ['critical', 'resuscitation'])) {
+                    $triage->update(['acuity_score' => 'critical']);
+                }
+            }
+
+            if (!empty($data['new_acuity_score'])) {
+                $triage->update(['acuity_score' => $data['new_acuity_score']]);
+            }
+
+            AuditEvent::create([
+                'actor_id'      => $actorId,
+                'encounter_id'  => $triage->visit_id,
+                'action_type'   => 'update',
+                'resource_type' => 'triage_record',
+                'resource_id'   => $triage->id,
+                'reason'        => $data['reason'] ?? 'Triage reassessment',
+            ]);
+
+            DB::commit();
+            return $triage->fresh();
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * List active triage records for a facility (additive).
+     * Active = triage records attached to visits at the facility that are not closed.
+     */
+    public function listActiveForFacility(string $facilityId): \Illuminate\Database\Eloquent\Collection
+    {
+        return TriageRecord::whereHas('visit', function ($query) use ($facilityId) {
+                $query->where('facility_id', $facilityId)
+                    ->whereNotIn('status', ['completed', 'cancelled']);
+            })
+            ->with(['visit', 'vitalSigns'])
+            ->latest()
+            ->get();
+    }
+
+    /**
      * Vital sign range assessment for clinical alerts.
      * Returns array of ['vital', 'value', 'status' => critical|warning|ok, 'note']
      */

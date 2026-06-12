@@ -49,15 +49,30 @@ class SubscriptionController extends Controller
     public function subscribe(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'plan_id'         => ['required', 'uuid'],
-            'organization_id' => ['required', 'uuid'],
-            'billing_cycle'   => ['required', 'in:monthly,annual'],
+            'plan_id'           => ['required', 'uuid'],
+            'organization_id'   => ['required', 'uuid'],
+            'organization_name' => ['nullable', 'string', 'max:255'],
+            'billing_cycle'     => ['required', 'in:monthly,annual'],
+            'billing_email'     => ['nullable', 'email'],
+            'billing_name'      => ['nullable', 'string', 'max:255'],
+            'payment_method'    => ['nullable', 'string', 'max:100'],
+            'auto_renew'        => ['nullable', 'boolean'],
         ]);
 
-        return response()->json(
-            $this->subscriptions->subscribe($validated, $request->user()->id),
-            201
+        $subscription = $this->subscriptions->subscribe(
+            $validated['organization_id'],
+            $validated['organization_name'] ?? ($request->user()->organization_name ?? ''),
+            $validated['plan_id'],
+            [
+                'email'          => $validated['billing_email'] ?? null,
+                'name'           => $validated['billing_name'] ?? null,
+                'payment_method' => $validated['payment_method'] ?? null,
+                'auto_renew'     => $validated['auto_renew'] ?? true,
+            ],
+            $request->user()->id
         );
+
+        return response()->json($subscription, 201);
     }
 
     public function upgrade(Request $request): JsonResponse
@@ -67,8 +82,13 @@ class SubscriptionController extends Controller
             'organization_id' => ['required', 'uuid'],
         ]);
 
+        $subscription = $this->subscriptions->getForOrganization($validated['organization_id']);
+        if (!$subscription) {
+            return response()->json(['message' => 'No subscription found for this organization.'], 404);
+        }
+
         return response()->json(
-            $this->subscriptions->changePlan($validated['organization_id'], $validated['new_plan_id'], $request->user()->id)
+            $this->subscriptions->changePlan($subscription->id, $validated['new_plan_id'], $request->user()->id)
         );
     }
 
@@ -79,8 +99,17 @@ class SubscriptionController extends Controller
             'reason'          => ['nullable', 'string'],
         ]);
 
+        $subscription = $this->subscriptions->getForOrganization($validated['organization_id']);
+        if (!$subscription) {
+            return response()->json(['message' => 'No subscription found for this organization.'], 404);
+        }
+
         return response()->json(
-            $this->subscriptions->cancel($validated['organization_id'], $validated['reason'] ?? null, $request->user()->id)
+            $this->subscriptions->cancelSubscription(
+                $subscription->id,
+                $validated['reason'] ?? 'No reason provided',
+                $request->user()->id
+            )
         );
     }
 
@@ -88,14 +117,34 @@ class SubscriptionController extends Controller
 
     public function getUsage(Request $request): JsonResponse
     {
-        return response()->json(
-            $this->limits->getCurrentUsage($request->user()->organization_id)
-        );
+        $subscription = $this->subscriptions->getForOrganization($request->user()->organization_id);
+        if (!$subscription) {
+            return response()->json(['message' => 'No subscription found for this organization.'], 404);
+        }
+
+        return response()->json([
+            'subscription_id' => $subscription->id,
+            'usage'           => $this->subscriptions->getUsageSummary($subscription->id),
+            'limits'          => $this->limits->getLimitsForPlan($subscription->plan_id),
+        ]);
     }
 
     public function checkLimit(Request $request, string $featureKey): JsonResponse
     {
-        $allowed = $this->limits->isWithinLimit($request->user()->organization_id, $featureKey);
-        return response()->json(['feature' => $featureKey, 'allowed' => $allowed]);
+        $subscription = $this->subscriptions->getForOrganization($request->user()->organization_id);
+        if (!$subscription) {
+            return response()->json(['message' => 'No subscription found for this organization.'], 404);
+        }
+
+        $usage        = $this->subscriptions->getUsageSummary($subscription->id);
+        $currentUsage = (int) ($usage[$featureKey] ?? 0);
+        $allowed      = $this->limits->isWithinLimit($subscription, $featureKey, $currentUsage);
+
+        return response()->json([
+            'feature'       => $featureKey,
+            'allowed'       => $allowed,
+            'current_usage' => $currentUsage,
+            'limit'         => $this->limits->getLimit($subscription->plan_id, $featureKey),
+        ]);
     }
 }

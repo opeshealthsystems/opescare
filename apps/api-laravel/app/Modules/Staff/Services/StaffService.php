@@ -73,6 +73,25 @@ class StaffService
         ]));
     }
 
+    public function getStaffProfile(string $profileId): StaffProfile
+    {
+        return StaffProfile::with(['licenses', 'departmentAssignments'])->findOrFail($profileId);
+    }
+
+    public function updateStaffProfile(string $profileId, array $data): StaffProfile
+    {
+        $allowed = [
+            'first_name', 'last_name', 'email', 'phone',
+            'job_title', 'department', 'staff_category',
+            'employment_type', 'contract_end_date', 'notes',
+        ];
+
+        $profile = StaffProfile::findOrFail($profileId);
+        $profile->update(array_intersect_key($data, array_flip($allowed)));
+
+        return $profile->fresh();
+    }
+
     public function generateEmployeeNumber(string $facilityId): string
     {
         $prefix = 'EMP';

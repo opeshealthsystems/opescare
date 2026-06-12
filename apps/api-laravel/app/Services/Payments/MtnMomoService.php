@@ -28,12 +28,14 @@ class MtnMomoService implements PaymentProvider
 
     public function __construct()
     {
-        $this->baseUrl         = rtrim(config('services.mtn_momo.base_url', 'https://sandbox.momodeveloper.mtn.com'), '/');
-        $this->subscriptionKey = config('services.mtn_momo.subscription_key', '');
-        $this->apiKey          = config('services.mtn_momo.api_key', '');
-        $this->userId          = config('services.mtn_momo.user_id', '');
-        $this->environment     = config('services.mtn_momo.environment', 'sandbox');
-        $this->currency        = config('services.mtn_momo.currency', 'XAF');
+        // config() returns null (not the default) when the key exists but the
+        // env var is unset — coalesce so typed string properties never get null.
+        $this->baseUrl         = rtrim((string) (config('services.mtn_momo.base_url') ?? 'https://sandbox.momodeveloper.mtn.com'), '/');
+        $this->subscriptionKey = (string) (config('services.mtn_momo.subscription_key') ?? '');
+        $this->apiKey          = (string) (config('services.mtn_momo.api_key') ?? '');
+        $this->userId          = (string) (config('services.mtn_momo.user_id') ?? '');
+        $this->environment     = (string) (config('services.mtn_momo.environment') ?? 'sandbox');
+        $this->currency        = (string) (config('services.mtn_momo.currency') ?? 'XAF');
         $this->callbackUrl     = config('services.mtn_momo.callback_url');
     }
 

@@ -77,10 +77,16 @@ class HealthIdAuditLogger
     ): MedicalIdAccessEvent {
         // ── Resolve actor context ──────────────────────────────────────────
         // Priority: explicit parameter → middleware attribute → Auth user
-        $resolvedActorId = $actorId
+        // actor_id is a uuid column — non-uuid client identifiers (e.g. the
+        // testing-bypass 'test_client_id') must not reach Postgres.
+        $candidateActorId = $actorId
             ?? $request->attributes->get('integration_client_id')
             ?? (string) ($request->user()?->id)
             ?? null;
+
+        $resolvedActorId = ($candidateActorId && \Illuminate\Support\Str::isUuid($candidateActorId))
+            ? $candidateActorId
+            : null;
 
         $resolvedActorType = $actorType
             ?? ($request->attributes->has('integration_client_id') ? 'integration_client' : 'patient');

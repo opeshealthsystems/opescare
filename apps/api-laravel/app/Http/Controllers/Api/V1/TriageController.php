@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\TriageRecord;
 use App\Modules\Triage\Services\TriageService;
 use App\Modules\Triage\Services\TriageScoringService;
 use App\Modules\Triage\Services\EmergencyWorkflowService;
@@ -27,18 +28,21 @@ class TriageController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'patient_id'       => ['required', 'uuid'],
-            'facility_id'      => ['required', 'uuid'],
-            'chief_complaint'  => ['required', 'string', 'max:1000'],
-            'arrival_mode'     => ['required', 'in:walk_in,ambulance,referral,emergency'],
-            'vitals'           => ['nullable', 'array'],
-            'vitals.bp_systolic'   => ['nullable', 'integer'],
-            'vitals.bp_diastolic'  => ['nullable', 'integer'],
-            'vitals.heart_rate'    => ['nullable', 'integer'],
-            'vitals.temperature'   => ['nullable', 'numeric'],
-            'vitals.spo2'          => ['nullable', 'integer'],
-            'vitals.respiratory_rate' => ['nullable', 'integer'],
-            'vitals.weight_kg'     => ['nullable', 'numeric'],
+            'visit_id'             => ['required', 'uuid'],
+            'patient_id'           => ['nullable', 'uuid'],
+            'facility_id'          => ['nullable', 'uuid'],
+            'presenting_complaint' => ['required', 'string', 'max:1000'],
+            'pain_score'           => ['nullable', 'integer', 'min:0', 'max:10'],
+            'pregnancy_status'     => ['nullable', 'string'],
+            'acuity_score'         => ['nullable', 'string'],
+            'vitals'               => ['nullable', 'array'],
+            'vitals.blood_pressure_systolic'  => ['nullable', 'integer'],
+            'vitals.blood_pressure_diastolic' => ['nullable', 'integer'],
+            'vitals.pulse'                    => ['nullable', 'integer'],
+            'vitals.temperature'              => ['nullable', 'numeric'],
+            'vitals.oxygen_saturation'        => ['nullable', 'numeric'],
+            'vitals.respiratory_rate'         => ['nullable', 'integer'],
+            'vitals.weight_kg'                => ['nullable', 'numeric'],
         ]);
 
         $record = $this->triage->recordTriage($validated, $request->user()->id);
@@ -48,7 +52,21 @@ class TriageController extends Controller
 
     public function score(Request $request, string $triageId): JsonResponse
     {
-        $score = $this->scoring->computeScore($triageId);
+        $validated = $request->validate([
+            'scoring_system'  => ['required', 'in:manchester,esi,manual'],
+            'component_data'  => ['nullable', 'array'],
+            'priority_level'  => ['required_if:scoring_system,manual', 'nullable', 'string'],
+        ]);
+
+        $triageRecord = TriageRecord::findOrFail($triageId);
+        $actorId      = $request->user()->id;
+        $components   = $validated['component_data'] ?? [];
+
+        $score = match ($validated['scoring_system']) {
+            'manchester' => $this->scoring->scoreManchesterTriage($triageRecord, $components, $actorId),
+            'esi'        => $this->scoring->scoreEsi($triageRecord, $components, $actorId),
+            'manual'     => $this->scoring->scoreManual($triageRecord, $validated['priority_level'], $actorId, $components ?: null),
+        };
 
         return response()->json([
             'triage_id'   => $triageId,
@@ -62,7 +80,7 @@ class TriageController extends Controller
         $validated = $request->validate([
             'reason'  => ['required', 'string'],
             'vitals'  => ['nullable', 'array'],
-            'new_priority' => ['nullable', 'in:immediate,urgent,less_urgent,non_urgent'],
+            'new_acuity_score' => ['nullable', 'string'],
         ]);
 
         return response()->json(
@@ -77,8 +95,10 @@ class TriageController extends Controller
             'location' => ['nullable', 'string'],
         ]);
 
+        $triageRecord = TriageRecord::findOrFail($triageId);
+
         return response()->json(
-            $this->emergency->escalateFromTriage($triageId, $validated, $request->user()->id)
+            $this->triage->escalateEmergency($triageRecord->visit_id, $validated['reason'], $request->user()->id)
         );
     }
 

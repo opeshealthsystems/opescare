@@ -36,6 +36,9 @@ enum VerificationStatus: string
     /** Verified by a facility (alias used in older records; functionally identical). */
     case VerifiedByFacility = 'verified_by_facility';
 
+    /** Verified by a facility (legacy short form used by older writers/seeders). */
+    case FacilityVerified = 'facility_verified';
+
     /** Suspended — temporarily blocked from use (e.g. fraud investigation). */
     case Suspended = 'suspended';
 
@@ -44,6 +47,9 @@ enum VerificationStatus: string
 
     /** Record created in error — must not be used for clinical lookups. */
     case EnteredInError = 'entered_in_error';
+
+    /** Flagged as a suspected duplicate — pending review/merge decision. */
+    case DuplicateSuspected = 'duplicate_suspected';
 
     /** Record was a duplicate and absorbed into another (canonical) record. */
     case Merged = 'merged';
@@ -61,7 +67,7 @@ enum VerificationStatus: string
      */
     public function isActive(): bool
     {
-        return in_array($this, [self::Verified, self::VerifiedByFacility], true);
+        return in_array($this, [self::Verified, self::VerifiedByFacility, self::FacilityVerified], true);
     }
 
     /**
@@ -88,8 +94,10 @@ enum VerificationStatus: string
             self::Provisional      => 'Provisional',
             self::Pending          => 'Pending Verification',
             self::Unverified       => 'Unverified',
+            self::DuplicateSuspected => 'Suspected Duplicate',
             self::Verified         => 'Verified',
             self::VerifiedByFacility => 'Verified by Facility',
+            self::FacilityVerified   => 'Verified by Facility',
             self::Suspended        => 'Suspended',
             self::Deceased         => 'Deceased',
             self::EnteredInError   => 'Entered in Error',
@@ -105,8 +113,10 @@ enum VerificationStatus: string
     public function badgeClass(): string
     {
         return match ($this) {
-            self::Verified, self::VerifiedByFacility => 'badge-success',
-            self::Pending, self::Provisional          => 'badge-warning',
+            self::Verified, self::VerifiedByFacility,
+            self::FacilityVerified                    => 'badge-success',
+            self::Pending, self::Provisional,
+            self::DuplicateSuspected                  => 'badge-warning',
             self::Unverified                          => 'badge-secondary',
             self::Suspended, self::ErasurePending     => 'badge-danger',
             self::Deceased, self::EnteredInError,

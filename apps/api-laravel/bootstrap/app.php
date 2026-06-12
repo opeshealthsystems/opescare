@@ -49,6 +49,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.mobile'      => \App\Http\Middleware\AuthenticateMobilePatient::class,
             'guardian.context' => \App\Http\Middleware\GuardianAccessMiddleware::class,
             'api.admin'        => \App\Http\Middleware\RequireApiAdminRole::class,
+            'verify.integration.client' => \App\Http\Middleware\VerifyIntegrationClient::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

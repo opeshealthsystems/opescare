@@ -139,7 +139,7 @@ class InsuranceController extends Controller
         ]);
 
         return response()->json(
-            $this->claims->decide($id, $validated, $request->user()->id)
+            $this->claims->decide($id, $request->user()->id, $validated)
         );
     }
 

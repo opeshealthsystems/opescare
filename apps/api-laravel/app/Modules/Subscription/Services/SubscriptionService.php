@@ -51,6 +51,38 @@ class SubscriptionService
         });
     }
 
+    /**
+     * List all active, public plans (additive — used by API plan listing).
+     */
+    public function listActivePlans()
+    {
+        return SubscriptionPlan::query()
+            ->active()
+            ->public()
+            ->with('planFeatures')
+            ->orderBy('sort_order')
+            ->get();
+    }
+
+    /**
+     * Fetch a single plan with its features (additive).
+     */
+    public function getPlan(string $planId): SubscriptionPlan
+    {
+        return SubscriptionPlan::with('planFeatures')->findOrFail($planId);
+    }
+
+    /**
+     * Get the most recent subscription for an organization (additive).
+     */
+    public function getForOrganization(string $organizationId): ?OrganizationSubscription
+    {
+        return OrganizationSubscription::with(['plan', 'moduleEntitlements'])
+            ->where('organization_id', $organizationId)
+            ->orderByDesc('created_at')
+            ->first();
+    }
+
     public function togglePlan(string $planId, bool $active, string $actorId): SubscriptionPlan
     {
         $plan = SubscriptionPlan::findOrFail($planId);
@@ -185,7 +217,7 @@ class SubscriptionService
         $sub->update(['status' => 'active', 'updated_by' => $actorId]);
 
         // Re-enable entitlements if they were paused (not cancelled)
-        if (ModuleEntitlement::where('subscription_id', $subscriptionId)->where('is_enabled', false)->whereNull('revoked_at')->doesntExist()) {
+        if (ModuleEntitlement::where('subscription_id', $subscriptionId)->where('is_enabled', false)->whereNull('revoked_at')->exists()) {
             $this->grantEntitlements($sub, $sub->plan, $actorId);
         }
 

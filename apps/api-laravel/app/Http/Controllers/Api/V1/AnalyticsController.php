@@ -39,29 +39,89 @@ class AnalyticsController extends Controller
         }
 
         return response()->json(
-            $this->analytics->getFacilityDashboard($facilityId, $request->all())
+            $this->analytics->dashboardSnapshot($facilityId, $request->input('period', '30d'))
         );
     }
 
     public function appointmentStats(Request $request): JsonResponse
     {
-        return response()->json(
-            $this->analytics->getAppointmentStats($request->all())
-        );
+        [$facilityId, $from, $to, $error] = $this->resolveStatsParams($request);
+        if ($error) {
+            return $error;
+        }
+
+        return response()->json([
+            'facility_id' => $facilityId,
+            'from'        => $from->toDateString(),
+            'to'          => $to->toDateString(),
+            'data'        => $this->analytics->appointmentSummary($facilityId, $from, $to),
+        ]);
     }
 
     public function queueStats(Request $request): JsonResponse
     {
-        return response()->json(
-            $this->analytics->getQueueStats($request->all())
-        );
+        [$facilityId, $from, $to, $error] = $this->resolveStatsParams($request);
+        if ($error) {
+            return $error;
+        }
+
+        return response()->json([
+            'facility_id' => $facilityId,
+            'from'        => $from->toDateString(),
+            'to'          => $to->toDateString(),
+            'data'        => $this->analytics->queueSummary($facilityId, $from, $to),
+        ]);
     }
 
     public function billingStats(Request $request): JsonResponse
     {
-        return response()->json(
-            $this->analytics->getBillingStats($request->all())
-        );
+        [$facilityId, $from, $to, $error] = $this->resolveStatsParams($request);
+        if ($error) {
+            return $error;
+        }
+
+        return response()->json([
+            'facility_id' => $facilityId,
+            'from'        => $from->toDateString(),
+            'to'          => $to->toDateString(),
+            'data'        => $this->analytics->revenueSummary($facilityId, $from, $to),
+        ]);
+    }
+
+    /**
+     * Resolve facility + date range for the flat stats endpoints.
+     * Returns [facilityId, from, to, errorResponse|null].
+     */
+    private function resolveStatsParams(Request $request): array
+    {
+        $request->validate([
+            'facility_id' => ['nullable', 'uuid'],
+            'from'        => ['nullable', 'date'],
+            'to'          => ['nullable', 'date'],
+        ]);
+
+        $authorizedFacilityId = $request->attributes->get('facility_id');
+        $requestedFacilityId  = $request->input('facility_id');
+
+        if ($authorizedFacilityId && $requestedFacilityId && $requestedFacilityId !== $authorizedFacilityId) {
+            return [null, null, null, response()->json([
+                'error'   => 'forbidden',
+                'message' => 'You do not have access to analytics for this facility.',
+            ], 403)];
+        }
+
+        $facilityId = $requestedFacilityId ?? $authorizedFacilityId;
+        if (!$facilityId) {
+            return [null, null, null, response()->json([
+                'error'   => 'validation_error',
+                'message' => 'facility_id is required.',
+            ], 422)];
+        }
+
+        $from = Carbon::parse($request->input('from', Carbon::today()->subDays(29)->toDateString()))->startOfDay();
+        $to   = Carbon::parse($request->input('to', Carbon::today()->toDateString()))->endOfDay();
+
+        return [$facilityId, $from, $to, null];
     }
 
     // ── Report Exports ─────────────────────────────────────────────────────

@@ -33,24 +33,31 @@ class StaffController extends Controller
         }
 
         return response()->json(
-            $this->staff->listForFacility($facilityId, $request->all())
+            $this->staff->listStaff($facilityId, $request->all())
         );
     }
 
     public function show(string $staffId): JsonResponse
     {
-        return response()->json($this->staff->get($staffId));
+        return response()->json($this->staff->getStaffProfile($staffId));
     }
 
     public function updateProfile(Request $request, string $staffId): JsonResponse
     {
         $validated = $request->validate([
-            'specialization'  => ['nullable', 'string'],
-            'bio'             => ['nullable', 'string'],
-            'contact_phone'   => ['nullable', 'string'],
+            'first_name'        => ['nullable', 'string'],
+            'last_name'         => ['nullable', 'string'],
+            'email'             => ['nullable', 'email'],
+            'phone'             => ['nullable', 'string'],
+            'job_title'         => ['nullable', 'string'],
+            'department'        => ['nullable', 'string'],
+            'staff_category'    => ['nullable', 'string'],
+            'employment_type'   => ['nullable', 'string'],
+            'contract_end_date' => ['nullable', 'date'],
+            'notes'             => ['nullable', 'string'],
         ]);
 
-        return response()->json($this->staff->updateProfile($staffId, $validated, $request->user()->id));
+        return response()->json($this->staff->updateStaffProfile($staffId, $validated));
     }
 
     // ── Duty Roster ────────────────────────────────────────────────────────
@@ -72,37 +79,49 @@ class StaffController extends Controller
         // Fall back to the authorized facility if none supplied
         $facilityId = $requestedFacilityId ?? $authorizedFacilityId;
 
+        if (!$facilityId) {
+            return response()->json([
+                'error'   => 'validation_error',
+                'message' => 'facility_id is required.',
+            ], 422);
+        }
+
+        // Single roster requested → return it with its assignments
+        if ($rosterId = $request->input('roster_id')) {
+            return response()->json($this->roster->getRosterWithAssignments($rosterId));
+        }
+
         return response()->json(
-            $this->roster->getRoster(
-                $facilityId,
-                $request->input('department_id'),
-                $request->input('from'),
-                $request->input('to')
-            )
+            $this->roster->listRosters($facilityId, [
+                'department' => $request->input('department'),
+                'status'     => $request->input('status'),
+            ])
         );
     }
 
     public function assignShift(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'staff_id'    => ['required', 'uuid'],
-            'facility_id' => ['required', 'uuid'],
-            'shift_date'  => ['required', 'date'],
-            'start_time'  => ['required', 'date_format:H:i'],
-            'end_time'    => ['required', 'date_format:H:i', 'after:start_time'],
-            'role'        => ['nullable', 'string'],
+            'duty_roster_id'   => ['required', 'uuid'],
+            'staff_profile_id' => ['required', 'uuid'],
+            'staff_shift_id'   => ['required', 'uuid'],
+            'work_date'        => ['required', 'date'],
+            'notes'            => ['nullable', 'string'],
         ]);
 
+        $rosterId = $validated['duty_roster_id'];
+        unset($validated['duty_roster_id']);
+
         return response()->json(
-            $this->roster->assignShift($validated, $request->user()->id),
+            $this->roster->addAssignment($rosterId, $request->user()->id, $validated),
             201
         );
     }
 
     public function removeShift(Request $request, string $shiftId): JsonResponse
     {
-        $this->roster->removeShift($shiftId, $request->user()->id);
-        return response()->json(['message' => 'Shift removed.']);
+        $this->roster->removeAssignment($shiftId);
+        return response()->json(['message' => 'Shift assignment removed.']);
     }
 
     // ── Leave Requests ─────────────────────────────────────────────────────
@@ -111,13 +130,21 @@ class StaffController extends Controller
     {
         $validated = $request->validate([
             'leave_type' => ['required', 'in:annual,sick,maternity,paternity,compassionate,unpaid'],
-            'from_date'  => ['required', 'date'],
-            'to_date'    => ['required', 'date', 'after_or_equal:from_date'],
+            'start_date' => ['required', 'date'],
+            'end_date'   => ['required', 'date', 'after_or_equal:start_date'],
             'reason'     => ['nullable', 'string'],
         ]);
 
+        $profile = \App\Models\StaffProfile::where('user_id', $request->user()->id)->first();
+        if (!$profile) {
+            return response()->json([
+                'error'   => 'not_found',
+                'message' => 'No staff profile is linked to the authenticated user.',
+            ], 404);
+        }
+
         return response()->json(
-            $this->leave->request($request->user()->id, $validated),
+            $this->leave->requestLeave($profile->id, $validated),
             201
         );
     }
@@ -125,14 +152,14 @@ class StaffController extends Controller
     public function approveLeave(Request $request, string $leaveId): JsonResponse
     {
         return response()->json(
-            $this->leave->approve($leaveId, $request->user()->id, $request->input('notes'))
+            $this->leave->approveLeave($leaveId, $request->user()->id, $request->input('notes'))
         );
     }
 
     public function rejectLeave(Request $request, string $leaveId): JsonResponse
     {
         return response()->json(
-            $this->leave->reject($leaveId, $request->user()->id, $request->input('reason'))
+            $this->leave->rejectLeave($leaveId, $request->user()->id, $request->input('reason'))
         );
     }
 }

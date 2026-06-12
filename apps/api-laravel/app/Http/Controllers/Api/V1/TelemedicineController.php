@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Teleconsultation;
 use App\Modules\Telemedicine\Services\TelemedicineService;
 use App\Modules\Telemedicine\Services\TelemedicineConsentService;
 use App\Modules\Telemedicine\Services\VirtualWaitingRoomService;
@@ -34,12 +35,14 @@ class TelemedicineController extends Controller
             'patient_id'    => ['required', 'uuid'],
             'provider_id'   => ['required', 'uuid'],
             'facility_id'   => ['required', 'uuid'],
+            'visit_id'      => ['nullable', 'uuid'],
+            'platform'      => ['nullable', 'in:own,zoom,meet,teams'],
             'scheduled_at'  => ['required', 'date', 'after:now'],
             'reason'        => ['required', 'string', 'max:500'],
         ]);
 
         return response()->json(
-            $this->teleconsult->book($validated, $request->user()->id),
+            $this->teleconsult->schedule($validated),
             201
         );
     }
@@ -48,20 +51,41 @@ class TelemedicineController extends Controller
     {
         $validated = $request->validate([
             'method'          => ['required', 'in:digital_signature,verbal_recorded,written_uploaded'],
-            'consent_text'    => ['nullable', 'string'],
+            'consent_text_version' => ['nullable', 'string'],
+            'witnessed_by'    => ['nullable', 'uuid'],
             'recording_consent' => ['required', 'boolean'],
         ]);
 
-        return response()->json(
-            $this->consent->record($consultId, $validated, $request->user()->id)
+        $consultation = Teleconsultation::findOrFail($consultId);
+
+        $consent = $this->consent->grantConsent(
+            $consultation,
+            $consultation->patient_id,
+            $validated['method'],
+            $validated['consent_text_version'] ?? 'v1',
+            $validated['witnessed_by'] ?? $request->user()->id
         );
+
+        return response()->json($consent);
     }
 
     public function joinWaitingRoom(Request $request, string $consultId): JsonResponse
     {
-        return response()->json(
-            $this->waitingRoom->join($consultId, $request->user()->id)
-        );
+        $consultation = Teleconsultation::findOrFail($consultId);
+
+        if (! $this->consent->canProceed($consultation)) {
+            return response()->json([
+                'message'    => 'Telemedicine consent must be recorded before joining the waiting room.',
+                'error_code' => 'TELEMEDICINE_CONSENT_REQUIRED',
+            ], 422);
+        }
+
+        $entry = $this->teleconsult->admitToWaitingRoom($consultation, $consultation->patient_id);
+
+        return response()->json([
+            'waiting_room_entry'     => $entry,
+            'estimated_wait_minutes' => $this->waitingRoom->estimateWait($consultation->facility_id),
+        ]);
     }
 
     public function initiateCall(Request $request, string $consultId): JsonResponse
@@ -83,14 +107,18 @@ class TelemedicineController extends Controller
 
     public function show(string $consultId): JsonResponse
     {
-        return response()->json($this->teleconsult->get($consultId));
+        return response()->json(
+            Teleconsultation::with(['consent', 'waitingRoom', 'callSession'])->findOrFail($consultId)
+        );
     }
 
     public function cancel(Request $request, string $consultId): JsonResponse
     {
         $validated = $request->validate(['reason' => ['required', 'string']]);
-        return response()->json(
-            $this->teleconsult->cancel($consultId, $validated['reason'], $request->user()->id)
-        );
+
+        $consultation = Teleconsultation::findOrFail($consultId);
+        $this->teleconsult->cancel($consultation, $validated['reason']);
+
+        return response()->json($consultation->fresh());
     }
 }

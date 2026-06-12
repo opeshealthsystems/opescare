@@ -28,6 +28,9 @@ enum IdentityStatus: string
     /** Identity is active and usable for clinical workflows. */
     case Active = 'active';
 
+    /** Identity verified (generic — e.g. by admin or system process). */
+    case Verified = 'verified';
+
     /** Identity verified by a registered facility. */
     case VerifiedByFacility = 'verified_by_facility';
 
@@ -53,7 +56,7 @@ enum IdentityStatus: string
      */
     public function isActive(): bool
     {
-        return in_array($this, [self::Active, self::VerifiedByFacility], true);
+        return in_array($this, [self::Active, self::Verified, self::VerifiedByFacility], true);
     }
 
     /**
@@ -79,6 +82,7 @@ enum IdentityStatus: string
             self::Provisional      => 'Provisional',
             self::Unverified       => 'Unverified',
             self::Active           => 'Active',
+            self::Verified         => 'Verified',
             self::VerifiedByFacility => 'Verified by Facility',
             self::Suspended        => 'Suspended',
             self::Deceased         => 'Deceased',
@@ -94,7 +98,8 @@ enum IdentityStatus: string
     public function badgeClass(): string
     {
         return match ($this) {
-            self::Active, self::VerifiedByFacility => 'badge-success',
+            self::Active, self::Verified,
+            self::VerifiedByFacility               => 'badge-success',
             self::Provisional, self::Unverified    => 'badge-warning',
             self::Suspended, self::ErasurePending  => 'badge-danger',
             self::Deceased, self::EnteredInError,

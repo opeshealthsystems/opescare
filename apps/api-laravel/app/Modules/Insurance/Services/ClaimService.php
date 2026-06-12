@@ -53,6 +53,85 @@ class ClaimService
     }
 
     /**
+     * List claims visible to a user, with optional filters (minimum-necessary fields only).
+     */
+    public function listForUser($user, array $filters = [])
+    {
+        $query = InsuranceClaim::query()
+            ->select([
+                'id', 'claim_number', 'status', 'facility_id',
+                'patient_insurance_policy_id', 'invoice_id', 'preauthorization_request_id',
+                'claimed_amount', 'approved_amount', 'paid_amount',
+                'submitted_at', 'decided_at', 'created_at', 'updated_at',
+            ])
+            ->orderByDesc('created_at');
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (!empty($filters['facility_id'])) {
+            $query->where('facility_id', $filters['facility_id']);
+        }
+
+        if (!empty($filters['policy_id'])) {
+            $query->where('patient_insurance_policy_id', $filters['policy_id']);
+        }
+
+        $perPage = min(100, max(1, (int) ($filters['per_page'] ?? 25)));
+
+        return $query->paginate($perPage);
+    }
+
+    /**
+     * Minimum-necessary view of a single claim for insurance users.
+     * Returns claim, line items, and decisions only — no unrelated clinical data.
+     */
+    public function getMinimumNecessaryView(string $claimId, $user): array
+    {
+        $claim = InsuranceClaim::with(['items', 'decisions', 'payments'])->findOrFail($claimId);
+
+        return [
+            'id'                          => $claim->id,
+            'claim_number'                => $claim->claim_number,
+            'status'                      => $claim->status,
+            'facility_id'                 => $claim->facility_id,
+            'patient_insurance_policy_id' => $claim->patient_insurance_policy_id,
+            'invoice_id'                  => $claim->invoice_id,
+            'preauthorization_request_id' => $claim->preauthorization_request_id,
+            'claimed_amount'              => $claim->claimed_amount,
+            'approved_amount'             => $claim->approved_amount,
+            'paid_amount'                 => $claim->paid_amount,
+            'submitted_at'                => $claim->submitted_at,
+            'decided_at'                  => $claim->decided_at,
+            'submission_notes'            => $claim->submission_notes,
+            'items'                       => $claim->items->map(fn ($item) => [
+                'id'           => $item->id,
+                'description'  => $item->description,
+                'service_code' => $item->service_code,
+                'quantity'     => $item->quantity,
+                'unit_price'   => $item->unit_price,
+                'total_price'  => $item->total_price,
+                'status'       => $item->status,
+            ])->all(),
+            'decisions'                   => $claim->decisions->map(fn ($d) => [
+                'id'              => $d->id,
+                'decision'        => $d->decision,
+                'approved_amount' => $d->approved_amount,
+                'reason'          => $d->reason,
+                'decided_at'      => $d->decided_at,
+            ])->all(),
+            'payments'                    => $claim->payments->map(fn ($p) => [
+                'id'        => $p->id,
+                'amount'    => $p->amount,
+                'paid_at'   => $p->paid_at,
+            ])->all(),
+            'created_at'                  => $claim->created_at,
+            'updated_at'                  => $claim->updated_at,
+        ];
+    }
+
+    /**
      * Submit a draft claim to the payer.
      */
     public function submit(string $claimId, string $actorId): InsuranceClaim

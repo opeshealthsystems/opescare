@@ -78,6 +78,30 @@ class OperationalAnalyticsService
         ];
     }
 
+    // ── Queue Analytics ───────────────────────────────────────
+
+    public function queueSummary(string $facilityId, Carbon $from, Carbon $to): array
+    {
+        $tickets = \App\Models\QueueTicket::where('facility_id', $facilityId)
+            ->whereBetween('checked_in_at', [$from, $to])
+            ->get();
+
+        $served = $tickets->filter(fn ($t) => $t->checked_in_at && $t->service_started_at);
+        $avgWait = $served
+            ->map(fn ($t) => Carbon::parse($t->checked_in_at)->diffInMinutes(Carbon::parse($t->service_started_at)))
+            ->avg();
+
+        return [
+            'total'            => $tickets->count(),
+            'completed'        => $tickets->where('status', 'completed')->count(),
+            'cancelled'        => $tickets->where('status', 'cancelled')->count(),
+            'waiting'          => $tickets->whereNotIn('status', ['completed', 'cancelled'])->count(),
+            'avg_wait_min'     => $avgWait !== null ? round($avgWait) : null,
+            'by_queue'         => $tickets->groupBy('current_queue')->map(fn ($g) => $g->count())->sortDesc()->toArray(),
+            'by_priority'      => $tickets->groupBy('priority_level')->map(fn ($g) => $g->count())->toArray(),
+        ];
+    }
+
     // ── Revenue Analytics ─────────────────────────────────────
 
     public function revenueSummary(string $facilityId, Carbon $from, Carbon $to): array

@@ -19,6 +19,10 @@ use App\Models\AuditEvent;
  */
 class CallProviderService
 {
+    public function __construct(
+        private TelemedicineConsentService $consentService
+    ) {}
+
     /**
      * Initiate a call session for a teleconsultation.
      * Returns a CallSession with provider-specific room credentials.
@@ -29,7 +33,7 @@ class CallProviderService
     {
         $consult = Teleconsultation::findOrFail($teleconsultationId);
 
-        if (! $consult->consent_obtained) {
+        if (! $this->consentService->hasValidConsent($consult)) {
             throw new \RuntimeException(
                 'Telemedicine consent must be obtained before initiating a call session.'
             );
