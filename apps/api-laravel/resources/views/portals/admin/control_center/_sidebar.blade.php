@@ -101,5 +101,17 @@
     <a href="{{ route('admin.roles.index') }}" class="sidebar-link {{ request()->routeIs('admin.roles*') ? 'active' : '' }}">
         <i data-lucide="shield"></i><span>Roles & RBAC</span>
     </a>
+    <a href="{{ route('portals.admin.financial.index') }}" class="sidebar-link {{ request()->routeIs('portals.admin.financial*') ? 'active' : '' }}">
+        <i data-lucide="banknote"></i><span>Financial</span>
+    </a>
+    <a href="{{ route('portals.admin.appointments.index') }}" class="sidebar-link {{ request()->routeIs('portals.admin.appointments*') ? 'active' : '' }}">
+        <i data-lucide="calendar"></i><span>Appointments</span>
+    </a>
+    <a href="{{ route('portals.admin.support.index') }}" class="sidebar-link {{ request()->routeIs('portals.admin.support*') ? 'active' : '' }}">
+        <i data-lucide="headphones"></i><span>Support Tickets</span>
+    </a>
+    <a href="{{ route('portals.admin.cdss.index') }}" class="sidebar-link {{ request()->routeIs('portals.admin.cdss*') ? 'active' : '' }}">
+        <i data-lucide="activity"></i><span>CDSS Rules</span>
+    </a>
 </div>
 @endsection

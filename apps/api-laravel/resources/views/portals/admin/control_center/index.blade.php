@@ -36,6 +36,39 @@
 </div>
 @endif
 
+{{-- God Mode — Platform Management --}}
+<div style="margin-bottom:1.75rem;">
+    <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;">
+        <i data-lucide="zap" style="width:18px;height:18px;color:var(--p-danger);"></i>
+        <h2 style="margin:0;font-size:1rem;font-weight:700;color:var(--p-danger);">God Mode — Platform Management</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;">
+        @php $godCards = [
+            ['Users',               'users',        '/portals/admin/users',         'Manage all platform users'],
+            ['Facilities',          'building',     '/portals/admin/facilities',     'Hospitals, clinics & labs'],
+            ['Patients',            'heart-pulse',  '/portals/admin/patients',       'Global patient registry'],
+            ['Staff',               'user-check',   '/portals/admin/staff',          'Clinical & admin staff'],
+            ['Financial',           'banknote',     '/portals/admin/financial',      'Billing, invoices & revenue'],
+            ['Appointments',        'calendar',     '/portals/admin/appointments',   'Scheduling across facilities'],
+            ['Support Tickets',     'headphones',   '/portals/admin/support',        'Help desk & issue queue'],
+            ['CDSS Rules',          'activity',     '/portals/admin/cdss',           'Clinical decision support'],
+            ['Roles & Permissions', 'shield',       '/portals/admin/roles',          'Access control & RBAC'],
+            ['Organizations',       'landmark',     '/portals/admin/organizations',  'Tenant & org management'],
+        ]; @endphp
+        @foreach($godCards as [$title, $icon, $url, $desc])
+        <a href="{{ $url }}" style="text-decoration:none;">
+            <div class="panel" style="padding:1.25rem;border-left:3px solid var(--p-danger);transition:box-shadow .15s;cursor:pointer;" onmouseover="this.style.boxShadow='0 4px 12px rgba(239,68,68,.15)'" onmouseout="this.style.boxShadow=''">
+                <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;">
+                    <i data-lucide="{{ $icon }}" style="width:20px;height:20px;color:var(--p-danger);"></i>
+                    <span style="font-weight:600;font-size:.92rem;">{{ $title }}</span>
+                </div>
+                <p style="font-size:.78rem;color:var(--p-text-muted);margin:0;">{{ $desc }}</p>
+            </div>
+        </a>
+        @endforeach
+    </div>
+</div>
+
 {{-- Quick nav cards --}}
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem;">
     @php $cards = [
