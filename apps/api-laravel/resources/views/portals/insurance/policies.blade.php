@@ -34,7 +34,7 @@
 @endsection
 
 @section('breadcrumb_home', 'Insurance Portal')
-@section('breadcrumb_home_url', route('portals.insurance.providers'))
+@section('breadcrumb_home_url', route('portals.insurance.dashboard'))
 @section('breadcrumb_section', 'Patient Policies')
 
 @section('content')

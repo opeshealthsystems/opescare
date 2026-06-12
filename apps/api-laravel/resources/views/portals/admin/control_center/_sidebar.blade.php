@@ -113,5 +113,52 @@
     <a href="{{ route('portals.admin.cdss.index') }}" class="sidebar-link {{ request()->routeIs('portals.admin.cdss*') ? 'active' : '' }}">
         <i data-lucide="activity"></i><span>CDSS Rules</span>
     </a>
+    <a href="{{ route('portals.admin.reports.minsante-monthly') }}" class="sidebar-link {{ request()->routeIs('portals.admin.reports*') ? 'active' : '' }}">
+        <i data-lucide="file-bar-chart"></i><span>Reports</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">Analytics & KPIs</div>
+    <a href="{{ route('portals.admin.kpi.index') }}" class="sidebar-link {{ request()->routeIs('portals.admin.kpi*') ? 'active' : '' }}">
+        <i data-lucide="bar-chart-3"></i><span>KPI Dashboard</span>
+    </a>
+    <a href="{{ route('portals.admin.kpi.trend') }}" class="sidebar-link {{ request()->routeIs('portals.admin.kpi.trend') ? 'active' : '' }}">
+        <i data-lucide="trending-up"></i><span>KPI Trends</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">Compliance & Legal</div>
+    <a href="{{ route('portals.admin.legal') }}" class="sidebar-link {{ request()->routeIs('portals.admin.legal') ? 'active' : '' }}">
+        <i data-lucide="scale"></i><span>Legal Documents</span>
+    </a>
+    <a href="{{ route('portals.admin.legal.closures') }}" class="sidebar-link {{ request()->routeIs('portals.admin.legal.closures*') ? 'active' : '' }}">
+        <i data-lucide="file-x-2"></i><span>Patient Rights Closures</span>
+    </a>
+    <a href="{{ route('portals.admin.legal.complaints') }}" class="sidebar-link {{ request()->routeIs('portals.admin.legal.complaints*') ? 'active' : '' }}">
+        <i data-lucide="message-circle-warning"></i><span>Privacy Complaints</span>
+    </a>
+    <a href="{{ route('portals.admin.legal.minor_transitions') }}" class="sidebar-link {{ request()->routeIs('portals.admin.legal.minor_transitions') ? 'active' : '' }}">
+        <i data-lucide="user-cog"></i><span>Minor Transitions</span>
+    </a>
+    <a href="{{ route('portals.admin.certifications.index') }}" class="sidebar-link {{ request()->routeIs('portals.admin.certifications*') ? 'active' : '' }}">
+        <i data-lucide="badge-check"></i><span>Certifications</span>
+    </a>
+    <a href="{{ route('portals.admin.code_mappings.index') }}" class="sidebar-link {{ request()->routeIs('portals.admin.code_mappings*') ? 'active' : '' }}">
+        <i data-lucide="code-2"></i><span>Code Mappings</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">Onboarding</div>
+    <a href="{{ route('portals.admin.onboarding') }}" class="sidebar-link {{ request()->routeIs('portals.admin.onboarding*') ? 'active' : '' }}">
+        <i data-lucide="clipboard-list"></i><span>Facility Onboarding</span>
+    </a>
+    <a href="{{ route('portals.admin.developer.accounts') }}" class="sidebar-link {{ request()->routeIs('portals.admin.developer.accounts*') ? 'active' : '' }}">
+        <i data-lucide="code"></i><span>Developer Accounts</span>
+    </a>
+    <a href="{{ route('portals.admin.developer.production_requests') }}" class="sidebar-link {{ request()->routeIs('portals.admin.developer.production_requests*') ? 'active' : '' }}">
+        <i data-lucide="rocket"></i><span>Production Requests</span>
+        @php $pendingProd = \Illuminate\Support\Facades\DB::table('production_access_requests')->where('status','pending')->count(); @endphp
+        @if($pendingProd > 0)<span class="sidebar-badge sidebar-badge--warning">{{ $pendingProd }}</span>@endif
+    </a>
 </div>
 @endsection

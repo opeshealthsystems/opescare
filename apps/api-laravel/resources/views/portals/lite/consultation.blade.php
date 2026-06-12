@@ -33,7 +33,7 @@
     Clinical decision-support tools are advisory only. They do not replace professional clinical judgment.
 </div>
 
-<form method="POST" action="{{ route('portals.staff.visits.create') }}" onsubmit="return confirm('Submit consultation note?')">
+<form method="POST" action="{{ route('portals.staff.visits.store') }}" onsubmit="return confirm('Submit consultation note?')">
     @csrf
     @if($patient)
         <input type="hidden" name="patient_id" value="{{ $patient->id }}">

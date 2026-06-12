@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     // ── Partner Governance ──
     const loadPartners = async () => {
         try {
-            const res = await fetch('/api/partner-governance/partners');
+            const res = await fetch('/api/partner-governance/partners', {headers:{'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? ''}});
             const data = await res.json();
             const tbody = document.getElementById('partners-body');
             if (!data.data || data.data.length === 0) {
@@ -361,7 +361,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const loadCases = async () => {
         const tbody = document.getElementById('duplicates-body');
         try {
-            const res = await fetch('/api/v1/connect/admin/merge-cases');
+            const res = await fetch('/api/v1/connect/admin/merge-cases', {headers:{'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? ''}});
             const data = await res.json();
             if (data.status === 'success') {
                 mergeCases = data.cases;

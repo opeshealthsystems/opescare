@@ -57,7 +57,9 @@
             <div style="color:var(--p-text-muted);font-size:.82rem;margin-bottom:.25rem;">Lab Alert Rules</div>
             <div style="font-size:2.25rem;font-weight:700;line-height:1;margin-bottom:.75rem;">{{ $labAlertCount ?? 0 }}</div>
             <p style="font-size:.825rem;color:var(--p-text-muted);margin-bottom:1.25rem;">Rules that alert clinicians when lab values fall outside defined thresholds for a given context.</p>
-            <span class="btn btn-ghost btn-sm" style="opacity:.5;pointer-events:none;">Coming Soon</span>
+            <a href="{{ route('portals.admin.cdss.lab-alerts') }}" class="btn btn-primary btn-sm">
+                <i data-lucide="arrow-right"></i> Manage Rules
+            </a>
         </div>
     </div>
 </div>

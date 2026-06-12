@@ -152,7 +152,7 @@
                                         </button>
                                     @endif
                                     @if($alert->visit_id)
-                                        <a href="{{ route('portals.staff.visit', $alert->visit_id) }}"
+                                        <a href="{{ route('portals.staff.visits.consult', $alert->visit_id) }}"
                                            class="btn btn--sm btn--outline" title="View visit">
                                             <i data-lucide="external-link" style="width:12px;height:12px;"></i>
                                         </a>

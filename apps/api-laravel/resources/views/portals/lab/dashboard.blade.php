@@ -60,11 +60,13 @@
             <div class="stat-card__label">Processing</div>
         </div>
     </a>
-    <div class="stat-card">
-        <div class="stat-card__icon" style="background:#dcfce7;color:#15803d;"><i data-lucide="check-circle-2"></i></div>
-        <div class="stat-card__val">{{ $stats['resulted'] }}</div>
-        <div class="stat-card__label">Resulted Today</div>
-    </div>
+    <a href="{{ route('portals.lab.results') }}" style="text-decoration:none;">
+        <div class="stat-card">
+            <div class="stat-card__icon" style="background:#dcfce7;color:#15803d;"><i data-lucide="check-circle-2"></i></div>
+            <div class="stat-card__val">{{ $stats['resulted'] }}</div>
+            <div class="stat-card__label">Resulted Today</div>
+        </div>
+    </a>
     <a href="{{ route('portals.lab.orders') }}?urgency=urgent" style="text-decoration:none;">
         <div class="stat-card">
             <div class="stat-card__icon" style="background:#fee2e2;color:#b91c1c;"><i data-lucide="alert-triangle"></i></div>

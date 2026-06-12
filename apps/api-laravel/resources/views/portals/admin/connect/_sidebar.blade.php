@@ -47,11 +47,11 @@
     </a>
 
     <div class="sidebar-section-label">NAVIGATE</div>
-    <a href="{{ route('portals.admin.control_center') }}" class="sidebar-link">
+    <a href="{{ route('portals.admin.cc') }}" class="sidebar-link">
         <i data-lucide="arrow-left"></i>
         <span>Control Center</span>
     </a>
-    <a href="{{ route('portals.admin.dashboard') }}" class="sidebar-link">
+    <a href="{{ route('portals.admin') }}" class="sidebar-link">
         <i data-lucide="home"></i>
         <span>Admin Home</span>
     </a>

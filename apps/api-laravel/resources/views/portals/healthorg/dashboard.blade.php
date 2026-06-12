@@ -88,9 +88,9 @@
                 <i data-lucide="map" style="width:18px;height:18px;color:#10b981;"></i>
                 Care Map
             </a>
-            <a href="{{ route('portals.staff.immunizations') }}" class="btn btn-outline" style="justify-content:flex-start;gap:.75rem;">
+            <a href="{{ route('portals.healthorg.outreach') }}" class="btn btn-outline" style="justify-content:flex-start;gap:.75rem;">
                 <i data-lucide="syringe" style="width:18px;height:18px;color:#8b5cf6;"></i>
-                Immunizations
+                Immunization Outreach
             </a>
         </div>
     </div>

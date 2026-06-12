@@ -103,6 +103,14 @@
         <div class="quick-action-icon"><i data-lucide="map-pin"></i></div>
         <span class="quick-action-label">{{ __('public.portal.nav_care_map', [], app()->getLocale()) ?: 'Care Map' }}</span>
     </a>
+    <a href="{{ route('portals.patient.family') }}" class="quick-action-btn">
+        <div class="quick-action-icon"><i data-lucide="users"></i></div>
+        <span class="quick-action-label">Family</span>
+    </a>
+    <a href="{{ route('portals.patient.insurance') }}" class="quick-action-btn">
+        <div class="quick-action-icon"><i data-lucide="shield"></i></div>
+        <span class="quick-action-label">Insurance</span>
+    </a>
 </div>
 
 <!-- Clinical Safety Banner -->

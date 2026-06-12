@@ -8,7 +8,7 @@
         <h1 class="lite-page-title">Dashboard</h1>
         <p class="lite-page-sub">{{ now()->format('l, d F Y') }}</p>
     </div>
-    <a href="{{ route('portals.staff.index') }}" class="lite-btn lite-btn--outline" style="font-size:0.78rem;padding:6px 12px;">
+    <a href="{{ route('portals.staff') }}" class="lite-btn lite-btn--outline" style="font-size:0.78rem;padding:6px 12px;">
         <i data-lucide="monitor" style="width:14px;height:14px;"></i> Full Portal
     </a>
 </div>
