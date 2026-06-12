@@ -234,8 +234,8 @@ class PortalContextServiceTest extends TestCase
         $this->actingAs($user);
         session(['active_facility_id' => $facility->id]);
 
-        $patientId  = 'pat00000-0000-0000-0000-000000000001';
-        $resourceId = 'res00000-0000-0000-0000-000000000001';
+        $patientId  = '9a700000-0000-0000-0000-000000000001';
+        $resourceId = '4e500000-0000-0000-0000-000000000001';
 
         $this->svc->auditPatientAccess(
             'patient_dashboard_view',

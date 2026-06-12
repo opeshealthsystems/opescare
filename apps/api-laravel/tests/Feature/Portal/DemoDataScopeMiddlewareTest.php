@@ -100,10 +100,10 @@ class DemoDataScopeMiddlewareTest extends TestCase
     {
         // Create one real and one demo record directly
         config(['demo.enabled' => false]);
-        Facility::forceCreate(['id' => 'dds00000-0000-0000-0000-000000000001', 'name' => 'Real Hospital', 'type' => 'hospital', 'is_demo' => false]);
+        Facility::forceCreate(['id' => 'dd500000-0000-0000-0000-000000000001', 'name' => 'Real Hospital', 'type' => 'hospital', 'is_demo' => false]);
 
         config(['demo.enabled' => true]);
-        Facility::forceCreate(['id' => 'dds00000-0000-0000-0000-000000000002', 'name' => 'Demo Hospital', 'type' => 'hospital', 'is_demo' => true]);
+        Facility::forceCreate(['id' => 'dd500000-0000-0000-0000-000000000002', 'name' => 'Demo Hospital', 'type' => 'hospital', 'is_demo' => true]);
 
         // When demo.enabled=true, only demo records visible
         $visible = Facility::all();

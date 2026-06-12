@@ -16,7 +16,7 @@ class PortalNavigationTest extends TestCase
         $user = User::factory()->create(['patient_id' => $patient->id]);
 
         $response = $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient'));
 
         $response->assertStatus(200);
@@ -36,7 +36,7 @@ class PortalNavigationTest extends TestCase
         $user = User::factory()->create(['patient_id' => $patient->id, 'is_demo' => false]);
 
         $response = $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient'));
 
         $response->assertDontSee('Demo Mode');
@@ -49,7 +49,7 @@ class PortalNavigationTest extends TestCase
         $user = User::factory()->create(['patient_id' => $patient->id]);
 
         $response = $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient'));
 
         // Privacy settings moved to profile page — should not be inline checkboxes

@@ -23,7 +23,7 @@ class DocumentsPageTest extends TestCase
         OfficialDocument::factory()->count(3)->create(['patient_id' => $patient->id]);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient.documents'))
             ->assertStatus(200)
             ->assertViewHas('documents', fn($d) => $d->count() === 3);
@@ -39,7 +39,7 @@ class DocumentsPageTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient.documents'));
 
         $response->assertStatus(200);
@@ -56,7 +56,7 @@ class DocumentsPageTest extends TestCase
         OfficialDocument::factory()->count(2)->create(['patient_id' => $patientB->id]);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient.documents'))
             ->assertStatus(200)
             ->assertViewHas('documents', fn($d) => $d->count() === 0);

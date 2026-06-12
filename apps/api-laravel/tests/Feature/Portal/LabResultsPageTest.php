@@ -23,7 +23,7 @@ class LabResultsPageTest extends TestCase
         LabResult::factory()->count(3)->create(['patient_id' => $patient->id]);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient.labs'))
             ->assertStatus(200)
             ->assertViewHas('labs', fn($l) => $l->count() === 3);
@@ -34,7 +34,7 @@ class LabResultsPageTest extends TestCase
         $user = User::factory()->create(['patient_id' => null]);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient.labs'))
             ->assertStatus(200)
             ->assertViewHas('patient', null);
@@ -48,7 +48,7 @@ class LabResultsPageTest extends TestCase
         LabResult::factory()->count(2)->create(['patient_id' => $patientB->id]);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient.labs'))
             ->assertStatus(200)
             ->assertViewHas('labs', fn($l) => $l->count() === 0);

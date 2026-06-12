@@ -23,7 +23,7 @@ class ConsentPageTest extends TestCase
         ConsentRequest::factory()->count(2)->create(['patient_id' => $patient->id, 'status' => 'pending']);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient.consent'))
             ->assertStatus(200)
             ->assertViewHas('consentRequests', fn($r) => $r->count() === 2);
@@ -36,7 +36,7 @@ class ConsentPageTest extends TestCase
         $req = ConsentRequest::factory()->create(['patient_id' => $patient->id, 'status' => 'pending']);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->post(route('portals.patient.consent.approve', $req->id))
             ->assertRedirect(route('portals.patient.consent'));
 
@@ -50,7 +50,7 @@ class ConsentPageTest extends TestCase
         $req = ConsentRequest::factory()->create(['patient_id' => $patient->id, 'status' => 'pending']);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->post(route('portals.patient.consent.deny', $req->id))
             ->assertRedirect(route('portals.patient.consent'));
 
@@ -65,7 +65,7 @@ class ConsentPageTest extends TestCase
         $req = ConsentRequest::factory()->create(['patient_id' => $patientB->id, 'status' => 'pending']);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->post(route('portals.patient.consent.approve', $req->id))
             ->assertStatus(404);
     }
@@ -82,7 +82,7 @@ class ConsentPageTest extends TestCase
         $user = \App\Models\User::factory()->create(['patient_id' => $myPatient->id]);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->post(route('portals.patient.consent.deny', $consentReq->id))
             ->assertStatus(404);
     }

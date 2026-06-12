@@ -21,7 +21,7 @@ class ProfilePageTest extends TestCase
         $user = User::factory()->create(['patient_id' => $patient->id]);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient.profile'))
             ->assertStatus(200)
             ->assertSee('+1234567890');
@@ -33,7 +33,7 @@ class ProfilePageTest extends TestCase
         $user = User::factory()->create(['patient_id' => $patient->id]);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->post(route('portals.patient.profile.update'), [
                 'phone_number' => '+9876543210',
                 'email'        => 'newemail@example.com',
@@ -51,7 +51,7 @@ class ProfilePageTest extends TestCase
         $user = User::factory()->create(['patient_id' => $patient->id]);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->post(route('portals.patient.profile.update'), [
                 'email' => 'not-an-email',
             ])
@@ -64,7 +64,7 @@ class ProfilePageTest extends TestCase
         $user = User::factory()->create(['patient_id' => $patient->id]);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->post(route('portals.patient.profile.update'), [
                 'privacy_require_consent'   => '1',
                 'privacy_emergency_access'  => '1',
@@ -84,7 +84,7 @@ class ProfilePageTest extends TestCase
         $user = \App\Models\User::factory()->create(['patient_id' => $patient->id]);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->post(route('portals.patient.profile.update'), [
                 'privacy_require_consent' => '0',
             ])
@@ -100,7 +100,7 @@ class ProfilePageTest extends TestCase
         $user = User::factory()->create(['patient_id' => null]);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient.profile'))
             ->assertStatus(200)
             ->assertViewHas('patient', null);

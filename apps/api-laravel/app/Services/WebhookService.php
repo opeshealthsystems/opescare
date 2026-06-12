@@ -11,7 +11,7 @@ use App\Models\WebhookSubscription;
  *
  * FIX H-2 (audit 2026-06-07): dispatch() previously delivered events to ALL active
  * subscriptions with no facility or client scope. Facility A events were delivered
- * to Facility B subscribers — a cross-facility data leak (OWASP API1 / ISO 27001 A.9.1).
+ * to Facility B subscribers â€” a cross-facility data leak (OWASP API1 / ISO 27001 A.9.1).
  *
  * Fix: dispatch() now accepts an optional $facilityId. When provided, only subscriptions
  * belonging to that facility receive the event. All patient-data events MUST pass
@@ -20,7 +20,7 @@ use App\Models\WebhookSubscription;
  * FIX H-3 (audit 2026-06-07): replay() previously re-delivered to ALL active subscriptions
  * matching the event type, regardless of who triggered the replay.
  * Fix: replay() now requires the caller to pass their $clientId. Only subscriptions
- * belonging to that client receive the replay — preventing cross-client event injection.
+ * belonging to that client receive the replay â€” preventing cross-client event injection.
  */
 class WebhookService
 {
@@ -68,7 +68,7 @@ class WebhookService
     /**
      * Re-dispatch a previously persisted event.
      *
-     * [FIX H-3] Now scoped to the $clientId of the caller — a client cannot replay
+     * [FIX H-3] Now scoped to the $clientId of the caller â€” a client cannot replay
      * events into another client's delivery pipeline.
      */
     public static function replay(
@@ -89,7 +89,7 @@ class WebhookService
         );
     }
 
-    // ── Private helpers ───────────────────────────────────────────────────────
+    // â”€â”€ Private helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     private static function dispatchToSubscriptions(
         string  $eventId,
@@ -99,7 +99,7 @@ class WebhookService
         ?string $clientId   = null,
         ?string $replayedBy = null,
     ): void {
-        // [FIX H-2] Scoped query — never fan-out blindly to all clients/facilities.
+        // [FIX H-2] Scoped query â€” never fan-out blindly to all clients/facilities.
         $query = WebhookSubscription::where('status', 'active');
 
         if ($facilityId !== null) {
@@ -117,7 +117,9 @@ class WebhookService
                 continue;
             }
 
-            if ($replayedBy !== null) {
+            // webhook_replays.replayed_by is a uuid column — non-uuid client ids
+            // (e.g. 'client_xxxx') must not reach Postgres.
+            if ($replayedBy !== null && \Illuminate\Support\Str::isUuid($replayedBy)) {
                 \App\Models\WebhookReplay::create([
                     'webhook_event_id'    => $eventId,
                     'webhook_endpoint_id' => $subscription->id,

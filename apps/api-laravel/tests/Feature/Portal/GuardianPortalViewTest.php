@@ -15,7 +15,7 @@ class GuardianPortalViewTest extends TestCase
     private function guardianSession(string $patientId): array
     {
         return [
-            'active_facility_id'          => 'test-facility',
+            'active_facility_id'          => '7e57fac1-0000-4000-8000-000000000001',
             'guardian_viewing_patient_id' => $patientId,
         ];
     }
@@ -114,7 +114,7 @@ class GuardianPortalViewTest extends TestCase
 
         // Family index page for the DEPENDENT (not the guardian)
         $response = $this->actingAs($depUser)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient.family'));
 
         $response->assertStatus(200);
@@ -122,7 +122,7 @@ class GuardianPortalViewTest extends TestCase
 
         // Deny action
         $deny = $this->actingAs($depUser)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->post(route('portals.patient.family.guardian_consent.deny', $link->id));
 
         $deny->assertRedirect(route('portals.patient'));

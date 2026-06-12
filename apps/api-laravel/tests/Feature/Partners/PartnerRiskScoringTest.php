@@ -33,7 +33,7 @@ class PartnerRiskScoringTest extends TestCase
         $service = app(PartnerRiskScoreService::class);
 
         // Add 85 points of risk (critical threshold is 80)
-        $service->recordRiskEvent($this->partner, 'Multiple unauthorized access attempts', 'high', 85);
+        $service->recordRiskEvent($this->partner, 'Multiple unauthorized access attempts', 'high', 85, (string) Str::uuid());
 
         $this->partner->refresh();
 

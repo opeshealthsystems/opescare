@@ -11,6 +11,7 @@ use App\Services\Documents\DocumentShareService;
 use App\Services\Documents\DocumentNumberService;
 use App\Services\Documents\QrCodeGenerationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class DocumentSystemV2Test extends TestCase
@@ -146,7 +147,7 @@ class DocumentSystemV2Test extends TestCase
         // Attempting to amend without reason must throw an exception
         $this->expectException(\InvalidArgumentException::class);
         $amendmentService = $this->app->make(\App\Services\Documents\DocumentAmendmentService::class);
-        $amendmentService->amend($document->id, ['medications' => [['name' => 'Ibuprofen']]], '', 'user-123');
+        $amendmentService->amend($document->id, ['medications' => [['name' => 'Ibuprofen']]], '', (string) Str::uuid());
     }
 
     /**
@@ -214,7 +215,7 @@ class DocumentSystemV2Test extends TestCase
             'issued_at' => now()
         ]);
 
-        $share = $this->shareService->generateShareLink($document->id, 'user-123', 60, 2);
+        $share = $this->shareService->generateShareLink($document->id, (string) Str::uuid(), 60, 2);
 
         // Resolve share link first time
         $resolved = $this->shareService->resolveShareLink($share['token']);

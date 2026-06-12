@@ -29,7 +29,7 @@ class GuardianAccessMiddlewareTest extends TestCase
         [$guardian] = $this->makeGuardianWithDependent();
 
         $response = $this->actingAs($guardian)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient.appointments'));
 
         $response->assertStatus(200);
@@ -41,7 +41,7 @@ class GuardianAccessMiddlewareTest extends TestCase
 
         $response = $this->actingAs($guardian)
             ->withSession([
-                'active_facility_id'           => 'test-facility',
+                'active_facility_id'           => '7e57fac1-0000-4000-8000-000000000001',
                 'guardian_viewing_patient_id'  => $dependent->id,
             ])
             ->get(route('portals.patient.appointments'));
@@ -55,7 +55,7 @@ class GuardianAccessMiddlewareTest extends TestCase
 
         $response = $this->actingAs($guardian)
             ->withSession([
-                'active_facility_id'           => 'test-facility',
+                'active_facility_id'           => '7e57fac1-0000-4000-8000-000000000001',
                 'guardian_viewing_patient_id'  => $dependent->id,
             ])
             ->get(route('portals.patient.appointments'));
@@ -70,7 +70,7 @@ class GuardianAccessMiddlewareTest extends TestCase
 
         $response = $this->actingAs($guardian)
             ->withSession([
-                'active_facility_id'           => 'test-facility',
+                'active_facility_id'           => '7e57fac1-0000-4000-8000-000000000001',
                 'guardian_viewing_patient_id'  => $dependent->id,
             ])
             ->get(route('portals.patient.appointments'));
@@ -88,7 +88,7 @@ class GuardianAccessMiddlewareTest extends TestCase
         // Guardian A sets session to dependentB's ID (injection attempt)
         $response = $this->actingAs($guardianA)
             ->withSession([
-                'active_facility_id'          => 'test-facility',
+                'active_facility_id'          => '7e57fac1-0000-4000-8000-000000000001',
                 'guardian_viewing_patient_id' => $dependentOfB->id,
             ])
             ->get(route('portals.patient.appointments'));
@@ -104,7 +104,7 @@ class GuardianAccessMiddlewareTest extends TestCase
 
         $response = $this->actingAs($guardian)
             ->withSession([
-                'active_facility_id'          => 'test-facility',
+                'active_facility_id'          => '7e57fac1-0000-4000-8000-000000000001',
                 'guardian_viewing_patient_id' => $fakePatientId,
             ])
             ->get(route('portals.patient.appointments'));

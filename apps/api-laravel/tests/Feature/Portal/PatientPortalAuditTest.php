@@ -39,7 +39,7 @@ class PatientPortalAuditTest extends TestCase
     public function test_patient_dashboard_access_creates_audit_event(): void
     {
         $facility = Facility::forceCreate([
-            'id'      => 'ppa00000-0000-0000-0000-000000000001',
+            'id'      => '99a00000-0000-0000-0000-000000000001',
             'name'    => 'Audit Test Hospital',
             'type'    => 'hospital',
             'is_demo' => false,
@@ -55,7 +55,7 @@ class PatientPortalAuditTest extends TestCase
         $this->actingAs($user);
         session(['active_facility_id' => $facility->id]);
 
-        $patientId = 'pat00000-0000-0000-0000-000000000001';
+        $patientId = '9a700000-0000-0000-0000-000000000001';
 
         $this->ctx->auditPatientAccess(
             actionType:   'patient_dashboard_view',
@@ -78,7 +78,7 @@ class PatientPortalAuditTest extends TestCase
     public function test_qr_generation_creates_distinct_audit_event(): void
     {
         $facility = Facility::forceCreate([
-            'id'      => 'ppa00000-0000-0000-0000-000000000002',
+            'id'      => '99a00000-0000-0000-0000-000000000002',
             'name'    => 'QR Audit Hospital',
             'type'    => 'hospital',
             'is_demo' => false,
@@ -94,8 +94,8 @@ class PatientPortalAuditTest extends TestCase
         $this->actingAs($user);
         session(['active_facility_id' => $facility->id]);
 
-        $patientId  = 'pat00000-0000-0000-0000-000000000002';
-        $resourceId = 'qrt00000-0000-0000-0000-000000000001';
+        $patientId  = '9a700000-0000-0000-0000-000000000002';
+        $resourceId = 'c4700000-0000-0000-0000-000000000001';
 
         $this->ctx->auditPatientAccess(
             actionType:   'temporary_qr_generated',
@@ -118,7 +118,7 @@ class PatientPortalAuditTest extends TestCase
     public function test_access_log_view_creates_audit_event(): void
     {
         $facility = Facility::forceCreate([
-            'id'      => 'ppa00000-0000-0000-0000-000000000003',
+            'id'      => '99a00000-0000-0000-0000-000000000003',
             'name'    => 'Log Audit Hospital',
             'type'    => 'hospital',
             'is_demo' => false,
@@ -134,7 +134,7 @@ class PatientPortalAuditTest extends TestCase
         $this->actingAs($user);
         session(['active_facility_id' => $facility->id]);
 
-        $patientId = 'pat00000-0000-0000-0000-000000000003';
+        $patientId = '9a700000-0000-0000-0000-000000000003';
 
         $this->ctx->auditPatientAccess(
             actionType:   'patient_access_log_view',
@@ -156,7 +156,7 @@ class PatientPortalAuditTest extends TestCase
     public function test_multiple_actions_create_separate_audit_events(): void
     {
         $facility = Facility::forceCreate([
-            'id'      => 'ppa00000-0000-0000-0000-000000000004',
+            'id'      => '99a00000-0000-0000-0000-000000000004',
             'name'    => 'Multi Audit Hospital',
             'type'    => 'hospital',
             'is_demo' => false,
@@ -172,10 +172,10 @@ class PatientPortalAuditTest extends TestCase
         $this->actingAs($user);
         session(['active_facility_id' => $facility->id]);
 
-        $patientId = 'pat00000-0000-0000-0000-000000000004';
+        $patientId = '9a700000-0000-0000-0000-000000000004';
 
         $this->ctx->auditPatientAccess('patient_dashboard_view', 'Patient', $patientId, $patientId);
-        $this->ctx->auditPatientAccess('temporary_qr_generated', 'HealthIdQrToken', 'qr-abc-123', $patientId);
+        $this->ctx->auditPatientAccess('temporary_qr_generated', 'HealthIdQrToken', '1b1dc491-0000-4000-8000-000000000123', $patientId);
 
         $count = AuditEvent::where('actor_id', $user->id)
                             ->where('patient_id', $patientId)
@@ -192,7 +192,7 @@ class PatientPortalAuditTest extends TestCase
         config(['demo.enabled' => true]);
 
         $facility = Facility::forceCreate([
-            'id'      => 'ppa00000-0000-0000-0000-000000000005',
+            'id'      => '99a00000-0000-0000-0000-000000000005',
             'name'    => 'Demo Hospital',
             'type'    => 'hospital',
             'is_demo' => true,
@@ -208,7 +208,7 @@ class PatientPortalAuditTest extends TestCase
         $this->actingAs($user);
         session(['active_facility_id' => $facility->id]);
 
-        $patientId = 'pat00000-0000-0000-0000-000000000005';
+        $patientId = '9a700000-0000-0000-0000-000000000005';
 
         $this->ctx->auditPatientAccess('patient_dashboard_view', 'Patient', $patientId, $patientId);
 

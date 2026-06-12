@@ -12,10 +12,40 @@ class WebhookEventReplayTest extends TestCase
 {
     use RefreshDatabase;
 
-    private array $authHeaders = [
-        'X-Client-ID'     => 'test_client_id',
-        'X-Client-Secret' => 'test_client_secret',
-    ];
+    /**
+     * UUID-shaped client_id: webhook_replays.replayed_by is a Postgres uuid
+     * column and the controller stores the caller's client_id there, so a
+     * non-UUID client_id would 500 on replay (see WebhookController L98).
+     */
+    private string $clientId = '11111111-1111-4111-8111-111111111111';
+
+    /**
+     * Create a sandbox integration client and exchange its credentials for a
+     * real RS256 Bearer token via the production token endpoint.
+     */
+    private function authHeaders(): array
+    {
+        \App\Models\IntegrationClient::firstOrCreate(
+            ['client_id' => $this->clientId],
+            [
+                'client_secret' => hash('sha256', 'test_client_secret'),
+                'facility_id'   => '00000000-0000-0000-0000-000000000001',
+                'name'          => 'Webhook Replay Test Client',
+                'environment'   => 'sandbox',
+                'scopes'        => ['*'],
+                'status'        => 'active',
+            ]
+        );
+
+        $response = $this->postJson('/api/v1/connect/auth/token', [
+            'client_id'     => $this->clientId,
+            'client_secret' => 'test_client_secret',
+            'grant_type'    => 'client_credentials',
+        ]);
+        $response->assertStatus(200);
+
+        return ['Authorization' => 'Bearer ' . $response->json('access_token')];
+    }
 
     public function test_dispatch_persists_webhook_event_to_database(): void
     {
@@ -35,7 +65,7 @@ class WebhookEventReplayTest extends TestCase
     {
         $fakeId = '00000000-0000-0000-0000-000000000000';
 
-        $response = $this->withHeaders($this->authHeaders)
+        $response = $this->withHeaders($this->authHeaders())
             ->postJson("/api/v1/connect/webhooks/events/{$fakeId}/replay");
 
         $response->assertStatus(404);
@@ -44,7 +74,9 @@ class WebhookEventReplayTest extends TestCase
     public function test_replay_endpoint_re_dispatches_existing_event(): void
     {
         WebhookSubscription::create([
-            'client_id'         => 'test-client',
+            // Must match the authenticated client — replay delivery is BOLA-scoped
+            // to the caller's own subscriptions (FIX H-3).
+            'client_id'         => $this->clientId,
             'callback_url'      => 'https://example.com/webhook',
             'webhook_secret'    => 'whsec_test',
             'subscribed_events' => ['appointment.booked'],
@@ -56,7 +88,7 @@ class WebhookEventReplayTest extends TestCase
             'payload'    => ['event_type' => 'appointment.booked', 'resource' => []],
         ]);
 
-        $response = $this->withHeaders($this->authHeaders)
+        $response = $this->withHeaders($this->authHeaders())
             ->postJson("/api/v1/connect/webhooks/events/{$event->id}/replay");
 
         $response->assertStatus(200)

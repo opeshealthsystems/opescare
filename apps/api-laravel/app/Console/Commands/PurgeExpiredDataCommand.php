@@ -27,9 +27,10 @@ class PurgeExpiredDataCommand extends Command
         $results = [];
 
         // 1. API usage logs
+        // api_usage_logs has no created_at — its timestamp column is logged_at.
         $results['api_usage_logs'] = $this->purgeTable(
             table: 'api_usage_logs',
-            column: 'created_at',
+            column: 'logged_at',
             days: (int) config('data_retention.api_usage_logs_days', 180),
             dryRun: $dryRun,
         );

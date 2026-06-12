@@ -126,6 +126,37 @@ class ConsentEnforcementTest extends TestCase
 
     // ── HTTP-level enforcement tests (added in Task 4) ────────────────────────
 
+    /**
+     * Create a sandbox integration client and exchange its credentials for a
+     * real RS256 Bearer token via the production token endpoint.
+     */
+    private function bearerHeaders(array $extra = []): array
+    {
+        \App\Models\IntegrationClient::firstOrCreate(
+            ['client_id' => 'test_client_id'],
+            [
+                'client_secret' => hash('sha256', 'test_client_secret'),
+                'facility_id'   => '00000000-0000-0000-0000-000000000001',
+                'name'          => 'Consent Enforcement Test Client',
+                'environment'   => 'sandbox',
+                'scopes'        => ['*'],
+                'status'        => 'active',
+            ]
+        );
+
+        $response = $this->postJson('/api/v1/connect/auth/token', [
+            'client_id'     => 'test_client_id',
+            'client_secret' => 'test_client_secret',
+            'grant_type'    => 'client_credentials',
+        ]);
+        $response->assertStatus(200);
+
+        return array_merge(
+            ['Authorization' => 'Bearer ' . $response->json('access_token')],
+            $extra
+        );
+    }
+
     public function test_push_encounter_requires_consent_grant(): void
     {
         // Seed facility and client for this test
@@ -134,12 +165,10 @@ class ConsentEnforcementTest extends TestCase
             'name' => 'Test Clinic', 'type' => 'clinic', 'status' => 'active',
         ]);
 
-        $response = $this->withHeaders([
-            'X-Client-ID'     => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret',
+        $response = $this->withHeaders($this->bearerHeaders([
             'Idempotency-Key' => 'idem-consent-enc-001',
             // No X-Consent-Grant-Id
-        ])->postJson('/api/v1/connect/records/encounters', [
+        ]))->postJson('/api/v1/connect/records/encounters', [
             'health_id'             => 'OC-TST-0001-0001-01',
             'external_encounter_id' => 'ENC-001',
         ]);
@@ -154,11 +183,9 @@ class ConsentEnforcementTest extends TestCase
             'name' => 'Test Clinic', 'type' => 'clinic', 'status' => 'active',
         ]);
 
-        $response = $this->withHeaders([
-            'X-Client-ID'     => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret',
+        $response = $this->withHeaders($this->bearerHeaders([
             'Idempotency-Key' => 'idem-consent-lab-001',
-        ])->postJson('/api/v1/connect/records/lab-results', [
+        ]))->postJson('/api/v1/connect/records/lab-results', [
             'health_id'             => 'OC-TST-0001-0001-01',
             'external_lab_order_id' => 'LAB-001',
         ]);
@@ -173,11 +200,9 @@ class ConsentEnforcementTest extends TestCase
             'name' => 'Test Clinic', 'type' => 'clinic', 'status' => 'active',
         ]);
 
-        $response = $this->withHeaders([
-            'X-Client-ID'     => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret',
+        $response = $this->withHeaders($this->bearerHeaders([
             'Idempotency-Key' => 'idem-consent-rx-001',
-        ])->postJson('/api/v1/connect/records/prescriptions', [
+        ]))->postJson('/api/v1/connect/records/prescriptions', [
             'health_id'  => 'OC-TST-0001-0001-01',
             'medication' => ['name' => 'Amoxicillin', 'dose' => '500mg'],
         ]);
@@ -201,11 +226,9 @@ class ConsentEnforcementTest extends TestCase
             'is_demo'       => false,
         ]);
 
-        $response = $this->withHeaders([
-            'X-Client-ID'     => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret',
+        $response = $this->withHeaders($this->bearerHeaders())
             // No X-Consent-Grant-Id or X-Purpose-Of-Use
-        ])->getJson('/api/v1/connect/patients/OC-CMR-7KQ9-MP42-X8D1/summary');
+            ->getJson('/api/v1/connect/patients/OC-CMR-7KQ9-MP42-X8D1/summary');
 
         $response->assertStatus(403)
                  ->assertJsonFragment(['required_action' => 'request_consent']);

@@ -47,7 +47,7 @@ class RequireFacilityContextMiddlewareTest extends TestCase
     public function test_request_with_active_facility_session_passes_through(): void
     {
         $facility = Facility::forceCreate([
-            'id'      => 'rfc00000-0000-0000-0000-000000000001',
+            'id'      => 'afc00000-0000-0000-0000-000000000001',
             'name'    => 'Session Facility',
             'type'    => 'hospital',
             'is_demo' => false,
@@ -82,7 +82,7 @@ class RequireFacilityContextMiddlewareTest extends TestCase
     public function test_user_with_primary_facility_auto_sets_session_and_passes_through(): void
     {
         $facility = Facility::forceCreate([
-            'id'      => 'rfc00000-0000-0000-0000-000000000002',
+            'id'      => 'afc00000-0000-0000-0000-000000000002',
             'name'    => 'Primary Facility',
             'type'    => 'clinic',
             'is_demo' => false,

@@ -6,6 +6,7 @@ use App\Models\Prescription;
 use App\Models\PrescriptionItem;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class PrescriptionsPageTest extends TestCase
@@ -21,10 +22,13 @@ class PrescriptionsPageTest extends TestCase
     {
         $patient = Patient::factory()->create(['is_demo' => false]);
         $user = User::factory()->create(['patient_id' => $patient->id]);
-        Prescription::factory()->count(2)->create(['patient_id' => $patient->id]);
+        Prescription::factory()->count(2)->create([
+            'patient_id' => $patient->id,
+            'prescribed_by' => (string) Str::uuid(),
+        ]);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient.prescriptions'))
             ->assertStatus(200)
             ->assertViewHas('prescriptions', fn($p) => $p->count() === 2);
@@ -35,7 +39,7 @@ class PrescriptionsPageTest extends TestCase
         $user = User::factory()->create(['patient_id' => null]);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient.prescriptions'))
             ->assertStatus(200)
             ->assertViewHas('patient', null);
@@ -46,10 +50,13 @@ class PrescriptionsPageTest extends TestCase
         $patientA = Patient::factory()->create(['is_demo' => false]);
         $patientB = Patient::factory()->create(['is_demo' => false]);
         $user = User::factory()->create(['patient_id' => $patientA->id]);
-        Prescription::factory()->count(3)->create(['patient_id' => $patientB->id]);
+        Prescription::factory()->count(3)->create([
+            'patient_id' => $patientB->id,
+            'prescribed_by' => (string) Str::uuid(),
+        ]);
 
         $this->actingAs($user)
-            ->withSession(['active_facility_id' => 'test-facility'])
+            ->withSession(['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'])
             ->get(route('portals.patient.prescriptions'))
             ->assertStatus(200)
             ->assertViewHas('prescriptions', fn($p) => $p->count() === 0);

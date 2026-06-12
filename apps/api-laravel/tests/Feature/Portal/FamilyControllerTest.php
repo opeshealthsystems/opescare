@@ -11,7 +11,7 @@ class FamilyControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    private array $session = ['active_facility_id' => 'test-facility'];
+    private array $session = ['active_facility_id' => '7e57fac1-0000-4000-8000-000000000001'];
 
     public function test_family_dashboard_shows_active_links(): void
     {

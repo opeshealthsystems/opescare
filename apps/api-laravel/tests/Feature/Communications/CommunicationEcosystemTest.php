@@ -73,9 +73,11 @@ class CommunicationEcosystemTest extends TestCase
     public function test_welcome_email_renders_correctly_and_bilingual_french_fallback_works()
     {
         $notificationService = app(NotificationService::class);
+        $userEn = (string) Str::uuid();
+        $userFr = (string) Str::uuid();
 
         // 1. Check English Welcome Rendering
-        $resultEn = $notificationService->sendNotification('101', 'welcome_patient', []);
+        $resultEn = $notificationService->sendNotification($userEn, 'welcome_patient', []);
         $this->assertEquals('success', $resultEn['status']);
         $eventEn = $resultEn['event'];
         $payloadEn = json_decode($eventEn->payload_json, true);
@@ -83,7 +85,7 @@ class CommunicationEcosystemTest extends TestCase
 
         // 2. Set Preference to French
         NotificationPreference::create([
-            'user_id' => '102',
+            'user_id' => $userFr,
             'category' => 'health_updates',
             'language' => 'fr',
             'email_enabled' => true,
@@ -94,7 +96,7 @@ class CommunicationEcosystemTest extends TestCase
             'dashboard_enabled' => true
         ]);
 
-        $resultFr = $notificationService->sendNotification('102', 'welcome_patient', []);
+        $resultFr = $notificationService->sendNotification($userFr, 'welcome_patient', []);
         $eventFr = $resultFr['event'];
         $payloadFr = json_decode($eventFr->payload_json, true);
         $this->assertStringContainsString('Votre compte OpesCare a été créé', $payloadFr['body']);
@@ -104,7 +106,7 @@ class CommunicationEcosystemTest extends TestCase
     {
         $notificationService = app(NotificationService::class);
 
-        $result = $notificationService->sendNotification('101', 'lab_result_patient', [
+        $result = $notificationService->sendNotification((string) Str::uuid(), 'lab_result_patient', [
             'result_value' => 'POSITIVE_HIV_CONFIRMED'
         ]);
 
@@ -143,13 +145,14 @@ class CommunicationEcosystemTest extends TestCase
     public function test_deduplication_prevents_identical_spam_within_short_window()
     {
         $router = app(CommunicationRouterService::class);
+        $recipient = (string) Str::uuid();
 
         // First route call
-        $res1 = $router->route('appointment_reminder', '301', ['body' => 'Remember your consult.']);
+        $res1 = $router->route('appointment_reminder', $recipient, ['body' => 'Remember your consult.']);
         $this->assertEquals('success', $res1['status']);
 
         // Second route call within 5 mins with same event type should get suppressed
-        $res2 = $router->route('appointment_reminder', '301', ['body' => 'Remember your consult.']);
+        $res2 = $router->route('appointment_reminder', $recipient, ['body' => 'Remember your consult.']);
         $this->assertEquals('suppressed', $res2['status']);
         $this->assertEquals('DEDUPLICATION_LIMIT', $res2['reason']);
     }

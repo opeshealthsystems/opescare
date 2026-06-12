@@ -18,8 +18,15 @@ class PartnerRiskScoreService
         $this->applicationService = $applicationService;
     }
 
-    public function recordRiskEvent(Partner $partner, string $riskFactor, string $severity, int $scoreDelta, string $actorId = 'system'): PartnerRiskScore
+    public function recordRiskEvent(Partner $partner, string $riskFactor, string $severity, int $scoreDelta, ?string $actorId = null): PartnerRiskScore
     {
+        // partner_audit_logs.actor_id is a uuid column — the old 'system' string
+        // default crashed Postgres. Null lets PartnerAuditService resolve the
+        // authenticated user, and actor_role still records 'system' when absent.
+        if ($actorId !== null && ! Str::isUuid($actorId)) {
+            $actorId = null;
+        }
+
         // 1. Fetch current or create new score record
         $riskRecord = PartnerRiskScore::firstOrCreate(
             ['partner_id' => $partner->id, 'status' => 'active'],
@@ -69,7 +76,7 @@ class PartnerRiskScoreService
         return $riskRecord;
     }
 
-    private function triggerCriticalGovernance(Partner $partner, string $riskFactor, string $actorId)
+    private function triggerCriticalGovernance(Partner $partner, string $riskFactor, ?string $actorId)
     {
         // Open a governance case
         $case = PartnerGovernanceCase::create([

@@ -10,9 +10,26 @@ class ConnectPlatformTest extends TestCase
 {
     use RefreshDatabase, WithMobileAuth;
 
+    private ?string $bearerToken = null;
+
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->bearerToken = null;
+
+        // Sandbox test client — Bearer tokens for it are obtained through the
+        // real /auth/token endpoint (SHA-256 secret path, as the developer
+        // portal stores secrets).
+        \App\Models\IntegrationClient::create([
+            'client_id'     => 'test_client_id',
+            'client_secret' => hash('sha256', 'test_client_secret'),
+            'facility_id'   => '00000000-0000-0000-0000-000000000001',
+            'name'          => 'Sandbox Test Client',
+            'environment'   => 'sandbox',
+            'scopes'        => json_encode(['*']),
+            'status'        => 'active',
+        ]);
 
         $facility = new \App\Models\Facility();
         $facility->id = '00000000-0000-0000-0000-000000000001';
@@ -72,6 +89,25 @@ class ConnectPlatformTest extends TestCase
     }
 
     /**
+     * Obtain a real RS256 Bearer token for the sandbox test client through the
+     * production token endpoint, and merge any extra request headers.
+     */
+    private function bearerHeaders(array $extra = []): array
+    {
+        if ($this->bearerToken === null) {
+            $response = $this->postJson('/api/v1/connect/auth/token', [
+                'client_id'     => 'test_client_id',
+                'client_secret' => 'test_client_secret',
+                'grant_type'    => 'client_credentials',
+            ]);
+            $response->assertStatus(200);
+            $this->bearerToken = $response->json('access_token');
+        }
+
+        return array_merge(['Authorization' => 'Bearer ' . $this->bearerToken], $extra);
+    }
+
+    /**
      * Test B2B OAuth token issuing endpoint.
      */
     public function test_auth_token_issuance_succeeds_with_sandbox_credentials()
@@ -96,7 +132,7 @@ class ConnectPlatformTest extends TestCase
      */
     public function test_b2b_routes_block_unauthorized_clients()
     {
-        // Missing X-Client-ID and X-Client-Secret headers
+        // Missing Authorization: Bearer header
         $response = $this->postJson('/api/v1/connect/patients/search', [
             'search_type' => 'health_id',
             'query' => 'OC-CMR-7KQ9-MP42-X8D1',
@@ -105,8 +141,18 @@ class ConnectPlatformTest extends TestCase
 
         $response->assertStatus(401)
                  ->assertJson([
-                     'error' => 'Missing integration credentials.'
+                     'error' => 'missing_token'
                  ]);
+
+        // A forged/garbage token must also be rejected
+        $this->withHeaders(['Authorization' => 'Bearer not.a.valid-token'])
+            ->postJson('/api/v1/connect/patients/search', [
+                'search_type' => 'health_id',
+                'query' => 'OC-CMR-7KQ9-MP42-X8D1',
+                'purpose' => 'treatment'
+            ])
+            ->assertStatus(401)
+            ->assertJson(['error' => 'invalid_token']);
     }
 
     /**
@@ -114,10 +160,7 @@ class ConnectPlatformTest extends TestCase
      */
     public function test_patient_search_succeeds_with_valid_sandbox_client()
     {
-        $response = $this->withHeaders([
-            'X-Client-ID' => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret'
-        ])->postJson('/api/v1/connect/patients/search', [
+        $response = $this->withHeaders($this->bearerHeaders())->postJson('/api/v1/connect/patients/search', [
             'search_type' => 'health_id',
             'query' => 'OC-CMR-7KQ9-MP42-X8D1',
             'purpose' => 'treatment'
@@ -135,10 +178,7 @@ class ConnectPlatformTest extends TestCase
      */
     public function test_writes_require_idempotency_key_header()
     {
-        $response = $this->withHeaders([
-            'X-Client-ID' => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret'
-        ])->postJson('/api/v1/connect/records/encounters', [
+        $response = $this->withHeaders($this->bearerHeaders())->postJson('/api/v1/connect/records/encounters', [
             'health_id' => 'OC-CMR-7KQ9-MP42-X8D1',
             'external_encounter_id' => 'ENC-9001'
         ]);
@@ -155,12 +195,10 @@ class ConnectPlatformTest extends TestCase
     public function test_writes_block_duplicate_idempotency_keys_and_retrieve_cache_hits()
     {
         // 1. Initial write — consent grant required on write routes
-        $response = $this->withHeaders([
-            'X-Client-ID'       => 'test_client_id',
-            'X-Client-Secret'   => 'test_client_secret',
+        $response = $this->withHeaders($this->bearerHeaders([
             'Idempotency-Key'   => 'idm_key_test_1002',
             'X-Consent-Grant-Id' => '0c000000-0000-4000-8000-0000000cc001',
-        ])->postJson('/api/v1/connect/records/encounters', [
+        ]))->postJson('/api/v1/connect/records/encounters', [
             'health_id' => 'OC-CMR-7KQ9-MP42-X8D1',
             'external_encounter_id' => 'ENC-9001'
         ]);
@@ -177,12 +215,10 @@ class ConnectPlatformTest extends TestCase
         ]);
 
         // 2. Duplicate request with EXACT same key and body returns CACHE HIT response
-        $response2 = $this->withHeaders([
-            'X-Client-ID'       => 'test_client_id',
-            'X-Client-Secret'   => 'test_client_secret',
+        $response2 = $this->withHeaders($this->bearerHeaders([
             'Idempotency-Key'   => 'idm_key_test_1002',
             'X-Consent-Grant-Id' => '0c000000-0000-4000-8000-0000000cc001',
-        ])->postJson('/api/v1/connect/records/encounters', [
+        ]))->postJson('/api/v1/connect/records/encounters', [
             'health_id' => 'OC-CMR-7KQ9-MP42-X8D1',
             'external_encounter_id' => 'ENC-9001'
         ]);
@@ -191,12 +227,10 @@ class ConnectPlatformTest extends TestCase
         $response2->assertHeader('X-Cache-Idempotency', 'HIT');
 
         // 3. Request with same key but DIFFERENT body throws 409 conflict
-        $response3 = $this->withHeaders([
-            'X-Client-ID'       => 'test_client_id',
-            'X-Client-Secret'   => 'test_client_secret',
+        $response3 = $this->withHeaders($this->bearerHeaders([
             'Idempotency-Key'   => 'idm_key_test_1002',
             'X-Consent-Grant-Id' => '0c000000-0000-4000-8000-0000000cc001',
-        ])->postJson('/api/v1/connect/records/encounters', [
+        ]))->postJson('/api/v1/connect/records/encounters', [
             'health_id' => 'OC-CMR-7KQ9-MP42-X8D1',
             'external_encounter_id' => 'ENC-9002_DIFFERENT'
         ]);
@@ -212,12 +246,10 @@ class ConnectPlatformTest extends TestCase
      */
     public function test_pull_summary_fails_without_consent_grant_token()
     {
-        $response = $this->withHeaders([
-            'X-Client-ID' => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret',
+        $response = $this->withHeaders($this->bearerHeaders([
             'X-Purpose-Of-Use' => 'treatment',
             'X-Consent-Grant-Id' => 'invalid_grant'
-        ])->getJson('/api/v1/connect/patients/OC-CMR-7KQ9-MP42-X8D1/summary');
+        ]))->getJson('/api/v1/connect/patients/OC-CMR-7KQ9-MP42-X8D1/summary');
 
         $response->assertStatus(403)
                  ->assertJsonFragment([
@@ -230,12 +262,13 @@ class ConnectPlatformTest extends TestCase
      */
     public function test_emergency_override_pull_bypasses_standard_consent_and_logs_audit_events()
     {
-        $response = $this->withHeaders([
-            'X-Client-ID' => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret',
-            'X-Purpose-Of-Use' => 'emergency',
-            'X-Emergency-Reason' => 'Patient is unconscious in ICU'
-        ])->getJson('/api/v1/connect/patients/OC-CMR-7KQ9-MP42-X8D1/emergency-profile');
+        // Purpose and reason now come from the validated request body (C-2 fix),
+        // never from spoofable headers.
+        $response = $this->withHeaders($this->bearerHeaders())
+            ->json('GET', '/api/v1/connect/patients/OC-CMR-7KQ9-MP42-X8D1/emergency-profile', [
+                'purpose'          => 'emergency',
+                'emergency_reason' => 'Patient is unconscious in ICU',
+            ]);
 
         $response->assertStatus(200)
                  ->assertJsonFragment([
@@ -254,12 +287,10 @@ class ConnectPlatformTest extends TestCase
      */
     public function test_reconciliation_case_creation_on_matching_conflicts()
     {
-        $response = $this->withHeaders([
-            'X-Client-ID'       => 'test_client_id',
-            'X-Client-Secret'   => 'test_client_secret',
+        $response = $this->withHeaders($this->bearerHeaders([
             'Idempotency-Key'   => 'idm_recon_key_01',
             'X-Consent-Grant-Id' => '0c000000-0000-4000-8000-0000000cc001',
-        ])->postJson('/api/v1/connect/records/encounters', [
+        ]))->postJson('/api/v1/connect/records/encounters', [
             'health_id' => 'OC-CMR-RECON-REQUIRED',
             'external_encounter_id' => 'ENC-RECON-001'
         ]);
@@ -294,13 +325,22 @@ class ConnectPlatformTest extends TestCase
     }
 
     /**
-     * Real integration client authenticates correctly via SHA-256 secret.
+     * Real integration client authenticates correctly via SHA-256 secret:
+     * the correct secret yields a Bearer token that grants API access.
      */
     public function test_real_client_can_authenticate_with_correct_secret(): void
     {
+        $tokenResponse = $this->postJson('/api/v1/connect/auth/token', [
+            'client_id'     => 'real_client_001',
+            'client_secret' => 'real_secret_abc123',
+            'grant_type'    => 'client_credentials',
+        ]);
+
+        $tokenResponse->assertStatus(200);
+        $token = $tokenResponse->json('access_token');
+
         $response = $this->withHeaders([
-            'X-Client-ID'     => 'real_client_001',
-            'X-Client-Secret' => 'real_secret_abc123',
+            'Authorization' => 'Bearer ' . $token,
         ])->postJson('/api/v1/connect/patients/search', [
             'search_type' => 'health_id',
             'query'       => 'OC-CMR-7KQ9-MP42-X8D1',
@@ -311,20 +351,26 @@ class ConnectPlatformTest extends TestCase
     }
 
     /**
-     * Real integration client is blocked with wrong secret.
+     * Real integration client is blocked with wrong secret:
+     * no Bearer token is issued, and forged tokens are rejected.
      */
     public function test_real_client_blocked_with_wrong_secret(): void
     {
-        $response = $this->withHeaders([
-            'X-Client-ID'     => 'real_client_001',
-            'X-Client-Secret' => 'wrong_secret',
+        // Wrong secret cannot obtain a token
+        $this->postJson('/api/v1/connect/auth/token', [
+            'client_id'     => 'real_client_001',
+            'client_secret' => 'wrong_secret',
+            'grant_type'    => 'client_credentials',
+        ])->assertStatus(401);
+
+        // And a self-made (unsigned) token is rejected by the API
+        $this->withHeaders([
+            'Authorization' => 'Bearer forged.token.value',
         ])->postJson('/api/v1/connect/patients/search', [
             'search_type' => 'health_id',
             'query'       => 'OC-CMR-7KQ9-MP42-X8D1',
             'purpose'     => 'treatment',
-        ]);
-
-        $response->assertStatus(403);
+        ])->assertStatus(401);
     }
 
     /**
@@ -332,10 +378,7 @@ class ConnectPlatformTest extends TestCase
      */
     public function test_rate_limit_headers_present_on_connect_response(): void
     {
-        $response = $this->withHeaders([
-            'X-Client-ID'     => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret',
-        ])->postJson('/api/v1/connect/patients/search', [
+        $response = $this->withHeaders($this->bearerHeaders())->postJson('/api/v1/connect/patients/search', [
             'search_type' => 'health_id',
             'query'       => 'OC-CMR-7KQ9-MP42-X8D1',
             'purpose'     => 'treatment',

@@ -27,7 +27,7 @@ class GlobalSearchTest extends TestCase
         [$patient] = $this->seedSearchRecords();
 
         $results = app(GlobalSearchService::class)->search('Amina', [
-            'actor_id' => 'admin_1',
+            'actor_id' => (string) Str::uuid(),
             'include_sensitive' => false,
         ]);
 
@@ -42,9 +42,10 @@ class GlobalSearchTest extends TestCase
     public function test_sensitive_patient_search_requires_explicit_scope_and_is_audited()
     {
         [$patient] = $this->seedSearchRecords();
+        $actorId = (string) Str::uuid();
 
         $results = app(GlobalSearchService::class)->search('OC-GS-001', [
-            'actor_id' => 'admin_1',
+            'actor_id' => $actorId,
             'include_sensitive' => true,
             'purpose' => 'care_coordination',
         ]);
@@ -54,7 +55,7 @@ class GlobalSearchTest extends TestCase
         $this->assertSame('OC-GS-001', $patientResult['metadata']['health_id']);
         $this->assertSame('Amina S.', $patientResult['title']);
         $this->assertDatabaseHas('audit_events', [
-            'actor_id' => 'admin_1',
+            'actor_id' => $actorId,
             'resource_type' => 'global_search',
             'patient_id' => $patient->id,
             'action_type' => 'search_patient',
