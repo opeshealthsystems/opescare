@@ -100,7 +100,7 @@
                                 {{ \Carbon\Carbon::parse($appointment->scheduled_at ?? $appointment->created_at)->format('M d, Y H:i') }}
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_patient_id', [], app()->getLocale()) ?: 'Patient ID' }}">
-                                <span style="font-family: monospace; font-size: var(--p-text-xs);">{{ $appointment->patient_id ?? '--' }}</span>
+                                <span style="font-family: monospace; font-size: var(--p-text-xs);">{{ $appointment->patient?->health_id ?? ($appointment->patient_id ? '#'.$appointment->patient_id : '—') }}</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_provider', [], app()->getLocale()) ?: 'Provider' }}">
                                 {{ $appointment->provider_name ?? $appointment->provider_id ?? '--' }}

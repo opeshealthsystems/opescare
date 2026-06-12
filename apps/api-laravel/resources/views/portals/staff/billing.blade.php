@@ -86,7 +86,7 @@
                                 </strong>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_patient_id', [], app()->getLocale()) ?: 'Patient ID' }}">
-                                <span style="font-family: monospace; font-size: var(--p-text-xs);">{{ $invoice->patient_id ?? '--' }}</span>
+                                <span style="font-family: monospace; font-size: var(--p-text-xs);">{{ $invoice->patient?->health_id ?? ($invoice->patient_id ? '#'.$invoice->patient_id : '—') }}</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_description', [], app()->getLocale()) ?: 'Description' }}">
                                 {{ $invoice->description ?? '--' }}
