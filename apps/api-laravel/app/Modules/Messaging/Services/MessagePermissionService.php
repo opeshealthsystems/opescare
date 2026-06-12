@@ -60,9 +60,12 @@ class MessagePermissionService
             return false;
         }
 
-        // If thread has legal hold, authorized compliance actors can view it
+        // If thread has legal hold, only compliance officers / legal counsel may view it.
+        // Any other user is denied — legal hold must never be a pass-all gate.
         if ($thread->legal_hold) {
-            return true;
+            $user = \App\Models\User::find($userId);
+            $complianceRoles = ['compliance_officer', 'legal_counsel', 'platform_admin', 'super_admin'];
+            return $user && in_array($user->role?->name ?? '', $complianceRoles);
         }
 
         return MessageThreadParticipant::where('thread_id', $thread->id)

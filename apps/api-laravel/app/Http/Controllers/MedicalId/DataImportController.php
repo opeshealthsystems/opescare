@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\MedicalId;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ExecuteImportJob;
 use App\Models\Facility;
 use App\Models\ImportJob;
 use App\Modules\DataImport\Services\ImportMappingService;
@@ -155,22 +156,11 @@ class DataImportController extends Controller
 
             $svc->audit($job, 'approved', $this->demoActorId());
 
-            // In a production system, a queued job would be dispatched here.
-            // For portal demo: simulate immediate completion.
-            $job->forceFill([
-                'status'                => 'completed',
-                'imported_rows'         => $job->valid_rows,
-                'import_started_at'     => now(),
-                'import_completed_at'   => now(),
-            ])->save();
-
-            $svc->audit($job, 'completed', $this->demoActorId(), [
-                'imported' => $job->valid_rows,
-                'note'     => 'Portal demo: simulated import completion.',
-            ]);
+            // Dispatch the real queued import job; UI will poll status.
+            ExecuteImportJob::dispatch($job->id, $this->demoActorId())->onQueue('imports');
 
             return redirect()->route('portals.staff.data_import.index')
-                ->with('success', "Import approved. {$job->valid_rows} valid records processed.");
+                ->with('success', "Import approved and queued. {$job->valid_rows} valid records will be processed shortly.");
         } catch (Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

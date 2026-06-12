@@ -50,6 +50,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'guardian.context' => \App\Http\Middleware\GuardianAccessMiddleware::class,
             'api.admin'        => \App\Http\Middleware\RequireApiAdminRole::class,
             'verify.integration.client' => \App\Http\Middleware\VerifyIntegrationClient::class,
+            'module'                    => \App\Http\Middleware\EnforceModuleEntitlement::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

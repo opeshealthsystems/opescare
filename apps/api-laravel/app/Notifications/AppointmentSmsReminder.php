@@ -41,6 +41,6 @@ class AppointmentSmsReminder extends Notification
         $facility = $appt->facility?->name ?? 'your facility';
 
         return "OpesCare Reminder: Your appointment on {$date} at {$time} at {$facility} is confirmed. " .
-               "Reply CANCEL to cancel. OpesCare Support: +237 XXX XXX XXX";
+               "Reply CANCEL to cancel. OpesCare Support: " . (config('opescare.support_phone') ?: config('opescare.support_email') ?: 'support@opescare.com');
     }
 }

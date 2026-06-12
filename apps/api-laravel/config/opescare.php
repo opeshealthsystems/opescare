@@ -16,4 +16,11 @@ return [
     // Set to true in production once subdomains are configured in Nginx.
     // When enabled, each subdomain only serves its designated routes (404 otherwise).
     'subdomain_routing' => env('SUBDOMAIN_ROUTING', false),
+
+    // Support contact — shown in SMS reminders and system notifications.
+    // Override via OPESCARE_SUPPORT_PHONE in .env
+    'support_phone' => env('OPESCARE_SUPPORT_PHONE', ''),
+
+    // Admin / operations support email
+    'support_email' => env('OPESCARE_SUPPORT_EMAIL', env('MAIL_FROM_ADDRESS', '')),
 ];

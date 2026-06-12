@@ -45,3 +45,13 @@ Schedule::command('health-id:purge-bulk-exports')->dailyAt('01:00');
 // expires windows whose ends_at has passed. Flushes the maintenance cache
 // so enforcement is near-real-time without waiting for the 5-min TTL.
 Schedule::command('maintenance:process')->everyMinute()->withoutOverlapping();
+
+// OpesCare: Appointment reminders
+// Runs every 5 minutes; dispatches SMS/push/email for reminders whose
+// scheduled_at has arrived. Uses withoutOverlapping() to prevent pile-up
+// if a run takes longer than the interval.
+Schedule::command('opescare:send-appointment-reminders')->everyFiveMinutes()->withoutOverlapping();
+
+// OpesCare: Provider credential expiry notifications
+// Runs daily at 07:30; alerts administrators of credentials expiring within 30 days.
+Schedule::command('opescare:notify-expiring-credentials')->dailyAt('07:30');

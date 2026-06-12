@@ -77,20 +77,18 @@ class FacilityVerificationService
         $pendingReviews = [];
 
         foreach ($data as $field => $newValue) {
-            if (!$facility->isDirty($field)) {
-                $oldValue = $facility->{$field};
-                if ($oldValue != $newValue) {
-                    if (in_array($field, $highRiskFields)) {
-                        // High-risk changes require review and do not apply immediately
-                        $pendingReviews[] = [
-                            'field' => $field,
-                            'old' => $oldValue,
-                            'new' => $newValue,
-                        ];
-                    } else {
-                        // Low-risk changes apply immediately
-                        $updatesToApply[$field] = $newValue;
-                    }
+            $oldValue = $facility->{$field};
+            if ($oldValue != $newValue) {
+                if (in_array($field, $highRiskFields)) {
+                    // High-risk changes require review and do not apply immediately
+                    $pendingReviews[] = [
+                        'field' => $field,
+                        'old' => $oldValue,
+                        'new' => $newValue,
+                    ];
+                } else {
+                    // Low-risk changes apply immediately
+                    $updatesToApply[$field] = $newValue;
                 }
             }
         }

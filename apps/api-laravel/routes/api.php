@@ -1182,6 +1182,12 @@ Route::middleware(VerifyIntegrationClient::class)->prefix('v1/security')->group(
     Route::patch('pen-tests/{id}/findings/{findingId}',         [\App\Http\Controllers\Api\V1\Security\PenTestController::class, 'updateFinding']);
 });
 
+// ── Mobile Money Callbacks (public — no auth, provider pushes to us) ─────────────
+Route::prefix('payments/mobile-money')->group(function () {
+    Route::post('mtn/callback',    [\App\Http\Controllers\Api\V1\MobileMoneyCallbackController::class, 'mtnCallback']);
+    Route::post('orange/callback', [\App\Http\Controllers\Api\V1\MobileMoneyCallbackController::class, 'orangeCallback']);
+});
+
 Route::prefix('mobile')->middleware('auth.mobile')->group(function () {
     // Care plans (read-only for patient)
     Route::get('care-plans',      [\App\Http\Controllers\Api\Mobile\MobileCarePlanController::class, 'index']);

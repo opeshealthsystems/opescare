@@ -27,8 +27,8 @@ class MessageAttachmentService
             throw new \Exception('MESSAGE_ATTACHMENT_BLOCKED');
         }
 
-        // Placeholder scan
-        $scanStatus = 'passed';
+        // Scan is queued asynchronously; attachment is quarantined until the job completes.
+        $scanStatus = 'pending';
 
         return MessageAttachment::create([
             'message_id' => $message->id,
