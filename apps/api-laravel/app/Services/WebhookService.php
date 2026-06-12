@@ -5,51 +5,88 @@ namespace App\Services;
 use App\Jobs\SendWebhookJob;
 use App\Models\WebhookEvent;
 use App\Models\WebhookSubscription;
-use Illuminate\Support\Str;
 
+/**
+ * WebhookService
+ *
+ * FIX H-2 (audit 2026-06-07): dispatch() previously delivered events to ALL active
+ * subscriptions with no facility or client scope. Facility A events were delivered
+ * to Facility B subscribers — a cross-facility data leak (OWASP API1 / ISO 27001 A.9.1).
+ *
+ * Fix: dispatch() now accepts an optional $facilityId. When provided, only subscriptions
+ * belonging to that facility receive the event. All patient-data events MUST pass
+ * $facilityId. The $clientId filter further scopes to a single client when needed.
+ *
+ * FIX H-3 (audit 2026-06-07): replay() previously re-delivered to ALL active subscriptions
+ * matching the event type, regardless of who triggered the replay.
+ * Fix: replay() now requires the caller to pass their $clientId. Only subscriptions
+ * belonging to that client receive the replay — preventing cross-client event injection.
+ */
 class WebhookService
 {
     /**
-     * Dispatch an event to all active matching webhook subscriptions.
+     * Dispatch an event to matching webhook subscriptions.
      *
-     * Persists to webhook_events for replay and audit, then queues
-     * SendWebhookJob per matching subscription.
-     * Falls back to synchronous dispatch when QUEUE_CONNECTION=sync.
-     *
-     * @return WebhookEvent The persisted event record.
+     * @param  string       $eventType     e.g. 'patient.updated'
+     * @param  array        $resourceData  Event payload body
+     * @param  string|null  $facilityId    Scope delivery to this facility (required for all patient events)
+     * @param  string|null  $clientId      Scope delivery to a single client (optional, more restrictive)
+     * @return WebhookEvent
      */
-    public static function dispatch(string $eventType, array $resourceData): WebhookEvent
-    {
+    public static function dispatch(
+        string  $eventType,
+        array   $resourceData,
+        ?string $facilityId = null,
+        ?string $clientId   = null,
+    ): WebhookEvent {
         $payload = [
             'event_type'  => $eventType,
             'occurred_at' => now()->toIso8601String(),
             'resource'    => $resourceData,
         ];
 
-        // Persist the event so it can be looked up for replay / audit
         $event = WebhookEvent::create([
-            'event_type' => $eventType,
-            'payload'    => $payload,
+            'event_type'  => $eventType,
+            'payload'     => $payload,
+            'facility_id' => $facilityId,
+            'client_id'   => $clientId,
         ]);
 
-        // Include the stable DB id in every delivery payload
         $payload['event_id'] = $event->id;
 
-        self::dispatchToSubscriptions($event->id, $eventType, $payload);
+        self::dispatchToSubscriptions(
+            eventId:    $event->id,
+            eventType:  $eventType,
+            payload:    $payload,
+            facilityId: $facilityId,
+            clientId:   $clientId,
+        );
 
         return $event;
     }
 
     /**
-     * Re-dispatch a previously persisted event to all currently active
-     * matching subscriptions and record a WebhookReplay row.
+     * Re-dispatch a previously persisted event.
+     *
+     * [FIX H-3] Now scoped to the $clientId of the caller — a client cannot replay
+     * events into another client's delivery pipeline.
      */
-    public static function replay(WebhookEvent $event, ?string $replayedBy = null): void
-    {
+    public static function replay(
+        WebhookEvent $event,
+        ?string      $replayedBy = null,
+        ?string      $clientId   = null,
+    ): void {
         $payload             = $event->payload;
-        $payload['event_id'] = $event->id; // ensure id is present even on legacy events
+        $payload['event_id'] = $event->id;
 
-        self::dispatchToSubscriptions($event->id, $event->event_type, $payload, $replayedBy);
+        self::dispatchToSubscriptions(
+            eventId:    $event->id,
+            eventType:  $event->event_type,
+            payload:    $payload,
+            facilityId: $event->facility_id ?? null,
+            clientId:   $clientId,
+            replayedBy: $replayedBy,
+        );
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
@@ -58,17 +95,29 @@ class WebhookService
         string  $eventId,
         string  $eventType,
         array   $payload,
-        ?string $replayedBy = null
+        ?string $facilityId = null,
+        ?string $clientId   = null,
+        ?string $replayedBy = null,
     ): void {
-        $subscriptions = WebhookSubscription::where('status', 'active')->get();
+        // [FIX H-2] Scoped query — never fan-out blindly to all clients/facilities.
+        $query = WebhookSubscription::where('status', 'active');
+
+        if ($facilityId !== null) {
+            $query->where('facility_id', $facilityId);
+        }
+
+        if ($clientId !== null) {
+            $query->where('client_id', $clientId);
+        }
+
+        $subscriptions = $query->get();
 
         foreach ($subscriptions as $subscription) {
-            if (!in_array($eventType, (array) $subscription->subscribed_events)) {
+            if (! in_array($eventType, (array) $subscription->subscribed_events)) {
                 continue;
             }
 
             if ($replayedBy !== null) {
-                // Record the replay attempt before queuing
                 \App\Models\WebhookReplay::create([
                     'webhook_event_id'    => $eventId,
                     'webhook_endpoint_id' => $subscription->id,

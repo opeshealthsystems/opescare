@@ -1,0 +1,113 @@
+<h2>OpesCare Patient App — Visual Direction</h2>
+<p class="subtitle">Which design feel should the Flutter patient app have? Pick the direction that best represents OpesCare's brand.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="clinical-trust" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0A2342;padding:20px;border-radius:8px;color:white;font-family:sans-serif;">
+      <div style="background:#0D3A6B;border-radius:10px;padding:14px;margin-bottom:10px;">
+        <div style="font-size:11px;opacity:0.7;letter-spacing:1px;text-transform:uppercase;">Health ID</div>
+        <div style="font-size:18px;font-weight:700;letter-spacing:2px;margin-top:4px;">OPC-2024-00421</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;background:#0D3A6B;border-radius:8px;padding:10px;">
+          <div style="font-size:9px;opacity:0.6;text-transform:uppercase;">Labs</div>
+          <div style="font-size:12px;margin-top:4px;color:#4FC3F7;">2 Ready</div>
+        </div>
+        <div style="flex:1;background:#0D3A6B;border-radius:8px;padding:10px;">
+          <div style="font-size:9px;opacity:0.6;text-transform:uppercase;">Rx</div>
+          <div style="font-size:12px;margin-top:4px;color:#4FC3F7;">Active</div>
+        </div>
+        <div style="flex:1;background:#0D3A6B;border-radius:8px;padding:10px;">
+          <div style="font-size:9px;opacity:0.6;text-transform:uppercase;">Appt</div>
+          <div style="font-size:12px;margin-top:4px;color:#FFB74D;">Thu</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;background:#0D3A6B;border-radius:8px;padding:10px;">
+        <div style="font-size:9px;opacity:0.6;text-transform:uppercase;">Consent Request</div>
+        <div style="font-size:11px;margin-top:4px;">St. Mary's Hospital wants to view your records</div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <div style="flex:1;background:#1565C0;border-radius:4px;padding:5px;text-align:center;font-size:10px;">Approve</div>
+          <div style="flex:1;background:transparent;border:1px solid rgba(255,255,255,0.3);border-radius:4px;padding:5px;text-align:center;font-size:10px;">Deny</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Clinical Trust (Dark Navy)</h3>
+      <p>Deep navy blue on dark surfaces. Premium, serious, institutional. Feels like banking or healthcare infra. High contrast, great readability at night.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="clean-light" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F0F4F8;padding:20px;border-radius:8px;font-family:sans-serif;">
+      <div style="background:white;border-radius:10px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <div style="font-size:11px;color:#64748B;letter-spacing:1px;text-transform:uppercase;">Health ID</div>
+        <div style="font-size:18px;font-weight:700;letter-spacing:2px;margin-top:4px;color:#0D3A6B;">OPC-2024-00421</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;background:white;border-radius:8px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+          <div style="font-size:9px;color:#64748B;text-transform:uppercase;">Labs</div>
+          <div style="font-size:12px;margin-top:4px;color:#0288D1;font-weight:600;">2 Ready</div>
+        </div>
+        <div style="flex:1;background:white;border-radius:8px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+          <div style="font-size:9px;color:#64748B;text-transform:uppercase;">Rx</div>
+          <div style="font-size:12px;margin-top:4px;color:#388E3C;font-weight:600;">Active</div>
+        </div>
+        <div style="flex:1;background:white;border-radius:8px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+          <div style="font-size:9px;color:#64748B;text-transform:uppercase;">Appt</div>
+          <div style="font-size:12px;margin-top:4px;color:#F57C00;font-weight:600;">Thu</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;background:white;border-radius:8px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,0.06);border-left:3px solid #1565C0;">
+        <div style="font-size:9px;color:#64748B;text-transform:uppercase;">Consent Request</div>
+        <div style="font-size:11px;margin-top:4px;color:#1E293B;">St. Mary's Hospital wants to view your records</div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <div style="flex:1;background:#1565C0;border-radius:4px;padding:5px;text-align:center;font-size:10px;color:white;">Approve</div>
+          <div style="flex:1;background:white;border:1px solid #CBD5E1;border-radius:4px;padding:5px;text-align:center;font-size:10px;color:#64748B;">Deny</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Clean Light (Off-White + Navy)</h3>
+      <p>White cards on light gray background. Clinical and modern. Easy to read in daylight. Familiar app feel. Accessible and warm without being casual.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="teal-accent" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F8FFFE;padding:20px;border-radius:8px;font-family:sans-serif;">
+      <div style="background:linear-gradient(135deg,#00695C,#00897B);border-radius:10px;padding:14px;margin-bottom:10px;color:white;">
+        <div style="font-size:11px;opacity:0.8;letter-spacing:1px;text-transform:uppercase;">Health ID</div>
+        <div style="font-size:18px;font-weight:700;letter-spacing:2px;margin-top:4px;">OPC-2024-00421</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;background:white;border-radius:8px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,0.06);border-top:3px solid #00897B;">
+          <div style="font-size:9px;color:#64748B;text-transform:uppercase;">Labs</div>
+          <div style="font-size:12px;margin-top:4px;color:#00695C;font-weight:600;">2 Ready</div>
+        </div>
+        <div style="flex:1;background:white;border-radius:8px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,0.06);border-top:3px solid #00897B;">
+          <div style="font-size:9px;color:#64748B;text-transform:uppercase;">Rx</div>
+          <div style="font-size:12px;margin-top:4px;color:#00695C;font-weight:600;">Active</div>
+        </div>
+        <div style="flex:1;background:white;border-radius:8px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,0.06);border-top:3px solid #F57C00;">
+          <div style="font-size:9px;color:#64748B;text-transform:uppercase;">Appt</div>
+          <div style="font-size:12px;margin-top:4px;color:#F57C00;font-weight:600;">Thu</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;background:white;border-radius:8px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+        <div style="font-size:9px;color:#64748B;text-transform:uppercase;">Consent Request</div>
+        <div style="font-size:11px;margin-top:4px;color:#1E293B;">St. Mary's Hospital wants to view your records</div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <div style="flex:1;background:#00897B;border-radius:4px;padding:5px;text-align:center;font-size:10px;color:white;">Approve</div>
+          <div style="flex:1;background:white;border:1px solid #CBD5E1;border-radius:4px;padding:5px;text-align:center;font-size:10px;color:#64748B;">Deny</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Health Teal (Teal + White)</h3>
+      <p>Teal/green primary on white cards. Feels alive and healthy. Strong healthcare associations. Friendly without being unprofessional. Good contrast ratios.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:24px;">Click to select your preferred visual direction, then reply in the terminal.</p>

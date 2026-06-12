@@ -24,8 +24,8 @@ abstract final class AppTheme {
         scrolledUnderElevation: 1,
         shadowColor: AppColors.divider,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
-        titleTextStyle: GoogleFonts.inter(
-          fontSize: 17, fontWeight: FontWeight.w600,
+        titleTextStyle: GoogleFonts.plusJakartaSans(
+          fontSize: 17, fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
       ),
@@ -44,7 +44,7 @@ abstract final class AppTheme {
           foregroundColor: AppColors.textOnPrimary,
           minimumSize: const Size(double.infinity, 52),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          textStyle: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
+          textStyle: GoogleFonts.dmSans(fontSize: 15, fontWeight: FontWeight.w700),
           elevation: 0,
         ),
       ),
@@ -54,13 +54,14 @@ abstract final class AppTheme {
           minimumSize: const Size(double.infinity, 52),
           side: const BorderSide(color: primary),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          textStyle: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
+          textStyle: GoogleFonts.dmSans(fontSize: 15, fontWeight: FontWeight.w700),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: AppColors.divider),
@@ -77,8 +78,10 @@ abstract final class AppTheme {
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: AppColors.danger),
         ),
-        labelStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.textSecondary),
-        hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.textMuted),
+        labelStyle: GoogleFonts.dmSans(
+            fontSize: 14, color: AppColors.textSecondary),
+        hintStyle:
+            GoogleFonts.dmSans(fontSize: 14, color: AppColors.textMuted),
       ),
       dividerTheme: const DividerThemeData(
         color: AppColors.divider, thickness: 1, space: 0,
@@ -95,7 +98,7 @@ abstract final class AppTheme {
   }
 
   static ThemeData get dark {
-    const primary = AppColors.primary400; // lighter blue for dark backgrounds
+    const primary       = AppColors.primary400;
     const darkBg        = Color(0xFF0F172A);
     const darkSurface   = Color(0xFF1E293B);
     const darkDivider   = Color(0xFF334155);
@@ -120,8 +123,8 @@ abstract final class AppTheme {
         scrolledUnderElevation: 1,
         shadowColor: darkDivider,
         systemOverlayStyle: SystemUiOverlayStyle.light,
-        titleTextStyle: GoogleFonts.inter(
-          fontSize: 17, fontWeight: FontWeight.w600,
+        titleTextStyle: GoogleFonts.plusJakartaSans(
+          fontSize: 17, fontWeight: FontWeight.w700,
           color: const Color(0xFFF1F5F9),
         ),
       ),
@@ -141,8 +144,8 @@ abstract final class AppTheme {
           minimumSize: const Size(double.infinity, 52),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10)),
-          textStyle: GoogleFonts.inter(
-              fontSize: 15, fontWeight: FontWeight.w600),
+          textStyle:
+              GoogleFonts.dmSans(fontSize: 15, fontWeight: FontWeight.w700),
           elevation: 0,
         ),
       ),
@@ -153,15 +156,15 @@ abstract final class AppTheme {
           side: const BorderSide(color: primary),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10)),
-          textStyle: GoogleFonts.inter(
-              fontSize: 15, fontWeight: FontWeight.w600),
+          textStyle:
+              GoogleFonts.dmSans(fontSize: 15, fontWeight: FontWeight.w700),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: darkSurface,
-        contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16, vertical: 14),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: darkDivider),
@@ -178,10 +181,8 @@ abstract final class AppTheme {
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: AppColors.danger),
         ),
-        labelStyle: GoogleFonts.inter(
-            fontSize: 14, color: darkTextSec),
-        hintStyle: GoogleFonts.inter(
-            fontSize: 14, color: darkTextMuted),
+        labelStyle: GoogleFonts.dmSans(fontSize: 14, color: darkTextSec),
+        hintStyle: GoogleFonts.dmSans(fontSize: 14, color: darkTextMuted),
       ),
       dividerTheme: const DividerThemeData(
         color: darkDivider, thickness: 1, space: 0,

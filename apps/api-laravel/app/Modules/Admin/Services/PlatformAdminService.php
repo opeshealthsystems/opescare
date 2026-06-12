@@ -2,6 +2,7 @@
 
 namespace App\Modules\Admin\Services;
 
+use App\Http\Middleware\CheckMaintenanceMode;
 use App\Models\AdminActionLog;
 use App\Models\FeatureFlag;
 use App\Models\MaintenanceWindow;
@@ -154,6 +155,9 @@ class PlatformAdminService
             'created_by'             => $actorId,
         ]);
 
+        // Flush cache so the new window is picked up immediately if active
+        CheckMaintenanceMode::flushCache();
+
         $this->log($actorId, 'maintenance_created', 'maintenance_window', $window->id, null, $window->toArray(), $ip);
         return $window;
     }
@@ -163,6 +167,10 @@ class PlatformAdminService
         $window = MaintenanceWindow::findOrFail($id);
         $before = $window->toArray();
         $window->forceFill(['is_active' => $active])->save();
+
+        // Flush cache immediately — enforcement must reflect the toggle within milliseconds
+        CheckMaintenanceMode::flushCache();
+
         $this->log($actorId, $active ? 'maintenance_activated' : 'maintenance_deactivated', 'maintenance_window', $id, $before, $window->fresh()->toArray(), $ip);
         return $window->fresh();
     }

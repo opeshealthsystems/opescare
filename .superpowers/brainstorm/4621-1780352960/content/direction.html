@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Care Map — Design Direction</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0F172A;
+    color: #F8FAFC;
+    min-height: 100vh;
+    padding: 2.5rem 1.5rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+  .page-header h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin-bottom: 0.5rem;
+  }
+  .page-header p {
+    font-size: 0.9rem;
+    color: #94A3B8;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .directions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .direction-card {
+    background: #1E293B;
+    border: 2px solid #334155;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .direction-card:hover {
+    border-color: #3B82F6;
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px rgba(59,130,246,.2);
+  }
+  .direction-card.selected {
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,.3), 0 20px 40px rgba(59,130,246,.2);
+  }
+
+  .card-mockup {
+    position: relative;
+    height: 340px;
+    overflow: hidden;
+  }
+
+  .card-label {
+    padding: 1.25rem 1.375rem 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .card-label .letter {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #3B82F6, #06B6D4);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+  .card-label h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #F8FAFC;
+  }
+  .card-label .tag {
+    margin-left: auto;
+    padding: 0.2rem 0.6rem;
+    background: rgba(59,130,246,.15);
+    border: 1px solid rgba(59,130,246,.3);
+    border-radius: 50px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #93C5FD;
+    white-space: nowrap;
+  }
+
+  .card-desc {
+    padding: 0.5rem 1.375rem 1.25rem;
+    font-size: 0.78rem;
+    color: #94A3B8;
+    line-height: 1.6;
+  }
+  .card-pills {
+    display: flex; flex-wrap: wrap; gap: 0.375rem;
+    padding: 0 1.375rem 1.25rem;
+  }
+  .pill {
+    padding: 0.15rem 0.6rem;
+    border-radius: 50px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    background: #0F172A;
+    border: 1px solid #334155;
+    color: #CBD5E1;
+  }
+
+  /* ─── MOCKUP A: Immersive Map-First ───────────────────── */
+  .mockup-a {
+    background: #E8F4F8;
+    position: relative;
+  }
+  .ma-map {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(rgba(14,165,233,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(14,165,233,.06) 1px, transparent 1px),
+      linear-gradient(135deg, #D1EAF5 0%, #C8E6F0 40%, #B8DDE8 100%);
+    background-size: 28px 28px, 28px 28px, 100% 100%;
+  }
+  /* roads */
+  .ma-road {
+    position: absolute;
+    background: rgba(255,255,255,.55);
+    border-radius: 2px;
+  }
+  /* glass panel */
+  .ma-panel {
+    position: absolute;
+    top: 10px; left: 10px;
+    width: 185px; bottom: 10px;
+    background: rgba(255,255,255,.82);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.9);
+    box-shadow: 0 8px 32px rgba(0,0,0,.12);
+    overflow: hidden;
+  }
+  .ma-panel-search {
+    background: #fff;
+    padding: 8px;
+    border-bottom: 1px solid #E2E8F0;
+  }
+  .ma-search-bar {
+    height: 28px;
+    background: #F1F5F9;
+    border-radius: 50px;
+    display: flex; align-items: center;
+    padding: 0 8px; gap: 5px;
+    font-size: 8px; color: #94A3B8;
+  }
+  .ma-search-bar svg { width: 9px; height: 9px; flex-shrink: 0; }
+  .ma-chips-row {
+    display: flex; gap: 4px;
+    padding: 6px 8px;
+    overflow: hidden;
+    border-bottom: 1px solid #E2E8F0;
+  }
+  .ma-chip {
+    height: 16px; padding: 0 7px;
+    border-radius: 50px;
+    font-size: 6.5px; font-weight: 600;
+    display: flex; align-items: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .ma-cards { padding: 6px; display: flex; flex-direction: column; gap: 5px; overflow: hidden; }
+  .ma-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 7px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    border: 1px solid #E2E8F0;
+  }
+  .ma-card-top { display: flex; gap: 5px; align-items: flex-start; }
+  .ma-icon { width: 22px; height: 22px; border-radius: 5px; flex-shrink: 0; }
+  .ma-card-name { font-size: 7.5px; font-weight: 700; color: #0F172A; line-height: 1.2; }
+  .ma-card-sub { font-size: 6px; color: #64748B; margin-top: 1px; }
+  .ma-card-row { font-size: 6px; color: #94A3B8; margin-top: 4px; }
+  .ma-card-btns { display: flex; gap: 3px; margin-top: 5px; }
+  .ma-btn { height: 14px; border-radius: 4px; padding: 0 5px; font-size: 6px; font-weight: 600; display: flex; align-items: center; }
+  /* map pins */
+  .ma-pin {
+    position: absolute;
+    width: 14px; height: 14px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,.2);
+  }
+  .ma-pin::after {
+    content: '';
+    width: 6px; height: 6px;
+    background: rgba(255,255,255,.9);
+    border-radius: 50%;
+    transform: rotate(45deg);
+  }
+  /* nav */
+  .ma-nav {
+    position: absolute; top: 0; left: 200px; right: 0; height: 36px;
+    background: rgba(255,255,255,.9);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.8);
+    display: flex; align-items: center; padding: 0 10px; gap: 6px;
+  }
+  .ma-nav-logo { display: flex; align-items: center; gap: 4px; }
+  .ma-nav-dot { width: 16px; height: 16px; border-radius: 4px; background: linear-gradient(135deg,#0F4C81,#14B8A6); }
+  .ma-nav-text { font-size: 8px; font-weight: 800; color: #0F4C81; }
+  .ma-nav-em {
+    margin-left: auto;
+    background: #DC2626; color: #fff;
+    font-size: 6.5px; font-weight: 700;
+    padding: 3px 7px; border-radius: 50px;
+  }
+
+  /* ─── MOCKUP B: Bold Hero + Split ─────────────────────── */
+  .mockup-b { background: #F8FAFC; }
+  .mb-hero {
+    background: linear-gradient(135deg, #0F4C81 0%, #0D9488 100%);
+    padding: 14px 12px 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .mb-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(20,184,166,.25), transparent 60%);
+  }
+  .mb-hero-inner { position: relative; }
+  .mb-logo-row { display: flex; align-items: center; gap: 5px; margin-bottom: 10px; }
+  .mb-logo-dot { width: 18px; height: 18px; border-radius: 5px; background: rgba(255,255,255,.25); border: 1px solid rgba(255,255,255,.4); display: flex; align-items: center; justify-content: center; }
+  .mb-logo-text { font-size: 9px; font-weight: 800; color: #fff; }
+  .mb-logo-sub { font-size: 5.5px; color: rgba(255,255,255,.6); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+  .mb-em { margin-left: auto; background: rgba(220,38,38,.8); color: #fff; font-size: 6px; font-weight: 700; padding: 2px 6px; border-radius: 50px; backdrop-filter: blur(4px); }
+  .mb-hero-title { font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 3px; font-family: 'Outfit', sans-serif; }
+  .mb-hero-sub { font-size: 7px; color: rgba(255,255,255,.7); margin-bottom: 9px; }
+  .mb-search { background: #fff; border-radius: 50px; height: 26px; display: flex; align-items: center; padding: 0 10px; gap: 6px; box-shadow: 0 4px 16px rgba(0,0,0,.2); }
+  .mb-search span { font-size: 7px; color: #94A3B8; flex: 1; }
+  .mb-search-btn { width: 18px; height: 18px; border-radius: 50px; background: #0F4C81; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .mb-stats { display: flex; gap: 5px; margin-top: 9px; }
+  .mb-stat { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); border-radius: 6px; padding: 4px 7px; backdrop-filter: blur(4px); }
+  .mb-stat-num { font-size: 10px; font-weight: 800; color: #fff; }
+  .mb-stat-label { font-size: 5.5px; color: rgba(255,255,255,.65); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .mb-filters { display: flex; gap: 4px; padding: 7px 10px; background: #fff; border-bottom: 1px solid #E2E8F0; overflow: hidden; }
+  .mb-fchip { height: 18px; padding: 0 7px; border-radius: 50px; font-size: 6.5px; font-weight: 600; display: flex; align-items: center; border: 1.5px solid; white-space: nowrap; flex-shrink: 0; }
+  .mb-body { display: flex; height: 145px; }
+  .mb-list { width: 160px; flex-shrink: 0; overflow: hidden; padding: 6px; display: flex; flex-direction: column; gap: 4px; border-right: 1px solid #E2E8F0; }
+  .mb-fcard { background: #fff; border: 1.5px solid #E2E8F0; border-radius: 8px; padding: 6px; }
+  .mb-fcard-top { display: flex; gap: 5px; align-items: flex-start; margin-bottom: 4px; }
+  .mb-fcard-ico { width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0; }
+  .mb-fcard-name { font-size: 7px; font-weight: 700; color: #0F172A; line-height: 1.2; }
+  .mb-fcard-sub { font-size: 6px; color: #64748B; }
+  .mb-fcard-loc { font-size: 6px; color: #94A3B8; }
+  .mb-fcard-btns { display: flex; gap: 3px; margin-top: 4px; }
+  .mb-btn { height: 13px; border-radius: 3px; padding: 0 5px; font-size: 5.5px; font-weight: 700; display: flex; align-items: center; }
+  .mb-map { flex: 1; position: relative; background: linear-gradient(135deg,#D1EAF5,#C8E6F0); }
+  .mb-map-grid { position: absolute; inset: 0; background: linear-gradient(rgba(14,165,233,.05) 1px,transparent 1px), linear-gradient(90deg,rgba(14,165,233,.05) 1px,transparent 1px); background-size: 20px 20px; }
+  .mb-road { position: absolute; background: rgba(255,255,255,.5); }
+
+  /* ─── MOCKUP C: Minimal Clinical ──────────────────────── */
+  .mockup-c { background: #FFFFFF; }
+  .mc-nav {
+    background: #fff;
+    border-bottom: 1px solid #E2E8F0;
+    padding: 0 12px;
+    height: 32px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .mc-nav-logo { display: flex; align-items: center; gap: 4px; }
+  .mc-nav-dot { width: 16px; height: 16px; border-radius: 4px; background: linear-gradient(135deg,#0F4C81,#14B8A6); }
+  .mc-nav-text { font-size: 8px; font-weight: 800; color: #0F4C81; }
+  .mc-search-wrap { flex: 1; height: 21px; background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 50px; display: flex; align-items: center; padding: 0 8px; gap: 4px; }
+  .mc-search-wrap span { font-size: 6.5px; color: #94A3B8; }
+  .mc-nav-em { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; font-size: 6px; font-weight: 700; padding: 2px 6px; border-radius: 50px; }
+  .mc-filter-row { display: flex; gap: 4px; padding: 6px 12px; background: #fff; border-bottom: 1px solid #E2E8F0; align-items: center; }
+  .mc-fchip { height: 18px; padding: 0 8px; border-radius: 50px; font-size: 6.5px; font-weight: 600; display: flex; align-items: center; gap: 3px; border: 1.5px solid; white-space: nowrap; flex-shrink: 0; }
+  .mc-dot { width: 5px; height: 5px; border-radius: 50%; }
+  .mc-body { display: flex; height: 268px; }
+  .mc-panel { width: 175px; flex-shrink: 0; border-right: 1px solid #E2E8F0; display: flex; flex-direction: column; }
+  .mc-panel-hdr { padding: 6px 8px; background: #fff; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; gap: 5px; }
+  .mc-count { font-size: 7px; font-weight: 700; color: #0F172A; flex: 1; }
+  .mc-sort { font-size: 6px; color: #64748B; border: 1px solid #E2E8F0; border-radius: 4px; padding: 2px 5px; }
+  .mc-cards { flex: 1; overflow: hidden; padding: 5px; display: flex; flex-direction: column; gap: 4px; }
+  .mc-card { background: #fff; border: 1.5px solid #E2E8F0; border-radius: 8px; padding: 7px; position: relative; }
+  .mc-card.active { border-color: #0F4C81; box-shadow: 0 0 0 2px rgba(15,76,129,.1); }
+  .mc-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2.5px; border-radius: 2px 0 0 2px; }
+  .mc-card.hospital::before { background: #0891B2; }
+  .mc-card.clinic::before { background: #059669; }
+  .mc-card.pharmacy::before { background: #D97706; }
+  .mc-card-top { display: flex; gap: 5px; margin-bottom: 4px; }
+  .mc-icon { width: 24px; height: 24px; border-radius: 6px; flex-shrink: 0; }
+  .mc-name { font-size: 7.5px; font-weight: 700; color: #0F172A; line-height: 1.2; }
+  .mc-badges { display: flex; gap: 2px; margin-top: 1px; flex-wrap: wrap; }
+  .mc-badge { font-size: 5.5px; font-weight: 700; padding: 1px 4px; border-radius: 50px; }
+  .mc-dist { position: absolute; top: 6px; right: 6px; font-size: 6px; font-weight: 700; color: #0F4C81; background: #EFF6FF; padding: 1px 5px; border-radius: 50px; }
+  .mc-info { font-size: 6px; color: #94A3B8; margin-bottom: 2px; }
+  .mc-btns { display: flex; gap: 3px; }
+  .mc-btn { height: 13px; border-radius: 3px; padding: 0 5px; font-size: 5.5px; font-weight: 700; display: flex; align-items: center; }
+  .mc-map { flex: 1; position: relative; }
+  .mc-map-base { position: absolute; inset: 0; background: linear-gradient(135deg,#E8F4F8,#D1EAF5); }
+  .mc-map-grid { position: absolute; inset: 0; background: linear-gradient(rgba(14,165,233,.06) 1px,transparent 1px), linear-gradient(90deg,rgba(14,165,233,.06) 1px,transparent 1px); background-size: 22px 22px; }
+  .mc-road { position: absolute; background: rgba(255,255,255,.6); }
+  .mc-pin { position: absolute; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,.18); }
+  .mc-pin::after { content:''; border-radius:50%; background:rgba(255,255,255,.9); transform: rotate(45deg); }
+
+  /* Footer label */
+  .rec-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #059669, #0D9488);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 50px;
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .select-note {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.8rem;
+    color: #64748B;
+  }
+  .select-note strong { color: #94A3B8; }
+</style>
+</head>
+<body>
+<div class="page-header">
+  <h1>Care Map — Design Direction</h1>
+  <p>Three distinct directions for the /care-map page. Click a card to select your preferred direction, or describe what resonates in the terminal.</p>
+</div>
+
+<div class="directions">
+
+  <!-- ── DIRECTION A ── -->
+  <div class="direction-card" data-choice="a" onclick="this.classList.toggle('selected')">
+    <div class="card-mockup mockup-a">
+      <!-- Map base -->
+      <div class="ma-map"></div>
+      <!-- Roads -->
+      <div class="ma-road" style="left:200px;right:0;top:95px;height:6px;transform:rotate(-4deg)"></div>
+      <div class="ma-road" style="left:200px;right:0;top:155px;height:4px"></div>
+      <div class="ma-road" style="left:200px;right:0;top:215px;height:8px;transform:rotate(2deg)"></div>
+      <div class="ma-road" style="left:230px;top:36px;width:5px;bottom:0"></div>
+      <div class="ma-road" style="left:290px;top:36px;width:4px;bottom:0;transform:skewX(-2deg)"></div>
+      <div class="ma-road" style="left:360px;top:36px;width:6px;bottom:0"></div>
+
+      <!-- Nav -->
+      <div class="ma-nav">
+        <div class="ma-nav-logo">
+          <div class="ma-nav-dot"></div>
+          <div>
+            <div class="ma-nav-text">OpesCare</div>
+          </div>
+        </div>
+        <div class="ma-nav-em">Emergency</div>
+      </div>
+
+      <!-- Glass panel -->
+      <div class="ma-panel">
+        <div class="ma-panel-search">
+          <div class="ma-search-bar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            Search hospitals, labs…
+          </div>
+        </div>
+        <div class="ma-chips-row">
+          <div class="ma-chip" style="background:#0F4C81;color:#fff;">All</div>
+          <div class="ma-chip" style="background:#ECFEFF;color:#0891B2;border:1px solid #A5F3FC">Hospital</div>
+          <div class="ma-chip" style="background:#ECFDF5;color:#059669;border:1px solid #A7F3D0">Clinic</div>
+        </div>
+        <div class="ma-cards">
+          <!-- Card 1 -->
+          <div class="ma-card">
+            <div class="ma-card-top">
+              <div class="ma-icon" style="background:#ECFEFF;display:flex;align-items:center;justify-content:center">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0891B2" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+              </div>
+              <div>
+                <div class="ma-card-name">Lagos State Hospital</div>
+                <div class="ma-card-sub">🏥 Hospital · ✓ Verified · 24/7</div>
+              </div>
+              <div style="margin-left:auto;font-size:6px;font-weight:700;color:#0F4C81;background:#EFF6FF;padding:1px 4px;border-radius:50px;white-space:nowrap">2.1km</div>
+            </div>
+            <div class="ma-card-row">📍 Broad St, Lagos Island</div>
+            <div class="ma-card-btns">
+              <div class="ma-btn" style="background:#059669;color:#fff">Call</div>
+              <div class="ma-btn" style="background:#F1F5F9;color:#475569">Directions</div>
+              <div class="ma-btn" style="background:#0F4C81;color:#fff;margin-left:auto">View →</div>
+            </div>
+          </div>
+          <!-- Card 2 -->
+          <div class="ma-card">
+            <div class="ma-card-top">
+              <div class="ma-icon" style="background:#ECFDF5;display:flex;align-items:center;justify-content:center">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              </div>
+              <div>
+                <div class="ma-card-name">Prime Care Clinic</div>
+                <div class="ma-card-sub">🏥 Clinic · Open Now</div>
+              </div>
+              <div style="margin-left:auto;font-size:6px;font-weight:700;color:#0F4C81;background:#EFF6FF;padding:1px 4px;border-radius:50px;white-space:nowrap">3.4km</div>
+            </div>
+            <div class="ma-card-row">📍 Victoria Island, Lagos</div>
+            <div class="ma-card-btns">
+              <div class="ma-btn" style="background:#059669;color:#fff">Call</div>
+              <div class="ma-btn" style="background:#0F4C81;color:#fff;margin-left:auto">View →</div>
+            </div>
+          </div>
+          <!-- Card 3 -->
+          <div class="ma-card">
+            <div class="ma-card-top">
+              <div class="ma-icon" style="background:#FFFBEB;display:flex;align-items:center;justify-content:center">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M9 12h6m-3-3v6"/></svg>
+              </div>
+              <div>
+                <div class="ma-card-name">MedPlus Pharmacy</div>
+                <div class="ma-card-sub">💊 Pharmacy</div>
+              </div>
+              <div style="margin-left:auto;font-size:6px;font-weight:700;color:#0F4C81;background:#EFF6FF;padding:1px 4px;border-radius:50px;white-space:nowrap">4.7km</div>
+            </div>
+            <div class="ma-card-row">📍 Ikeja, Lagos</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Map pins -->
+      <div class="ma-pin" style="top:95px;left:260px;width:16px;height:16px;background:#0891B2"></div>
+      <div class="ma-pin" style="top:145px;left:320px;width:20px;height:20px;background:#0F4C81"></div>
+      <div class="ma-pin" style="top:185px;left:380px;width:14px;height:14px;background:#059669"></div>
+      <div class="ma-pin" style="top:230px;left:290px;width:14px;height:14px;background:#D97706"></div>
+      <div class="ma-pin" style="top:265px;left:350px;width:12px;height:12px;background:#DC2626"></div>
+    </div>
+    <div class="card-label">
+      <div class="letter">A</div>
+      <h3>Immersive Map-First</h3>
+      <span class="tag">Google Maps DNA</span>
+    </div>
+    <div class="card-desc">Full-screen map backdrop. A frosted-glass panel floats on the left containing search + results. The map is the hero — the list coexists with it.</div>
+    <div class="card-pills">
+      <span class="pill">Floating glass panel</span>
+      <span class="pill">Map always visible</span>
+      <span class="pill">Spatial discovery</span>
+    </div>
+  </div>
+
+  <!-- ── DIRECTION B ── -->
+  <div class="direction-card" data-choice="b" onclick="this.classList.toggle('selected')">
+    <div class="card-mockup mockup-b">
+      <!-- Hero -->
+      <div class="mb-hero">
+        <div class="mb-hero-inner">
+          <div class="mb-logo-row">
+            <div class="mb-logo-dot">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div>
+              <div class="mb-logo-text">OpesCare</div>
+              <div class="mb-logo-sub">Care Map</div>
+            </div>
+            <div class="mb-em">Emergency</div>
+          </div>
+          <div class="mb-hero-title">Find Health Services Near You</div>
+          <div class="mb-hero-sub">Hospitals, clinics, pharmacies, labs and more across Nigeria</div>
+          <div class="mb-search">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <span>Search by name, city or type…</span>
+            <div class="mb-search-btn">
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </div>
+          </div>
+          <div class="mb-stats">
+            <div class="mb-stat">
+              <div class="mb-stat-num">247</div>
+              <div class="mb-stat-label">Facilities</div>
+            </div>
+            <div class="mb-stat">
+              <div class="mb-stat-num">3</div>
+              <div class="mb-stat-label">States</div>
+            </div>
+            <div class="mb-stat">
+              <div class="mb-stat-num">184</div>
+              <div class="mb-stat-label">Verified</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Filters -->
+      <div class="mb-filters">
+        <div class="mb-fchip" style="background:#0F4C81;color:#fff;border-color:#0F4C81">All</div>
+        <div class="mb-fchip" style="background:#ECFEFF;color:#0891B2;border-color:#A5F3FC">Hospitals</div>
+        <div class="mb-fchip" style="background:#ECFDF5;color:#059669;border-color:#A7F3D0">Clinics</div>
+        <div class="mb-fchip" style="background:#FFFBEB;color:#D97706;border-color:#FDE68A">Pharmacies</div>
+        <div class="mb-fchip" style="background:#F5F3FF;color:#7C3AED;border-color:#DDD6FE">Labs</div>
+      </div>
+      <!-- Body -->
+      <div class="mb-body">
+        <div class="mb-list">
+          <div class="mb-fcard">
+            <div class="mb-fcard-top">
+              <div class="mb-fcard-ico" style="background:#ECFEFF;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0891B2" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+              <div style="flex:1">
+                <div class="mb-fcard-name">Lagos State Hospital</div>
+                <div class="mb-fcard-sub" style="color:#0891B2;font-size:5.5px;font-weight:700">Hospital · ✓ Gov. Verified</div>
+              </div>
+              <div style="font-size:6px;font-weight:700;color:#0F4C81;background:#EFF6FF;padding:1px 4px;border-radius:50px">2.1km</div>
+            </div>
+            <div class="mb-fcard-loc">📍 Broad St, Lagos Island · Open 24/7</div>
+            <div class="mb-fcard-btns" style="margin-top:5px">
+              <div class="mb-btn" style="background:#ECFDF5;color:#059669;border:1px solid #A7F3D0">Call</div>
+              <div class="mb-btn" style="background:#F1F5F9;color:#475569">Directions</div>
+              <div class="mb-btn" style="background:#0F4C81;color:#fff;margin-left:auto">View →</div>
+            </div>
+          </div>
+          <div class="mb-fcard">
+            <div class="mb-fcard-top">
+              <div class="mb-fcard-ico" style="background:#ECFDF5;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+              <div style="flex:1">
+                <div class="mb-fcard-name">Prime Care Clinic</div>
+                <div class="mb-fcard-sub" style="color:#059669;font-size:5.5px;font-weight:700">Clinic · ✓ Verified · Open Now</div>
+              </div>
+              <div style="font-size:6px;font-weight:700;color:#0F4C81;background:#EFF6FF;padding:1px 4px;border-radius:50px">3.4km</div>
+            </div>
+            <div class="mb-fcard-loc">📍 Victoria Island, Lagos</div>
+            <div class="mb-fcard-btns" style="margin-top:5px">
+              <div class="mb-btn" style="background:#ECFDF5;color:#059669;border:1px solid #A7F3D0">Call</div>
+              <div class="mb-btn" style="background:#0F4C81;color:#fff;margin-left:auto">View →</div>
+            </div>
+          </div>
+        </div>
+        <!-- Map -->
+        <div class="mb-map">
+          <div class="mb-map-grid"></div>
+          <div class="mb-road" style="left:0;right:0;top:45px;height:5px"></div>
+          <div class="mb-road" style="left:0;right:0;top:90px;height:4px;transform:rotate(-2deg)"></div>
+          <div class="mb-road" style="left:35px;top:0;width:4px;bottom:0"></div>
+          <div class="mb-road" style="left:90px;top:0;width:5px;bottom:0"></div>
+          <!-- Pins -->
+          <div style="position:absolute;top:30px;left:50px;width:18px;height:18px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#0891B2;box-shadow:0 2px 6px rgba(0,0,0,.2)"><div style="width:7px;height:7px;background:rgba(255,255,255,.9);border-radius:50%;transform:rotate(45deg);margin:5px auto 0"></div></div>
+          <div style="position:absolute;top:65px;left:95px;width:16px;height:16px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#059669;box-shadow:0 2px 6px rgba(0,0,0,.2)"><div style="width:6px;height:6px;background:rgba(255,255,255,.9);border-radius:50%;transform:rotate(45deg);margin:5px auto 0"></div></div>
+          <div style="position:absolute;top:100px;left:45px;width:14px;height:14px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#D97706;box-shadow:0 2px 6px rgba(0,0,0,.2)"><div style="width:5px;height:5px;background:rgba(255,255,255,.9);border-radius:50%;transform:rotate(45deg);margin:4px auto 0"></div></div>
+          <div style="position:absolute;top:110px;left:120px;width:14px;height:14px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#7C3AED;box-shadow:0 2px 6px rgba(0,0,0,.2)"><div style="width:5px;height:5px;background:rgba(255,255,255,.9);border-radius:50%;transform:rotate(45deg);margin:4px auto 0"></div></div>
+          <div style="position:absolute;top:75px;left:70px;width:10px;height:10px;border-radius:50%;background:#0F4C81;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>
+          <div style="position:absolute;top:63px;left:58px;font-size:5.5px;font-weight:700;color:#0F4C81;background:white;padding:2px 5px;border-radius:50px;box-shadow:0 1px 4px rgba(0,0,0,.15)">You</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <div class="letter">B</div>
+      <h3>Bold Hero + Directory</h3>
+      <span class="tag">Healthgrades DNA</span>
+    </div>
+    <div class="card-desc">Strong branded header with live statistics. Below it: classic split panel — results on the left, interactive map on the right. Clear visual hierarchy.</div>
+    <div class="card-pills">
+      <span class="pill">Branded hero</span>
+      <span class="pill">Live stats bar</span>
+      <span class="pill">Classic split view</span>
+    </div>
+  </div>
+
+  <!-- ── DIRECTION C ── -->
+  <div class="direction-card" data-choice="c" onclick="this.classList.toggle('selected')">
+    <div class="card-mockup mockup-c">
+      <!-- Nav -->
+      <div class="mc-nav">
+        <div class="mc-nav-logo">
+          <div class="mc-nav-dot"></div>
+          <div>
+            <div class="mc-nav-text">OpesCare</div>
+          </div>
+        </div>
+        <div class="mc-search-wrap">
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <span>Search hospitals, pharmacies, labs…</span>
+        </div>
+        <div class="mc-nav-em">Emergency</div>
+      </div>
+      <!-- Filter row -->
+      <div class="mc-filter-row">
+        <div class="mc-fchip" style="background:#0F4C81;color:#fff;border-color:#0F4C81">All</div>
+        <div class="mc-fchip" style="background:#ECFEFF;color:#0891B2;border-color:#A5F3FC"><div class="mc-dot" style="background:#0891B2"></div>Hospitals</div>
+        <div class="mc-fchip" style="background:#ECFDF5;color:#059669;border-color:#A7F3D0"><div class="mc-dot" style="background:#059669"></div>Clinics</div>
+        <div class="mc-fchip" style="background:#FFFBEB;color:#D97706;border-color:#FDE68A"><div class="mc-dot" style="background:#D97706"></div>Pharmacies</div>
+        <div class="mc-fchip" style="background:#F5F3FF;color:#7C3AED;border-color:#DDD6FE"><div class="mc-dot" style="background:#7C3AED"></div>Labs</div>
+      </div>
+      <!-- Body -->
+      <div class="mc-body">
+        <div class="mc-panel">
+          <div class="mc-panel-hdr">
+            <div class="mc-count">247 facilities found <span style="color:#059669;font-size:5.5px">✓ 184 verified</span></div>
+            <div class="mc-sort">A–Z ▾</div>
+          </div>
+          <div class="mc-cards">
+            <!-- Card 1 -->
+            <div class="mc-card hospital active" style="border-left-color: #0891B2">
+              <div class="mc-card-top">
+                <div class="mc-icon" style="background:#ECFEFF;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0891B2" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+                <div style="flex:1">
+                  <div class="mc-name">Lagos State Hospital</div>
+                  <div class="mc-badges">
+                    <span class="mc-badge" style="background:#ECFEFF;color:#0891B2">Hospital</span>
+                    <span class="mc-badge" style="background:#DCFCE7;color:#15803D">✓ Gov. Verified</span>
+                    <span class="mc-badge" style="background:#FEF2F2;color:#DC2626">24/7</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mc-dist">2.1 km</div>
+              <div class="mc-info">📍 Broad Street, Lagos Island</div>
+              <div class="mc-info">📞 +234 801 234 5678</div>
+              <div class="mc-btns">
+                <div class="mc-btn" style="background:#ECFDF5;color:#059669;border:1px solid #A7F3D0">Call</div>
+                <div class="mc-btn" style="background:#F1F5F9;color:#475569">Directions</div>
+                <div class="mc-btn" style="background:#0F4C81;color:#fff;margin-left:auto">View Profile →</div>
+              </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="mc-card clinic" style="border-left-color: #059669">
+              <div class="mc-card-top">
+                <div class="mc-icon" style="background:#ECFDF5;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+                <div style="flex:1">
+                  <div class="mc-name">Prime Care Clinic</div>
+                  <div class="mc-badges">
+                    <span class="mc-badge" style="background:#ECFDF5;color:#059669">Clinic</span>
+                    <span class="mc-badge" style="background:#DCFCE7;color:#15803D">✓ Verified</span>
+                    <span class="mc-badge" style="background:#F0FDF4;color:#15803D">Open Now</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mc-dist">3.4 km</div>
+              <div class="mc-info">📍 Victoria Island, Lagos</div>
+              <div class="mc-btns">
+                <div class="mc-btn" style="background:#ECFDF5;color:#059669;border:1px solid #A7F3D0">Call</div>
+                <div class="mc-btn" style="background:#0F4C81;color:#fff;margin-left:auto">View Profile →</div>
+              </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="mc-card pharmacy" style="border-left-color: #D97706">
+              <div class="mc-card-top">
+                <div class="mc-icon" style="background:#FFFBEB;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M9 12h6m-3-3v6"/></svg></div>
+                <div style="flex:1">
+                  <div class="mc-name">MedPlus Pharmacy</div>
+                  <div class="mc-badges">
+                    <span class="mc-badge" style="background:#FFFBEB;color:#D97706">Pharmacy</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mc-dist">4.7 km</div>
+              <div class="mc-info">📍 Ikeja, Lagos</div>
+              <div class="mc-btns">
+                <div class="mc-btn" style="background:#0F4C81;color:#fff;margin-left:auto">View Profile →</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Map -->
+        <div class="mc-map">
+          <div class="mc-map-base"></div>
+          <div class="mc-map-grid"></div>
+          <div class="mc-road" style="left:0;right:0;top:60px;height:6px"></div>
+          <div class="mc-road" style="left:0;right:0;top:130px;height:4px;transform:rotate(-2deg)"></div>
+          <div class="mc-road" style="left:0;right:0;top:190px;height:5px;transform:rotate(1deg)"></div>
+          <div class="mc-road" style="left:50px;top:0;width:5px;bottom:0"></div>
+          <div class="mc-road" style="left:120px;top:0;width:4px;bottom:0;transform:skewX(-1deg)"></div>
+          <div class="mc-road" style="left:190px;top:0;width:6px;bottom:0"></div>
+          <!-- Pins -->
+          <div class="mc-pin" style="top:42px;left:62px;width:20px;height:20px;background:#0891B2"><div style="width:8px;height:8px;background:rgba(255,255,255,.9);border-radius:50%;transform:rotate(45deg);margin:6px auto 0"></div></div>
+          <div class="mc-pin" style="top:108px;left:130px;width:18px;height:18px;background:#0F4C81"><div style="width:7px;height:7px;background:rgba(255,255,255,.9);border-radius:50%;transform:rotate(45deg);margin:5px auto 0"></div></div>
+          <div class="mc-pin" style="top:85px;left:195px;width:16px;height:16px;background:#059669"><div style="width:6px;height:6px;background:rgba(255,255,255,.9);border-radius:50%;transform:rotate(45deg);margin:5px auto 0"></div></div>
+          <div class="mc-pin" style="top:155px;left:80px;width:16px;height:16px;background:#D97706"><div style="width:6px;height:6px;background:rgba(255,255,255,.9);border-radius:50%;transform:rotate(45deg);margin:5px auto 0"></div></div>
+          <div class="mc-pin" style="top:180px;left:155px;width:14px;height:14px;background:#DC2626"><div style="width:5px;height:5px;background:rgba(255,255,255,.9);border-radius:50%;transform:rotate(45deg);margin:4px auto 0"></div></div>
+          <!-- You marker -->
+          <div style="position:absolute;top:118px;left:68px;width:12px;height:12px;border-radius:50%;background:#0F4C81;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>
+          <div style="position:absolute;top:104px;left:55px;font-size:5px;font-weight:700;color:#0F4C81;background:white;padding:2px 4px;border-radius:50px;box-shadow:0 1px 4px rgba(0,0,0,.15)">You are here</div>
+          <!-- Popup -->
+          <div style="position:absolute;top:10px;left:90px;background:#fff;border-radius:8px;padding:6px 8px;box-shadow:0 4px 16px rgba(0,0,0,.15);border:1px solid #E2E8F0;min-width:90px">
+            <div style="font-size:6.5px;font-weight:700;color:#0F172A;margin-bottom:2px">Lagos State Hospital</div>
+            <div style="font-size:5.5px;color:#0891B2;margin-bottom:5px">Hospital · 2.1 km</div>
+            <div style="display:flex;gap:3px">
+              <div style="flex:1;background:#0F4C81;color:#fff;font-size:5.5px;font-weight:700;padding:2px 0;border-radius:3px;text-align:center">View</div>
+              <div style="flex:1;background:#F1F5F9;color:#475569;font-size:5.5px;font-weight:700;padding:2px 0;border-radius:3px;text-align:center">Dir.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <div class="letter">C</div>
+      <h3>Refined Clinical Split</h3>
+      <span class="tag">Industry Standard</span>
+      <div class="rec-badge">Recommended</div>
+    </div>
+    <div class="card-desc">Clean, precise, professional. Minimal nav with inline search. Type-coloured accent stripe on cards. Rich detail without noise. Map popup with quick actions.</div>
+    <div class="card-pills">
+      <span class="pill">Precision design</span>
+      <span class="pill">Type accent stripes</span>
+      <span class="pill">Rich card detail</span>
+      <span class="pill">Popups with actions</span>
+    </div>
+  </div>
+
+</div>
+
+<p class="select-note">Click a direction to select it, or describe what you like (or don't) from each — we can mix elements.<br><strong>All three work on mobile — the split becomes a toggle view.</strong></p>
+
+<script>
+document.querySelectorAll('.direction-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const isSelected = card.classList.contains('selected');
+    document.querySelectorAll('.direction-card').forEach(c => c.classList.remove('selected'));
+    if (!isSelected) card.classList.add('selected');
+    // Record choice for the server
+    if (window.__recordChoice) {
+      window.__recordChoice(card.dataset.choice, card.querySelector('h3').textContent);
+    }
+  });
+});
+</script>
+</body>
+</html>

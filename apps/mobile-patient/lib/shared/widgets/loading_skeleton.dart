@@ -36,22 +36,22 @@ class HomeScreenSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+    return const SingleChildScrollView(
+      padding: EdgeInsets.all(16),
       child: Column(children: [
-        const LoadingSkeleton(height: 100, borderRadius: 14),
-        const SizedBox(height: 12),
-        Row(children: const [
+        LoadingSkeleton(height: 100, borderRadius: 14),
+        SizedBox(height: 12),
+        Row(children: [
           Expanded(child: LoadingSkeleton(height: 72, borderRadius: 10)),
           SizedBox(width: 8),
           Expanded(child: LoadingSkeleton(height: 72, borderRadius: 10)),
           SizedBox(width: 8),
           Expanded(child: LoadingSkeleton(height: 72, borderRadius: 10)),
         ]),
-        const SizedBox(height: 20),
-        const LoadingSkeleton(height: 90, borderRadius: 10),
-        const SizedBox(height: 12),
-        const LoadingSkeleton(height: 90, borderRadius: 10),
+        SizedBox(height: 20),
+        LoadingSkeleton(height: 90, borderRadius: 10),
+        SizedBox(height: 12),
+        LoadingSkeleton(height: 90, borderRadius: 10),
       ]),
     );
   }

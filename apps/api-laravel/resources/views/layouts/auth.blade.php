@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
     
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+    <script src="{{ asset('js/lucide.min.js') }}"></script>
 </head>
 <body class="auth-body">
 

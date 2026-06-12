@@ -33,12 +33,13 @@
             <i data-lucide="history"></i>
             {{ __('public.portal.access_history', [], app()->getLocale()) ?: 'Access History' }}
         </h2>
-        @if(count($logs) > 0)
-        <span class="badge badge-primary">{{ count($logs) }}</span>
+        @php $logCount = method_exists($logs, 'total') ? $logs->total() : $logs->count(); @endphp
+        @if($logCount > 0)
+        <span class="badge badge-primary">{{ $logCount }}</span>
         @endif
     </div>
 
-    @if(count($logs) === 0)
+    @if($logCount === 0)
         <div class="empty-state">
             <div class="empty-state-icon"><i data-lucide="clipboard-list"></i></div>
             <h3>{{ __('public.portal.no_logs_title', [], app()->getLocale()) ?: 'No Access Logs' }}</h3>
@@ -98,6 +99,11 @@
                 </tbody>
             </table>
         </div>
+        @if(method_exists($logs, 'links') && $logs->hasPages())
+        <div style="padding:var(--p-space-4);border-top:1px solid var(--p-border);">
+            {{ $logs->links() }}
+        </div>
+        @endif
     @endif
 </div>
 

@@ -10,6 +10,10 @@
 @section('sidebar_nav')
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">Insurance</div>
+    <a href="{{ route('portals.insurance.dashboard') }}" class="sidebar-link">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Dashboard</span>
+    </a>
     <a href="{{ route('portals.insurance.providers') }}" class="sidebar-link">
         <i data-lucide="building-2"></i>
         <span>Providers & Plans</span>

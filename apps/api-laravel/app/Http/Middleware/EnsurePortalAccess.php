@@ -74,6 +74,15 @@ class EnsurePortalAccess
         'portals/lite' => [
             'lite_facility', 'lite_staff', 'lite_device', 'lite_offline_sync',
         ],
+        'portals/pharmacy' => [
+            'pharmacist', 'pharmacy_technician', 'pharmacy_manager', 'medicine_stock', 'dispensing_officer',
+        ],
+        'portals/lab' => [
+            'labtech', 'lab_scientist', 'lab_manager', 'lab_validator', 'sample_collection',
+        ],
+        'portals/healthorg' => [
+            'ngo_admin', 'health_program_manager', 'outreach_team', 'mobile_clinic_team',
+        ],
     ];
 
     public function handle(Request $request, Closure $next): mixed
@@ -91,9 +100,18 @@ class EnsurePortalAccess
             return $next($request);
         }
 
-        // Patient portal: patients, guardians, and caregivers may not have a system role
-        // record or a facility assignment — let them through for their own portal.
+        // Patient portal: only patient/guardian/caregiver roles allowed.
+        // [RBAC FIX] Previously bypassed all role checks — a doctor or pharmacist
+        // could access any patient's portal. Now enforced like every other portal.
         if ($requestedPrefix === 'portals/patient') {
+            $patientRole = $user->role?->name ?? null;
+            $allowedPatientRoles = self::PORTAL_ROLES['portals/patient'];
+            if ($patientRole && !in_array($patientRole, $allowedPatientRoles, true)) {
+                // Staff/admin user tried to open the patient portal — redirect to their own portal
+                return redirect($this->correctPortalFor($patientRole), 302);
+            }
+            // Users without an explicit role record (e.g. unverified patient accounts)
+            // are allowed through — the patient portal itself handles identity gating.
             return $next($request);
         }
 
@@ -141,8 +159,11 @@ class EnsurePortalAccess
     {
         return match (true) {
             in_array($role, self::PORTAL_ROLES['portals/patient'])    => '/portals/patient',
+            in_array($role, self::PORTAL_ROLES['portals/pharmacy'])   => '/portals/pharmacy',
+            in_array($role, self::PORTAL_ROLES['portals/lab'])        => '/portals/lab',
+            in_array($role, self::PORTAL_ROLES['portals/healthorg'])  => '/portals/healthorg',
             in_array($role, self::PORTAL_ROLES['portals/staff'])      => '/portals/staff',
-            in_array($role, self::PORTAL_ROLES['portals/insurance'])  => '/portals/insurance/claims',
+            in_array($role, self::PORTAL_ROLES['portals/insurance'])  => '/portals/insurance',
             in_array($role, self::PORTAL_ROLES['portals/developer'])  => '/portals/developer',
             in_array($role, self::PORTAL_ROLES['portals/lite'])       => '/portals/lite',
             default                                                    => '/portals/admin',

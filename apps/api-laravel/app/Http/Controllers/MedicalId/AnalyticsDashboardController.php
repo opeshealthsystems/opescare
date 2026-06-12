@@ -5,7 +5,6 @@ namespace App\Http\Controllers\MedicalId;
 use App\Http\Controllers\Controller;
 use App\Models\ClinicalAlert;
 use App\Models\DataImportBatch;
-use App\Models\Facility;
 use App\Models\PatientQueueEntry;
 use App\Models\WardBed;
 use App\Models\WardAdmission;
@@ -21,9 +20,9 @@ class AnalyticsDashboardController extends Controller
         private OperationalAnalyticsService $analytics,
     ) {}
 
-    private function demoFacilityId(): string
+    private function facilityId(): ?string
     {
-        return Facility::value('id') ?? '';
+        return session('active_facility_id') ?? auth()->user()?->primary_facility_id ?? null;
     }
 
     private function periodDates(string $period): array
@@ -44,7 +43,7 @@ class AnalyticsDashboardController extends Controller
             ? $request->input('period')
             : '30d';
 
-        $facilityId = $this->demoFacilityId();
+        $facilityId = $this->facilityId();
         $snapshot   = $this->analytics->dashboardSnapshot($facilityId, $period);
 
         return view('portals.staff.analytics.index', compact('snapshot', 'period'));
@@ -55,23 +54,23 @@ class AnalyticsDashboardController extends Controller
     public function queue(Request $request): View
     {
         $period     = in_array($request->input('period'), ['7d', '30d', '90d', '1y']) ? $request->input('period') : '30d';
-        $facilityId = $this->demoFacilityId();
+        $facilityId = $this->facilityId();
         [$from, $to] = $this->periodDates($period);
 
         $totalQueued = DB::table('patient_queue_entries')
-            ->where('facility_id', $facilityId)
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereBetween('created_at', [$from, $to])
             ->count();
 
         $avgWaitMin = DB::table('patient_queue_entries')
-            ->where('facility_id', $facilityId)
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereNotNull('called_at')
             ->whereBetween('created_at', [$from, $to])
             ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, created_at, called_at)) as avg_wait')
             ->value('avg_wait');
 
         $byStatus = DB::table('patient_queue_entries')
-            ->where('facility_id', $facilityId)
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereBetween('created_at', [$from, $to])
             ->selectRaw('status, COUNT(*) as cnt')
             ->groupBy('status')
@@ -79,7 +78,7 @@ class AnalyticsDashboardController extends Controller
             ->toArray();
 
         $byPriority = DB::table('patient_queue_entries')
-            ->where('facility_id', $facilityId)
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereBetween('created_at', [$from, $to])
             ->selectRaw('priority, COUNT(*) as cnt')
             ->groupBy('priority')
@@ -88,7 +87,7 @@ class AnalyticsDashboardController extends Controller
             ->toArray();
 
         $dailyTrend = DB::table('patient_queue_entries')
-            ->where('facility_id', $facilityId)
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereBetween('created_at', [$from, $to])
             ->selectRaw('DATE(created_at) as day, COUNT(*) as total')
             ->groupBy('day')
@@ -106,26 +105,26 @@ class AnalyticsDashboardController extends Controller
     public function ward(Request $request): View
     {
         $period     = in_array($request->input('period'), ['7d', '30d', '90d', '1y']) ? $request->input('period') : '30d';
-        $facilityId = $this->demoFacilityId();
+        $facilityId = $this->facilityId();
         [$from, $to] = $this->periodDates($period);
 
-        $totalBeds      = DB::table('ward_beds')->where('facility_id', $facilityId)->count();
-        $occupiedBeds   = DB::table('ward_beds')->where('facility_id', $facilityId)->where('status', 'occupied')->count();
+        $totalBeds      = DB::table('ward_beds')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->count();
+        $occupiedBeds   = DB::table('ward_beds')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->where('status', 'occupied')->count();
         $occupancyRate  = $totalBeds > 0 ? round($occupiedBeds / $totalBeds * 100, 1) : 0;
 
         $admissions = DB::table('ward_admissions')
-            ->where('facility_id', $facilityId)
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereBetween('admitted_at', [$from, $to])
             ->count();
 
         $discharges = DB::table('ward_admissions')
-            ->where('facility_id', $facilityId)
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereNotNull('discharged_at')
             ->whereBetween('discharged_at', [$from, $to])
             ->count();
 
         $avgLosHours = DB::table('ward_admissions')
-            ->where('facility_id', $facilityId)
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereNotNull('discharged_at')
             ->whereBetween('admitted_at', [$from, $to])
             ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, admitted_at, discharged_at)) as avg_los')
@@ -133,7 +132,7 @@ class AnalyticsDashboardController extends Controller
 
         $byWard = DB::table('ward_beds')
             ->join('wards', 'wards.id', '=', 'ward_beds.ward_id')
-            ->where('ward_beds.facility_id', $facilityId)
+            ->when($facilityId, fn ($q) => $q->where('ward_beds.facility_id', $facilityId))
             ->selectRaw('wards.name as ward_name, COUNT(*) as total_beds,
                 SUM(CASE WHEN ward_beds.status = "occupied" THEN 1 ELSE 0 END) as occupied')
             ->groupBy('wards.id', 'wards.name')
@@ -151,14 +150,14 @@ class AnalyticsDashboardController extends Controller
     public function financial(Request $request): View
     {
         $period     = in_array($request->input('period'), ['7d', '30d', '90d', '1y']) ? $request->input('period') : '30d';
-        $facilityId = $this->demoFacilityId();
+        $facilityId = $this->facilityId();
         [$from, $to] = $this->periodDates($period);
 
         $revenue   = $this->analytics->revenueSummary($facilityId, $from, $to);
         $revTrend  = $this->analytics->revenueTrend($facilityId, $from, $to);
 
         $byPaymentMode = DB::table('invoices')
-            ->where('facility_id', $facilityId)
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->where('status', 'paid')
             ->whereBetween('paid_at', [$from, $to])
             ->selectRaw('payment_mode, SUM(total_amount) as total, COUNT(*) as cnt')
@@ -167,18 +166,18 @@ class AnalyticsDashboardController extends Controller
             ->toArray();
 
         $outstandingAmount = DB::table('invoices')
-            ->where('facility_id', $facilityId)
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereIn('status', ['pending', 'partial'])
             ->sum('balance_due');
 
         $outstandingCount = DB::table('invoices')
-            ->where('facility_id', $facilityId)
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereIn('status', ['pending', 'partial'])
             ->count();
 
         $topServices = DB::table('invoice_items')
             ->join('invoices', 'invoices.id', '=', 'invoice_items.invoice_id')
-            ->where('invoices.facility_id', $facilityId)
+            ->when($facilityId, fn ($q) => $q->where('invoices.facility_id', $facilityId))
             ->whereBetween('invoices.created_at', [$from, $to])
             ->selectRaw('invoice_items.description, SUM(invoice_items.unit_price * invoice_items.quantity) as revenue, COUNT(*) as cnt')
             ->groupBy('invoice_items.description')
@@ -197,19 +196,19 @@ class AnalyticsDashboardController extends Controller
 
     public function dataQuality(Request $request): View
     {
-        $facilityId = $this->demoFacilityId();
+        $facilityId = $this->facilityId();
 
         // Patient record completeness
-        $totalPatients    = DB::table('patients')->where('facility_id', $facilityId)->count();
-        $withPhone        = DB::table('patients')->where('facility_id', $facilityId)->whereNotNull('phone')->count();
-        $withAddress      = DB::table('patients')->where('facility_id', $facilityId)->whereNotNull('address')->count();
-        $withDob          = DB::table('patients')->where('facility_id', $facilityId)->whereNotNull('date_of_birth')->count();
-        $withNhis         = DB::table('patients')->where('facility_id', $facilityId)->whereNotNull('nhis_number')->count();
-        $withNextOfKin    = DB::table('patients')->where('facility_id', $facilityId)->whereNotNull('next_of_kin_name')->count();
+        $totalPatients    = DB::table('patients')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->count();
+        $withPhone        = DB::table('patients')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->whereNotNull('phone')->count();
+        $withAddress      = DB::table('patients')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->whereNotNull('address')->count();
+        $withDob          = DB::table('patients')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->whereNotNull('date_of_birth')->count();
+        $withNhis         = DB::table('patients')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->whereNotNull('nhis_number')->count();
+        $withNextOfKin    = DB::table('patients')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->whereNotNull('next_of_kin_name')->count();
 
         // Import history
         $importStats = DB::table('data_import_batches')
-            ->where('facility_id', $facilityId)
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->selectRaw('status, COUNT(*) as cnt, SUM(total_records) as records')
             ->groupBy('status')
             ->get()
@@ -217,7 +216,7 @@ class AnalyticsDashboardController extends Controller
             ->toArray();
 
         $recentImports = DB::table('data_import_batches')
-            ->where('facility_id', $facilityId)
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get()

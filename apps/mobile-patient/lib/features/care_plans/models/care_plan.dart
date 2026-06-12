@@ -41,12 +41,18 @@ class CarePlan {
     required this.interventions,
     this.startedAt,
     this.progressPct,
+    this.providerName,
+    this.nextCheckIn,
   });
   final String id, title, status;
   final String? startedAt;
+  final String? providerName;
+  final String? nextCheckIn;
   final List<CarePlanGoal> goals;
   final List<CarePlanIntervention> interventions;
   final int? progressPct;
+
+  bool get isActive => status == 'active';
 
   factory CarePlan.fromJson(Map<String, dynamic> json) {
     final planJson = json.containsKey('plan')
@@ -58,10 +64,14 @@ class CarePlan {
         planJson['interventions'] as List? ?? [];
 
     return CarePlan(
-      id:            planJson['id']?.toString()        ?? '',
-      title:         planJson['title']?.toString()     ?? 'Care Plan',
-      status:        planJson['status']?.toString()    ?? 'active',
+      id:            planJson['id']?.toString()           ?? '',
+      title:         planJson['title']?.toString()        ?? 'Care Plan',
+      status:        planJson['status']?.toString()       ?? 'active',
       startedAt:     planJson['started_at']?.toString(),
+      providerName:  planJson['provider_name']?.toString() ??
+                     (planJson['provider'] as Map?)?['name']?.toString(),
+      nextCheckIn:   planJson['next_check_in']?.toString() ??
+                     json['next_check_in']?.toString(),
       goals:         goalsList
           .map((g) => CarePlanGoal.fromJson(g as Map<String, dynamic>))
           .toList(),

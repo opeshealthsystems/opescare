@@ -17,6 +17,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Maintenance Mode Bypass
+    |--------------------------------------------------------------------------
+    |
+    | maintenance_bypass_token  — set MAINTENANCE_BYPASS_TOKEN in .env.
+    |   Send as X-Maintenance-Bypass header to skip maintenance enforcement.
+    |   Use for load balancer health checks and admin deployment scripts.
+    |
+    | maintenance_secret        — mirrors APP_MAINTENANCE_SECRET.
+    |   Honours the standard Laravel `php artisan down --secret=<token>`
+    |   cookie so native artisan maintenance and DB-driven windows coexist.
+    |
+    | maintenance_bypass_ips    — comma-separated list of IPs that are never
+    |   blocked by maintenance mode (e.g. office VPN, monitoring servers).
+    |
+    */
+
+    'maintenance_bypass_token' => env('MAINTENANCE_BYPASS_TOKEN'),
+    'maintenance_secret'       => env('APP_MAINTENANCE_SECRET'),
+    'maintenance_bypass_ips'   => env('MAINTENANCE_BYPASS_IPS', ''),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

@@ -1,4 +1,4 @@
-@extends('layouts.public')
+﻿@extends('layouts.public')
 
 @section('title', 'Consent and Patient Rights | OpesCare')
 @section('meta_description', 'Understand how OpesCare puts patients in control of their health information through consent, scoped access, audit logs, and the right to revoke.')
@@ -156,7 +156,7 @@
                     ['icon'=>'shield-off','title'=>'Right to Revoke','desc'=>'Remove previously granted access where policy and regulations allow.'],
                     ['icon'=>'file-check','title'=>'Right to Review','desc'=>'Access your own complete medical timeline and consent history at any time.'],
                     ['icon'=>'file-edit','title'=>'Right to Correct','desc'=>'Request corrections to your identity information if it is inaccurate.'],
-                    ['icon'=>'phone','title'=>'Right to Support','desc'=>'Contact our privacy team at privacy@opesware.com for any data concern.'],
+                    ['icon'=>'phone','title'=>'Right to Support','desc'=>'Contact our privacy team at privacy@opeshealthsystems.com for any data concern.'],
                 ];
                 @endphp
                 @foreach($rights as $right)

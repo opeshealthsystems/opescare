@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'hero' => [
@@ -23,10 +23,10 @@ return [
         'interop'           => 'Interopérabilité',
         'resources'         => 'Ressources',
         'sign_in'           => 'Se connecter',
-        'get_started'       => 'Commencer',
+        'get_started'       => 'Créer mon Health ID',
         // Étiquettes de liens (tiroir mobile + menus déroulants)
         'company'           => 'Entreprise',
-        'about'             => "À propos d'Opesware",
+        'about'             => "À propos d'Opes Health Systems",
         'security_page'     => 'Normes de sécurité',
         'privacy'           => 'Politique de confidentialité',
         'privacy_short'     => 'Confidentialité',
@@ -252,7 +252,7 @@ return [
         'title' => 'Apportez des dossiers patients connectés à votre réseau de soins.',
         'desc' => 'Que vous dirigiez un hôpital, une clinique, une pharmacie, un laboratoire, une assurance ou un programme de santé, OpesCare vous aide à connecter les dossiers médicaux en toute sécurité pour un système coordonné.',
         'cta_primary' => 'Demander une démo de partenariat',
-        'cta_secondary' => 'Parler à Opesware',
+        'cta_secondary' => 'Parler à Opes Health Systems',
         'form' => [
             'title' => 'Demande de Démonstration ou de Partenariat',
             'name' => 'Nom Complet',
@@ -301,19 +301,19 @@ return [
         'title' => 'Commencez à bâtir des dossiers médicaux plus sûrs et connectés avec OpesCare.',
         'subtitle' => 'Donnez aux patients un ID Santé unique. Donnez aux prestataires les bonnes informations au bon moment. Connectez hôpitaux, laboratoires, pharmacies et assureurs sur une plateforme d\'interopérabilité sécurisée.',
         'cta_primary' => 'Demander une démo de partenariat',
-        'cta_secondary' => 'Contacter Opesware',
+        'cta_secondary' => 'Contacter Opes Health Systems',
     ],
     'footer' => [
-        'desc'          => "OpesCare est une plateforme d'identité de santé numérique et d'interopérabilité créée par Opesware.",
+        'desc'          => "OpesCare est une plateforme d'identité de santé numérique et d'interopérabilité créée par Opes Health Systems Sarl.",
         'col_product'   => 'Produit',
         'col_orgs'      => 'Pour les Organisations',
         'col_devs'      => 'Développeurs',
         'col_company'   => 'Entreprise',
-        'copyright'     => '© ' . date('Y') . " OpesCare. Une plateforme d'identité de santé et d'interopérabilité créée par Opesware. Tous droits réservés.",
+        'copyright'     => '© ' . date('Y') . " OpesCare. Une plateforme d'identité de santé et d'interopérabilité créée par Opes Health Systems Sarl. Tous droits réservés.",
         'product_links' => ["ID Santé", 'Chronologie Patient', 'Contrôle du Consentement', "Accès d'Urgence", 'Disponibilité Médicaments', 'Réseau Sanguin'],
         'org_links'     => ['Hôpitaux & Cliniques', 'Laboratoires', 'Pharmacies', 'Assureurs', 'Organisations de Santé Publique'],
         'dev_links'     => ['API Connect', 'SDK Connect', 'Widget Connect', 'Agent de liaison Bridge', 'Webhooks & Alertes'],
-        'company_links' => ["À propos d'Opesware", 'Normes de Sécurité', 'Politique de Confidentialité', "Conditions d'Utilisation", 'Partenariats'],
+        'company_links' => ["À propos d'Opes Health Systems", 'Normes de Sécurité', 'Politique de Confidentialité', "Conditions d'Utilisation", 'Partenariats'],
         // Étiquettes de liens individuels pour les colonnes du pied de page
         'link_how_it_works'  => 'Comment fonctionne OpesCare',
         'link_health_id'     => 'ID Santé',
@@ -333,7 +333,7 @@ return [
         'link_bridge'        => 'Bridge Agent',
         'link_webhooks'      => 'Webhooks & Alertes',
         'link_interop'       => "Vue d'ensemble de l'interopérabilité",
-        'link_about'         => "À propos d'Opesware",
+        'link_about'         => "À propos d'Opes Health Systems",
         'link_security'      => 'Normes de sécurité',
         'link_privacy'       => 'Politique de confidentialité',
         'link_terms'         => "Conditions d'utilisation",

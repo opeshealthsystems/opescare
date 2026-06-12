@@ -26,8 +26,8 @@ class InsurancePolicy {
       id:            json['id']?.toString() ?? '',
       policyNumber:  json['policy_number']?.toString() ?? '',
       status:        json['status']?.toString() ?? 'inactive',
-      startDate:     json['start_date']?.toString() ?? '',
-      endDate:       json['end_date']?.toString(),
+      startDate:     json['effective_date']?.toString() ?? '',
+      endDate:       json['expiry_date']?.toString(),
       planName:      plan?['name']?.toString(),
       providerName:  provider?['name']?.toString() ??
                      plan?['provider_name']?.toString(),

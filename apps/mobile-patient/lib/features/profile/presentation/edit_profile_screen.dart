@@ -113,15 +113,23 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
           Text('SEX', style: AppTextStyles.label),
           const SizedBox(height: 8),
-          ..._sexOptions.map((s) => RadioListTile<String>(
-            value: s,
+          RadioGroup<String>(
             groupValue: _sex,
             onChanged: (v) => setState(() => _sex = v),
-            title: Text(s[0].toUpperCase() + s.substring(1),
-                style: AppTextStyles.body),
-            activeColor: AppColors.primary500,
-            contentPadding: EdgeInsets.zero,
-          )),
+            child: Column(
+              children: _sexOptions.map((s) => RadioListTile<String>(
+                value: s,
+                title: Text(s[0].toUpperCase() + s.substring(1),
+                    style: AppTextStyles.body),
+                fillColor: WidgetStateProperty.resolveWith(
+                  (states) => states.contains(WidgetState.selected)
+                      ? AppColors.primary500
+                      : AppColors.neutral400,
+                ),
+                contentPadding: EdgeInsets.zero,
+              )).toList(),
+            ),
+          ),
           const SizedBox(height: 32),
         ],
       ),

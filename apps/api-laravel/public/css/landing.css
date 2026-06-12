@@ -188,11 +188,10 @@ h4 { font-size: 1.1rem; }
     }
 }
 
-@media (max-width: 640px) {
-    /* Also hide the lang switcher from the header bar on small screens
-       (it appears inside the mobile drawer instead) */
+/* Hide lang switcher from header bar on all mobile breakpoints */
+@media (max-width: 1024px) {
     .header-lang-switcher {
-        display: none;
+        display: none !important;
     }
 }
 
@@ -320,6 +319,9 @@ h4 { font-size: 1.1rem; }
 .section-muted { background-color: #F1F5F9; }
 .section-dark { background-color: #0F172A; color: white; }
 .bg-dark-elite { background-color: #0B0F19 !important; border-top: 1px solid #1E293B; border-bottom: 1px solid #1E293B; }
+/* On dark backgrounds, .text-muted inherits section-dark's white but the class overrides it to a dark slate — fix that */
+.section-dark .text-muted,
+.bg-dark-elite .text-muted { color: rgba(255,255,255,0.6); }
 .mb-12 { margin-bottom: 3.5rem; }
 .mt-8 { margin-top: 2rem; }
 
@@ -1190,4 +1192,336 @@ select.form-control { cursor: pointer; }
     display: inline-block;
     vertical-align: middle;
     flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════════════
+   MOBILE DRAWER CTA BUTTONS
+   ══════════════════════════════════════════════════════ */
+.mobile-drawer-cta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.mobile-drawer-btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    padding: 0.875rem 1.5rem;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    border-radius: 0.625rem;
+}
+
+/* ══════════════════════════════════════════════════════
+   FOOTER — 2-COLUMN GRID ON MOBILE
+   ══════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .footer-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 2rem !important;
+    }
+
+    /* Brand column spans full width on mobile */
+    .footer-logo {
+        grid-column: 1 / -1;
+    }
+
+    .footer {
+        padding: 3rem 0 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    /* On very small screens keep 2 columns but tighten */
+    .footer-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 1.5rem 1rem !important;
+    }
+}
+
+/* ══════════════════════════════════════════════════════
+   COMPREHENSIVE MOBILE RESPONSIVENESS
+   ══════════════════════════════════════════════════════ */
+
+/* ── Container padding on mobile ── */
+@media (max-width: 640px) {
+    .container {
+        padding: 0 1rem;
+    }
+}
+
+/* ── Section spacing ── */
+@media (max-width: 640px) {
+    .section {
+        padding: 3rem 0;
+    }
+
+    h1 { font-size: 2rem; letter-spacing: -0.02em; }
+    h2 { font-size: 1.625rem; letter-spacing: -0.01em; }
+    h3 { font-size: 1.25rem; }
+
+    .section-subtitle {
+        font-size: 1rem;
+    }
+}
+
+/* ── Hero section ── */
+@media (max-width: 1024px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+    }
+
+    .hero-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .hero-trust {
+        justify-items: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .hero {
+        padding: 2.5rem 0;
+    }
+
+    .hero-subtitle {
+        font-size: 1.125rem;
+    }
+
+    .hero-desc {
+        font-size: 1rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .hero-actions .btn {
+        width: 100%;
+        justify-content: center;
+        font-size: 1rem;
+        padding: 0.875rem 1.5rem;
+    }
+
+    .hero-trust {
+        grid-template-columns: 1fr;
+        justify-items: start;
+        text-align: left;
+    }
+
+    /* Hide complex hero visual on very small screens — prevents overflow */
+    .hero-visual {
+        display: none;
+    }
+}
+
+/* ── Trust strip ── */
+@media (max-width: 640px) {
+    .strip-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .strip-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* ── Cards grid ── */
+@media (max-width: 640px) {
+    .grid-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .card {
+        padding: 1.5rem;
+    }
+}
+
+/* ── Stepper / how it works ── */
+@media (max-width: 768px) {
+    .stepper {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+}
+
+/* ── Solution hub visual ── */
+@media (max-width: 768px) {
+    .solution-visual {
+        height: auto;
+        padding: 2rem 0;
+    }
+
+    .hub-container {
+        width: 280px;
+        height: 280px;
+    }
+}
+
+/* ── Roles tabs ── */
+@media (max-width: 640px) {
+    .roles-tab-container {
+        padding: 1.25rem;
+        border-radius: 1rem;
+    }
+
+    .roles-tabs {
+        justify-content: center;
+    }
+
+    .role-tab {
+        padding: 0.6rem 0.875rem;
+        font-size: 0.8125rem;
+    }
+
+    .panel-inner h3 {
+        font-size: 1.375rem;
+    }
+
+    .panel-inner p {
+        font-size: 0.9375rem;
+    }
+}
+
+/* ── Consent simulator & security cards ── */
+@media (max-width: 640px) {
+    .simulator-card {
+        width: 100%;
+        max-width: 380px;
+        margin: 0 auto;
+    }
+
+    .consent-grid-mini {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Availability cards ── */
+@media (max-width: 640px) {
+    .avail-list {
+        grid-template-columns: 1fr;
+    }
+
+    .avail-card {
+        padding: 1.5rem;
+    }
+}
+
+/* ── Partner form ── */
+@media (max-width: 640px) {
+    .partner-form-card {
+        padding: 1.5rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group.full-width {
+        grid-column: span 1;
+    }
+}
+
+/* ── Section header text ── */
+@media (max-width: 640px) {
+    .section-header {
+        margin-bottom: 2rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.625rem;
+    }
+
+    .section-header p {
+        font-size: 0.9375rem;
+    }
+}
+
+/* ── Footer bottom bar ── */
+@media (max-width: 640px) {
+    .footer .container > div:last-child {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .footer .container > div:last-child > div {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+}
+
+/* ── Safety banner ── */
+@media (max-width: 640px) {
+    .safety-banner {
+        padding: 1rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* ── Bilingual section ── */
+@media (max-width: 640px) {
+    .lang-visualizer-box {
+        width: 100%;
+        max-width: 300px;
+        height: 220px;
+    }
+
+    .visual-panel {
+        width: 210px;
+    }
+}
+
+/* ── Badges & small UI ── */
+@media (max-width: 640px) {
+    .badge {
+        font-size: 0.6875rem;
+    }
+
+    .btn-lg {
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+/* ── Prevent any horizontal overflow globally ── */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* ── Mobile-safe image/icon sizes ── */
+@media (max-width: 640px) {
+    .strip-icon {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    .strip-icon svg {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    .strip-text strong {
+        font-size: 0.9375rem;
+    }
 }

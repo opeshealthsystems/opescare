@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
@@ -31,7 +31,7 @@
     <link rel="stylesheet" href="{{ asset('css/public.css') }}">
     
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+    <script src="{{ asset('js/lucide.min.js') }}"></script>
     @yield('head_scripts')
 </head>
 <body>
@@ -100,9 +100,6 @@
                 </div>
 
                 <div class="header-desktop-cta" style="display:flex;align-items:center;gap:1rem;">
-                    <a href="{{ route('login') }}#demo" style="font-size:0.875rem;font-weight:700;color:var(--color-text-secondary);text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem;">
-                        <i data-lucide="play-circle" style="width:1rem;height:1rem;"></i> Demo
-                    </a>
                     <a href="{{ route('login') }}" style="font-size:0.875rem;font-weight:700;color:var(--color-text-secondary);text-decoration:none;">{{ __('auth.login.title') ?: 'Sign In' }}</a>
                     <a href="{{ route('register') }}" class="btn btn-primary">{{ __('landing.nav.get_started', [], app()->getLocale()) ?: 'Get Started' }}</a>
                 </div>
@@ -159,23 +156,15 @@
                     </div>
                     <div class="mobile-nav-group">
                         <span class="mobile-nav-label">{{ __('landing.nav.company', [], app()->getLocale()) ?: 'Company' }}</span>
-                        <a href="{{ route('public.about') }}" class="mobile-nav-link">{{ __('landing.nav.about', [], app()->getLocale()) ?: 'About Opesware' }}</a>
+                        <a href="{{ route('public.about') }}" class="mobile-nav-link">{{ __('landing.nav.about', [], app()->getLocale()) ?: 'About Opes Health Systems' }}</a>
                         <a href="{{ route('public.security') }}" class="mobile-nav-link">{{ __('landing.nav.security_page', [], app()->getLocale()) ?: 'Security Standards' }}</a>
                         <a href="{{ route('public.privacy') }}" class="mobile-nav-link">{{ __('landing.nav.privacy', [], app()->getLocale()) ?: 'Privacy Policy' }}</a>
                         <a href="{{ route('public.terms') }}" class="mobile-nav-link">{{ __('landing.nav.terms', [], app()->getLocale()) ?: 'Terms of Service' }}</a>
                     </div>
 
-                    <div style="display:flex;gap:1rem;margin:1.5rem 0;">
-                        <a href="{{ route('lang.switch', 'en') }}" style="font-weight:700;font-size:0.8125rem;color:{{ app()->getLocale()=='en' ? 'var(--color-primary)' : 'var(--color-text-secondary)' }};text-decoration:none;">EN</a>
-                        <span style="color:var(--color-border);">|</span>
-                        <a href="{{ route('lang.switch', 'fr') }}" style="font-weight:700;font-size:0.8125rem;color:{{ app()->getLocale()=='fr' ? 'var(--color-primary)' : 'var(--color-text-secondary)' }};text-decoration:none;">FR</a>
-                    </div>
-                    <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:0.5rem;">
-                        <a href="{{ route('login') }}" class="btn btn-secondary" style="text-align:center;width:100%;">{{ __('auth.login.title', [], app()->getLocale()) ?: 'Sign In' }}</a>
-                        <a href="{{ route('register') }}" class="btn btn-primary" style="text-align:center;width:100%;">{{ __('landing.nav.get_started', [], app()->getLocale()) ?: 'Get Started' }}</a>
-                        <a href="{{ route('login') }}#demo" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;font-size:0.875rem;font-weight:600;color:var(--color-text-secondary);text-decoration:none;padding:0.5rem 0;">
-                            <i data-lucide="play-circle" style="width:1rem;height:1rem;"></i> {{ __('landing.nav.demo', [], app()->getLocale()) ?: 'Demo' }}
-                        </a>
+                    <div class="mobile-drawer-cta">
+                        <a href="{{ route('login') }}" class="btn btn-secondary mobile-drawer-btn">{{ __('auth.login.title', [], app()->getLocale()) ?: 'Sign In' }}</a>
+                        <a href="{{ route('register') }}" class="btn btn-primary mobile-drawer-btn">{{ __('landing.nav.get_started', [], app()->getLocale()) ?: 'Create Health ID' }}</a>
                     </div>
                 </nav>
             </div>
@@ -248,7 +237,7 @@
             <div>
                 <h4 style="font-size:0.6875rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-secondary);margin-bottom:1.25rem;">{{ __('landing.footer.col_company', [], app()->getLocale()) }}</h4>
                 <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.625rem;">
-                    <li><a href="{{ route('public.about') }}" class="footer-link">{{ __('landing.footer.link_about', [], app()->getLocale()) ?: 'About Opesware' }}</a></li>
+                    <li><a href="{{ route('public.about') }}" class="footer-link">{{ __('landing.footer.link_about', [], app()->getLocale()) ?: 'About Opes Health Systems' }}</a></li>
                     <li><a href="{{ route('public.security') }}" class="footer-link">{{ __('landing.footer.link_security', [], app()->getLocale()) ?: 'Security Standards' }}</a></li>
                     <li><a href="{{ route('public.privacy') }}" class="footer-link">{{ __('landing.footer.link_privacy', [], app()->getLocale()) ?: 'Privacy Policy' }}</a></li>
                     <li><a href="{{ route('public.terms') }}" class="footer-link">{{ __('landing.footer.link_terms', [], app()->getLocale()) ?: 'Terms of Service' }}</a></li>

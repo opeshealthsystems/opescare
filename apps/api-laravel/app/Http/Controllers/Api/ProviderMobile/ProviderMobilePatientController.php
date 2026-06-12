@@ -36,6 +36,9 @@ class ProviderMobilePatientController extends Controller
 
         $healthId = trim($request->query('health_id'));
 
+        $facilityId = $request->attributes->get('facility_id');
+        $hasGlobal  = $request->attributes->get('permission_global_resolve', false);
+
         $patient = Patient::where('health_id', $healthId)->first();
 
         if (!$patient) {
@@ -43,6 +46,13 @@ class ProviderMobilePatientController extends Controller
                 'found'   => false,
                 'message' => 'No patient found with Health ID: ' . $healthId,
             ], 404);
+        }
+
+        if (!$hasGlobal && $facilityId && $patient->facility_id !== $facilityId) {
+            return response()->json([
+                'error'   => 'PATIENT_NOT_IN_FACILITY',
+                'message' => 'Patient is not registered at your facility.',
+            ], 403);
         }
 
         return response()->json([

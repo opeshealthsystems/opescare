@@ -1,4 +1,4 @@
-@extends('layouts.docs')
+﻿@extends('layouts.docs')
 @section('title', 'Interactive Playground')
 
 @section('head')
@@ -52,6 +52,6 @@
         }'
     ></redoc>
 
-    <script src="https://cdn.jsdelivr.net/npm/redoc@2.1.3/bundles/redoc.standalone.js"></script>
+    <script src="{{ asset('js/redoc.standalone.js') }}"></script>
 </div>
 @endsection

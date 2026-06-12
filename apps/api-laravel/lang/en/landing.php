@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'hero' => [
@@ -23,10 +23,10 @@ return [
         'interop'           => 'Interoperability',
         'resources'         => 'Resources',
         'sign_in'           => 'Sign In',
-        'get_started'       => 'Get Started',
+        'get_started'       => 'Create Health ID',
         // Link-level nav labels (mobile drawer + dropdown items)
         'company'           => 'Company',
-        'about'             => 'About Opesware',
+        'about'             => 'About Opes Health Systems',
         'security_page'     => 'Security Standards',
         'privacy'           => 'Privacy Policy',
         'privacy_short'     => 'Privacy',
@@ -252,7 +252,7 @@ return [
         'title' => 'Bring connected patient records to your healthcare network.',
         'desc' => 'Whether you run a hospital, clinic, pharmacy, lab, insurer, or health program, OpesCare can help you connect patient records safely and prepare for a more coordinated healthcare system.',
         'cta_primary' => 'Request Partnership Demo',
-        'cta_secondary' => 'Talk to Opesware',
+        'cta_secondary' => 'Talk to Opes Health Systems',
         'form' => [
             'title' => 'Request a Demo or Partnership Inquiry',
             'name' => 'Full Name',
@@ -301,19 +301,19 @@ return [
         'title' => 'Start building safer, connected healthcare records with OpesCare.',
         'subtitle' => 'Give patients one Health ID. Give providers the right information at the right time. Connect hospitals, labs, pharmacies, insurers, and approved health systems through a secure interoperability platform.',
         'cta_primary' => 'Request Partnership Demo',
-        'cta_secondary' => 'Contact Opesware',
+        'cta_secondary' => 'Contact Opes Health Systems',
     ],
     'footer' => [
-        'desc'          => 'OpesCare is a digital Health ID and healthcare interoperability platform by Opesware.',
+        'desc'          => 'OpesCare is a digital Health ID and healthcare interoperability platform by Opes Health Systems Sarl.',
         'col_product'   => 'Product',
         'col_orgs'      => 'For Organizations',
         'col_devs'      => 'Developers',
         'col_company'   => 'Company',
-        'copyright'     => '© ' . date('Y') . ' OpesCare. A digital Health ID and healthcare interoperability platform by Opesware. All rights reserved.',
+        'copyright'     => '© ' . date('Y') . ' OpesCare. A digital Health ID and healthcare interoperability platform by Opes Health Systems Sarl. All rights reserved.',
         'product_links' => ['Health ID', 'Patient Timeline', 'Consent Control', 'Emergency Access', 'Medication Availability', 'Blood Network'],
         'org_links'     => ['Hospitals & Clinics', 'Laboratories', 'Pharmacies', 'Insurers', 'Public Health Organizations'],
         'dev_links'     => ['Connect API', 'Connect SDK', 'Connect Widget', 'Bridge Agent', 'Webhooks & Alerts'],
-        'company_links' => ['About Opesware', 'Security Standards', 'Privacy Policy', 'Terms of Service', 'Partnerships'],
+        'company_links' => ['About Opes Health Systems', 'Security Standards', 'Privacy Policy', 'Terms of Service', 'Partnerships'],
         // Individual link labels used in footer columns and bottom bar
         'link_how_it_works'  => 'How OpesCare Works',
         'link_health_id'     => 'Health ID',
@@ -333,7 +333,7 @@ return [
         'link_bridge'        => 'Bridge Agent',
         'link_webhooks'      => 'Webhooks & Alerts',
         'link_interop'       => 'Interoperability Overview',
-        'link_about'         => 'About Opesware',
+        'link_about'         => 'About Opes Health Systems',
         'link_security'      => 'Security Standards',
         'link_privacy'       => 'Privacy Policy',
         'link_terms'         => 'Terms of Service',

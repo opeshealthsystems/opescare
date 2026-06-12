@@ -1,0 +1,2124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpesCare Patient — Design Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  /* Portal-matched Clinical Blue */
+  --primary:        #1565C0;
+  --primary-50:     #EFF6FF;
+  --primary-100:    #DBEAFE;
+  --primary-200:    #BFDBFE;
+  --primary-300:    #93C5FD;
+  --primary-400:    #60A5FA;
+  --primary-600:    #1044A0;
+  --primary-700:    #0D3A7D;
+  --primary-800:    #0A2B5C;
+  --primary-900:    #071B3B;
+  --grad-start:     #1565C0;
+  --grad-end:       #1044A0;
+
+  --success:        #10B981;
+  --success-bg:     #D1FAE5;
+  --success-dark:   #059669;
+  --warning:        #F59E0B;
+  --warning-bg:     #FEF3C7;
+  --danger:         #EF4444;
+  --danger-bg:      #FEE2E2;
+  --info:           #3B82F6;
+  --info-bg:        #EFF6FF;
+
+  --bg:             #F3F4F6;
+  --surface:        #FFFFFF;
+  --surface-muted:  #F9FAFB;
+  --divider:        #E5E7EB;
+  --text:           #111827;
+  --text-2:         #6B7280;
+  --text-3:         #9CA3AF;
+
+  --f-body:   'Plus Jakarta Sans', system-ui, sans-serif;
+  --f-mono:   'Geist Mono', 'Courier New', monospace;
+
+  --r-sm:   6px;
+  --r-md:   10px;
+  --r-lg:   14px;
+  --r-xl:   20px;
+  --r-card: 16px;
+  --r-full: 9999px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.05);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.14),0 4px 8px rgba(0,0,0,.07);
+  --shadow-blue: 0 8px 32px rgba(21,101,192,.35),0 2px 8px rgba(21,101,192,.2);
+}
+
+[data-dark] {
+  --bg:           #0F1117;
+  --surface:      #1A1D27;
+  --surface-muted:#222636;
+  --divider:      #2A2D3A;
+  --text:         #F1F5F9;
+  --text-2:       #94A3B8;
+  --text-3:       #64748B;
+  --primary-50:   #0D1B36;
+  --primary-100:  #1E3A6E;
+  --shadow-blue: 0 8px 32px rgba(21,101,192,.5),0 2px 8px rgba(21,101,192,.3);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--f-body);background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s;}
+
+/* ── Page shell ─── */
+.topbar{background:var(--surface);border-bottom:1px solid var(--divider);height:56px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-sm);}
+.topbar-logo{display:flex;align-items:center;gap:10px;}
+.topbar-wordmark{font-weight:800;font-size:17px;color:var(--primary);letter-spacing:-.03em;}
+.topbar-wordmark span{color:var(--text-2);font-weight:400;}
+.topbar-tag{background:var(--primary-50);color:var(--primary);font-size:11px;font-weight:600;padding:2px 8px;border-radius:var(--r-full);letter-spacing:.05em;border:1px solid var(--primary-100);}
+.btn-toggle{background:var(--surface-muted);border:1px solid var(--divider);border-radius:var(--r-full);padding:6px 16px;font-family:var(--f-body);font-size:12px;font-weight:600;color:var(--text-2);cursor:pointer;letter-spacing:.03em;}
+.btn-toggle:hover{background:var(--primary-50);color:var(--primary);border-color:var(--primary-200);}
+
+/* ── Sections ─── */
+.section{padding:72px 0 60px;border-bottom:1px solid var(--divider);}
+.section:last-child{border-bottom:none;}
+.wrap{max-width:1240px;margin:0 auto;padding:0 40px;}
+.section-eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--primary);margin-bottom:10px;}
+.section-title{font-size:32px;font-weight:800;color:var(--text);margin-bottom:8px;letter-spacing:-.02em;line-height:1.15;}
+.section-desc{font-size:16px;color:var(--text-2);margin-bottom:48px;max-width:520px;line-height:1.6;}
+
+/* ── Phone frame ─── */
+.phones{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;align-items:flex-start;}
+.phone{background:var(--surface);width:340px;border-radius:40px;box-shadow:var(--shadow-lg);border:1px solid var(--divider);overflow:hidden;flex-shrink:0;}
+.phone-notch{background:var(--surface);height:46px;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-bottom:1px solid var(--divider);}
+.phone-time{font-family:var(--f-mono);font-size:13px;font-weight:600;color:var(--text);}
+.phone-status{font-size:11px;color:var(--text-3);display:flex;gap:6px;align-items:center;}
+.phone-appbar{background:var(--surface);padding:14px 16px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--divider);}
+.phone-appbar-title{font-size:17px;font-weight:700;color:var(--text);}
+.phone-appbar-icon{width:36px;height:36px;border-radius:var(--r-md);background:var(--primary-50);display:flex;align-items:center;justify-content:center;}
+.phone-scroll{overflow:hidden;}
+
+/* ── Health ID Card ─── */
+.hid-card{margin:16px;border-radius:20px;background:linear-gradient(135deg,var(--grad-start),var(--grad-end));padding:20px;box-shadow:var(--shadow-blue);position:relative;overflow:hidden;}
+.hid-card::before{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.05);top:-60px;right:-60px;}
+.hid-card::after{content:'';position:absolute;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.04);bottom:-50px;left:-30px;}
+.hid-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;}
+.hid-brand{display:flex;align-items:center;gap:8px;}
+.hid-brand-icon{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;}
+.hid-brand-name{font-size:13px;font-weight:700;color:#fff;letter-spacing:-.01em;}
+.hid-verified{display:flex;align-items:center;gap:5px;background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.4);border-radius:var(--r-full);padding:3px 10px;}
+.hid-verified-dot{width:6px;height:6px;background:#34D399;border-radius:50%;}
+.hid-verified-text{font-size:10px;font-weight:700;color:#6EE7B7;letter-spacing:.06em;}
+.hid-main{display:flex;gap:16px;align-items:flex-start;}
+.hid-info{flex:1;}
+.hid-name-label{font-size:9px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;}
+.hid-name{font-size:18px;font-weight:800;color:#fff;letter-spacing:-.01em;line-height:1.1;margin-bottom:12px;}
+.hid-id-label{font-size:9px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;}
+.hid-id{font-family:var(--f-mono);font-size:15px;font-weight:700;color:#fff;letter-spacing:.12em;margin-bottom:14px;}
+.hid-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.hid-meta-item{}
+.hid-meta-label{font-size:9px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;}
+.hid-meta-value{font-size:12px;font-weight:700;color:rgba(255,255,255,.95);}
+.hid-qr{background:#fff;border-radius:12px;padding:10px;flex-shrink:0;width:88px;height:88px;display:flex;align-items:center;justify-content:center;}
+.hid-qr-img{width:68px;height:68px;}
+
+/* ── Quick actions ─── */
+.quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 16px;}
+.quick-btn{background:var(--surface);border:1px solid var(--divider);border-radius:var(--r-lg);padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;}
+.quick-btn:hover{background:var(--primary-50);border-color:var(--primary-200);}
+.quick-btn-icon{width:38px;height:38px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;}
+.quick-btn-label{font-size:10px;font-weight:600;color:var(--text-2);text-align:center;line-height:1.2;}
+
+/* ── Temp QR button ─── */
+.gen-qr-btn{margin:4px 16px 16px;background:linear-gradient(135deg,var(--primary),var(--primary-600));border-radius:var(--r-lg);padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+.gen-qr-btn-icon{width:40px;height:40px;background:rgba(255,255,255,.18);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.gen-qr-btn-text{flex:1;}
+.gen-qr-btn-title{font-size:14px;font-weight:700;color:#fff;line-height:1.2;}
+.gen-qr-btn-sub{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px;}
+.gen-qr-btn-arrow{color:rgba(255,255,255,.6);font-size:18px;}
+
+/* ── List rows ─── */
+.phone-section-header{padding:14px 16px 8px;display:flex;align-items:center;justify-content:space-between;}
+.phone-section-title{font-size:13px;font-weight:700;color:var(--text);}
+.phone-section-see-all{font-size:12px;font-weight:600;color:var(--primary);}
+.list-row{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--divider);}
+.list-row:last-child{border-bottom:none;}
+.list-icon-wrap{width:40px;height:40px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.list-title{font-size:14px;font-weight:600;color:var(--text);line-height:1.2;}
+.list-sub{font-size:12px;color:var(--text-3);margin-top:2px;}
+.list-right{margin-left:auto;text-align:right;flex-shrink:0;}
+.pill{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:3px 9px;border-radius:var(--r-full);letter-spacing:.04em;}
+.pill-green{background:var(--success-bg);color:var(--success-dark);}
+.pill-amber{background:var(--warning-bg);color:#92400E;}
+.pill-red{background:var(--danger-bg);color:#991B1B;}
+.pill-blue{background:var(--info-bg);color:#1E40AF;}
+.pill-gray{background:var(--divider);color:var(--text-2);}
+
+/* ── Home screen stats ─── */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 16px 0;}
+.stat-card{background:var(--surface);border:1px solid var(--divider);border-radius:var(--r-lg);padding:14px 10px;text-align:center;}
+.stat-num{font-family:var(--f-mono);font-size:24px;font-weight:700;color:var(--primary);display:block;line-height:1;}
+.stat-lbl{font-size:10px;font-weight:600;color:var(--text-3);margin-top:5px;display:block;letter-spacing:.04em;}
+
+/* ── Bottom nav ─── */
+.bottom-nav{display:flex;background:var(--surface);border-top:1px solid var(--divider);padding:10px 0 16px;}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
+.bnav-icon{width:24px;height:24px;display:flex;align-items:center;justify-content:center;}
+.bnav-label{font-size:10px;font-weight:600;color:var(--text-3);letter-spacing:.03em;}
+.bnav-item.active .bnav-label{color:var(--primary);}
+.bnav-dot{width:4px;height:4px;border-radius:50%;background:var(--primary);margin:0 auto;display:none;}
+.bnav-item.active .bnav-dot{display:block;}
+
+/* ── Color swatches ─── */
+.swatch-grid{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:40px;}
+.swatch{border-radius:var(--r-lg);overflow:hidden;min-width:110px;box-shadow:var(--shadow-sm);}
+.swatch-block{height:72px;}
+.swatch-foot{padding:10px 12px;background:var(--surface);border:1px solid var(--divider);border-top:none;}
+.swatch-name{font-size:12px;font-weight:700;color:var(--text);}
+.swatch-hex{font-family:var(--f-mono);font-size:11px;color:var(--text-3);}
+
+/* ── Type specimens ─── */
+.type-card{background:var(--surface);border:1px solid var(--divider);border-radius:var(--r-card);padding:28px;margin-bottom:16px;}
+.type-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:12px;}
+.type-sample-display{font-size:42px;font-weight:800;color:var(--text);line-height:1.1;letter-spacing:-.02em;}
+.type-sample-body{font-size:16px;color:var(--text-2);line-height:1.7;}
+.type-sample-mono{font-family:var(--f-mono);font-size:20px;font-weight:600;color:var(--text);letter-spacing:.06em;}
+.type-meta{margin-top:14px;font-size:12px;color:var(--text-3);border-top:1px solid var(--divider);padding-top:12px;}
+
+/* ── Component demos ─── */
+.comp-section-title{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);margin-bottom:16px;}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px;align-items:center;}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--f-body);font-weight:700;font-size:14px;padding:11px 22px;border-radius:var(--r-lg);cursor:pointer;border:none;letter-spacing:.01em;text-decoration:none;transition:all .15s;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-600);}
+.btn-secondary{background:var(--primary-50);color:var(--primary);border:1.5px solid var(--primary-200);}
+.btn-outline{background:transparent;color:var(--text);border:1.5px solid var(--divider);}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary);}
+.btn-ghost{background:var(--surface-muted);color:var(--text-2);}
+.btn-danger{background:var(--danger-bg);color:var(--danger);}
+.input-group{margin-bottom:20px;max-width:340px;}
+.input-label{font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:6px;display:block;letter-spacing:.06em;text-transform:uppercase;}
+.input{width:100%;background:var(--surface);border:1.5px solid var(--divider);border-radius:var(--r-lg);padding:12px 14px;font-family:var(--f-body);font-size:14px;color:var(--text);outline:none;transition:border .15s;}
+.input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(21,101,192,.12);}
+.alert{display:flex;gap:12px;padding:14px 16px;border-radius:var(--r-lg);font-size:14px;margin-bottom:12px;max-width:560px;}
+.alert svg{flex-shrink:0;margin-top:1px;}
+.alert-success{background:var(--success-bg);color:#065F46;}
+.alert-warning{background:var(--warning-bg);color:#92400E;}
+.alert-danger{background:var(--danger-bg);color:#991B1B;}
+.alert-info{background:var(--info-bg);color:#1E40AF;}
+
+/* ── Grid ─── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+@media(max-width:900px){.grid-3,.grid-2{grid-template-columns:1fr;}.phones{flex-direction:column;align-items:center;}}
+@media(max-width:600px){.wrap{padding:0 16px;}.section{padding:48px 0 40px;}}
+
+/* SVG icon helpers */
+svg.icon{display:inline-block;vertical-align:middle;}
+
+/* ── Family member card ─── */
+.fam-card{background:var(--surface);border:1px solid var(--divider);border-radius:var(--r-lg);padding:14px;margin:0 16px 10px;display:flex;align-items:center;gap:12px;}
+.fam-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0;}
+.fam-name{font-size:14px;font-weight:700;color:var(--text);line-height:1.2;}
+.fam-rel{font-size:11px;color:var(--text-3);margin-top:2px;}
+.fam-chips{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
+.chip{font-size:9px;font-weight:700;padding:2px 7px;border-radius:var(--r-full);letter-spacing:.04em;}
+.chip-rx{background:#FEF3C7;color:#92400E;}
+.chip-appt{background:#EFF6FF;color:#1E40AF;}
+.chip-alert{background:#FEE2E2;color:#991B1B;}
+.chip-ok{background:#D1FAE5;color:#065F46;}
+
+/* ── Care map facility card ─── */
+.facility-card{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--divider);}
+.facility-icon-wrap{width:42px;height:42px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.facility-name{font-size:14px;font-weight:600;color:var(--text);}
+.facility-meta{font-size:11px;color:var(--text-3);margin-top:2px;}
+.facility-dist{font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--primary);flex-shrink:0;}
+
+/* ── Care plan card ─── */
+.plan-card{background:var(--surface);border:1px solid var(--divider);border-radius:var(--r-lg);padding:14px;margin:0 16px 10px;}
+.plan-title{font-size:14px;font-weight:700;color:var(--text);}
+.plan-meta{font-size:12px;color:var(--text-3);margin-top:3px;}
+.plan-progress-bar{height:4px;background:var(--divider);border-radius:2px;margin-top:12px;overflow:hidden;}
+.plan-progress-fill{height:100%;background:var(--primary);border-radius:2px;}
+.plan-progress-label{display:flex;justify-content:space-between;margin-top:6px;}
+
+/* ── Invite form ─── */
+.phone-input-group{margin:0 16px 12px;}
+.phone-input-label{font-size:10px;font-weight:700;color:var(--text-2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;display:block;}
+.phone-input{width:100%;background:var(--surface);border:1.5px solid var(--divider);border-radius:var(--r-lg);padding:11px 12px;font-family:var(--f-body);font-size:13px;color:var(--text);box-sizing:border-box;}
+.phone-input:focus-visible{outline:none;border-color:var(--primary);}
+.phone-btn-primary{margin:0 16px 12px;background:linear-gradient(135deg,var(--primary),var(--primary-600));border-radius:var(--r-lg);padding:13px 16px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;}
+.phone-btn-primary span{font-size:14px;font-weight:700;color:#fff;}
+.phone-btn-outline{margin:0 16px 12px;background:var(--surface);border:1.5px solid var(--divider);border-radius:var(--r-lg);padding:13px 16px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;}
+.phone-btn-outline span{font-size:14px;font-weight:600;color:var(--text-2);}
+.filter-chips-row{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;}
+.filter-chip{flex-shrink:0;background:var(--surface);border:1px solid var(--divider);border-radius:var(--r-full);padding:5px 12px;font-size:11px;font-weight:600;color:var(--text-2);cursor:pointer;}
+.filter-chip.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+
+/* ── Auth ─── */
+.auth-logo{display:flex;flex-direction:column;align-items:center;padding:28px 20px 16px;}
+.auth-logo-icon{width:52px;height:52px;background:var(--primary-50);border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.auth-title{font-size:21px;font-weight:800;color:var(--text);letter-spacing:-.02em;text-align:center;}
+.auth-sub{font-size:13px;color:var(--text-2);text-align:center;margin-top:4px;line-height:1.5;}
+.otp-boxes{display:flex;gap:7px;justify-content:center;margin:20px 12px;}
+.otp-box{flex:1;height:52px;border:1.5px solid var(--divider);border-radius:var(--r-lg);display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:20px;font-weight:700;color:var(--text);background:var(--surface);}
+.otp-box.filled{border-color:var(--primary);background:var(--primary-50);color:var(--primary);}
+.otp-box.cursor{border-color:var(--primary);box-shadow:0 0 0 3px rgba(21,101,192,.12);}
+
+/* ── Lab / clinical values ─── */
+.lab-hero{text-align:center;padding:16px 16px 8px;}
+.lab-val{font-family:var(--f-mono);font-size:48px;font-weight:700;line-height:1;}
+.lab-unit-row{font-size:13px;color:var(--text-2);margin-top:4px;}
+.lab-range-track{height:6px;background:var(--divider);border-radius:3px;margin:12px 16px 4px;position:relative;}
+.lab-range-zone{height:100%;border-radius:3px;position:absolute;background:rgba(16,185,129,.22);}
+.lab-range-dot{width:12px;height:12px;border-radius:50%;position:absolute;top:-3px;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.lab-range-labels{display:flex;justify-content:space-between;padding:0 16px 10px;}
+.lab-range-lbl{font-family:var(--f-mono);font-size:9px;color:var(--text-3);font-weight:600;}
+
+/* ── Timeline ─── */
+.tl-item{display:flex;gap:10px;padding:0 16px 16px;}
+.tl-left{display:flex;flex-direction:column;align-items:center;}
+.tl-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.tl-line{width:2px;flex:1;background:var(--divider);min-height:12px;margin:3px 0;}
+.tl-body{flex:1;padding-top:4px;}
+.tl-date{font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.05em;margin-bottom:3px;}
+.tl-title{font-size:13px;font-weight:700;color:var(--text);}
+.tl-meta{font-size:11px;color:var(--text-3);margin-top:2px;}
+
+/* ── Step indicator ─── */
+.step-dots{display:flex;gap:5px;justify-content:center;padding:8px 0 12px;}
+.step-dot{height:5px;border-radius:3px;}
+.step-dot.done{background:var(--primary);width:18px;}
+.step-dot.active{background:var(--primary);width:26px;}
+.step-dot.todo{background:var(--divider);width:8px;}
+
+/* ── Survey ─── */
+.survey-opt{background:var(--surface);border:1.5px solid var(--divider);border-radius:var(--r-lg);padding:11px 13px;margin:0 16px 8px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.survey-opt.sel{border-color:var(--primary);background:var(--primary-50);}
+.s-radio{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--divider);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.survey-opt.sel .s-radio{border-color:var(--primary);background:var(--primary);}
+.s-dot{width:7px;height:7px;border-radius:50%;background:white;}
+
+/* ── Consent ─── */
+.consent-card{margin:0 16px 10px;border-radius:var(--r-lg);border:1px solid var(--divider);background:var(--surface);overflow:hidden;}
+.consent-card.pending{border-color:var(--primary-200);background:var(--primary-50);}
+.consent-actions{display:flex;border-top:1px solid var(--divider);}
+.c-btn{flex:1;padding:10px;text-align:center;font-size:13px;font-weight:700;cursor:pointer;}
+.c-approve{color:var(--primary);}
+.c-deny{color:var(--danger);border-left:1px solid var(--divider);}
+
+/* ── Tab bar ─── */
+.tab-bar{display:flex;border-bottom:1px solid var(--divider);padding:0 16px;overflow-x:auto;}
+.tab-item{padding:10px 12px 8px;border-bottom:2px solid transparent;font-size:12px;font-weight:600;color:var(--text-2);cursor:pointer;margin-bottom:-1px;white-space:nowrap;flex-shrink:0;}
+.tab-item.active{border-color:var(--primary);color:var(--primary);}
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <!-- Heart icon -->
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <span class="topbar-wordmark">OpesCare <span>Patient</span></span>
+    <span class="topbar-tag">DESIGN PREVIEW</span>
+  </div>
+  <button class="btn-toggle" onclick="document.body.toggleAttribute('data-dark')">Toggle Dark</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SECTION 1: SCREEN MOCKUPS                              -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-eyebrow">Screen Mockups</div>
+    <h2 class="section-title">Professional. Clear. Yours.</h2>
+    <p class="section-desc">Three redesigned screens — Health ID with integrated QR, Home dashboard with quick actions, and the patient portal–matched color system throughout.</p>
+
+    <div class="phones">
+
+      <!-- ── Phone 1: Health ID ── -->
+      <div class="phone">
+        <div class="phone-notch">
+          <span class="phone-time">9:41</span>
+          <span class="phone-status">
+            <!-- Signal -->
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="8" width="2.5" height="4" rx="1" fill="#9CA3AF"/><rect x="4" y="5" width="2.5" height="7" rx="1" fill="#9CA3AF"/><rect x="8" y="2" width="2.5" height="10" rx="1" fill="#6B7280"/><rect x="12" y="0" width="2.5" height="12" rx="1" fill="#374151"/></svg>
+            <!-- WiFi -->
+            <svg width="16" height="12" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
+            <!-- Battery -->
+            <svg width="22" height="12" viewBox="0 0 22 12" fill="none"><rect x="0" y="1" width="18" height="10" rx="2" stroke="#6B7280" stroke-width="1.5"/><rect x="1.5" y="2.5" width="13" height="7" rx="1" fill="#374151"/><path d="M19 4.5v3" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+        </div>
+        <div class="phone-appbar">
+          <div class="phone-appbar-title">My Health ID</div>
+          <div style="display:flex;gap:8px;">
+            <div class="phone-appbar-icon">
+              <!-- share-2 -->
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </div>
+            <div class="phone-appbar-icon">
+              <!-- more-vertical -->
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Health ID Card -->
+        <div class="hid-card">
+          <div class="hid-top">
+            <div class="hid-brand">
+              <div class="hid-brand-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </div>
+              <span class="hid-brand-name">OpesCare</span>
+            </div>
+            <div class="hid-verified">
+              <div class="hid-verified-dot"></div>
+              <span class="hid-verified-text">VERIFIED</span>
+            </div>
+          </div>
+          <div class="hid-main">
+            <div class="hid-info">
+              <div class="hid-name-label">Full Name</div>
+              <div class="hid-name">Jean-Pierre<br>Mbarga</div>
+              <div class="hid-id-label">Health ID</div>
+              <div class="hid-id">OPC·2847·9301·CM</div>
+              <div class="hid-meta">
+                <div class="hid-meta-item">
+                  <div class="hid-meta-label">Date of Birth</div>
+                  <div class="hid-meta-value">12 Mar 1988</div>
+                </div>
+                <div class="hid-meta-item">
+                  <div class="hid-meta-label">Blood Group</div>
+                  <div class="hid-meta-value">O Rh+</div>
+                </div>
+                <div class="hid-meta-item">
+                  <div class="hid-meta-label">Sex</div>
+                  <div class="hid-meta-value">Male</div>
+                </div>
+                <div class="hid-meta-item">
+                  <div class="hid-meta-label">Country</div>
+                  <div class="hid-meta-value">Cameroon 🇨🇲</div>
+                </div>
+              </div>
+            </div>
+            <!-- QR Code (SVG pattern) -->
+            <div class="hid-qr">
+              <svg class="hid-qr-img" viewBox="0 0 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Finder patterns -->
+                <rect x="2" y="2" width="20" height="20" rx="2" fill="#1565C0"/>
+                <rect x="5" y="5" width="14" height="14" rx="1" fill="white"/>
+                <rect x="8" y="8" width="8" height="8" rx="1" fill="#1565C0"/>
+                <rect x="46" y="2" width="20" height="20" rx="2" fill="#1565C0"/>
+                <rect x="49" y="5" width="14" height="14" rx="1" fill="white"/>
+                <rect x="52" y="8" width="8" height="8" rx="1" fill="#1565C0"/>
+                <rect x="2" y="46" width="20" height="20" rx="2" fill="#1565C0"/>
+                <rect x="5" y="49" width="14" height="14" rx="1" fill="white"/>
+                <rect x="8" y="52" width="8" height="8" rx="1" fill="#1565C0"/>
+                <!-- Data modules -->
+                <rect x="26" y="2" width="4" height="4" fill="#1565C0"/><rect x="34" y="2" width="4" height="4" fill="#1565C0"/>
+                <rect x="26" y="8" width="4" height="4" fill="#1565C0"/><rect x="32" y="8" width="4" height="4" fill="#1565C0"/><rect x="40" y="8" width="4" height="4" fill="#1565C0"/>
+                <rect x="28" y="14" width="4" height="4" fill="#1565C0"/><rect x="36" y="14" width="4" height="4" fill="#1565C0"/>
+                <rect x="24" y="20" width="4" height="4" fill="#1565C0"/><rect x="30" y="20" width="4" height="4" fill="#1565C0"/><rect x="42" y="20" width="4" height="4" fill="#1565C0"/>
+                <rect x="2" y="26" width="4" height="4" fill="#1565C0"/><rect x="10" y="26" width="4" height="4" fill="#1565C0"/><rect x="24" y="26" width="4" height="4" fill="#1565C0"/><rect x="30" y="26" width="4" height="4" fill="#1565C0"/><rect x="38" y="26" width="4" height="4" fill="#1565C0"/><rect x="46" y="26" width="4" height="4" fill="#1565C0"/><rect x="58" y="26" width="4" height="4" fill="#1565C0"/>
+                <rect x="6" y="32" width="4" height="4" fill="#1565C0"/><rect x="14" y="32" width="4" height="4" fill="#1565C0"/><rect x="24" y="32" width="4" height="4" fill="#1565C0"/><rect x="34" y="32" width="4" height="4" fill="#1565C0"/><rect x="44" y="32" width="4" height="4" fill="#1565C0"/><rect x="54" y="32" width="4" height="4" fill="#1565C0"/><rect x="62" y="32" width="4" height="4" fill="#1565C0"/>
+                <rect x="2" y="38" width="4" height="4" fill="#1565C0"/><rect x="12" y="38" width="4" height="4" fill="#1565C0"/><rect x="22" y="38" width="4" height="4" fill="#1565C0"/><rect x="36" y="38" width="4" height="4" fill="#1565C0"/><rect x="48" y="38" width="4" height="4" fill="#1565C0"/><rect x="60" y="38" width="4" height="4" fill="#1565C0"/>
+                <rect x="26" y="44" width="4" height="4" fill="#1565C0"/><rect x="34" y="44" width="4" height="4" fill="#1565C0"/><rect x="42" y="44" width="4" height="4" fill="#1565C0"/><rect x="58" y="44" width="4" height="4" fill="#1565C0"/>
+                <rect x="28" y="50" width="4" height="4" fill="#1565C0"/><rect x="36" y="50" width="4" height="4" fill="#1565C0"/><rect x="50" y="50" width="4" height="4" fill="#1565C0"/>
+                <rect x="24" y="56" width="4" height="4" fill="#1565C0"/><rect x="32" y="56" width="4" height="4" fill="#1565C0"/><rect x="44" y="56" width="4" height="4" fill="#1565C0"/><rect x="56" y="56" width="4" height="4" fill="#1565C0"/>
+                <rect x="28" y="62" width="4" height="4" fill="#1565C0"/><rect x="40" y="62" width="4" height="4" fill="#1565C0"/><rect x="52" y="62" width="4" height="4" fill="#1565C0"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Generate Temporary QR button -->
+        <div class="gen-qr-btn">
+          <div class="gen-qr-btn-icon">
+            <!-- qr-code icon -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="5" y="5" width="3" height="3" fill="white" stroke="none"/><rect x="16" y="5" width="3" height="3" fill="white" stroke="none"/><rect x="16" y="16" width="3" height="3" fill="white" stroke="none"/><rect x="5" y="16" width="3" height="3" fill="white" stroke="none"/></svg>
+          </div>
+          <div class="gen-qr-btn-text">
+            <div class="gen-qr-btn-title">Generate Temporary QR</div>
+            <div class="gen-qr-btn-sub">Valid for 10 minutes · Scan at reception</div>
+          </div>
+          <!-- chevron-right -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <div class="quick-btn">
+            <div class="quick-btn-icon" style="background:#EFF6FF;">
+              <!-- flask-conical -->
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg>
+            </div>
+            <span class="quick-btn-label">Lab Results</span>
+          </div>
+          <div class="quick-btn">
+            <div class="quick-btn-icon" style="background:#F0FDF4;">
+              <!-- calendar-check-2 -->
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
+            </div>
+            <span class="quick-btn-label">Appointments</span>
+          </div>
+          <div class="quick-btn">
+            <div class="quick-btn-icon" style="background:#FEF3C7;">
+              <!-- pill -->
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg>
+            </div>
+            <span class="quick-btn-label">Prescriptions</span>
+          </div>
+          <div class="quick-btn">
+            <div class="quick-btn-icon" style="background:#FEE2E2;">
+              <!-- shield-check -->
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+            </div>
+            <span class="quick-btn-label">Consent</span>
+          </div>
+        </div>
+
+        <!-- Access Log -->
+        <div class="phone-section-header">
+          <span class="phone-section-title">Recent Access Logs</span>
+          <span class="phone-section-see-all">See all</span>
+        </div>
+        <div class="list-row">
+          <div class="list-icon-wrap" style="background:#EFF6FF;">
+            <!-- hospital icon -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v4m0 0v4m0-4h4m-4 0H8"/><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </div>
+          <div>
+            <div class="list-title">Hôpital Central Yaoundé</div>
+            <div class="list-sub">Viewed CBC results · Today, 10:24</div>
+          </div>
+          <div class="list-right"><span class="pill pill-green">Allowed</span></div>
+        </div>
+        <div class="list-row">
+          <div class="list-icon-wrap" style="background:#F9FAFB;">
+            <!-- user-check -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+          </div>
+          <div>
+            <div class="list-title">Dr. A. Ngouo</div>
+            <div class="list-sub">Accessed profile · Yesterday, 14:07</div>
+          </div>
+          <div class="list-right"><span class="pill pill-green">Allowed</span></div>
+        </div>
+        <div style="height:12px;"></div>
+        <div class="bottom-nav">
+          <div class="bnav-item active">
+            <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+            <span class="bnav-label" style="color:var(--primary);">Home</span>
+            <div class="bnav-dot"></div>
+          </div>
+          <div class="bnav-item">
+            <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="#9CA3AF"/></svg></div>
+            <span class="bnav-label">Health ID</span>
+          </div>
+          <div class="bnav-item">
+            <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+            <span class="bnav-label">Insurance</span>
+          </div>
+          <div class="bnav-item">
+            <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <span class="bnav-label">Profile</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Phone 2: Home Dashboard ── -->
+      <div class="phone">
+        <div class="phone-notch">
+          <span class="phone-time">9:41</span>
+          <span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span>
+        </div>
+        <div class="phone-appbar">
+          <div>
+            <div style="font-size:12px;color:var(--text-3);font-weight:500;">Good morning,</div>
+            <div class="phone-appbar-title">Jean-Pierre 👋</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <div class="phone-appbar-icon">
+              <!-- bell -->
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/><circle cx="18" cy="6" r="4" fill="#EF4444" stroke="none"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compact Health ID banner -->
+        <div style="margin:14px 16px;background:linear-gradient(135deg,var(--grad-start),var(--grad-end));border-radius:var(--r-lg);padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-blue);">
+          <div style="flex:1;">
+            <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;">Health ID</div>
+            <div style="font-family:var(--f-mono);font-size:14px;font-weight:700;color:#fff;letter-spacing:.1em;">OPC·2847·9301·CM</div>
+          </div>
+          <div style="background:rgba(255,255,255,.15);border-radius:10px;padding:8px;display:flex;align-items:center;gap:6px;">
+            <!-- qr-code icon -->
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span style="font-size:12px;font-weight:700;color:#fff;">Scan ID</span>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stat-row">
+          <div class="stat-card"><span class="stat-num">3</span><span class="stat-lbl">Active Rx</span></div>
+          <div class="stat-card"><span class="stat-num">12</span><span class="stat-lbl">Lab Results</span></div>
+          <div class="stat-card"><span class="stat-num">2</span><span class="stat-lbl">Upcoming</span></div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="phone-section-header" style="margin-top:8px;">
+          <span class="phone-section-title">Quick Actions</span>
+        </div>
+        <div class="quick-actions" style="grid-template-columns:repeat(4,1fr);">
+          <div class="quick-btn">
+            <div class="quick-btn-icon" style="background:#EFF6FF;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+            <span class="quick-btn-label">Book Appt</span>
+          </div>
+          <div class="quick-btn">
+            <div class="quick-btn-icon" style="background:#F0FDF4;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/></svg></div>
+            <span class="quick-btn-label">Lab Results</span>
+          </div>
+          <div class="quick-btn">
+            <div class="quick-btn-icon" style="background:#EFF6FF;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+            <span class="quick-btn-label">Insurance</span>
+          </div>
+          <div class="quick-btn">
+            <div class="quick-btn-icon" style="background:#FEF3C7;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+            <span class="quick-btn-label">Documents</span>
+          </div>
+        </div>
+
+        <!-- Upcoming -->
+        <div class="phone-section-header" style="margin-top:4px;">
+          <span class="phone-section-title">Upcoming</span>
+          <span class="phone-section-see-all">See all</span>
+        </div>
+        <div class="list-row">
+          <div class="list-icon-wrap" style="background:#EFF6FF;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div>
+            <div class="list-title">Cardiology Follow-up</div>
+            <div class="list-sub">CHHUY · 18 Jun · 10:30</div>
+          </div>
+          <div class="list-right"><span class="pill pill-blue">Confirmed</span></div>
+        </div>
+        <div class="list-row">
+          <div class="list-icon-wrap" style="background:#FEF3C7;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/></svg>
+          </div>
+          <div>
+            <div class="list-title">CBC Results Ready</div>
+            <div class="list-sub">Hôpital Central · 2 days ago</div>
+          </div>
+          <div class="list-right"><span class="pill pill-amber">Review</span></div>
+        </div>
+
+        <!-- Consent request -->
+        <div style="margin:10px 16px;background:var(--info-bg);border:1px solid #BFDBFE;border-radius:var(--r-lg);padding:12px 14px;display:flex;gap:12px;align-items:flex-start;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round" style="margin-top:2px;flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:700;color:#1E40AF;">Consent Request Pending</div>
+            <div style="font-size:11px;color:#3B82F6;margin-top:2px;">Hôpital Central wants access to your lab results</div>
+          </div>
+          <span style="font-size:12px;font-weight:700;color:#1565C0;flex-shrink:0;cursor:pointer;">Review →</span>
+        </div>
+
+        <div style="height:12px;"></div>
+        <div class="bottom-nav">
+          <div class="bnav-item active">
+            <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+            <span class="bnav-label" style="color:var(--primary);">Home</span>
+            <div class="bnav-dot"></div>
+          </div>
+          <div class="bnav-item"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><span class="bnav-label">Health ID</span></div>
+          <div class="bnav-item"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span class="bnav-label">Insurance</span></div>
+          <div class="bnav-item"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="bnav-label">Profile</span></div>
+        </div>
+      </div>
+
+      <!-- ── Phone 3: Insurance Marketplace ── -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar">
+          <div class="phone-appbar-title">Health Insurance</div>
+          <div style="background:var(--primary-50);border:1px solid var(--primary-200);border-radius:var(--r-full);padding:5px 12px;font-size:12px;font-weight:700;color:var(--primary);cursor:pointer;">Browse Plans</div>
+        </div>
+
+        <!-- My policy banner -->
+        <div style="margin:14px 16px;background:var(--primary-50);border:1.5px solid var(--primary-200);border-radius:var(--r-lg);padding:14px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+            <span style="font-size:13px;font-weight:700;color:var(--primary);">Active Policy</span>
+            <span class="pill pill-green" style="margin-left:auto;">Active</span>
+          </div>
+          <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px;">Activa Gold Santé</div>
+          <div style="font-size:12px;color:var(--text-2);">Activa Assurances Cameroun</div>
+          <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--primary-200);">
+            <div><div style="font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.06em;text-transform:uppercase;">Policy No.</div><div style="font-family:var(--f-mono);font-size:12px;font-weight:700;color:var(--text);">POL-ACT7K2MN9X</div></div>
+            <div><div style="font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.06em;text-transform:uppercase;">Valid Until</div><div style="font-family:var(--f-mono);font-size:12px;font-weight:700;color:var(--text);">31 May 2027</div></div>
+          </div>
+        </div>
+
+        <div class="phone-section-header">
+          <span class="phone-section-title">Available Plans</span>
+          <span style="font-size:11px;color:var(--text-3);">34 plans · 15 insurers</span>
+        </div>
+
+        <!-- Provider -->
+        <div style="padding:10px 16px 6px;border-top:1px solid var(--divider);">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;background:var(--primary-50);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            </div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);">AXA Cameroun</div>
+              <div style="font-size:11px;color:var(--text-3);">3 plans available</div>
+            </div>
+          </div>
+        </div>
+        <!-- Plan card -->
+        <div style="margin:8px 16px;border:1.5px solid var(--divider);border-radius:var(--r-lg);padding:14px;background:var(--surface);">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
+            <div style="font-size:15px;font-weight:700;color:var(--text);">AXA Vital Santé</div>
+            <span style="background:var(--primary-50);color:var(--primary);font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--r-full);">PRIVATE</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-2);margin-bottom:10px;line-height:1.5;">Consultation, hospitalisation, maternité, médicaments.</div>
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <div style="background:var(--primary-50);border-radius:var(--r-md);padding:7px 10px;flex:1;">
+              <div style="font-size:10px;color:var(--text-3);font-weight:600;margin-bottom:2px;">Monthly</div>
+              <div style="font-family:var(--f-mono);font-size:15px;font-weight:700;color:var(--primary);">XAF 14,000</div>
+            </div>
+            <div style="background:var(--surface-muted);border:1px solid var(--divider);border-radius:var(--r-md);padding:7px 10px;flex:1;">
+              <div style="font-size:10px;color:var(--text-3);font-weight:600;margin-bottom:2px;">Annual</div>
+              <div style="font-family:var(--f-mono);font-size:15px;font-weight:700;color:var(--text-2);">XAF 154,000</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;font-size:11px;color:var(--text-3);margin-bottom:12px;">
+            <span style="color:var(--success);font-weight:700;">✓ Cashless</span>
+            <span>20% co-pay</span>
+          </div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;border-radius:var(--r-lg);padding:11px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+            Enroll in this Plan
+          </button>
+        </div>
+        <div style="height:12px;"></div>
+        <div class="bottom-nav">
+          <div class="bnav-item"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><span class="bnav-label">Home</span></div>
+          <div class="bnav-item"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><span class="bnav-label">Health ID</span></div>
+          <div class="bnav-item active"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span class="bnav-label" style="color:var(--primary);">Insurance</span><div class="bnav-dot"></div></div>
+          <div class="bnav-item"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="bnav-label">Profile</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SECTION 2: COLORS                                      -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-eyebrow">Color System</div>
+    <h2 class="section-title">Clinical Blue — unchanged from the portal</h2>
+    <p class="section-desc">The exact same palette as the patient portal. Consistent across web and mobile — patients recognise OpesCare instantly on any surface.</p>
+
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch-block" style="background:#1565C0;"></div><div class="swatch-foot"><div class="swatch-name">Primary</div><div class="swatch-hex">#1565C0</div></div></div>
+      <div class="swatch"><div class="swatch-block" style="background:#1044A0;"></div><div class="swatch-foot"><div class="swatch-name">Primary 600</div><div class="swatch-hex">#1044A0</div></div></div>
+      <div class="swatch"><div class="swatch-block" style="background:#0D3A7D;"></div><div class="swatch-foot"><div class="swatch-name">Primary 700</div><div class="swatch-hex">#0D3A7D</div></div></div>
+      <div class="swatch"><div class="swatch-block" style="background:#EFF6FF;border:1px solid #BFDBFE;"></div><div class="swatch-foot"><div class="swatch-name">Primary 50</div><div class="swatch-hex">#EFF6FF</div></div></div>
+      <div class="swatch"><div class="swatch-block" style="background:#10B981;"></div><div class="swatch-foot"><div class="swatch-name">Success</div><div class="swatch-hex">#10B981</div></div></div>
+      <div class="swatch"><div class="swatch-block" style="background:#F59E0B;"></div><div class="swatch-foot"><div class="swatch-name">Warning</div><div class="swatch-hex">#F59E0B</div></div></div>
+      <div class="swatch"><div class="swatch-block" style="background:#EF4444;"></div><div class="swatch-foot"><div class="swatch-name">Danger</div><div class="swatch-hex">#EF4444</div></div></div>
+      <div class="swatch"><div class="swatch-block" style="background:#F3F4F6;border:1px solid #E5E7EB;"></div><div class="swatch-foot"><div class="swatch-name">Background</div><div class="swatch-hex">#F3F4F6</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SECTION 3: TYPOGRAPHY                                  -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-eyebrow">Typography</div>
+    <h2 class="section-title">Plus Jakarta Sans + Geist Mono</h2>
+    <p class="section-desc">Replacing Inter with Plus Jakarta Sans — same clean geometric feel, more character, better weight range. Geist Mono for all numbers and IDs.</p>
+
+    <div class="type-card">
+      <div class="type-tag">Display — Plus Jakarta Sans 800</div>
+      <div class="type-sample-display" style="font-family:var(--f-body);">My Health, My Records</div>
+      <div class="type-meta">Plus Jakarta Sans · 42px · 800 weight · Screen titles, section heroes · Letter-spacing −0.02em</div>
+    </div>
+    <div class="type-card">
+      <div class="type-tag">Body — Plus Jakarta Sans 400</div>
+      <div class="type-sample-body" style="font-family:var(--f-body);">Your CBC results from Hôpital Central Yaoundé have been reviewed by Dr. Ngouo. Your WBC count is slightly elevated at 13.2 ×10³/µL (reference: 4.0–11.0). This may indicate a mild infection. Please schedule a follow-up if you experience fever, fatigue, or persistent pain.</div>
+      <div class="type-meta">Plus Jakarta Sans · 16px · 400 weight · All body text, descriptions, labels</div>
+    </div>
+    <div class="type-card">
+      <div class="type-tag">Data / Numbers — Geist Mono</div>
+      <div class="type-sample-mono" style="font-family:var(--f-mono);">OPC · 2847 · 9301 · CM</div>
+      <div style="display:flex;gap:40px;flex-wrap:wrap;margin-top:16px;">
+        <div><div style="font-size:11px;color:var(--text-3);margin-bottom:4px;">Lab value — normal</div><div style="font-family:var(--f-mono);font-size:28px;font-weight:700;color:var(--success);">14.8 <span style="font-size:14px;color:var(--text-3);">g/dL</span></div></div>
+        <div><div style="font-size:11px;color:var(--text-3);margin-bottom:4px;">Lab value — high</div><div style="font-family:var(--f-mono);font-size:28px;font-weight:700;color:var(--danger);">13.2 <span style="font-size:14px;color:var(--text-3);">×10³/µL ↑</span></div></div>
+        <div><div style="font-size:11px;color:var(--text-3);margin-bottom:4px;">Monthly premium</div><div style="font-family:var(--f-mono);font-size:28px;font-weight:700;color:var(--primary);">24,000 <span style="font-size:14px;color:var(--text-3);">XAF</span></div></div>
+      </div>
+      <div class="type-meta">Geist Mono · Variable weight · Health IDs, lab values, prices, timestamps, policy numbers</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SECTION 4: COMPONENTS                                  -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-eyebrow">Components</div>
+    <h2 class="section-title">Buttons, inputs, alerts</h2>
+    <p class="section-desc">Consistent components using the Clinical Blue system. The same feel as the portal — professional, clear, accessible.</p>
+
+    <div class="comp-section-title">Buttons</div>
+    <div class="btn-row">
+      <button class="btn btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        Enroll in Plan
+      </button>
+      <button class="btn btn-secondary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Book Appointment
+      </button>
+      <button class="btn btn-outline">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        View Details
+      </button>
+      <button class="btn btn-ghost">Cancel</button>
+      <button class="btn btn-danger">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        Revoke Access
+      </button>
+    </div>
+
+    <div class="comp-section-title">Inputs</div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:32px;">
+      <div class="input-group">
+        <label class="input-label">Health ID</label>
+        <input class="input" value="OPC·2847·9301·CM" style="font-family:var(--f-mono);letter-spacing:.06em;">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Date of Birth</label>
+        <input class="input" type="date" value="1988-03-12">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Blood Group</label>
+        <input class="input" value="O Rh Positive">
+      </div>
+    </div>
+
+    <div class="comp-section-title">Alerts & Status</div>
+    <div class="alert alert-success"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><div><strong>Enrollment submitted.</strong> Your Activa Gold policy is pending activation within 1–2 business days. You will receive a notification when confirmed.</div></div>
+    <div class="alert alert-warning"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><div><strong>WBC count elevated.</strong> Your doctor has been notified. Schedule a follow-up appointment if you experience fever, fatigue, or pain.</div></div>
+    <div class="alert alert-danger"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div><strong>Policy expired.</strong> Your CNAMGS Régime de Base expired on 31 May 2026. Renew your policy to maintain health coverage.</div></div>
+    <div class="alert alert-info"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><div><strong>Consent request pending.</strong> Hôpital Central Yaoundé is requesting access to your CBC panel results. Review and approve or deny.</div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SECTION 5: FAMILY, CARE MAP & CARE PLANS               -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-eyebrow">New Screens</div>
+    <h2 class="section-title">Family, Care Map &amp; Care Plans</h2>
+    <p class="section-desc">Five new screens — manage your family group, invite members, browse your care network, and track active care plans.</p>
+
+    <div class="phones">
+
+      <!-- ── Phone 1: Family Dashboard ── -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar">
+          <div class="phone-appbar-title">My Family</div>
+          <div style="display:flex;gap:8px;">
+            <div class="phone-appbar-icon" style="cursor:pointer;">
+              <!-- user-plus icon -->
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Primary patient (self) -->
+        <div style="margin:14px 16px 0;">
+          <div style="font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Primary Account</div>
+          <div style="background:linear-gradient(135deg,var(--grad-start),var(--grad-end));border-radius:var(--r-lg);padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-blue);">
+            <div style="width:40px;height:40px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0;">J</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;color:#fff;">Jean-Pierre Mbarga</div>
+              <div style="font-family:var(--f-mono);font-size:10px;color:rgba(255,255,255,.65);margin-top:2px;letter-spacing:.08em;">OPC·2847·9301·CM</div>
+            </div>
+            <span class="pill pill-green" style="background:rgba(16,185,129,.2);color:#6EE7B7;border:1px solid rgba(16,185,129,.35);">You</span>
+          </div>
+        </div>
+
+        <!-- Family members -->
+        <div style="margin-top:16px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px 8px;">
+            <span style="font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;">Family Members</span>
+            <span style="font-size:12px;font-weight:600;color:var(--primary);cursor:pointer;">Manage</span>
+          </div>
+
+          <!-- Member 1 -->
+          <div class="fam-card">
+            <div class="fam-avatar" style="background:#FEF3C7;color:#92400E;">M</div>
+            <div style="flex:1;min-width:0;">
+              <div class="fam-name">Marie Mbarga</div>
+              <div class="fam-rel">Spouse · DOB 14 Jun 1990</div>
+              <div class="fam-chips">
+                <span class="chip chip-rx">2 Active Rx</span>
+                <span class="chip chip-appt">Appt 20 Jun</span>
+              </div>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+
+          <!-- Member 2 -->
+          <div class="fam-card">
+            <div class="fam-avatar" style="background:#EFF6FF;color:#1E40AF;">E</div>
+            <div style="flex:1;min-width:0;">
+              <div class="fam-name">Ethan Mbarga</div>
+              <div class="fam-rel">Child · DOB 3 Jan 2015 · Age 11</div>
+              <div class="fam-chips">
+                <span class="chip chip-alert">Vaccination due</span>
+                <span class="chip chip-ok">Labs OK</span>
+              </div>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+
+          <!-- Member 3 — pending invite -->
+          <div class="fam-card" style="opacity:.7;border-style:dashed;">
+            <div class="fam-avatar" style="background:var(--surface-muted);color:var(--text-3);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div class="fam-name">+237 699 ···</div>
+              <div class="fam-rel">Invite pending · sent 2 days ago</div>
+            </div>
+            <span class="pill pill-amber">Pending</span>
+          </div>
+        </div>
+
+        <!-- Add member CTA -->
+        <div style="margin:8px 16px 12px;background:var(--primary-50);border:1.5px dashed var(--primary-200);border-radius:var(--r-lg);padding:13px;display:flex;align-items:center;gap:10px;cursor:pointer;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+          <span style="font-size:13px;font-weight:700;color:var(--primary);">Add or Invite a Family Member</span>
+        </div>
+
+        <div style="height:4px;"></div>
+        <!-- Bottom nav -->
+        <div class="bottom-nav">
+          <div class="bnav-item"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><span class="bnav-label">Home</span><div class="bnav-dot"></div></div>
+          <div class="bnav-item"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><span class="bnav-label">Health ID</span><div class="bnav-dot"></div></div>
+          <div class="bnav-item active"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span class="bnav-label">Family</span><div class="bnav-dot"></div></div>
+          <div class="bnav-item"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="bnav-label">Profile</span><div class="bnav-dot"></div></div>
+        </div>
+      </div>
+
+      <!-- ── Phone 2: Add Family Member ── -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar" style="padding:10px 12px 10px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </div>
+            <div class="phone-appbar-title">Add Family Member</div>
+          </div>
+        </div>
+
+        <div style="padding:0 16px;overflow:hidden;">
+          <!-- Toggle: new vs existing -->
+          <div style="display:flex;background:var(--surface-muted);border-radius:var(--r-lg);padding:4px;margin:14px 0 16px;border:1px solid var(--divider);">
+            <div style="flex:1;background:var(--surface);border-radius:10px;padding:8px;text-align:center;box-shadow:var(--shadow-sm);">
+              <span style="font-size:12px;font-weight:700;color:var(--text);">New Member</span>
+            </div>
+            <div style="flex:1;padding:8px;text-align:center;">
+              <span style="font-size:12px;font-weight:600;color:var(--text-3);">Link Account</span>
+            </div>
+          </div>
+
+          <!-- Form fields -->
+          <div style="margin-bottom:14px;">
+            <div class="phone-input-label">Full Name</div>
+            <input class="phone-input" value="Sophie Mbarga" readonly>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+            <div>
+              <div class="phone-input-label">Date of Birth</div>
+              <input class="phone-input" value="08 Apr 2020" readonly>
+            </div>
+            <div>
+              <div class="phone-input-label">Sex</div>
+              <div class="phone-input" style="display:flex;align-items:center;justify-content:space-between;color:var(--text);">
+                Female
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+            <div>
+              <div class="phone-input-label">Relationship</div>
+              <div class="phone-input" style="display:flex;align-items:center;justify-content:space-between;color:var(--text);">
+                Child
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </div>
+            <div>
+              <div class="phone-input-label">Blood Group</div>
+              <div class="phone-input" style="display:flex;align-items:center;justify-content:space-between;color:var(--text);">
+                A Rh+
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="phone-input-label">Emergency Contact Phone</div>
+            <input class="phone-input" value="+237 699 000 000" readonly>
+          </div>
+
+          <!-- Consent notice -->
+          <div style="background:var(--info-bg);border:1px solid var(--primary-200);border-radius:var(--r-md);padding:10px 12px;display:flex;gap:8px;margin-bottom:16px;align-items:flex-start;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span style="font-size:11px;color:#1E40AF;line-height:1.4;">A Health ID will be generated for this member. You can share access with their providers.</span>
+          </div>
+
+          <!-- CTA -->
+          <div class="phone-btn-primary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+            <span>Add Sophie to Family</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Phone 3: Invite Family Member ── -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar" style="padding:10px 12px 10px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </div>
+            <div class="phone-appbar-title">Invite Family Member</div>
+          </div>
+        </div>
+
+        <!-- Method toggle -->
+        <div style="display:flex;background:var(--surface-muted);border-radius:var(--r-lg);padding:4px;margin:14px 16px 16px;border:1px solid var(--divider);">
+          <div style="flex:1;background:var(--surface);border-radius:10px;padding:8px;text-align:center;box-shadow:var(--shadow-sm);">
+            <span style="font-size:12px;font-weight:700;color:var(--text);">Phone</span>
+          </div>
+          <div style="flex:1;padding:8px;text-align:center;">
+            <span style="font-size:12px;font-weight:600;color:var(--text-3);">Email</span>
+          </div>
+          <div style="flex:1;padding:8px;text-align:center;">
+            <span style="font-size:12px;font-weight:600;color:var(--text-3);">QR Code</span>
+          </div>
+        </div>
+
+        <!-- Phone input -->
+        <div class="phone-input-group">
+          <div class="phone-input-label">Phone Number</div>
+          <div style="display:flex;gap:8px;">
+            <div class="phone-input" style="width:64px;flex-shrink:0;display:flex;align-items:center;gap:4px;justify-content:center;">
+              <span>🇨🇲</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <input class="phone-input" value="+237 699 123 456" readonly style="flex:1;">
+          </div>
+        </div>
+
+        <!-- Relationship -->
+        <div class="phone-input-group">
+          <div class="phone-input-label">Relationship</div>
+          <div class="phone-input" style="display:flex;align-items:center;justify-content:space-between;">
+            Parent
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+
+        <!-- Permission level -->
+        <div style="margin:0 16px 14px;">
+          <div class="phone-input-label">Access Level</div>
+          <div style="display:flex;gap:8px;margin-top:6px;">
+            <div style="flex:1;border:1.5px solid var(--primary);background:var(--primary-50);border-radius:var(--r-md);padding:8px;text-align:center;cursor:pointer;">
+              <div style="font-size:11px;font-weight:700;color:var(--primary);">View Only</div>
+              <div style="font-size:10px;color:var(--primary);opacity:.7;margin-top:2px;">See health data</div>
+            </div>
+            <div style="flex:1;border:1px solid var(--divider);background:var(--surface);border-radius:var(--r-md);padding:8px;text-align:center;cursor:pointer;">
+              <div style="font-size:11px;font-weight:700;color:var(--text-2);">Guardian</div>
+              <div style="font-size:10px;color:var(--text-3);margin-top:2px;">Manage + book</div>
+            </div>
+            <div style="flex:1;border:1px solid var(--divider);background:var(--surface);border-radius:var(--r-md);padding:8px;text-align:center;cursor:pointer;">
+              <div style="font-size:11px;font-weight:700;color:var(--text-2);">Full</div>
+              <div style="font-size:10px;color:var(--text-3);margin-top:2px;">All access</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Send CTA -->
+        <div class="phone-btn-primary" style="margin-bottom:4px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          <span>Send Invite</span>
+        </div>
+
+        <!-- Pending invites -->
+        <div style="padding:12px 16px 6px;border-top:1px solid var(--divider);margin-top:8px;">
+          <span style="font-size:12px;font-weight:700;color:var(--text);">Pending Invites</span>
+        </div>
+        <div class="list-row" style="padding:10px 16px;">
+          <div class="list-icon-wrap" style="background:#FEF3C7;width:36px;height:36px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div>
+            <div class="list-title" style="font-size:13px;">+237 699 ···</div>
+            <div class="list-sub">Sent 2 days ago · Expires in 5 days</div>
+          </div>
+          <div class="list-right"><span class="pill pill-amber">Pending</span></div>
+        </div>
+      </div>
+
+      <!-- ── Phone 4: Care Map ── -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar">
+          <div class="phone-appbar-title">Care Map</div>
+          <div class="phone-appbar-icon" style="cursor:pointer;">
+            <!-- search -->
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+        </div>
+
+        <!-- Map placeholder -->
+        <div style="height:140px;background:linear-gradient(135deg,#EFF6FF 0%,#DBEAFE 100%);position:relative;overflow:hidden;">
+          <!-- Subtle grid lines -->
+          <svg width="100%" height="100%" style="position:absolute;top:0;left:0;opacity:.35;">
+            <defs><pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M 30 0 L 0 0 0 30" fill="none" stroke="#93C5FD" stroke-width="0.5"/></pattern></defs>
+            <rect width="100%" height="100%" fill="url(#grid)"/>
+          </svg>
+          <!-- Roads -->
+          <svg width="100%" height="100%" style="position:absolute;top:0;left:0;">
+            <line x1="0" y1="70" x2="340" y2="70" stroke="#BFDBFE" stroke-width="8"/>
+            <line x1="160" y1="0" x2="160" y2="140" stroke="#BFDBFE" stroke-width="6"/>
+            <line x1="80" y1="0" x2="80" y2="140" stroke="#DBEAFE" stroke-width="3"/>
+            <line x1="240" y1="0" x2="240" y2="140" stroke="#DBEAFE" stroke-width="3"/>
+          </svg>
+          <!-- Facility pins -->
+          <div style="position:absolute;top:32px;left:52px;display:flex;flex-direction:column;align-items:center;">
+            <div style="width:28px;height:28px;background:#1565C0;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(21,101,192,.4);display:flex;align-items:center;justify-content:center;">
+              <div style="transform:rotate(45deg);color:white;font-size:10px;">🏥</div>
+            </div>
+          </div>
+          <div style="position:absolute;top:52px;left:180px;display:flex;flex-direction:column;align-items:center;">
+            <div style="width:24px;height:24px;background:#10B981;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(16,185,129,.4);display:flex;align-items:center;justify-content:center;">
+              <div style="transform:rotate(45deg);color:white;font-size:9px;">💊</div>
+            </div>
+          </div>
+          <div style="position:absolute;top:22px;left:220px;">
+            <div style="width:24px;height:24px;background:#F59E0B;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(245,158,11,.4);display:flex;align-items:center;justify-content:center;">
+              <div style="transform:rotate(45deg);color:white;font-size:9px;">🔬</div>
+            </div>
+          </div>
+          <!-- My location -->
+          <div style="position:absolute;top:60px;left:130px;">
+            <div style="width:16px;height:16px;background:#1565C0;border-radius:50%;border:3px solid white;box-shadow:0 0 0 4px rgba(21,101,192,.2);"></div>
+          </div>
+          <!-- Map attribution -->
+          <div style="position:absolute;bottom:6px;right:8px;font-size:9px;color:var(--text-3);">Yaoundé, CM</div>
+        </div>
+
+        <!-- Filter chips -->
+        <div class="filter-chips-row" style="padding:10px 12px;">
+          <div class="filter-chip active">All</div>
+          <div class="filter-chip">Hospitals</div>
+          <div class="filter-chip">Clinics</div>
+          <div class="filter-chip">Pharmacies</div>
+          <div class="filter-chip">Labs</div>
+          <div class="filter-chip">Emergency</div>
+        </div>
+
+        <!-- Nearby facilities list -->
+        <div style="border-top:1px solid var(--divider);">
+          <!-- Facility 1 -->
+          <div class="facility-card">
+            <div class="facility-icon-wrap" style="background:#EFF6FF;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><path d="M12 6v4m0 0v4m0-4h4m-4 0H8" stroke="#1565C0"/></svg>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div class="facility-name">Hôpital Central Yaoundé</div>
+              <div class="facility-meta">General · Your assigned hospital</div>
+              <div style="display:flex;gap:6px;margin-top:4px;">
+                <span class="chip chip-ok">Connected</span>
+                <span style="font-size:10px;color:var(--text-3);">★ 4.3</span>
+              </div>
+            </div>
+            <div class="facility-dist">1.2 km</div>
+          </div>
+          <!-- Facility 2 -->
+          <div class="facility-card">
+            <div class="facility-icon-wrap" style="background:#F0FDF4;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div class="facility-name">Clinique de l'Espoir</div>
+              <div class="facility-meta">Clinic · Cardiology, Internal Med</div>
+              <div style="margin-top:4px;"><span style="font-size:10px;color:var(--text-3);">★ 4.7 · Open now</span></div>
+            </div>
+            <div class="facility-dist">2.8 km</div>
+          </div>
+          <!-- Facility 3 -->
+          <div class="facility-card">
+            <div class="facility-icon-wrap" style="background:#FEF3C7;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/></svg>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div class="facility-name">Pharmacie du Lac</div>
+              <div class="facility-meta">Pharmacy · 24h open</div>
+              <div style="margin-top:4px;"><span style="font-size:10px;color:var(--success);font-weight:600;">Open · Closes midnight</span></div>
+            </div>
+            <div class="facility-dist">0.6 km</div>
+          </div>
+        </div>
+
+        <div style="height:8px;"></div>
+        <div class="bottom-nav">
+          <div class="bnav-item"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><span class="bnav-label">Home</span><div class="bnav-dot"></div></div>
+          <div class="bnav-item"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><span class="bnav-label">Health ID</span><div class="bnav-dot"></div></div>
+          <div class="bnav-item active"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></div><span class="bnav-label">Care Map</span><div class="bnav-dot"></div></div>
+          <div class="bnav-item"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="bnav-label">Profile</span><div class="bnav-dot"></div></div>
+        </div>
+      </div>
+
+      <!-- ── Phone 5: Care Plans ── -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar">
+          <div class="phone-appbar-title">Care Plans</div>
+          <div class="phone-appbar-icon">
+            <!-- filter icon -->
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+          </div>
+        </div>
+
+        <!-- Status tabs -->
+        <div style="display:flex;border-bottom:1px solid var(--divider);padding:0 16px;">
+          <div style="padding:10px 14px 9px;border-bottom:2px solid var(--primary);margin-bottom:-1px;cursor:pointer;">
+            <span style="font-size:12px;font-weight:700;color:var(--primary);">Active</span>
+            <span style="background:var(--primary);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:999px;margin-left:5px;">2</span>
+          </div>
+          <div style="padding:10px 14px 9px;cursor:pointer;">
+            <span style="font-size:12px;font-weight:600;color:var(--text-3);">Completed</span>
+          </div>
+          <div style="padding:10px 14px 9px;cursor:pointer;">
+            <span style="font-size:12px;font-weight:600;color:var(--text-3);">All</span>
+          </div>
+        </div>
+
+        <!-- Plan cards -->
+        <div style="padding:12px 0;">
+
+          <!-- Plan 1: Hypertension -->
+          <div class="plan-card">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;">
+              <div style="flex:1;min-width:0;">
+                <div class="plan-title">Hypertension Management</div>
+                <div class="plan-meta">Dr. A. Ngouo · Started 1 Mar 2026</div>
+              </div>
+              <span class="pill pill-green" style="flex-shrink:0;margin-left:8px;">Active</span>
+            </div>
+            <!-- Goal pills -->
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;">
+              <span style="background:var(--primary-50);color:var(--primary);font-size:10px;font-weight:600;padding:3px 9px;border-radius:999px;">💊 Daily medication</span>
+              <span style="background:var(--success-bg);color:var(--success-dark);font-size:10px;font-weight:600;padding:3px 9px;border-radius:999px;">🩺 BP check weekly</span>
+              <span style="background:var(--warning-bg);color:#92400E;font-size:10px;font-weight:600;padding:3px 9px;border-radius:999px;">🥗 Low-sodium diet</span>
+            </div>
+            <!-- Progress -->
+            <div class="plan-progress-label">
+              <span style="font-size:10px;color:var(--text-3);">Goals completed</span>
+              <span style="font-size:10px;font-weight:700;color:var(--primary);">4 / 6</span>
+            </div>
+            <div class="plan-progress-bar"><div class="plan-progress-fill" style="width:66%;"></div></div>
+            <!-- Next check-in -->
+            <div style="display:flex;align-items:center;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--divider);">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <span style="font-size:11px;color:var(--text-3);">Next check-in: <strong style="color:var(--text);">18 Jun 2026</strong></span>
+            </div>
+          </div>
+
+          <!-- Plan 2: Diabetes -->
+          <div class="plan-card">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;">
+              <div style="flex:1;min-width:0;">
+                <div class="plan-title">Diabetes Type 2 Control</div>
+                <div class="plan-meta">Dr. M. Fon · Started 10 Jan 2026</div>
+              </div>
+              <span class="pill pill-blue" style="flex-shrink:0;margin-left:8px;">Active</span>
+            </div>
+            <!-- Goal pills -->
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;">
+              <span style="background:var(--primary-50);color:var(--primary);font-size:10px;font-weight:600;padding:3px 9px;border-radius:999px;">💉 Insulin morning</span>
+              <span style="background:#F0FDF4;color:#065F46;font-size:10px;font-weight:600;padding:3px 9px;border-radius:999px;">🏃 30min walk daily</span>
+            </div>
+            <!-- Progress -->
+            <div class="plan-progress-label">
+              <span style="font-size:10px;color:var(--text-3);">Goals completed</span>
+              <span style="font-size:10px;font-weight:700;color:var(--primary);">2 / 5</span>
+            </div>
+            <div class="plan-progress-bar"><div class="plan-progress-fill" style="width:40%;"></div></div>
+            <!-- HbA1c banner -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--divider);">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/></svg>
+                <span style="font-size:11px;color:var(--text-3);">HbA1c: <strong style="color:var(--warning);font-family:var(--f-mono);">7.4%</strong></span>
+              </div>
+              <span style="font-size:11px;font-weight:600;color:var(--primary);cursor:pointer;">View Labs →</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="height:4px;"></div>
+        <div class="bottom-nav">
+          <div class="bnav-item active"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><span class="bnav-label">Home</span><div class="bnav-dot"></div></div>
+          <div class="bnav-item"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><span class="bnav-label">Health ID</span><div class="bnav-dot"></div></div>
+          <div class="bnav-item"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span class="bnav-label">Insurance</span><div class="bnav-dot"></div></div>
+          <div class="bnav-item"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="bnav-label">Profile</span><div class="bnav-dot"></div></div>
+        </div>
+      </div>
+
+    </div><!-- /phones -->
+  </div>
+</section>
+
+<!-- ══ SECTION 6: AUTHENTICATION ══ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-eyebrow">Authentication</div>
+    <h2 class="section-title">Login · OTP · Register</h2>
+    <p class="section-desc">Full auth flow — phone-first login, OTP verification, and new patient onboarding with health profile creation.</p>
+    <div class="phones">
+
+      <!-- Login -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="auth-logo">
+          <div class="auth-logo-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2.2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+          <div style="font-size:20px;font-weight:800;color:var(--primary);letter-spacing:-.02em;">OpesCare</div>
+          <div class="auth-title" style="font-size:18px;margin-top:12px;">Welcome back</div>
+          <div class="auth-sub">Sign in with your phone number or email</div>
+        </div>
+        <div style="padding:0 16px;">
+          <!-- Toggle -->
+          <div style="display:flex;background:var(--surface-muted);border-radius:var(--r-lg);padding:4px;border:1px solid var(--divider);margin-bottom:16px;">
+            <div style="flex:1;background:var(--surface);border-radius:10px;padding:8px;text-align:center;box-shadow:var(--shadow-sm);"><span style="font-size:12px;font-weight:700;color:var(--text);">Phone</span></div>
+            <div style="flex:1;padding:8px;text-align:center;"><span style="font-size:12px;font-weight:600;color:var(--text-3);">Email</span></div>
+          </div>
+          <!-- Phone field -->
+          <div style="margin-bottom:14px;">
+            <div class="input-label">Phone Number</div>
+            <div style="display:flex;gap:8px;">
+              <div class="input" style="width:68px;flex-shrink:0;display:flex;align-items:center;gap:4px;justify-content:center;padding:0 10px;">
+                <span style="font-size:15px;">🇨🇲</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <input class="input" value="+237 699 000 000" style="flex:1;font-size:14px;" readonly>
+            </div>
+          </div>
+          <!-- PIN -->
+          <div style="margin-bottom:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span class="input-label">PIN</span>
+              <span style="font-size:12px;font-weight:600;color:var(--primary);cursor:pointer;">Forgot PIN?</span>
+            </div>
+            <input class="input" type="password" value="••••••" style="font-size:20px;letter-spacing:.4em;" readonly>
+          </div>
+          <div class="phone-btn-primary" style="margin:0 0 14px;border-radius:var(--r-lg);">
+            <span>Sign In</span>
+          </div>
+          <div style="text-align:center;font-size:13px;color:var(--text-2);">New to OpesCare? <span style="color:var(--primary);font-weight:700;cursor:pointer;">Create account →</span></div>
+        </div>
+        <div style="margin:20px 16px 0;padding:12px;background:var(--surface-muted);border-radius:var(--r-lg);text-align:center;">
+          <span style="font-size:10px;color:var(--text-3);">By continuing you agree to our <span style="color:var(--primary);">Terms</span> &amp; <span style="color:var(--primary);">Privacy Policy</span></span>
+        </div>
+      </div>
+
+      <!-- OTP -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div style="padding:10px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--divider);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </div>
+        <div class="auth-logo" style="padding:24px 20px 12px;">
+          <div class="auth-logo-icon" style="background:#D1FAE5;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.99 12 19.79 19.79 0 0 1 1.9 3.32C1.82 2.18 2.76 1 3.9 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 8.74a16 16 0 0 0 5.16 5.16l1.1-1.1a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 15z"/></svg></div>
+          <div class="auth-title">Enter your code</div>
+          <div class="auth-sub">We sent a 6-digit code to<br><strong style="color:var(--text);">+237 699 ·· ·· 00</strong></div>
+        </div>
+        <div class="otp-boxes">
+          <div class="otp-box filled">3</div>
+          <div class="otp-box filled">8</div>
+          <div class="otp-box filled">4</div>
+          <div class="otp-box cursor"></div>
+          <div class="otp-box"></div>
+          <div class="otp-box"></div>
+        </div>
+        <div style="padding:0 16px;">
+          <div class="phone-btn-primary" style="margin:4px 0 14px;border-radius:var(--r-lg);">
+            <span>Verify Code</span>
+          </div>
+          <div style="text-align:center;">
+            <span style="font-size:12px;color:var(--text-3);">Didn't receive it? </span>
+            <span style="font-size:12px;font-weight:700;color:var(--text-3);">Resend in 0:42</span>
+          </div>
+        </div>
+        <div style="margin:16px 16px 0;padding:12px 14px;background:var(--info-bg);border:1px solid var(--primary-200);border-radius:var(--r-lg);display:flex;gap:8px;align-items:center;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span style="font-size:11px;color:#1E40AF;">Your code expires in 10 minutes for security.</span>
+        </div>
+      </div>
+
+      <!-- Register -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div style="padding:10px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--divider);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <span style="font-size:13px;font-weight:700;color:var(--text);">Create Health Profile</span>
+          <span style="font-size:12px;font-weight:600;color:var(--text-3);">1 of 3</span>
+        </div>
+        <!-- Progress -->
+        <div style="display:flex;gap:4px;padding:12px 16px 0;">
+          <div style="height:4px;flex:1;background:var(--primary);border-radius:2px;"></div>
+          <div style="height:4px;flex:1;background:var(--divider);border-radius:2px;"></div>
+          <div style="height:4px;flex:1;background:var(--divider);border-radius:2px;"></div>
+        </div>
+        <div style="padding:14px 16px 10px;font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.06em;text-transform:uppercase;">Personal Information</div>
+        <div style="padding:0 16px;display:flex;flex-direction:column;gap:12px;">
+          <div>
+            <div class="input-label">First Name</div>
+            <input class="input" value="Jean-Pierre" readonly>
+          </div>
+          <div>
+            <div class="input-label">Last Name</div>
+            <input class="input" value="Mbarga" readonly>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div>
+              <div class="input-label">Date of Birth</div>
+              <input class="input" value="12 Mar 1988" readonly>
+            </div>
+            <div>
+              <div class="input-label">Sex</div>
+              <div class="input" style="display:flex;align-items:center;justify-content:space-between;">Male<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div>
+              <div class="input-label">Blood Group</div>
+              <div class="input" style="display:flex;align-items:center;justify-content:space-between;">O Rh+<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+            <div>
+              <div class="input-label">Country</div>
+              <div class="input" style="display:flex;align-items:center;justify-content:space-between;">🇨🇲 CM<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            </div>
+          </div>
+          <div class="phone-btn-primary" style="margin:4px 0 0;border-radius:var(--r-lg);"><span>Continue — Step 2 →</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 7: PROFILE & EDIT ══ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-eyebrow">Profile</div>
+    <h2 class="section-title">View · Edit · Emergency Contacts</h2>
+    <p class="section-desc">Full patient profile with every editable field — name, date of birth, blood group, emergency contact, address, and language preferences.</p>
+    <div class="phones">
+
+      <!-- Profile View -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar">
+          <div class="phone-appbar-title">My Profile</div>
+          <div class="phone-appbar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+        </div>
+        <!-- Header card -->
+        <div style="margin:14px 16px;background:linear-gradient(135deg,var(--grad-start),var(--grad-end));border-radius:16px;padding:18px;box-shadow:var(--shadow-blue);display:flex;gap:14px;align-items:center;">
+          <div style="width:52px;height:52px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;flex-shrink:0;">J</div>
+          <div>
+            <div style="font-size:16px;font-weight:800;color:#fff;">Jean-Pierre Mbarga</div>
+            <div style="font-family:var(--f-mono);font-size:10px;color:rgba(255,255,255,.65);margin-top:2px;letter-spacing:.08em;">OPC·2847·9301·CM</div>
+            <div style="display:flex;gap:6px;margin-top:6px;">
+              <span style="background:rgba(16,185,129,.25);border:1px solid rgba(16,185,129,.4);color:#6EE7B7;font-size:9px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.04em;">✓ VERIFIED</span>
+              <span style="background:rgba(255,255,255,.15);color:#fff;font-size:9px;font-weight:600;padding:2px 8px;border-radius:999px;">Active</span>
+            </div>
+          </div>
+        </div>
+        <!-- Info sections -->
+        <div style="margin:0 16px 8px;background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--divider);overflow:hidden;">
+          <div style="padding:11px 14px;font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.07em;text-transform:uppercase;border-bottom:1px solid var(--divider);">Personal Information</div>
+          <div class="list-row" style="border-bottom:1px solid var(--divider);padding:10px 14px;"><div style="flex:1;"><div class="list-sub">Date of Birth</div><div class="list-title" style="font-size:13px;">12 March 1988</div></div></div>
+          <div class="list-row" style="border-bottom:1px solid var(--divider);padding:10px 14px;"><div style="flex:1;"><div class="list-sub">Sex</div><div class="list-title" style="font-size:13px;">Male</div></div></div>
+          <div class="list-row" style="border-bottom:1px solid var(--divider);padding:10px 14px;"><div style="flex:1;"><div class="list-sub">Blood Group</div><div class="list-title" style="font-size:13px;">O Rh Positive</div></div></div>
+          <div class="list-row" style="padding:10px 14px;"><div style="flex:1;"><div class="list-sub">Phone</div><div class="list-title" style="font-size:13px;">+237 699 000 000</div></div></div>
+        </div>
+        <div style="margin:0 16px;background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--divider);overflow:hidden;">
+          <div style="padding:11px 14px;font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.07em;text-transform:uppercase;border-bottom:1px solid var(--divider);">Emergency Contact</div>
+          <div class="list-row" style="padding:10px 14px;"><div style="flex:1;"><div class="list-sub">Marie Mbarga — Spouse</div><div class="list-title" style="font-size:13px;">+237 699 111 222</div></div></div>
+        </div>
+      </div>
+
+      <!-- Edit Profile -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar" style="padding:10px 12px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            <div class="phone-appbar-title">Edit Profile</div>
+          </div>
+          <div style="background:var(--primary);color:#fff;font-size:12px;font-weight:700;padding:6px 14px;border-radius:999px;cursor:pointer;">Save</div>
+        </div>
+        <div style="padding:12px 16px;overflow:hidden;display:flex;flex-direction:column;gap:11px;">
+          <div style="font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;">Personal</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div><div class="input-label">First Name</div><input class="input" value="Jean-Pierre" style="font-size:13px;" readonly></div>
+            <div><div class="input-label">Last Name</div><input class="input" value="Mbarga" style="font-size:13px;" readonly></div>
+          </div>
+          <div><div class="input-label">Date of Birth ✎</div><input class="input" value="12 Mar 1988" style="font-size:13px;border-color:var(--primary);" readonly></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div><div class="input-label">Sex</div><div class="input" style="font-size:13px;display:flex;align-items:center;justify-content:space-between;">Male<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div></div>
+            <div><div class="input-label">Blood Group</div><div class="input" style="font-size:13px;display:flex;align-items:center;justify-content:space-between;">O Rh+<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div></div>
+          </div>
+          <div style="font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;margin-top:2px;">Contact</div>
+          <div><div class="input-label">Phone Number</div><input class="input" value="+237 699 000 000" style="font-size:13px;" readonly></div>
+          <div><div class="input-label">Email</div><input class="input" value="jp.mbarga@email.com" style="font-size:13px;" readonly></div>
+          <div style="font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;margin-top:2px;">Emergency Contact</div>
+          <div><div class="input-label">Contact Name</div><input class="input" value="Marie Mbarga" style="font-size:13px;" readonly></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div><div class="input-label">Phone</div><input class="input" value="+237 699 111 222" style="font-size:13px;" readonly></div>
+            <div><div class="input-label">Relation</div><div class="input" style="font-size:13px;display:flex;align-items:center;justify-content:space-between;">Spouse<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar"><div class="phone-appbar-title">Settings</div></div>
+        <div style="padding:8px 0;">
+          <!-- Section: Notifications -->
+          <div style="padding:10px 16px 6px;font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;">Notifications</div>
+          <div style="background:var(--surface);border-top:1px solid var(--divider);border-bottom:1px solid var(--divider);">
+            <div class="list-row" style="border-bottom:1px solid var(--divider);padding:11px 14px;">
+              <div class="list-icon-wrap" style="background:#EFF6FF;width:36px;height:36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+              <div style="flex:1;"><div class="list-title" style="font-size:13px;">Push Notifications</div></div>
+              <div style="width:40px;height:22px;background:var(--primary);border-radius:11px;display:flex;align-items:center;justify-content:flex-end;padding:3px;cursor:pointer;"><div style="width:16px;height:16px;background:#fff;border-radius:50%;"></div></div>
+            </div>
+            <div class="list-row" style="padding:11px 14px;">
+              <div class="list-icon-wrap" style="background:#FEF3C7;width:36px;height:36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+              <div style="flex:1;"><div class="list-title" style="font-size:13px;">Consent Alerts</div></div>
+              <div style="width:40px;height:22px;background:var(--primary);border-radius:11px;display:flex;align-items:center;justify-content:flex-end;padding:3px;cursor:pointer;"><div style="width:16px;height:16px;background:#fff;border-radius:50%;"></div></div>
+            </div>
+          </div>
+          <!-- Section: Privacy -->
+          <div style="padding:12px 16px 6px;font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;">Privacy &amp; Data</div>
+          <div style="background:var(--surface);border-top:1px solid var(--divider);border-bottom:1px solid var(--divider);">
+            <div class="list-row" style="border-bottom:1px solid var(--divider);padding:11px 14px;cursor:pointer;"><div class="list-icon-wrap" style="background:#F0FDF4;width:36px;height:36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><div style="flex:1;"><div class="list-title" style="font-size:13px;">Access Logs</div></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+            <div class="list-row" style="border-bottom:1px solid var(--divider);padding:11px 14px;cursor:pointer;"><div class="list-icon-wrap" style="background:#EFF6FF;width:36px;height:36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div style="flex:1;"><div class="list-title" style="font-size:13px;">Export My Records</div></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+            <div class="list-row" style="padding:11px 14px;cursor:pointer;"><div class="list-icon-wrap" style="background:#FEE2E2;width:36px;height:36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><div style="flex:1;"><div class="list-title" style="font-size:13px;color:var(--danger);">Delete Account</div></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+          <!-- Sign out -->
+          <div style="margin:16px 16px 0;background:var(--danger-bg);border:1px solid rgba(239,68,68,.2);border-radius:var(--r-lg);padding:14px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span style="font-size:14px;font-weight:700;color:var(--danger);">Sign Out</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 8: LAB RESULTS ══ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-eyebrow">Lab Results</div>
+    <h2 class="section-title">Results list · Detail view · Critical alerts</h2>
+    <p class="section-desc">Lab results with status pills, critical value highlighting, reference ranges, and trend indicators. Mono font for all clinical numbers.</p>
+    <div class="phones">
+
+      <!-- Labs List -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar"><div class="phone-appbar-title">Lab Results</div><div class="phone-appbar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div></div>
+        <!-- Critical banner -->
+        <div style="margin:10px 16px;background:var(--danger-bg);border:1px solid rgba(239,68,68,.25);border-radius:var(--r-lg);padding:10px 12px;display:flex;gap:10px;align-items:center;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div><div style="font-size:12px;font-weight:700;color:#991B1B;">1 Critical Value Requires Review</div><div style="font-size:10px;color:var(--danger);margin-top:1px;">WBC 13.2 — above normal range</div></div>
+        </div>
+        <!-- Tabs -->
+        <div class="tab-bar">
+          <div class="tab-item active">All <span style="background:var(--primary);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:999px;margin-left:4px;">12</span></div>
+          <div class="tab-item">Recent</div>
+          <div class="tab-item">Critical</div>
+          <div class="tab-item">Pending</div>
+        </div>
+        <!-- Rows -->
+        <div class="list-row" style="border-bottom:1px solid var(--divider);">
+          <div class="list-icon-wrap" style="background:#FEE2E2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/></svg></div>
+          <div style="flex:1;"><div class="list-title">Complete Blood Count</div><div class="list-sub">Hôpital Central · 2 Jun 2026</div></div>
+          <div class="list-right"><span class="pill pill-red">Critical</span><div style="font-family:var(--f-mono);font-size:10px;color:var(--text-3);margin-top:3px;text-align:right;">13.2 ↑</div></div>
+        </div>
+        <div class="list-row" style="border-bottom:1px solid var(--divider);">
+          <div class="list-icon-wrap" style="background:#EFF6FF;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/></svg></div>
+          <div style="flex:1;"><div class="list-title">Haemoglobin</div><div class="list-sub">Hôpital Central · 2 Jun 2026</div></div>
+          <div class="list-right"><span class="pill pill-green">Normal</span><div style="font-family:var(--f-mono);font-size:10px;color:var(--text-3);margin-top:3px;text-align:right;">14.8</div></div>
+        </div>
+        <div class="list-row" style="border-bottom:1px solid var(--divider);">
+          <div class="list-icon-wrap" style="background:#FEF3C7;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/></svg></div>
+          <div style="flex:1;"><div class="list-title">HbA1c</div><div class="list-sub">Clinique de l'Espoir · 15 May 2026</div></div>
+          <div class="list-right"><span class="pill pill-amber">High</span><div style="font-family:var(--f-mono);font-size:10px;color:var(--text-3);margin-top:3px;text-align:right;">7.4%</div></div>
+        </div>
+        <div class="list-row">
+          <div class="list-icon-wrap" style="background:#F0FDF4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/></svg></div>
+          <div style="flex:1;"><div class="list-title">Creatinine</div><div class="list-sub">Hôpital Central · 1 Apr 2026</div></div>
+          <div class="list-right"><span class="pill pill-green">Normal</span><div style="font-family:var(--f-mono);font-size:10px;color:var(--text-3);margin-top:3px;text-align:right;">0.91</div></div>
+        </div>
+      </div>
+
+      <!-- Lab Detail -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar" style="padding:10px 12px;">
+          <div style="display:flex;align-items:center;gap:8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg><div class="phone-appbar-title">CBC — WBC Count</div></div>
+          <span class="pill pill-red">Critical</span>
+        </div>
+        <!-- Hero value -->
+        <div class="lab-hero">
+          <div class="lab-val" style="color:var(--danger);">13.2</div>
+          <div class="lab-unit-row">×10³/µL &nbsp;·&nbsp; WBC Count &nbsp;<span style="color:var(--danger);">↑ HIGH</span></div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:4px;">Reference: 4.0 – 11.0 ×10³/µL</div>
+        </div>
+        <!-- Range bar -->
+        <div class="lab-range-track">
+          <div class="lab-range-zone" style="left:25%;width:45%;"></div>
+          <div class="lab-range-dot" style="left:calc(80% - 6px);background:var(--danger);"></div>
+        </div>
+        <div class="lab-range-labels">
+          <span class="lab-range-lbl">0</span>
+          <span class="lab-range-lbl" style="color:var(--success);">4.0 Normal</span>
+          <span class="lab-range-lbl" style="color:var(--success);">11.0 Normal</span>
+          <span class="lab-range-lbl">16</span>
+        </div>
+        <!-- Context card -->
+        <div style="margin:8px 16px;background:var(--danger-bg);border:1px solid rgba(239,68,68,.2);border-radius:var(--r-lg);padding:12px 14px;">
+          <div style="font-size:12px;font-weight:700;color:#991B1B;margin-bottom:4px;">Interpretation</div>
+          <div style="font-size:12px;color:#991B1B;line-height:1.5;">Elevated WBC may indicate infection or inflammation. Your doctor has been notified. Schedule a follow-up if you have fever, fatigue, or persistent pain.</div>
+        </div>
+        <!-- Meta -->
+        <div style="margin:8px 16px;background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--divider);overflow:hidden;">
+          <div class="list-row" style="padding:10px 14px;border-bottom:1px solid var(--divider);"><div style="flex:1;"><div class="list-sub" style="font-size:10px;">Ordered by</div><div class="list-title" style="font-size:13px;">Dr. A. Ngouo</div></div></div>
+          <div class="list-row" style="padding:10px 14px;border-bottom:1px solid var(--divider);"><div style="flex:1;"><div class="list-sub" style="font-size:10px;">Collected</div><div class="list-title" style="font-size:13px;">2 Jun 2026 · 08:42</div></div></div>
+          <div class="list-row" style="padding:10px 14px;"><div style="flex:1;"><div class="list-sub" style="font-size:10px;">Facility</div><div class="list-title" style="font-size:13px;">Hôpital Central Yaoundé</div></div></div>
+        </div>
+      </div>
+
+      <!-- Prescriptions List -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar"><div class="phone-appbar-title">Prescriptions</div><div class="phone-appbar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg></div></div>
+        <div class="tab-bar"><div class="tab-item active">Active <span style="background:var(--primary);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:999px;margin-left:4px;">3</span></div><div class="tab-item">Completed</div><div class="tab-item">All</div></div>
+        <!-- Rx rows -->
+        <div class="list-row" style="border-bottom:1px solid var(--divider);align-items:flex-start;">
+          <div class="list-icon-wrap" style="background:#EFF6FF;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg></div>
+          <div style="flex:1;"><div class="list-title">Amlodipine 5mg</div><div class="list-sub">1 tab daily · Dr. A. Ngouo</div><div class="list-sub" style="margin-top:3px;">Refills: 2 remaining</div></div>
+          <span class="pill pill-green">Active</span>
+        </div>
+        <div class="list-row" style="border-bottom:1px solid var(--divider);align-items:flex-start;">
+          <div class="list-icon-wrap" style="background:#FEF3C7;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg></div>
+          <div style="flex:1;"><div class="list-title">Metformin 500mg</div><div class="list-sub">2 tabs twice daily · Dr. M. Fon</div><div class="list-sub" style="margin-top:3px;">Refills: 0 · Renewal needed</div></div>
+          <span class="pill pill-amber">Renew</span>
+        </div>
+        <div class="list-row" style="border-bottom:1px solid var(--divider);align-items:flex-start;">
+          <div class="list-icon-wrap" style="background:#F0FDF4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg></div>
+          <div style="flex:1;"><div class="list-title">Lisinopril 10mg</div><div class="list-sub">1 tab morning · Dr. A. Ngouo</div><div class="list-sub" style="margin-top:3px;">Refills: 5 remaining</div></div>
+          <span class="pill pill-green">Active</span>
+        </div>
+        <!-- Refill CTA -->
+        <div style="margin:12px 16px;background:var(--primary-50);border:1px solid var(--primary-200);border-radius:var(--r-lg);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;">
+          <div><div style="font-size:12px;font-weight:700;color:var(--primary);">Request Refill</div><div style="font-size:11px;color:var(--text-3);margin-top:1px;">Send directly to your pharmacy</div></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 9: APPOINTMENTS ══ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-eyebrow">Appointments</div>
+    <h2 class="section-title">List · Book · Detail</h2>
+    <p class="section-desc">Upcoming and past appointments, multi-step booking flow with facility/specialty/slot selection, and appointment detail with actions.</p>
+    <div class="phones">
+
+      <!-- Appointments List -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar"><div class="phone-appbar-title">Appointments</div><div class="phone-appbar-icon" style="cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
+        <div class="tab-bar"><div class="tab-item active">Upcoming</div><div class="tab-item">Past</div></div>
+        <!-- Upcoming cards -->
+        <div style="margin:12px 16px 8px;background:var(--surface);border:1px solid var(--divider);border-radius:var(--r-lg);overflow:hidden;">
+          <div style="background:var(--primary);padding:6px 14px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.8);letter-spacing:.06em;">TOMORROW · 18 JUN</span>
+            <span class="pill" style="background:rgba(255,255,255,.2);color:#fff;font-size:9px;">Confirmed</span>
+          </div>
+          <div style="padding:12px 14px;">
+            <div style="font-size:14px;font-weight:700;color:var(--text);">Cardiology Follow-up</div>
+            <div style="font-size:12px;color:var(--text-2);margin-top:2px;">Dr. A. Ngouo · CHHUY</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:8px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span style="font-size:11px;color:var(--text-3);">10:30 AM &nbsp;·&nbsp; Room 204, Block B</span></div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <div style="flex:1;background:var(--primary-50);border:1px solid var(--primary-200);border-radius:var(--r-md);padding:8px;text-align:center;cursor:pointer;"><span style="font-size:11px;font-weight:700;color:var(--primary);">Get Directions</span></div>
+              <div style="flex:1;background:var(--danger-bg);border:1px solid rgba(239,68,68,.2);border-radius:var(--r-md);padding:8px;text-align:center;cursor:pointer;"><span style="font-size:11px;font-weight:700;color:var(--danger);">Cancel</span></div>
+            </div>
+          </div>
+        </div>
+        <div style="margin:0 16px 8px;background:var(--surface);border:1px solid var(--divider);border-radius:var(--r-lg);overflow:hidden;">
+          <div style="background:var(--surface-muted);padding:6px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--divider);">
+            <span style="font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:.06em;">25 JUN</span>
+            <span class="pill pill-amber">Pending</span>
+          </div>
+          <div style="padding:10px 14px;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);">General Consultation</div>
+            <div style="font-size:11px;color:var(--text-2);margin-top:1px;">Clinique de l'Espoir · 9:00 AM</div>
+          </div>
+        </div>
+        <div class="phone-btn-primary" style="margin:4px 16px 0;border-radius:var(--r-lg);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>Book New Appointment</span>
+        </div>
+      </div>
+
+      <!-- Book Appointment -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar" style="padding:10px 12px;">
+          <div style="display:flex;align-items:center;gap:8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg><div class="phone-appbar-title">Book Appointment</div></div>
+          <span style="font-size:12px;font-weight:600;color:var(--text-3);">Step 3/4</span>
+        </div>
+        <!-- Progress -->
+        <div style="display:flex;gap:4px;padding:10px 16px 0;">
+          <div style="height:4px;flex:1;background:var(--primary);border-radius:2px;"></div>
+          <div style="height:4px;flex:1;background:var(--primary);border-radius:2px;"></div>
+          <div style="height:4px;flex:1;background:var(--primary);border-radius:2px;"></div>
+          <div style="height:4px;flex:1;background:var(--divider);border-radius:2px;"></div>
+        </div>
+        <!-- Selected summary -->
+        <div style="margin:12px 16px;background:var(--primary-50);border:1px solid var(--primary-200);border-radius:var(--r-lg);padding:10px 12px;">
+          <div style="font-size:11px;font-weight:700;color:var(--primary);">Hôpital Central Yaoundé · Cardiology</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:2px;">Dr. A. Ngouo · Select a date</div>
+        </div>
+        <!-- Calendar mini -->
+        <div style="margin:0 16px;background:var(--surface);border:1px solid var(--divider);border-radius:var(--r-lg);padding:12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            <span style="font-size:13px;font-weight:700;color:var(--text);">June 2026</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;">
+            <span style="font-size:9px;color:var(--text-3);font-weight:700;">Mo</span><span style="font-size:9px;color:var(--text-3);font-weight:700;">Tu</span><span style="font-size:9px;color:var(--text-3);font-weight:700;">We</span><span style="font-size:9px;color:var(--text-3);font-weight:700;">Th</span><span style="font-size:9px;color:var(--text-3);font-weight:700;">Fr</span><span style="font-size:9px;color:var(--text-3);font-weight:700;">Sa</span><span style="font-size:9px;color:var(--text-3);font-weight:700;">Su</span>
+            <span style="font-size:11px;color:var(--text-3);padding:3px 0;">1</span><span style="font-size:11px;color:var(--text-3);padding:3px 0;">2</span><span style="font-size:11px;color:var(--text-3);padding:3px 0;">3</span><span style="font-size:11px;color:var(--text-3);padding:3px 0;">4</span><span style="font-size:11px;color:var(--text-3);padding:3px 0;">5</span><span style="font-size:11px;color:var(--text-3);padding:3px 0;">6</span><span style="font-size:11px;color:var(--text-3);padding:3px 0;">7</span>
+            <span style="font-size:11px;color:var(--text);padding:3px 0;">8</span><span style="font-size:11px;color:var(--text);padding:3px 0;">9</span><span style="font-size:11px;color:var(--text);padding:3px 0;">10</span><span style="font-size:11px;color:var(--text);padding:3px 0;">11</span><span style="font-size:11px;color:var(--text);padding:3px 0;">12</span><span style="font-size:11px;color:var(--text-3);padding:3px 0;">13</span><span style="font-size:11px;color:var(--text-3);padding:3px 0;">14</span>
+            <span style="font-size:11px;color:var(--text);padding:3px 0;">15</span><span style="font-size:11px;color:var(--text);padding:3px 0;">16</span><span style="font-size:11px;color:var(--text);padding:3px 0;">17</span><span style="font-size:11px;background:var(--primary);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;margin:0 auto;">18</span><span style="font-size:11px;color:var(--text);padding:3px 0;">19</span><span style="font-size:11px;color:var(--text-3);padding:3px 0;">20</span><span style="font-size:11px;color:var(--text-3);padding:3px 0;">21</span>
+          </div>
+        </div>
+        <!-- Time slots -->
+        <div style="padding:10px 16px 6px;font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.06em;text-transform:uppercase;">Available Slots — 18 Jun</div>
+        <div style="display:flex;gap:8px;padding:0 16px;flex-wrap:wrap;">
+          <div style="background:var(--primary);color:#fff;font-size:12px;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer;">09:00</div>
+          <div style="background:var(--surface);border:1px solid var(--divider);color:var(--text);font-size:12px;font-weight:600;padding:7px 14px;border-radius:999px;cursor:pointer;">10:30</div>
+          <div style="background:var(--surface);border:1px solid var(--divider);color:var(--text);font-size:12px;font-weight:600;padding:7px 14px;border-radius:999px;cursor:pointer;">11:00</div>
+          <div style="background:var(--surface);border:1px solid var(--divider);color:var(--text-3);font-size:12px;font-weight:600;padding:7px 14px;border-radius:999px;opacity:.4;">14:00</div>
+        </div>
+        <div class="phone-btn-primary" style="margin:12px 16px 0;border-radius:var(--r-lg);"><span>Continue →</span></div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar"><div class="phone-appbar-title">Health Timeline</div><div class="phone-appbar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg></div></div>
+        <div style="padding:12px 0;">
+          <!-- Event 1 -->
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot" style="background:#FEE2E2;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.5" stroke-linecap="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/></svg></div><div class="tl-line"></div></div>
+            <div class="tl-body"><div class="tl-date">2 JUN 2026</div><div class="tl-title">CBC — Critical WBC result</div><div class="tl-meta">Hôpital Central · Requires review</div><span class="pill pill-red" style="margin-top:5px;display:inline-flex;">Critical</span></div>
+          </div>
+          <!-- Event 2 -->
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot" style="background:#EFF6FF;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="tl-line"></div></div>
+            <div class="tl-body"><div class="tl-date">18 MAY 2026</div><div class="tl-title">Cardiology Consultation</div><div class="tl-meta">Dr. A. Ngouo · CHHUY</div><span class="pill pill-green" style="margin-top:5px;display:inline-flex;">Completed</span></div>
+          </div>
+          <!-- Event 3 -->
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot" style="background:#FEF3C7;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2.5" stroke-linecap="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/></svg></div><div class="tl-line"></div></div>
+            <div class="tl-body"><div class="tl-date">10 MAY 2026</div><div class="tl-title">Amlodipine 5mg prescribed</div><div class="tl-meta">Dr. A. Ngouo · 90-day supply</div></div>
+          </div>
+          <!-- Event 4 -->
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot" style="background:#D1FAE5;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div><div class="tl-line"></div></div>
+            <div class="tl-body"><div class="tl-date">3 APR 2026</div><div class="tl-title">Consent granted — Lab access</div><div class="tl-meta">Hôpital Central · Approved by you</div></div>
+          </div>
+          <!-- Event 5 -->
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot" style="background:#F0FDF4;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/></svg></div></div>
+            <div class="tl-body"><div class="tl-date">1 APR 2026</div><div class="tl-title">HbA1c 7.4% — High</div><div class="tl-meta">Clinique de l'Espoir</div><span class="pill pill-amber" style="margin-top:5px;display:inline-flex;">High</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 10: CONSENT & ACCESS ══ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-eyebrow">Privacy &amp; Consent</div>
+    <h2 class="section-title">Consent Requests · Access Logs · Documents</h2>
+    <p class="section-desc">Granular consent management — approve or deny per data category. Full access log of who viewed records and when.</p>
+    <div class="phones">
+
+      <!-- Consent Requests -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar"><div class="phone-appbar-title">Consent Requests</div></div>
+        <!-- Pending badge -->
+        <div style="margin:10px 16px;background:var(--warning-bg);border:1px solid var(--warning-bg);border-radius:var(--r-lg);padding:10px 12px;display:flex;gap:10px;align-items:center;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span style="font-size:12px;font-weight:700;color:#92400E;">2 requests pending your review</span>
+        </div>
+        <!-- Pending card 1 -->
+        <div class="consent-card pending" style="margin-bottom:10px;">
+          <div style="padding:12px 14px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+              <div style="width:36px;height:36px;background:var(--primary-100);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+              <div><div style="font-size:13px;font-weight:700;color:var(--primary);">Hôpital Central Yaoundé</div><div style="font-size:11px;color:var(--text-3);">Requested 2 Jun 2026</div></div>
+              <span class="pill pill-amber" style="margin-left:auto;">Pending</span>
+            </div>
+            <div style="font-size:12px;color:var(--text-2);margin-bottom:8px;">Requesting access to <strong>Lab Results &amp; CBC Panel</strong> for ongoing treatment by Dr. A. Ngouo.</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <span style="background:var(--primary-50);color:var(--primary);font-size:9px;font-weight:700;padding:2px 7px;border-radius:999px;">Lab Results</span>
+              <span style="background:var(--primary-50);color:var(--primary);font-size:9px;font-weight:700;padding:2px 7px;border-radius:999px;">CBC Panel</span>
+              <span style="background:var(--primary-50);color:var(--primary);font-size:9px;font-weight:700;padding:2px 7px;border-radius:999px;">Allergies</span>
+            </div>
+          </div>
+          <div class="consent-actions">
+            <div class="c-btn c-approve">✓ Approve</div>
+            <div class="c-btn c-deny">✗ Deny</div>
+          </div>
+        </div>
+        <!-- Approved card -->
+        <div class="consent-card">
+          <div style="padding:10px 14px;display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;background:var(--success-bg);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--text);">Clinique de l'Espoir</div><div style="font-size:11px;color:var(--text-3);">Approved 3 Apr 2026 · Expires 3 Jul 2026</div></div>
+            <span class="pill pill-green">Active</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Access Logs -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar"><div class="phone-appbar-title">Access Logs</div><div class="phone-appbar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg></div></div>
+        <div style="margin:10px 16px;background:var(--info-bg);border:1px solid var(--primary-200);border-radius:var(--r-lg);padding:10px 12px;"><span style="font-size:12px;color:#1E40AF;">Your data was accessed <strong>4 times</strong> in the last 30 days.</span></div>
+        <!-- Log rows -->
+        <div class="list-row" style="border-bottom:1px solid var(--divider);">
+          <div class="list-icon-wrap" style="background:#EFF6FF;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+          <div style="flex:1;"><div class="list-title">Hôpital Central Yaoundé</div><div class="list-sub">Viewed CBC results · Today, 10:24</div></div>
+          <span class="pill pill-green">Allowed</span>
+        </div>
+        <div class="list-row" style="border-bottom:1px solid var(--divider);">
+          <div class="list-icon-wrap" style="background:#F9FAFB;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div style="flex:1;"><div class="list-title">Dr. A. Ngouo</div><div class="list-sub">Accessed profile · Yesterday, 14:07</div></div>
+          <span class="pill pill-green">Allowed</span>
+        </div>
+        <div class="list-row" style="border-bottom:1px solid var(--divider);">
+          <div class="list-icon-wrap" style="background:#FEE2E2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div>
+          <div style="flex:1;"><div class="list-title">Clinique de l'Espoir</div><div class="list-sub">Emergency access · 28 May, 02:15</div></div>
+          <span class="pill pill-red">Emergency</span>
+        </div>
+        <div class="list-row">
+          <div class="list-icon-wrap" style="background:#F0FDF4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/></svg></div>
+          <div style="flex:1;"><div class="list-title">Pharmacie du Lac</div><div class="list-sub">Verified prescription · 20 May, 11:00</div></div>
+          <span class="pill pill-green">Allowed</span>
+        </div>
+      </div>
+
+      <!-- Documents -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar"><div class="phone-appbar-title">Documents</div><div class="phone-appbar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
+        <div class="tab-bar"><div class="tab-item active">All</div><div class="tab-item">Reports</div><div class="tab-item">Certificates</div><div class="tab-item">Exports</div></div>
+        <!-- Docs -->
+        <div class="list-row" style="border-bottom:1px solid var(--divider);">
+          <div class="list-icon-wrap" style="background:#FEE2E2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div style="flex:1;"><div class="list-title">CBC Panel Report</div><div class="list-sub">Lab Report · 2 Jun 2026 · 284 KB</div></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <div class="list-row" style="border-bottom:1px solid var(--divider);">
+          <div class="list-icon-wrap" style="background:#EFF6FF;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div style="flex:1;"><div class="list-title">Medical Certificate</div><div class="list-sub">Certificate · 18 May 2026 · 120 KB</div></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <div class="list-row" style="border-bottom:1px solid var(--divider);">
+          <div class="list-icon-wrap" style="background:#F0FDF4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div style="flex:1;"><div class="list-title">HbA1c Results Export</div><div class="list-sub">Lab Report · 15 May 2026 · 98 KB</div></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <div class="list-row">
+          <div class="list-icon-wrap" style="background:#FEF3C7;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div style="flex:1;"><div class="list-title">Full Records Export (PDF)</div><div class="list-sub">Export · 1 Apr 2026 · 2.4 MB</div></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 11: EXPORT · SURVEYS · REFERRALS ══ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-eyebrow">Records &amp; Engagement</div>
+    <h2 class="section-title">Export · Health Surveys · Referrals</h2>
+    <p class="section-desc">Export full medical records in PDF or FHIR format, complete health surveys from your care team, and track specialist referrals.</p>
+    <div class="phones">
+
+      <!-- Medical Export -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar" style="padding:10px 12px;"><div style="display:flex;align-items:center;gap:8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg><div class="phone-appbar-title">Export My Records</div></div></div>
+        <div style="padding:0 16px;">
+          <!-- Format -->
+          <div style="padding:14px 0 8px;font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.07em;text-transform:uppercase;">Format</div>
+          <div style="display:flex;gap:10px;margin-bottom:14px;">
+            <div style="flex:1;border:1.5px solid var(--primary);background:var(--primary-50);border-radius:var(--r-lg);padding:12px;text-align:center;cursor:pointer;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round" style="margin:0 auto;display:block;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <div style="font-size:12px;font-weight:700;color:var(--primary);margin-top:4px;">PDF</div>
+              <div style="font-size:10px;color:var(--text-3);">Human-readable</div>
+            </div>
+            <div style="flex:1;border:1px solid var(--divider);background:var(--surface);border-radius:var(--r-lg);padding:12px;text-align:center;cursor:pointer;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2" stroke-linecap="round" style="margin:0 auto;display:block;"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              <div style="font-size:12px;font-weight:700;color:var(--text-2);margin-top:4px;">FHIR</div>
+              <div style="font-size:10px;color:var(--text-3);">Machine-readable</div>
+            </div>
+          </div>
+          <!-- Date range -->
+          <div style="margin-bottom:12px;"><div class="input-label">Date Range</div>
+            <div style="display:flex;gap:8px;">
+              <input class="input" value="01 Jan 2026" style="flex:1;font-size:12px;" readonly>
+              <span style="align-self:center;color:var(--text-3);font-size:12px;">to</span>
+              <input class="input" value="31 May 2026" style="flex:1;font-size:12px;" readonly>
+            </div>
+          </div>
+          <!-- Categories -->
+          <div style="margin-bottom:14px;"><div class="input-label" style="margin-bottom:8px;">Include Categories</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--primary);width:16px;height:16px;"><span style="font-size:13px;color:var(--text);">Lab Results</span></label>
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--primary);width:16px;height:16px;"><span style="font-size:13px;color:var(--text);">Prescriptions</span></label>
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--primary);width:16px;height:16px;"><span style="font-size:13px;color:var(--text);">Appointments</span></label>
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--primary);width:16px;height:16px;"><span style="font-size:13px;color:var(--text);">Immunizations</span></label>
+            </div>
+          </div>
+          <div class="phone-btn-primary" style="margin:0;border-radius:var(--r-lg);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Generate &amp; Download</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Health Survey -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar" style="padding:10px 12px;">
+          <div style="display:flex;align-items:center;gap:8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg><div class="phone-appbar-title">Health Survey</div></div>
+          <span style="font-size:12px;font-weight:600;color:var(--text-3);">Q 3 / 8</span>
+        </div>
+        <!-- Progress -->
+        <div style="height:4px;background:var(--divider);margin:0;"><div style="height:100%;width:37.5%;background:var(--primary);border-radius:0 2px 2px 0;"></div></div>
+        <!-- Question -->
+        <div style="padding:16px 16px 10px;">
+          <div style="font-size:10px;font-weight:700;color:var(--primary);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Diabetes Management Survey</div>
+          <div style="font-size:15px;font-weight:700;color:var(--text);line-height:1.4;">How often do you check your blood glucose at home?</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:4px;">Select the option that best describes your routine.</div>
+        </div>
+        <!-- Options -->
+        <div class="survey-opt sel">
+          <div class="s-radio"><div class="s-dot"></div></div>
+          <span style="font-size:13px;font-weight:600;color:var(--primary);">Twice daily (morning &amp; evening)</span>
+        </div>
+        <div class="survey-opt">
+          <div class="s-radio"></div>
+          <span style="font-size:13px;color:var(--text);">Once daily</span>
+        </div>
+        <div class="survey-opt">
+          <div class="s-radio"></div>
+          <span style="font-size:13px;color:var(--text);">A few times per week</span>
+        </div>
+        <div class="survey-opt">
+          <div class="s-radio"></div>
+          <span style="font-size:13px;color:var(--text);">Rarely or never</span>
+        </div>
+        <div style="display:flex;gap:10px;padding:14px 16px 0;">
+          <div class="phone-btn-outline" style="flex:1;margin:0;"><span style="color:var(--text-2);">← Back</span></div>
+          <div class="phone-btn-primary" style="flex:2;margin:0;border-radius:var(--r-lg);"><span>Next →</span></div>
+        </div>
+      </div>
+
+      <!-- Referrals -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar"><div class="phone-appbar-title">Referrals</div></div>
+        <div class="tab-bar"><div class="tab-item active">Active</div><div class="tab-item">Completed</div></div>
+        <!-- Referral cards -->
+        <div style="margin:12px 16px;background:var(--surface);border:1px solid var(--primary-200);border-radius:var(--r-lg);padding:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Cardiology Referral</div>
+            <span class="pill pill-blue">Active</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-2);margin-bottom:6px;">Referred by <strong>Dr. A. Ngouo</strong> on 18 May 2026</div>
+          <div style="font-size:12px;color:var(--text-2);margin-bottom:10px;">Reason: Elevated WBC, follow-up cardiac assessment needed.</div>
+          <div style="background:var(--primary-50);border-radius:var(--r-md);padding:8px 10px;display:flex;align-items:center;justify-content:space-between;">
+            <div><div style="font-size:10px;color:var(--text-3);font-weight:600;">Referred to</div><div style="font-size:12px;font-weight:700;color:var(--text);">CHHUY — Cardiology</div></div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+        <div style="margin:0 16px;background:var(--surface);border:1px solid var(--divider);border-radius:var(--r-lg);padding:14px;opacity:.75;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Ophthalmology Referral</div>
+            <span class="pill pill-gray">Done</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-3);">Dr. M. Fon · Completed 12 Feb 2026</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 12: DETAIL SCREENS ══ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-eyebrow">Detail Views</div>
+    <h2 class="section-title">Care Plan Detail · Insurance Plan · Notifications</h2>
+    <p class="section-desc">Deep-dive screens — full care plan with goals and interventions, insurance plan enrollment, and the notifications inbox.</p>
+    <div class="phones">
+
+      <!-- Care Plan Detail -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar" style="padding:10px 12px;"><div style="display:flex;align-items:center;gap:8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg><div class="phone-appbar-title">Care Plan Detail</div></div><span class="pill pill-green">Active</span></div>
+        <div style="padding:14px 16px 0;">
+          <div style="font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.01em;">Hypertension Management</div>
+          <div style="font-size:12px;color:var(--text-2);margin-top:3px;">Dr. A. Ngouo · Started 1 Mar 2026</div>
+          <!-- Progress bar -->
+          <div style="margin:12px 0 4px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:11px;color:var(--text-3);">Goals completed</span><span style="font-size:11px;font-weight:700;color:var(--primary);">4 / 6</span></div><div style="height:6px;background:var(--divider);border-radius:3px;overflow:hidden;"><div style="width:66%;height:100%;background:var(--primary);border-radius:3px;"></div></div></div>
+          <!-- Next check-in -->
+          <div style="display:flex;align-items:center;gap:6px;margin:10px 0 14px;padding:8px 10px;background:var(--primary-50);border-radius:var(--r-md);">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span style="font-size:11px;color:var(--primary);font-weight:600;">Next check-in: <strong>18 Jun 2026</strong></span>
+          </div>
+        </div>
+        <!-- Goals -->
+        <div style="padding:0 16px 6px;font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.07em;text-transform:uppercase;">Goals</div>
+        <div style="background:var(--surface);border-top:1px solid var(--divider);border-bottom:1px solid var(--divider);">
+          <div class="list-row" style="border-bottom:1px solid var(--divider);padding:10px 14px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><div style="margin-left:10px;flex:1;"><div class="list-title" style="font-size:12px;">Maintain systolic BP &lt; 130 mmHg</div></div><span class="pill pill-green">Done</span></div>
+          <div class="list-row" style="border-bottom:1px solid var(--divider);padding:10px 14px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><div style="margin-left:10px;flex:1;"><div class="list-title" style="font-size:12px;">Take Amlodipine 5mg daily</div></div><span class="pill pill-green">Done</span></div>
+          <div class="list-row" style="border-bottom:1px solid var(--divider);padding:10px 14px;"><div style="width:14px;height:14px;border:1.5px solid var(--divider);border-radius:3px;flex-shrink:0;"></div><div style="margin-left:10px;flex:1;"><div class="list-title" style="font-size:12px;">30-min walk 5x per week</div></div><span class="pill pill-amber">In progress</span></div>
+          <div class="list-row" style="padding:10px 14px;"><div style="width:14px;height:14px;border:1.5px solid var(--divider);border-radius:3px;flex-shrink:0;"></div><div style="margin-left:10px;flex:1;"><div class="list-title" style="font-size:12px;">Reduce sodium intake &lt; 2g/day</div></div><span class="pill pill-gray">Pending</span></div>
+        </div>
+      </div>
+
+      <!-- Insurance Plan Detail -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar" style="padding:10px 12px;"><div style="display:flex;align-items:center;gap:8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg><div class="phone-appbar-title">Plan Detail</div></div></div>
+        <!-- Header -->
+        <div style="margin:14px 16px;background:var(--primary-50);border:1.5px solid var(--primary-200);border-radius:var(--r-lg);padding:14px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><div style="width:36px;height:36px;background:var(--primary-100);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div><div><div style="font-size:15px;font-weight:700;color:var(--text);">AXA Vital Santé</div><div style="font-size:12px;color:var(--text-2);">AXA Cameroun</div></div><span class="pill pill-blue" style="margin-left:auto;">PRIVATE</span></div>
+          <div style="font-size:12px;color:var(--text-2);line-height:1.5;margin-bottom:10px;">Consultation, hospitalisation, maternité, médicaments. Réseau de 120+ établissements.</div>
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;background:var(--surface);border-radius:var(--r-md);padding:8px 10px;"><div style="font-size:10px;color:var(--text-3);font-weight:600;margin-bottom:2px;">Monthly</div><div style="font-family:var(--f-mono);font-size:14px;font-weight:700;color:var(--primary);">XAF 14,000</div></div>
+            <div style="flex:1;background:var(--surface-muted);border:1px solid var(--divider);border-radius:var(--r-md);padding:8px 10px;"><div style="font-size:10px;color:var(--text-3);font-weight:600;margin-bottom:2px;">Annual</div><div style="font-family:var(--f-mono);font-size:14px;font-weight:700;color:var(--text-2);">XAF 154,000</div></div>
+          </div>
+        </div>
+        <!-- Features -->
+        <div style="margin:0 16px;background:var(--surface);border:1px solid var(--divider);border-radius:var(--r-lg);overflow:hidden;">
+          <div style="padding:10px 14px;border-bottom:1px solid var(--divider);font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.07em;text-transform:uppercase;">Coverage Highlights</div>
+          <div class="list-row" style="border-bottom:1px solid var(--divider);padding:9px 14px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span style="margin-left:8px;font-size:12px;color:var(--text);">Cashless hospitalisation</span></div>
+          <div class="list-row" style="border-bottom:1px solid var(--divider);padding:9px 14px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span style="margin-left:8px;font-size:12px;color:var(--text);">Maternity &amp; newborn care</span></div>
+          <div class="list-row" style="border-bottom:1px solid var(--divider);padding:9px 14px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span style="margin-left:8px;font-size:12px;color:var(--text);">120+ network facilities</span></div>
+          <div class="list-row" style="padding:9px 14px;"><span style="font-size:12px;color:var(--text-3);">20% co-pay on outpatient</span></div>
+        </div>
+        <div class="phone-btn-primary" style="margin:12px 16px 0;border-radius:var(--r-lg);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg><span>Enroll in this Plan</span></div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="phone">
+        <div class="phone-notch"><span class="phone-time">9:41</span><span class="phone-status" style="font-size:11px;color:var(--text-3);">⚡ 87%</span></div>
+        <div class="phone-appbar"><div class="phone-appbar-title">Notifications</div><div style="font-size:12px;font-weight:600;color:var(--primary);cursor:pointer;">Mark all read</div></div>
+        <!-- Today -->
+        <div style="padding:10px 16px 6px;font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;">Today</div>
+        <div class="list-row" style="border-bottom:1px solid var(--divider);background:var(--primary-50);">
+          <div class="list-icon-wrap" style="background:#FEE2E2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          <div style="flex:1;"><div class="list-title">Critical Lab Result</div><div class="list-sub">Your WBC count is above normal. Please review and contact your doctor.</div><div style="font-size:10px;color:var(--text-3);margin-top:3px;">10:24 AM</div></div>
+          <div style="width:8px;height:8px;background:var(--primary);border-radius:50%;flex-shrink:0;margin-top:4px;"></div>
+        </div>
+        <div class="list-row" style="border-bottom:1px solid var(--divider);background:var(--primary-50);">
+          <div class="list-icon-wrap" style="background:#EFF6FF;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div style="flex:1;"><div class="list-title">Consent Request</div><div class="list-sub">Hôpital Central wants access to your lab results.</div><div style="font-size:10px;color:var(--text-3);margin-top:3px;">08:05 AM</div></div>
+          <div style="width:8px;height:8px;background:var(--primary);border-radius:50%;flex-shrink:0;margin-top:4px;"></div>
+        </div>
+        <!-- Yesterday -->
+        <div style="padding:10px 16px 6px;font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;">Yesterday</div>
+        <div class="list-row" style="border-bottom:1px solid var(--divider);">
+          <div class="list-icon-wrap" style="background:#F0FDF4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <div style="flex:1;"><div class="list-title">Appointment Confirmed</div><div class="list-sub">Cardiology Follow-up — 18 Jun at 10:30 AM, CHHUY.</div><div style="font-size:10px;color:var(--text-3);margin-top:3px;">Yesterday, 3:12 PM</div></div>
+        </div>
+        <div class="list-row">
+          <div class="list-icon-wrap" style="background:#FEF3C7;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/></svg></div>
+          <div style="flex:1;"><div class="list-title">Medication Reminder</div><div class="list-sub">Time to take Amlodipine 5mg — morning dose.</div><div style="font-size:10px;color:var(--text-3);margin-top:3px;">Yesterday, 8:00 AM</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer style="background:var(--primary);color:rgba(255,255,255,.6);text-align:center;padding:36px 24px;">
+  <div style="font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;color:rgba(255,255,255,.9);margin-bottom:8px;">OPESCARE PATIENT · DESIGN SYSTEM · 2026</div>
+  <div style="font-size:13px;">Plus Jakarta Sans · Geist Mono · Clinical Blue #1565C0</div>
+  <div style="font-size:12px;margin-top:6px;">Matching the patient portal — consistent across every surface</div>
+</footer>
+
+</body>
+</html>

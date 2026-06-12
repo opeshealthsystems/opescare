@@ -66,6 +66,18 @@
                         style="width:100%;padding:var(--p-space-2) var(--p-space-3);border:1px solid var(--p-border);border-radius:var(--p-radius-sm);font-size:0.875rem;background:var(--p-surface);color:var(--p-text);resize:vertical;">{{ old('address', $patient->address) }}</textarea>
                 </div>
 
+                @error('date_of_birth')<p style="color:#DC2626;font-size:0.8125rem;">{{ $message }}</p>@enderror
+                <div>
+                    <label style="font-size:0.8125rem;font-weight:700;color:var(--p-text-muted);display:block;margin-bottom:4px;">Date of Birth</label>
+                    <input type="date" name="date_of_birth"
+                        value="{{ old('date_of_birth', $patient->date_of_birth?->format('Y-m-d')) }}"
+                        max="{{ now()->subDay()->format('Y-m-d') }}"
+                        style="width:100%;padding:var(--p-space-2) var(--p-space-3);border:1px solid var(--p-border);border-radius:var(--p-radius-sm);font-size:0.875rem;background:var(--p-surface);color:var(--p-text);">
+                    @if($patient->date_of_birth)
+                        <p style="font-size:0.75rem;color:var(--p-text-muted);margin-top:4px;">Age: {{ $patient->date_of_birth->diffInYears(now()) }} years</p>
+                    @endif
+                </div>
+
             </div>
         </div>
 
@@ -165,17 +177,17 @@
             <div class="panel-body" style="display:flex;flex-direction:column;gap:var(--p-space-4);">
                 <div>
                     <label style="font-size:0.8125rem;font-weight:700;color:var(--p-text-muted);display:block;margin-bottom:4px;">Name</label>
-                    <input type="text" name="emergency_contact[name]" value="{{ old('emergency_contact.name', $patient->emergency_contact['name'] ?? '') }}"
+                    <input type="text" name="emergency_contact[name]" value="{{ old('emergency_contact.name', ($patient->emergency_contact ?? [])['name'] ?? '') }}"
                         style="width:100%;padding:var(--p-space-2) var(--p-space-3);border:1px solid var(--p-border);border-radius:var(--p-radius-sm);font-size:0.875rem;background:var(--p-surface);color:var(--p-text);">
                 </div>
                 <div>
                     <label style="font-size:0.8125rem;font-weight:700;color:var(--p-text-muted);display:block;margin-bottom:4px;">Phone</label>
-                    <input type="text" name="emergency_contact[phone]" value="{{ old('emergency_contact.phone', $patient->emergency_contact['phone'] ?? '') }}"
+                    <input type="text" name="emergency_contact[phone]" value="{{ old('emergency_contact.phone', ($patient->emergency_contact ?? [])['phone'] ?? '') }}"
                         style="width:100%;padding:var(--p-space-2) var(--p-space-3);border:1px solid var(--p-border);border-radius:var(--p-radius-sm);font-size:0.875rem;background:var(--p-surface);color:var(--p-text);">
                 </div>
                 <div>
                     <label style="font-size:0.8125rem;font-weight:700;color:var(--p-text-muted);display:block;margin-bottom:4px;">Relationship</label>
-                    <input type="text" name="emergency_contact[relationship]" value="{{ old('emergency_contact.relationship', $patient->emergency_contact['relationship'] ?? '') }}"
+                    <input type="text" name="emergency_contact[relationship]" value="{{ old('emergency_contact.relationship', ($patient->emergency_contact ?? [])['relationship'] ?? '') }}"
                         style="width:100%;padding:var(--p-space-2) var(--p-space-3);border:1px solid var(--p-border);border-radius:var(--p-radius-sm);font-size:0.875rem;background:var(--p-surface);color:var(--p-text);">
                 </div>
             </div>

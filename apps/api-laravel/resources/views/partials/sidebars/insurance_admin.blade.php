@@ -6,7 +6,7 @@
 <div style="margin-bottom:var(--p-space-3);"></div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_dashboard', [], $l) ?: 'Overview' }}</div>
-    <a href="{{ route('portals.insurance.claims') }}" class="sidebar-link">
+    <a href="{{ route('portals.insurance.dashboard') }}" class="sidebar-link">
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], $l) ?: 'Dashboard' }}</span>
     </a>

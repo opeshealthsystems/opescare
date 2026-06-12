@@ -5,6 +5,13 @@
 </div>
 <div style="margin-bottom:var(--p-space-3);"></div>
 <div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">Pharmacy Portal</div>
+    <a href="{{ route('portals.pharmacy.dashboard') }}" class="sidebar-link" style="background:rgba(16,185,129,.08);border-left:3px solid #10b981;">
+        <i data-lucide="pill" style="color:#10b981;"></i>
+        <span style="font-weight:700;">My Pharmacy Portal</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_dashboard', [], $l) ?: 'Overview' }}</div>
     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
         <i data-lucide="layout-dashboard"></i>

@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 
 @section('title', 'Analytics Dashboard')
 
@@ -456,7 +456,7 @@
 
 @section('scripts')
 @if(!empty($visitTrend))
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{ asset('js/chart.umd.min.js') }}"></script>
 <script>
 (function() {
     var visitLabels = @json(array_keys($visitTrend));

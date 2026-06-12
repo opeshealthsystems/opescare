@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:opescare_patient/core/api/api_client.dart';
-import 'package:opescare_patient/core/storage/secure_storage.dart';
-import 'package:opescare_patient/features/auth/data/auth_repository.dart';
 import 'package:opescare_patient/features/auth/presentation/login_screen.dart';
 import 'package:opescare_patient/features/auth/providers/auth_provider.dart';
 

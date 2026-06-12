@@ -12,7 +12,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/notifications/{id}/acknowledge', [CommunicationController::class, 'acknowledgeNotification']);
     Route::post('/notifications/mark-all-read', [CommunicationController::class, 'markAllRead']);
     Route::post('/notifications/{id}/archive', [CommunicationController::class, 'archiveNotification']);
-    
+
     Route::get('/notification-preferences', [CommunicationController::class, 'getPreferences']);
     Route::put('/notification-preferences', [CommunicationController::class, 'updatePreferences']);
 
@@ -25,7 +25,10 @@ Route::prefix('v1')->group(function () {
     Route::post('/tasks/{id}/escalate', [CommunicationController::class, 'escalateTask']);
 
     // Admin Templates, Deliveries & Escalations
-    Route::prefix('admin')->group(function () {
+    // [RBAC FIX] These admin endpoints previously had NO middleware — any unauthenticated
+    // caller could create/update/publish notification templates. Now protected by
+    // VerifyIntegrationClient (B2B Argon2id credential check).
+    Route::prefix('admin')->middleware(['verify.integration.client'])->group(function () {
         Route::get('/notification-templates', [CommunicationController::class, 'getAdminTemplates']);
         Route::post('/notification-templates', [CommunicationController::class, 'createAdminTemplate']);
         Route::put('/notification-templates/{id}', [CommunicationController::class, 'updateAdminTemplate']);
@@ -44,9 +47,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/escalation-chains/{id}/deactivate', [CommunicationController::class, 'deactivateEscalationChain']);
 
         Route::post('/broadcasts', [CommunicationController::class, 'createBroadcast']);
-        Route::put('/broadcasts/{id}', [CommunicationController::class, 'updateAdminTemplate']); // shared update or separate is fine
+        Route::put('/broadcasts/{id}', [CommunicationController::class, 'updateAdminTemp']);
         Route::post('/broadcasts/{id}/publish', [CommunicationController::class, 'publishBroadcast']);
         Route::post('/broadcasts/{id}/cancel', [CommunicationController::class, 'cancelBroadcast']);
+        Route::get('/broadcasts/{id}/acknowledgements', [CommunicationController::class, 'broadcastAcknowledgements']);
     });
 
     // Messaging

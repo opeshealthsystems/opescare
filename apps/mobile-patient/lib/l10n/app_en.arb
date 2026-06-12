@@ -1,0 +1,56 @@
+{
+  "@@locale": "en",
+  "appTitle": "OpesCare",
+  "@appTitle": { "description": "Application name" },
+
+  "navHome": "Home",
+  "navHealthId": "Health ID",
+  "navAppointments": "Appointments",
+  "navRecords": "Records",
+  "navSettings": "Settings",
+
+  "actionSignIn": "Sign in",
+  "actionSignOut": "Sign out",
+  "actionContinue": "Continue",
+  "actionCancel": "Cancel",
+  "actionSave": "Save",
+  "actionRetry": "Retry",
+  "actionClose": "Close",
+
+  "authEmail": "Email",
+  "authPassword": "Password",
+  "authShowPassword": "Show password",
+  "authHidePassword": "Hide password",
+  "authForgotPassword": "Forgot password?",
+  "authLoginFailed": "Sign-in failed. Check your details and try again.",
+
+  "homeGreeting": "Hello, {name}",
+  "@homeGreeting": {
+    "description": "Greeting on the home screen",
+    "placeholders": { "name": { "type": "String", "example": "Awa" } }
+  },
+  "homeYourHealthId": "Your Health ID",
+  "homeGenerateQr": "Generate temporary QR",
+
+  "consentTitle": "Consent requests",
+  "consentApprove": "Approve",
+  "consentDeny": "Deny",
+  "consentPendingCount": "{count, plural, =0{No pending requests} =1{1 pending request} other{{count} pending requests}}",
+  "@consentPendingCount": {
+    "description": "Number of pending consent requests",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "labsTitle": "Lab results",
+  "prescriptionsTitle": "Prescriptions",
+  "appointmentsBook": "Book appointment",
+  "appointmentsUpcoming": "Upcoming",
+
+  "errorNetwork": "No connection. Check your network and try again.",
+  "errorGeneric": "Something went wrong. Please try again.",
+  "offlineBanner": "You are offline. Some data may be out of date.",
+
+  "securityUpdateRequiredTitle": "Update required",
+  "securityUpdateRequiredBody": "A newer version of OpesCare is required to continue. Please update to keep your data secure.",
+  "securityUpdateNow": "Update now"
+}

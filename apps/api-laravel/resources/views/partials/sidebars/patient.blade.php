@@ -43,6 +43,13 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">Insurance</div>
+    <a href="{{ route('portals.patient.insurance') }}" class="sidebar-link {{ request()->routeIs('portals.patient.insurance*') ? 'active' : '' }}">
+        <i data-lucide="shield-check"></i>
+        <span>Health Insurance</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_privacy', [], $l) ?: 'Privacy & Access' }}</div>
     <a href="{{ route('portals.patient.consent') }}" class="sidebar-link">
         <i data-lucide="shield-check"></i>

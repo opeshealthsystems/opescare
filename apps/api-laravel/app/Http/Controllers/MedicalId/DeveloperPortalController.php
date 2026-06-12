@@ -183,16 +183,20 @@ class DeveloperPortalController extends Controller
         $clientId     = 'sandbox_' . Str::random(24);
         $clientSecret = 'sk_sandbox_' . Str::random(48);
 
+        // Migration Sprint — Item 1: new clients use Argon2id from creation.
+        // client_secret (SHA-256 legacy) is intentionally left null for new apps.
         $client = IntegrationClient::create([
-            'client_id'     => $clientId,
-            'client_secret' => hash('sha256', $clientSecret),  // hash — never stored plain
-            'name'          => $request->input('name'),
-            'description'   => $request->input('description'),
-            'contact_email' => $developer->email,
-            'created_by'    => $developer->email,
-            'environment'   => 'sandbox',
-            'scopes'        => json_encode(['health_id:read', 'consents:read', 'patients:read']),
-            'status'        => 'active',
+            'client_id'           => $clientId,
+            'client_secret'       => null,                   // Legacy SHA-256 — not used for new clients
+            'client_secret_argon' => \Illuminate\Support\Facades\Hash::make($clientSecret),
+            'secret_upgraded_at'  => now(),
+            'name'                => $request->input('name'),
+            'description'         => $request->input('description'),
+            'contact_email'       => $developer->email,
+            'created_by'          => $developer->email,
+            'environment'         => 'sandbox',
+            'scopes'              => json_encode(['health_id:read', 'consents:read', 'patients:read']),
+            'status'              => 'active',
         ]);
 
         AuditLogger::log($request, 'developer_app_created', 'integration_client', $client->id);
@@ -466,5 +470,47 @@ class DeveloperPortalController extends Controller
         AuditLogger::log($request, 'developer_account_suspended', 'developer_account', $account->id);
 
         return back()->with('success', 'Developer account suspended.');
+    }
+
+    // ── API Usage Analytics ───────────────────────────────────────────────────
+
+    public function analytics(Request $request)
+    {
+        $developer = $this->currentDeveloper();
+        if (!$developer) {
+            return redirect()->route('portals.developer.dashboard');
+        }
+
+        $clientIds = IntegrationClient::where('created_by', $developer->email)->pluck('id');
+
+        // 30-day totals
+        $period = $request->input('period', 'daily');
+        $since  = now()->subDays(30);
+
+        $metrics = \App\Models\ApiUsageMetric::whereIn('api_credential_id', function ($q) use ($clientIds) {
+                $q->select('id')->from('api_credentials')->whereIn('client_id', $clientIds);
+            })
+            ->where('period', $period)
+            ->where('period_start', '>=', $since)
+            ->orderByDesc('period_start')
+            ->limit(200)
+            ->get();
+
+        $totals = [
+            'requests' => $metrics->sum('request_count'),
+            'errors'   => $metrics->sum('error_count'),
+            'avg_ms'   => $metrics->avg('avg_response_ms') ?? 0,
+        ];
+
+        $byEndpoint = $metrics->groupBy('endpoint')->map(fn($rows) => [
+            'endpoint'  => $rows->first()->endpoint,
+            'requests'  => $rows->sum('request_count'),
+            'errors'    => $rows->sum('error_count'),
+            'avg_ms'    => round($rows->avg('avg_response_ms'), 1),
+        ])->sortByDesc('requests')->take(15)->values();
+
+        $clients = IntegrationClient::whereIn('id', $clientIds)->get();
+
+        return view('portals.developer.analytics', compact('developer', 'clients', 'metrics', 'totals', 'byEndpoint', 'period'));
     }
 }

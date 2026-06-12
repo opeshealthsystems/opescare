@@ -138,9 +138,12 @@ Route::middleware(['web', 'throttle:verify'])->group(function () {
 });
 
 // Portal Routes — require authentication, correct portal for role, and facility context
-Route::middleware(['web', 'auth', 'portal.access', 'facility.context'])->group(function () {
+Route::middleware(['web', 'auth', 'portal.access', 'facility.context', 'throttle:portal'])->group(function () {
     Route::get('/portals/patient', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'index'])->name('portals.patient');
-    Route::post('/portals/patient/generate-qr', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'generateTemporaryQr'])->name('portals.patient.qr');
+    // QR generation has its own tighter rate limit (10/min) on top of the portal limit
+    Route::post('/portals/patient/generate-qr', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'generateTemporaryQr'])
+        ->middleware('throttle:portal.qr')
+        ->name('portals.patient.qr');
 
     Route::get('/portals/staff', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'index'])->name('portals.staff');
     Route::get('/portals/staff/appointments', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'appointments'])->name('portals.staff.appointments');
@@ -166,12 +169,22 @@ Route::middleware(['web', 'auth', 'portal.access', 'facility.context'])->group(f
 
     Route::middleware(['guardian.context'])->group(function () {
         Route::get('/portals/patient/appointments', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'appointments'])->name('portals.patient.appointments');
+        Route::post('/portals/patient/appointments/{id}/cancel', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'cancelAppointment'])->name('portals.patient.appointments.cancel');
         Route::get('/portals/patient/labs', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'labResults'])->name('portals.patient.labs');
         Route::get('/portals/patient/prescriptions', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'prescriptions'])->name('portals.patient.prescriptions');
+        Route::post('/portals/patient/prescriptions/{id}/refill', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'requestRefill'])->name('portals.patient.prescriptions.refill');
         Route::get('/portals/patient/consent', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'consentRequests'])->name('portals.patient.consent');
         Route::post('/portals/patient/consent/{id}/approve', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'approveConsent'])->name('portals.patient.consent.approve');
         Route::post('/portals/patient/consent/{id}/deny', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'denyConsent'])->name('portals.patient.consent.deny');
+        Route::post('/portals/patient/consent/{id}/revoke', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'revokeConsent'])->name('portals.patient.consent.revoke');
         Route::get('/portals/patient/documents', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'documents'])->name('portals.patient.documents');
+        Route::get('/portals/patient/documents/{id}/download', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'documentDownload'])->name('portals.patient.documents.download');
+        // Health ID card PDF download
+        Route::get('/portals/patient/health-id-card/download', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'downloadHealthIdCard'])->name('portals.patient.health-id-card.download');
+        // QR token management
+        Route::post('/portals/patient/qr/{tokenId}/revoke', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'revokeQrToken'])->name('portals.patient.qr.revoke');
+        Route::post('/portals/patient/qr/revoke-all', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'revokeAllQrTokens'])->name('portals.patient.qr.revoke-all');
+        Route::post('/portals/patient/report-lost-card', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'reportLostCard'])->name('portals.patient.report-lost-card');
         Route::get('/portals/patient/profile', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'profile'])->name('portals.patient.profile');
         Route::post('/portals/patient/profile', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'updateProfile'])->name('portals.patient.profile.update');
         Route::get('/portals/patient/logs',          [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'accessLogs'])->name('portals.patient.logs');
@@ -179,6 +192,16 @@ Route::middleware(['web', 'auth', 'portal.access', 'facility.context'])->group(f
         Route::get('/portals/patient/allergies',     [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'allergies'])->name('portals.patient.allergies');
         Route::get('/portals/patient/clinical',      [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'clinicalHistory'])->name('portals.patient.clinical');
         Route::get('/portals/patient/immunizations', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'immunizations'])->name('portals.patient.immunizations');
+
+        // Insurance marketplace
+        Route::get('/portals/patient/insurance',                 [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'insuranceMarketplace'])->name('portals.patient.insurance');
+        Route::get('/portals/patient/insurance/plans/{id}',      [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'insurancePlanDetail'])->name('portals.patient.insurance.plan');
+        Route::post('/portals/patient/insurance/plans/{id}/purchase', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'insurancePurchase'])->name('portals.patient.insurance.purchase');
+
+        // ── Data Subject Rights (Cameroon Law No. 2010/012 Art. 21–24) ──────────
+        Route::get('/portals/patient/data-rights/export',  [\App\Http\Controllers\MedicalId\DataSubjectRightsController::class, 'export'])->name('portals.patient.data-rights.export');
+        Route::post('/portals/patient/data-rights/rectify',[\App\Http\Controllers\MedicalId\DataSubjectRightsController::class, 'rectify'])->name('portals.patient.data-rights.rectify');
+        Route::post('/portals/patient/data-rights/erase',  [\App\Http\Controllers\MedicalId\DataSubjectRightsController::class, 'erase'])->name('portals.patient.data-rights.erase');
     });
 
     // ── Staff: Visit Flow ────────────────────────────────────────
@@ -274,6 +297,10 @@ Route::middleware(['web', 'auth', 'portal.access', 'facility.context'])->group(f
     // --- Global Search ---
     Route::get('/portals/staff/search', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'search'])->name('portals.staff.search');
 
+    // ── Clinical Register (prescription & lab listings for clinical staff) ─────
+    Route::get('/portals/staff/prescriptions', [\App\Http\Controllers\MedicalId\StaffClinicalController::class, 'prescriptions'])->name('portals.staff.prescriptions');
+    Route::get('/portals/staff/lab-orders',    [\App\Http\Controllers\MedicalId\StaffClinicalController::class, 'labOrders'])->name('portals.staff.lab_orders');
+
     // --- Ward / Admission / Bed Management ---
     Route::get('/portals/staff/wards',                            [\App\Http\Controllers\MedicalId\WardController::class, 'index'])->name('portals.staff.wards');
     Route::post('/portals/staff/wards',                           [\App\Http\Controllers\MedicalId\WardController::class, 'wardStore'])->name('portals.staff.wards.store');
@@ -330,6 +357,7 @@ Route::middleware(['web', 'auth', 'portal.access', 'facility.context'])->group(f
     Route::post('/portals/staff/cdss/alerts/{alertId}/dismiss',              [\App\Http\Controllers\MedicalId\CdssController::class, 'dismiss'])->name('portals.staff.cdss.dismiss');
 
     // --- Insurance Portal ---
+    Route::get('/portals/insurance', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'dashboard'])->name('portals.insurance.dashboard');
     Route::get('/portals/insurance/providers', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'providers'])->name('portals.insurance.providers');
     Route::post('/portals/insurance/providers', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'providersStore'])->name('portals.insurance.providers.store');
     Route::post('/portals/insurance/providers/{providerId}/plans', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'plansStore'])->name('portals.insurance.plans.store');
@@ -354,6 +382,10 @@ Route::middleware(['web', 'auth', 'portal.access', 'facility.context'])->group(f
     Route::post('/portals/insurance/claims/{id}/pay', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'claimsPay'])->name('portals.insurance.claims.pay');
 
     Route::get('/portals/admin', [\App\Http\Controllers\MedicalId\AdminPortalController::class, 'index'])->name('portals.admin');
+
+    // ── Facility Clinical Register (hospital_admin / clinic_admin) ─────────
+    Route::get('/portals/admin/clinical/prescriptions', [\App\Http\Controllers\MedicalId\FacilityClinicalController::class, 'prescriptions'])->name('portals.admin.clinical.prescriptions');
+    Route::get('/portals/admin/clinical/lab-orders',    [\App\Http\Controllers\MedicalId\FacilityClinicalController::class, 'labOrders'])->name('portals.admin.clinical.lab_orders');
     Route::get('/portals/admin/go-live', [\App\Http\Controllers\Api\V1\Admin\FacilityGoLiveReadinessController::class, 'index'])->name('portals.admin.go-live');
 
     // ── Master Admin Control Center ───────────────────────────────
@@ -369,6 +401,10 @@ Route::middleware(['web', 'auth', 'portal.access', 'facility.context'])->group(f
     Route::post('/portals/admin/cc/maintenance/{id}',    [\App\Http\Controllers\MedicalId\AdminControlCenterController::class, 'maintenanceToggle'])->name('portals.admin.cc.maintenance.toggle');
     Route::get('/portals/admin/cc/health',               [\App\Http\Controllers\MedicalId\AdminControlCenterController::class, 'systemHealth'])->name('portals.admin.cc.health');
     Route::get('/portals/admin/cc/audit',                [\App\Http\Controllers\MedicalId\AdminControlCenterController::class, 'auditLog'])->name('portals.admin.cc.audit');
+
+    // ── MINSANTE Compliance Reports ─────────────────────────────────────────
+    Route::get('/portals/admin/reports/minsante-monthly',           [\App\Http\Controllers\MedicalId\ComplianceReportController::class, 'minsanteMonthly'])->name('portals.admin.reports.minsante-monthly');
+    Route::get('/portals/admin/reports/minsante-monthly/download',  [\App\Http\Controllers\MedicalId\ComplianceReportController::class, 'minsanteMonthlyDownload'])->name('portals.admin.reports.minsante-monthly.download');
 
     // --- Connect Suite Admin Portal ---
     Route::get('/portals/admin/connect',                       [\App\Http\Controllers\MedicalId\ConnectPortalController::class, 'index'])->name('portals.admin.connect');
@@ -473,6 +509,46 @@ Route::middleware(['web', 'auth'])->get('/admin/care-map/governance', [\App\Http
 
 /*
 |--------------------------------------------------------------------------
+| OpesCare Health Organization Portal
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
+    Route::get('/portals/healthorg',           [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'dashboard'])->name('portals.healthorg.dashboard');
+    Route::get('/portals/healthorg/programs',  [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'programs'])->name('portals.healthorg.programs');
+    Route::get('/portals/healthorg/outreach',  [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'outreach'])->name('portals.healthorg.outreach');
+    Route::get('/portals/healthorg/reports',   [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'reports'])->name('portals.healthorg.reports');
+    Route::get('/portals/healthorg/signals',   [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'signals'])->name('portals.healthorg.signals');
+});
+
+/*
+|--------------------------------------------------------------------------
+| OpesCare Lab / Diagnostic Portal
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
+    Route::get('/portals/lab',                                   [\App\Http\Controllers\MedicalId\LabPortalController::class, 'dashboard'])->name('portals.lab.dashboard');
+    Route::get('/portals/lab/orders',                            [\App\Http\Controllers\MedicalId\LabPortalController::class, 'orders'])->name('portals.lab.orders');
+    Route::get('/portals/lab/results',                           [\App\Http\Controllers\MedicalId\LabPortalController::class, 'results'])->name('portals.lab.results');
+    Route::get('/portals/lab/samples',                           [\App\Http\Controllers\MedicalId\LabPortalController::class, 'samples'])->name('portals.lab.samples');
+    Route::post('/portals/lab/orders/{id}/collect',              [\App\Http\Controllers\MedicalId\LabPortalController::class, 'markCollected'])->name('portals.lab.orders.collect');
+    Route::post('/portals/lab/orders/{id}/process',              [\App\Http\Controllers\MedicalId\LabPortalController::class, 'markProcessing'])->name('portals.lab.orders.process');
+});
+
+/*
+|--------------------------------------------------------------------------
+| OpesCare Pharmacy Portal
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
+    Route::get('/portals/pharmacy',                              [\App\Http\Controllers\MedicalId\PharmacyPortalController::class, 'dashboard'])->name('portals.pharmacy.dashboard');
+    Route::get('/portals/pharmacy/prescriptions',               [\App\Http\Controllers\MedicalId\PharmacyPortalController::class, 'prescriptions'])->name('portals.pharmacy.prescriptions');
+    Route::post('/portals/pharmacy/prescriptions/{id}/dispense',[\App\Http\Controllers\MedicalId\PharmacyPortalController::class, 'dispense'])->name('portals.pharmacy.dispense');
+    Route::get('/portals/pharmacy/inventory',                   [\App\Http\Controllers\MedicalId\PharmacyPortalController::class, 'inventory'])->name('portals.pharmacy.inventory');
+    Route::get('/portals/pharmacy/controlled',                  [\App\Http\Controllers\MedicalId\PharmacyPortalController::class, 'controlled'])->name('portals.pharmacy.controlled');
+});
+
+/*
+|--------------------------------------------------------------------------
 | OpesCare Lite — Simplified Portal for Small / Low-Connectivity Facilities
 |--------------------------------------------------------------------------
 */
@@ -517,6 +593,9 @@ Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
 
     // Webhook Delivery Logs
     Route::get('/portals/developer/apps/{clientId}/webhook-deliveries',       [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'webhookDeliveries'])->name('portals.developer.webhook_deliveries');
+
+    // API Usage Analytics
+    Route::get('/portals/developer/analytics',                                [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'analytics'])->name('portals.developer.analytics');
 });
 
 
@@ -581,6 +660,22 @@ Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
     Route::post('/portals/admin/onboarding/{facility}/mark',                 [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'markItem'])->name('portals.admin.onboarding.mark');
     Route::post('/portals/admin/onboarding/{facility}/approve',              [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'approve'])->name('portals.admin.onboarding.approve');
 });
+
+// ── Document Template Preview Gallery (no auth — dev/sales preview) ─────────
+Route::prefix('document-preview')->name('document.preview.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\DocumentPreviewController::class, 'index'])->name('gallery');
+    Route::get('/{type}', [\App\Http\Controllers\DocumentPreviewController::class, 'show'])->name('show');
+});
+
+// ── Document Render — Category B (Living Clinical Forms) ─────────────────
+Route::get('/patients/{patientId}/clinical-forms/{type}', [\App\Http\Controllers\DocumentRenderController::class, 'clinicalForm'])
+    ->name('documents.clinical-form')
+    ->where('type', '[a-z-]+');
+
+// ── Document Render — Category C (On-Demand Reports) ─────────────────────
+Route::get('/patients/{patientId}/documents/{type}/render', [\App\Http\Controllers\DocumentRenderController::class, 'onDemand'])
+    ->name('documents.on-demand')
+    ->where('type', '[a-z-]+');
 
 // Public — no auth required (GET lets unauthenticated patients view the invite page)
 Route::get('/family/invite/accept/{token}',  [\App\Http\Controllers\MedicalId\FamilyController::class, 'acceptInvite'])->name('portals.patient.family.invite.accept');

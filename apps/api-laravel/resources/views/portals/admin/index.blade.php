@@ -60,6 +60,36 @@
     </div>
 </div>
 
+<!-- Clinical Register Quick Links (visible to hospital_admin / clinic_admin) -->
+<div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-header" style="font-weight:700;display:flex;align-items:center;gap:.5rem;">
+        <i data-lucide="stethoscope" style="width:16px;height:16px;color:#0f4c81;"></i>
+        Clinical Register
+    </div>
+    <div class="card-body" style="display:flex;gap:1rem;flex-wrap:wrap;">
+        <a href="{{ route('portals.admin.clinical.prescriptions') }}" class="btn btn-outline" style="gap:.6rem;">
+            <i data-lucide="clipboard-list" style="width:16px;height:16px;color:#7c3aed;"></i>
+            Prescription Register
+        </a>
+        <a href="{{ route('portals.admin.clinical.lab_orders') }}" class="btn btn-outline" style="gap:.6rem;">
+            <i data-lucide="microscope" style="width:16px;height:16px;color:#0ea5e9;"></i>
+            Lab Orders Register
+        </a>
+        <a href="{{ route('portals.staff.analytics') }}" class="btn btn-outline" style="gap:.6rem;">
+            <i data-lucide="bar-chart-2" style="width:16px;height:16px;color:#10b981;"></i>
+            Analytics
+        </a>
+        <a href="{{ route('portals.staff.wards') }}" class="btn btn-outline" style="gap:.6rem;">
+            <i data-lucide="bed" style="width:16px;height:16px;color:#f59e0b;"></i>
+            Wards & Admissions
+        </a>
+        <a href="{{ route('portals.staff.billing') }}" class="btn btn-outline" style="gap:.6rem;">
+            <i data-lucide="receipt" style="width:16px;height:16px;color:#ef4444;"></i>
+            Billing
+        </a>
+    </div>
+</div>
+
 <!-- Partner Governance -->
 <div class="panel mb-6" id="partners" style="margin-bottom:var(--p-space-6);">
     <div class="panel-header">

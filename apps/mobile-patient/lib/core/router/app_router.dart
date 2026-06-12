@@ -26,6 +26,8 @@ import '../../features/surveys/presentation/survey_wizard_screen.dart';
 import '../../features/medical_export/presentation/medical_export_screen.dart';
 import '../../features/referrals/presentation/referrals_screen.dart';
 import '../../features/insurance/presentation/insurance_screen.dart';
+import '../../features/family/presentation/family_screen.dart';
+import '../../features/care_map/presentation/care_map_screen.dart';
 import '../../features/shell/presentation/main_shell.dart';
 
 abstract final class Routes {
@@ -48,6 +50,8 @@ abstract final class Routes {
   static const medExport       = '/export-records';
   static const referrals       = '/referrals';
   static const insurance       = '/insurance';
+  static const family          = '/family';
+  static const careMap         = '/care-map';
 }
 
 class _RouterNotifier extends ChangeNotifier {
@@ -145,12 +149,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const DocumentsScreen(),
       ),
 
-      // Profile
-      GoRoute(
-        path: Routes.profile,
-        builder: (_, __) => const ProfileScreen(),
-      ),
-
       // Care Plans (with nested detail)
       GoRoute(
         path: Routes.carePlans,
@@ -189,13 +187,31 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const ReferralsScreen(),
       ),
 
-      // Insurance
+      // Settings (standalone — reached from Profile tab)
       GoRoute(
-        path: Routes.insurance,
-        builder: (_, __) => const InsuranceScreen(),
+        path: Routes.settings,
+        builder: (_, __) => const SettingsScreen(),
       ),
 
-      // Shell — 5-tab bottom navigation
+      // Timeline (standalone — reached from History links)
+      GoRoute(
+        path: Routes.timeline,
+        builder: (_, __) => const TimelineScreen(),
+      ),
+
+      // Consent (standalone — reached from alerts and health-id quick actions)
+      GoRoute(
+        path: Routes.consent,
+        builder: (_, __) => const ConsentScreen(),
+      ),
+
+      // Care Map (standalone push route)
+      GoRoute(
+        path: Routes.careMap,
+        builder: (_, __) => const CareMapScreen(),
+      ),
+
+      // Shell — 5-tab bottom navigation: Home · Health ID · Family · Insurance · Profile
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) =>
             MainShell(navigationShell: shell),
@@ -209,16 +225,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (_, __) => const HealthIdScreen()),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: Routes.consent,
-                builder: (_, __) => const ConsentScreen()),
+            GoRoute(path: Routes.family,
+                builder: (_, __) => const FamilyScreen()),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: Routes.timeline,
-                builder: (_, __) => const TimelineScreen()),
+            GoRoute(path: Routes.insurance,
+                builder: (_, __) => const InsuranceScreen()),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: Routes.settings,
-                builder: (_, __) => const SettingsScreen()),
+            GoRoute(path: Routes.profile,
+                builder: (_, __) => const ProfileScreen()),
           ]),
         ],
       ),

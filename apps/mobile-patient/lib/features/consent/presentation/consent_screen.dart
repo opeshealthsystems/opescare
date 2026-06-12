@@ -50,7 +50,7 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen>
       ),
       body: TabBarView(
         controller: _tab,
-        children: [
+        children: const [
           _ConsentList(status: 'pending'),
           _ConsentList(status: null),
         ],

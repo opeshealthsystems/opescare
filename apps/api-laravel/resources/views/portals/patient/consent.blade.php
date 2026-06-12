@@ -78,11 +78,23 @@
                     </button>
                 </form>
                 @else
-                <span style="padding:3px 10px;border-radius:9999px;font-size:0.75rem;font-weight:700;
-                    background:{{ $req->status === 'approved' ? '#D1FAE5' : 'var(--p-surface-2)' }};
-                    color:{{ $req->status === 'approved' ? '#059669' : 'var(--p-text-muted)' }};">
-                    {{ ucfirst($req->status) }}
-                </span>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+                    <span style="padding:3px 10px;border-radius:9999px;font-size:0.75rem;font-weight:700;
+                        background:{{ $req->status === 'approved' ? '#D1FAE5' : 'var(--p-surface-2)' }};
+                        color:{{ $req->status === 'approved' ? '#059669' : 'var(--p-text-muted)' }};">
+                        {{ ucfirst($req->status) }}
+                    </span>
+                    @if($req->status === 'approved')
+                    <form method="POST" action="{{ route('portals.patient.consent.revoke', $req->id) }}"
+                          onsubmit="return confirm('Revoke this consent? The facility will immediately lose access.')">
+                        @csrf
+                        <button type="submit"
+                            style="font-size:0.75rem;background:none;border:none;color:#DC2626;cursor:pointer;padding:0;text-decoration:underline;">
+                            Revoke access
+                        </button>
+                    </form>
+                    @endif
+                </div>
                 @endif
             </div>
         </div>
@@ -90,6 +102,13 @@
 </div>
 @endforeach
 </div>
+
+@if(method_exists($consentRequests, 'links') && $consentRequests->hasPages())
+<div style="margin-top:var(--p-space-4);">
+    {{ $consentRequests->links() }}
+</div>
+@endif
+
 @endif
 
 @endsection

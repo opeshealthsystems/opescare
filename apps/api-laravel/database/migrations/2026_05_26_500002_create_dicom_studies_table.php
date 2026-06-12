@@ -13,7 +13,9 @@ return new class extends Migration {
             $table->uuid('id')->primary();
             $table->foreignUuid('patient_id')->constrained('patients')->cascadeOnDelete();
             $table->foreignUuid('facility_id')->constrained('facilities')->cascadeOnDelete();
-            $table->foreignUuid('lab_order_id')->nullable()->constrained('lab_orders')->nullOnDelete();
+            // FK to lab_orders is added in 2026_05_28_000002 — the lab_orders
+            // table itself is only created in 2026_05_28_000001.
+            $table->uuid('lab_order_id')->nullable()->index();
             $table->string('study_uid')->unique();
             $table->string('modality', 20);
             $table->string('body_part')->nullable();

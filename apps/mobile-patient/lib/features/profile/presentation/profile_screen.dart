@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'edit_profile_screen.dart';
+import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/error_view.dart';
@@ -16,8 +18,11 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(profileProvider);
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('My Profile'),
+        backgroundColor: AppColors.surface,
+        surfaceTintColor: Colors.transparent,
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.pencil),
@@ -37,11 +42,16 @@ class ProfileScreen extends ConsumerWidget {
         ],
       ),
       body: profileAsync.when(
-        loading: () => ListView(padding: const EdgeInsets.all(16), children: const [
-          LoadingSkeleton(height: 120, borderRadius: 12),
-          SizedBox(height: 16),
-          LoadingSkeleton(height: 200, borderRadius: 12),
-        ]),
+        loading: () => ListView(
+          padding: const EdgeInsets.all(16),
+          children: const [
+            LoadingSkeleton(height: 120, borderRadius: 14),
+            SizedBox(height: 20),
+            LoadingSkeleton(height: 200, borderRadius: 12),
+            SizedBox(height: 16),
+            LoadingSkeleton(height: 100, borderRadius: 12),
+          ],
+        ),
         error: (e, _) => ErrorView(
           message: e.toString(),
           onRetry: () => ref.invalidate(profileProvider),
@@ -61,140 +71,284 @@ class _ProfileBody extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // Avatar + name card
+        // ── Gradient header card ──────────────────────────────────────────
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [AppColors.cardGradientStart, AppColors.cardGradientEnd],
-              begin: Alignment.topLeft, end: Alignment.bottomRight,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(children: [
-            Container(
-              width: 56, height: 56,
-              decoration: const BoxDecoration(
-                color: AppColors.whiteOverlay, shape: BoxShape.circle,
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.cardGradientStart.withAlpha(77), // ~0.3 alpha
+                blurRadius: 16,
+                offset: const Offset(0, 6),
               ),
-              child: Center(
-                child: Text(
-                  profile.firstName.isNotEmpty
-                      ? profile.firstName[0].toUpperCase()
-                      : 'P',
-                  style: AppTextStyles.h2.copyWith(color: Colors.white),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Avatar circle
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: AppColors.whiteOverlay,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    profile.firstName.isNotEmpty
+                        ? profile.firstName[0].toUpperCase()
+                        : 'P',
+                    style: AppTextStyles.h2.copyWith(color: Colors.white),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(profile.displayName,
-                    style: AppTextStyles.h3.copyWith(color: Colors.white)),
-                const SizedBox(height: 4),
-                Text(profile.healthId,
-                    style: AppTextStyles.caption
-                        .copyWith(color: Colors.white70)),
-                const SizedBox(height: 6),
-                _StatusChip(status: profile.status),
-              ]),
-            ),
-          ]),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      profile.displayName,
+                      style: AppTextStyles.h3.copyWith(color: Colors.white),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      profile.healthId,
+                      style: AppTextStyles.monoXs
+                          .copyWith(color: Colors.white60),
+                    ),
+                    const SizedBox(height: 8),
+                    // Chips row
+                    Row(
+                      children: [
+                        // Verified chip
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: AppColors.successLight.withAlpha(64), // 0.25
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: AppColors.success,
+                              width: 1,
+                            ),
+                          ),
+                          child: Text(
+                            '✓ VERIFIED',
+                            style: AppTextStyles.caption.copyWith(
+                              color: AppColors.successLight,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        // Status chip
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: AppColors.whiteOverlay,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            profile.status == 'active'
+                                ? 'Active'
+                                : profile.status.toUpperCase(),
+                            style: AppTextStyles.caption
+                                .copyWith(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+
+        // ── PERSONAL INFORMATION ──────────────────────────────────────────
+        _SectionLabel(label: 'PERSONAL INFORMATION'),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.divider),
+          ),
+          child: Column(
+            children: [
+              if (profile.dob != null)
+                _InfoRow(label: 'Date of Birth', value: profile.dob!),
+              if (profile.dob != null && profile.sex != null)
+                const Divider(height: 1, indent: 16),
+              if (profile.sex != null)
+                _InfoRow(
+                    label: 'Sex',
+                    value: profile.sex![0].toUpperCase() +
+                        profile.sex!.substring(1)),
+              if (profile.sex != null && profile.bloodGroup != null)
+                const Divider(height: 1, indent: 16),
+              if (profile.bloodGroup != null)
+                _InfoRow(label: 'Blood Group', value: profile.bloodGroup!),
+              if (profile.bloodGroup != null && profile.phone != null)
+                const Divider(height: 1, indent: 16),
+              if (profile.phone != null)
+                _InfoRow(label: 'Phone', value: profile.phone!),
+            ],
+          ),
         ),
         const SizedBox(height: 20),
 
-        // Demographics
-        _InfoSection(title: 'Personal Information', icon: LucideIcons.user, rows: [
-          if (profile.dob != null)    _Row('Date of Birth', profile.dob!),
-          if (profile.sex != null)    _Row('Sex', profile.sex!.toUpperCase()),
-          if (profile.bloodGroup != null) _Row('Blood Group', profile.bloodGroup!),
-          if (profile.phone != null)  _Row('Phone', profile.phone!),
-          if (profile.email != null)  _Row('Email', profile.email!),
-        ]),
-        const SizedBox(height: 16),
+        // ── EMERGENCY CONTACT ─────────────────────────────────────────────
+        _SectionLabel(label: 'EMERGENCY CONTACT'),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.divider),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.dangerLight,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  LucideIcons.phone,
+                  size: 18,
+                  color: AppColors.danger,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Emergency Contact',
+                      style: AppTextStyles.bodySm,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Not set',
+                      style: AppTextStyles.body
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(LucideIcons.chevronRight,
+                  size: 16, color: AppColors.neutral400),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
 
-        // Health summary
-        _InfoSection(title: 'Health Summary', icon: LucideIcons.activity, rows: [
-          _Row('Active Allergies', '${profile.allergiesCount}'),
-          _Row('Active Conditions', '${profile.conditionsCount}'),
-        ]),
+        // ── Settings row ──────────────────────────────────────────────────
+        GestureDetector(
+          onTap: () => context.push(Routes.settings),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.divider),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: AppColors.neutral100,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    LucideIcons.settings,
+                    size: 18,
+                    color: AppColors.neutral500,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Settings',
+                    style: AppTextStyles.body
+                        .copyWith(fontWeight: FontWeight.w600),
+                  ),
+                ),
+                const Icon(LucideIcons.chevronRight,
+                    size: 16, color: AppColors.neutral400),
+              ],
+            ),
+          ),
+        ),
         const SizedBox(height: 32),
       ],
     );
   }
 }
 
-class _StatusChip extends StatelessWidget {
-  const _StatusChip({required this.status});
-  final String status;
+/// Uppercase section label with letter-spacing
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel({required this.label});
+  final String label;
 
   @override
   Widget build(BuildContext context) {
-    final isActive = status == 'active';
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: AppColors.whiteOverlay,
-        borderRadius: BorderRadius.circular(20),
+    return Text(
+      label,
+      style: AppTextStyles.label.copyWith(
+        letterSpacing: 0.8,
+        color: AppColors.textMuted,
       ),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(isActive ? LucideIcons.checkCircle : LucideIcons.alertCircle,
-            size: 11, color: Colors.white),
-        const SizedBox(width: 4),
-        Text(isActive ? 'Active' : status.toUpperCase(),
-            style: AppTextStyles.caption.copyWith(color: Colors.white)),
-      ]),
     );
   }
 }
 
-class _InfoSection extends StatelessWidget {
-  const _InfoSection({
-    required this.title,
-    required this.icon,
-    required this.rows,
-  });
-  final String title;
-  final IconData icon;
-  final List<_Row> rows;
+/// A two-line info row: small label on top, bold value below
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({required this.label, required this.value});
+  final String label;
+  final String value;
 
   @override
   Widget build(BuildContext context) {
-    if (rows.isEmpty) return const SizedBox.shrink();
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.divider),
-      ),
-      child: Column(children: [
-        Padding(
-          padding: const EdgeInsets.all(14),
-          child: Row(children: [
-            Icon(icon, size: 16, color: AppColors.primary500),
-            const SizedBox(width: 8),
-            Text(title, style: AppTextStyles.h4),
-          ]),
-        ),
-        const Divider(height: 1),
-        ...rows.map((r) => Column(children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            child: Row(children: [
-              Expanded(child: Text(r.label, style: AppTextStyles.bodySm)),
-              Text(r.value,
-                  style: AppTextStyles.body
-                      .copyWith(fontWeight: FontWeight.w600)),
-            ]),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label.toUpperCase(),
+            style: AppTextStyles.caption.copyWith(
+              color: AppColors.textMuted,
+              letterSpacing: 0.6,
+            ),
           ),
-          if (r != rows.last) const Divider(height: 1, indent: 14),
-        ])),
-      ]),
+          const SizedBox(height: 3),
+          Text(
+            value,
+            style:
+                AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
     );
   }
-}
-
-class _Row {
-  const _Row(this.label, this.value);
-  final String label, value;
 }

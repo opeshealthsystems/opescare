@@ -1,0 +1,2 @@
+[console_scripts]
+opescare-bridge = opescare_bridge.daemon:main

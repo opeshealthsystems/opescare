@@ -11,7 +11,7 @@ class CredentialingService
 {
     public function addCredential(array $data): ProviderCredential
     {
-        return ProviderCredential::create($data);
+        return ProviderCredential::create(array_merge(['status' => 'active'], $data));
     }
 
     public function verify(string $credentialId, string $verifiedBy): ProviderCredential

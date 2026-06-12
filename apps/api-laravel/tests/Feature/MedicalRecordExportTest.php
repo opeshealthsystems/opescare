@@ -17,6 +17,9 @@ class MedicalRecordExportTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        if (!class_exists(\Barryvdh\DomPDF\Facade\Pdf::class)) {
+            $this->markTestSkipped('barryvdh/laravel-dompdf not installed — run: composer require barryvdh/laravel-dompdf');
+        }
         $this->service = app(MedicalRecordExportService::class);
         Storage::fake('local');
     }

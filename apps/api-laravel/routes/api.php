@@ -17,7 +17,19 @@ Route::get('/health', \App\Http\Controllers\Api\HealthCheckController::class);
 |--------------------------------------------------------------------------
 */
 Route::prefix('v1/operational-flow')->middleware(VerifyIntegrationClient::class)->group(function () {
+    // Pilot journey (existing)
     Route::post('/patient-journey', [\App\Http\Controllers\Api\V1\OperationalFlowController::class, 'patientJourney']);
+
+    // ── Visit lifecycle ────────────────────────────────────────────────────
+    Route::post('/visits',                                        [\App\Http\Controllers\Api\V1\OperationalFlowController::class, 'createVisit']);
+    Route::get('/visits/{visit}',                                 [\App\Http\Controllers\Api\V1\OperationalFlowController::class, 'showVisit']);
+    Route::post('/visits/{visit}/transition',                     [\App\Http\Controllers\Api\V1\OperationalFlowController::class, 'transition']);
+    Route::post('/visits/{visit}/complete',                       [\App\Http\Controllers\Api\V1\OperationalFlowController::class, 'completeVisit']);
+    Route::post('/visits/{visit}/cancel',                         [\App\Http\Controllers\Api\V1\OperationalFlowController::class, 'cancelVisit']);
+
+    // ── Medication reconciliation ──────────────────────────────────────────
+    Route::post('/medication-reconciliations',                    [\App\Http\Controllers\Api\V1\OperationalFlowController::class, 'createReconciliation']);
+    Route::post('/drug-interaction-alerts/{alertId}/acknowledge', [\App\Http\Controllers\Api\V1\OperationalFlowController::class, 'acknowledgeDrugAlert']);
 });
 
 /*
@@ -27,14 +39,18 @@ Route::prefix('v1/operational-flow')->middleware(VerifyIntegrationClient::class)
 */
 Route::prefix('v1/support')->middleware(VerifyIntegrationClient::class)->group(function () {
     Route::get('/tickets', [\App\Http\Controllers\Api\V1\SupportController::class, 'index']);
+    Route::get('/tickets/unassigned', [\App\Http\Controllers\Api\V1\SupportController::class, 'unassigned']);
     Route::post('/tickets', [\App\Http\Controllers\Api\V1\SupportController::class, 'store']);
     Route::post('/tickets/{ticket}/messages', [\App\Http\Controllers\Api\V1\SupportController::class, 'addMessage']);
     Route::post('/tickets/{ticket}/assign', [\App\Http\Controllers\Api\V1\SupportController::class, 'assign']);
     Route::post('/tickets/{ticket}/escalate', [\App\Http\Controllers\Api\V1\SupportController::class, 'escalate']);
     Route::post('/tickets/{ticket}/resolve', [\App\Http\Controllers\Api\V1\SupportController::class, 'resolve']);
     Route::post('/tickets/{ticket}/incident', [\App\Http\Controllers\Api\V1\SupportController::class, 'createIncident']);
-    Route::post('/knowledge-base', [\App\Http\Controllers\Api\V1\SupportController::class, 'publishArticle']);
-    Route::post('/knowledge-base/{article}/view', [\App\Http\Controllers\Api\V1\SupportController::class, 'viewArticle']);
+    Route::get('/knowledge-base',                        [\App\Http\Controllers\Api\V1\SupportController::class, 'listArticles']);
+    Route::post('/knowledge-base',                       [\App\Http\Controllers\Api\V1\SupportController::class, 'publishArticle']);
+    Route::post('/knowledge-base/{article}/view',        [\App\Http\Controllers\Api\V1\SupportController::class, 'viewArticle']);
+    Route::post('/knowledge-base/{article}/publish',     [\App\Http\Controllers\Api\V1\SupportController::class, 'publishKbArticle']);
+    Route::post('/knowledge-base/{article}/unpublish',   [\App\Http\Controllers\Api\V1\SupportController::class, 'unpublishKbArticle']);
 });
 
 /*
@@ -50,6 +66,7 @@ Route::prefix('v1/billing')->middleware(VerifyIntegrationClient::class)->group(f
     Route::post('/wallets/deposit', [\App\Http\Controllers\Api\V1\BillingController::class, 'depositWallet']);
     Route::post('/cashier-sessions', [\App\Http\Controllers\Api\V1\BillingController::class, 'openSession']);
     Route::post('/cashier-sessions/{session}/close', [\App\Http\Controllers\Api\V1\BillingController::class, 'closeSession']);
+    Route::post('/cashier-sessions/{session}/reconcile', [\App\Http\Controllers\Api\V1\BillingController::class, 'reconcileSession']);
 });
 
 /*
@@ -62,11 +79,26 @@ Route::prefix('v1/queues')->middleware(VerifyIntegrationClient::class)->group(fu
     Route::post('/check-ins', [\App\Http\Controllers\Api\V1\QueueController::class, 'checkIn']);
     Route::post('/call-next', [\App\Http\Controllers\Api\V1\QueueController::class, 'callNext']);
     Route::get('/display', [\App\Http\Controllers\Api\V1\QueueController::class, 'display']);
+    Route::get('/public-display', [\App\Http\Controllers\Api\V1\QueueController::class, 'publicDisplay']);
+    Route::get('/stations/{stationId}', [\App\Http\Controllers\Api\V1\QueueController::class, 'stationQueue']);
     Route::post('/tickets/{ticket}/start-service', [\App\Http\Controllers\Api\V1\QueueController::class, 'startService']);
     Route::post('/tickets/{ticket}/transfer', [\App\Http\Controllers\Api\V1\QueueController::class, 'transfer']);
     Route::post('/tickets/{ticket}/prioritize', [\App\Http\Controllers\Api\V1\QueueController::class, 'prioritize']);
     Route::post('/tickets/{ticket}/complete', [\App\Http\Controllers\Api\V1\QueueController::class, 'complete']);
     Route::post('/tickets/{ticket}/cancel', [\App\Http\Controllers\Api\V1\QueueController::class, 'cancel']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| OpesCare Clinical Encounter API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/encounters')->middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::post('/notes',                   [\App\Http\Controllers\Api\V1\EncounterController::class, 'saveNote']);
+    Route::get('/notes/{note}',             [\App\Http\Controllers\Api\V1\EncounterController::class, 'showNote']);
+    Route::post('/notes/{note}/amend',      [\App\Http\Controllers\Api\V1\EncounterController::class, 'amendNote']);
+    Route::post('/allergies',               [\App\Http\Controllers\Api\V1\EncounterController::class, 'recordAllergy']);
+    Route::post('/diagnoses',               [\App\Http\Controllers\Api\V1\EncounterController::class, 'recordDiagnosis']);
 });
 
 /*
@@ -81,6 +113,11 @@ Route::prefix('v1/appointments')->middleware(VerifyIntegrationClient::class)->gr
     Route::post('/{appointment}/reschedule', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'reschedule']);
     Route::post('/{appointment}/cancel', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'cancel']);
     Route::post('/{appointment}/check-in', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'checkIn']);
+    // Waitlist
+    Route::post('/waitlist', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'addToWaitlist']);
+    Route::post('/waitlist/backfill', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'triggerBackfill']);
+    // Patient self-booking
+    Route::post('/self-book', [\App\Http\Controllers\Api\V1\AppointmentController::class, 'selfBook']);
 });
 
 /*
@@ -93,8 +130,8 @@ Route::prefix('v1/connect')->group(function () {
     // Auth token request endpoint (unprotected by client middleware, uses POST body credentials)
     Route::post('/auth/token', [\App\Http\Controllers\Api\V1\Connect\AuthController::class, 'issueToken']);
 
-    // Authenticated B2B routes group (per-client rate limit: 200 req/min)
-    Route::middleware([VerifyIntegrationClient::class, 'throttle.client:200,1'])->group(function () {
+    // Authenticated B2B routes group — Bearer JWT (RS256) + per-client rate limit 200 req/min
+    Route::middleware(['auth.bearer', 'throttle.client:200,1'])->group(function () {
         
         // Widget session
         Route::post('/widget/sessions', [\App\Http\Controllers\Api\V1\Connect\AuthController::class, 'createWidgetSession']);
@@ -170,8 +207,15 @@ Route::prefix('mobile')->group(function () {
         // QR Code
         Route::post('/qr/temporary', [\App\Http\Controllers\Api\Mobile\MobileQrController::class, 'generateTemporary']);
 
-        // Insurance
+        // Insurance — existing policies
         Route::get('/insurance', [\App\Http\Controllers\Api\Mobile\MobileInsuranceController::class, 'index']);
+
+        // Insurance marketplace — browse & purchase plans
+        Route::prefix('insurance/marketplace')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\Mobile\MobileInsuranceMarketplaceController::class, 'index']);
+            Route::get('/plans/{id}', [\App\Http\Controllers\Api\Mobile\MobileInsuranceMarketplaceController::class, 'show']);
+            Route::post('/plans/{id}/purchase', [\App\Http\Controllers\Api\Mobile\MobileInsuranceMarketplaceController::class, 'purchase']);
+        });
 
         // Referrals
         Route::get('/referrals', [\App\Http\Controllers\Api\Mobile\MobileReferralController::class, 'index']);
@@ -233,6 +277,13 @@ Route::prefix('mobile')->group(function () {
         Route::patch('/settings', [\App\Http\Controllers\Api\Mobile\MobileSettingsController::class, 'update']);
         Route::post('/push-tokens', [\App\Http\Controllers\Api\Mobile\MobileSettingsController::class, 'registerPushToken']);
         Route::delete('/push-tokens/{id}', [\App\Http\Controllers\Api\Mobile\MobileSettingsController::class, 'revokePushToken']);
+
+        // Family management (guardians & dependents)
+        Route::get('/family',                         [\App\Http\Controllers\Api\Mobile\MobileFamilyController::class, 'index']);
+        Route::post('/family',                        [\App\Http\Controllers\Api\Mobile\MobileFamilyController::class, 'store']);
+        Route::get('/family/invitations',             [\App\Http\Controllers\Api\Mobile\MobileFamilyController::class, 'invitations']);
+        Route::post('/family/invitations',            [\App\Http\Controllers\Api\Mobile\MobileFamilyController::class, 'sendInvitation']);
+        Route::delete('/family/invitations/{id}',     [\App\Http\Controllers\Api\Mobile\MobileFamilyController::class, 'cancelInvitation']);
     });
 });
 
@@ -343,6 +394,173 @@ Route::prefix('v1/admin')->middleware(VerifyIntegrationClient::class)->group(fun
     Route::post('/country-policies', [\App\Http\Controllers\Api\V1\Admin\AdminGovernanceController::class, 'createCountryPolicy']);
     Route::put('/country-policies/{id}', [\App\Http\Controllers\Api\V1\Admin\AdminGovernanceController::class, 'updateCountryPolicy']);
     Route::post('/country-policies/{id}/publish', [\App\Http\Controllers\Api\V1\Admin\AdminGovernanceController::class, 'publishCountryPolicy']);
+
+    // ── Master Patient Index ──────────────────────────────────────────────
+    Route::prefix('mpi')->group(function () {
+        Route::get('/candidates',                      [\App\Http\Controllers\Api\V1\Admin\MasterPatientIndexController::class, 'listCandidates']);
+        Route::post('/detect',                         [\App\Http\Controllers\Api\V1\Admin\MasterPatientIndexController::class, 'detect']);
+        Route::post('/search',                         [\App\Http\Controllers\Api\V1\Admin\MasterPatientIndexController::class, 'search']);
+        Route::post('/candidates/{candidate}/confirm', [\App\Http\Controllers\Api\V1\Admin\MasterPatientIndexController::class, 'confirmMatch']);
+        Route::post('/candidates/{candidate}/reject',  [\App\Http\Controllers\Api\V1\Admin\MasterPatientIndexController::class, 'rejectMatch']);
+        Route::post('/patients/{patient}/identifiers', [\App\Http\Controllers\Api\V1\Admin\MasterPatientIndexController::class, 'linkIdentifier']);
+    });
+
+    // ── Access Control — Roles & Permissions ──────────────────────────────
+    Route::prefix('access-control')->group(function () {
+        // Roles
+        Route::get('/roles',                                        [\App\Http\Controllers\Api\V1\Admin\AccessControlController::class, 'listRoles']);
+        Route::post('/roles',                                       [\App\Http\Controllers\Api\V1\Admin\AccessControlController::class, 'createRole']);
+        Route::get('/roles/{role}',                                 [\App\Http\Controllers\Api\V1\Admin\AccessControlController::class, 'showRole']);
+        Route::put('/roles/{role}',                                 [\App\Http\Controllers\Api\V1\Admin\AccessControlController::class, 'updateRole']);
+        Route::post('/roles/{role}/permissions',                    [\App\Http\Controllers\Api\V1\Admin\AccessControlController::class, 'assignPermissions']);
+        Route::delete('/roles/{role}/permissions/{permission}',     [\App\Http\Controllers\Api\V1\Admin\AccessControlController::class, 'revokePermission']);
+        // Permissions
+        Route::get('/permissions',                                  [\App\Http\Controllers\Api\V1\Admin\AccessControlController::class, 'listPermissions']);
+        Route::post('/permissions',                                 [\App\Http\Controllers\Api\V1\Admin\AccessControlController::class, 'createPermission']);
+        // Governance matrix
+        Route::get('/matrix',                                       [\App\Http\Controllers\Api\V1\Admin\AccessControlController::class, 'matrix']);
+    });
+
+    // ── Facility Readiness Scoring ────────────────────────────────────────
+    Route::post('/facilities/{facility}/readiness-score',          [\App\Http\Controllers\Api\V1\Admin\FacilityGoLiveReadinessController::class, 'computeScore']);
+    Route::get('/facilities/{facility}/readiness-score',           [\App\Http\Controllers\Api\V1\Admin\FacilityGoLiveReadinessController::class, 'latestScore']);
+
+    // ── Feature Flags ─────────────────────────────────────────────────────
+    Route::get('/feature-flags',                    [\App\Http\Controllers\Api\V1\Admin\AdminPlatformController::class, 'listFlags']);
+    Route::get('/feature-flags/{key}',              [\App\Http\Controllers\Api\V1\Admin\AdminPlatformController::class, 'checkFlag']);
+    Route::post('/feature-flags/{key}/enable',      [\App\Http\Controllers\Api\V1\Admin\AdminPlatformController::class, 'enableFlag']);
+    Route::post('/feature-flags/{key}/disable',     [\App\Http\Controllers\Api\V1\Admin\AdminPlatformController::class, 'disableFlag']);
+
+    // ── System Health ─────────────────────────────────────────────────────
+    Route::get('/system-health',                    [\App\Http\Controllers\Api\V1\Admin\AdminPlatformController::class, 'latestHealth']);
+    Route::post('/system-health/capture',           [\App\Http\Controllers\Api\V1\Admin\AdminPlatformController::class, 'captureHealth']);
+
+    // ── Platform Administration (PlatformAdminController) ─────────────────
+    Route::prefix('platform')->group(function () {
+        // Platform Settings
+        Route::get('/settings',                     [\App\Http\Controllers\Api\V1\Admin\PlatformAdminController::class, 'allSettings']);
+        Route::put('/settings/{key}',               [\App\Http\Controllers\Api\V1\Admin\PlatformAdminController::class, 'updateSetting']);
+        Route::post('/settings/seed',               [\App\Http\Controllers\Api\V1\Admin\PlatformAdminController::class, 'seedSettings']);
+        // Module Toggles
+        Route::get('/modules',                      [\App\Http\Controllers\Api\V1\Admin\PlatformAdminController::class, 'allModules']);
+        Route::post('/modules/{key}/toggle',        [\App\Http\Controllers\Api\V1\Admin\PlatformAdminController::class, 'toggleModule']);
+        Route::post('/modules/seed',                [\App\Http\Controllers\Api\V1\Admin\PlatformAdminController::class, 'seedModules']);
+        // Maintenance Windows
+        Route::get('/maintenance',                  [\App\Http\Controllers\Api\V1\Admin\PlatformAdminController::class, 'listMaintenance']);
+        Route::post('/maintenance',                 [\App\Http\Controllers\Api\V1\Admin\PlatformAdminController::class, 'createMaintenance']);
+        Route::post('/maintenance/{id}/toggle',     [\App\Http\Controllers\Api\V1\Admin\PlatformAdminController::class, 'toggleMaintenance']);
+        // Platform Health & Audit
+        Route::get('/health',                       [\App\Http\Controllers\Api\V1\Admin\PlatformAdminController::class, 'health']);
+        Route::get('/action-log',                   [\App\Http\Controllers\Api\V1\Admin\PlatformAdminController::class, 'actionLog']);
+    });
+
+    // ── Legal Admin Stats ──────────────────────────────────────────────────
+    Route::get('/legal/stats',                      [\App\Http\Controllers\Api\V1\LegalDocumentController::class, 'adminStats']);
+
+    // ── Partner Governance ────────────────────────────────────────────────
+    Route::prefix('partners')->group(function () {
+        Route::get('/',                                          [\App\Http\Controllers\Api\V1\Admin\PartnerGovernanceController::class, 'listPartners']);
+        Route::post('/{id}/approve',                            [\App\Http\Controllers\Api\V1\Admin\PartnerGovernanceController::class, 'approvePartner']);
+        Route::post('/{id}/suspend',                            [\App\Http\Controllers\Api\V1\Admin\PartnerGovernanceController::class, 'suspendPartner']);
+        Route::post('/{id}/documents/{documentId}/verify',      [\App\Http\Controllers\Api\V1\Admin\PartnerGovernanceController::class, 'verifyDocument']);
+        Route::post('/{id}/agreements/{agreementId}/sign',      [\App\Http\Controllers\Api\V1\Admin\PartnerGovernanceController::class, 'markAgreementSigned']);
+        Route::post('/{id}/integrations/{integrationId}/certify',  [\App\Http\Controllers\Api\V1\Admin\PartnerGovernanceController::class, 'certifyIntegration']);
+        Route::post('/{id}/integrations/{integrationId}/enable-production', [\App\Http\Controllers\Api\V1\Admin\PartnerGovernanceController::class, 'enableProduction']);
+        Route::post('/{id}/risk-events',                        [\App\Http\Controllers\Api\V1\Admin\PartnerGovernanceController::class, 'recordRiskEvent']);
+    });
+
+    // ── Country Expansion ──────────────────────────────────────────────────
+    Route::prefix('countries')->group(function () {
+        Route::post('/{country}/launch',              [\App\Http\Controllers\Api\V1\Admin\CountryExpansionController::class, 'initiateLaunch']);
+        Route::get('/{country}/launch',               [\App\Http\Controllers\Api\V1\Admin\CountryExpansionController::class, 'launchStatus']);
+        Route::put('/{country}/launch/checklist',     [\App\Http\Controllers\Api\V1\Admin\CountryExpansionController::class, 'updateChecklist']);
+        Route::post('/{country}/launch/approve',      [\App\Http\Controllers\Api\V1\Admin\CountryExpansionController::class, 'approveLaunch']);
+    });
+
+    // ── Connect Integration Client Management ─────────────────────────────
+    Route::prefix('connect')->group(function () {
+        Route::get('/clients',                              [\App\Http\Controllers\Api\V1\Admin\ConnectAdminController::class, 'listClients']);
+        Route::post('/clients',                             [\App\Http\Controllers\Api\V1\Admin\ConnectAdminController::class, 'createClient']);
+        Route::get('/clients/{client}',                     [\App\Http\Controllers\Api\V1\Admin\ConnectAdminController::class, 'showClient']);
+        Route::post('/clients/{client}/approve',            [\App\Http\Controllers\Api\V1\Admin\ConnectAdminController::class, 'approveClient']);
+        Route::post('/clients/{client}/suspend',            [\App\Http\Controllers\Api\V1\Admin\ConnectAdminController::class, 'suspendClient']);
+        Route::post('/clients/{client}/revoke',             [\App\Http\Controllers\Api\V1\Admin\ConnectAdminController::class, 'revokeClient']);
+        Route::post('/clients/{client}/tokens',             [\App\Http\Controllers\Api\V1\Admin\ConnectAdminController::class, 'issueToken']);
+        Route::delete('/tokens/{token}',                    [\App\Http\Controllers\Api\V1\Admin\ConnectAdminController::class, 'revokeToken']);
+        Route::get('/webhooks/stats',                       [\App\Http\Controllers\Api\V1\Admin\ConnectAdminController::class, 'webhookStats']);
+        Route::get('/stats',                                [\App\Http\Controllers\Api\V1\Admin\ConnectAdminController::class, 'stats']);
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| File Storage API (V1)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/files')->middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::post('/upload',                   [\App\Http\Controllers\Api\V1\FileStorageController::class, 'upload']);
+    Route::post('/upload-and-attach',        [\App\Http\Controllers\Api\V1\FileStorageController::class, 'uploadAndAttach']);
+    Route::post('/{asset}/attach',           [\App\Http\Controllers\Api\V1\FileStorageController::class, 'attach']);
+    Route::get('/{asset}',                   [\App\Http\Controllers\Api\V1\FileStorageController::class, 'show']);
+    Route::get('/{asset}/download',          [\App\Http\Controllers\Api\V1\FileStorageController::class, 'download']);
+    Route::delete('/{asset}',                [\App\Http\Controllers\Api\V1\FileStorageController::class, 'delete']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Legal Documents API (V1)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/legal')->group(function () {
+    // Public (no auth — served to onboarding flows, mobile apps, web)
+    Route::get('/documents',                               [\App\Http\Controllers\Api\V1\LegalDocumentController::class, 'publicDocuments']);
+    Route::get('/users/{userId}/missing-acceptances',      [\App\Http\Controllers\Api\V1\LegalDocumentController::class, 'missingAcceptances']);
+
+    // Auth-required acceptance recording
+    Route::middleware(VerifyIntegrationClient::class)->group(function () {
+        Route::post('/acceptances/user',                   [\App\Http\Controllers\Api\V1\LegalDocumentController::class, 'recordUserAcceptance']);
+        Route::post('/acceptances/partner',                [\App\Http\Controllers\Api\V1\LegalDocumentController::class, 'recordPartnerAcceptance']);
+
+        // Admin document management
+        Route::post('/documents/ensure',                   [\App\Http\Controllers\Api\V1\LegalDocumentController::class, 'ensureDocument']);
+        Route::post('/documents/{document}/versions',      [\App\Http\Controllers\Api\V1\LegalDocumentController::class, 'publishVersion']);
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Clinical Consent Management API (V1)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/consents')->middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::post('/request',                  [\App\Http\Controllers\Api\V1\ConsentManagementController::class, 'request']);
+    Route::post('/requests/{id}/grant',      [\App\Http\Controllers\Api\V1\ConsentManagementController::class, 'grant']);
+    Route::post('/grants/{id}/revoke',       [\App\Http\Controllers\Api\V1\ConsentManagementController::class, 'revoke']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Search API (V1)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/search')->middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::get('/',                                          [\App\Http\Controllers\Api\V1\SearchController::class, 'search']);
+    Route::post('/index',                                    [\App\Http\Controllers\Api\V1\SearchController::class, 'reindex']);
+    Route::delete('/index/{resourceType}/{resourceId}',      [\App\Http\Controllers\Api\V1\SearchController::class, 'deindex']);
+    Route::get('/permissions/{role}',                        [\App\Http\Controllers\Api\V1\SearchController::class, 'rolePermissions']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Offline Sync API (V1)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/offline')->middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::get('/policy/{scope}',                            [\App\Http\Controllers\Api\V1\OfflineSyncController::class, 'policy']);
+    Route::get('/policy/facility/{facilityId}',              [\App\Http\Controllers\Api\V1\OfflineSyncController::class, 'facilityScopes']);
+    Route::get('/conflicts/device/{deviceId}',               [\App\Http\Controllers\Api\V1\OfflineSyncController::class, 'deviceConflicts']);
+    Route::get('/conflicts/clinical',                        [\App\Http\Controllers\Api\V1\OfflineSyncController::class, 'clinicalConflicts']);
+    Route::post('/conflicts/{id}/resolve',                   [\App\Http\Controllers\Api\V1\OfflineSyncController::class, 'resolve']);
 });
 
 /*
@@ -430,6 +648,14 @@ Route::middleware(VerifyIntegrationClient::class)->group(function () {
     Route::post('/v1/documents/{id}/entered-in-error', [\App\Http\Controllers\Api\V1\DocumentController::class, 'enteredInError']);
     Route::post('/v1/document-verification/verify-code', [\App\Http\Controllers\Api\V1\DocumentController::class, 'verifyCode']);
     Route::post('/v1/documents/{id}/share-links', [\App\Http\Controllers\Api\V1\DocumentController::class, 'share']);
+
+    // Category B — living clinical forms (live DB render, no OfficialDocument record)
+    Route::get('patients/{patientId}/clinical-forms/{type}', [\App\Http\Controllers\DocumentRenderController::class, 'clinicalForm'])
+        ->where('type', '[a-z-]+');
+
+    // Category C — on-demand reports (assembled at request time, optional archive)
+    Route::get('patients/{patientId}/documents/{type}/render', [\App\Http\Controllers\DocumentRenderController::class, 'onDemand'])
+        ->where('type', '[a-z-]+');
 });
 
 /*
@@ -554,67 +780,67 @@ Route::prefix('fhir/R4')->group(function () {
     Route::get('/metadata', [\App\Http\Controllers\Api\Fhir\FhirController::class, 'metadata']);
 });
 
-Route::prefix('fhir/R4')->middleware(VerifyIntegrationClient::class)->group(function () {
+// ── FHIR R4 — Patient resource (requires patients:read scope) ────────────────
+// SMART on FHIR scope enforcement added (audit sprint — HL7 SMART, OWASP API5).
+// Each group is scoped by required bearer scopes via VerifyBearerToken middleware.
+Route::prefix('fhir/R4')->middleware('auth.bearer:patients:read')->group(function () {
 
-    // Patient resource
-    Route::get('/Patient',                [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchPatient']);
-    Route::get('/Patient/{id}',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'patient']);
-    Route::get('/Patient/{id}/\$everything', [\App\Http\Controllers\Api\Fhir\FhirController::class, 'patientEverything'])
-        ->middleware('consent.grant:patients:read');
+    // Patient — consent-gated in controller (OWASP API1 / ISO 27799 §7.3)
+    Route::get('/Patient',                   [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchPatient']);
+    Route::get('/Patient/{id}',              [\App\Http\Controllers\Api\Fhir\FhirController::class, 'patient']);
+    Route::get('/Patient/{id}/\$everything', [\App\Http\Controllers\Api\Fhir\FhirController::class, 'patientEverything']);
 
-    // Encounter resource
+    // Clinical resources — patient-scoped queries, no cross-facility risk
     Route::get('/Encounter',              [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchEncounter']);
     Route::get('/Encounter/{id}',         [\App\Http\Controllers\Api\Fhir\FhirController::class, 'encounter']);
-
-    // DiagnosticReport resource
     Route::get('/DiagnosticReport',       [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchDiagnosticReport']);
     Route::get('/DiagnosticReport/{id}',  [\App\Http\Controllers\Api\Fhir\FhirController::class, 'diagnosticReport']);
-
-    // MedicationRequest resource
     Route::get('/MedicationRequest',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchMedicationRequest']);
     Route::get('/MedicationRequest/{id}', [\App\Http\Controllers\Api\Fhir\FhirController::class, 'medicationRequest']);
-
-    // Practitioner
-    Route::get('/Practitioner',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchPractitioner']);
-    Route::get('/Practitioner/{id}',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'practitioner']);
-
-    // Organization
-    Route::get('/Organization',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchOrganization']);
-    Route::get('/Organization/{id}',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'organization']);
-
-    // DocumentReference
+    Route::get('/Immunization',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchImmunization']);
+    Route::get('/Immunization/{id}',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'immunization']);
+    Route::get('/AllergyIntolerance',     [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchAllergyIntolerance']);
+    Route::get('/AllergyIntolerance/{id}',[\App\Http\Controllers\Api\Fhir\FhirController::class, 'allergyIntolerance']);
+    Route::get('/Condition',              [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchCondition']);
+    Route::get('/Condition/{id}',         [\App\Http\Controllers\Api\Fhir\FhirController::class, 'condition']);
+    Route::get('/Consent',                [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchConsent']);
+    Route::get('/Consent/{id}',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'consent']);
+    Route::get('/Coverage',               [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchCoverage']);
+    Route::get('/Coverage/{id}',          [\App\Http\Controllers\Api\Fhir\FhirController::class, 'coverage']);
     Route::get('/DocumentReference',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchDocumentReference']);
     Route::get('/DocumentReference/{id}', [\App\Http\Controllers\Api\Fhir\FhirController::class, 'documentReference']);
 
-    // Consent
-    Route::get('/Consent',                [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchConsent']);
-    Route::get('/Consent/{id}',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'consent']);
+    // Patient-level bulk export (requires patients:read scope + consent)
+    Route::get('/Patient/{id}/\$export',  [\App\Http\Controllers\Api\Fhir\FhirController::class, 'patientBulkExport']);
+});
 
-    // Coverage
-    Route::get('/Coverage',               [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchCoverage']);
-    Route::get('/Coverage/{id}',          [\App\Http\Controllers\Api\Fhir\FhirController::class, 'coverage']);
+// ── FHIR R4 — Facility/provider resources (no PHI, no consent required) ──────
+Route::prefix('fhir/R4')->middleware('auth.bearer')->group(function () {
+    Route::get('/Practitioner',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchPractitioner']);
+    Route::get('/Practitioner/{id}',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'practitioner']);
+    Route::get('/Organization',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchOrganization']);
+    Route::get('/Organization/{id}',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'organization']);
+});
 
-    // FHIR Immunization (ImmunizationRecord → FHIR Immunization)
-    Route::get('/Immunization',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchImmunization']);
-    Route::get('/Immunization/{id}',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'immunization']);
-
-    // FHIR AllergyIntolerance (AllergyRecord → FHIR AllergyIntolerance)
-    Route::get('/AllergyIntolerance',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchAllergyIntolerance']);
-    Route::get('/AllergyIntolerance/{id}',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'allergyIntolerance']);
-
-    // FHIR Condition (Diagnosis → FHIR Condition)
-    Route::get('/Condition',              [\App\Http\Controllers\Api\Fhir\FhirController::class, 'searchCondition']);
-    Route::get('/Condition/{id}',         [\App\Http\Controllers\Api\Fhir\FhirController::class, 'condition']);
-
-    // FHIR Subscriptions (Item 11)
+// ── FHIR R4 — Subscriptions (requires subscriptions:write scope) ─────────────
+Route::prefix('fhir/R4')->middleware('auth.bearer:subscriptions:write')->group(function () {
     Route::get('/Subscription',           [\App\Http\Controllers\Api\Fhir\FhirController::class, 'subscriptionIndex']);
     Route::post('/Subscription',          [\App\Http\Controllers\Api\Fhir\FhirController::class, 'subscriptionCreate']);
     Route::get('/Subscription/{id}',      [\App\Http\Controllers\Api\Fhir\FhirController::class, 'subscriptionShow']);
     Route::delete('/Subscription/{id}',   [\App\Http\Controllers\Api\Fhir\FhirController::class, 'subscriptionDelete']);
+});
 
-    // FHIR Bulk Export (Item 11)
-    Route::get('/\$export',               [\App\Http\Controllers\Api\Fhir\FhirController::class, 'bulkExport']);
-    Route::get('/Patient/{id}/\$export',  [\App\Http\Controllers\Api\Fhir\FhirController::class, 'patientBulkExport']);
+// ── FHIR R4 — System bulk export (requires system:export scope) ───────────────
+// CRITICAL: Previously had NO scope requirement — any bearer could export ALL patients.
+// Migration Sprint Item 4: bulkExport() now returns 202 Accepted with async polling.
+Route::prefix('fhir/R4')->middleware('auth.bearer:system:export')->group(function () {
+    // Trigger async export — returns 202 Accepted + Content-Location polling URL.
+    Route::get('/\$export', [\App\Http\Controllers\Api\Fhir\FhirController::class, 'bulkExport']);
+
+    // FHIR Bulk Data IG polling endpoints (same scope as trigger — no scope downgrade).
+    Route::get('/bulkdata/{jobId}/status',           [\App\Http\Controllers\Api\Fhir\BulkExportController::class, 'status']);
+    Route::get('/bulkdata/{jobId}/download/{file}',  [\App\Http\Controllers\Api\Fhir\BulkExportController::class, 'download'])
+        ->where('file', '[A-Za-z0-9._-]+'); // restrict to safe filenames only
 });
 
 /*
@@ -659,6 +885,13 @@ Route::prefix('v1/inventory')->middleware(VerifyIntegrationClient::class)->group
     Route::post('/purchase-orders/{orderId}/receive', [\App\Http\Controllers\Api\V1\InventoryController::class, 'receiveGoods']);
     Route::post('/audits', [\App\Http\Controllers\Api\V1\InventoryController::class, 'openAudit']);
     Route::post('/audits/{auditId}/close', [\App\Http\Controllers\Api\V1\InventoryController::class, 'closeAudit']);
+
+    // ── Blood Bank Inventory ───────────────────────────────────────────────
+    Route::get('/blood',                         [\App\Http\Controllers\Api\V1\BloodInventoryController::class, 'index']);
+    Route::get('/blood/summary',                 [\App\Http\Controllers\Api\V1\BloodInventoryController::class, 'summary']);
+    Route::post('/blood',                        [\App\Http\Controllers\Api\V1\BloodInventoryController::class, 'upsert']);
+    Route::post('/blood/{item}/adjust',          [\App\Http\Controllers\Api\V1\BloodInventoryController::class, 'adjust']);
+    Route::patch('/blood/{item}/flags',          [\App\Http\Controllers\Api\V1\BloodInventoryController::class, 'setFlags']);
 });
 
 /*
@@ -667,12 +900,52 @@ Route::prefix('v1/inventory')->middleware(VerifyIntegrationClient::class)->group
 |--------------------------------------------------------------------------
 */
 Route::prefix('v1/analytics')->middleware(VerifyIntegrationClient::class)->group(function () {
-    Route::get('/facilities/{facilityId}/dashboard', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'facilityDashboard']);
-    Route::get('/appointments', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'appointmentStats']);
-    Route::get('/queues', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'queueStats']);
-    Route::get('/billing', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'billingStats']);
-    Route::post('/exports', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'requestExport']);
-    Route::get('/exports/{exportId}', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'exportStatus']);
+    Route::get('/facilities/{facilityId}/dashboard',  [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'facilityDashboard']);
+    Route::get('/appointments',                       [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'appointmentStats']);
+    Route::get('/queues',                             [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'queueStats']);
+    Route::get('/billing',                            [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'billingStats']);
+    Route::post('/exports',                           [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'requestExport']);
+    Route::get('/exports/{exportId}',                 [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'exportStatus']);
+    // KPI snapshots & trend data (ProductAnalyticsService)
+    Route::get('/facilities/{facilityId}/kpi',        [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'kpiSnapshots']);
+    Route::get('/facilities/{facilityId}/metric-trend', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'metricTrend']);
+    Route::get('/platform/summary',                   [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'platformSummary']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Clinical Decision Support System (CDSS)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/cdss')->middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::post('/run',                                          [\App\Http\Controllers\Api\V1\ClinicalDecisionSupportController::class, 'run']);
+    Route::get('/visits/{visitId}/alerts',                       [\App\Http\Controllers\Api\V1\ClinicalDecisionSupportController::class, 'visitAlerts']);
+    Route::get('/patients/{patientId}/alerts',                   [\App\Http\Controllers\Api\V1\ClinicalDecisionSupportController::class, 'patientAlerts']);
+    Route::post('/alerts/{alertId}/acknowledge',                 [\App\Http\Controllers\Api\V1\ClinicalDecisionSupportController::class, 'acknowledge']);
+    Route::post('/alerts/{alertId}/override',                    [\App\Http\Controllers\Api\V1\ClinicalDecisionSupportController::class, 'override']);
+    Route::post('/alerts/{alertId}/dismiss',                     [\App\Http\Controllers\Api\V1\ClinicalDecisionSupportController::class, 'dismiss']);
+    Route::get('/facilities/{facilityId}/summary',               [\App\Http\Controllers\Api\V1\ClinicalDecisionSupportController::class, 'facilitySummary']);
+
+    // ── Alert Overrides (QA governance) ───────────────────────────────────
+    Route::post('/overrides',                                    [\App\Http\Controllers\Api\V1\ClinicalDecisionSupportController::class, 'recordOverride']);
+    Route::get('/overrides/high-risk',                           [\App\Http\Controllers\Api\V1\ClinicalDecisionSupportController::class, 'highRiskOverridesPendingReview']);
+    Route::post('/overrides/{overrideId}/qa-review',             [\App\Http\Controllers\Api\V1\ClinicalDecisionSupportController::class, 'qaReviewOverride']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Research Data Access Program
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/research')->middleware(VerifyIntegrationClient::class)->group(function () {
+    Route::get('/requests',                             [\App\Http\Controllers\Api\V1\ResearchAccessController::class, 'index']);
+    Route::post('/requests',                            [\App\Http\Controllers\Api\V1\ResearchAccessController::class, 'submit']);
+    Route::get('/requests/{researchRequest}',           [\App\Http\Controllers\Api\V1\ResearchAccessController::class, 'show']);
+    Route::post('/requests/{researchRequest}/dac-review',   [\App\Http\Controllers\Api\V1\ResearchAccessController::class, 'dacReview']);
+    Route::post('/requests/{researchRequest}/approve',  [\App\Http\Controllers\Api\V1\ResearchAccessController::class, 'approve']);
+    Route::post('/requests/{researchRequest}/reject',   [\App\Http\Controllers\Api\V1\ResearchAccessController::class, 'reject']);
+    Route::post('/agreements/{agreement}/sign',         [\App\Http\Controllers\Api\V1\ResearchAccessController::class, 'signAgreement']);
+    Route::post('/requests/{researchRequest}/log-access', [\App\Http\Controllers\Api\V1\ResearchAccessController::class, 'logAccess']);
 });
 
 /*
@@ -769,6 +1042,10 @@ Route::prefix('v1/maternity')->middleware(VerifyIntegrationClient::class)->group
     Route::post('pregnancies/{id}/antenatal-visits', [\App\Http\Controllers\Api\V1\MaternityController::class, 'storeAntenatalVisit']);
     Route::get('pregnancies/{id}/deliveries',        [\App\Http\Controllers\Api\V1\MaternityController::class, 'deliveries']);
     Route::post('pregnancies/{id}/deliveries',       [\App\Http\Controllers\Api\V1\MaternityController::class, 'storeDelivery']);
+
+    // ── Dedicated ANC Records (AntenatalCareService) ──────────────────────
+    Route::post('antenatal-records',                             [\App\Http\Controllers\Api\V1\MaternityController::class, 'openAntenatalRecord']);
+    Route::post('antenatal-records/{recordId}/visits',           [\App\Http\Controllers\Api\V1\MaternityController::class, 'recordAncVisit']);
 });
 
 /*

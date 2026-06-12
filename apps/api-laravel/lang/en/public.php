@@ -1,17 +1,17 @@
-<?php
+﻿<?php
 
 return [
     'about' => [
         'hero_title' => 'Building a safer way for medical records to follow the patient.',
-        'hero_subtitle' => 'OpesCare is a digital Health ID and healthcare interoperability platform created by Opesware to help patients, providers, and health systems work with clearer, safer, and more connected medical information.',
+        'hero_subtitle' => 'OpesCare is a digital Health ID and healthcare interoperability platform created by Opes Health Systems Sarl to help patients, providers, and health systems work with clearer, safer, and more connected medical information.',
         'why_title' => 'Healthcare should not depend on a paper book alone.',
         'why_content' => 'Many patients move between hospitals, clinics, pharmacies, and laboratories with records that are incomplete, lost, damaged, or trapped in separate systems. A doctor may not know the patient’s allergies. A lab result may not be available when needed. A pharmacy may not know whether a prescription has already been dispensed. Patients may move from place to place searching for medicines or compatible blood.',
         'mission_title' => 'Our mission',
         'mission_content' => 'To give every patient a secure digital Health ID and help healthcare providers access the right approved information at the right time, while protecting privacy, consent, and accountability.',
-        'built_by_title' => 'Built by Opesware',
-        'built_by_content' => 'OpesCare is developed by Opesware, a software engineering company focused on building custom-coded, secure, scalable, and practical digital systems.',
+        'built_by_title' => 'Built by Opes Health Systems Sarl',
+        'built_by_content' => 'OpesCare is developed by Opes Health Systems Sarl, a software engineering company focused on building custom-coded, secure, scalable, and practical digital systems.',
         'footer_cta_title' => 'Partner with us to build connected healthcare records.',
-        'footer_cta_btn' => 'Contact Opesware',
+        'footer_cta_btn' => 'Contact Opes Health Systems',
     ],
     'how_it_works' => [
         'hero_title' => 'How OpesCare connects care around the patient.',

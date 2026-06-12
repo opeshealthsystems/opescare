@@ -56,10 +56,23 @@ abstract final class ApiEndpoints {
   // Referrals
   static String get referrals          => '$_base/mobile/referrals';
 
-  // Insurance
-  static String get insurancePolicies  => '$_base/mobile/insurance/policies';
-  static String get insurance          => '$_base/mobile/insurance';
+  // Insurance — policies (GET /mobile/insurance)
+  static String get insurance => '$_base/mobile/insurance';
+
+  // Insurance marketplace
+  static String get insuranceMarketplace       => '$_base/mobile/insurance/marketplace';
+  static String insuranceMarketplacePlan(String id) => '$_base/mobile/insurance/marketplace/plans/$id';
+  static String insurancePurchasePlan(String id)    => '$_base/mobile/insurance/marketplace/plans/$id/purchase';
 
   // QR temporary
   static String get generateTemporaryQr => '$_base/mobile/qr/temporary';
+
+  // Family
+  static String get family                    => '$_base/mobile/family';
+  static String get familyInvitations         => '$_base/mobile/family/invitations';
+  static String familyMember(String id)       => '$_base/mobile/family/members/$id';
+  static String familyInvitation(String id)   => '$_base/mobile/family/invitations/$id';
+
+  // Care Map (reuses facilities endpoint with type filter)
+  static String get careMap => '$_base/mobile/facilities';
 }

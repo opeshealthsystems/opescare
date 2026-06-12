@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpesCare Care Map — Full System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#060E1A;min-height:100vh;padding:2rem 1rem 5rem;color:#F8FAFC}
+
+/* ── Shared tokens ── */
+:root{
+  --brand:#0F4C81;--brand2:#0D9488;
+  --nav-dark:#0A1628;--nav-border:rgba(255,255,255,.08);
+  --surface:#fff;--bg:#F1F5F9;--border:#E2E8F0;
+  --text:#0F172A;--muted:#64748B;--subtle:#94A3B8;
+  --hospital:#0891B2;--hospital-bg:#ECFEFF;
+  --clinic:#059669;--clinic-bg:#ECFDF5;
+  --pharmacy:#D97706;--pharmacy-bg:#FFFBEB;
+  --lab:#7C3AED;--lab-bg:#F5F3FF;
+  --blood:#DC2626;--blood-bg:#FEF2F2;
+  --diag:#0F4C81;--diag-bg:#EFF6FF;
+}
+
+/* ── Page sections ── */
+.pg-section{width:100%;max-width:1200px;margin:0 auto 5rem}
+.pg-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#334155;text-align:center;margin-bottom:.625rem}
+.pg-title{font-family:'Outfit',sans-serif;font-size:1.375rem;font-weight:800;color:#F8FAFC;text-align:center;margin-bottom:.375rem}
+.pg-sub{font-size:.82rem;color:#475569;text-align:center;margin-bottom:1.75rem}
+.route-badge{display:inline-block;background:rgba(14,165,233,.12);border:1px solid rgba(14,165,233,.25);color:#38BDF8;font-size:.68rem;font-weight:700;padding:.2rem .75rem;border-radius:50px;font-family:monospace;margin-bottom:.375rem;letter-spacing:.03em}
+
+/* ── Frame wrappers ── */
+.frame{border-radius:14px;overflow:hidden;box-shadow:0 32px 72px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.07);background:var(--bg)}
+.phone-wrap{width:320px;border-radius:38px;overflow:hidden;box-shadow:0 24px 56px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.08);flex-shrink:0}
+.phone-notch{background:var(--nav-dark);height:26px;display:flex;align-items:center;justify-content:center}
+.phone-pill{width:76px;height:9px;background:rgba(0,0,0,.55);border-radius:50px}
+
+/* ── Nav (dark) ── */
+.nav{background:var(--nav-dark);height:58px;display:flex;align-items:center;padding:0 1.375rem;gap:1rem;border-bottom:1px solid var(--nav-border);flex-shrink:0}
+.logo{display:flex;align-items:center;gap:.625rem;flex-shrink:0}
+.logo-mark{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,#1a6fb5,#0aab9a);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{color:#fff}
+.logo-name{font-family:'Outfit',sans-serif;font-size:.9375rem;font-weight:700;color:#fff;line-height:1}
+.logo-tag{font-size:.55rem;color:rgba(255,255,255,.4);font-weight:500;letter-spacing:.07em;text-transform:uppercase;margin-top:1px;display:block}
+.nav-search{flex:1;max-width:500px;margin:0 auto;height:36px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:50px;display:flex;align-items:center;padding:0 .875rem;gap:.5rem;cursor:text}
+.nav-search svg{color:rgba(255,255,255,.35);flex-shrink:0}
+.nav-search-text{font-size:.8rem;color:rgba(255,255,255,.38);flex:1}
+.nav-search-kbd{font-size:.62rem;color:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.14);border-radius:4px;padding:.1rem .35rem;font-family:monospace}
+.nav-actions{display:flex;align-items:center;gap:.625rem;margin-left:auto;flex-shrink:0}
+.btn-locate{display:flex;align-items:center;gap:.35rem;padding:.35rem .8rem;border:1.5px solid rgba(255,255,255,.14);border-radius:50px;font-size:.77rem;font-weight:500;color:rgba(255,255,255,.65);cursor:pointer;white-space:nowrap}
+.btn-locate svg{width:13px;height:13px}
+.btn-em{display:flex;align-items:center;gap:.35rem;padding:.35rem .8rem;background:rgba(220,38,38,.85);border:none;border-radius:50px;font-size:.77rem;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap}
+.btn-em svg{width:13px;height:13px}
+
+/* ── Category rail ── */
+.cat-rail{background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.375rem;height:50px;gap:.25rem;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.cat{display:flex;align-items:center;gap:.375rem;padding:.35rem .8rem;border-radius:50px;font-size:.78rem;font-weight:500;white-space:nowrap;flex-shrink:0;cursor:pointer;border:1.5px solid transparent;transition:all .15s}
+.cat.on{background:var(--nav-dark);color:#fff}
+.cat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.cat-count{font-size:.67rem;font-weight:700;padding:.1rem .4rem;border-radius:50px}
+.cat.on .cat-count{background:rgba(255,255,255,.15);color:rgba(255,255,255,.8)}
+
+/* ── Split body ── */
+.body{display:flex;height:560px;overflow:hidden}
+.panel{width:420px;flex-shrink:0;display:flex;flex-direction:column;background:var(--bg);border-right:1px solid var(--border)}
+.panel-hdr{padding:.75rem 1.125rem;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem;flex-shrink:0}
+.panel-count{flex:1;font-size:.8rem;color:var(--muted)}
+.panel-count strong{color:var(--text);font-weight:700}
+.verified-chip{display:inline-flex;align-items:center;gap:.2rem;font-size:.7rem;font-weight:600;color:#059669;margin-left:.25rem}
+.sort-btn{font-size:.73rem;color:var(--muted);border:1.5px solid var(--border);border-radius:.5rem;padding:.275rem .6rem;display:flex;align-items:center;gap:.3rem;background:#fff;cursor:pointer}
+.sort-btn svg{width:10px;height:10px;color:var(--subtle)}
+.cards{flex:1;overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.625rem}
+.cards::-webkit-scrollbar{width:3px}
+.cards::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:2px}
+
+/* ── Facility card ── */
+.fc{background:#fff;border-radius:13px;border:1.5px solid var(--border);overflow:hidden;position:relative;cursor:pointer;transition:all .18s}
+.fc:hover{border-color:#94A3B8;box-shadow:0 6px 20px rgba(0,0,0,.08);transform:translateY(-1px)}
+.fc.on{border-color:var(--brand);box-shadow:0 0 0 3px rgba(15,76,129,.1)}
+.fc-stripe{position:absolute;left:0;top:0;bottom:0;width:4px}
+.fc-body{padding:.875rem .875rem .875rem 1.1rem}
+.fc-top{display:flex;align-items:flex-start;gap:.7rem;margin-bottom:.5rem}
+.fc-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fc-ico svg{width:19px;height:19px}
+.fc-meta{flex:1;min-width:0}
+.fc-name{font-size:.875rem;font-weight:700;color:var(--text);margin-bottom:.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badges{display:flex;align-items:center;gap:.275rem;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:.18rem;padding:.13rem .45rem;border-radius:50px;font-size:.63rem;font-weight:700;white-space:nowrap}
+.badge svg{width:8px;height:8px}
+.dist{position:absolute;top:.875rem;right:.875rem;font-size:.68rem;font-weight:700;color:var(--brand);background:#EFF6FF;padding:.15rem .475rem;border-radius:50px;white-space:nowrap}
+.fc-info{display:flex;flex-direction:column;gap:.225rem;margin-bottom:.625rem}
+.fc-row{display:flex;align-items:flex-start;gap:.375rem;font-size:.75rem;color:var(--muted);line-height:1.4}
+.fc-row svg{width:11px;height:11px;color:var(--subtle);flex-shrink:0;margin-top:1px}
+.fc-acts{display:flex;gap:.4rem;align-items:center;padding-top:.6rem;border-top:1px solid #F1F5F9}
+.fbtn{display:inline-flex;align-items:center;gap:.28rem;padding:.375rem .7rem;border-radius:7px;font-size:.75rem;font-weight:600;cursor:pointer;border:none;white-space:nowrap;transition:all .15s}
+.fbtn svg{width:10px;height:10px}
+.fbtn-call{background:#DCFCE7;color:#15803D}
+.fbtn-dir{background:#F1F5F9;color:#475569}
+.fbtn-view{background:var(--brand);color:#fff;margin-left:auto}
+
+/* ── Map ── */
+.map-area{flex:1;position:relative;overflow:hidden;background:linear-gradient(160deg,#E4F0F7 0%,#D2E7F2 60%,#C5DEE9 100%)}
+.map-grid{position:absolute;inset:0;background:linear-gradient(rgba(160,200,225,.22) 1px,transparent 1px),linear-gradient(90deg,rgba(160,200,225,.22) 1px,transparent 1px);background-size:42px 42px}
+.road{position:absolute;background:rgba(255,255,255,.7);border-radius:2px}
+.map-controls{position:absolute;top:.875rem;right:.875rem;display:flex;flex-direction:column;gap:.5rem}
+.map-ctrl{background:#fff;border:1px solid var(--border);border-radius:9px;padding:.45rem .8rem;font-size:.75rem;font-weight:500;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.09);display:flex;align-items:center;gap:.35rem;color:#374151}
+.map-ctrl svg{width:12px;height:12px;color:#6B7280}
+.pin{position:absolute;display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-100%);cursor:pointer}
+.pin-head{border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.22)}
+.pin-tail{width:2px;border-radius:1px}
+.pin-lbl{background:#fff;border:1px solid var(--border);border-radius:6px;padding:.13rem .475rem;font-size:.58rem;font-weight:700;color:var(--text);white-space:nowrap;margin-top:2px;box-shadow:0 2px 6px rgba(0,0,0,.09)}
+.cluster{position:absolute;border-radius:50%;background:var(--brand);color:#fff;border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:800;box-shadow:0 3px 10px rgba(15,76,129,.38)}
+.you{position:absolute;transform:translate(-50%,-50%)}
+.you-pulse{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:28px;height:28px;border-radius:50%;background:rgba(15,76,129,.14);border:2px solid rgba(15,76,129,.22)}
+.you-dot{width:13px;height:13px;background:var(--brand);border:2.5px solid #fff;border-radius:50%;box-shadow:0 2px 8px rgba(15,76,129,.45);position:relative}
+.popup{position:absolute;background:#fff;border-radius:13px;box-shadow:0 8px 32px rgba(0,0,0,.16),0 0 0 1px rgba(0,0,0,.05);overflow:hidden;min-width:210px}
+.popup-bar{height:4px}
+.popup-body{padding:.8rem}
+.popup-name{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.2rem}
+.popup-sub{font-size:.68rem;color:var(--muted);margin-bottom:.5rem}
+.popup-btns{display:flex;gap:.375rem}
+.popup-btn{flex:1;text-align:center;padding:.35rem;border-radius:6px;font-size:.68rem;font-weight:700;cursor:pointer}
+.popup-tail{width:11px;height:7px;background:#fff;clip-path:polygon(50% 100%,0 0,100% 0);margin:0 auto;filter:drop-shadow(0 2px 2px rgba(0,0,0,.08))}
+
+/* ═══════════ DETAIL PAGE ═══════════ */
+.detail-frame{border-radius:14px;overflow:hidden;box-shadow:0 32px 72px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.07);background:#fff;max-width:960px;margin:0 auto}
+
+.detail-hero{padding:1.75rem 2rem 1.5rem;position:relative;overflow:hidden;color:#fff}
+.detail-hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='40' cy='40' r='30'/%3E%3C/g%3E%3C/svg%3E") repeat}
+.detail-back{display:inline-flex;align-items:center;gap:.375rem;font-size:.78rem;font-weight:500;color:rgba(255,255,255,.65);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:50px;padding:.3rem .75rem;margin-bottom:1.25rem;cursor:pointer;position:relative}
+.detail-back svg{width:13px;height:13px}
+.detail-hero-inner{position:relative;display:flex;align-items:flex-start;gap:1.25rem}
+.detail-icon{width:64px;height:64px;border-radius:16px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(8px)}
+.detail-icon svg{width:28px;height:28px;color:#fff}
+.detail-info{flex:1;min-width:0}
+.detail-type-pill{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .7rem;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);border-radius:50px;font-size:.72rem;font-weight:700;margin-bottom:.625rem;backdrop-filter:blur(6px)}
+.detail-name{font-family:'Outfit',sans-serif;font-size:clamp(1.25rem,3vw,1.75rem);font-weight:800;line-height:1.15;margin-bottom:.625rem}
+.detail-meta-row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;opacity:.88;font-size:.8rem;margin-bottom:.875rem}
+.detail-meta-item{display:flex;align-items:center;gap:.375rem}
+.detail-meta-item svg{width:13px;height:13px;opacity:.75}
+.detail-badges-row{display:flex;gap:.4rem;flex-wrap:wrap}
+.detail-badge{display:inline-flex;align-items:center;gap:.25rem;padding:.22rem .65rem;border-radius:50px;font-size:.7rem;font-weight:700;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);color:#fff;backdrop-filter:blur(4px)}
+.detail-badge svg{width:10px;height:10px}
+.detail-hero-actions{display:flex;flex-direction:column;gap:.5rem;flex-shrink:0}
+.hero-btn{display:flex;align-items:center;gap:.4rem;padding:.5rem 1.125rem;border-radius:9px;font-size:.8rem;font-weight:700;cursor:pointer;border:none;white-space:nowrap}
+.hero-btn svg{width:13px;height:13px}
+.hero-btn-call{background:#fff;color:#0F172A}
+.hero-btn-dir{background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.25)}
+.hero-btn-save{background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.2)}
+
+/* detail body */
+.detail-body{background:var(--bg);display:grid;grid-template-columns:1fr 320px;gap:1.25rem;padding:1.25rem}
+.detail-main{display:flex;flex-direction:column;gap:1.125rem}
+.detail-aside{display:flex;flex-direction:column;gap:1rem}
+.section-card{background:#fff;border-radius:12px;border:1.5px solid var(--border);padding:1.125rem;overflow:hidden}
+.section-card-title{font-size:.8rem;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.875rem;display:flex;align-items:center;gap:.5rem}
+.section-card-title svg{width:14px;height:14px;color:var(--subtle)}
+.service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+.svc-chip{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:.5rem .625rem;font-size:.73rem;font-weight:500;color:var(--muted);display:flex;align-items:center;gap:.375rem}
+.svc-chip svg{width:11px;height:11px;color:var(--subtle);flex-shrink:0}
+.hours-grid{display:flex;flex-direction:column;gap:.375rem}
+.hours-row{display:flex;align-items:center;justify-content:space-between;padding:.35rem 0;border-bottom:1px solid #F8FAFC;font-size:.77rem}
+.hours-day{font-weight:500;color:var(--text)}
+.hours-day.today{color:var(--brand);font-weight:700}
+.hours-time{color:var(--muted)}
+.hours-badge{font-size:.65rem;font-weight:700;padding:.15rem .45rem;border-radius:50px}
+.insurance-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.ins-chip{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:.45rem .625rem;font-size:.72rem;font-weight:500;color:var(--muted);display:flex;align-items:center;gap:.375rem}
+.ins-chip svg{width:10px;height:10px;color:#059669}
+.map-mini{height:160px;border-radius:10px;overflow:hidden;position:relative;margin-bottom:.875rem;background:linear-gradient(135deg,#E4F0F7,#D2E7F2)}
+.map-mini-grid{position:absolute;inset:0;background:linear-gradient(rgba(160,200,225,.2) 1px,transparent 1px),linear-gradient(90deg,rgba(160,200,225,.2) 1px,transparent 1px);background-size:28px 28px}
+.map-mini-dir{position:absolute;bottom:.625rem;right:.625rem;background:#fff;border-radius:7px;padding:.375rem .7rem;font-size:.72rem;font-weight:700;color:var(--brand);box-shadow:0 2px 8px rgba(0,0,0,.1);display:flex;align-items:center;gap:.35rem;cursor:pointer}
+.map-mini-dir svg{width:11px;height:11px}
+.aside-info{display:flex;flex-direction:column;gap:.625rem}
+.aside-row{display:flex;align-items:flex-start;gap:.75rem}
+.aside-row-icon{width:32px;height:32px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.aside-row-icon svg{width:14px;height:14px;color:var(--muted)}
+.aside-row-label{font-size:.68rem;font-weight:600;color:var(--subtle);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.15rem}
+.aside-row-val{font-size:.8rem;font-weight:500;color:var(--text)}
+.aside-row-val a{color:var(--brand);text-decoration:none}
+.report-btn{width:100%;padding:.6rem;border-radius:9px;border:1.5px solid var(--border);background:#fff;font-size:.77rem;font-weight:600;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.4rem}
+.report-btn svg{width:12px;height:12px}
+.claim-btn{width:100%;padding:.6rem;border-radius:9px;border:1.5px solid #BFDBFE;background:#EFF6FF;font-size:.77rem;font-weight:600;color:var(--brand);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.4rem}
+.claim-btn svg{width:13px;height:13px;flex-shrink:0}
+
+/* ═══════════ EMERGENCY PAGE ═══════════ */
+.emrg-frame{border-radius:14px;overflow:hidden;box-shadow:0 32px 72px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.07);background:#0C0A0A;max-width:1100px;margin:0 auto}
+.emrg-nav{background:#0C0A0A;border-bottom:1px solid rgba(220,38,38,.25);height:56px;display:flex;align-items:center;padding:0 1.375rem;gap:1rem}
+.emrg-logo-mark{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,#991B1B,#DC2626);display:flex;align-items:center;justify-content:center}
+.emrg-logo-mark svg{color:#fff}
+.emrg-logo-name{font-family:'Outfit',sans-serif;font-size:.9375rem;font-weight:700;color:#fff}
+.emrg-logo-tag{font-size:.55rem;color:rgba(255,100,100,.55);font-weight:600;text-transform:uppercase;letter-spacing:.07em;display:block}
+.emrg-title-bar{background:rgba(220,38,38,.08);border-bottom:1px solid rgba(220,38,38,.15);padding:.875rem 1.375rem;display:flex;align-items:center;gap:1rem}
+.emrg-title{font-family:'Outfit',sans-serif;font-size:1.125rem;font-weight:800;color:#FCA5A5}
+.emrg-sub{font-size:.78rem;color:rgba(220,38,38,.6);margin-left:auto}
+.emrg-dial-pill{display:flex;align-items:center;gap:.5rem;background:rgba(220,38,38,.15);border:1.5px solid rgba(220,38,38,.3);border-radius:50px;padding:.35rem .875rem;font-size:.77rem;font-weight:700;color:#F87171}
+.emrg-dial-pill svg{width:12px;height:12px}
+.emrg-body{display:flex;height:420px}
+.emrg-panel{width:380px;flex-shrink:0;background:#0C0A0A;border-right:1px solid rgba(220,38,38,.12);display:flex;flex-direction:column;overflow-y:auto}
+.emrg-card{margin:.5rem .625rem;background:rgba(220,38,38,.06);border:1.5px solid rgba(220,38,38,.15);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .15s}
+.emrg-card:hover{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.1)}
+.emrg-card.selected{border-color:#DC2626;background:rgba(220,38,38,.1)}
+.emrg-card-top{display:flex;align-items:flex-start;gap:.625rem;padding:.75rem .875rem .5rem}
+.emrg-ico{width:38px;height:38px;border-radius:9px;background:rgba(220,38,38,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.emrg-ico svg{width:17px;height:17px;color:#F87171}
+.emrg-meta{flex:1;min-width:0}
+.emrg-name{font-size:.85rem;font-weight:700;color:#FCA5A5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.emrg-badges{display:flex;gap:.25rem;margin-top:.2rem;flex-wrap:wrap}
+.emrg-badge{font-size:.62rem;font-weight:700;padding:.1rem .4rem;border-radius:50px;background:rgba(220,38,38,.15);color:#F87171}
+.emrg-dist{font-size:.65rem;font-weight:700;color:#F87171;background:rgba(220,38,38,.12);padding:.12rem .4rem;border-radius:50px;white-space:nowrap}
+.emrg-card-info{padding:0 .875rem .625rem}
+.emrg-row{font-size:.72rem;color:rgba(220,38,38,.55);display:flex;align-items:center;gap:.35rem;margin-bottom:.175rem}
+.emrg-row svg{width:10px;height:10px;color:rgba(220,38,38,.4);flex-shrink:0}
+.emrg-card-acts{display:flex;gap:.375rem;padding:0 .875rem .75rem}
+.emrg-btn{flex:1;text-align:center;padding:.4rem;border-radius:7px;font-size:.72rem;font-weight:700;cursor:pointer}
+.emrg-btn-call{background:#DC2626;color:#fff}
+.emrg-btn-dir{background:rgba(220,38,38,.12);color:#F87171;border:1px solid rgba(220,38,38,.25)}
+.emrg-map{flex:1;position:relative;background:linear-gradient(160deg,#0D0D0D,#111)}
+.emrg-map-grid{position:absolute;inset:0;background:linear-gradient(rgba(220,38,38,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(220,38,38,.06) 1px,transparent 1px);background-size:38px 38px}
+.emrg-road{position:absolute;background:rgba(220,38,38,.09);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- ═══════ SECTION 1: DIRECTORY ═══════ -->
+<div class="pg-section">
+  <div class="pg-label">Route 1 of 3</div>
+  <div class="route-badge">GET /care-map</div>
+  <div class="pg-title">Directory — Desktop</div>
+  <div class="pg-sub">Dark nav · Category rail with counts · Split panel · Type-coloured cards · Map with popup + cluster</div>
+
+  <div class="frame">
+    <!-- Nav -->
+    <nav class="nav">
+      <div class="logo">
+        <div class="logo-mark"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <div><div class="logo-name">OpesCare</div><div class="logo-tag">Care Map</div></div>
+      </div>
+      <div class="nav-search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span class="nav-search-text">Search hospitals, pharmacies, labs, blood banks…</span>
+        <span class="nav-search-kbd">⌘K</span>
+      </div>
+      <div class="nav-actions">
+        <div class="btn-locate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg>Near me</div>
+        <div class="btn-em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Emergency</div>
+      </div>
+    </nav>
+
+    <!-- Category rail -->
+    <div class="cat-rail">
+      <div class="cat on">All facilities <span class="cat-count">247</span></div>
+      <div class="cat" style="color:var(--hospital)"><span class="cat-dot" style="background:var(--hospital)"></span>Hospitals <span class="cat-count" style="background:var(--hospital-bg);color:var(--hospital)">12</span></div>
+      <div class="cat" style="color:var(--clinic)"><span class="cat-dot" style="background:var(--clinic)"></span>Clinics <span class="cat-count" style="background:var(--clinic-bg);color:var(--clinic)">45</span></div>
+      <div class="cat" style="color:var(--pharmacy)"><span class="cat-dot" style="background:var(--pharmacy)"></span>Pharmacies <span class="cat-count" style="background:var(--pharmacy-bg);color:var(--pharmacy)">63</span></div>
+      <div class="cat" style="color:var(--lab)"><span class="cat-dot" style="background:var(--lab)"></span>Laboratories <span class="cat-count" style="background:var(--lab-bg);color:var(--lab)">38</span></div>
+      <div class="cat" style="color:var(--blood)"><span class="cat-dot" style="background:var(--blood)"></span>Blood Banks <span class="cat-count" style="background:var(--blood-bg);color:var(--blood)">18</span></div>
+      <div class="cat" style="color:var(--diag)"><span class="cat-dot" style="background:var(--diag)"></span>Diagnostic <span class="cat-count" style="background:var(--diag-bg);color:var(--diag)">71</span></div>
+    </div>
+
+    <!-- Body -->
+    <div class="body">
+      <!-- Panel -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <div class="panel-count"><strong>247</strong> facilities <span class="verified-chip"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>184 verified</span></div>
+          <div class="sort-btn">Nearest first <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></div>
+        </div>
+        <div class="cards">
+
+          <!-- Card 1 Hospital (active) -->
+          <div class="fc on">
+            <div class="fc-stripe" style="background:var(--hospital)"></div>
+            <div class="fc-body">
+              <div class="fc-top">
+                <div class="fc-ico" style="background:var(--hospital-bg);color:var(--hospital)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+                <div class="fc-meta">
+                  <div class="fc-name">Lagos State Hospital</div>
+                  <div class="badges">
+                    <span class="badge" style="background:var(--hospital-bg);color:var(--hospital)">Hospital</span>
+                    <span class="badge" style="background:#FEF3C7;color:#B45309"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Gov. Verified</span>
+                    <span class="badge" style="background:var(--blood-bg);color:var(--blood);font-weight:800">24/7</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dist">2.1 km</div>
+              <div class="fc-info">
+                <div class="fc-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Broad Street, Lagos Island, Lagos</div>
+                <div class="fc-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>+234 801 234 5678</div>
+                <div class="fc-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>A&amp;E · Maternity · ICU · Radiology · Lab</div>
+              </div>
+              <div class="fc-acts">
+                <div class="fbtn fbtn-call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call</div>
+                <div class="fbtn fbtn-dir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>Directions</div>
+                <div class="fbtn fbtn-view">View Profile <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 Clinic -->
+          <div class="fc">
+            <div class="fc-stripe" style="background:var(--clinic)"></div>
+            <div class="fc-body">
+              <div class="fc-top">
+                <div class="fc-ico" style="background:var(--clinic-bg);color:var(--clinic)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+                <div class="fc-meta">
+                  <div class="fc-name">Prime Care Clinic</div>
+                  <div class="badges">
+                    <span class="badge" style="background:var(--clinic-bg);color:var(--clinic)">Clinic</span>
+                    <span class="badge" style="background:#DCFCE7;color:#15803D"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Verified</span>
+                    <span class="badge" style="background:#F0FDF4;color:#15803D">Open Now</span>
+                    <span class="badge" style="background:#EFF6FF;color:var(--brand)">Live</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dist">3.4 km</div>
+              <div class="fc-info">
+                <div class="fc-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>15 Admiralty Way, Victoria Island, Lagos</div>
+                <div class="fc-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>+234 811 556 7890</div>
+              </div>
+              <div class="fc-acts">
+                <div class="fbtn fbtn-call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call</div>
+                <div class="fbtn fbtn-dir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>Directions</div>
+                <div class="fbtn fbtn-view">View Profile <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 Pharmacy -->
+          <div class="fc">
+            <div class="fc-stripe" style="background:var(--pharmacy)"></div>
+            <div class="fc-body">
+              <div class="fc-top">
+                <div class="fc-ico" style="background:var(--pharmacy-bg);color:var(--pharmacy)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M9 12h6m-3-3v6"/></svg></div>
+                <div class="fc-meta">
+                  <div class="fc-name">MedPlus Pharmacy — Ikeja</div>
+                  <div class="badges">
+                    <span class="badge" style="background:var(--pharmacy-bg);color:var(--pharmacy)">Pharmacy</span>
+                    <span class="badge" style="background:#DCFCE7;color:#15803D"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Verified</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dist">4.7 km</div>
+              <div class="fc-info">
+                <div class="fc-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>44 Obafemi Awolowo Way, Ikeja, Lagos</div>
+              </div>
+              <div class="fc-acts">
+                <div class="fbtn fbtn-call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call</div>
+                <div class="fbtn fbtn-dir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>Directions</div>
+                <div class="fbtn fbtn-view">View Profile <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Map -->
+      <div class="map-area">
+        <div class="map-grid"></div>
+        <div class="road" style="left:0;right:0;top:110px;height:9px;transform:rotate(-1.5deg)"></div>
+        <div class="road" style="left:0;right:0;top:215px;height:6px"></div>
+        <div class="road" style="left:0;right:0;top:330px;height:8px;transform:rotate(1deg)"></div>
+        <div class="road" style="left:0;right:0;top:450px;height:5px"></div>
+        <div class="road" style="left:95px;top:0;width:7px;bottom:0"></div>
+        <div class="road" style="left:240px;top:0;width:6px;bottom:0;transform:skewX(-1.5deg)"></div>
+        <div class="road" style="left:390px;top:0;width:8px;bottom:0"></div>
+        <div class="road" style="left:530px;top:0;width:5px;bottom:0;transform:skewX(1deg)"></div>
+
+        <!-- You -->
+        <div class="you" style="left:215px;top:290px"><div class="you-pulse"></div><div class="you-dot"></div></div>
+
+        <!-- Pins -->
+        <div class="pin" style="left:170px;top:180px">
+          <div class="pin-head" style="width:36px;height:36px;background:var(--hospital)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+          <div class="pin-tail" style="height:10px;background:var(--hospital)"></div>
+          <div class="pin-lbl">Lagos State Hospital</div>
+        </div>
+        <div class="pin" style="left:325px;top:250px">
+          <div class="pin-head" style="width:30px;height:30px;background:var(--clinic)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div class="pin-tail" style="height:8px;background:var(--clinic)"></div>
+        </div>
+        <div class="pin" style="left:455px;top:145px">
+          <div class="pin-head" style="width:28px;height:28px;background:var(--pharmacy)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M9 12h6m-3-3v6"/></svg></div>
+          <div class="pin-tail" style="height:8px;background:var(--pharmacy)"></div>
+        </div>
+        <div class="pin" style="left:280px;top:380px">
+          <div class="pin-head" style="width:28px;height:28px;background:var(--lab)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+          <div class="pin-tail" style="height:8px;background:var(--lab)"></div>
+        </div>
+        <div class="pin" style="left:530px;top:310px">
+          <div class="pin-head" style="width:28px;height:28px;background:var(--blood)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg></div>
+          <div class="pin-tail" style="height:8px;background:var(--blood)"></div>
+        </div>
+        <div class="cluster" style="left:410px;top:400px;width:34px;height:34px">+14</div>
+
+        <!-- Popup -->
+        <div style="position:absolute;left:90px;top:44px">
+          <div class="popup">
+            <div class="popup-bar" style="background:var(--hospital)"></div>
+            <div class="popup-body">
+              <div class="popup-name">Lagos State Hospital</div>
+              <div class="popup-sub">Hospital · Lagos Island · 2.1 km</div>
+              <div style="display:inline-flex;align-items:center;gap:.25rem;font-size:.65rem;font-weight:700;background:#FEF3C7;color:#B45309;padding:.15rem .5rem;border-radius:50px;margin-bottom:.6rem">
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                Gov. Verified · 24/7 Emergency
+              </div>
+              <div class="popup-btns">
+                <div class="popup-btn" style="background:var(--brand);color:#fff">View Profile</div>
+                <div class="popup-btn" style="background:#F1F5F9;color:#374151">Directions</div>
+              </div>
+            </div>
+          </div>
+          <div class="popup-tail"></div>
+        </div>
+
+        <!-- Controls -->
+        <div class="map-controls">
+          <div class="map-ctrl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6m-6 0 6-6M9 21H3v-6m6 0-6 6"/></svg>Fit all</div>
+          <div class="map-ctrl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg>Locate me</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ SECTION 2: FACILITY DETAIL ═══════ -->
+<div class="pg-section">
+  <div class="pg-label">Route 2 of 3</div>
+  <div class="route-badge">GET /care-map/facility/{id}</div>
+  <div class="pg-title">Facility Detail — Profile Page</div>
+  <div class="pg-sub">Hero with gradient · Services · Operating hours · Insurance · Mini-map · Report / Claim listing buttons</div>
+
+  <div class="detail-frame">
+    <!-- Detail Nav -->
+    <nav class="nav">
+      <div class="logo">
+        <div class="logo-mark"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <div><div class="logo-name">OpesCare</div><div class="logo-tag">Care Map</div></div>
+      </div>
+      <div style="flex:1"></div>
+      <div class="nav-actions">
+        <div class="btn-locate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7-7-7 7 7 7"/></svg>Back to map</div>
+        <div class="btn-em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Emergency</div>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="detail-hero" style="background:linear-gradient(135deg,#0B3D6E 0%,#0B7285 100%)">
+      <div class="detail-back">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
+        Back to Care Map
+      </div>
+      <div class="detail-hero-inner">
+        <div class="detail-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+        </div>
+        <div class="detail-info">
+          <div class="detail-type-pill">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            Hospital
+          </div>
+          <div class="detail-name">Lagos State Hospital</div>
+          <div class="detail-meta-row">
+            <div class="detail-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Broad Street, Lagos Island, Lagos</div>
+            <div class="detail-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>+234 801 234 5678</div>
+          </div>
+          <div class="detail-badges-row">
+            <div class="detail-badge" style="background:rgba(253,224,71,.15);border-color:rgba(253,224,71,.3);color:#FDE047"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Government Verified</div>
+            <div class="detail-badge" style="background:rgba(239,68,68,.2);border-color:rgba(239,68,68,.35);color:#FCA5A5">24 / 7 Emergency</div>
+            <div class="detail-badge" style="background:rgba(52,211,153,.15);border-color:rgba(52,211,153,.3);color:#6EE7B7">Open Now</div>
+            <div class="detail-badge">OpesCare Live</div>
+          </div>
+        </div>
+        <div class="detail-hero-actions">
+          <div class="hero-btn hero-btn-call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call facility</div>
+          <div class="hero-btn hero-btn-dir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>Get directions</div>
+          <div class="hero-btn hero-btn-save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Save facility</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail body -->
+    <div class="detail-body">
+      <div class="detail-main">
+
+        <!-- Services -->
+        <div class="section-card">
+          <div class="section-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Services Offered</div>
+          <div class="service-grid">
+            <div class="svc-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Accident &amp; Emergency</div>
+            <div class="svc-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Maternity &amp; Obstetrics</div>
+            <div class="svc-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Intensive Care Unit</div>
+            <div class="svc-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Radiology &amp; Imaging</div>
+            <div class="svc-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Laboratory Services</div>
+            <div class="svc-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>General Outpatient</div>
+            <div class="svc-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Paediatrics</div>
+            <div class="svc-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Pharmacy</div>
+            <div class="svc-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Blood Bank</div>
+          </div>
+        </div>
+
+        <!-- Hours -->
+        <div class="section-card">
+          <div class="section-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Operating Hours</div>
+          <div class="hours-grid">
+            <div class="hours-row"><span class="hours-day today">Monday (today)</span><span class="hours-badge" style="background:#DCFCE7;color:#15803D">Open Now</span><span class="hours-time">24 hours</span></div>
+            <div class="hours-row"><span class="hours-day">Tuesday</span><span class="hours-time">24 hours</span></div>
+            <div class="hours-row"><span class="hours-day">Wednesday</span><span class="hours-time">24 hours</span></div>
+            <div class="hours-row"><span class="hours-day">Thursday</span><span class="hours-time">24 hours</span></div>
+            <div class="hours-row"><span class="hours-day">Friday</span><span class="hours-time">24 hours</span></div>
+            <div class="hours-row"><span class="hours-day">Saturday</span><span class="hours-time">24 hours</span></div>
+            <div class="hours-row" style="border:none"><span class="hours-day">Sunday</span><span class="hours-time">24 hours</span></div>
+          </div>
+        </div>
+
+        <!-- Insurance -->
+        <div class="section-card">
+          <div class="section-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Accepted Insurance</div>
+          <div class="insurance-grid">
+            <div class="ins-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>NHIS — National HMO</div>
+            <div class="ins-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Reliance HMO</div>
+            <div class="ins-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Hygeia HMO</div>
+            <div class="ins-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Axa Mansard Health</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Aside -->
+      <div class="detail-aside">
+
+        <!-- Mini map -->
+        <div class="section-card" style="padding:.875rem">
+          <div class="section-card-title" style="margin-bottom:.75rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/></svg>Location</div>
+          <div class="map-mini">
+            <div class="map-mini-grid"></div>
+            <div style="position:absolute;left:0;right:0;top:60px;height:6px;background:rgba(255,255,255,.6)"></div>
+            <div style="position:absolute;left:0;right:0;top:110px;height:4px;background:rgba(255,255,255,.5)"></div>
+            <div style="position:absolute;left:70px;top:0;width:5px;bottom:0;background:rgba(255,255,255,.55)"></div>
+            <div style="position:absolute;left:140px;top:0;width:4px;bottom:0;background:rgba(255,255,255,.45)"></div>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-120%)">
+              <div style="width:30px;height:30px;border-radius:50%;background:var(--hospital);border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.22)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+              <div style="width:2px;height:8px;background:var(--hospital);margin:0 auto;border-radius:1px"></div>
+            </div>
+            <div class="map-mini-dir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>Directions</div>
+          </div>
+          <div style="font-size:.77rem;color:var(--muted);line-height:1.5">Broad Street, Lagos Island, Lagos State, Nigeria</div>
+        </div>
+
+        <!-- Contact info -->
+        <div class="section-card">
+          <div class="section-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Contact</div>
+          <div class="aside-info">
+            <div class="aside-row">
+              <div class="aside-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+              <div><div class="aside-row-label">Phone</div><div class="aside-row-val"><a>+234 801 234 5678</a></div></div>
+            </div>
+            <div class="aside-row">
+              <div class="aside-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+              <div><div class="aside-row-label">Email</div><div class="aside-row-val"><a>info@lsh.gov.ng</a></div></div>
+            </div>
+            <div class="aside-row">
+              <div class="aside-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+              <div><div class="aside-row-label">Website</div><div class="aside-row-val"><a>lsh.gov.ng</a></div></div>
+            </div>
+            <div class="aside-row">
+              <div class="aside-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+              <div><div class="aside-row-label">Emergency</div><div class="aside-row-val"><a>+234 800 EMERGENCY</a></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div style="display:flex;flex-direction:column;gap:.5rem">
+          <button class="report-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Report incorrect info</button>
+          <button class="claim-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Claim this listing</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ SECTION 3: EMERGENCY ═══════ -->
+<div class="pg-section">
+  <div class="pg-label">Route 3 of 3</div>
+  <div class="route-badge">GET /care-map/emergency</div>
+  <div class="pg-title">Emergency — Critical Access</div>
+  <div class="pg-sub">Dark theme · Red accent system · 24/7 hospitals only · Dial shortcuts always visible</div>
+
+  <div class="emrg-frame">
+    <div class="emrg-nav">
+      <div class="logo">
+        <div class="emrg-logo-mark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <div><div class="emrg-logo-name">OpesCare</div><div class="emrg-logo-tag">Emergency Access</div></div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:.625rem;align-items:center">
+        <div class="emrg-dial-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Dial 112</div>
+        <div class="emrg-dial-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Dial 199</div>
+        <a style="font-size:.75rem;font-weight:600;color:rgba(255,255,255,.5);text-decoration:none">← Back to map</a>
+      </div>
+    </div>
+
+    <div class="emrg-title-bar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2.5"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div class="emrg-title">Emergency Facilities — 24/7 Access</div>
+      <div class="emrg-sub">Showing 12 emergency centres near you</div>
+    </div>
+
+    <div class="emrg-body">
+      <div class="emrg-panel">
+
+        <!-- Emergency card 1 -->
+        <div class="emrg-card selected">
+          <div class="emrg-card-top">
+            <div class="emrg-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+            <div class="emrg-meta">
+              <div class="emrg-name">Lagos State Hospital</div>
+              <div class="emrg-badges"><span class="emrg-badge">Gov. Verified</span><span class="emrg-badge">24/7 A&amp;E</span></div>
+            </div>
+            <div class="emrg-dist">2.1 km</div>
+          </div>
+          <div class="emrg-card-info">
+            <div class="emrg-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Broad Street, Lagos Island</div>
+            <div class="emrg-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>+234 800 EMERGENCY</div>
+          </div>
+          <div class="emrg-card-acts">
+            <div class="emrg-btn emrg-btn-call">Call Now</div>
+            <div class="emrg-btn emrg-btn-dir">Directions</div>
+          </div>
+        </div>
+
+        <!-- Emergency card 2 -->
+        <div class="emrg-card">
+          <div class="emrg-card-top">
+            <div class="emrg-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+            <div class="emrg-meta">
+              <div class="emrg-name">LUTH — University Teaching</div>
+              <div class="emrg-badges"><span class="emrg-badge">Gov. Verified</span><span class="emrg-badge">Trauma Centre</span></div>
+            </div>
+            <div class="emrg-dist">4.8 km</div>
+          </div>
+          <div class="emrg-card-info">
+            <div class="emrg-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Idi-Araba, Surulere, Lagos</div>
+            <div class="emrg-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>+234 802 000 4444</div>
+          </div>
+          <div class="emrg-card-acts">
+            <div class="emrg-btn emrg-btn-call">Call Now</div>
+            <div class="emrg-btn emrg-btn-dir">Directions</div>
+          </div>
+        </div>
+
+        <!-- Emergency card 3 -->
+        <div class="emrg-card">
+          <div class="emrg-card-top">
+            <div class="emrg-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+            <div class="emrg-meta">
+              <div class="emrg-name">St. Nicholas Hospital</div>
+              <div class="emrg-badges"><span class="emrg-badge">Verified</span><span class="emrg-badge">24/7</span></div>
+            </div>
+            <div class="emrg-dist">6.2 km</div>
+          </div>
+          <div class="emrg-card-info">
+            <div class="emrg-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>57 Campbell Street, Lagos Island</div>
+          </div>
+          <div class="emrg-card-acts">
+            <div class="emrg-btn emrg-btn-call">Call Now</div>
+            <div class="emrg-btn emrg-btn-dir">Directions</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Emergency map -->
+      <div class="emrg-map">
+        <div class="emrg-map-grid"></div>
+        <div class="emrg-road" style="left:0;right:0;top:80px;height:7px"></div>
+        <div class="emrg-road" style="left:0;right:0;top:180px;height:5px;transform:rotate(-1deg)"></div>
+        <div class="emrg-road" style="left:0;right:0;top:280px;height:6px"></div>
+        <div class="emrg-road" style="left:80px;top:0;width:5px;bottom:0"></div>
+        <div class="emrg-road" style="left:200px;top:0;width:6px;bottom:0;transform:skewX(-1deg)"></div>
+        <div class="emrg-road" style="left:330px;top:0;width:5px;bottom:0"></div>
+        <div class="emrg-road" style="left:450px;top:0;width:7px;bottom:0"></div>
+
+        <!-- You -->
+        <div style="position:absolute;left:210px;top:195px;transform:translate(-50%,-50%)">
+          <div style="width:26px;height:26px;border-radius:50%;background:rgba(220,38,38,.15);border:2px solid rgba(220,38,38,.3);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+          <div style="width:12px;height:12px;background:#DC2626;border:2.5px solid rgba(255,255,255,.8);border-radius:50%;box-shadow:0 2px 8px rgba(220,38,38,.5)"></div>
+        </div>
+
+        <!-- Emergency pins -->
+        <div style="position:absolute;left:160px;top:155px;transform:translate(-50%,-100%)">
+          <div style="width:36px;height:36px;border-radius:50%;background:#DC2626;border:3px solid rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(220,38,38,.45)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+          </div>
+          <div style="width:2px;height:10px;background:#DC2626;margin:0 auto;border-radius:1px"></div>
+          <div style="background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.25);border-radius:6px;padding:2px 7px;font-size:8px;font-weight:700;color:#F87171;white-space:nowrap;margin-top:2px">Lagos State Hospital</div>
+        </div>
+        <div style="position:absolute;left:310px;top:240px;transform:translate(-50%,-100%)">
+          <div style="width:30px;height:30px;border-radius:50%;background:rgba(220,38,38,.7);border:2.5px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(220,38,38,.35)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+          </div>
+          <div style="width:2px;height:8px;background:rgba(220,38,38,.7);margin:0 auto;border-radius:1px"></div>
+        </div>
+        <div style="position:absolute;left:440px;top:155px;transform:translate(-50%,-100%)">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(220,38,38,.6);border:2.5px solid rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(220,38,38,.3)">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+          </div>
+          <div style="width:2px;height:8px;background:rgba(220,38,38,.6);margin:0 auto;border-radius:1px"></div>
+        </div>
+
+        <!-- Popup for selected -->
+        <div style="position:absolute;left:75px;top:30px">
+          <div style="background:#1A0A0A;border-radius:12px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.5);border:1px solid rgba(220,38,38,.25);min-width:200px">
+            <div style="height:3px;background:#DC2626"></div>
+            <div style="padding:.75rem">
+              <div style="font-size:.8rem;font-weight:700;color:#FCA5A5;margin-bottom:.2rem">Lagos State Hospital</div>
+              <div style="font-size:.68rem;color:rgba(220,38,38,.55);margin-bottom:.5rem">Hospital · A&amp;E · 2.1 km</div>
+              <div style="display:flex;gap:.375rem">
+                <div style="flex:1;text-align:center;padding:.35rem;border-radius:6px;background:#DC2626;color:#fff;font-size:.68rem;font-weight:700;cursor:pointer">Call Now</div>
+                <div style="flex:1;text-align:center;padding:.35rem;border-radius:6px;background:rgba(220,38,38,.12);color:#F87171;border:1px solid rgba(220,38,38,.25);font-size:.68rem;font-weight:700;cursor:pointer">Directions</div>
+              </div>
+            </div>
+          </div>
+          <div style="width:10px;height:6px;background:#1A0A0A;clip-path:polygon(50% 100%,0 0,100% 0);margin:0 auto;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))"></div>
+        </div>
+
+        <!-- Zoom controls -->
+        <div style="position:absolute;bottom:.875rem;right:.875rem;display:flex;flex-direction:column;gap:.375rem">
+          <div style="background:rgba(26,10,10,.8);border:1px solid rgba(220,38,38,.2);border-radius:8px;padding:.4rem .7rem;font-size:.72rem;font-weight:600;color:#F87171;cursor:pointer;display:flex;align-items:center;gap:.35rem;backdrop-filter:blur(6px)">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6m-6 0 6-6M9 21H3v-6m6 0-6 6"/></svg>Fit all
+          </div>
+          <div style="background:rgba(26,10,10,.8);border:1px solid rgba(220,38,38,.2);border-radius:8px;padding:.4rem .7rem;font-size:.72rem;font-weight:600;color:#F87171;cursor:pointer;display:flex;align-items:center;gap:.35rem;backdrop-filter:blur(6px)">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg>Near me
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;padding:1rem 0 3rem">
+  <p style="font-size:.85rem;color:#475569;margin-bottom:.5rem">Three routes, complete system. What would you change before we build?</p>
+  <p style="font-size:.72rem;color:#334155">Cards · Nav · Detail page · Emergency theme · Anything else — tell me and I'll revise.</p>
+</div>
+
+</body>
+</html>

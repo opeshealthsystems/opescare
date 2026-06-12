@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="utf-8">
@@ -37,7 +37,7 @@
         @endif
     </div>
 </div>
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="{{ asset('js/lucide.min.js') }}"></script>
 <script>if (typeof lucide !== 'undefined') lucide.createIcons();</script>
 </body>
 </html>

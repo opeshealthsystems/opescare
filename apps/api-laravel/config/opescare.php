@@ -12,4 +12,8 @@ return [
     'health_id' => [
         'default_country' => env('OPESCARE_DEFAULT_COUNTRY', 'CM'),
     ],
+
+    // Set to true in production once subdomains are configured in Nginx.
+    // When enabled, each subdomain only serves its designated routes (404 otherwise).
+    'subdomain_routing' => env('SUBDOMAIN_ROUTING', false),
 ];

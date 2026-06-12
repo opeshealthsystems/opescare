@@ -1,7 +1,7 @@
-@extends('layouts.public')
+﻿@extends('layouts.public')
 
 @section('title', 'About OpesCare | Digital Health ID and Connected Medical Records')
-@section('meta_description', 'OpesCare is a digital Health ID and healthcare interoperability platform built by Opesware to connect patients, hospitals, labs, pharmacies, and insurers through consent-based record sharing.')
+@section('meta_description', 'OpesCare is a digital Health ID and healthcare interoperability platform Built by Opes Health Systems to connect patients, hospitals, labs, pharmacies, and insurers through consent-based record sharing.')
 
 @section('head_scripts')
 <style>
@@ -131,14 +131,14 @@
         <div class="container">
             <div class="hero-grid">
                 <div class="hero-content">
-                    <div class="badge" style="background:rgba(15,76,129,.08);color:#0F4C81;margin-bottom:1rem;">Built by Opesware</div>
+                    <div class="badge" style="background:rgba(15,76,129,.08);color:#0F4C81;margin-bottom:1rem;">Built by Opes Health Systems</div>
                     <h2>{{ __('public.about.built_by_title') }}</h2>
                     <p class="text-muted" style="font-size:1.0625rem;line-height:1.75;">{{ __('public.about.built_by_content') }}</p>
                     <p class="text-muted" style="font-size:1.0625rem;line-height:1.75;margin-top:1rem;">
                         OpesCare is a product of deep collaboration with healthcare practitioners, hospital administrators, and public health experts to ensure that every feature reflects real clinical workflows and real patient needs.
                     </p>
                     <div style="margin-top:2rem;">
-                        <a href="https://opesware.com" target="_blank" rel="noopener" class="btn btn-primary">Learn about Opesware</a>
+                        <a href="https://opeshealthsystems.com" target="_blank" rel="noopener" class="btn btn-primary">Learn about Opes Health Systems</a>
                     </div>
                 </div>
                 <div class="hero-visual">

@@ -473,7 +473,7 @@ class DashboardProfilesSeeder extends Seeder
                 'name'          => 'Platform Owner Dashboard',
                 'portal_prefix' => 'admin',
                 'landing_route' => 'portals.admin.cc',
-                'description'   => 'Opesware product owner and platform management',
+                'description'   => 'Opes Health Systems product owner and platform management',
             ],
             [
                 'key'           => 'country_regional_admin',

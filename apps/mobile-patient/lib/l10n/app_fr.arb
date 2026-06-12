@@ -1,0 +1,47 @@
+{
+  "@@locale": "fr",
+  "appTitle": "OpesCare",
+
+  "navHome": "Accueil",
+  "navHealthId": "Identifiant Santé",
+  "navAppointments": "Rendez-vous",
+  "navRecords": "Dossiers",
+  "navSettings": "Paramètres",
+
+  "actionSignIn": "Se connecter",
+  "actionSignOut": "Se déconnecter",
+  "actionContinue": "Continuer",
+  "actionCancel": "Annuler",
+  "actionSave": "Enregistrer",
+  "actionRetry": "Réessayer",
+  "actionClose": "Fermer",
+
+  "authEmail": "E-mail",
+  "authPassword": "Mot de passe",
+  "authShowPassword": "Afficher le mot de passe",
+  "authHidePassword": "Masquer le mot de passe",
+  "authForgotPassword": "Mot de passe oublié ?",
+  "authLoginFailed": "Échec de la connexion. Vérifiez vos informations et réessayez.",
+
+  "homeGreeting": "Bonjour, {name}",
+  "homeYourHealthId": "Votre Identifiant Santé",
+  "homeGenerateQr": "Générer un QR temporaire",
+
+  "consentTitle": "Demandes de consentement",
+  "consentApprove": "Approuver",
+  "consentDeny": "Refuser",
+  "consentPendingCount": "{count, plural, =0{Aucune demande en attente} =1{1 demande en attente} other{{count} demandes en attente}}",
+
+  "labsTitle": "Résultats de laboratoire",
+  "prescriptionsTitle": "Ordonnances",
+  "appointmentsBook": "Prendre rendez-vous",
+  "appointmentsUpcoming": "À venir",
+
+  "errorNetwork": "Aucune connexion. Vérifiez votre réseau et réessayez.",
+  "errorGeneric": "Une erreur s'est produite. Veuillez réessayer.",
+  "offlineBanner": "Vous êtes hors ligne. Certaines données peuvent être obsolètes.",
+
+  "securityUpdateRequiredTitle": "Mise à jour requise",
+  "securityUpdateRequiredBody": "Une version plus récente d'OpesCare est requise pour continuer. Veuillez mettre à jour pour protéger vos données.",
+  "securityUpdateNow": "Mettre à jour"
+}

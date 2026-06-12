@@ -12,12 +12,12 @@ class CarePlanService
 {
     public function create(array $data): CarePlan
     {
-        return CarePlan::create($data);
+        return CarePlan::create(array_merge(['status' => 'active'], $data));
     }
 
     public function addGoal(string $carePlanId, array $data): CarePlanGoal
     {
-        return CarePlanGoal::create(array_merge($data, ['care_plan_id' => $carePlanId]));
+        return CarePlanGoal::create(array_merge(['status' => 'pending'], $data, ['care_plan_id' => $carePlanId]));
     }
 
     public function updateGoalStatus(string $goalId, string $status): CarePlanGoal

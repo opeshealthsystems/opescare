@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpesCare Care Map — Redesign Concept</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: #0A1628; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2.5rem 1.5rem 4rem; gap: 3rem; }
+
+.section-label {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #475569; text-align: center; margin-bottom: 1rem;
+}
+.section-title {
+  font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800;
+  color: #F8FAFC; text-align: center; margin-bottom: 0.5rem;
+}
+.section-sub { font-size: 0.85rem; color: #64748B; text-align: center; margin-bottom: 2rem; max-width: 500px; }
+
+/* ═══════════════════════════════════════════════════════════
+   DESKTOP MOCKUP
+═══════════════════════════════════════════════════════════ */
+.desktop-frame {
+  width: 100%;
+  max-width: 1160px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.08);
+  background: #F1F5F9;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Nav ── */
+.d-nav {
+  background: #0A1628;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  gap: 1.25rem;
+  flex-shrink: 0;
+}
+.d-logo {
+  display: flex; align-items: center; gap: 0.625rem;
+  flex-shrink: 0;
+}
+.d-logo-mark {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, #1E6AAF 0%, #0D9488 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.d-logo-mark svg { color: #fff; }
+.d-logo-name { font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 700; color: #fff; line-height: 1; }
+.d-logo-tag { font-size: 0.6rem; color: rgba(255,255,255,.45); font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; display: block; margin-top: 1px; }
+
+.d-search {
+  flex: 1; max-width: 520px; margin: 0 auto;
+  height: 38px;
+  background: rgba(255,255,255,.08);
+  border: 1.5px solid rgba(255,255,255,.12);
+  border-radius: 50px;
+  display: flex; align-items: center;
+  padding: 0 1rem; gap: 0.625rem;
+  transition: all 0.2s;
+}
+.d-search:hover { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.2); }
+.d-search svg { color: rgba(255,255,255,.4); flex-shrink: 0; }
+.d-search-text { font-size: 0.82rem; color: rgba(255,255,255,.4); flex: 1; }
+.d-search-kbd {
+  font-size: 0.65rem; color: rgba(255,255,255,.25);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 4px; padding: 0.1rem 0.375rem;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.d-nav-actions { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; flex-shrink: 0; }
+.d-btn-locate {
+  display: flex; align-items: center; gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border: 1.5px solid rgba(255,255,255,.15);
+  border-radius: 50px;
+  font-size: 0.78rem; font-weight: 500; color: rgba(255,255,255,.7);
+  cursor: pointer; white-space: nowrap;
+  transition: all 0.15s;
+}
+.d-btn-locate svg { width: 13px; height: 13px; }
+.d-btn-emergency {
+  display: flex; align-items: center; gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  background: rgba(220,38,38,.9);
+  border: none;
+  border-radius: 50px;
+  font-size: 0.78rem; font-weight: 700; color: #fff;
+  cursor: pointer; white-space: nowrap;
+}
+.d-btn-emergency svg { width: 13px; height: 13px; }
+
+/* ── Category Rail ── */
+.d-cat-rail {
+  background: #fff;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex; align-items: center;
+  padding: 0 1.5rem;
+  height: 52px;
+  gap: 0.25rem;
+  overflow-x: auto; scrollbar-width: none;
+  flex-shrink: 0;
+}
+.d-cat {
+  display: flex; align-items: center; gap: 0.4rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 50px;
+  font-size: 0.8rem; font-weight: 500;
+  white-space: nowrap; flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1.5px solid transparent;
+}
+.d-cat-count {
+  font-size: 0.68rem; font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 50px;
+  background: rgba(0,0,0,.06);
+}
+.d-cat.active-all {
+  background: #0A1628; color: #fff;
+}
+.d-cat.active-all .d-cat-count { background: rgba(255,255,255,.15); color: rgba(255,255,255,.85); }
+.d-cat-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Main Body ── */
+.d-body {
+  display: flex;
+  flex: 1;
+  height: 580px;
+  overflow: hidden;
+}
+
+/* ── Results Panel ── */
+.d-panel {
+  width: 420px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: #F8FAFC;
+  border-right: 1px solid #E2E8F0;
+}
+.d-panel-hdr {
+  padding: 0.875rem 1.125rem;
+  background: #fff;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex; align-items: center;
+  gap: 0.75rem;
+}
+.d-panel-count {
+  flex: 1;
+  font-size: 0.82rem; color: #475569;
+}
+.d-panel-count strong { color: #0F172A; font-weight: 700; }
+.d-panel-count .verified-pill {
+  display: inline-flex; align-items: center; gap: 0.2rem;
+  font-size: 0.72rem; font-weight: 600; color: #059669;
+  margin-left: 0.25rem;
+}
+.d-sort {
+  font-size: 0.75rem; color: #475569;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.625rem;
+  display: flex; align-items: center; gap: 0.3rem;
+  cursor: pointer;
+  background: #fff;
+}
+.d-sort svg { width: 11px; height: 11px; color: #94A3B8; }
+
+.d-cards {
+  flex: 1; overflow-y: auto; padding: 0.875rem;
+  display: flex; flex-direction: column; gap: 0.625rem;
+}
+.d-cards::-webkit-scrollbar { width: 3px; }
+.d-cards::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 2px; }
+
+/* ── Facility Card ── */
+.fc {
+  background: #fff;
+  border-radius: 14px;
+  border: 1.5px solid #E2E8F0;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.18s;
+  position: relative;
+}
+.fc:hover { border-color: #94A3B8; box-shadow: 0 6px 20px rgba(0,0,0,.08); transform: translateY(-1px); }
+.fc.selected { border-color: #0F4C81; box-shadow: 0 0 0 3px rgba(15,76,129,.1), 0 6px 20px rgba(0,0,0,.08); }
+
+.fc-accent {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 4px; border-radius: 0;
+}
+
+.fc-body { padding: 0.875rem 0.875rem 0.875rem 1.125rem; }
+
+.fc-top { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.625rem; }
+.fc-icon {
+  width: 42px; height: 42px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.fc-icon svg { width: 20px; height: 20px; }
+
+.fc-meta { flex: 1; min-width: 0; }
+.fc-name {
+  font-size: 0.9rem; font-weight: 700; color: #0F172A;
+  margin-bottom: 0.3rem; line-height: 1.3;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.fc-badges { display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; }
+.badge {
+  display: inline-flex; align-items: center; gap: 0.2rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 50px;
+  font-size: 0.67rem; font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+.badge svg { width: 8px; height: 8px; }
+
+.fc-dist {
+  position: absolute; top: 0.875rem; right: 0.875rem;
+  font-size: 0.72rem; font-weight: 700;
+  color: #0F4C81; background: #EFF6FF;
+  padding: 0.175rem 0.5rem;
+  border-radius: 50px;
+  white-space: nowrap;
+}
+
+.fc-info {
+  display: flex; flex-direction: column; gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+.fc-row {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.77rem; color: #64748B;
+}
+.fc-row svg { width: 11px; height: 11px; color: #94A3B8; flex-shrink: 0; }
+
+.fc-actions {
+  display: flex; gap: 0.5rem; align-items: center;
+  padding-top: 0.625rem;
+  border-top: 1px solid #F1F5F9;
+}
+.fc-btn {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.77rem; font-weight: 600;
+  cursor: pointer; border: none;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.fc-btn svg { width: 11px; height: 11px; }
+.fc-btn-call { background: #DCFCE7; color: #15803D; }
+.fc-btn-dir  { background: #F1F5F9; color: #475569; }
+.fc-btn-view { background: #0F4C81; color: #fff; margin-left: auto; }
+.fc-btn-view svg { width: 12px; height: 12px; }
+
+/* ── Map ── */
+.d-map {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+.d-map-base {
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, #E8F4F8 0%, #D6EAF2 50%, #C8E0ED 100%);
+}
+.d-map-grid {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(rgba(180,210,230,.25) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(180,210,230,.25) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+/* Roads */
+.road {
+  position: absolute;
+  background: rgba(255,255,255,.72);
+  border-radius: 2px;
+}
+/* Map overlay UI */
+.d-map-search-overlay {
+  position: absolute; top: 1rem; left: 1rem; right: 1rem;
+  display: flex; justify-content: flex-end; gap: 0.5rem;
+  pointer-events: none;
+}
+.d-map-ctrl {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.78rem; font-weight: 500;
+  cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.1);
+  display: flex; align-items: center; gap: 0.375rem;
+  color: #374151; pointer-events: all;
+}
+.d-map-ctrl svg { width: 13px; height: 13px; color: #6B7280; }
+
+/* Cluster pill */
+.map-cluster {
+  position: absolute;
+  background: #0F4C81;
+  color: #fff;
+  border: 2.5px solid #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 800;
+  box-shadow: 0 3px 10px rgba(15,76,129,.4);
+}
+
+/* Pin */
+.pin {
+  position: absolute;
+  display: flex; flex-direction: column; align-items: center;
+  transform: translate(-50%, -100%);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.pin:hover { transform: translate(-50%, -100%) scale(1.15); }
+.pin-circle {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 3px solid #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,.25);
+}
+.pin-circle svg { width: 14px; height: 14px; }
+.pin-circle.active-pin {
+  width: 40px; height: 40px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.3);
+}
+.pin-tail {
+  width: 2px; height: 10px;
+  border-radius: 1px;
+}
+.pin-label {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.6rem; font-weight: 700;
+  color: #0F172A;
+  white-space: nowrap;
+  margin-top: 3px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.1);
+}
+
+/* You pin */
+.you-pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+.you-dot {
+  width: 14px; height: 14px;
+  background: #0F4C81;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(15,76,129,.5);
+  position: relative;
+}
+.you-pulse {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: rgba(15,76,129,.15);
+  border: 2px solid rgba(15,76,129,.25);
+}
+
+/* Map popup */
+.map-popup {
+  position: absolute;
+  background: #fff;
+  border-radius: 14px;
+  padding: 0;
+  box-shadow: 0 8px 32px rgba(0,0,0,.18), 0 0 0 1px rgba(0,0,0,.06);
+  overflow: hidden;
+  min-width: 220px;
+}
+.popup-type-bar {
+  height: 4px;
+}
+.popup-inner { padding: 0.875rem; }
+.popup-name { font-size: 0.875rem; font-weight: 700; color: #0F172A; margin-bottom: 0.25rem; line-height: 1.3; }
+.popup-sub { font-size: 0.72rem; color: #64748B; margin-bottom: 0.625rem; }
+.popup-badge { display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.65rem; font-weight: 700; margin-bottom: 0.625rem; }
+.popup-btns { display: flex; gap: 0.375rem; }
+.popup-btn {
+  flex: 1; text-align: center; padding: 0.375rem;
+  border-radius: 7px; font-size: 0.72rem; font-weight: 700;
+  cursor: pointer;
+}
+.popup-btn-view { background: #0F4C81; color: #fff; }
+.popup-btn-dir { background: #F1F5F9; color: #374151; }
+.popup-tail {
+  width: 12px; height: 8px;
+  background: #fff;
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+  margin: 0 auto;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,.1));
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE MOCKUP
+═══════════════════════════════════════════════════════════ */
+.mobile-section {
+  display: flex;
+  gap: 2.5rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1160px;
+  width: 100%;
+}
+.mobile-label {
+  font-size: 0.72rem; font-weight: 600; color: #475569;
+  text-align: center; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.07em;
+}
+
+.phone-frame {
+  width: 320px;
+  border-radius: 40px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.08), inset 0 0 0 2px rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.1);
+  flex-shrink: 0;
+}
+.phone-notch {
+  background: #0A1628;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.phone-notch-pill {
+  width: 80px; height: 10px;
+  background: rgba(0,0,0,.6);
+  border-radius: 50px;
+}
+.phone-content { background: #F1F5F9; }
+
+/* mobile nav */
+.m-nav {
+  background: #0A1628;
+  padding: 0.75rem 1rem;
+  display: flex; align-items: center; gap: 0.625rem;
+}
+.m-logo-mark { width: 28px; height: 28px; border-radius: 7px; background: linear-gradient(135deg, #1E6AAF, #0D9488); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.m-logo-text { font-family: 'Outfit', sans-serif; font-size: 0.875rem; font-weight: 700; color: #fff; }
+.m-logo-sub { font-size: 0.55rem; color: rgba(255,255,255,.45); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+.m-em-btn { margin-left: auto; background: rgba(220,38,38,.85); color: #fff; font-size: 0.65rem; font-weight: 700; padding: 0.3rem 0.625rem; border-radius: 50px; white-space: nowrap; }
+
+/* mobile search */
+.m-search-bar {
+  background: #fff;
+  padding: 0.625rem;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex; gap: 0.5rem; align-items: center;
+}
+.m-search-input {
+  flex: 1; height: 36px; background: #F8FAFC;
+  border: 1.5px solid #E2E8F0; border-radius: 50px;
+  display: flex; align-items: center; padding: 0 0.75rem; gap: 0.5rem;
+  font-size: 0.78rem; color: #94A3B8;
+}
+.m-search-input svg { color: #CBD5E1; flex-shrink: 0; }
+.m-locate-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #EFF6FF; border: 1.5px solid #BFDBFE;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.m-locate-btn svg { color: #0F4C81; }
+
+/* mobile cats */
+.m-cats {
+  background: #fff; border-bottom: 1px solid #E2E8F0;
+  display: flex; gap: 0.375rem; padding: 0.5rem 0.875rem;
+  overflow-x: auto; scrollbar-width: none;
+}
+.m-cat {
+  display: flex; align-items: center; gap: 0.3rem;
+  padding: 0.3rem 0.75rem; border-radius: 50px;
+  font-size: 0.72rem; font-weight: 600;
+  white-space: nowrap; flex-shrink: 0;
+  border: 1.5px solid transparent;
+}
+
+/* mobile cards */
+.m-cards { padding: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.m-fc {
+  background: #fff; border-radius: 14px;
+  border: 1.5px solid #E2E8F0;
+  overflow: hidden; position: relative;
+}
+.m-fc-accent { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.m-fc-body { padding: 0.75rem 0.75rem 0.75rem 1rem; }
+.m-fc-top { display: flex; align-items: flex-start; gap: 0.625rem; margin-bottom: 0.5rem; }
+.m-fc-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.m-fc-icon svg { width: 18px; height: 18px; }
+.m-fc-meta { flex: 1; min-width: 0; }
+.m-fc-name { font-size: 0.82rem; font-weight: 700; color: #0F172A; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-fc-badges { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+.m-badge { display: inline-flex; align-items: center; gap: 0.15rem; padding: 0.1rem 0.4rem; border-radius: 50px; font-size: 0.6rem; font-weight: 700; }
+.m-fc-dist { position: absolute; top: 0.75rem; right: 0.75rem; font-size: 0.65rem; font-weight: 700; color: #0F4C81; background: #EFF6FF; padding: 0.1rem 0.4rem; border-radius: 50px; }
+.m-fc-loc { font-size: 0.7rem; color: #64748B; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.3rem; }
+.m-fc-loc svg { color: #CBD5E1; flex-shrink: 0; }
+.m-fc-actions { display: flex; gap: 0.375rem; }
+.m-fc-btn { flex: 1; text-align: center; padding: 0.375rem 0; border-radius: 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer; }
+
+/* mobile FAB */
+.m-fab-area { padding: 0.75rem; background: #F1F5F9; display: flex; justify-content: center; }
+.m-fab {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  background: #0F4C81; color: #fff;
+  border-radius: 50px;
+  font-size: 0.8rem; font-weight: 700;
+  box-shadow: 0 4px 16px rgba(15,76,129,.4);
+}
+.m-fab svg { width: 15px; height: 15px; }
+
+/* mobile map view */
+.m-map-view {
+  background: #E8F4F8;
+  position: relative;
+  height: 240px;
+  overflow: hidden;
+}
+.m-map-grid-overlay {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(rgba(180,210,230,.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(180,210,230,.2) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+.m-road { position: absolute; background: rgba(255,255,255,.65); border-radius: 2px; }
+.m-bottom-sheet {
+  background: #fff;
+  border-radius: 18px 18px 0 0;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 -8px 24px rgba(0,0,0,.12);
+}
+.m-sheet-handle {
+  width: 40px; height: 4px; background: #E2E8F0;
+  border-radius: 2px; margin: 0 auto 0.875rem;
+}
+.m-sheet-card {
+  display: flex; gap: 0.75rem; align-items: flex-start;
+}
+.m-sheet-icon { width: 44px; height: 44px; border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.m-sheet-icon svg { width: 20px; height: 20px; }
+.m-sheet-meta { flex: 1; min-width: 0; }
+.m-sheet-name { font-size: 0.875rem; font-weight: 700; color: #0F172A; margin-bottom: 0.25rem; }
+.m-sheet-badges { display: flex; gap: 0.25rem; margin-bottom: 0.5rem; }
+.m-sheet-loc { font-size: 0.72rem; color: #64748B; margin-bottom: 0.625rem; }
+.m-sheet-btns { display: flex; gap: 0.5rem; }
+.m-sheet-btn { flex: 1; text-align: center; padding: 0.45rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; }
+
+/* ── Typography helpers ── */
+.page-hero { width: 100%; max-width: 1160px; text-align: center; padding-bottom: 1rem; }
+.tag-row { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.tag { padding: 0.2rem 0.75rem; border-radius: 50px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; border: 1px solid; }
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<div class="page-hero">
+  <div class="tag-row">
+    <span class="tag" style="background:rgba(14,165,233,.12);color:#38BDF8;border-color:rgba(14,165,233,.2)">Full Redesign Concept</span>
+    <span class="tag" style="background:rgba(16,185,129,.12);color:#34D399;border-color:rgba(16,185,129,.2)">Mobile-First</span>
+    <span class="tag" style="background:rgba(139,92,246,.12);color:#A78BFA;border-color:rgba(139,92,246,.2)">Real Data Wired In</span>
+  </div>
+  <div class="section-title">OpesCare Care Map — Redesign</div>
+  <div class="section-sub">Dark navigation · Type-coloured accent system · Rich cards · Smart map popup · Mobile bottom-sheet</div>
+</div>
+
+<!-- ═══════════════ DESKTOP ═══════════════ -->
+<div class="section-label">Desktop — 1280px</div>
+<div class="desktop-frame">
+
+  <!-- Nav -->
+  <nav class="d-nav">
+    <div class="d-logo">
+      <div class="d-logo-mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </div>
+      <div>
+        <div class="d-logo-name">OpesCare</div>
+        <div class="d-logo-tag">Care Map</div>
+      </div>
+    </div>
+
+    <div class="d-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <span class="d-search-text">Search hospitals, pharmacies, labs, blood banks…</span>
+      <span class="d-search-kbd">⌘K</span>
+    </div>
+
+    <div class="d-nav-actions">
+      <div class="d-btn-locate">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg>
+        Near me
+      </div>
+      <div class="d-btn-emergency">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Emergency
+      </div>
+    </div>
+  </nav>
+
+  <!-- Category Rail -->
+  <div class="d-cat-rail">
+    <div class="d-cat active-all">
+      All facilities
+      <span class="d-cat-count">247</span>
+    </div>
+    <div class="d-cat" style="color:#0891B2">
+      <span class="d-cat-dot" style="background:#0891B2"></span>Hospitals
+      <span class="d-cat-count" style="background:#ECFEFF;color:#0891B2">12</span>
+    </div>
+    <div class="d-cat" style="color:#059669">
+      <span class="d-cat-dot" style="background:#059669"></span>Clinics
+      <span class="d-cat-count" style="background:#ECFDF5;color:#059669">45</span>
+    </div>
+    <div class="d-cat" style="color:#D97706">
+      <span class="d-cat-dot" style="background:#D97706"></span>Pharmacies
+      <span class="d-cat-count" style="background:#FFFBEB;color:#D97706">63</span>
+    </div>
+    <div class="d-cat" style="color:#7C3AED">
+      <span class="d-cat-dot" style="background:#7C3AED"></span>Laboratories
+      <span class="d-cat-count" style="background:#F5F3FF;color:#7C3AED">38</span>
+    </div>
+    <div class="d-cat" style="color:#DC2626">
+      <span class="d-cat-dot" style="background:#DC2626"></span>Blood Banks
+      <span class="d-cat-count" style="background:#FEF2F2;color:#DC2626">18</span>
+    </div>
+    <div class="d-cat" style="color:#0F4C81">
+      <span class="d-cat-dot" style="background:#0F4C81"></span>Diagnostic
+      <span class="d-cat-count" style="background:#EFF6FF;color:#0F4C81">71</span>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="d-body">
+
+    <!-- Results Panel -->
+    <div class="d-panel">
+      <div class="d-panel-hdr">
+        <div class="d-panel-count">
+          <strong>247</strong> facilities
+          <span class="verified-pill">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            184 verified
+          </span>
+        </div>
+        <div class="d-sort">
+          Nearest first
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+      </div>
+
+      <div class="d-cards">
+
+        <!-- Card 1: Hospital (selected/active) -->
+        <div class="fc selected">
+          <div class="fc-accent" style="background:#0891B2"></div>
+          <div class="fc-body">
+            <div class="fc-top">
+              <div class="fc-icon" style="background:#ECFEFF;color:#0891B2">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+              </div>
+              <div class="fc-meta">
+                <div class="fc-name">Lagos State Hospital</div>
+                <div class="fc-badges">
+                  <span class="badge" style="background:#ECFEFF;color:#0891B2">Hospital</span>
+                  <span class="badge" style="background:#FEF3C7;color:#B45309">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    Gov. Verified
+                  </span>
+                  <span class="badge" style="background:#FEF2F2;color:#DC2626;font-weight:800">24/7</span>
+                </div>
+              </div>
+            </div>
+            <div class="fc-dist">2.1 km</div>
+            <div class="fc-info">
+              <div class="fc-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Broad Street, Lagos Island, Lagos
+              </div>
+              <div class="fc-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                +234 801 234 5678
+              </div>
+              <div class="fc-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                A&amp;E · Outpatient · Maternity · ICU · Radiology
+              </div>
+            </div>
+            <div class="fc-actions">
+              <div class="fc-btn fc-btn-call">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                Call
+              </div>
+              <div class="fc-btn fc-btn-dir">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                Directions
+              </div>
+              <div class="fc-btn fc-btn-view">
+                View Profile
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Clinic -->
+        <div class="fc">
+          <div class="fc-accent" style="background:#059669"></div>
+          <div class="fc-body">
+            <div class="fc-top">
+              <div class="fc-icon" style="background:#ECFDF5;color:#059669">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              </div>
+              <div class="fc-meta">
+                <div class="fc-name">Prime Care Clinic</div>
+                <div class="fc-badges">
+                  <span class="badge" style="background:#ECFDF5;color:#059669">Clinic</span>
+                  <span class="badge" style="background:#DCFCE7;color:#15803D">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    Verified
+                  </span>
+                  <span class="badge" style="background:#F0FDF4;color:#15803D">Open Now</span>
+                </div>
+              </div>
+            </div>
+            <div class="fc-dist">3.4 km</div>
+            <div class="fc-info">
+              <div class="fc-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                15 Admiralty Way, Victoria Island, Lagos
+              </div>
+              <div class="fc-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                +234 811 556 7890
+              </div>
+            </div>
+            <div class="fc-actions">
+              <div class="fc-btn fc-btn-call">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                Call
+              </div>
+              <div class="fc-btn fc-btn-dir">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                Directions
+              </div>
+              <div class="fc-btn fc-btn-view">
+                View Profile
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Pharmacy -->
+        <div class="fc">
+          <div class="fc-accent" style="background:#D97706"></div>
+          <div class="fc-body">
+            <div class="fc-top">
+              <div class="fc-icon" style="background:#FFFBEB;color:#D97706">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M9 12h6m-3-3v6"/></svg>
+              </div>
+              <div class="fc-meta">
+                <div class="fc-name">MedPlus Pharmacy — Ikeja</div>
+                <div class="fc-badges">
+                  <span class="badge" style="background:#FFFBEB;color:#D97706">Pharmacy</span>
+                  <span class="badge" style="background:#DCFCE7;color:#15803D">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    Verified
+                  </span>
+                  <span class="badge" style="background:#EFF6FF;color:#0F4C81">Live</span>
+                </div>
+              </div>
+            </div>
+            <div class="fc-dist">4.7 km</div>
+            <div class="fc-info">
+              <div class="fc-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                44 Obafemi Awolowo Way, Ikeja, Lagos
+              </div>
+              <div class="fc-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                +234 700 633 7587
+              </div>
+            </div>
+            <div class="fc-actions">
+              <div class="fc-btn fc-btn-call">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                Call
+              </div>
+              <div class="fc-btn fc-btn-dir">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                Directions
+              </div>
+              <div class="fc-btn fc-btn-view">
+                View Profile
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div class="d-map">
+      <div class="d-map-base"></div>
+      <div class="d-map-grid"></div>
+
+      <!-- Roads -->
+      <div class="road" style="left:0;right:0;top:120px;height:9px;transform:rotate(-2deg)"></div>
+      <div class="road" style="left:0;right:0;top:220px;height:6px"></div>
+      <div class="road" style="left:0;right:0;top:340px;height:8px;transform:rotate(1.5deg)"></div>
+      <div class="road" style="left:0;right:0;top:450px;height:5px;transform:rotate(-0.5deg)"></div>
+      <div class="road" style="left:100px;top:0;width:7px;bottom:0;transform:skewX(-1deg)"></div>
+      <div class="road" style="left:240px;top:0;width:6px;bottom:0"></div>
+      <div class="road" style="left:380px;top:0;width:8px;bottom:0;transform:skewX(1.5deg)"></div>
+      <div class="road" style="left:520px;top:0;width:6px;bottom:0"></div>
+      <div class="road" style="left:0;right:0;top:30px;height:4px;opacity:.5"></div>
+
+      <!-- Map controls -->
+      <div class="d-map-search-overlay">
+        <div class="d-map-ctrl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6m-6 0 6-6M9 21H3v-6m6 0-6 6"/></svg>
+          Fit all
+        </div>
+      </div>
+
+      <!-- Pins -->
+      <!-- Hospital (active) -->
+      <div class="pin" style="left:175px;top:190px">
+        <div class="pin-circle active-pin" style="background:#0891B2;width:40px;height:40px">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+        </div>
+        <div class="pin-tail" style="background:#0891B2"></div>
+        <div class="pin-label">Lagos State Hospital</div>
+      </div>
+
+      <!-- Clinic -->
+      <div class="pin" style="left:330px;top:260px">
+        <div class="pin-circle" style="background:#059669">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div class="pin-tail" style="background:#059669"></div>
+      </div>
+
+      <!-- Pharmacy -->
+      <div class="pin" style="left:460px;top:155px">
+        <div class="pin-circle" style="background:#D97706">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M9 12h6m-3-3v6"/></svg>
+        </div>
+        <div class="pin-tail" style="background:#D97706"></div>
+      </div>
+
+      <!-- Lab -->
+      <div class="pin" style="left:280px;top:380px">
+        <div class="pin-circle" style="background:#7C3AED">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </div>
+        <div class="pin-tail" style="background:#7C3AED"></div>
+      </div>
+
+      <!-- Blood bank -->
+      <div class="pin" style="left:540px;top:310px">
+        <div class="pin-circle" style="background:#DC2626">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
+        </div>
+        <div class="pin-tail" style="background:#DC2626"></div>
+      </div>
+
+      <!-- Cluster -->
+      <div class="map-cluster" style="left:410px;top:400px;width:36px;height:36px;font-size:0.72rem">+14</div>
+
+      <!-- You pin -->
+      <div class="you-pin" style="left:230px;top:300px">
+        <div class="you-pulse"></div>
+        <div class="you-dot"></div>
+      </div>
+
+      <!-- Popup for active hospital -->
+      <div style="position:absolute;left:100px;top:50px">
+        <div class="map-popup">
+          <div class="popup-type-bar" style="background:#0891B2"></div>
+          <div class="popup-inner">
+            <div class="popup-name">Lagos State Hospital</div>
+            <div class="popup-sub">Hospital · Lagos Island · 2.1 km away</div>
+            <div class="popup-badge" style="color:#B45309;background:#FEF3C7;padding:.15rem .5rem;border-radius:50px">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              Gov. Verified · 24/7
+            </div>
+            <div class="popup-btns">
+              <div class="popup-btn popup-btn-view">View Profile</div>
+              <div class="popup-btn popup-btn-dir">Directions</div>
+            </div>
+          </div>
+        </div>
+        <div class="popup-tail"></div>
+      </div>
+
+    </div>
+  </div>
+</div><!-- /desktop frame -->
+
+<!-- ═══════════════ MOBILE ═══════════════ -->
+<div style="width:100%;max-width:1160px;text-align:center">
+  <div class="section-label" style="margin-bottom:1.5rem">Mobile — Two states</div>
+</div>
+<div class="mobile-section">
+
+  <!-- Phone 1: List View -->
+  <div>
+    <div class="mobile-label">List View (default)</div>
+    <div class="phone-frame">
+      <div class="phone-notch"><div class="phone-notch-pill"></div></div>
+      <div class="phone-content">
+        <!-- Nav -->
+        <div class="m-nav">
+          <div class="m-logo-mark">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <div>
+            <div class="m-logo-text">OpesCare</div>
+            <div class="m-logo-sub">Care Map</div>
+          </div>
+          <div class="m-em-btn">Emergency</div>
+        </div>
+        <!-- Search -->
+        <div class="m-search-bar">
+          <div class="m-search-input">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            Search hospitals, pharmacies…
+          </div>
+          <div class="m-locate-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg>
+          </div>
+        </div>
+        <!-- Cats -->
+        <div class="m-cats">
+          <div class="m-cat" style="background:#0A1628;color:#fff">All · 247</div>
+          <div class="m-cat" style="color:#0891B2;border-color:#A5F3FC;background:#ECFEFF"><span style="width:6px;height:6px;border-radius:50%;background:#0891B2;display:inline-block"></span> Hospitals</div>
+          <div class="m-cat" style="color:#059669;border-color:#A7F3D0;background:#ECFDF5"><span style="width:6px;height:6px;border-radius:50%;background:#059669;display:inline-block"></span> Clinics</div>
+          <div class="m-cat" style="color:#D97706;border-color:#FDE68A;background:#FFFBEB"><span style="width:6px;height:6px;border-radius:50%;background:#D97706;display:inline-block"></span> Pharmacy</div>
+        </div>
+        <!-- Cards -->
+        <div class="m-cards">
+          <div class="m-fc">
+            <div class="m-fc-accent" style="background:#0891B2"></div>
+            <div class="m-fc-body">
+              <div class="m-fc-top">
+                <div class="m-fc-icon" style="background:#ECFEFF;color:#0891B2">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+                </div>
+                <div class="m-fc-meta">
+                  <div class="m-fc-name">Lagos State Hospital</div>
+                  <div class="m-fc-badges">
+                    <span class="m-badge" style="background:#FEF3C7;color:#B45309">✓ Gov. Verified</span>
+                    <span class="m-badge" style="background:#FEF2F2;color:#DC2626">24/7</span>
+                  </div>
+                </div>
+              </div>
+              <div class="m-fc-dist">2.1 km</div>
+              <div class="m-fc-loc">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Broad Street, Lagos Island
+              </div>
+              <div class="m-fc-actions">
+                <div class="m-fc-btn" style="background:#DCFCE7;color:#15803D">Call</div>
+                <div class="m-fc-btn" style="background:#F1F5F9;color:#475569">Directions</div>
+                <div class="m-fc-btn" style="background:#0F4C81;color:#fff">View →</div>
+              </div>
+            </div>
+          </div>
+          <div class="m-fc">
+            <div class="m-fc-accent" style="background:#059669"></div>
+            <div class="m-fc-body">
+              <div class="m-fc-top">
+                <div class="m-fc-icon" style="background:#ECFDF5;color:#059669">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                </div>
+                <div class="m-fc-meta">
+                  <div class="m-fc-name">Prime Care Clinic</div>
+                  <div class="m-fc-badges">
+                    <span class="m-badge" style="background:#DCFCE7;color:#15803D">✓ Verified</span>
+                    <span class="m-badge" style="background:#F0FDF4;color:#15803D">Open Now</span>
+                  </div>
+                </div>
+              </div>
+              <div class="m-fc-dist">3.4 km</div>
+              <div class="m-fc-loc">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Victoria Island, Lagos
+              </div>
+              <div class="m-fc-actions">
+                <div class="m-fc-btn" style="background:#DCFCE7;color:#15803D">Call</div>
+                <div class="m-fc-btn" style="background:#0F4C81;color:#fff">View →</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- FAB -->
+        <div class="m-fab-area">
+          <div class="m-fab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/></svg>
+            Show Map
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phone 2: Map + Bottom Sheet -->
+  <div>
+    <div class="mobile-label">Map View + Bottom Sheet</div>
+    <div class="phone-frame">
+      <div class="phone-notch"><div class="phone-notch-pill"></div></div>
+      <div class="phone-content">
+        <div class="m-nav">
+          <div class="m-logo-mark">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <div>
+            <div class="m-logo-text">OpesCare</div>
+            <div class="m-logo-sub">Care Map</div>
+          </div>
+          <div style="margin-left:auto;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);font-size:.65rem;font-weight:600;padding:.3rem .75rem;border-radius:50px">✕ Close Map</div>
+        </div>
+        <div class="m-map-view">
+          <div class="m-map-grid-overlay"></div>
+          <div class="m-road" style="left:0;right:0;top:50px;height:6px"></div>
+          <div class="m-road" style="left:0;right:0;top:130px;height:4px;transform:rotate(-1.5deg)"></div>
+          <div class="m-road" style="left:0;right:0;top:175px;height:7px"></div>
+          <div class="m-road" style="left:60px;top:0;width:5px;bottom:0"></div>
+          <div class="m-road" style="left:145px;top:0;width:4px;bottom:0"></div>
+          <div class="m-road" style="left:220px;top:0;width:6px;bottom:0;transform:skewX(-2deg)"></div>
+          <!-- Pins -->
+          <div style="position:absolute;left:80px;top:60px;transform:translate(-50%,-100%)">
+            <div style="width:36px;height:36px;border-radius:50%;background:#0891B2;border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.25)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+            </div>
+            <div style="width:2px;height:8px;background:#0891B2;margin:0 auto;border-radius:1px"></div>
+          </div>
+          <div style="position:absolute;left:180px;top:100px;transform:translate(-50%,-100%)">
+            <div style="width:28px;height:28px;border-radius:50%;background:#059669;border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.2)">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
+            <div style="width:2px;height:7px;background:#059669;margin:0 auto;border-radius:1px"></div>
+          </div>
+          <div style="position:absolute;left:240px;top:145px;transform:translate(-50%,-100%)">
+            <div style="width:26px;height:26px;border-radius:50%;background:#D97706;border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.2)">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M9 12h6m-3-3v6"/></svg>
+            </div>
+            <div style="width:2px;height:6px;background:#D97706;margin:0 auto;border-radius:1px"></div>
+          </div>
+          <!-- You -->
+          <div style="position:absolute;left:130px;top:145px;transform:translate(-50%,-50%)">
+            <div style="width:26px;height:26px;border-radius:50%;background:rgba(15,76,129,.15);border:2px solid rgba(15,76,129,.25);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+            <div style="width:12px;height:12px;border-radius:50%;background:#0F4C81;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(15,76,129,.4)"></div>
+          </div>
+          <!-- Cluster -->
+          <div style="position:absolute;left:155px;top:175px;width:30px;height:30px;border-radius:50%;background:#0F4C81;border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;font-size:0.58rem;font-weight:800;color:#fff;box-shadow:0 3px 10px rgba(15,76,129,.4)">+8</div>
+        </div>
+        <!-- Bottom Sheet -->
+        <div class="m-bottom-sheet">
+          <div class="m-sheet-handle"></div>
+          <div class="m-sheet-card">
+            <div class="m-sheet-icon" style="background:#ECFEFF;color:#0891B2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+            </div>
+            <div class="m-sheet-meta">
+              <div class="m-sheet-name">Lagos State Hospital</div>
+              <div class="m-sheet-badges">
+                <span class="m-badge" style="background:#FEF3C7;color:#B45309;padding:.15rem .5rem">✓ Gov. Verified</span>
+                <span class="m-badge" style="background:#FEF2F2;color:#DC2626;padding:.15rem .5rem">24/7</span>
+              </div>
+              <div class="m-sheet-loc">📍 Broad Street, Lagos Island · 2.1 km</div>
+              <div class="m-sheet-btns">
+                <div class="m-sheet-btn" style="background:#DCFCE7;color:#15803D">Call</div>
+                <div class="m-sheet-btn" style="background:#F1F5F9;color:#475569">Directions</div>
+                <div class="m-sheet-btn" style="background:#0F4C81;color:#fff">View →</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="text-align:center;margin-top:1rem">
+  <p style="font-size:0.82rem;color:#475569;margin-bottom:0.75rem">What do you think of this direction? Tell me what to keep, change, or push further.</p>
+  <p style="font-size:0.72rem;color:#334155">e.g. "Love the dark nav — make the cards bigger" · "Cards are perfect, change the map style" · "Go darker overall"</p>
+</div>
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-@extends('layouts.public')
+﻿@extends('layouts.public')
 
 @section('title', 'OpesCare Developers | Connect API, SDK, Widget & Integration Tools')
 @section('meta_description', 'Developer resources for the OpesCare platform: REST API, PHP/JS/Python SDK, embeddable widget, Bridge Agent, OpesCare Lite, and webhooks.')
@@ -95,8 +95,8 @@
 
             <div class="card-grid">
                 @foreach([
-                    ['icon'=>'code','lang'=>'PHP','badge'=>'Stable','color'=>'#4F46E5','desc'=>'Laravel/Symfony compatible. Install via Composer. Full typed request/response objects.','snippet'=>'composer require opesware/opescare-php'],
-                    ['icon'=>'braces','lang'=>'JavaScript','badge'=>'Stable','color'=>'#F59E0B','desc'=>'Node.js and browser-compatible. Works with Axios and Fetch. TypeScript definitions included.','snippet'=>'npm install @opesware/opescare-js'],
+                    ['icon'=>'code','lang'=>'PHP','badge'=>'Stable','color'=>'#4F46E5','desc'=>'Laravel/Symfony compatible. Install via Composer. Full typed request/response objects.','snippet'=>'composer require opes-health-systems/opescare-php'],
+                    ['icon'=>'braces','lang'=>'JavaScript','badge'=>'Stable','color'=>'#F59E0B','desc'=>'Node.js and browser-compatible. Works with Axios and Fetch. TypeScript definitions included.','snippet'=>'npm install @opes-health-systems/opescare-js'],
                     ['icon'=>'terminal','lang'=>'Python','badge'=>'Beta','color'=>'#10B981','desc'=>'Async and sync clients. Pydantic models for type safety. FastAPI and Django ready.','snippet'=>'pip install opescare-python'],
                     ['icon'=>'layers','lang'=>'.NET / Java','badge'=>'Roadmap','color'=>'#6B7280','desc'=>'.NET 6+ and Java 17+ clients are currently in development. Register to be notified at launch.','snippet'=>'Coming soon — register interest'],
                 ] as $sdk)

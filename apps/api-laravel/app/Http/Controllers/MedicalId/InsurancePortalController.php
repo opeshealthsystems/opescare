@@ -4,7 +4,6 @@ namespace App\Http\Controllers\MedicalId;
 
 use App\Http\Controllers\Controller;
 use App\Models\EligibilityCheck;
-use App\Models\Facility;
 use App\Models\InsuranceClaim;
 use App\Models\InsurancePlan;
 use App\Models\InsuranceProvider;
@@ -31,7 +30,35 @@ class InsurancePortalController extends Controller
 
     private function demoFacilityId(): ?string
     {
-        return Facility::value('id');
+        return session('active_facility_id') ?? auth()->user()?->primary_facility_id ?? null;
+    }
+
+    // -----------------------------------------------------------------
+    // Dashboard
+    // -----------------------------------------------------------------
+
+    public function dashboard()
+    {
+        $stats = [
+            'providers'    => InsuranceProvider::count(),
+            'active_plans' => InsurancePlan::where('status', 'active')->count(),
+            'policies'     => PatientInsurancePolicy::count(),
+            'open_claims'  => InsuranceClaim::whereNotIn('status', ['paid', 'rejected', 'cancelled'])->count(),
+            'pending_auth' => PreauthorizationRequest::whereNotIn('status', ['approved', 'rejected', 'cancelled'])->count(),
+            'paid_claims'  => InsuranceClaim::where('status', 'paid')->count(),
+        ];
+
+        $recentClaims = InsuranceClaim::with('patient')
+            ->orderByDesc('created_at')
+            ->limit(5)
+            ->get();
+
+        $recentPreauths = PreauthorizationRequest::with('patient')
+            ->orderByDesc('created_at')
+            ->limit(5)
+            ->get();
+
+        return view('portals.insurance.dashboard', compact('stats', 'recentClaims', 'recentPreauths'));
     }
 
     // -----------------------------------------------------------------

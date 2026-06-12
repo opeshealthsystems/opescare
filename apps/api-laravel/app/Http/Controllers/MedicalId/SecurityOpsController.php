@@ -38,7 +38,11 @@ class SecurityOpsController extends Controller
 
     public function incidents(Request $request)
     {
-        $q = SecurityIncident::orderByDesc('detected_at');
+        $facilityId = session('active_facility_id') ?? auth()->user()?->primary_facility_id ?? null;
+        $isPlatformAdmin = in_array(auth()->user()?->role?->name, ['super_admin', 'platform_admin', 'security_officer']);
+
+        $q = SecurityIncident::orderByDesc('detected_at')
+            ->when($facilityId && !$isPlatformAdmin, fn ($q) => $q->where('facility_id', $facilityId));
 
         if ($request->filled('severity')) {
             $q->where('severity', $request->severity);
@@ -102,12 +106,16 @@ class SecurityOpsController extends Controller
 
     public function emergencyAccess(Request $request)
     {
-        $q = EmergencyAccessEvent::with('patient')->orderByDesc('created_at');
+        $facilityId = session('active_facility_id') ?? auth()->user()?->primary_facility_id ?? null;
+        $isPlatformAdmin = in_array(auth()->user()?->role?->name, ['super_admin', 'platform_admin', 'security_officer']);
+
+        $q = EmergencyAccessEvent::with('patient')->orderByDesc('created_at')
+            ->when($facilityId && !$isPlatformAdmin, fn ($q) => $q->where('facility_id', $facilityId));
 
         if ($request->filled('provider_id')) {
             $q->where('provider_id', $request->provider_id);
         }
-        if ($request->filled('facility_id')) {
+        if ($request->filled('facility_id') && $isPlatformAdmin) {
             $q->where('facility_id', $request->facility_id);
         }
 
@@ -120,7 +128,11 @@ class SecurityOpsController extends Controller
 
     public function auditExplorer(Request $request)
     {
-        $q = AuditEvent::orderByDesc('created_at');
+        $facilityId = session('active_facility_id') ?? auth()->user()?->primary_facility_id ?? null;
+        $isPlatformAdmin = in_array(auth()->user()?->role?->name, ['super_admin', 'platform_admin', 'security_officer']);
+
+        $q = AuditEvent::orderByDesc('created_at')
+            ->when($facilityId && !$isPlatformAdmin, fn ($q) => $q->where('facility_id', $facilityId));
 
         if ($request->filled('action_type')) {
             $q->where('action_type', $request->action_type);

@@ -1,5 +1,10 @@
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  exclude:
+    # Third-party package build tools — not part of the app, not our code
+    - packages/lucide_icons/tool/**
+
 linter:
   rules:
     prefer_single_quotes: true

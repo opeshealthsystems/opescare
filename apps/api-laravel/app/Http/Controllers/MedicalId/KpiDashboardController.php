@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\MedicalId;
 
 use App\Http\Controllers\Controller;
-use App\Models\Facility;
 use App\Models\KpiExport;
 use App\Models\MetricDefinition;
 use App\Models\MetricSnapshot;
@@ -31,7 +30,7 @@ class KpiDashboardController extends Controller
 
     public function index(Request $request): View
     {
-        $facilityId = $this->demoFacilityId();
+        $facilityId = $this->facilityId();
         $category   = $request->input('category'); // volume|quality|efficiency|financial|safety
 
         // Ensure core metric definitions exist
@@ -57,7 +56,7 @@ class KpiDashboardController extends Controller
 
     public function trend(Request $request): View
     {
-        $facilityId = $this->demoFacilityId();
+        $facilityId = $this->facilityId();
         $slug       = $request->input('metric', ProductAnalyticsService::METRIC_DAILY_VISITS);
         $period     = in_array($request->input('period'), ['7d', '30d', '90d']) ? $request->input('period') : '30d';
 
@@ -89,7 +88,7 @@ class KpiDashboardController extends Controller
             'export_type'   => 'required|in:csv,json',
         ]);
 
-        $facilityId = $this->demoFacilityId();
+        $facilityId = $this->facilityId();
 
         $export = $this->analytics->requestExport(
             requestedBy: $this->demoActorId(),
@@ -109,7 +108,7 @@ class KpiDashboardController extends Controller
 
     public function recompute(Request $request): RedirectResponse
     {
-        $facilityId = $this->demoFacilityId();
+        $facilityId = $this->facilityId();
         $date       = Carbon::parse($request->input('date', Carbon::today()->toDateString()));
 
         $this->analytics->seedCoreMetrics();
@@ -120,9 +119,9 @@ class KpiDashboardController extends Controller
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    private function demoFacilityId(): string
+    private function facilityId(): ?string
     {
-        return Facility::value('id') ?? '';
+        return session('active_facility_id') ?? auth()->user()?->primary_facility_id ?? null;
     }
 
     private function demoActorId(): string

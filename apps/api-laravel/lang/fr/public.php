@@ -3,15 +3,15 @@
 return [
     'about' => [
         'hero_title' => 'Construire un moyen plus sûr pour que les dossiers médicaux suivent le patient.',
-        'hero_subtitle' => 'OpesCare est une identité de santé numérique et une plateforme d\'interopérabilité des soins de santé créée par Opesware pour aider les patients, les prestataires et les systèmes de santé à travailler avec des informations médicales plus claires, plus sûres et plus connectées.',
+        'hero_subtitle' => 'OpesCare est une identité de santé numérique et une plateforme d\'interopérabilité des soins de santé créée par Opes Health Systems Sarl pour aider les patients, les prestataires et les systèmes de santé à travailler avec des informations médicales plus claires, plus sûres et plus connectées.',
         'why_title' => 'Les soins de santé ne devraient pas dépendre d\'un carnet papier seul.',
         'why_content' => 'De nombreux patients se déplacent entre les hôpitaux, les cliniques, les pharmacies et les laboratoires avec des dossiers incomplets, perdus, endommagés ou piégés dans des systèmes séparés. Un médecin peut ne pas connaître les allergies du patient. Un résultat de laboratoire peut ne pas être disponible quand on en a besoin. Une pharmacie peut ne pas savoir si une prescription a déjà été délivrée. Les patients peuvent se déplacer d\'un endroit à l\'autre à la recherche de médicaments ou de sang compatible.',
         'mission_title' => 'Notre mission',
         'mission_content' => 'Donner à chaque patient un identifiant de santé numérique sécurisé et aider les prestataires de soins de santé à accéder à la bonne information approuvée au bon moment, tout en protégeant la confidentialité, le consentement et la responsabilité.',
-        'built_by_title' => 'Construit par Opesware',
-        'built_by_content' => 'OpesCare est développé by Opesware, une société d\'ingénierie logicielle axée sur la création de systèmes numériques codés sur mesure, sécurisés, évolutifs et pratiques.',
+        'built_by_title' => 'Construit par Opes Health Systems Sarl',
+        'built_by_content' => 'OpesCare est développé by Opes Health Systems Sarl, une société d\'ingénierie logicielle axée sur la création de systèmes numériques codés sur mesure, sécurisés, évolutifs et pratiques.',
         'footer_cta_title' => 'Devenez partenaire pour construire des dossiers de santé connectés.',
-        'footer_cta_btn' => 'Contacter Opesware',
+        'footer_cta_btn' => 'Contacter Opes Health Systems',
     ],
     'how_it_works' => [
         'hero_title' => 'Comment OpesCare connecte les soins autour du patient.',

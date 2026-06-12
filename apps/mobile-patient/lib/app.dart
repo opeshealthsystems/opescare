@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'core/notifications/notification_service.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
@@ -46,6 +47,11 @@ class _OpesCareAppState extends ConsumerState<OpesCareApp> {
       themeMode: ThemeMode.system,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
+      // Localization: English + French (Gabon is francophone). Strings live in
+      // lib/l10n/*.arb. Run `flutter gen-l10n` (or `flutter pub get`) to generate
+      // AppLocalizations, then migrate screens to AppLocalizations.of(context).
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
     );
   }
 }

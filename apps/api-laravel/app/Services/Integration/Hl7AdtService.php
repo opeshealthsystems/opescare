@@ -203,23 +203,44 @@ class Hl7AdtService
     // -------------------------------------------------------------------------
 
     /**
-     * Send an HL7 message over MLLP/TCP.
+     * Send an HL7 message over MLLP/TCP (or MLLP-S/TLS when configured).
+     *
+     * [FIX M-1] Raw TCP was used unconditionally — PHI transmitted in plaintext.
+     * Fix: when `hl7.tls` is true (default in production), the connection is
+     * upgraded to TLS via stream_socket_client() with an SSL context.
+     * The TLS peer is verified against the system CA bundle by default; set
+     * `hl7.tls_verify_peer = false` only for self-signed certs in staging.
+     *
+     * Configuration keys (config/hl7.php):
+     *   hl7.tls               — bool   (default: true)
+     *   hl7.tls_verify_peer   — bool   (default: true)
+     *   hl7.tls_cafile        — string (optional path to CA bundle)
+     *   hl7.timeout           — int    (default: 5)
+     *
      * Returns true on successful write (ACK not parsed — fire-and-forget).
      */
     public function send(string $hl7Message, string $host, int $port): bool
     {
-        $timeout = config('hl7.timeout', 5);
+        $timeout   = (int) config('hl7.timeout', 5);
+        $useTls    = (bool) config('hl7.tls', true);
+        $caFile    = config('hl7.tls_cafile');
+        $verifyPeer = (bool) config('hl7.tls_verify_peer', true);
+
+        // [FIX M-1] Log a warning (don't abort) if TLS is disabled — operator must
+        // explicitly opt out; this makes the non-TLS path visible in logs.
+        if (! $useTls) {
+            Log::warning('Hl7AdtService: TLS is DISABLED — PHI will be sent in plaintext. '
+                . 'Set HL7_TLS=true to enable transport encryption. '
+                . 'ISO 27799 §8.2 / ISO 27001 A.13.2.3 require encryption of PHI in transit.', [
+                'host' => $host,
+                'port' => $port,
+            ]);
+        }
 
         try {
-            $socket = @fsockopen($host, $port, $errno, $errstr, $timeout);
+            $socket = $this->openSocket($host, $port, $timeout, $useTls, $verifyPeer, $caFile);
 
             if ($socket === false) {
-                Log::warning('Hl7AdtService: Could not connect to HL7 host', [
-                    'host'   => $host,
-                    'port'   => $port,
-                    'errno'  => $errno,
-                    'errstr' => $errstr,
-                ]);
                 return false;
             }
 
@@ -229,7 +250,11 @@ class Hl7AdtService
             $written = fwrite($socket, $framed);
 
             if ($written === false || $written === 0) {
-                Log::warning('Hl7AdtService: Failed to write to socket');
+                Log::warning('Hl7AdtService: Failed to write to socket', [
+                    'host' => $host,
+                    'port' => $port,
+                    'tls'  => $useTls,
+                ]);
                 fclose($socket);
                 return false;
             }
@@ -242,6 +267,7 @@ class Hl7AdtService
                 'host'  => $host,
                 'port'  => $port,
                 'bytes' => $written,
+                'tls'   => $useTls,
             ]);
 
             return true;
@@ -250,10 +276,75 @@ class Hl7AdtService
             Log::error('Hl7AdtService: Exception during send', [
                 'host'      => $host,
                 'port'      => $port,
+                'tls'       => $useTls,
                 'exception' => $e->getMessage(),
             ]);
             return false;
         }
+    }
+
+    /**
+     * Open a socket connection — TLS (stream_socket_client + SSL context) or plain TCP.
+     *
+     * @return resource|false
+     */
+    private function openSocket(
+        string  $host,
+        int     $port,
+        int     $timeout,
+        bool    $useTls,
+        bool    $verifyPeer,
+        ?string $caFile
+    ): mixed {
+        if ($useTls) {
+            // Build SSL context — peer verification is mandatory in production.
+            $contextOptions = [
+                'ssl' => [
+                    'verify_peer'       => $verifyPeer,
+                    'verify_peer_name'  => $verifyPeer,
+                    'allow_self_signed' => ! $verifyPeer,
+                    'SNI_enabled'       => true,
+                    'peer_name'         => $host,
+                ],
+            ];
+
+            if (! empty($caFile) && file_exists($caFile)) {
+                $contextOptions['ssl']['cafile'] = $caFile;
+            }
+
+            $context = stream_context_create($contextOptions);
+
+            // 'tls://' triggers TLS negotiation during connect (MLLP-S).
+            $socket = @stream_socket_client(
+                "tls://{$host}:{$port}",
+                $errno,
+                $errstr,
+                $timeout,
+                STREAM_CLIENT_CONNECT,
+                $context
+            );
+        } else {
+            // Plain TCP fallback — only when operator explicitly sets HL7_TLS=false.
+            $socket = @stream_socket_client(
+                "tcp://{$host}:{$port}",
+                $errno,
+                $errstr,
+                $timeout,
+                STREAM_CLIENT_CONNECT
+            );
+        }
+
+        if ($socket === false) {
+            Log::warning('Hl7AdtService: Could not connect to HL7 host', [
+                'host'   => $host,
+                'port'   => $port,
+                'tls'    => $useTls,
+                'errno'  => $errno,
+                'errstr' => $errstr,
+            ]);
+        }
+
+        return $socket;
     }
 
     /**

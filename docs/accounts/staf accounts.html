@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpesCare Staff Accounts — Production Logins</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f4f8; color: #1e293b; padding: 24px; }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  header { background: #0f4c81; color: #fff; border-radius: 12px; padding: 24px 28px; margin-bottom: 28px; }
+  header h1 { font-size: 1.4rem; font-weight: 800; margin-bottom: 6px; }
+  header p  { font-size: .85rem; opacity: .8; }
+  .meta { display: flex; gap: 24px; margin-top: 14px; flex-wrap: wrap; }
+  .meta span { font-size: .8rem; background: rgba(255,255,255,.12); padding: 4px 12px; border-radius: 20px; }
+
+  .search-bar { margin-bottom: 20px; }
+  .search-bar input {
+    width: 100%; padding: 10px 16px; border: 1px solid #cbd5e1; border-radius: 8px;
+    font-size: .9rem; outline: none; background: #fff;
+  }
+  .search-bar input:focus { border-color: #0f4c81; box-shadow: 0 0 0 3px rgba(15,76,129,.12); }
+
+  .section { margin-bottom: 28px; }
+  .section-title {
+    font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+    color: #64748b; margin-bottom: 10px; padding-left: 4px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
+
+  .facility-tag {
+    display: inline-block; font-size: .7rem; background: #e0f2fe; color: #0369a1;
+    padding: 2px 8px; border-radius: 10px; font-weight: 600; margin-bottom: 10px;
+  }
+
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+  thead { background: #f8fafc; }
+  th { padding: 10px 14px; text-align: left; font-size: .75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid #f1f5f9; }
+  td { padding: 9px 14px; border-bottom: 1px solid #f8fafc; font-size: .85rem; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f8fafc; }
+
+  .role-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: .72rem;
+    font-weight: 600; background: #f1f5f9; color: #475569;
+  }
+
+  .copy-wrap { display: flex; align-items: center; gap: 6px; }
+  .copy-val {
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: .82rem; color: #1e293b; cursor: pointer; user-select: all;
+    background: #f8fafc; border: 1px solid #e2e8f0; padding: 3px 8px; border-radius: 5px;
+    transition: background .12s;
+  }
+  .copy-val:hover { background: #e0f2fe; border-color: #7dd3fc; }
+  .copy-btn {
+    cursor: pointer; background: none; border: none; padding: 3px 6px; border-radius: 5px;
+    color: #94a3b8; font-size: .72rem; transition: color .12s, background .12s;
+    display: flex; align-items: center; gap: 3px; white-space: nowrap;
+  }
+  .copy-btn:hover { color: #0f4c81; background: #e0f2fe; }
+  .copy-btn.copied { color: #16a34a; background: #dcfce7; }
+
+  .pw-val { color: #7c3aed; }
+
+  .stats-bar {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;
+  }
+  .stat { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 18px; text-align: center; }
+  .stat__val { font-size: 1.6rem; font-weight: 800; color: #0f4c81; line-height: 1; }
+  .stat__label { font-size: .72rem; color: #64748b; margin-top: 2px; }
+
+  .account-row { display: none; }
+  .account-row.visible { display: table-row; }
+  table.show-all .account-row { display: table-row; }
+
+  @media (max-width: 640px) {
+    th:nth-child(2) { display: none; }
+    td:nth-child(2) { display: none; }
+    body { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>OpesCare Staff Accounts — Production Logins</h1>
+  <p>All accounts are active, email-verified, and production-ready (is_demo = false).</p>
+  <div class="meta">
+    <span>📅 Generated: 2026-05-30</span>
+    <span>🔗 Login: http://localhost/login</span>
+    <span>👤 92 accounts</span>
+    <span>🏥 6 institutions</span>
+  </div>
+</header>
+
+<div class="stats-bar">
+  <div class="stat"><div class="stat__val">92</div><div class="stat__label">Total Accounts</div></div>
+  <div class="stat"><div class="stat__val">7</div><div class="stat__label">Clinical Roles</div></div>
+  <div class="stat"><div class="stat__val">5</div><div class="stat__label">Lab Roles</div></div>
+  <div class="stat"><div class="stat__val">4</div><div class="stat__label">Pharmacy Roles</div></div>
+  <div class="stat"><div class="stat__val">5</div><div class="stat__label">Nursing Roles</div></div>
+  <div class="stat"><div class="stat__val">16</div><div class="stat__label">Password Groups</div></div>
+</div>
+
+<div class="search-bar">
+  <input type="text" id="searchInput" placeholder="🔍  Search by name, email, role or facility…" oninput="filterAccounts()">
+</div>
+
+<div id="accountsContainer">
+
+<!-- ── Clinical Providers ──────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Clinical Providers</div>
+  <div class="facility-tag">🏥 OpesCare General Hospital</div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+    <tbody>
+      <tr class="account-row visible" data-search="dr. kofi mensah doctor kofi.mensah@opescare.com hospital">
+        <td>Dr. Kofi Mensah</td><td><span class="role-badge">Doctor</span></td>
+        <td><div class="copy-wrap"><span class="copy-val">kofi.mensah@opescare.com</span><button class="copy-btn" onclick="copyText('kofi.mensah@opescare.com',this)">⎘ Copy</button></div></td>
+        <td><div class="copy-wrap"><span class="copy-val pw-val">D0ct0r@OC#2026</span><button class="copy-btn" onclick="copyText('D0ct0r@OC#2026',this)">⎘ Copy</button></div></td>
+      </tr>
+      <tr class="account-row visible" data-search="dr. amara diallo multi_doctor amara.diallo@opescare.com hospital">
+        <td>Dr. Amara Diallo</td><td><span class="role-badge">Multi-Facility Doctor</span></td>
+        <td><div class="copy-wrap"><span class="copy-val">amara.diallo@opescare.com</span><button class="copy-btn" onclick="copyText('amara.diallo@opescare.com',this)">⎘ Copy</button></div></td>
+        <td><div class="copy-wrap"><span class="copy-val pw-val">D0ct0r@OC#2026</span><button class="copy-btn" onclick="copyText('D0ct0r@OC#2026',this)">⎘ Copy</button></div></td>
+      </tr>
+      <tr class="account-row visible" data-search="dr. fatima bello radiologist specialist fatima.bello@opescare.com hospital">
+        <td>Dr. Fatima Bello</td><td><span class="role-badge">Specialist — Radiologist</span></td>
+        <td><div class="copy-wrap"><span class="copy-val">fatima.bello@opescare.com</span><button class="copy-btn" onclick="copyText('fatima.bello@opescare.com',this)">⎘ Copy</button></div></td>
+        <td><div class="copy-wrap"><span class="copy-val pw-val">D0ct0r@OC#2026</span><button class="copy-btn" onclick="copyText('D0ct0r@OC#2026',this)">⎘ Copy</button></div></td>
+      </tr>
+      <tr class="account-row visible" data-search="dr. omar sy cardiologist specialist omar.sy@opescare.com hospital">
+        <td>Dr. Omar Sy</td><td><span class="role-badge">Specialist — Cardiologist</span></td>
+        <td><div class="copy-wrap"><span class="copy-val">omar.sy@opescare.com</span><button class="copy-btn" onclick="copyText('omar.sy@opescare.com',this)">⎘ Copy</button></div></td>
+        <td><div class="copy-wrap"><span class="copy-val pw-val">D0ct0r@OC#2026</span><button class="copy-btn" onclick="copyText('D0ct0r@OC#2026',this)">⎘ Copy</button></div></td>
+      </tr>
+      <tr class="account-row visible" data-search="dr. ibrahim touré consultant ibrahim.toure@opescare.com hospital">
+        <td>Dr. Ibrahim Touré</td><td><span class="role-badge">Consultant</span></td>
+        <td><div class="copy-wrap"><span class="copy-val">ibrahim.toure@opescare.com</span><button class="copy-btn" onclick="copyText('ibrahim.toure@opescare.com',this)">⎘ Copy</button></div></td>
+        <td><div class="copy-wrap"><span class="copy-val pw-val">D0ct0r@OC#2026</span><button class="copy-btn" onclick="copyText('D0ct0r@OC#2026',this)">⎘ Copy</button></div></td>
+      </tr>
+      <tr class="account-row visible" data-search="dr. aissatou camara resident aissatou.camara@opescare.com hospital">
+        <td>Dr. Aissatou Camara</td><td><span class="role-badge">Resident Doctor</span></td>
+        <td><div class="copy-wrap"><span class="copy-val">aissatou.camara@opescare.com</span><button class="copy-btn" onclick="copyText('aissatou.camara@opescare.com',this)">⎘ Copy</button></div></td>
+        <td><div class="copy-wrap"><span class="copy-val pw-val">D0ct0r@OC#2026</span><button class="copy-btn" onclick="copyText('D0ct0r@OC#2026',this)">⎘ Copy</button></div></td>
+      </tr>
+      <tr class="account-row visible" data-search="dr. emmanuel nkomo visiting_doctor emmanuel.nkomo@opescare.com hospital">
+        <td>Dr. Emmanuel Nkomo</td><td><span class="role-badge">Visiting Doctor</span></td>
+        <td><div class="copy-wrap"><span class="copy-val">emmanuel.nkomo@opescare.com</span><button class="copy-btn" onclick="copyText('emmanuel.nkomo@opescare.com',this)">⎘ Copy</button></div></td>
+        <td><div class="copy-wrap"><span class="copy-val pw-val">D0ct0r@OC#2026</span><button class="copy-btn" onclick="copyText('D0ct0r@OC#2026',this)">⎘ Copy</button></div></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Nursing & Midwifery ─────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Nursing &amp; Midwifery</div>
+  <div class="facility-tag">🏥 OpesCare General Hospital</div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+    <tbody>
+      <tr class="account-row visible" data-search="grace osei nurse grace.osei@opescare.com hospital nursing"><td>Nurse Grace Osei</td><td><span class="role-badge">Nurse</span></td><td><div class="copy-wrap"><span class="copy-val">grace.osei@opescare.com</span><button class="copy-btn" onclick="copyText('grace.osei@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Nurs3@OC#2026</span><button class="copy-btn" onclick="copyText('Nurs3@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="fatou kone triage nurse fatou.kone@opescare.com hospital"><td>Nurse Fatou Koné</td><td><span class="role-badge">Triage Nurse</span></td><td><div class="copy-wrap"><span class="copy-val">fatou.kone@opescare.com</span><button class="copy-btn" onclick="copyText('fatou.kone@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Nurs3@OC#2026</span><button class="copy-btn" onclick="copyText('Nurs3@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="aminata sow ward nurse aminata.sow@opescare.com hospital"><td>Nurse Aminata Sow</td><td><span class="role-badge">Ward Nurse</span></td><td><div class="copy-wrap"><span class="copy-val">aminata.sow@opescare.com</span><button class="copy-btn" onclick="copyText('aminata.sow@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Nurs3@OC#2026</span><button class="copy-btn" onclick="copyText('Nurs3@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="mariam ba midwife mariam.ba@opescare.com hospital"><td>Midwife Mariam Ba</td><td><span class="role-badge">Midwife</span></td><td><div class="copy-wrap"><span class="copy-val">mariam.ba@opescare.com</span><button class="copy-btn" onclick="copyText('mariam.ba@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Nurs3@OC#2026</span><button class="copy-btn" onclick="copyText('Nurs3@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="kadiatou bah nurse supervisor kadiatou.bah@opescare.com hospital"><td>Kadiatou Bah</td><td><span class="role-badge">Nurse Supervisor</span></td><td><div class="copy-wrap"><span class="copy-val">kadiatou.bah@opescare.com</span><button class="copy-btn" onclick="copyText('kadiatou.bah@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Nurs3@OC#2026</span><button class="copy-btn" onclick="copyText('Nurs3@OC#2026',this)">⎘ Copy</button></div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Clinical Training ───────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Clinical Training</div>
+  <div class="facility-tag">🏥 OpesCare General Hospital</div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+    <tbody>
+      <tr class="account-row visible" data-search="moussa coulibaly student doctor moussa.coulibaly@opescare.com hospital"><td>Moussa Coulibaly</td><td><span class="role-badge">Student Doctor</span></td><td><div class="copy-wrap"><span class="copy-val">moussa.coulibaly@opescare.com</span><button class="copy-btn" onclick="copyText('moussa.coulibaly@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Tr@in3e@OC#2026</span><button class="copy-btn" onclick="copyText('Tr@in3e@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="aicha traore student nurse aicha.traore@opescare.com hospital"><td>Aicha Traoré</td><td><span class="role-badge">Student Nurse</span></td><td><div class="copy-wrap"><span class="copy-val">aicha.traore@opescare.com</span><button class="copy-btn" onclick="copyText('aicha.traore@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Tr@in3e@OC#2026</span><button class="copy-btn" onclick="copyText('Tr@in3e@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="boubacar kouyate intern boubacar.kouyate@opescare.com hospital"><td>Dr. Boubacar Kouyaté</td><td><span class="role-badge">Intern</span></td><td><div class="copy-wrap"><span class="copy-val">boubacar.kouyate@opescare.com</span><button class="copy-btn" onclick="copyText('boubacar.kouyate@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Tr@in3e@OC#2026</span><button class="copy-btn" onclick="copyText('Tr@in3e@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="seydou ouedraogo medical supervisor seydou.ouedraogo@opescare.com hospital"><td>Dr. Seydou Ouédraogo</td><td><span class="role-badge">Medical Supervisor</span></td><td><div class="copy-wrap"><span class="copy-val">seydou.ouedraogo@opescare.com</span><button class="copy-btn" onclick="copyText('seydou.ouedraogo@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">D0ct0r@OC#2026</span><button class="copy-btn" onclick="copyText('D0ct0r@OC#2026',this)">⎘ Copy</button></div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Front Desk ──────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Front Desk &amp; Operations</div>
+  <div class="facility-tag">🏥 OpesCare General Hospital</div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+    <tbody>
+      <tr class="account-row visible" data-search="marietou diallo receptionist marietou.diallo@opescare.com hospital"><td>Marietou Diallo</td><td><span class="role-badge">Receptionist</span></td><td><div class="copy-wrap"><span class="copy-val">marietou.diallo@opescare.com</span><button class="copy-btn" onclick="copyText('marietou.diallo@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Fr0ntDesk@OC26</span><button class="copy-btn" onclick="copyText('Fr0ntDesk@OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="jean-baptiste nguema front desk jeanbaptiste.nguema@opescare.com hospital"><td>Jean-Baptiste Nguema</td><td><span class="role-badge">Front Desk Officer</span></td><td><div class="copy-wrap"><span class="copy-val">jeanbaptiste.nguema@opescare.com</span><button class="copy-btn" onclick="copyText('jeanbaptiste.nguema@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Fr0ntDesk@OC26</span><button class="copy-btn" onclick="copyText('Fr0ntDesk@OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="rabi abdullahi appointment coordinator rabi.abdullahi@opescare.com hospital"><td>Rabi Abdullahi</td><td><span class="role-badge">Appointment Coordinator</span></td><td><div class="copy-wrap"><span class="copy-val">rabi.abdullahi@opescare.com</span><button class="copy-btn" onclick="copyText('rabi.abdullahi@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Fr0ntDesk@OC26</span><button class="copy-btn" onclick="copyText('Fr0ntDesk@OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="ousmane fofana queue manager ousmane.fofana@opescare.com hospital"><td>Ousmane Fofana</td><td><span class="role-badge">Queue Manager</span></td><td><div class="copy-wrap"><span class="copy-val">ousmane.fofana@opescare.com</span><button class="copy-btn" onclick="copyText('ousmane.fofana@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Fr0ntDesk@OC26</span><button class="copy-btn" onclick="copyText('Fr0ntDesk@OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="binta keita records officer binta.keita@opescare.com hospital"><td>Binta Keïta</td><td><span class="role-badge">Records Officer</span></td><td><div class="copy-wrap"><span class="copy-val">binta.keita@opescare.com</span><button class="copy-btn" onclick="copyText('binta.keita@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Fr0ntDesk@OC26</span><button class="copy-btn" onclick="copyText('Fr0ntDesk@OC26',this)">⎘ Copy</button></div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Laboratory ──────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Laboratory</div>
+  <div class="facility-tag">🔬 OpesCare Diagnostic Centre</div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+    <tbody>
+      <tr class="account-row visible" data-search="aboubakar sangare labtech lab technician aboubakar.sangare@opescare.com diagnostic"><td>Aboubakar Sangaré</td><td><span class="role-badge">Lab Technician</span></td><td><div class="copy-wrap"><span class="copy-val">aboubakar.sangare@opescare.com</span><button class="copy-btn" onclick="copyText('aboubakar.sangare@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">L@bT3ch#OC2026</span><button class="copy-btn" onclick="copyText('L@bT3ch#OC2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="rokiatou barry lab scientist rokiatou.barry@opescare.com diagnostic"><td>Dr. Rokiatou Barry</td><td><span class="role-badge">Lab Scientist</span></td><td><div class="copy-wrap"><span class="copy-val">rokiatou.barry@opescare.com</span><button class="copy-btn" onclick="copyText('rokiatou.barry@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">L@bT3ch#OC2026</span><button class="copy-btn" onclick="copyText('L@bT3ch#OC2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="seku camara lab manager seku.camara@opescare.com diagnostic"><td>Dr. Sékou Camara</td><td><span class="role-badge">Lab Manager</span></td><td><div class="copy-wrap"><span class="copy-val">seku.camara@opescare.com</span><button class="copy-btn" onclick="copyText('seku.camara@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">L@bT3ch#OC2026</span><button class="copy-btn" onclick="copyText('L@bT3ch#OC2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="coumba diallo lab validator coumba.diallo@opescare.com diagnostic"><td>Dr. Coumba Diallo</td><td><span class="role-badge">Lab Validator</span></td><td><div class="copy-wrap"><span class="copy-val">coumba.diallo@opescare.com</span><button class="copy-btn" onclick="copyText('coumba.diallo@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">L@bT3ch#OC2026</span><button class="copy-btn" onclick="copyText('L@bT3ch#OC2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="adama kone sample collection adama.kone@opescare.com diagnostic"><td>Adama Koné</td><td><span class="role-badge">Sample Collection</span></td><td><div class="copy-wrap"><span class="copy-val">adama.kone@opescare.com</span><button class="copy-btn" onclick="copyText('adama.kone@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">L@bT3ch#OC2026</span><button class="copy-btn" onclick="copyText('L@bT3ch#OC2026',this)">⎘ Copy</button></div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Pharmacy ────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Pharmacy</div>
+  <div class="facility-tag">💊 OpesCare Pharmacy</div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+    <tbody>
+      <tr class="account-row visible" data-search="aicha coulibaly pharmacist aicha.coulibaly@opescare.com pharmacy"><td>Aïcha Coulibaly</td><td><span class="role-badge">Pharmacist</span></td><td><div class="copy-wrap"><span class="copy-val">aicha.coulibaly@opescare.com</span><button class="copy-btn" onclick="copyText('aicha.coulibaly@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Ph@rm@cy#OC26</span><button class="copy-btn" onclick="copyText('Ph@rm@cy#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="fatou cisse pharmacy technician fatou.cisse@opescare.com pharmacy"><td>Fatou Cissé</td><td><span class="role-badge">Pharmacy Technician</span></td><td><div class="copy-wrap"><span class="copy-val">fatou.cisse@opescare.com</span><button class="copy-btn" onclick="copyText('fatou.cisse@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Ph@rm@cy#OC26</span><button class="copy-btn" onclick="copyText('Ph@rm@cy#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="oumar balde medicine stock oumar.balde@opescare.com pharmacy"><td>Oumar Baldé</td><td><span class="role-badge">Medicine Stock Manager</span></td><td><div class="copy-wrap"><span class="copy-val">oumar.balde@opescare.com</span><button class="copy-btn" onclick="copyText('oumar.balde@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Ph@rm@cy#OC26</span><button class="copy-btn" onclick="copyText('Ph@rm@cy#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="mariama balde dispensing officer mariama.balde@opescare.com pharmacy"><td>Mariama Baldé</td><td><span class="role-badge">Dispensing Officer</span></td><td><div class="copy-wrap"><span class="copy-val">mariama.balde@opescare.com</span><button class="copy-btn" onclick="copyText('mariama.balde@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Ph@rm@cy#OC26</span><button class="copy-btn" onclick="copyText('Ph@rm@cy#OC26',this)">⎘ Copy</button></div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Billing & Finance ───────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Billing &amp; Finance</div>
+  <div class="facility-tag">🏥 OpesCare General Hospital &amp; Clinic</div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+    <tbody>
+      <tr class="account-row visible" data-search="mamadou diarra cashier mamadou.diarra@opescare.com hospital billing"><td>Mamadou Diarra</td><td><span class="role-badge">Cashier</span></td><td><div class="copy-wrap"><span class="copy-val">mamadou.diarra@opescare.com</span><button class="copy-btn" onclick="copyText('mamadou.diarra@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">B1ll1ng@OC#2026</span><button class="copy-btn" onclick="copyText('B1ll1ng@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="fatoumata toure billing officer fatoumata.toure@opescare.com hospital"><td>Fatoumata Touré</td><td><span class="role-badge">Billing Officer</span></td><td><div class="copy-wrap"><span class="copy-val">fatoumata.toure@opescare.com</span><button class="copy-btn" onclick="copyText('fatoumata.toure@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">B1ll1ng@OC#2026</span><button class="copy-btn" onclick="copyText('B1ll1ng@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="cheikh ndiaye finance manager cheikh.ndiaye@opescare.com hospital"><td>Cheikh Ndiaye</td><td><span class="role-badge">Finance Manager</span></td><td><div class="copy-wrap"><span class="copy-val">cheikh.ndiaye@opescare.com</span><button class="copy-btn" onclick="copyText('cheikh.ndiaye@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">B1ll1ng@OC#2026</span><button class="copy-btn" onclick="copyText('B1ll1ng@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="rokhaya diop refund approver rokhaya.diop@opescare.com hospital"><td>Rokhaya Diop</td><td><span class="role-badge">Refund Approver</span></td><td><div class="copy-wrap"><span class="copy-val">rokhaya.diop@opescare.com</span><button class="copy-btn" onclick="copyText('rokhaya.diop@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">B1ll1ng@OC#2026</span><button class="copy-btn" onclick="copyText('B1ll1ng@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="amadou ly wallet ops amadou.ly@opescare.com hospital"><td>Amadou Ly</td><td><span class="role-badge">Wallet / Payment Ops</span></td><td><div class="copy-wrap"><span class="copy-val">amadou.ly@opescare.com</span><button class="copy-btn" onclick="copyText('amadou.ly@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">B1ll1ng@OC#2026</span><button class="copy-btn" onclick="copyText('B1ll1ng@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="oumou sangare finance clinic oumou.sangare@opescare.com clinic"><td>Oumou Sangaré</td><td><span class="role-badge">Finance — Clinic</span></td><td><div class="copy-wrap"><span class="copy-val">oumou.sangare@opescare.com</span><button class="copy-btn" onclick="copyText('oumou.sangare@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">B1ll1ng@OC#2026</span><button class="copy-btn" onclick="copyText('B1ll1ng@OC#2026',this)">⎘ Copy</button></div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Insurance ──────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Insurance</div>
+  <div class="facility-tag">🛡 OpesCare Insurance Company</div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+    <tbody>
+      <tr class="account-row visible" data-search="mbacke insurance reviewer claims.mbacke@opescare.com insurance"><td>Mbacké</td><td><span class="role-badge">Insurance Reviewer</span></td><td><div class="copy-wrap"><span class="copy-val">claims.mbacke@opescare.com</span><button class="copy-btn" onclick="copyText('claims.mbacke@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Insur@nce@OC26</span><button class="copy-btn" onclick="copyText('Insur@nce@OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="sokhna diop claims officer sokhna.diop@opescare.com insurance"><td>Sokhna Diop</td><td><span class="role-badge">Claims Officer</span></td><td><div class="copy-wrap"><span class="copy-val">sokhna.diop@opescare.com</span><button class="copy-btn" onclick="copyText('sokhna.diop@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Insur@nce@OC26</span><button class="copy-btn" onclick="copyText('Insur@nce@OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="ndeye fall preauth officer ndeye.fall@opescare.com insurance"><td>Ndéye Fall</td><td><span class="role-badge">Preauth Officer</span></td><td><div class="copy-wrap"><span class="copy-val">ndeye.fall@opescare.com</span><button class="copy-btn" onclick="copyText('ndeye.fall@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Insur@nce@OC26</span><button class="copy-btn" onclick="copyText('Insur@nce@OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="pape sow insurance finance pape.sow@opescare.com insurance"><td>Pape Sow</td><td><span class="role-badge">Insurance Finance</span></td><td><div class="copy-wrap"><span class="copy-val">pape.sow@opescare.com</span><button class="copy-btn" onclick="copyText('pape.sow@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Insur@nce@OC26</span><button class="copy-btn" onclick="copyText('Insur@nce@OC26',this)">⎘ Copy</button></div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Facility Administration ────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Facility Administration</div>
+  <div class="facility-tag">🏥 OpesCare General Hospital</div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+    <tbody>
+      <tr class="account-row visible" data-search="ndeye mbaye facility admin ndeye.mbaye@opescare.com hospital"><td>Ndeye Mbaye</td><td><span class="role-badge">Facility Admin</span></td><td><div class="copy-wrap"><span class="copy-val">ndeye.mbaye@opescare.com</span><button class="copy-btn" onclick="copyText('ndeye.mbaye@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">F@cAdm1n#OC26</span><button class="copy-btn" onclick="copyText('F@cAdm1n#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="mamoudou diallo ceo director mamoudou.diallo@opescare.com hospital"><td>Dr. Mamoudou Diallo</td><td><span class="role-badge">Facility CEO / Director</span></td><td><div class="copy-wrap"><span class="copy-val">mamoudou.diallo@opescare.com</span><button class="copy-btn" onclick="copyText('mamoudou.diallo@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">F@cAdm1n#OC26</span><button class="copy-btn" onclick="copyText('F@cAdm1n#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="hawa conde department manager hawa.conde@opescare.com hospital"><td>Hawa Condé</td><td><span class="role-badge">Department Manager</span></td><td><div class="copy-wrap"><span class="copy-val">hawa.conde@opescare.com</span><button class="copy-btn" onclick="copyText('hawa.conde@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">F@cAdm1n#OC26</span><button class="copy-btn" onclick="copyText('F@cAdm1n#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="modibo traore branch admin modibo.traore@opescare.com hospital"><td>Modibo Traoré</td><td><span class="role-badge">Branch Admin</span></td><td><div class="copy-wrap"><span class="copy-val">modibo.traore@opescare.com</span><button class="copy-btn" onclick="copyText('modibo.traore@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">F@cAdm1n#OC26</span><button class="copy-btn" onclick="copyText('F@cAdm1n#OC26',this)">⎘ Copy</button></div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Health Org & Public Health ─────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Health Organization &amp; Public Health</div>
+  <div class="facility-tag">🌍 OpesCare Health Organization</div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+    <tbody>
+      <tr class="account-row visible" data-search="bineta ndiaye health programme manager bineta.ndiaye@opescare.com healthorg"><td>Dr. Bineta Ndiaye</td><td><span class="role-badge">Health Programme Manager</span></td><td><div class="copy-wrap"><span class="copy-val">bineta.ndiaye@opescare.com</span><button class="copy-btn" onclick="copyText('bineta.ndiaye@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">H3@lthOrg#OC26</span><button class="copy-btn" onclick="copyText('H3@lthOrg#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="yaye toure outreach team yaye.toure@opescare.com healthorg"><td>Yaye Touré</td><td><span class="role-badge">Outreach Team Officer</span></td><td><div class="copy-wrap"><span class="copy-val">yaye.toure@opescare.com</span><button class="copy-btn" onclick="copyText('yaye.toure@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">H3@lthOrg#OC26</span><button class="copy-btn" onclick="copyText('H3@lthOrg#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="mamadou kouyate mobile clinic mobile.kouyate@opescare.com healthorg"><td>Mamadou Kouyaté</td><td><span class="role-badge">Mobile Clinic Team</span></td><td><div class="copy-wrap"><span class="copy-val">mobile.kouyate@opescare.com</span><button class="copy-btn" onclick="copyText('mobile.kouyate@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">H3@lthOrg#OC26</span><button class="copy-btn" onclick="copyText('H3@lthOrg#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="rokia keita public health officer rokia.keita@opescare.com healthorg"><td>Dr. Rokia Keita</td><td><span class="role-badge">Public Health Officer</span></td><td><div class="copy-wrap"><span class="copy-val">rokia.keita@opescare.com</span><button class="copy-btn" onclick="copyText('rokia.keita@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">H3@lthOrg#OC26</span><button class="copy-btn" onclick="copyText('H3@lthOrg#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="ibou diatta public health reviewer ibou.diatta@opescare.com healthorg"><td>Ibou Diatta</td><td><span class="role-badge">Public Health Reviewer</span></td><td><div class="copy-wrap"><span class="copy-val">ibou.diatta@opescare.com</span><button class="copy-btn" onclick="copyText('ibou.diatta@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">H3@lthOrg#OC26</span><button class="copy-btn" onclick="copyText('H3@lthOrg#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="awa ndiaye public health admin awa.ndiaye@opescare.com healthorg"><td>Dr. Awa Ndiaye</td><td><span class="role-badge">Public Health Admin</span></td><td><div class="copy-wrap"><span class="copy-val">awa.ndiaye@opescare.com</span><button class="copy-btn" onclick="copyText('awa.ndiaye@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">H3@lthOrg#OC26</span><button class="copy-btn" onclick="copyText('H3@lthOrg#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="alassane diop government supervisor alassane.diop@opescare.com healthorg"><td>Dir. Alassane Diop</td><td><span class="role-badge">Government Supervisor</span></td><td><div class="copy-wrap"><span class="copy-val">alassane.diop@opescare.com</span><button class="copy-btn" onclick="copyText('alassane.diop@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">H3@lthOrg#OC26</span><button class="copy-btn" onclick="copyText('H3@lthOrg#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="halimatou barry disease surveillance halimatou.barry@opescare.com healthorg"><td>Dr. Halimatou Barry</td><td><span class="role-badge">Disease Surveillance</span></td><td><div class="copy-wrap"><span class="copy-val">halimatou.barry@opescare.com</span><button class="copy-btn" onclick="copyText('halimatou.barry@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">H3@lthOrg#OC26</span><button class="copy-btn" onclick="copyText('H3@lthOrg#OC26',this)">⎘ Copy</button></div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Developer / API ────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Developer / API / Bridge</div>
+  <div class="facility-tag">⚙️ No Facility / OpesCare Clinic (Bridge &amp; Lite)</div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+    <tbody>
+      <tr class="account-row visible" data-search="public health api publichealth.api@opescare.com developer"><td>Public Health API Client</td><td><span class="role-badge">Public Health API</span></td><td><div class="copy-wrap"><span class="copy-val">publichealth.api@opescare.com</span><button class="copy-btn" onclick="copyText('publichealth.api@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">D3v3l0p@r#OC26</span><button class="copy-btn" onclick="copyText('D3v3l0p@r#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="api developer api.developer@opescare.com developer"><td>API Developer</td><td><span class="role-badge">Developer</span></td><td><div class="copy-wrap"><span class="copy-val">api.developer@opescare.com</span><button class="copy-btn" onclick="copyText('api.developer@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">D3v3l0p@r#OC26</span><button class="copy-btn" onclick="copyText('D3v3l0p@r#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="api partner api.partner@opescare.com developer"><td>API Partner Admin</td><td><span class="role-badge">API Partner</span></td><td><div class="copy-wrap"><span class="copy-val">api.partner@opescare.com</span><button class="copy-btn" onclick="copyText('api.partner@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">D3v3l0p@r#OC26</span><button class="copy-btn" onclick="copyText('D3v3l0p@r#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="api technical api.technical@opescare.com developer"><td>API Technical User</td><td><span class="role-badge">API Technical</span></td><td><div class="copy-wrap"><span class="copy-val">api.technical@opescare.com</span><button class="copy-btn" onclick="copyText('api.technical@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">D3v3l0p@r#OC26</span><button class="copy-btn" onclick="copyText('D3v3l0p@r#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="webhook manager webhook.manager@opescare.com developer"><td>Webhook Manager</td><td><span class="role-badge">Webhook Manager</span></td><td><div class="copy-wrap"><span class="copy-val">webhook.manager@opescare.com</span><button class="copy-btn" onclick="copyText('webhook.manager@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">D3v3l0p@r#OC26</span><button class="copy-btn" onclick="copyText('D3v3l0p@r#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="sandbox developer sandbox.dev@opescare.com developer"><td>Sandbox Developer</td><td><span class="role-badge">Sandbox Developer</span></td><td><div class="copy-wrap"><span class="copy-val">sandbox.dev@opescare.com</span><button class="copy-btn" onclick="copyText('sandbox.dev@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">D3v3l0p@r#OC26</span><button class="copy-btn" onclick="copyText('D3v3l0p@r#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="bridge agent bridge.agent@opescare.com bridge hospital"><td>Bridge Agent Device</td><td><span class="role-badge">Bridge Agent</span></td><td><div class="copy-wrap"><span class="copy-val">bridge.agent@opescare.com</span><button class="copy-btn" onclick="copyText('bridge.agent@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">D3v3l0p@r#OC26</span><button class="copy-btn" onclick="copyText('D3v3l0p@r#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="bridge admin bridge.admin@opescare.com bridge hospital"><td>Bridge Admin</td><td><span class="role-badge">Bridge Admin</span></td><td><div class="copy-wrap"><span class="copy-val">bridge.admin@opescare.com</span><button class="copy-btn" onclick="copyText('bridge.admin@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">D3v3l0p@r#OC26</span><button class="copy-btn" onclick="copyText('D3v3l0p@r#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="lite facility admin lite.facility@opescare.com lite clinic"><td>Lite Facility Admin</td><td><span class="role-badge">Lite Facility</span></td><td><div class="copy-wrap"><span class="copy-val">lite.facility@opescare.com</span><button class="copy-btn" onclick="copyText('lite.facility@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Fr0ntDesk@OC26</span><button class="copy-btn" onclick="copyText('Fr0ntDesk@OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="lite staff user lite.staff@opescare.com lite clinic"><td>Lite Staff User</td><td><span class="role-badge">Lite Staff</span></td><td><div class="copy-wrap"><span class="copy-val">lite.staff@opescare.com</span><button class="copy-btn" onclick="copyText('lite.staff@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Fr0ntDesk@OC26</span><button class="copy-btn" onclick="copyText('Fr0ntDesk@OC26',this)">⎘ Copy</button></div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Support ─────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Support &amp; Customer Success</div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+    <tbody>
+      <tr class="account-row visible" data-search="ibou mbaye support agent ibou.mbaye@opescare.com support"><td>Ibou Mbaye</td><td><span class="role-badge">Support Agent</span></td><td><div class="copy-wrap"><span class="copy-val">ibou.mbaye@opescare.com</span><button class="copy-btn" onclick="copyText('ibou.mbaye@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Supp0rt@OC#2026</span><button class="copy-btn" onclick="copyText('Supp0rt@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="aissata bah support manager aissata.bah@opescare.com support"><td>Aissata Bah</td><td><span class="role-badge">Support Manager</span></td><td><div class="copy-wrap"><span class="copy-val">aissata.bah@opescare.com</span><button class="copy-btn" onclick="copyText('aissata.bah@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Supp0rt@OC#2026</span><button class="copy-btn" onclick="copyText('Supp0rt@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="kadia traore customer success kadia.traore@opescare.com support"><td>Kadia Traoré</td><td><span class="role-badge">Customer Success</span></td><td><div class="copy-wrap"><span class="copy-val">kadia.traore@opescare.com</span><button class="copy-btn" onclick="copyText('kadia.traore@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Supp0rt@OC#2026</span><button class="copy-btn" onclick="copyText('Supp0rt@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="mamoud keita implementation lead mamoud.keita@opescare.com support"><td>Mamoud Keïta</td><td><span class="role-badge">Implementation Lead</span></td><td><div class="copy-wrap"><span class="copy-val">mamoud.keita@opescare.com</span><button class="copy-btn" onclick="copyText('mamoud.keita@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Supp0rt@OC#2026</span><button class="copy-btn" onclick="copyText('Supp0rt@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="awa diallo training support awa.diallo@opescare.com support"><td>Awa Diallo</td><td><span class="role-badge">Training Support</span></td><td><div class="copy-wrap"><span class="copy-val">awa.diallo@opescare.com</span><button class="copy-btn" onclick="copyText('awa.diallo@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Supp0rt@OC#2026</span><button class="copy-btn" onclick="copyText('Supp0rt@OC#2026',this)">⎘ Copy</button></div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Security / Privacy / Data Quality ─────────────────────── -->
+<div class="section">
+  <div class="section-title">Privacy, Security, Compliance &amp; Data Quality</div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+    <tbody>
+      <tr class="account-row visible" data-search="privacy officer privacy.officer@opescare.com security"><td>Dr. Oumou Kouyate</td><td><span class="role-badge">Privacy Officer</span></td><td><div class="copy-wrap"><span class="copy-val">privacy.officer@opescare.com</span><button class="copy-btn" onclick="copyText('privacy.officer@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">S3cur1ty@OC#26</span><button class="copy-btn" onclick="copyText('S3cur1ty@OC#26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="data protection officer dpo dpo@opescare.com security"><td>Moussa Ba</td><td><span class="role-badge">Data Protection Officer</span></td><td><div class="copy-wrap"><span class="copy-val">dpo@opescare.com</span><button class="copy-btn" onclick="copyText('dpo@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">S3cur1ty@OC#26</span><button class="copy-btn" onclick="copyText('S3cur1ty@OC#26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="security officer security.officer@opescare.com security"><td>Sidy Diallo</td><td><span class="role-badge">Security Officer</span></td><td><div class="copy-wrap"><span class="copy-val">security.officer@opescare.com</span><button class="copy-btn" onclick="copyText('security.officer@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">S3cur1ty@OC#26</span><button class="copy-btn" onclick="copyText('S3cur1ty@OC#26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="compliance officer compliance@opescare.com security"><td>Aminata Fall</td><td><span class="role-badge">Compliance Officer</span></td><td><div class="copy-wrap"><span class="copy-val">compliance@opescare.com</span><button class="copy-btn" onclick="copyText('compliance@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">S3cur1ty@OC#26</span><button class="copy-btn" onclick="copyText('S3cur1ty@OC#26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="audit reviewer audit@opescare.com security"><td>Assane Diop</td><td><span class="role-badge">Audit Reviewer</span></td><td><div class="copy-wrap"><span class="copy-val">audit@opescare.com</span><button class="copy-btn" onclick="copyText('audit@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">S3cur1ty@OC#26</span><button class="copy-btn" onclick="copyText('S3cur1ty@OC#26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="emergency access reviewer emergency.reviewer@opescare.com security"><td>Astou Seck</td><td><span class="role-badge">Emergency Access Reviewer</span></td><td><div class="copy-wrap"><span class="copy-val">emergency.reviewer@opescare.com</span><button class="copy-btn" onclick="copyText('emergency.reviewer@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">S3cur1ty@OC#26</span><button class="copy-btn" onclick="copyText('S3cur1ty@OC#26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="data steward data.steward@opescare.com security"><td>Fatoumata Koné</td><td><span class="role-badge">Data Steward</span></td><td><div class="copy-wrap"><span class="copy-val">data.steward@opescare.com</span><button class="copy-btn" onclick="copyText('data.steward@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">S3cur1ty@OC#26</span><button class="copy-btn" onclick="copyText('S3cur1ty@OC#26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="reconciliation officer reconciliation@opescare.com data"><td>Ibrahima Diallo</td><td><span class="role-badge">Reconciliation Officer</span></td><td><div class="copy-wrap"><span class="copy-val">reconciliation@opescare.com</span><button class="copy-btn" onclick="copyText('reconciliation@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">S3cur1ty@OC#26</span><button class="copy-btn" onclick="copyText('S3cur1ty@OC#26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="data import officer data.import@opescare.com data"><td>Coumba Fall</td><td><span class="role-badge">Data Import Officer</span></td><td><div class="copy-wrap"><span class="copy-val">data.import@opescare.com</span><button class="copy-btn" onclick="copyText('data.import@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">S3cur1ty@OC#26</span><button class="copy-btn" onclick="copyText('S3cur1ty@OC#26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="data quality reviewer data.quality@opescare.com data"><td>Ramata Traoré</td><td><span class="role-badge">Data Quality Reviewer</span></td><td><div class="copy-wrap"><span class="copy-val">data.quality@opescare.com</span><button class="copy-btn" onclick="copyText('data.quality@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">S3cur1ty@OC#26</span><button class="copy-btn" onclick="copyText('S3cur1ty@OC#26',this)">⎘ Copy</button></div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Academy ─────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Academy &amp; Certification</div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+    <tbody>
+      <tr class="account-row visible" data-search="aminata diallo academy learner academy.learner@opescare.com academy"><td>Aminata Diallo</td><td><span class="role-badge">Academy Learner</span></td><td><div class="copy-wrap"><span class="copy-val">academy.learner@opescare.com</span><button class="copy-btn" onclick="copyText('academy.learner@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Acad3my@OC#2026</span><button class="copy-btn" onclick="copyText('Acad3my@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="coumba kone academy instructor academy.instructor@opescare.com academy"><td>Dr. Coumba Koné</td><td><span class="role-badge">Academy Instructor</span></td><td><div class="copy-wrap"><span class="copy-val">academy.instructor@opescare.com</span><button class="copy-btn" onclick="copyText('academy.instructor@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Acad3my@OC#2026</span><button class="copy-btn" onclick="copyText('Acad3my@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="penda sarr academy admin academy.admin@opescare.com academy"><td>Penda Sarr</td><td><span class="role-badge">Academy Admin</span></td><td><div class="copy-wrap"><span class="copy-val">academy.admin@opescare.com</span><button class="copy-btn" onclick="copyText('academy.admin@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Acad3my@OC#2026</span><button class="copy-btn" onclick="copyText('Acad3my@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="thierno bah certification reviewer cert.reviewer@opescare.com academy"><td>Thierno Bah</td><td><span class="role-badge">Certification Reviewer</span></td><td><div class="copy-wrap"><span class="copy-val">cert.reviewer@opescare.com</span><button class="copy-btn" onclick="copyText('cert.reviewer@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Acad3my@OC#2026</span><button class="copy-btn" onclick="copyText('Acad3my@OC#2026',this)">⎘ Copy</button></div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Partner Governance ─────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Partner Governance</div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+    <tbody>
+      <tr class="account-row visible" data-search="mody diallo partner admin partner.admin@opescare.com partner"><td>Mody Diallo</td><td><span class="role-badge">Partner Admin</span></td><td><div class="copy-wrap"><span class="copy-val">partner.admin@opescare.com</span><button class="copy-btn" onclick="copyText('partner.admin@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">P@rtn3r@OC#2026</span><button class="copy-btn" onclick="copyText('P@rtn3r@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="yacine ba partner reviewer partner.reviewer@opescare.com partner"><td>Yacine Ba</td><td><span class="role-badge">Partner Reviewer</span></td><td><div class="copy-wrap"><span class="copy-val">partner.reviewer@opescare.com</span><button class="copy-btn" onclick="copyText('partner.reviewer@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">P@rtn3r@OC#2026</span><button class="copy-btn" onclick="copyText('P@rtn3r@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="nafissatou sow partner compliance partner.compliance@opescare.com partner"><td>Nafissatou Sow</td><td><span class="role-badge">Partner Compliance</span></td><td><div class="copy-wrap"><span class="copy-val">partner.compliance@opescare.com</span><button class="copy-btn" onclick="copyText('partner.compliance@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">P@rtn3r@OC#2026</span><button class="copy-btn" onclick="copyText('P@rtn3r@OC#2026',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="malick niang partner technical partner.technical@opescare.com partner"><td>Malick Niang</td><td><span class="role-badge">Partner Technical</span></td><td><div class="copy-wrap"><span class="copy-val">partner.technical@opescare.com</span><button class="copy-btn" onclick="copyText('partner.technical@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">P@rtn3r@OC#2026</span><button class="copy-btn" onclick="copyText('P@rtn3r@OC#2026',this)">⎘ Copy</button></div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Platform / Super Admin ─────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">Platform &amp; Super Admin</div>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+    <tbody>
+      <tr class="account-row visible" data-search="super admin super.admin@opescare.com platform"><td>Super Admin</td><td><span class="role-badge">Super Admin</span></td><td><div class="copy-wrap"><span class="copy-val">super.admin@opescare.com</span><button class="copy-btn" onclick="copyText('super.admin@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Pl@tAdm1n#OC26</span><button class="copy-btn" onclick="copyText('Pl@tAdm1n#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="platform admin platform.admin@opescare.com platform"><td>Platform Owner</td><td><span class="role-badge">Platform Admin</span></td><td><div class="copy-wrap"><span class="copy-val">platform.admin@opescare.com</span><button class="copy-btn" onclick="copyText('platform.admin@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Pl@tAdm1n#OC26</span><button class="copy-btn" onclick="copyText('Pl@tAdm1n#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="system admin system.admin@opescare.com platform"><td>System Administrator</td><td><span class="role-badge">System Admin</span></td><td><div class="copy-wrap"><span class="copy-val">system.admin@opescare.com</span><button class="copy-btn" onclick="copyText('system.admin@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Pl@tAdm1n#OC26</span><button class="copy-btn" onclick="copyText('Pl@tAdm1n#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="product admin product.admin@opescare.com platform"><td>Product Admin</td><td><span class="role-badge">Product Admin</span></td><td><div class="copy-wrap"><span class="copy-val">product.admin@opescare.com</span><button class="copy-btn" onclick="copyText('product.admin@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Pl@tAdm1n#OC26</span><button class="copy-btn" onclick="copyText('Pl@tAdm1n#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="legal admin legal.admin@opescare.com platform"><td>Legal Document Admin</td><td><span class="role-badge">Legal Admin</span></td><td><div class="copy-wrap"><span class="copy-val">legal.admin@opescare.com</span><button class="copy-btn" onclick="copyText('legal.admin@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Pl@tAdm1n#OC26</span><button class="copy-btn" onclick="copyText('Pl@tAdm1n#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="country admin cameroon country.admin@opescare.com platform"><td>Country Admin Cameroon</td><td><span class="role-badge">Country Admin</span></td><td><div class="copy-wrap"><span class="copy-val">country.admin@opescare.com</span><button class="copy-btn" onclick="copyText('country.admin@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Pl@tAdm1n#OC26</span><button class="copy-btn" onclick="copyText('Pl@tAdm1n#OC26',this)">⎘ Copy</button></div></td></tr>
+      <tr class="account-row visible" data-search="regional admin west africa regional.admin@opescare.com platform"><td>Regional Admin West Africa</td><td><span class="role-badge">Regional Admin</span></td><td><div class="copy-wrap"><span class="copy-val">regional.admin@opescare.com</span><button class="copy-btn" onclick="copyText('regional.admin@opescare.com',this)">⎘ Copy</button></div></td><td><div class="copy-wrap"><span class="copy-val pw-val">Pl@tAdm1n#OC26</span><button class="copy-btn" onclick="copyText('Pl@tAdm1n#OC26',this)">⎘ Copy</button></div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+</div><!-- end accountsContainer -->
+
+<div id="noResults" style="display:none;text-align:center;padding:3rem;color:#94a3b8;font-size:.95rem;">
+  No accounts match your search.
+</div>
+
+</div><!-- end container -->
+
+<script>
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const original = btn.innerHTML;
+    btn.innerHTML = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.innerHTML = original;
+      btn.classList.remove('copied');
+    }, 1800);
+  });
+}
+
+function filterAccounts() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const rows = document.querySelectorAll('.account-row');
+  const sections = document.querySelectorAll('.section');
+  let totalVisible = 0;
+
+  rows.forEach(row => {
+    const text = (row.dataset.search || '') + ' ' + row.textContent.toLowerCase();
+    const match = !q || text.includes(q);
+    row.classList.toggle('visible', match);
+    if (match) totalVisible++;
+  });
+
+  // Hide sections where all rows are hidden
+  sections.forEach(section => {
+    const visibleRows = section.querySelectorAll('.account-row.visible');
+    section.style.display = visibleRows.length > 0 ? '' : 'none';
+  });
+
+  document.getElementById('noResults').style.display = totalVisible === 0 ? 'block' : 'none';
+}
+</script>
+</body>
+</html>

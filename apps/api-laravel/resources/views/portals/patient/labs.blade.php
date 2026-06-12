@@ -75,6 +75,11 @@
             </tbody>
         </table>
     </div>
+    @if(method_exists($labs, 'links') && $labs->hasPages())
+    <div style="padding:var(--p-space-4);border-top:1px solid var(--p-border);">
+        {{ $labs->links() }}
+    </div>
+    @endif
 </div>
 @endif
 

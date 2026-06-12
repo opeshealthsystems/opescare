@@ -29,6 +29,14 @@
         <i data-lucide="send"></i>
         <span>{{ __('public.portal.nav_referrals', [], $l) ?: 'Referrals' }}</span>
     </a>
+    <a href="{{ route('portals.staff.prescriptions') }}" class="sidebar-link">
+        <i data-lucide="clipboard-list"></i>
+        <span>Prescriptions</span>
+    </a>
+    <a href="{{ route('portals.staff.lab_orders') }}" class="sidebar-link">
+        <i data-lucide="microscope"></i>
+        <span>Lab Orders</span>
+    </a>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link">
         <i data-lucide="brain"></i>
         <span>{{ __('public.portal.nav_cdss', [], $l) ?: 'CDSS' }}</span>

@@ -2,6 +2,8 @@
 namespace App\Services\Payment;
 
 use App\Models\MobileMoneyTransaction;
+use App\Services\Payments\MtnMomoService;
+use App\Services\Payments\OrangeMoneyService;
 
 class MobileMoneyService
 {
@@ -26,15 +28,15 @@ class MobileMoneyService
         ]);
 
         $gateway = match ($provider) {
-            'mtn_momo'     => new MtnMomoGateway(),
-            'orange_money' => new OrangeMoneyGateway(),
+            'mtn_momo'     => new MtnMomoService(),
+            'orange_money' => new OrangeMoneyService(),
             default        => throw new \InvalidArgumentException("Unknown provider: {$provider}"),
         };
 
         try {
-            $result = $gateway->requestPayment($amountXaf, $phoneNumber, $reference, $description);
+            $result = $gateway->requestPayment($phoneNumber, $amountXaf, 'XAF', $reference, $description);
             $txn->update([
-                'provider_ref'      => $result['provider_ref'] ?? null,
+                'provider_ref'      => $result['reference_id'] ?? $result['provider_ref'] ?? null,
                 'provider_response' => $result,
                 'status'            => ($result['success'] ?? false) ? 'pending' : 'failed',
             ]);
@@ -43,5 +45,16 @@ class MobileMoneyService
         }
 
         return $txn->fresh();
+    }
+
+    public function checkStatus(string $provider, string $providerRef): array
+    {
+        $gateway = match ($provider) {
+            'mtn_momo'     => new MtnMomoService(),
+            'orange_money' => new OrangeMoneyService(),
+            default        => throw new \InvalidArgumentException("Unknown provider: {$provider}"),
+        };
+
+        return $gateway->checkStatus($providerRef);
     }
 }

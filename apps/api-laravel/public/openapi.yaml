@@ -7,23 +7,34 @@ info:
     labs, insurers, and third-party systems to securely access and push
     patient health data with full consent and audit controls.
 
-    **Base URL (Sandbox):** `https://opescare.test/api/v1`
+    **Base URL (Sandbox):** `http://opescare.test`
+
+    **Base URL (Production):** `https://api.opescare.com`
 
     **Authentication:**
-    - Connect API → OAuth 2.0 client_credentials → Bearer token
-    - SDK → Static bearer token from developer portal
-    - Bridge Agent → `X-Bridge-Token` header
+    - Connect API → OAuth 2.0 client_credentials → RS256 Bearer JWT (1 hour TTL)
+    - SDK routes → Same RS256 Bearer JWT from the Connect auth endpoint
+    - Bridge Agent → `X-Bridge-Agent-ID` + `X-Bridge-Agent-Key` headers
+
+    **Token:** The access_token is a real RS256-signed JWT (three base64url segments).
+    It is signed with OpesCare's RSA-2048 private key. Cache tokens for up to 3600s.
+
+    **SDKs:** `composer require opescare/sdk` | `npm install @opescare/sdk` | `pip install opescare-sdk`
+
+    **Bridge Agent:** `pip install opescare-bridge-agent` → `opescare-bridge --config bridge_config.json`
 
   contact:
     name: OpesCare Developer Support
-    email: developers@opescare.test
+    email: developer-support@opescare.com
   license:
     name: Proprietary
 
 servers:
-  - url: https://opescare.test/api/v1
+  - url: http://opescare.test
     description: Sandbox / Local Dev
-  - url: https://api.opescare.health/v1
+  - url: https://sandbox-api.opescare.com
+    description: Sandbox (Cloud)
+  - url: https://api.opescare.com
     description: Production (requires approved account)
 
 components:
@@ -31,16 +42,17 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
-      description: OAuth 2.0 access token for Connect API
-    SdkToken:
-      type: http
-      scheme: bearer
-      description: SDK static bearer token from developer portal
-    BridgeToken:
+      bearerFormat: JWT
+      description: |
+        RS256 JWT issued by POST /api/v1/connect/auth/token using client_credentials grant.
+        Expires in 3600 seconds. Cache and reuse — do not request a new token per call.
+    BridgeAgentKey:
       type: apiKey
       in: header
-      name: X-Bridge-Token
-      description: Bridge Agent authentication token
+      name: X-Bridge-Agent-Key
+      description: |
+        Bridge Agent authentication key. Pass alongside X-Bridge-Agent-ID header.
+        The key is verified server-side against its SHA-256 hash.
 
   schemas:
     Error:
@@ -70,14 +82,14 @@ components:
           example: 3600
         scope:
           type: string
-          example: "patient:profile:read pharmacy:stock:read"
+          example: "health_id:verify patients:read consents:read encounters:write labs:write webhooks:manage"
 
     Patient:
       type: object
       properties:
         health_id:
           type: string
-          example: "OPC-2024-XK7T9"
+          example: "CM-HID-7KQ9-MP42-X8D1"
         name:
           type: string
           example: "Jean Dupont"

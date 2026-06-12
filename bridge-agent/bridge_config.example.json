@@ -1,0 +1,18 @@
+{
+  "_comment": "Copy this to bridge_config.json and fill in your credentials. Never commit bridge_config.json.",
+  "server_url":   "http://opescare.test",
+  "agent_id":     "YOUR_BRIDGE_AGENT_ID_FROM_OPESCARE_ADMIN",
+  "agent_key":    "SET_VIA_OPESCARE_AGENT_KEY_ENV_VAR_OR_HERE",
+  "facility_id":  "YOUR_FACILITY_UUID_FROM_OPESCARE",
+  "environment":  "sandbox",
+  "heartbeat_interval_seconds": 60,
+  "sync_interval_seconds": 300,
+  "queue_db_path": "bridge_queue.db",
+  "log_level": "INFO",
+  "connector": {
+    "type":           "csv_folder",
+    "watch_folder":   "./data/incoming",
+    "file_pattern":   "*.csv",
+    "poll_interval_seconds": 60
+  }
+}

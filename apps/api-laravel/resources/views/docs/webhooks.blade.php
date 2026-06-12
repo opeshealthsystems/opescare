@@ -4,12 +4,19 @@
 
 <h1>Webhooks</h1>
 <p class="docs-lead">
-    OpesCare pushes real-time events to your HTTPS endpoint whenever something meaningful
-    happens — a new appointment, a lab result ready, a consent granted. Each delivery is
-    signed with HMAC-SHA256 so you can verify it came from OpesCare.
+    OpesCare pushes real-time events to your HTTPS endpoint whenever something meaningful happens —
+    a lab result published, a prescription issued, a consent granted or revoked. Each delivery is
+    signed with HMAC-SHA256 and includes a timestamp, so you can verify authenticity and reject
+    replays.
 </p>
 
 <h2 id="subscribe">Subscribe to Events</h2>
+
+<p>
+    Create a subscription by providing your <code>callback_url</code> and the list of events you
+    want to receive. The response includes a <code>webhook_secret</code> — store it immediately,
+    it is shown only once.
+</p>
 
 <div class="docs-code-block">
     <div class="docs-code-tabs">
@@ -17,64 +24,59 @@
         <button class="docs-code-tab" data-lang="php">PHP</button>
         <button class="docs-code-tab" data-lang="js">JavaScript</button>
         <button class="docs-code-tab" data-lang="python">Python</button>
-        <button class="docs-code-tab" data-lang="java">Java</button>
     </div>
     <div class="docs-code-pane" data-lang="curl">
 <pre>curl -X POST https://opescare.test/api/v1/connect/webhooks/subscriptions \
   -H "Authorization: Bearer {access_token}" \
   -H "Content-Type: application/json" \
   -d '{
-    "endpoint_url": "https://your-system.example.com/opescare/webhook",
-    "events": ["appointment.created", "lab_result.ready", "consent.granted"],
-    "secret": "your-webhook-signing-secret"
+    "callback_url": "https://your-system.example.com/opescare/webhook",
+    "subscribed_events": ["lab_result.released", "prescription.issued", "consent.granted"],
+    "description": "My CDSS event listener"
   }'</pre>
     </div>
     <div class="docs-code-pane" data-lang="php">
-<pre>Http::withToken($accessToken)
+<pre>$subscription = Http::withToken($accessToken)
     ->post('https://opescare.test/api/v1/connect/webhooks/subscriptions', [
-        'endpoint_url' =&gt; 'https://your-system.example.com/opescare/webhook',
-        'events'       =&gt; ['appointment.created', 'lab_result.ready', 'consent.granted'],
-        'secret'       =&gt; env('OPESCARE_WEBHOOK_SECRET'),
-    ]);</pre>
+        'callback_url'      =&gt; 'https://your-system.example.com/opescare/webhook',
+        'subscribed_events' =&gt; ['lab_result.released', 'prescription.issued', 'consent.granted'],
+        'description'       =&gt; 'My CDSS event listener',
+    ])->json();
+
+// Save immediately — shown only once
+$webhookSecret = $subscription['webhook_secret']; // "whsec_xxxxxxxxxxxxxxxx"</pre>
     </div>
     <div class="docs-code-pane" data-lang="js">
-<pre>await fetch('https://opescare.test/api/v1/connect/webhooks/subscriptions', {
+<pre>const res = await fetch('https://opescare.test/api/v1/connect/webhooks/subscriptions', {
   method: 'POST',
   headers: {
     Authorization: `Bearer ${accessToken}`,
     'Content-Type': 'application/json',
   },
   body: JSON.stringify({
-    endpoint_url: 'https://your-system.example.com/opescare/webhook',
-    events: ['appointment.created', 'lab_result.ready', 'consent.granted'],
-    secret: process.env.OPESCARE_WEBHOOK_SECRET,
+    callback_url:      'https://your-system.example.com/opescare/webhook',
+    subscribed_events: ['lab_result.released', 'prescription.issued', 'consent.granted'],
+    description:       'My CDSS event listener',
   }),
-});</pre>
+});
+const subscription = await res.json();
+
+// Save immediately — shown only once
+const webhookSecret = subscription.webhook_secret; // "whsec_xxxxxxxxxxxxxxxx"</pre>
     </div>
     <div class="docs-code-pane" data-lang="python">
-<pre>requests.post(
+<pre>subscription = requests.post(
     'https://opescare.test/api/v1/connect/webhooks/subscriptions',
     headers={'Authorization': f'Bearer {access_token}'},
     json={
-        'endpoint_url': 'https://your-system.example.com/opescare/webhook',
-        'events': ['appointment.created', 'lab_result.ready', 'consent.granted'],
-        'secret': os.environ['OPESCARE_WEBHOOK_SECRET'],
+        'callback_url':      'https://your-system.example.com/opescare/webhook',
+        'subscribed_events': ['lab_result.released', 'prescription.issued', 'consent.granted'],
+        'description':       'My CDSS event listener',
     }
-)</pre>
-    </div>
-    <div class="docs-code-pane" data-lang="java">
-<pre>String body = """
-    {
-      "endpoint_url": "https://your-system.example.com/opescare/webhook",
-      "events": ["appointment.created", "lab_result.ready"],
-      "secret": "your-webhook-signing-secret"
-    }""";
-HttpRequest req = HttpRequest.newBuilder()
-    .uri(URI.create("https://opescare.test/api/v1/connect/webhooks/subscriptions"))
-    .header("Authorization", "Bearer " + accessToken)
-    .header("Content-Type", "application/json")
-    .POST(HttpRequest.BodyPublishers.ofString(body))
-    .build();</pre>
+).json()
+
+# Save immediately — shown only once
+webhook_secret = subscription['webhook_secret']  # "whsec_xxxxxxxxxxxxxxxx"</pre>
     </div>
 </div>
 
@@ -83,13 +85,28 @@ HttpRequest req = HttpRequest.newBuilder()
 <table class="docs-table">
     <thead><tr><th>Event</th><th>Triggered When</th></tr></thead>
     <tbody>
-        <tr><td><code>appointment.created</code></td><td>A new appointment is booked</td></tr>
-        <tr><td><code>appointment.updated</code></td><td>Appointment time, status, or doctor changes</td></tr>
-        <tr><td><code>lab_result.ready</code></td><td>Lab results are finalised and available</td></tr>
-        <tr><td><code>prescription.ready</code></td><td>Prescription is ready for collection at the pharmacy</td></tr>
-        <tr><td><code>consent.granted</code></td><td>Patient grants consent to a provider</td></tr>
-        <tr><td><code>payment.completed</code></td><td>Invoice is marked paid</td></tr>
-        <tr><td><code>patient.registered</code></td><td>New patient registers at a facility</td></tr>
+        <tr><td><code>patient.created</code></td><td>New patient registered</td></tr>
+        <tr><td><code>patient.updated</code></td><td>Patient demographics updated</td></tr>
+        <tr><td><code>health_id.created</code></td><td>New Health ID issued</td></tr>
+        <tr><td><code>health_id.verified</code></td><td>Health ID verified by a facility</td></tr>
+        <tr><td><code>consent.requested</code></td><td>Consent request sent to patient</td></tr>
+        <tr><td><code>consent.granted</code></td><td>Patient grants consent — proceed with data access</td></tr>
+        <tr><td><code>consent.denied</code></td><td>Patient denies a consent request</td></tr>
+        <tr><td><code>consent.revoked</code></td><td>Patient revokes a previously granted consent — stop data access immediately</td></tr>
+        <tr><td><code>encounter.created</code></td><td>New encounter/visit recorded</td></tr>
+        <tr><td><code>encounter.closed</code></td><td>Encounter finalised</td></tr>
+        <tr><td><code>lab_order.created</code></td><td>Lab test ordered</td></tr>
+        <tr><td><code>lab_result.released</code></td><td>Lab result published — <strong>trigger CDSS analysis</strong></td></tr>
+        <tr><td><code>lab_result.amended</code></td><td>Lab result corrected — re-run CDSS analysis</td></tr>
+        <tr><td><code>prescription.issued</code></td><td>New prescription written — trigger drug interaction check</td></tr>
+        <tr><td><code>prescription.cancelled</code></td><td>Prescription cancelled</td></tr>
+        <tr><td><code>prescription.dispensed</code></td><td>Prescription dispensed by pharmacy</td></tr>
+        <tr><td><code>appointment.created</code></td><td>Appointment scheduled</td></tr>
+        <tr><td><code>appointment.checked_in</code></td><td>Patient checked in</td></tr>
+        <tr><td><code>appointment.cancelled</code></td><td>Appointment cancelled</td></tr>
+        <tr><td><code>document.issued</code></td><td>New clinical document issued</td></tr>
+        <tr><td><code>document.verified</code></td><td>Document QR verified</td></tr>
+        <tr><td><code>bridge_agent.sync_failed</code></td><td>Bridge Agent sync failure — check agent health</td></tr>
     </tbody>
 </table>
 
@@ -99,28 +116,42 @@ HttpRequest req = HttpRequest.newBuilder()
     <div class="docs-code-tabs"><button class="docs-code-tab active" data-lang="json">JSON</button></div>
     <div class="docs-code-pane active" data-lang="json">
 <pre>{
-  "id": "evt_01HX9K2ABCD",
-  "event": "appointment.created",
-  "facility_id": "00000000-0000-0000-0000-100000000001",
-  "timestamp": "2026-05-20T10:30:00Z",
+  "id":         "evt_01HX9K2ABCD",
+  "type":       "lab_result.released",
+  "version":    "1.0",
+  "created_at": "2026-06-01T10:30:00Z",
   "data": {
-    "appointment_id": "APT-202605200001",
-    "patient_health_id": "OPC-2024-DEMO1",
-    "scheduled_at": "2026-05-21T09:00:00Z",
-    "doctor": "Dr. Amara Nwosu",
-    "department": "Cardiology"
+    "health_id":     "CM-HID-7KQ9-MP42-X8D1",
+    "lab_result_id": "lr_xxxxxx",
+    "test_name":     "Complete Blood Count",
+    "flagged":       true,
+    "facility_id":   "00000000-0000-0000-0000-100000000001"
+  },
+  "meta": {
+    "organization_id": "org-uuid",
+    "facility_id":     "00000000-0000-0000-0000-100000000001",
+    "environment":     "production",
+    "request_id":      "req-uuid"
   }
 }</pre>
     </div>
 </div>
 
+<div class="docs-callout info">
+    <i data-lucide="info" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <div>The event type is in the <code>type</code> field (not <code>event</code>). Payload sensitivity varies by event — most deliver only metadata by default. Contact support to request full payload delivery for specific events.</div>
+</div>
+
 <h2 id="verification">Signature Verification</h2>
 
 <p>
-    Every delivery includes an <code>X-OpesCare-Signature</code> header.
-    It is an HMAC-SHA256 digest of the raw request body using your webhook secret,
-    prefixed with <code>sha256=</code>. <strong>Always verify this before processing.</strong>
+    Every delivery includes an <code>X-OpesCare-Signature</code> header in the format
+    <code>t=<em>timestamp</em>,v1=<em>hmac-hex</em></code>.
+    The signature is computed as <code>HMAC-SHA256(timestamp + "." + raw_body, webhook_secret)</code>.
+    <strong>Always verify this before processing any payload.</strong>
 </p>
+
+<p>Also check that the timestamp is within <strong>5 minutes</strong> of the current time to reject replay attacks.</p>
 
 <div class="docs-code-block">
     <div class="docs-code-tabs">
@@ -133,17 +164,30 @@ HttpRequest req = HttpRequest.newBuilder()
     <div class="docs-code-pane" data-lang="php">
 <pre>// routes/api.php
 Route::post('/opescare/webhook', function (\Illuminate\Http\Request $request) {
-    $signature = $request->header('X-OpesCare-Signature');
+    $sigHeader = $request->header('X-OpesCare-Signature'); // "t=1717228800,v1=abc123..."
     $body      = $request->getContent();
-    $secret    = env('OPESCARE_WEBHOOK_SECRET');
-    $expected  = 'sha256=' . hash_hmac('sha256', $body, $secret);
+    $secret    = env('OPESCARE_WEBHOOK_SECRET'); // "whsec_xxxxxxxxxxxxxxxx"
 
-    if (!hash_equals($expected, $signature)) {
-        abort(401, 'Invalid signature');
+    // Parse t= and v1= from signature header
+    $parts = [];
+    foreach (explode(',', $sigHeader) as $seg) {
+        [$k, $v] = explode('=', $seg, 2);
+        $parts[trim($k)] = trim($v);
+    }
+
+    // Replay protection — reject events older than 5 minutes
+    if (abs(time() - (int)$parts['t']) > 300) {
+        abort(400, 'Webhook timestamp out of tolerance');
+    }
+
+    // Verify HMAC-SHA256 signature
+    $expected = hash_hmac('sha256', $parts['t'] . '.' . $body, $secret);
+    if (!hash_equals($expected, $parts['v1'])) {
+        abort(400, 'Invalid signature');
     }
 
     $payload = $request->json()->all();
-    // Process $payload['event'] ...
+    // Process $payload['type'] ...
 
     return response()->json(['received' => true]);
 });</pre>
@@ -153,47 +197,71 @@ Route::post('/opescare/webhook', function (\Illuminate\Http\Request $request) {
 const express = require('express');
 const app = express();
 
-// IMPORTANT: use raw body for signature check
 app.post('/opescare/webhook',
   express.raw({ type: 'application/json' }),
   (req, res) => {
-    const sig      = req.headers['x-opescare-signature'];
-    const secret   = process.env.OPESCARE_WEBHOOK_SECRET;
-    const expected = 'sha256=' + crypto
-      .createHmac('sha256', secret)
-      .update(req.body)
-      .digest('hex');
+    const sigHeader = req.headers['x-opescare-signature']; // "t=...,v1=..."
+    const secret    = process.env.OPESCARE_WEBHOOK_SECRET;
 
-    if (!crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(sig))) {
-      return res.status(401).send('Invalid signature');
+    // Parse t= and v1= from header
+    const parts = Object.fromEntries(
+      sigHeader.split(',').map(s => s.split('=', 2))
+    );
+
+    // Replay protection
+    if (Math.abs(Math.floor(Date.now() / 1000) - parseInt(parts.t, 10)) > 300) {
+      return res.status(400).send('Timestamp out of tolerance');
+    }
+
+    // Verify HMAC-SHA256
+    const signed   = `${parts.t}.${req.body.toString()}`;
+    const expected = crypto.createHmac('sha256', secret).update(signed).digest('hex');
+    const expBuf   = Buffer.from(expected, 'hex');
+    const recBuf   = Buffer.from(parts.v1, 'hex');
+
+    if (expBuf.length !== recBuf.length || !crypto.timingSafeEqual(expBuf, recBuf)) {
+      return res.status(400).send('Invalid signature');
     }
 
     const payload = JSON.parse(req.body);
-    // Handle payload.event ...
+    // Handle payload.type ...
 
     res.status(200).json({ received: true });
   }
 );</pre>
     </div>
     <div class="docs-code-pane" data-lang="python">
-<pre>import hmac, hashlib, os
+<pre>import hmac, hashlib, time, os
 from flask import Flask, request, abort, jsonify
 
 app = Flask(__name__)
 
 @app.route('/opescare/webhook', methods=['POST'])
 def webhook():
-    sig    = request.headers.get('X-OpesCare-Signature', '')
-    secret = os.environ['OPESCARE_WEBHOOK_SECRET'].encode()
-    body   = request.get_data()  # raw bytes — do not call request.json first
+    sig_header = request.headers.get('X-OpesCare-Signature', '')
+    secret     = os.environ['OPESCARE_WEBHOOK_SECRET']
+    body       = request.get_data()  # raw bytes — do NOT call request.json first
 
-    expected = 'sha256=' + hmac.new(secret, body, hashlib.sha256).hexdigest()
+    # Parse t= and v1= from header
+    parts = {}
+    for seg in sig_header.split(','):
+        if '=' in seg:
+            k, v = seg.split('=', 1)
+            parts[k.strip()] = v.strip()
 
-    if not hmac.compare_digest(expected, sig):
-        abort(401, 'Invalid signature')
+    # Replay protection — reject events older than 5 minutes
+    if abs(int(time.time()) - int(parts.get('t', 0))) > 300:
+        abort(400, 'Timestamp out of tolerance')
+
+    # Verify HMAC-SHA256: HMAC(timestamp + "." + raw_body)
+    signed   = f"{parts['t']}.".encode() + body
+    expected = hmac.new(secret.encode(), signed, hashlib.sha256).hexdigest()
+
+    if not hmac.compare_digest(expected, parts.get('v1', '')):
+        abort(400, 'Invalid signature')
 
     payload = request.json
-    # Handle payload['event'] ...
+    # Handle payload['type'] ...
 
     return jsonify({'received': True})</pre>
     </div>
@@ -207,22 +275,45 @@ import (
     "encoding/hex"
     "fmt"
     "io"
+    "math"
     "net/http"
     "os"
+    "strconv"
+    "strings"
+    "time"
 )
 
-func verifyWebhook(body []byte, signature, secret string) bool {
+func verifyWebhook(body []byte, sigHeader, secret string) bool {
+    parts := make(map[string]string)
+    for _, seg := range strings.Split(sigHeader, ",") {
+        kv := strings.SplitN(seg, "=", 2)
+        if len(kv) == 2 {
+            parts[strings.TrimSpace(kv[0])] = strings.TrimSpace(kv[1])
+        }
+    }
+
+    ts, err := strconv.ParseInt(parts["t"], 10, 64)
+    if err != nil || math.Abs(float64(time.Now().Unix()-ts)) > 300 {
+        return false // missing timestamp or replay
+    }
+
+    signed := []byte(fmt.Sprintf("%d.", ts))
+    signed = append(signed, body...)
+
     mac := hmac.New(sha256.New, []byte(secret))
-    mac.Write(body)
-    expected := "sha256=" + hex.EncodeToString(mac.Sum(nil))
-    return hmac.Equal([]byte(expected), []byte(signature))
+    mac.Write(signed)
+    expected := hex.EncodeToString(mac.Sum(nil))
+
+    return hmac.Equal([]byte(expected), []byte(parts["v1"]))
 }
 
 func webhookHandler(w http.ResponseWriter, r *http.Request) {
     body, _ := io.ReadAll(r.Body)
-    sig := r.Header.Get("X-OpesCare-Signature")
-    if !verifyWebhook(body, sig, os.Getenv("OPESCARE_WEBHOOK_SECRET")) {
-        http.Error(w, "Invalid signature", http.StatusUnauthorized)
+    sig    := r.Header.Get("X-OpesCare-Signature")
+    secret := os.Getenv("OPESCARE_WEBHOOK_SECRET")
+
+    if !verifyWebhook(body, sig, secret) {
+        http.Error(w, "Invalid signature", http.StatusBadRequest)
         return
     }
     fmt.Fprintln(w, `{"received":true}`)
@@ -231,47 +322,81 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
     <div class="docs-code-pane" data-lang="java">
 <pre>import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.util.HexFormat;
+import java.util.*;
 
 public class WebhookVerifier {
-    public static boolean verify(byte[] body, String signature, String secret)
+    public static boolean verify(byte[] body, String sigHeader, String secret)
             throws Exception {
+
+        // Parse t= and v1= from header
+        Map&lt;String, String&gt; parts = new HashMap&lt;&gt;();
+        for (String seg : sigHeader.split(",")) {
+            String[] kv = seg.strip().split("=", 2);
+            if (kv.length == 2) parts.put(kv[0].strip(), kv[1].strip());
+        }
+
+        long ts = Long.parseLong(parts.getOrDefault("t", "0"));
+        if (Math.abs(System.currentTimeMillis() / 1000L - ts) > 300) {
+            return false; // replay protection
+        }
+
+        // Compute HMAC-SHA256(timestamp + "." + raw_body)
+        byte[] prefix  = (ts + ".").getBytes();
+        byte[] signed  = new byte[prefix.length + body.length];
+        System.arraycopy(prefix, 0, signed, 0, prefix.length);
+        System.arraycopy(body, 0, signed, prefix.length, body.length);
+
         Mac mac = Mac.getInstance("HmacSHA256");
         mac.init(new SecretKeySpec(secret.getBytes(), "HmacSHA256"));
-        String expected = "sha256=" + HexFormat.of().formatHex(mac.doFinal(body));
-        return MessageDigest.isEqual(expected.getBytes(), signature.getBytes());
-    }
-}
+        String expected = HexFormat.of().formatHex(mac.doFinal(signed));
 
-// In your servlet / controller:
-byte[] body = request.getInputStream().readAllBytes();
-String sig   = request.getHeader("X-OpesCare-Signature");
-if (!WebhookVerifier.verify(body, sig, System.getenv("OPESCARE_WEBHOOK_SECRET"))) {
-    response.sendError(401, "Invalid signature");
-    return;
+        return MessageDigest.isEqual(
+            expected.getBytes(), parts.getOrDefault("v1", "").getBytes()
+        );
+    }
 }</pre>
+    </div>
+</div>
+
+<div class="docs-callout warning">
+    <i data-lucide="alert-triangle" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <div>
+        If you are using an OpesCare SDK, call <code>client.webhooks.verify_signature()</code> — it handles
+        parsing, HMAC verification, and replay protection correctly in all three languages.
     </div>
 </div>
 
 <h2 id="retry">Retry Policy</h2>
 
 <p>
-    OpesCare retries failed deliveries with exponential back-off.
-    Your endpoint must return a <code>2xx</code> status within <strong>10 seconds</strong> to be considered successful.
+    Your endpoint must return a <code>2xx</code> status within <strong>10 seconds</strong>.
+    OpesCare retries failed deliveries on this schedule:
 </p>
 
 <table class="docs-table">
     <thead><tr><th>Attempt</th><th>Delay Before Retry</th></tr></thead>
     <tbody>
         <tr><td>1 (initial)</td><td>Immediate</td></tr>
-        <tr><td>2</td><td>1 second</td></tr>
-        <tr><td>3</td><td>5 seconds</td></tr>
-        <tr><td>4</td><td>30 seconds</td></tr>
-        <tr><td>5 (final)</td><td>2 minutes</td></tr>
+        <tr><td>2</td><td>1 minute</td></tr>
+        <tr><td>3</td><td>5 minutes</td></tr>
+        <tr><td>4</td><td>15 minutes</td></tr>
+        <tr><td>5</td><td>1 hour</td></tr>
+        <tr><td>6</td><td>6 hours</td></tr>
+        <tr><td>7 (final)</td><td>24 hours</td></tr>
     </tbody>
 </table>
 
-<p>After 5 failed attempts the delivery is marked <code>exhausted</code>. No further retries occur. View delivery logs in the developer portal under <strong>Apps → Webhook Deliveries</strong>.</p>
+<p>After the final attempt the delivery is marked <code>exhausted</code>. Use the replay endpoint or developer portal to manually resend. View delivery logs under <strong>Apps → Webhook Deliveries</strong>.</p>
+
+<h2 id="replay">Replay a Failed Event</h2>
+
+<div class="docs-code-block">
+    <div class="docs-code-tabs"><button class="docs-code-tab active" data-lang="curl">cURL</button></div>
+    <div class="docs-code-pane active" data-lang="curl">
+<pre>curl -X POST https://opescare.test/api/v1/connect/webhooks/events/evt_01HX9K2ABCD/replay \
+  -H "Authorization: Bearer {access_token}"</pre>
+    </div>
+</div>
 
 <h2 id="testing">Testing Your Endpoint</h2>
 
@@ -288,9 +413,9 @@ curl -X POST https://opescare.test/api/v1/connect/webhooks/subscriptions \
   -H "Authorization: Bearer {access_token}" \
   -H "Content-Type: application/json" \
   -d '{
-    "endpoint_url": "https://abc123.ngrok.io/opescare/webhook",
-    "events": ["appointment.created"],
-    "secret": "test-secret-123"
+    "callback_url": "https://abc123.ngrok.io/opescare/webhook",
+    "subscribed_events": ["lab_result.released", "prescription.issued"],
+    "description": "Local dev test"
   }'</pre>
     </div>
 </div>

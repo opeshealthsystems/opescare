@@ -18,6 +18,13 @@
     </div>
 </div>
 
+@if(session('success'))
+<div class="alert alert-info" style="margin-bottom:var(--p-space-4);"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
+@endif
+@if(session('warning'))
+<div class="alert" style="margin-bottom:var(--p-space-4);background:#FEF3C7;border-color:#FCD34D;color:#92400E;"><i data-lucide="alert-circle"></i><div>{{ session('warning') }}</div></div>
+@endif
+
 @if(!$patient)
 <div class="panel">
     <div class="empty-state">
@@ -38,39 +45,68 @@
 <div class="panel">
     <div class="panel-header">
         <h2 class="panel-title"><i data-lucide="file-text"></i> Official Documents</h2>
+        <span class="badge badge-primary">{{ method_exists($documents, 'total') ? $documents->total() : $documents->count() }}</span>
     </div>
-    <div class="panel-body" style="padding:0;">
-        <table style="width:100%;border-collapse:collapse;">
+    <div class="table-wrapper">
+        <table class="data-table" aria-label="Documents list">
             <thead>
-                <tr style="background:var(--p-surface-2);font-size:0.8125rem;color:var(--p-text-muted);">
-                    <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;">Document</th>
-                    <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;">Type</th>
-                    <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;">Number</th>
-                    <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;">Status</th>
-                    <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;">Issued</th>
-                    <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;">Expires</th>
+                <tr>
+                    <th>Document</th>
+                    <th>Type</th>
+                    <th>Number</th>
+                    <th>Status</th>
+                    <th>Issued</th>
+                    <th>Expires</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($documents as $doc)
-                <tr style="border-top:1px solid var(--p-border);font-size:0.875rem;">
-                    <td style="padding:var(--p-space-3) var(--p-space-4);font-weight:600;">{{ $doc->title ?? 'Untitled Document' }}</td>
-                    <td style="padding:var(--p-space-3) var(--p-space-4);color:var(--p-text-muted);">{{ str_replace('_', ' ', ucfirst($doc->document_type)) }}</td>
-                    <td style="padding:var(--p-space-3) var(--p-space-4);color:var(--p-text-muted);font-family:monospace;font-size:0.8125rem;">{{ $doc->document_number ?? '—' }}</td>
-                    <td style="padding:var(--p-space-3) var(--p-space-4);">
-                        <span style="padding:2px 8px;border-radius:9999px;font-size:0.75rem;font-weight:700;
-                            background:{{ $doc->status === 'released' ? '#D1FAE5' : 'var(--p-surface-2)' }};
-                            color:{{ $doc->status === 'released' ? '#059669' : 'var(--p-text-muted)' }};">
+                <tr>
+                    <td data-label="Document">
+                        <span class="td-strong">{{ $doc->title ?? 'Untitled Document' }}</span>
+                    </td>
+                    <td data-label="Type">
+                        <span class="td-muted">{{ str_replace('_', ' ', ucfirst($doc->document_type)) }}</span>
+                    </td>
+                    <td data-label="Number">
+                        <span style="font-family:monospace;font-size:0.8125rem;color:var(--p-text-muted);">{{ $doc->document_number ?? '—' }}</span>
+                    </td>
+                    <td data-label="Status">
+                        @php
+                            $statusBg   = match($doc->status) { 'released' => '#D1FAE5', 'revoked' => '#FEE2E2', default => 'var(--p-surface-2)' };
+                            $statusText = match($doc->status) { 'released' => '#059669', 'revoked' => '#DC2626', default => 'var(--p-text-muted)' };
+                        @endphp
+                        <span style="padding:2px 8px;border-radius:9999px;font-size:0.75rem;font-weight:700;background:{{ $statusBg }};color:{{ $statusText }};">
                             {{ ucfirst($doc->status) }}
                         </span>
                     </td>
-                    <td style="padding:var(--p-space-3) var(--p-space-4);color:var(--p-text-muted);">{{ $doc->issued_at?->format('d M Y') ?? '—' }}</td>
-                    <td style="padding:var(--p-space-3) var(--p-space-4);color:var(--p-text-muted);">{{ $doc->expires_at?->format('d M Y') ?? 'No expiry' }}</td>
+                    <td data-label="Issued">
+                        <span class="td-muted">{{ $doc->issued_at?->format('d M Y') ?? '—' }}</span>
+                    </td>
+                    <td data-label="Expires">
+                        <span class="td-muted">{{ $doc->expires_at?->format('d M Y') ?? 'No expiry' }}</span>
+                    </td>
+                    <td>
+                        @if($doc->status === 'released' && $doc->pdf_path)
+                        <a href="{{ route('portals.patient.documents.download', $doc->id) }}"
+                           style="display:inline-flex;align-items:center;gap:4px;font-size:0.75rem;color:var(--p-primary);font-weight:600;text-decoration:none;">
+                            <i data-lucide="download" style="width:0.75rem;height:0.75rem;"></i>Download
+                        </a>
+                        @elseif($doc->status === 'released')
+                        <span style="font-size:0.75rem;color:var(--p-text-muted);">Processing…</span>
+                        @endif
+                    </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
+    @if(method_exists($documents, 'links') && $documents->hasPages())
+    <div style="padding:var(--p-space-4);border-top:1px solid var(--p-border);">
+        {{ $documents->links() }}
+    </div>
+    @endif
 </div>
 @endif
 

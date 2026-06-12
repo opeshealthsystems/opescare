@@ -42,7 +42,7 @@ class _SettingsBody extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        _SectionTitle(icon: LucideIcons.bellRing, title: 'Notifications'),
+        const _SectionTitle(icon: LucideIcons.bellRing, title: 'Notifications'),
         _Card(children: [
           _SwitchRow(
             icon: LucideIcons.bell,
@@ -78,12 +78,12 @@ class _SettingsBody extends ConsumerWidget {
         ]),
         const SizedBox(height: 20),
 
-        _SectionTitle(icon: LucideIcons.heartPulse, title: 'Your Health'),
+        const _SectionTitle(icon: LucideIcons.heartPulse, title: 'Your Health'),
         _Card(children: [
           _NavRow(
             icon: LucideIcons.userCircle,
             label: 'My Profile',
-            onTap: () => context.push(Routes.profile),
+            onTap: () => context.go(Routes.profile),
           ),
           const Divider(height: 1),
           _NavRow(
@@ -101,7 +101,7 @@ class _SettingsBody extends ConsumerWidget {
           _NavRow(
             icon: LucideIcons.shield,
             label: 'Insurance',
-            onTap: () => context.push(Routes.insurance),
+            onTap: () => context.go(Routes.insurance),
           ),
           const Divider(height: 1),
           _NavRow(
@@ -112,7 +112,7 @@ class _SettingsBody extends ConsumerWidget {
         ]),
         const SizedBox(height: 20),
 
-        _SectionTitle(icon: LucideIcons.lock, title: 'Privacy & Data'),
+        const _SectionTitle(icon: LucideIcons.lock, title: 'Privacy & Data'),
         _Card(children: [
           _NavRow(
             icon: LucideIcons.eye,
@@ -178,7 +178,7 @@ class _SettingsBody extends ConsumerWidget {
         ]),
         const SizedBox(height: 20),
 
-        _SectionTitle(icon: LucideIcons.user, title: 'Account'),
+        const _SectionTitle(icon: LucideIcons.user, title: 'Account'),
         _Card(children: [
           _NavRow(
             icon: LucideIcons.logOut,
@@ -279,8 +279,12 @@ class _SwitchRow extends StatelessWidget {
         Icon(icon, size: 18, color: AppColors.neutral500),
         const SizedBox(width: 12),
         Expanded(child: Text(label, style: AppTextStyles.body)),
-        Switch(value: value, onChanged: onChanged,
-            activeColor: AppColors.primary500),
+        Switch(
+          value: value,
+          onChanged: onChanged,
+          activeThumbColor: AppColors.primary500,
+          activeTrackColor: AppColors.primary200,
+        ),
       ]),
     );
   }
