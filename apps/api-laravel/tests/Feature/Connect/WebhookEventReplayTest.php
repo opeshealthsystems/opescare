@@ -13,11 +13,11 @@ class WebhookEventReplayTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * UUID-shaped client_id: webhook_replays.replayed_by is a Postgres uuid
-     * column and the controller stores the caller's client_id there, so a
-     * non-UUID client_id would 500 on replay (see WebhookController L98).
+     * Realistic IntegrationClientFactory-format client_id (NOT a uuid):
+     * webhook_replays.replayed_by is a string column as of migration
+     * 2026_06_12_000001, so real client ids must work end-to-end.
      */
-    private string $clientId = '11111111-1111-4111-8111-111111111111';
+    private string $clientId = 'client_replay_test_abc123';
 
     /**
      * Create a sandbox integration client and exchange its credentials for a
@@ -97,6 +97,9 @@ class WebhookEventReplayTest extends TestCase
         $this->assertDatabaseHas('webhook_replays', [
             'webhook_event_id'    => $event->id,
             'webhook_endpoint_id' => WebhookSubscription::first()->id,
+            // The acting client's id must be recorded even though it is not a
+            // uuid — this is the regression the column-type fix guards against.
+            'replayed_by'         => $this->clientId,
         ]);
     }
 

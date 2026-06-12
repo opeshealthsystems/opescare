@@ -117,9 +117,9 @@ class WebhookService
                 continue;
             }
 
-            // webhook_replays.replayed_by is a uuid column — non-uuid client ids
-            // (e.g. 'client_xxxx') must not reach Postgres.
-            if ($replayedBy !== null && \Illuminate\Support\Str::isUuid($replayedBy)) {
+            // replayed_by records the acting integration client_id (string column
+            // as of 2026_06_12_000001 — previously uuid, which 500'd real clients).
+            if ($replayedBy !== null) {
                 \App\Models\WebhookReplay::create([
                     'webhook_event_id'    => $eventId,
                     'webhook_endpoint_id' => $subscription->id,
