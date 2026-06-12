@@ -79,4 +79,27 @@
         <i data-lucide="cable"></i><span>Bridge Agents</span>
     </a>
 </div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">God Mode — Data</div>
+    <a href="{{ route('admin.users.index') }}" class="sidebar-link {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
+        <i data-lucide="users"></i><span>All Users</span>
+        @php $pendingUsers = \App\Models\User::where('status','pending')->count(); @endphp
+        @if($pendingUsers > 0)<span class="sidebar-badge sidebar-badge--warning">{{ $pendingUsers }}</span>@endif
+    </a>
+    <a href="{{ route('admin.facilities.index') }}" class="sidebar-link {{ request()->routeIs('admin.facilities*') ? 'active' : '' }}">
+        <i data-lucide="building-2"></i><span>All Facilities</span>
+    </a>
+    <a href="{{ route('admin.patients.index') }}" class="sidebar-link {{ request()->routeIs('admin.patients*') ? 'active' : '' }}">
+        <i data-lucide="heart-pulse"></i><span>All Patients</span>
+    </a>
+    <a href="{{ route('admin.staff.index') }}" class="sidebar-link {{ request()->routeIs('admin.staff*') ? 'active' : '' }}">
+        <i data-lucide="user-check"></i><span>All Staff</span>
+    </a>
+    <a href="{{ route('admin.organizations.index') }}" class="sidebar-link {{ request()->routeIs('admin.organizations*') ? 'active' : '' }}">
+        <i data-lucide="network"></i><span>Organizations</span>
+    </a>
+    <a href="{{ route('admin.roles.index') }}" class="sidebar-link {{ request()->routeIs('admin.roles*') ? 'active' : '' }}">
+        <i data-lucide="shield"></i><span>Roles & RBAC</span>
+    </a>
+</div>
 @endsection

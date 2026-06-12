@@ -5,6 +5,16 @@ use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\DocsController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\MedicalId\AdminUserManagementController;
+use App\Http\Controllers\MedicalId\AdminFacilityManagementController;
+use App\Http\Controllers\MedicalId\AdminPatientManagementController;
+use App\Http\Controllers\MedicalId\AdminStaffManagementController;
+use App\Http\Controllers\MedicalId\AdminCdssRulesController;
+use App\Http\Controllers\MedicalId\AdminSupportController;
+use App\Http\Controllers\MedicalId\AdminFinancialController;
+use App\Http\Controllers\MedicalId\AdminAppointmentsController;
+use App\Http\Controllers\MedicalId\AdminRolesController;
+use App\Http\Controllers\MedicalId\AdminOrganizationsController;
 
 // ── Developer Documentation (public, no auth required) ──────────────────────
 Route::prefix('docs')->name('docs.')->group(function () {
@@ -468,6 +478,107 @@ Route::middleware(['web', 'auth', 'portal.access', 'facility.context', 'throttle
     Route::post('/portals/patient/family/{id}/revoke',              [\App\Http\Controllers\MedicalId\FamilyController::class, 'revoke'])->name('portals.patient.family.revoke');
     Route::post('/portals/patient/family/{id}/guardian-consent/approve', [\App\Http\Controllers\MedicalId\FamilyController::class, 'guardianConsentApprove'])->name('portals.patient.family.guardian_consent.approve');
     Route::post('/portals/patient/family/{id}/guardian-consent/deny',    [\App\Http\Controllers\MedicalId\FamilyController::class, 'guardianConsentDeny'])->name('portals.patient.family.guardian_consent.deny');
+
+    // ── User Management (god mode) ──────────────────────────────────────────
+    Route::prefix('portals/admin/users')->name('portals.admin.users.')->group(function () {
+        Route::get('/',                  [AdminUserManagementController::class,    'index'])->name('index');
+        Route::post('/',                 [AdminUserManagementController::class,    'store'])->name('store');
+        Route::get('{id}',               [AdminUserManagementController::class,    'show'])->name('show');
+        Route::post('{id}/update',       [AdminUserManagementController::class,    'update'])->name('update');
+        Route::post('{id}/suspend',      [AdminUserManagementController::class,    'suspend'])->name('suspend');
+        Route::post('{id}/activate',     [AdminUserManagementController::class,    'activate'])->name('activate');
+        Route::post('{id}/reset-password',[AdminUserManagementController::class,   'resetPassword'])->name('reset-password');
+        Route::post('{id}/delete',       [AdminUserManagementController::class,    'destroy'])->name('destroy');
+    });
+
+    // ── Facility Management ─────────────────────────────────────────────────
+    Route::prefix('portals/admin/facilities')->name('portals.admin.facilities.')->group(function () {
+        Route::get('/',              [AdminFacilityManagementController::class, 'index'])->name('index');
+        Route::post('/',             [AdminFacilityManagementController::class, 'store'])->name('store');
+        Route::get('{id}',           [AdminFacilityManagementController::class, 'show'])->name('show');
+        Route::post('{id}/update',   [AdminFacilityManagementController::class, 'update'])->name('update');
+        Route::post('{id}/suspend',  [AdminFacilityManagementController::class, 'suspend'])->name('suspend');
+        Route::post('{id}/activate', [AdminFacilityManagementController::class, 'activate'])->name('activate');
+        Route::post('{id}/approve',  [AdminFacilityManagementController::class, 'approve'])->name('approve');
+        Route::post('{id}/delete',   [AdminFacilityManagementController::class, 'destroy'])->name('destroy');
+    });
+
+    // ── Patient Management ──────────────────────────────────────────────────
+    Route::prefix('portals/admin/patients')->name('portals.admin.patients.')->group(function () {
+        Route::get('/',              [AdminPatientManagementController::class, 'index'])->name('index');
+        Route::get('{id}',           [AdminPatientManagementController::class, 'show'])->name('show');
+        Route::post('{id}/update',   [AdminPatientManagementController::class, 'update'])->name('update');
+        Route::post('{id}/suspend',  [AdminPatientManagementController::class, 'suspend'])->name('suspend');
+        Route::post('{id}/activate', [AdminPatientManagementController::class, 'activate'])->name('activate');
+        Route::post('{id}/delete',   [AdminPatientManagementController::class, 'destroy'])->name('destroy');
+    });
+
+    // ── Staff Overview ──────────────────────────────────────────────────────
+    Route::prefix('portals/admin/staff')->name('portals.admin.staff.')->group(function () {
+        Route::get('/',              [AdminStaffManagementController::class, 'index'])->name('index');
+        Route::get('{id}',           [AdminStaffManagementController::class, 'show'])->name('show');
+        Route::post('{id}/suspend',  [AdminStaffManagementController::class, 'suspend'])->name('suspend');
+        Route::post('{id}/activate', [AdminStaffManagementController::class, 'activate'])->name('activate');
+    });
+
+    // ── CDSS Rules ──────────────────────────────────────────────────────────
+    Route::prefix('portals/admin/cdss')->name('portals.admin.cdss.')->group(function () {
+        Route::get('/',                              [AdminCdssRulesController::class, 'index'])->name('index');
+        Route::get('drug-interactions',              [AdminCdssRulesController::class, 'drugInteractions'])->name('drug-interactions');
+        Route::post('drug-interactions',             [AdminCdssRulesController::class, 'storeDrugInteraction'])->name('store-drug');
+        Route::post('drug-interactions/{id}/delete', [AdminCdssRulesController::class, 'destroyDrugInteraction'])->name('destroy-drug');
+        Route::get('allergy-alerts',                 [AdminCdssRulesController::class, 'allergyAlerts'])->name('allergy-alerts');
+        Route::post('allergy-alerts',                [AdminCdssRulesController::class, 'storeAllergyAlert'])->name('store-allergy');
+        Route::post('allergy-alerts/{id}/delete',    [AdminCdssRulesController::class, 'destroyAllergyAlert'])->name('destroy-allergy');
+        Route::get('lab-alerts',                     [AdminCdssRulesController::class, 'labAlerts'])->name('lab-alerts');
+        Route::post('lab-alerts',                    [AdminCdssRulesController::class, 'storeLabAlert'])->name('store-lab');
+        Route::post('lab-alerts/{id}/delete',        [AdminCdssRulesController::class, 'destroyLabAlert'])->name('destroy-lab');
+    });
+
+    // ── Support Admin ───────────────────────────────────────────────────────
+    Route::prefix('portals/admin/support')->name('portals.admin.support.')->group(function () {
+        Route::get('/',              [AdminSupportController::class, 'index'])->name('index');
+        Route::get('{id}',           [AdminSupportController::class, 'show'])->name('show');
+        Route::post('{id}/assign',   [AdminSupportController::class, 'assign'])->name('assign');
+        Route::post('{id}/close',    [AdminSupportController::class, 'close'])->name('close');
+        Route::post('{id}/reopen',   [AdminSupportController::class, 'reopen'])->name('reopen');
+        Route::post('{id}/delete',   [AdminSupportController::class, 'destroy'])->name('destroy');
+    });
+
+    // ── Financial Overview ──────────────────────────────────────────────────
+    Route::prefix('portals/admin/financial')->name('portals.admin.financial.')->group(function () {
+        Route::get('/',                       [AdminFinancialController::class, 'index'])->name('index');
+        Route::get('invoices',                [AdminFinancialController::class, 'invoices'])->name('invoices');
+        Route::post('invoices/{id}/mark-paid',[AdminFinancialController::class, 'markPaid'])->name('mark-paid');
+        Route::post('invoices/{id}/void',     [AdminFinancialController::class, 'voidInvoice'])->name('void-invoice');
+        Route::get('payments',                [AdminFinancialController::class, 'payments'])->name('payments');
+    });
+
+    // ── Appointments Overview ───────────────────────────────────────────────
+    Route::prefix('portals/admin/appointments')->name('portals.admin.appointments.')->group(function () {
+        Route::get('/',              [AdminAppointmentsController::class, 'index'])->name('index');
+        Route::get('{id}',           [AdminAppointmentsController::class, 'show'])->name('show');
+        Route::post('{id}/cancel',   [AdminAppointmentsController::class, 'cancel'])->name('cancel');
+        Route::post('{id}/delete',   [AdminAppointmentsController::class, 'destroy'])->name('destroy');
+    });
+
+    // ── Roles & Permissions ─────────────────────────────────────────────────
+    Route::prefix('portals/admin/roles')->name('portals.admin.roles.')->group(function () {
+        Route::get('/',              [AdminRolesController::class, 'index'])->name('index');
+        Route::post('/',             [AdminRolesController::class, 'store'])->name('store');
+        Route::post('{id}/update',   [AdminRolesController::class, 'update'])->name('update');
+        Route::post('{id}/delete',   [AdminRolesController::class, 'destroy'])->name('destroy');
+        Route::get('{id}/users',     [AdminRolesController::class, 'users'])->name('users');
+    });
+
+    // ── Organizations / Facility Applications ──────────────────────────────
+    Route::prefix('portals/admin/organizations')->name('portals.admin.organizations.')->group(function () {
+        Route::get('/',              [AdminOrganizationsController::class, 'index'])->name('index');
+        Route::get('pending',        [AdminOrganizationsController::class, 'pending'])->name('pending');
+        Route::post('{id}/approve',  [AdminOrganizationsController::class, 'approve'])->name('approve');
+        Route::post('{id}/reject',   [AdminOrganizationsController::class, 'reject'])->name('reject');
+        Route::post('{id}/delete',   [AdminOrganizationsController::class, 'destroy'])->name('destroy');
+    });
 });
 
 /*
@@ -659,6 +770,50 @@ Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
     Route::get('/portals/admin/onboarding/{facility}',                       [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'show'])->name('portals.admin.onboarding.show');
     Route::post('/portals/admin/onboarding/{facility}/mark',                 [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'markItem'])->name('portals.admin.onboarding.mark');
     Route::post('/portals/admin/onboarding/{facility}/approve',              [\App\Http\Controllers\MedicalId\OnboardingPortalController::class, 'approve'])->name('portals.admin.onboarding.approve');
+});
+
+// ── God-Mode Admin — Users, Facilities, Patients, Staff, Organizations, Roles ─
+Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
+    // Users
+    Route::get('/admin/users',                                  [\App\Http\Controllers\MedicalId\AdminUserManagementController::class, 'index'])->name('admin.users.index');
+    Route::get('/admin/users/{id}',                             [\App\Http\Controllers\MedicalId\AdminUserManagementController::class, 'show'])->name('admin.users.show');
+    Route::post('/admin/users',                                 [\App\Http\Controllers\MedicalId\AdminUserManagementController::class, 'store'])->name('admin.users.store');
+    Route::put('/admin/users/{id}',                             [\App\Http\Controllers\MedicalId\AdminUserManagementController::class, 'update'])->name('admin.users.update');
+    Route::post('/admin/users/{id}/suspend',                    [\App\Http\Controllers\MedicalId\AdminUserManagementController::class, 'suspend'])->name('admin.users.suspend');
+    Route::post('/admin/users/{id}/activate',                   [\App\Http\Controllers\MedicalId\AdminUserManagementController::class, 'activate'])->name('admin.users.activate');
+    Route::post('/admin/users/{id}/reset-password',             [\App\Http\Controllers\MedicalId\AdminUserManagementController::class, 'resetPassword'])->name('admin.users.reset_password');
+    Route::delete('/admin/users/{id}',                          [\App\Http\Controllers\MedicalId\AdminUserManagementController::class, 'destroy'])->name('admin.users.destroy');
+    // Facilities
+    Route::get('/admin/facilities',                             [\App\Http\Controllers\MedicalId\AdminFacilityManagementController::class, 'index'])->name('admin.facilities.index');
+    Route::get('/admin/facilities/{id}',                        [\App\Http\Controllers\MedicalId\AdminFacilityManagementController::class, 'show'])->name('admin.facilities.show');
+    Route::post('/admin/facilities',                            [\App\Http\Controllers\MedicalId\AdminFacilityManagementController::class, 'store'])->name('admin.facilities.store');
+    Route::put('/admin/facilities/{id}',                        [\App\Http\Controllers\MedicalId\AdminFacilityManagementController::class, 'update'])->name('admin.facilities.update');
+    Route::post('/admin/facilities/{id}/suspend',               [\App\Http\Controllers\MedicalId\AdminFacilityManagementController::class, 'suspend'])->name('admin.facilities.suspend');
+    Route::post('/admin/facilities/{id}/activate',              [\App\Http\Controllers\MedicalId\AdminFacilityManagementController::class, 'approve'])->name('admin.facilities.approve');
+    Route::delete('/admin/facilities/{id}',                     [\App\Http\Controllers\MedicalId\AdminFacilityManagementController::class, 'destroy'])->name('admin.facilities.destroy');
+    // Patients
+    Route::get('/admin/patients',                               [\App\Http\Controllers\MedicalId\AdminPatientManagementController::class, 'index'])->name('admin.patients.index');
+    Route::get('/admin/patients/{id}',                          [\App\Http\Controllers\MedicalId\AdminPatientManagementController::class, 'show'])->name('admin.patients.show');
+    Route::put('/admin/patients/{id}',                          [\App\Http\Controllers\MedicalId\AdminPatientManagementController::class, 'update'])->name('admin.patients.update');
+    Route::post('/admin/patients/{id}/activate',                [\App\Http\Controllers\MedicalId\AdminPatientManagementController::class, 'activate'])->name('admin.patients.activate');
+    Route::post('/admin/patients/{id}/suspend',                 [\App\Http\Controllers\MedicalId\AdminPatientManagementController::class, 'suspend'])->name('admin.patients.suspend');
+    Route::delete('/admin/patients/{id}',                       [\App\Http\Controllers\MedicalId\AdminPatientManagementController::class, 'destroy'])->name('admin.patients.destroy');
+    // Staff
+    Route::get('/admin/staff',                                  [\App\Http\Controllers\MedicalId\AdminStaffManagementController::class, 'index'])->name('admin.staff.index');
+    Route::get('/admin/staff/{id}',                             [\App\Http\Controllers\MedicalId\AdminStaffManagementController::class, 'show'])->name('admin.staff.show');
+    Route::post('/admin/staff/{id}/suspend',                    [\App\Http\Controllers\MedicalId\AdminStaffManagementController::class, 'suspend'])->name('admin.staff.suspend');
+    Route::post('/admin/staff/{id}/activate',                   [\App\Http\Controllers\MedicalId\AdminStaffManagementController::class, 'activate'])->name('admin.staff.activate');
+    // Organizations
+    Route::get('/admin/organizations',                          [\App\Http\Controllers\MedicalId\AdminOrganizationsController::class, 'index'])->name('admin.organizations.index');
+    Route::post('/admin/organizations/{id}/approve',            [\App\Http\Controllers\MedicalId\AdminOrganizationsController::class, 'approve'])->name('admin.organizations.approve');
+    Route::post('/admin/organizations/{id}/reject',             [\App\Http\Controllers\MedicalId\AdminOrganizationsController::class, 'reject'])->name('admin.organizations.reject');
+    Route::delete('/admin/organizations/{id}',                  [\App\Http\Controllers\MedicalId\AdminOrganizationsController::class, 'destroy'])->name('admin.organizations.destroy');
+    // Roles
+    Route::get('/admin/roles',                                  [\App\Http\Controllers\MedicalId\AdminRolesController::class, 'index'])->name('admin.roles.index');
+    Route::post('/admin/roles',                                 [\App\Http\Controllers\MedicalId\AdminRolesController::class, 'store'])->name('admin.roles.store');
+    Route::put('/admin/roles/{id}',                             [\App\Http\Controllers\MedicalId\AdminRolesController::class, 'update'])->name('admin.roles.update');
+    Route::delete('/admin/roles/{id}',                          [\App\Http\Controllers\MedicalId\AdminRolesController::class, 'destroy'])->name('admin.roles.destroy');
+    Route::get('/admin/roles/{id}/users',                       [\App\Http\Controllers\MedicalId\AdminRolesController::class, 'users'])->name('admin.roles.users');
 });
 
 // ── Document Template Preview Gallery (no auth — dev/sales preview) ─────────

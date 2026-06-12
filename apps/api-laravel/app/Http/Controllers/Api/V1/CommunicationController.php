@@ -405,7 +405,12 @@ class CommunicationController extends Controller
             return response()->json(['error' => 'MESSAGE_ACCESS_DENIED'], 403);
         }
 
-        return response()->json($thread->load('messages'));
+        $thread->load('messages');
+        $thread->messages->transform(function ($msg) {
+            $msg->body = $this->messagingService->decryptBody($msg->body);
+            return $msg;
+        });
+        return response()->json($thread);
     }
 
     /**
@@ -450,10 +455,10 @@ class CommunicationController extends Controller
         $validated = $request->validate(['body' => ['required', 'string']]);
 
         $message = Message::findOrFail($id);
-        $message->body      = $validated['body'];
+        $message->body      = $this->messagingService->encryptBody($validated['body']);
         $message->edited_at = now();
         $message->save();
-
+        $message->body = $validated['body']; // return plaintext in response
         return response()->json($message);
     }
 

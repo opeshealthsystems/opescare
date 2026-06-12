@@ -5,15 +5,32 @@ namespace App\Modules\Messaging\Services;
 use App\Modules\Messaging\Models\MessageThread;
 use App\Modules\Messaging\Models\MessageThreadParticipant;
 use App\Modules\Messaging\Models\Message;
+use App\Services\Security\KmsEncryptionService;
 use Illuminate\Support\Str;
 
 class MessagingService
 {
     private MessagePermissionService $permissionService;
+    private KmsEncryptionService $kms;
 
-    public function __construct(MessagePermissionService $permissionService)
+    public function __construct(MessagePermissionService $permissionService, KmsEncryptionService $kms)
     {
         $this->permissionService = $permissionService;
+        $this->kms = $kms;
+    }
+
+    public function decryptBody(string $encryptedBody): string
+    {
+        try {
+            return $this->kms->decrypt($encryptedBody);
+        } catch (\Throwable) {
+            return $encryptedBody; // graceful fallback for legacy plaintext messages
+        }
+    }
+
+    public function encryptBody(string $plaintext): string
+    {
+        return $this->kms->encrypt($plaintext);
     }
 
     public function createThread(string $creatorId, string $creatorRole, array $details): MessageThread
@@ -66,12 +83,12 @@ class MessagingService
         }
 
         return Message::create([
-            'uuid' => Str::uuid(),
-            'thread_id' => $thread->id,
-            'sender_id' => $senderId,
+            'uuid'         => Str::uuid(),
+            'thread_id'    => $thread->id,
+            'sender_id'    => $senderId,
             'message_type' => $type,
-            'body' => $body,
-            'status' => 'sent'
+            'body'         => $this->kms->encrypt($body),
+            'status'       => 'sent',
         ]);
     }
 
