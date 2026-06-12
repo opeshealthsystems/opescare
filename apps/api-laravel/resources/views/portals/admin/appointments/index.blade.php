@@ -1,232 +1,145 @@
-@extends('layouts.admin')
+@extends('layouts.portal')
 @section('title', 'Appointments')
+@include('portals.admin.control_center._sidebar')
+@section('breadcrumb_home', 'Admin')
+@section('breadcrumb_home_url', route('portals.admin'))
+@section('breadcrumb_section', 'Appointments')
 @section('content')
-<div class="admin-page">
 
-  @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
-  @if(session('error'))<div class="alert alert-danger">{{ session('error') }}</div>@endif
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Appointments</h1>
+        <p class="page-subtitle">All appointments across every facility.</p>
+    </div>
+</div>
 
-  <div class="page-header d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 mb-0">Appointments</h1>
-  </div>
+@if(session('success'))<div class="auth-alert auth-alert-success" style="margin-bottom:1rem;"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
+@if(session('error'))<div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;"><i data-lucide="alert-circle"></i><div>{{ session('error') }}</div></div>@endif
 
-  {{-- Stats Row --}}
-  <div class="row g-3 mb-4">
-    <div class="col-6 col-md-3">
-      <div class="card text-center">
-        <div class="card-body py-3">
-          <div class="fs-4 fw-bold">{{ $stats['total'] ?? 0 }}</div>
-          <div class="text-muted small">Today Total</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="card text-center border-success">
-        <div class="card-body py-3">
-          <div class="fs-4 fw-bold text-success">{{ $stats['confirmed'] ?? 0 }}</div>
-          <div class="text-muted small">Confirmed</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="card text-center border-danger">
-        <div class="card-body py-3">
-          <div class="fs-4 fw-bold text-danger">{{ $stats['cancelled'] ?? 0 }}</div>
-          <div class="text-muted small">Cancelled</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="card text-center border-warning">
-        <div class="card-body py-3">
-          <div class="fs-4 fw-bold text-warning">{{ $stats['no_show'] ?? 0 }}</div>
-          <div class="text-muted small">No-show</div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="kpi-grid" style="margin-bottom:1.5rem;">
+    <div class="kpi-card"><div class="kpi-icon blue"><i data-lucide="calendar"></i></div><div class="kpi-body"><div class="kpi-label">Today Total</div><div class="kpi-value">{{ $stats['total'] ?? 0 }}</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon teal"><i data-lucide="check-circle"></i></div><div class="kpi-body"><div class="kpi-label">Confirmed</div><div class="kpi-value" style="color:var(--p-teal);">{{ $stats['confirmed'] ?? 0 }}</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:rgba(239,68,68,.1);"><i data-lucide="ban" style="color:var(--p-danger);"></i></div><div class="kpi-body"><div class="kpi-label">Cancelled</div><div class="kpi-value" style="color:var(--p-danger);">{{ $stats['cancelled'] ?? 0 }}</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:rgba(245,158,11,.1);"><i data-lucide="user-x" style="color:var(--p-warning);"></i></div><div class="kpi-body"><div class="kpi-label">No-show</div><div class="kpi-value" style="color:var(--p-warning);">{{ $stats['no_show'] ?? 0 }}</div></div></div>
+</div>
 
-  {{-- Filters --}}
-  <div class="card mb-4">
-    <div class="card-body">
-      <form method="GET" action="{{ route('portals.admin.appointments.index') }}" class="row g-2 align-items-end">
-        <div class="col-12 col-md-3">
-          <label class="form-label form-label-sm mb-1">Patient Health ID</label>
-          <input type="text" name="search" class="form-control form-control-sm" placeholder="Health ID..." value="{{ request('search') }}">
+<form method="GET" action="{{ route('portals.admin.appointments.index') }}" class="panel" style="padding:1rem;margin-bottom:1rem;">
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end;">
+        <div style="flex:1;min-width:180px;"><label style="font-size:.8rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">Search (Health ID)</label>
+            <input type="text" name="search" class="form-control form-control-sm" placeholder="Health ID…" value="{{ request('search') }}">
         </div>
-        <div class="col-6 col-md-2">
-          <label class="form-label form-label-sm mb-1">Status</label>
-          <select name="status" class="form-select form-select-sm">
-            <option value="">All Statuses</option>
-            <option value="scheduled" @selected(request('status') === 'scheduled')>Scheduled</option>
-            <option value="confirmed" @selected(request('status') === 'confirmed')>Confirmed</option>
-            <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelled</option>
-            <option value="no_show" @selected(request('status') === 'no_show')>No-show</option>
-            <option value="completed" @selected(request('status') === 'completed')>Completed</option>
-          </select>
+        <div><label style="font-size:.8rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">Status</label>
+            <select name="status" class="form-control form-control-sm">
+                <option value="">All</option>
+                @foreach(['scheduled','confirmed','cancelled','no_show','completed'] as $s)
+                <option value="{{ $s }}" @selected(request('status')===$s)>{{ ucfirst(str_replace('_',' ',$s)) }}</option>
+                @endforeach
+            </select>
         </div>
-        <div class="col-6 col-md-2">
-          <label class="form-label form-label-sm mb-1">Facility</label>
-          <select name="facility_id" class="form-select form-select-sm">
-            <option value="">All Facilities</option>
-            @foreach($facilities ?? [] as $facility)
-              <option value="{{ $facility->id }}" @selected(request('facility_id') == $facility->id)>{{ $facility->name }}</option>
-            @endforeach
-          </select>
+        <div><label style="font-size:.8rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">Facility</label>
+            <select name="facility_id" class="form-control form-control-sm">
+                <option value="">All Facilities</option>
+                @foreach($facilities??[] as $facility)
+                <option value="{{ $facility->id }}" @selected(request('facility_id')==$facility->id)>{{ $facility->name }}</option>
+                @endforeach
+            </select>
         </div>
-        <div class="col-6 col-md-2">
-          <label class="form-label form-label-sm mb-1">Date From</label>
-          <input type="date" name="date_from" class="form-control form-control-sm" value="{{ request('date_from') }}">
+        <div><label style="font-size:.8rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">From</label>
+            <input type="date" name="date_from" class="form-control form-control-sm" value="{{ request('date_from') }}">
         </div>
-        <div class="col-6 col-md-2">
-          <label class="form-label form-label-sm mb-1">Date To</label>
-          <input type="date" name="date_to" class="form-control form-control-sm" value="{{ request('date_to') }}">
+        <div><label style="font-size:.8rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">To</label>
+            <input type="date" name="date_to" class="form-control form-control-sm" value="{{ request('date_to') }}">
         </div>
-        <div class="col-12 col-md-1 d-flex gap-1">
-          <button type="submit" class="btn btn-primary btn-sm w-100">
-            <i data-lucide="search" style="width:14px;height:14px;"></i>
-          </button>
-          <a href="{{ route('portals.admin.appointments.index') }}" class="btn btn-outline-secondary btn-sm w-100">
-            <i data-lucide="x" style="width:14px;height:14px;"></i>
-          </a>
-        </div>
-      </form>
+        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+        <a href="{{ route('portals.admin.appointments.index') }}" class="btn btn-ghost btn-sm">Reset</a>
     </div>
-  </div>
+</form>
 
-  {{-- Table --}}
-  <div class="card">
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-striped table-hover mb-0 align-middle">
-          <thead class="table-light">
-            <tr>
-              <th>Patient</th>
-              <th>Facility</th>
-              <th>Type</th>
-              <th>Scheduled At</th>
-              <th>Status</th>
-              <th>Provider</th>
-              <th class="text-end">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @forelse($appointments ?? [] as $appointment)
-            <tr>
-              <td>
-                <div class="fw-semibold">{{ $appointment->patient->full_name ?? '—' }}</div>
-                <div class="text-muted small">{{ $appointment->patient->health_id ?? '' }}</div>
-              </td>
-              <td>{{ $appointment->facility->name ?? '—' }}</td>
-              <td>{{ ucfirst(str_replace('_', ' ', $appointment->type ?? '—')) }}</td>
-              <td>
-                <div>{{ $appointment->scheduled_at ? $appointment->scheduled_at->format('M d, Y') : '—' }}</div>
-                <div class="text-muted small">{{ $appointment->scheduled_at ? $appointment->scheduled_at->format('H:i') : '' }}</div>
-              </td>
-              <td>
+<div class="panel">
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Facility</th>
+                    <th>Type</th>
+                    <th>Scheduled At</th>
+                    <th>Status</th>
+                    <th>Provider</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($appointments??[] as $appointment)
                 @php
-                  $statusMap = [
-                    'scheduled'  => 'secondary',
-                    'confirmed'  => 'success',
-                    'cancelled'  => 'danger',
-                    'no_show'    => 'warning',
-                    'completed'  => 'info',
-                  ];
-                  $badgeColor = $statusMap[$appointment->status ?? ''] ?? 'secondary';
+                $sBadge=match($appointment->status??''){'scheduled'=>'badge-neutral','confirmed'=>'badge-success','cancelled'=>'badge-danger','no_show'=>'badge-warning','completed'=>'badge-primary',default=>'badge-neutral'};
                 @endphp
-                <span class="badge bg-{{ $badgeColor }}">{{ ucfirst(str_replace('_', ' ', $appointment->status ?? '—')) }}</span>
-              </td>
-              <td>{{ $appointment->provider->full_name ?? '—' }}</td>
-              <td class="text-end">
-                <div class="d-flex justify-content-end gap-1">
-                  <a href="{{ route('portals.admin.appointments.show', $appointment) }}" class="btn btn-sm btn-outline-primary" title="View">
-                    <i data-lucide="eye" style="width:14px;height:14px;"></i>
-                  </a>
-                  @if(!in_array($appointment->status, ['cancelled', 'completed']))
-                  <button type="button" class="btn btn-sm btn-outline-danger" title="Cancel"
-                    data-bs-toggle="modal"
-                    data-bs-target="#cancelModal"
-                    data-id="{{ $appointment->id }}"
-                    data-url="{{ route('portals.admin.appointments.cancel', $appointment) }}">
-                    <i data-lucide="ban" style="width:14px;height:14px;"></i>
-                  </button>
-                  @endif
-                  <form method="POST" action="{{ route('portals.admin.appointments.destroy', $appointment) }}" onsubmit="return confirm('Delete this appointment?')" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-sm btn-outline-secondary" title="Delete">
-                      <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
-                    </button>
-                  </form>
-                </div>
-              </td>
-            </tr>
-            @empty
-            <tr>
-              <td colspan="7" class="text-center text-muted py-4">
-                <i data-lucide="calendar-off" style="width:32px;height:32px;opacity:.4;"></i>
-                <div class="mt-2">No appointments found.</div>
-              </td>
-            </tr>
-            @endforelse
-          </tbody>
+                <tr>
+                    <td>
+                        <div style="font-weight:600;">{{ $appointment->patient?->full_name ?? '—' }}</div>
+                        <div style="font-size:.78rem;font-family:monospace;color:var(--p-text-muted);">{{ $appointment->patient?->health_id ?? '' }}</div>
+                    </td>
+                    <td style="font-size:.85rem;">{{ $appointment->facility?->name ?? '—' }}</td>
+                    <td style="font-size:.85rem;">{{ ucfirst(str_replace('_',' ',$appointment->type??'—')) }}</td>
+                    <td>
+                        <div style="font-size:.85rem;">{{ $appointment->scheduled_at?->format('d M Y') ?? '—' }}</div>
+                        <div style="font-size:.75rem;color:var(--p-text-muted);">{{ $appointment->scheduled_at?->format('H:i') ?? '' }}</div>
+                    </td>
+                    <td><span class="badge {{ $sBadge }}">{{ ucfirst(str_replace('_',' ',$appointment->status??'—')) }}</span></td>
+                    <td style="font-size:.85rem;">{{ $appointment->provider?->full_name ?? '—' }}</td>
+                    <td style="text-align:right;">
+                        <div style="display:flex;gap:.35rem;justify-content:flex-end;">
+                            @if(!in_array($appointment->status??'',['cancelled','completed']))
+                            <button onclick="openCancelModal('{{ $appointment->id }}','{{ route('portals.admin.appointments.cancel',$appointment) }}')" class="btn btn-warning btn-xs"><i data-lucide="ban"></i></button>
+                            @endif
+                            <form method="POST" action="{{ route('portals.admin.appointments.destroy',$appointment) }}" onsubmit="return confirm('Delete this appointment?')">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-xs"><i data-lucide="trash-2"></i></button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--p-text-muted);">No appointments found.</td></tr>
+                @endforelse
+            </tbody>
         </table>
-      </div>
     </div>
     @if(isset($appointments) && $appointments->hasPages())
-    <div class="card-footer d-flex justify-content-end">
-      {{ $appointments->withQueryString()->links() }}
-    </div>
+    <div style="padding:.75rem 1.25rem;">{{ $appointments->withQueryString()->links() }}</div>
     @endif
-  </div>
-
 </div>
 
 {{-- Cancel Modal --}}
-<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form method="POST" id="cancelForm">
-        @csrf
-        @method('PATCH')
-        <div class="modal-header">
-          <h5 class="modal-title" id="cancelModalLabel">
-            <i data-lucide="ban" style="width:18px;height:18px;" class="me-1"></i> Cancel Appointment
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div id="cancel-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;background:rgba(15,23,42,.7);backdrop-filter:blur(4px);padding:1rem;" role="dialog">
+    <div style="background:var(--p-surface);border:1px solid var(--p-border);border-radius:var(--p-radius-xl);width:100%;max-width:480px;overflow:hidden;box-shadow:var(--p-shadow-lg);">
+        <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--p-border);display:flex;justify-content:space-between;align-items:center;">
+            <h3 style="margin:0;font-size:1rem;font-weight:700;">Cancel Appointment</h3>
+            <button onclick="document.getElementById('cancel-modal').style.display='none'" class="topbar-icon-btn"><i data-lucide="x"></i></button>
         </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="cancelReason" class="form-label">Cancellation Reason <span class="text-danger">*</span></label>
-            <textarea name="reason" id="cancelReason" class="form-control" rows="3" placeholder="Enter reason for cancellation..." required></textarea>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-danger">
-            <i data-lucide="ban" style="width:14px;height:14px;" class="me-1"></i> Confirm Cancel
-          </button>
-        </div>
-      </form>
+        <form method="POST" id="cancel-form" action="">
+            @csrf @method('PATCH')
+            <div style="padding:1.5rem;">
+                <div class="form-group">
+                    <label class="form-label">Cancellation Reason <span style="color:var(--p-danger);">*</span></label>
+                    <textarea name="reason" class="form-control" rows="3" placeholder="Enter reason for cancellation…" required></textarea>
+                </div>
+            </div>
+            <div style="padding:1rem 1.5rem;border-top:1px solid var(--p-border);display:flex;gap:.75rem;justify-content:flex-end;">
+                <button type="button" onclick="document.getElementById('cancel-modal').style.display='none'" class="btn btn-ghost">Close</button>
+                <button type="submit" class="btn btn-danger"><i data-lucide="ban"></i> Confirm Cancel</button>
+            </div>
+        </form>
     </div>
-  </div>
 </div>
-
-@push('scripts')
+@endsection
+@section('scripts')
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const cancelModal = document.getElementById('cancelModal');
-    if (cancelModal) {
-      cancelModal.addEventListener('show.bs.modal', function (event) {
-        const btn = event.relatedTarget;
-        const url = btn.getAttribute('data-url');
-        document.getElementById('cancelForm').setAttribute('action', url);
-        document.getElementById('cancelReason').value = '';
-      });
-    }
-
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-  });
+function openCancelModal(id, url) {
+    document.getElementById('cancel-form').action = url;
+    document.getElementById('cancel-form').querySelector('textarea').value = '';
+    document.getElementById('cancel-modal').style.display = 'flex';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('[id$="-modal"]').forEach(m=>m.style.display='none');}});
 </script>
-@endpush
 @endsection

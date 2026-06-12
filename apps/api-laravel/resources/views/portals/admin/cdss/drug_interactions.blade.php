@@ -1,143 +1,124 @@
-@extends('layouts.admin')
+@extends('layouts.portal')
 @section('title', 'Drug Interaction Rules')
+@include('portals.admin.control_center._sidebar')
+@section('breadcrumb_home', 'Admin')
+@section('breadcrumb_home_url', route('portals.admin'))
+@section('breadcrumb_section', 'CDSS')
 @section('content')
-<div class="admin-page">
-  @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
-  @if(session('error'))<div class="alert alert-danger">{{ session('error') }}</div>@endif
 
-  <div class="page-header d-flex justify-content-between align-items-center mb-4">
-    <div class="d-flex align-items-center gap-3">
-      <a href="{{ route('portals.admin.cdss.index') }}" class="btn btn-sm btn-outline-secondary">
-        <i data-lucide="arrow-left" style="width:14px;height:14px;"></i>
-      </a>
-      <h1 class="h3 mb-0">Drug Interaction Rules</h1>
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center;">
+    <div>
+        <a href="{{ route('portals.admin.cdss.index') }}" style="font-size:.82rem;color:var(--p-text-muted);display:inline-flex;align-items:center;gap:.3rem;margin-bottom:.4rem;">
+            <i data-lucide="arrow-left" style="width:13px;height:13px;"></i> CDSS Rules
+        </a>
+        <h1 class="page-title">Drug Interaction Rules</h1>
     </div>
-    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#addRuleModal">
-      <i data-lucide="plus" class="me-1" style="width:16px;height:16px;"></i> Add Rule
+    <button onclick="document.getElementById('add-drug-modal').style.display='flex'" class="btn btn-danger">
+        <i data-lucide="plus"></i> Add Rule
     </button>
-  </div>
+</div>
 
-  <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
-    <i data-lucide="alert-triangle" class="me-2 flex-shrink-0" style="width:18px;height:18px;"></i>
-    <div class="small">These rules affect clinical decision support. Review carefully before adding.</div>
-  </div>
+@if(session('success'))<div class="auth-alert auth-alert-success" style="margin-bottom:1rem;"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
+@if(session('error'))<div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;"><i data-lucide="alert-circle"></i><div>{{ session('error') }}</div></div>@endif
 
-  <div class="card border-0 shadow-sm">
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-striped table-hover align-middle mb-0">
-          <thead class="table-light">
-            <tr>
-              <th>Drug A</th>
-              <th>Drug B</th>
-              <th>Severity</th>
-              <th>Description</th>
-              <th>Action Required</th>
-              <th>Created</th>
-              <th class="text-end">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @forelse($rules as $rule)
-            <tr>
-              <td class="fw-medium">{{ $rule->drug_a }}</td>
-              <td class="fw-medium">{{ $rule->drug_b }}</td>
-              <td>
-                @php
-                  $badge = match($rule->severity) {
-                    'mild'            => 'info',
-                    'moderate'        => 'warning',
-                    'severe'          => 'danger',
-                    'contraindicated' => 'dark',
-                    default           => 'secondary',
-                  };
-                @endphp
-                <span class="badge bg-{{ $badge }}">{{ ucfirst($rule->severity) }}</span>
-              </td>
-              <td class="text-muted small" style="max-width:260px;">{{ $rule->description }}</td>
-              <td class="text-muted small" style="max-width:200px;">{{ $rule->action_required }}</td>
-              <td class="text-muted small text-nowrap">{{ $rule->created_at->format('d M Y') }}</td>
-              <td class="text-end">
-                <form action="{{ route('portals.admin.cdss.destroy-drug', $rule->id) }}" method="POST"
-                      onsubmit="return confirm('Delete this drug interaction rule?')">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit" class="btn btn-sm btn-outline-danger">
-                    <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
-                  </button>
-                </form>
-              </td>
-            </tr>
-            @empty
-            <tr>
-              <td colspan="7" class="text-center text-muted py-5">
-                <i data-lucide="inbox" style="width:32px;height:32px;" class="mb-2 d-block mx-auto"></i>
-                No drug interaction rules found.
-              </td>
-            </tr>
-            @endforelse
-          </tbody>
+<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:var(--p-radius);padding:.875rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:flex-start;gap:.75rem;">
+    <i data-lucide="alert-triangle" style="width:16px;height:16px;color:var(--p-warning);flex-shrink:0;margin-top:.15rem;"></i>
+    <div style="font-size:.85rem;">These rules affect clinical decision support. Review carefully before adding.</div>
+</div>
+
+<div class="panel">
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Drug A</th>
+                    <th>Drug B</th>
+                    <th>Severity</th>
+                    <th>Description</th>
+                    <th>Action Required</th>
+                    <th>Created</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($rules as $rule)
+                @php $sBadge=match($rule->severity??''){'mild'=>'badge-primary','moderate'=>'badge-warning','severe'=>'badge-danger','contraindicated'=>'badge-danger',default=>'badge-neutral'}; @endphp
+                <tr>
+                    <td style="font-weight:600;">{{ $rule->drug_a }}</td>
+                    <td style="font-weight:600;">{{ $rule->drug_b }}</td>
+                    <td><span class="badge {{ $sBadge }}">{{ ucfirst($rule->severity) }}</span></td>
+                    <td style="font-size:.82rem;color:var(--p-text-muted);max-width:220px;">{{ Str::limit($rule->description, 80) }}</td>
+                    <td style="font-size:.82rem;color:var(--p-text-muted);max-width:180px;">{{ Str::limit($rule->action_required, 60) }}</td>
+                    <td style="font-size:.82rem;color:var(--p-text-muted);">{{ $rule->created_at->format('d M Y') }}</td>
+                    <td style="text-align:right;">
+                        <form action="{{ route('portals.admin.cdss.destroy-drug', $rule->id) }}" method="POST" onsubmit="return confirm('Delete this drug interaction rule?')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-xs"><i data-lucide="trash-2"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--p-text-muted);">No drug interaction rules found.</td></tr>
+                @endforelse
+            </tbody>
         </table>
-      </div>
     </div>
     @if(isset($rules) && $rules->hasPages())
-    <div class="card-footer bg-transparent d-flex justify-content-end">
-      {{ $rules->links() }}
-    </div>
+    <div style="padding:.75rem 1.25rem;">{{ $rules->links() }}</div>
     @endif
-  </div>
 </div>
 
-<!-- Add Rule Modal -->
-<div class="modal fade" id="addRuleModal" tabindex="-1" aria-labelledby="addRuleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <form action="{{ route('portals.admin.cdss.store-drug') }}" method="POST">
-        @csrf
-        <div class="modal-header">
-          <h5 class="modal-title" id="addRuleModalLabel">
-            <i data-lucide="zap" class="me-2" style="width:18px;height:18px;"></i> Add Drug Interaction Rule
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+{{-- Add Drug Interaction Modal --}}
+<div id="add-drug-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;background:rgba(15,23,42,.7);backdrop-filter:blur(4px);padding:1rem;" role="dialog">
+    <div style="background:var(--p-surface);border:1px solid var(--p-border);border-radius:var(--p-radius-xl);width:100%;max-width:620px;overflow:hidden;box-shadow:var(--p-shadow-lg);">
+        <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--p-border);display:flex;justify-content:space-between;align-items:center;">
+            <h3 style="margin:0;font-size:1rem;font-weight:700;display:flex;align-items:center;gap:.5rem;">
+                <i data-lucide="zap" style="width:16px;height:16px;color:var(--p-danger);"></i> Add Drug Interaction Rule
+            </h3>
+            <button onclick="document.getElementById('add-drug-modal').style.display='none'" class="topbar-icon-btn"><i data-lucide="x"></i></button>
         </div>
-        <div class="modal-body">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label fw-medium">Drug A <span class="text-danger">*</span></label>
-              <input type="text" name="drug_a" class="form-control" placeholder="e.g. Warfarin" required>
+        <form action="{{ route('portals.admin.cdss.store-drug') }}" method="POST">
+            @csrf
+            <div style="padding:1.5rem;display:flex;flex-direction:column;gap:1rem;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Drug A <span style="color:var(--p-danger);">*</span></label>
+                        <input type="text" name="drug_a" class="form-control" placeholder="e.g. Warfarin" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Drug B <span style="color:var(--p-danger);">*</span></label>
+                        <input type="text" name="drug_b" class="form-control" placeholder="e.g. Aspirin" required>
+                    </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 2fr;gap:1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Severity <span style="color:var(--p-danger);">*</span></label>
+                        <select name="severity" class="form-control" required>
+                            <option value="">Select…</option>
+                            <option value="mild">Mild</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="severe">Severe</option>
+                            <option value="contraindicated">Contraindicated</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Action Required</label>
+                        <input type="text" name="action_required" class="form-control" placeholder="e.g. Monitor INR closely">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-control" rows="3" placeholder="Describe the interaction and its clinical significance…"></textarea>
+                </div>
             </div>
-            <div class="col-md-6">
-              <label class="form-label fw-medium">Drug B <span class="text-danger">*</span></label>
-              <input type="text" name="drug_b" class="form-control" placeholder="e.g. Aspirin" required>
+            <div style="padding:1rem 1.5rem;border-top:1px solid var(--p-border);display:flex;gap:.75rem;justify-content:flex-end;">
+                <button type="button" onclick="document.getElementById('add-drug-modal').style.display='none'" class="btn btn-ghost">Cancel</button>
+                <button type="submit" class="btn btn-danger"><i data-lucide="plus"></i> Add Rule</button>
             </div>
-            <div class="col-md-4">
-              <label class="form-label fw-medium">Severity <span class="text-danger">*</span></label>
-              <select name="severity" class="form-select" required>
-                <option value="">Select severity...</option>
-                <option value="mild">Mild</option>
-                <option value="moderate">Moderate</option>
-                <option value="severe">Severe</option>
-                <option value="contraindicated">Contraindicated</option>
-              </select>
-            </div>
-            <div class="col-md-8">
-              <label class="form-label fw-medium">Action Required</label>
-              <input type="text" name="action_required" class="form-control" placeholder="e.g. Monitor INR closely">
-            </div>
-            <div class="col-12">
-              <label class="form-label fw-medium">Description</label>
-              <textarea name="description" class="form-control" rows="3" placeholder="Describe the interaction and its clinical significance..."></textarea>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-danger">
-            <i data-lucide="plus" class="me-1" style="width:14px;height:14px;"></i> Add Rule
-          </button>
-        </div>
-      </form>
+        </form>
     </div>
-  </div>
 </div>
+@endsection
+@section('scripts')
+<script>document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('[id$="-modal"]').forEach(m=>m.style.display='none');}});</script>
 @endsection

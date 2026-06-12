@@ -1,284 +1,111 @@
-@extends('layouts.admin')
+@extends('layouts.portal')
 @section('title', 'Support Tickets')
+@include('portals.admin.control_center._sidebar')
+@section('breadcrumb_home', 'Admin')
+@section('breadcrumb_home_url', route('portals.admin'))
+@section('breadcrumb_section', 'Support')
 @section('content')
-<div class="admin-page">
 
-  @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
-  @if(session('error'))<div class="alert alert-danger">{{ session('error') }}</div>@endif
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Support Tickets</h1>
+        <p class="page-subtitle">Manage and resolve platform support requests.</p>
+    </div>
+</div>
 
-  <div class="page-header d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 mb-0">Support Tickets</h1>
-  </div>
+@if(session('success'))<div class="auth-alert auth-alert-success" style="margin-bottom:1rem;"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
+@if(session('error'))<div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;"><i data-lucide="alert-circle"></i><div>{{ session('error') }}</div></div>@endif
 
-  <!-- Stats Row -->
-  <div class="row g-3 mb-4">
-    <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm">
-        <div class="card-body d-flex align-items-center gap-3">
-          <div class="rounded-circle bg-primary bg-opacity-10 p-3">
-            <i data-lucide="ticket" class="text-primary" style="width:20px;height:20px;"></i>
-          </div>
-          <div>
-            <div class="fw-bold fs-4">{{ $stats['total'] ?? 0 }}</div>
-            <div class="text-muted small">Total</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm">
-        <div class="card-body d-flex align-items-center gap-3">
-          <div class="rounded-circle bg-danger bg-opacity-10 p-3">
-            <i data-lucide="alert-circle" class="text-danger" style="width:20px;height:20px;"></i>
-          </div>
-          <div>
-            <div class="fw-bold fs-4">{{ $stats['open'] ?? 0 }}</div>
-            <div class="text-muted small">Open</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm">
-        <div class="card-body d-flex align-items-center gap-3">
-          <div class="rounded-circle bg-warning bg-opacity-10 p-3">
-            <i data-lucide="clock" class="text-warning" style="width:20px;height:20px;"></i>
-          </div>
-          <div>
-            <div class="fw-bold fs-4">{{ $stats['pending'] ?? 0 }}</div>
-            <div class="text-muted small">Pending</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm">
-        <div class="card-body d-flex align-items-center gap-3">
-          <div class="rounded-circle bg-success bg-opacity-10 p-3">
-            <i data-lucide="check-circle" class="text-success" style="width:20px;height:20px;"></i>
-          </div>
-          <div>
-            <div class="fw-bold fs-4">{{ $stats['resolved'] ?? 0 }}</div>
-            <div class="text-muted small">Resolved</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="kpi-grid" style="margin-bottom:1.5rem;">
+    <div class="kpi-card"><div class="kpi-icon blue"><i data-lucide="ticket"></i></div><div class="kpi-body"><div class="kpi-label">Total</div><div class="kpi-value">{{ $stats['total'] ?? 0 }}</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:rgba(239,68,68,.1);"><i data-lucide="alert-circle" style="color:var(--p-danger);"></i></div><div class="kpi-body"><div class="kpi-label">Open</div><div class="kpi-value" style="color:var(--p-danger);">{{ $stats['open'] ?? 0 }}</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:rgba(245,158,11,.1);"><i data-lucide="clock" style="color:var(--p-warning);"></i></div><div class="kpi-body"><div class="kpi-label">Pending</div><div class="kpi-value" style="color:var(--p-warning);">{{ $stats['pending'] ?? 0 }}</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:rgba(16,185,129,.1);"><i data-lucide="check-circle" style="color:#10b981;"></i></div><div class="kpi-body"><div class="kpi-label">Resolved</div><div class="kpi-value" style="color:#10b981;">{{ $stats['resolved'] ?? 0 }}</div></div></div>
+</div>
 
-  <!-- Filters -->
-  <div class="card border-0 shadow-sm mb-4">
-    <div class="card-body">
-      <form method="GET" action="{{ route('portals.admin.support.index') }}" class="row g-2 align-items-end">
-        <div class="col-12 col-md-3">
-          <label class="form-label small fw-semibold mb-1">Status</label>
-          <select name="status" class="form-select form-select-sm">
-            <option value="">All Statuses</option>
-            <option value="open" {{ request('status') === 'open' ? 'selected' : '' }}>Open</option>
-            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
-            <option value="resolved" {{ request('status') === 'resolved' ? 'selected' : '' }}>Resolved</option>
-            <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>Closed</option>
-          </select>
+<form method="GET" action="{{ route('portals.admin.support.index') }}" class="panel" style="padding:1rem;margin-bottom:1rem;">
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end;">
+        <div><label style="font-size:.8rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">Status</label>
+            <select name="status" class="form-control form-control-sm">
+                <option value="">All</option>
+                @foreach(['open','pending','resolved','closed'] as $s)
+                <option value="{{ $s }}" @selected(request('status')===$s)>{{ ucfirst($s) }}</option>
+                @endforeach
+            </select>
         </div>
-        <div class="col-12 col-md-2">
-          <label class="form-label small fw-semibold mb-1">Priority</label>
-          <select name="priority" class="form-select form-select-sm">
-            <option value="">All Priorities</option>
-            <option value="low" {{ request('priority') === 'low' ? 'selected' : '' }}>Low</option>
-            <option value="medium" {{ request('priority') === 'medium' ? 'selected' : '' }}>Medium</option>
-            <option value="high" {{ request('priority') === 'high' ? 'selected' : '' }}>High</option>
-            <option value="urgent" {{ request('priority') === 'urgent' ? 'selected' : '' }}>Urgent</option>
-          </select>
+        <div><label style="font-size:.8rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">Priority</label>
+            <select name="priority" class="form-control form-control-sm">
+                <option value="">All</option>
+                @foreach(['low','medium','high','urgent'] as $p)
+                <option value="{{ $p }}" @selected(request('priority')===$p)>{{ ucfirst($p) }}</option>
+                @endforeach
+            </select>
         </div>
-        <div class="col-12 col-md-3">
-          <label class="form-label small fw-semibold mb-1">Category</label>
-          <select name="category" class="form-select form-select-sm">
-            <option value="">All Categories</option>
-            @foreach($categories ?? [] as $cat)
-              <option value="{{ $cat }}"
-                {{ request('category') === $cat ? 'selected' : '' }}>{{ ucfirst($cat) }}</option>
-            @endforeach
-          </select>
+        <div><label style="font-size:.8rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">Category</label>
+            <select name="category" class="form-control form-control-sm">
+                <option value="">All</option>
+                @foreach($categories ?? [] as $cat)
+                <option value="{{ $cat }}" @selected(request('category')===$cat)>{{ ucfirst($cat) }}</option>
+                @endforeach
+            </select>
         </div>
-        <div class="col-12 col-md-3">
-          <label class="form-label small fw-semibold mb-1">Search</label>
-          <input type="text" name="search" class="form-control form-control-sm"
-            placeholder="Ticket # or subject..." value="{{ request('search') }}">
+        <div style="flex:1;min-width:180px;"><label style="font-size:.8rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">Search</label>
+            <input type="text" name="search" class="form-control form-control-sm" placeholder="Ticket # or subject…" value="{{ request('search') }}">
         </div>
-        <div class="col-12 col-md-1 d-flex gap-1">
-          <button type="submit" class="btn btn-primary btn-sm w-100">
-            <i data-lucide="search" style="width:14px;height:14px;"></i>
-          </button>
-          <a href="{{ route('portals.admin.support.index') }}" class="btn btn-outline-secondary btn-sm w-100">
-            <i data-lucide="x" style="width:14px;height:14px;"></i>
-          </a>
-        </div>
-      </form>
+        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+        <a href="{{ route('portals.admin.support.index') }}" class="btn btn-ghost btn-sm">Reset</a>
     </div>
-  </div>
+</form>
 
-  <!-- Table -->
-  <div class="card border-0 shadow-sm">
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-striped table-hover align-middle mb-0">
-          <thead class="table-light">
-            <tr>
-              <th class="ps-3">Ticket #</th>
-              <th>Subject</th>
-              <th>Category</th>
-              <th>Priority</th>
-              <th>Status</th>
-              <th>Assignee</th>
-              <th>Created</th>
-              <th class="text-end pe-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @forelse($tickets ?? [] as $ticket)
-            <tr>
-              <td class="ps-3">
-                <span class="fw-semibold text-muted">#{{ $ticket->ticket_number ?? $ticket->id }}</span>
-              </td>
-              <td>
-                <a href="{{ route('portals.admin.support.show', $ticket) }}"
-                   class="text-decoration-none fw-semibold">{{ Str::limit($ticket->subject, 50) }}</a>
-              </td>
-              <td>
-                <span class="badge bg-light text-dark border">{{ ucfirst($ticket->category ?? 'General') }}</span>
-              </td>
-              <td>
+<div class="panel">
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Ticket #</th>
+                    <th>Subject</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Assignee</th>
+                    <th>Created</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($tickets ?? [] as $ticket)
                 @php
-                  $priorityClass = match($ticket->priority ?? 'medium') {
-                    'urgent' => 'danger',
-                    'high'   => 'warning',
-                    'medium' => 'info',
-                    'low'    => 'secondary',
-                    default  => 'secondary',
-                  };
+                $statusBadge=match($ticket->status??'open'){'open'=>'badge-danger','pending'=>'badge-warning','resolved'=>'badge-success','closed'=>'badge-neutral',default=>'badge-neutral'};
+                $prioBadge=match($ticket->priority??'medium'){'urgent'=>'badge-danger','high'=>'badge-warning','medium'=>'badge-primary','low'=>'badge-neutral',default=>'badge-neutral'};
                 @endphp
-                <span class="badge bg-{{ $priorityClass }}">{{ ucfirst($ticket->priority ?? 'Medium') }}</span>
-              </td>
-              <td>
-                @php
-                  $statusClass = match($ticket->status ?? 'open') {
-                    'open'     => 'danger',
-                    'pending'  => 'warning',
-                    'resolved' => 'success',
-                    'closed'   => 'secondary',
-                    default    => 'secondary',
-                  };
-                @endphp
-                <span class="badge bg-{{ $statusClass }}">{{ ucfirst($ticket->status ?? 'Open') }}</span>
-              </td>
-              <td>
-                @if($ticket->assignee)
-                  <span class="d-flex align-items-center gap-1">
-                    <i data-lucide="user" style="width:14px;height:14px;"></i>
-                    {{ $ticket->assignee->name }}
-                  </span>
-                @else
-                  <span class="text-muted small">Unassigned</span>
-                @endif
-              </td>
-              <td>
-                <span class="text-muted small">{{ $ticket->created_at?->format('M d, Y') }}</span>
-              </td>
-              <td class="text-end pe-3">
-                <div class="d-flex justify-content-end gap-1">
-                  <a href="{{ route('portals.admin.support.show', $ticket) }}"
-                     class="btn btn-sm btn-outline-primary" title="View">
-                    <i data-lucide="eye" style="width:14px;height:14px;"></i>
-                  </a>
-                  <button type="button" class="btn btn-sm btn-outline-secondary"
-                    title="Assign"
-                    data-bs-toggle="modal" data-bs-target="#assignModal"
-                    data-ticket-id="{{ $ticket->id }}"
-                    data-ticket-num="#{{ $ticket->ticket_number ?? $ticket->id }}">
-                    <i data-lucide="user-check" style="width:14px;height:14px;"></i>
-                  </button>
-                  @if(!in_array($ticket->status, ['closed', 'resolved']))
-                  <form method="POST"
-                    action="{{ route('portals.admin.support.close', $ticket) }}"
-                    onsubmit="return confirm('Close this ticket?')">
-                    @csrf
-                    @method('PATCH')
-                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Close">
-                      <i data-lucide="x-circle" style="width:14px;height:14px;"></i>
-                    </button>
-                  </form>
-                  @endif
-                </div>
-              </td>
-            </tr>
-            @empty
-            <tr>
-              <td colspan="8" class="text-center py-5 text-muted">
-                <i data-lucide="inbox" style="width:32px;height:32px;" class="mb-2 d-block mx-auto"></i>
-                No tickets found.
-              </td>
-            </tr>
-            @endforelse
-          </tbody>
+                <tr>
+                    <td><span style="font-weight:600;color:var(--p-text-muted);">#{{ $ticket->ticket_number ?? $ticket->id }}</span></td>
+                    <td><a href="{{ route('portals.admin.support.show', $ticket) }}" style="font-weight:600;text-decoration:none;color:var(--p-text);">{{ Str::limit($ticket->subject, 55) }}</a></td>
+                    <td><span class="badge badge-neutral">{{ ucfirst($ticket->category ?? 'General') }}</span></td>
+                    <td><span class="badge {{ $prioBadge }}">{{ ucfirst($ticket->priority ?? 'Medium') }}</span></td>
+                    <td><span class="badge {{ $statusBadge }}">{{ ucfirst($ticket->status ?? 'Open') }}</span></td>
+                    <td style="font-size:.82rem;">{{ $ticket->assignee?->name ?? '—' }}</td>
+                    <td style="font-size:.82rem;color:var(--p-text-muted);">{{ $ticket->created_at?->format('d M Y') }}</td>
+                    <td style="text-align:right;">
+                        <div style="display:flex;gap:.35rem;justify-content:flex-end;">
+                            <a href="{{ route('portals.admin.support.show', $ticket) }}" class="btn btn-primary btn-xs"><i data-lucide="eye"></i></a>
+                            @if(!in_array($ticket->status??'',['closed','resolved']))
+                            <form method="POST" action="{{ route('portals.admin.support.close', $ticket) }}" onsubmit="return confirm('Close this ticket?')">
+                                @csrf @method('PATCH')
+                                <button type="submit" class="btn btn-danger btn-xs"><i data-lucide="x-circle"></i></button>
+                            </form>
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--p-text-muted);">No tickets found.</td></tr>
+                @endforelse
+            </tbody>
         </table>
-      </div>
     </div>
     @if(isset($tickets) && $tickets->hasPages())
-    <div class="card-footer bg-transparent d-flex justify-content-end">
-      {{ $tickets->withQueryString()->links() }}
-    </div>
+    <div style="padding:.75rem 1.25rem;">{{ $tickets->withQueryString()->links() }}</div>
     @endif
-  </div>
-
 </div>
-
-<!-- Assign Modal -->
-<div class="modal fade" id="assignModal" tabindex="-1" aria-labelledby="assignModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="assignModalLabel">
-          <i data-lucide="user-check" style="width:16px;height:16px;"></i>
-          Assign Ticket
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <form method="POST" id="assignForm" action="">
-        @csrf
-        @method('PATCH')
-        <div class="modal-body">
-          <p class="text-muted small mb-3">Assigning ticket <strong id="assignTicketNum"></strong></p>
-          <label class="form-label fw-semibold">Assignee</label>
-          <select name="assignee_id" class="form-select" required>
-            <option value="">-- Select Staff Member --</option>
-            @foreach($staffUsers ?? [] as $staff)
-              <option value="{{ $staff->id }}">{{ $staff->name }}</option>
-            @endforeach
-          </select>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary btn-sm">
-            <i data-lucide="check" style="width:14px;height:14px;"></i> Assign
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-@push('scripts')
-<script>
-  const assignModal = document.getElementById('assignModal');
-  assignModal.addEventListener('show.bs.modal', function (event) {
-    const btn = event.relatedTarget;
-    const ticketId = btn.getAttribute('data-ticket-id');
-    const ticketNum = btn.getAttribute('data-ticket-num');
-    document.getElementById('assignTicketNum').textContent = ticketNum;
-    const baseUrl = '{{ url("portals/admin/support") }}';
-    document.getElementById('assignForm').action = baseUrl + '/' + ticketId + '/assign';
-  });
-  lucide.createIcons();
-</script>
-@endpush
 @endsection
