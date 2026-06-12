@@ -611,7 +611,9 @@ class PatientPortalController extends Controller
 
         $documents = $patient
             ? OfficialDocument::where('patient_id', $patient->id)
-                ->select(['id', 'title', 'document_type', 'document_number', 'status', 'issued_at', 'expires_at', 'sensitivity_level', 'pdf_path'])
+                // pdf_path is a server filesystem path — never expose it to the
+                // list view; downloads resolve it in their own scoped query.
+                ->select(['id', 'title', 'document_type', 'document_number', 'status', 'issued_at', 'expires_at', 'sensitivity_level'])
                 ->orderByDesc('issued_at')
                 ->paginate(20)
             : collect([]);

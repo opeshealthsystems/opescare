@@ -215,7 +215,11 @@
                 <div>
                     <label style="font-size:0.8125rem;font-weight:700;color:var(--p-text-muted);display:block;margin-bottom:4px;">Status</label>
                     <div style="padding:var(--p-space-2) var(--p-space-3);background:var(--p-surface-2);border:1px solid var(--p-border);border-radius:var(--p-radius-sm);font-size:0.875rem;color:var(--p-text);">
-                        {{ ucfirst(str_replace('_', ' ', $patient->verification_status ?? $patient->identity_status ?? 'Active')) }}
+                        @php
+                            $portalStatus = $patient->verification_status ?? $patient->identity_status ?? 'Active';
+                            $portalStatus = $portalStatus instanceof \BackedEnum ? $portalStatus->value : $portalStatus;
+                        @endphp
+                        {{ ucfirst(str_replace('_', ' ', $portalStatus)) }}
                     </div>
                 </div>
                 <p style="font-size:0.75rem;color:var(--p-text-muted);">Identity fields are managed by OpesCare. To update, contact your registered facility.</p>
