@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,7 +11,8 @@ return new class extends Migration {
         }
         Schema::create('controlled_substance_records', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('prescription_id')->constrained('prescriptions')->cascadeOnDelete();
+            // FK to prescriptions is added in 2026_05_28_000002 - prescriptions table is created in 2026_05_28_000001.
+            $table->uuid('prescription_id')->index();
             $table->foreignUuid('patient_id')->constrained('patients')->cascadeOnDelete();
             $table->foreignUuid('facility_id')->constrained('facilities')->cascadeOnDelete();
             $table->foreignUuid('prescribed_by')->constrained('users')->cascadeOnDelete();
