@@ -76,7 +76,18 @@ class MobileMoneyCallbackController extends Controller
             return;
         }
 
-        $payment->status = $success ? 'completed' : 'failed';
+        $payment->status         = $success ? 'successful' : 'failed';
+        $payment->gateway        = $provider;
+        $payment->gateway_status = $success ? 'SUCCESSFUL' : 'FAILED';
+        if ($success) {
+            $payment->confirmed_at = now();
+        } else {
+            $payment->failed_at = now();
+        }
+        $payment->gateway_metadata = array_merge(
+            (array) ($payment->gateway_metadata ?? []),
+            ['callback_payload' => request()->all(), 'callback_at' => now()->toIso8601String()]
+        );
         $payment->save();
 
         if ($success) {

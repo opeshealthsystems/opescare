@@ -548,10 +548,12 @@ Route::middleware(['web', 'auth', 'portal.access', 'facility.context', 'throttle
     // ── Financial Overview ──────────────────────────────────────────────────
     Route::prefix('portals/admin/financial')->name('portals.admin.financial.')->group(function () {
         Route::get('/',                       [AdminFinancialController::class, 'index'])->name('index');
+        Route::get('payments',                [AdminFinancialController::class, 'payments'])->name('payments');
+        Route::get('payments/{id}',           [AdminFinancialController::class, 'paymentDetail'])->name('payment.detail');
         Route::get('invoices',                [AdminFinancialController::class, 'invoices'])->name('invoices');
         Route::post('invoices/{id}/mark-paid',[AdminFinancialController::class, 'markPaid'])->name('mark-paid');
         Route::post('invoices/{id}/void',     [AdminFinancialController::class, 'voidInvoice'])->name('void-invoice');
-        Route::get('payments',                [AdminFinancialController::class, 'payments'])->name('payments');
+        Route::get('reports/by-service',      [AdminFinancialController::class, 'reportByService'])->name('report.by_service');
     });
 
     // ── Appointments Overview ───────────────────────────────────────────────
