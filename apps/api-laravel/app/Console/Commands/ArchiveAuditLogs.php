@@ -66,7 +66,12 @@ class ArchiveAuditLogs extends Command
 
         $totalArchived = 0;
         $totalDeleted  = 0;
-        $errors        = 0;
+
+        // Immutable archive target. In production this disk points at an S3
+        // bucket with Object Lock (WORM) so written archives cannot be altered
+        // or deleted within the retention window. See config/audit.php.
+        $diskName = config('audit.archive_disk', 'local');
+        $disk     = Storage::disk($diskName);
 
         // Group by year-month so each archive file covers one calendar month.
         // We query the oldest distinct months first to build files chronologically.
@@ -83,37 +88,54 @@ class ArchiveAuditLogs extends Command
             $monthEnd   = $monthStart->copy()->endOfMonth();
 
             $archivePath = "audit-archive/{$ym}.jsonl";
-            $rowsThisMonth = 0;
+            $digestPath  = "{$archivePath}.sha256";
 
-            // Stream the rows in chunks, appending to the JSONL archive file.
-            MedicalIdAccessEvent::whereBetween('created_at', [$monthStart, $monthEnd])
-                ->orderBy('created_at')
-                ->chunkById($chunk, function ($rows) use ($archivePath, &$rowsThisMonth, &$errors) {
-                    $lines = $rows->map(fn ($r) => json_encode($r->toArray()))->implode("\n");
-                    try {
-                        // 'append' mode — safe to call multiple times for same file
-                        Storage::append($archivePath, $lines);
-                        $rowsThisMonth += $rows->count();
-                    } catch (\Throwable $e) {
-                        $this->error("  Failed to write archive for {$archivePath}: " . $e->getMessage());
-                        $errors++;
-                    }
-                });
-
-            if ($errors > 0) {
-                $this->warn("  Skipping DB deletion for {$ym} due to write errors.");
-                $errors = 0; // reset for next month
+            // Refuse to overwrite an existing immutable archive object. On a WORM
+            // store the put() would fail anyway; this makes the intent explicit
+            // and avoids silently re-archiving a month.
+            if ($disk->exists($archivePath)) {
+                $this->warn("  Archive for {$ym} already exists on '{$diskName}' — skipping (immutable).");
                 continue;
             }
 
-            // Delete only after successful archive write
+            // Build the month's JSONL in memory from chunked reads, then write it
+            // ONCE. Write-once (not append) is required for Object Lock / WORM.
+            $buffer        = '';
+            $rowsThisMonth = 0;
+            MedicalIdAccessEvent::whereBetween('created_at', [$monthStart, $monthEnd])
+                ->orderBy('created_at')
+                ->chunkById($chunk, function ($rows) use (&$buffer, &$rowsThisMonth) {
+                    foreach ($rows as $r) {
+                        $buffer .= json_encode($r->toArray()) . "\n";
+                        $rowsThisMonth++;
+                    }
+                });
+
+            try {
+                // Single write-once put for the archive, plus a SHA-256 digest
+                // sidecar so any later tampering with the archive is detectable.
+                $disk->put($archivePath, $buffer);
+                $disk->put($digestPath, hash('sha256', $buffer));
+            } catch (\Throwable $e) {
+                $this->error("  Failed to write archive for {$archivePath}: " . $e->getMessage());
+                $this->warn("  Skipping DB deletion for {$ym} due to write error.");
+                continue;
+            }
+
+            // Verify the write before purging the hot table — never delete source
+            // rows unless the immutable copy is present and matches.
+            if (! $disk->exists($archivePath) || hash('sha256', $disk->get($archivePath)) !== hash('sha256', $buffer)) {
+                $this->error("  Archive integrity check failed for {$ym} — keeping hot rows.");
+                continue;
+            }
+
             $deleted = MedicalIdAccessEvent::whereBetween('created_at', [$monthStart, $monthEnd])
                 ->delete();
 
             $totalArchived += $rowsThisMonth;
             $totalDeleted  += $deleted;
 
-            $this->line("  Archived {$rowsThisMonth} rows → {$archivePath} | Deleted from hot table: {$deleted}");
+            $this->line("  Archived {$rowsThisMonth} rows → {$diskName}:{$archivePath} (+digest) | Deleted: {$deleted}");
         }
 
         Log::info('audit_log_archival_complete', [
