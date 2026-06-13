@@ -344,7 +344,7 @@ return [
 
     /* ── Maquette visuelle héro ─────────────────────── */
     'hero_card' => [
-        'demo_id'            => 'OC-NGA-4F2K-9R7M-Q3WX',
+        'demo_id'            => 'CM-HID-7KQ9-MP42-X8D1',
         'label_health_id'    => 'Identifiant de Santé',
         'label_verified'     => 'Vérifié',
         'secure_label'       => 'Identifiant Chiffré Sécurisé',
@@ -371,12 +371,12 @@ return [
     /* ── Simulateur d'urgence ───────────────────────── */
     'emergency_sim' => [
         'override_label'     => "Accès d'Urgence Actif",
-        'demo_name'          => 'Amara Diallo',
-        'demo_id'            => 'OC-NGA-4F2K-9R7M-Q3WX',
+        'demo_name'          => 'Amina Nkeng',
+        'demo_id'            => 'CM-HID-7KQ9-MP42-X8D1',
         'demo_blood'         => 'O Positif (O+)',
         'demo_allergies'     => 'Pénicilline, Arachides',
         'demo_conditions'    => 'Asthme Chronique',
-        'demo_contact'       => 'Fatima Diallo (+234-801-555-0193)',
+        'demo_contact'       => 'Marie Nkeng (+237 6 99 55 01 93)',
         'lbl_blood'          => 'Groupe Sanguin',
         'lbl_allergies'      => 'Allergies Critiques',
         'lbl_conditions'     => 'Pathologies',

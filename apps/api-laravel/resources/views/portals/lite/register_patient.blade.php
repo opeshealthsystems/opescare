@@ -56,7 +56,7 @@
                 <label class="lite-label" for="phone">Phone Number</label>
                 <input id="phone" name="phone" type="tel"
                        value="{{ old('phone') }}"
-                       class="lite-input" placeholder="+234 800 000 0000">
+                       class="lite-input" placeholder="+237 6 99 00 00 00">
             </div>
         </div>
     </div>
