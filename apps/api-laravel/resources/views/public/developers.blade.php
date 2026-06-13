@@ -149,9 +149,9 @@
                             </div>
                             <div style="background:#fff;border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;">
                                 <div style="display:flex;align-items:center;gap:.75rem;">
-                                    <div style="width:2.5rem;height:2.5rem;background:#0F4C81;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;">JD</div>
+                                    <div style="width:2.5rem;height:2.5rem;background:#0F4C81;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;">AN</div>
                                     <div>
-                                        <div style="font-weight:700;font-size:.875rem;">Jane Doe — F, 34</div>
+                                        <div style="font-weight:700;font-size:.875rem;">Amina Nkeng — F, 34</div>
                                         <div style="font-size:.75rem;color:#14B8A6;font-weight:600;">● Verified</div>
                                     </div>
                                 </div>
