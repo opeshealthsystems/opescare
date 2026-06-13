@@ -44,7 +44,7 @@
                 </div>
                 <div class="auth-pass-wrapper">
                     <input type="password" id="password" name="password" class="auth-input{{ $errors->has('password') ? ' auth-input-error' : '' }}" required placeholder="••••••••">
-                    <button type="button" class="auth-pass-toggle" onclick="togglePasswordVisibility('password')">
+                    <button type="button" class="auth-pass-toggle" data-toggle-password="password">
                         <i data-lucide="eye" id="password-toggle-icon"></i>
                     </button>
                 </div>
@@ -90,7 +90,7 @@
     </form>
 
     <div class="demo-panel" id="demoPanel">
-        <div class="demo-panel-header open" id="demoPanelHeader" onclick="toggleDemoPanel()">
+        <div class="demo-panel-header open" id="demoPanelHeader" data-demo-panel-toggle>
             <div class="demo-panel-header-left">
                 <span class="demo-badge">DEMO</span>
                 <div>
@@ -109,22 +109,22 @@
 
             {{-- Portal Tab Strip --}}
             <div class="demo-tabs" role="tablist">
-                <button class="demo-tab-btn active" type="button" onclick="switchDemoTab('clinical', this)">
+                <button class="demo-tab-btn active" type="button" data-demo-tab="clinical">
                     <i data-lucide="stethoscope"></i> Clinical
                 </button>
-                <button class="demo-tab-btn" type="button" onclick="switchDemoTab('facility', this)">
+                <button class="demo-tab-btn" type="button" data-demo-tab="facility">
                     <i data-lucide="building-2"></i> Facility
                 </button>
-                <button class="demo-tab-btn" type="button" onclick="switchDemoTab('insurance', this)">
+                <button class="demo-tab-btn" type="button" data-demo-tab="insurance">
                     <i data-lucide="shield-check"></i> Insurance
                 </button>
-                <button class="demo-tab-btn" type="button" onclick="switchDemoTab('patient', this)">
+                <button class="demo-tab-btn" type="button" data-demo-tab="patient">
                     <i data-lucide="user"></i> Patient
                 </button>
-                <button class="demo-tab-btn" type="button" onclick="switchDemoTab('admin', this)">
+                <button class="demo-tab-btn" type="button" data-demo-tab="admin">
                     <i data-lucide="settings-2"></i> Admin
                 </button>
-                <button class="demo-tab-btn" type="button" onclick="switchDemoTab('developer', this)">
+                <button class="demo-tab-btn" type="button" data-demo-tab="developer">
                     <i data-lucide="code-2"></i> Developer
                 </button>
             </div>
@@ -132,32 +132,32 @@
             {{-- Clinical Portal --}}
             <div class="demo-tab-pane active" id="demo-tab-clinical" role="tabpanel">
                 <div class="demo-btn-grid">
-                    <button type="button" class="demo-login-btn demo-btn-clinical" onclick="demoLogin('doctor','demo.doctor@opescare.test')">
+                    <button type="button" class="demo-login-btn demo-btn-clinical" data-demo-role="doctor" data-demo-email="demo.doctor@opescare.test">
                         <i data-lucide="stethoscope"></i>
                         <span>Dr. Amara Diallo</span>
                         <small>General Practitioner</small>
                     </button>
-                    <button type="button" class="demo-login-btn demo-btn-clinical" onclick="demoLogin('multi_doctor','demo.multi.doctor@opescare.test')">
+                    <button type="button" class="demo-login-btn demo-btn-clinical" data-demo-role="multi_doctor" data-demo-email="demo.multi.doctor@opescare.test">
                         <i data-lucide="network"></i>
                         <span>Dr. Kofi Mensah</span>
                         <small>Multi-Facility Doctor</small>
                     </button>
-                    <button type="button" class="demo-login-btn demo-btn-clinical" onclick="demoLogin('nurse','demo.nurse@opescare.test')">
+                    <button type="button" class="demo-login-btn demo-btn-clinical" data-demo-role="nurse" data-demo-email="demo.nurse@opescare.test">
                         <i data-lucide="heart-pulse"></i>
                         <span>Nurse Fatou Traoré</span>
                         <small>Clinical Nurse</small>
                     </button>
-                    <button type="button" class="demo-login-btn demo-btn-clinical" onclick="demoLogin('specialist','demo.specialist@opescare.test')">
+                    <button type="button" class="demo-login-btn demo-btn-clinical" data-demo-role="specialist" data-demo-email="demo.specialist@opescare.test">
                         <i data-lucide="microscope"></i>
                         <span>Dr. Ibrahim Sow</span>
                         <small>Specialist</small>
                     </button>
-                    <button type="button" class="demo-login-btn demo-btn-clinical" onclick="demoLogin('pharmacist','demo.pharmacist@opescare.test')">
+                    <button type="button" class="demo-login-btn demo-btn-clinical" data-demo-role="pharmacist" data-demo-email="demo.pharmacist@opescare.test">
                         <i data-lucide="pill"></i>
                         <span>Aïcha Coulibaly</span>
                         <small>Pharmacist</small>
                     </button>
-                    <button type="button" class="demo-login-btn demo-btn-clinical" onclick="demoLogin('labtech','demo.labtech@opescare.test')">
+                    <button type="button" class="demo-login-btn demo-btn-clinical" data-demo-role="labtech" data-demo-email="demo.labtech@opescare.test">
                         <i data-lucide="flask-conical"></i>
                         <span>Boubacar Keïta</span>
                         <small>Lab Technician</small>
@@ -168,17 +168,17 @@
             {{-- Facility Portal --}}
             <div class="demo-tab-pane" id="demo-tab-facility" role="tabpanel">
                 <div class="demo-btn-grid">
-                    <button type="button" class="demo-login-btn demo-btn-facility" onclick="demoLogin('facility_admin','demo.facility.admin@opescare.test')">
+                    <button type="button" class="demo-login-btn demo-btn-facility" data-demo-role="facility_admin" data-demo-email="demo.facility.admin@opescare.test">
                         <i data-lucide="building-2"></i>
                         <span>Admin Mariam Touré</span>
                         <small>Facility Administrator</small>
                     </button>
-                    <button type="button" class="demo-login-btn demo-btn-facility" onclick="demoLogin('facility_ceo','demo.facility.ceo@opescare.test')">
+                    <button type="button" class="demo-login-btn demo-btn-facility" data-demo-role="facility_ceo" data-demo-email="demo.facility.ceo@opescare.test">
                         <i data-lucide="briefcase"></i>
                         <span>CEO Seydou Ouédraogo</span>
                         <small>Chief Executive Officer</small>
                     </button>
-                    <button type="button" class="demo-login-btn demo-btn-facility" onclick="demoLogin('finance','demo.finance@opescare.test')">
+                    <button type="button" class="demo-login-btn demo-btn-facility" data-demo-role="finance" data-demo-email="demo.finance@opescare.test">
                         <i data-lucide="bar-chart-2"></i>
                         <span>Finance Officer Kadiatou</span>
                         <small>Finance & Billing</small>
@@ -189,12 +189,12 @@
             {{-- Insurance Portal --}}
             <div class="demo-tab-pane" id="demo-tab-insurance" role="tabpanel">
                 <div class="demo-btn-grid">
-                    <button type="button" class="demo-login-btn demo-btn-insurance" onclick="demoLogin('insurance_claims','demo.insurance@opescare.test')">
+                    <button type="button" class="demo-login-btn demo-btn-insurance" data-demo-role="insurance_claims" data-demo-email="demo.insurance@opescare.test">
                         <i data-lucide="file-check-2"></i>
                         <span>Oumar Ba</span>
                         <small>Claims Officer</small>
                     </button>
-                    <button type="button" class="demo-login-btn demo-btn-insurance" onclick="demoLogin('insurance_preauth','demo.preauth@opescare.test')">
+                    <button type="button" class="demo-login-btn demo-btn-insurance" data-demo-role="insurance_preauth" data-demo-email="demo.preauth@opescare.test">
                         <i data-lucide="clipboard-check"></i>
                         <span>Awa (Preauth)</span>
                         <small>Pre-Auth Reviewer</small>
@@ -205,12 +205,12 @@
             {{-- Patient Portal --}}
             <div class="demo-tab-pane" id="demo-tab-patient" role="tabpanel">
                 <div class="demo-btn-grid">
-                    <button type="button" class="demo-login-btn demo-btn-patient" onclick="demoLogin('patient','demo.patient@opescare.test')">
+                    <button type="button" class="demo-login-btn demo-btn-patient" data-demo-role="patient" data-demo-email="demo.patient@opescare.test">
                         <i data-lucide="user"></i>
                         <span>Jean Dupont</span>
                         <small>Patient</small>
                     </button>
-                    <button type="button" class="demo-login-btn demo-btn-patient" onclick="demoLogin('guardian','demo.guardian@opescare.test')">
+                    <button type="button" class="demo-login-btn demo-btn-patient" data-demo-role="guardian" data-demo-email="demo.guardian@opescare.test">
                         <i data-lucide="users"></i>
                         <span>Marie Dupont</span>
                         <small>Guardian / Family</small>
@@ -221,7 +221,7 @@
             {{-- Platform Admin --}}
             <div class="demo-tab-pane" id="demo-tab-admin" role="tabpanel">
                 <div class="demo-btn-grid">
-                    <button type="button" class="demo-login-btn demo-btn-admin" onclick="demoLogin('platform_admin','demo.admin@opescare.test')">
+                    <button type="button" class="demo-login-btn demo-btn-admin" data-demo-role="platform_admin" data-demo-email="demo.admin@opescare.test">
                         <i data-lucide="settings-2"></i>
                         <span>Platform Admin</span>
                         <small>Super Administrator</small>
@@ -232,7 +232,7 @@
             {{-- Developer / API --}}
             <div class="demo-tab-pane" id="demo-tab-developer" role="tabpanel">
                 <div class="demo-btn-grid">
-                    <button type="button" class="demo-login-btn" style="background:#0284c7;" onclick="demoLogin('developer','demo.developer@opescare.test')">
+                    <button type="button" class="demo-login-btn" style="background:#0284c7;" data-demo-role="developer" data-demo-email="demo.developer@opescare.test">
                         <i data-lucide="code-2"></i>
                         <span>API Developer</span>
                         <small>Developer Portal</small>
@@ -250,44 +250,6 @@
     @endif
 @endsection
 
-@section('scripts')
-    <script>
-        function togglePasswordVisibility(fieldId) {
-            const input = document.getElementById(fieldId);
-            const icon = document.getElementById(fieldId + '-toggle-icon');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.setAttribute('data-lucide', 'eye-off');
-            } else {
-                input.type = 'password';
-                icon.setAttribute('data-lucide', 'eye');
-            }
-            if (typeof lucide !== 'undefined') lucide.createIcons();
-        }
-
-        @if(config('demo.enabled'))
-        function toggleDemoPanel() {
-            const body   = document.getElementById('demoPanelBody');
-            const header = document.getElementById('demoPanelHeader');
-            const chevron = document.getElementById('demoPanelChevron');
-            const isOpen = body.classList.toggle('open');
-            header.classList.toggle('open', isOpen);
-            chevron.setAttribute('data-lucide', isOpen ? 'chevron-up' : 'chevron-down');
-            if (typeof lucide !== 'undefined') lucide.createIcons();
-        }
-
-        function switchDemoTab(tab, btn) {
-            document.querySelectorAll('.demo-tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.querySelectorAll('.demo-tab-pane').forEach(p => p.classList.remove('active'));
-            document.getElementById('demo-tab-' + tab).classList.add('active');
-        }
-
-        function demoLogin(role, email) {
-            document.getElementById('demoRoleInput').value  = role;
-            document.getElementById('demoEmailInput').value = email;
-            document.getElementById('demoLoginForm').submit();
-        }
-        @endif
-    </script>
-@endsection
+{{-- Behaviour (password toggle, demo panel/tabs/login, icon rendering) lives in
+     public/js/auth.js, loaded by layouts.auth. Inline scripts are blocked by the
+     strict CSP (script-src 'self'), so handlers use data-* attributes instead. --}}

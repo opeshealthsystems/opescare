@@ -111,24 +111,11 @@
         
     </div>
 
-    <!-- Initialize Lucide Icons (robust: runs whether or not the DOM is ready,
-         with a load-event fallback so icons never silently fail to render) -->
-    <script>
-        (function () {
-            function renderIcons() {
-                if (window.lucide && typeof window.lucide.createIcons === 'function') {
-                    window.lucide.createIcons();
-                }
-            }
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', renderIcons);
-            } else {
-                renderIcons();
-            }
-            window.addEventListener('load', renderIcons);
-        })();
-    </script>
-
     @yield('scripts')
+
+    <!-- Auth-page behaviour (icon rendering, password toggle, demo handlers).
+         External file — the strict CSP (script-src 'self', no 'unsafe-inline')
+         blocks inline scripts, so this must be loaded from 'self'. -->
+    <script src="{{ asset('js/auth.js') }}?v={{ @filemtime(public_path('js/auth.js')) ?: '1' }}"></script>
 </body>
 </html>
