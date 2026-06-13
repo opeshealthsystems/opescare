@@ -291,8 +291,8 @@ server {
 
     # Strict rate limit on auth endpoints (brute-force protection)
     limit_req_zone $binary_remote_addr zone=mobile_auth:10m rate=5r/m;
-    location ~ ^/mobile/auth { limit_req zone=mobile_auth burst=3 nodelay; }
-    location ~ ^/provider-mobile/auth { limit_req zone=mobile_auth burst=3 nodelay; }
+    location ~ ^/api/mobile/auth { limit_req zone=mobile_auth burst=3 nodelay; }
+    location ~ ^/api/provider-mobile/auth { limit_req zone=mobile_auth burst=3 nodelay; }
 
     location / {
         try_files $uri $uri/ /index.php?$query_string;
