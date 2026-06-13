@@ -2,6 +2,9 @@
 
 namespace App\Modules\OperationalFlow\Services;
 
+use App\Models\ClinicalAlert;
+use App\Models\ClinicalNote;
+use App\Models\QueueTicket;
 use App\Models\Visit;
 use Illuminate\Support\Facades\DB;
 
@@ -26,6 +29,12 @@ class VisitManagementService
         'cancelled'            => [],
         'abandoned'            => [],
     ];
+
+    /** Queue-ticket statuses that count as "still open" (block visit closure). */
+    private const OPEN_QUEUE_STATUSES = ['waiting', 'called', 'service_started'];
+
+    /** Visit types that do NOT require a consultation note before closing. */
+    private const NO_CONSULT_NOTE_TYPES = ['lab-only', 'pharmacy-only'];
 
     /**
      * Create a new visit.
@@ -58,6 +67,7 @@ class VisitManagementService
             $updates = ['status' => $newStatus];
 
             if ($newStatus === 'completed') {
+                $this->assertCompletable($visit);
                 $updates['ended_at'] = now();
             }
 
@@ -72,18 +82,60 @@ class VisitManagementService
      */
     public function complete(string $visitId, string $actorId): Visit
     {
-        $visit = Visit::findOrFail($visitId);
+        return DB::transaction(function () use ($visitId) {
+            $visit = Visit::findOrFail($visitId);
 
-        if ($visit->status === 'completed') {
-            return $visit;
+            if ($visit->status === 'completed') {
+                return $visit;
+            }
+
+            $this->assertCompletable($visit);
+
+            $visit->update([
+                'status'   => 'completed',
+                'ended_at' => now(),
+            ]);
+
+            return $visit->fresh();
+        });
+    }
+
+    /**
+     * Patient-safety guards that must pass before a visit can be completed.
+     * (GAP-006) Throws with a VISIT_BLOCKED_* code on the first failing guard.
+     */
+    private function assertCompletable(Visit $visit): void
+    {
+        // 1. No unacknowledged critical clinical alert may remain open.
+        $hasActiveCriticalAlert = ClinicalAlert::where('visit_id', $visit->id)
+            ->where('severity', 'critical')
+            ->where('status', 'active')
+            ->exists();
+        if ($hasActiveCriticalAlert) {
+            throw new \RuntimeException(
+                'VISIT_BLOCKED_CRITICAL_ALERT: resolve or acknowledge the critical clinical alert before completing this visit.'
+            );
         }
 
-        $visit->update([
-            'status'   => 'completed',
-            'ended_at' => now(),
-        ]);
+        // 2. Consultation-bearing visits require a consultation note.
+        if (! in_array($visit->visit_type, self::NO_CONSULT_NOTE_TYPES, true)) {
+            $hasConsultNote = ClinicalNote::where('visit_id', $visit->id)->exists();
+            if (! $hasConsultNote) {
+                throw new \RuntimeException(
+                    'VISIT_BLOCKED_NO_CONSULT_NOTE: record a consultation note before completing this visit.'
+                );
+            }
+        }
 
-        return $visit->fresh();
+        // 3. No queue ticket may still be open for this visit.
+        $hasOpenQueueTicket = QueueTicket::where('visit_id', $visit->id)
+            ->whereIn('status', self::OPEN_QUEUE_STATUSES)
+            ->exists();
+        if ($hasOpenQueueTicket) {
+            throw new \RuntimeException(
+                'VISIT_BLOCKED_OPEN_QUEUE_TICKET: close the open queue ticket before completing this visit.'
+            );
+        }
     }
 
     /**
