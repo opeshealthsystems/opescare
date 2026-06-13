@@ -39,11 +39,11 @@ class SubscriptionPlan extends Model
         return $this->hasMany(OrganizationSubscription::class, 'plan_id');
     }
 
-    /** Price in major currency unit (Naira/Dollars) */
+    /** Price in major currency unit (XAF / FCFA) */
     public function priceFormatted(): string
     {
         $amount = $this->price_kobo / 100;
-        return $this->currency . ' ' . number_format($amount, 2);
+        return $this->currency . ' ' . number_format($amount, 0);
     }
 
     public function scopeActive($query)

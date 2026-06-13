@@ -40,12 +40,12 @@
         </div>
         <div class="lite-card__body" style="padding:0;">
             <table class="lite-table" id="lineItemsTable">
-                <thead><tr><th>Description</th><th>Qty</th><th>Amount (₦)</th><th></th></tr></thead>
+                <thead><tr><th>Description</th><th>Qty</th><th>Amount (FCFA)</th><th></th></tr></thead>
                 <tbody id="lineItems">
                     <tr id="row-0">
                         <td><input type="text" name="items[0][description]" class="lite-input" style="width:100%;min-width:0;" placeholder="Service…"></td>
                         <td style="width:70px;"><input type="number" name="items[0][qty]" class="lite-input" value="1" min="1" onchange="calcTotal()" style="width:100%;min-width:0;"></td>
-                        <td style="width:110px;"><input type="number" name="items[0][amount]" class="lite-input" placeholder="0.00" step="0.01" onchange="calcTotal()" style="width:100%;min-width:0;"></td>
+                        <td style="width:110px;"><input type="number" name="items[0][amount]" class="lite-input" placeholder="0" step="1" onchange="calcTotal()" style="width:100%;min-width:0;"></td>
                         <td style="width:40px;text-align:center;">—</td>
                     </tr>
                 </tbody>
@@ -57,7 +57,7 @@
         <div class="lite-card__body">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
                 <span style="font-weight:600;">Total</span>
-                <span style="font-size:1.3rem;font-weight:800;color:#16a34a;">₦ <span id="totalAmt">0.00</span></span>
+                <span style="font-size:1.3rem;font-weight:800;color:#16a34a;">FCFA <span id="totalAmt">0</span></span>
             </div>
             <div class="lite-form-group">
                 <label class="lite-label">Payment Mode</label>
@@ -98,7 +98,7 @@ function addLineItem() {
     tr.innerHTML = `
         <td><input type="text" name="items[${i}][description]" class="lite-input" style="width:100%;min-width:0;" placeholder="Service…"></td>
         <td style="width:70px;"><input type="number" name="items[${i}][qty]" class="lite-input" value="1" min="1" onchange="calcTotal()" style="width:100%;min-width:0;"></td>
-        <td style="width:110px;"><input type="number" name="items[${i}][amount]" class="lite-input" placeholder="0.00" step="0.01" onchange="calcTotal()" style="width:100%;min-width:0;"></td>
+        <td style="width:110px;"><input type="number" name="items[${i}][amount]" class="lite-input" placeholder="0" step="1" onchange="calcTotal()" style="width:100%;min-width:0;"></td>
         <td style="width:40px;text-align:center;">
             <button type="button" onclick="this.closest('tr').remove();calcTotal()"
                     style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:1rem;padding:0;">✕</button>
@@ -113,7 +113,7 @@ function calcTotal() {
         const amt = parseFloat(tr.querySelector('input[name*="[amount]"]')?.value || 0);
         if (!isNaN(qty) && !isNaN(amt)) total += qty * amt;
     });
-    document.getElementById('totalAmt').textContent = total.toFixed(2);
+    document.getElementById('totalAmt').textContent = total.toLocaleString('fr-FR');
 }
 </script>
 @endsection

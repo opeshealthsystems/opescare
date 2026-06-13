@@ -147,8 +147,8 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Price (NGN) <span style="color:red">*</span></label>
-                        <input type="number" name="price" class="form-control" required min="0" step="0.01" placeholder="0.00">
+                        <label class="form-label">Price (FCFA) <span style="color:red">*</span></label>
+                        <input type="number" name="price" class="form-control" required min="0" step="1" placeholder="0">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Trial Days</label>

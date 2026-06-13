@@ -25,7 +25,7 @@
         <div class="stat-card">
             <div class="stat-card__icon" style="background:#f0fdf4;"><i data-lucide="banknote" style="color:#16a34a;"></i></div>
             <div class="stat-card__body">
-                <div class="stat-card__value" style="color:#16a34a;">NGN {{ number_format($stats['paid_this_month'] / 100, 0) }}</div>
+                <div class="stat-card__value" style="color:#16a34a;">FCFA {{ number_format($stats['paid_this_month'] / 100, 0) }}</div>
                 <div class="stat-card__label">Paid This Month</div>
             </div>
         </div>
@@ -43,7 +43,7 @@
         <div class="stat-card">
             <div class="stat-card__icon" style="background:#fee2e2;"><i data-lucide="banknote" style="color:#dc2626;"></i></div>
             <div class="stat-card__body">
-                <div class="stat-card__value" style="color:#dc2626;">NGN {{ number_format($stats['overdue_amount'] / 100, 0) }}</div>
+                <div class="stat-card__value" style="color:#dc2626;">FCFA {{ number_format($stats['overdue_amount'] / 100, 0) }}</div>
                 <div class="stat-card__label">Overdue Amount</div>
             </div>
         </div>

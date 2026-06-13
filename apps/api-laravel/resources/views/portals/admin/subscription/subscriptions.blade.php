@@ -39,7 +39,7 @@
             <div class="stat-card__icon" style="background:#ede9fe;"><i data-lucide="trending-up" style="color:#7c3aed;"></i></div>
             <div class="stat-card__body">
                 <div class="stat-card__value" style="color:#7c3aed;">
-                    NGN {{ number_format($stats['mrr_kobo'] / 100, 0) }}
+                    FCFA {{ number_format($stats['mrr_kobo'] / 100, 0) }}
                 </div>
                 <div class="stat-card__label">MRR</div>
             </div>

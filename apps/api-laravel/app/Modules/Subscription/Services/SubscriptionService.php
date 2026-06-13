@@ -23,7 +23,7 @@ class SubscriptionService
                 'slug'                    => Str::slug($data['name']),
                 'billing_cycle'           => $data['billing_cycle'],
                 'price_kobo'              => (int) ($data['price'] * 100),
-                'currency'                => $data['currency'] ?? 'NGN',
+                'currency'                => $data['currency'] ?? 'XAF',
                 'description'             => $data['description'] ?? null,
                 'features'                => $data['features'] ?? null,
                 'max_facilities'          => $data['max_facilities'] ?? 1,
