@@ -185,6 +185,9 @@ Route::prefix('v1/connect')->group(function () {
 */
 Route::prefix('mobile')->group(function () {
 
+    // Public version gate — consumed at startup (before login) for forced-update.
+    Route::get('/app-config', [\App\Http\Controllers\Api\Mobile\MobileAppConfigController::class, 'show']);
+
     // Public auth endpoints — rate-limited to 5 requests per minute
     Route::prefix('auth')->middleware('throttle:5,1')->group(function () {
         // Legacy: phone + PIN → OTP flow

@@ -207,7 +207,7 @@ git commit -m "build(mobile): android release signing config"
 
 ## WORK-STREAM B — Backend support + force-update
 
-### Task B1: Laravel `GET /api/v1/mobile/app-config` (buildable now, TDD)
+### Task B1: Laravel `GET /api/mobile/app-config` (buildable now, TDD)
 
 **Files:**
 - Create: `apps/api-laravel/config/mobile.php`
@@ -233,7 +233,7 @@ class AppConfigTest extends TestCase
         config()->set('mobile.latest_version', '1.2.0');
         config()->set('mobile.store_url', 'https://play.google.com/store/apps/details?id=cm.opescare.patient');
 
-        $res = $this->getJson('/api/v1/mobile/app-config');
+        $res = $this->getJson('/api/mobile/app-config');
 
         $res->assertOk()
             ->assertJson([
@@ -246,7 +246,7 @@ class AppConfigTest extends TestCase
     public function test_app_config_is_public(): void
     {
         // No auth header — must still succeed (it gates the app before login).
-        $this->getJson('/api/v1/mobile/app-config')->assertOk();
+        $this->getJson('/api/mobile/app-config')->assertOk();
     }
 }
 ```
@@ -300,7 +300,7 @@ class MobileAppConfigController extends Controller
 
 In `routes/api.php`, add near the other `v1` prefixes:
 ```php
-Route::prefix('v1/mobile')->group(function () {
+Route::prefix('mobile') // existing group — add as a public sibling of auth(function () {
     Route::get('/app-config', [\App\Http\Controllers\Api\Mobile\MobileAppConfigController::class, 'show']);
 });
 ```

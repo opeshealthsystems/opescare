@@ -16,7 +16,7 @@ MINSANTE context), closing every gap identified in the 2026-06-13 assessment.
   session has no Flutter SDK and GitHub is network-blocked. This document plus
   the implementation plan are the deliverables. Execution happens in a Flutter
   build environment.
-- The single **backend** piece (`GET /api/v1/mobile/app-config`) is buildable in
+- The single **backend** piece (`GET /api/mobile/app-config`) is buildable in
   `apps/api-laravel` and is specified here for that later execution.
 - Honor standing constraints: do not delete/override existing work; build only
   what is missing; keep everything Cameroon-only.
@@ -49,7 +49,7 @@ MINSANTE context), closing every gap identified in the 2026-06-13 assessment.
   scheme (`version: x.y.z+build`).
 
 ### B — Backend support (Laravel — buildable independently)
-- **B1 `GET /api/v1/mobile/app-config`.** Returns
+- **B1 `GET /api/mobile/app-config`.** Returns
   `{ min_supported_build, latest_version, store_url }`. Values from config/env so
   ops can bump without a deploy. Public (no auth) — it gates the app before login.
   Add a controller + route under the existing `v1` group; add a feature test.
