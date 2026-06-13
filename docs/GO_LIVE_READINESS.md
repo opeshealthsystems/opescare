@@ -55,7 +55,7 @@ Changes landed locally this session that the **next production deploy must accou
 
 ## A. Must verify (run these — currently unknown)
 
-- [ ] **A1 — Test suite green.** `php artisan test` (uses in-memory SQLite; no DB setup). 169 Feature + 4 Unit tests exist but were never executed in the audit. **This is the single biggest unknown.**
+- [x] **A1 — Test suite green.** ✅ Run 2026-06-13: `php artisan test` → **735 tests, 730 passed, 5 skipped, 0 failed** (1954 assertions, ~143s, against the dedicated Postgres `opescare_test` DB). The biggest unknown is closed — the code is green.
 - [ ] **A2 — Migrations applied.** `php artisan migrate:status` against the Postgres `opescare` DB → any **Pending** = not run. Back up, then `php artisan migrate`. (177 migrations; newest 2026-06-09.)
 - [ ] **A3 — Authoritative route-auth sweep.** `php artisan route:list --json > routes.json && python docs/audits/route_auth_check.py routes.json`. Confirm no PHI route is unauthenticated. (Spot-checks were clean; full sweep pending.)
 - [ ] **A4 — Dependency vulnerability scans.** `composer audit` · `pip-audit` (bridge-agent, sdk/python) · Flutter `pana`. (`npm audit` on api-laravel already = 0 vulnerabilities.)
