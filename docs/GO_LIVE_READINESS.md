@@ -45,7 +45,7 @@ Changes landed locally this session that the **next production deploy must accou
 
 | Component | State | Blocking items |
 |-----------|-------|----------------|
-| Backend API | 🟡 Conditionally ready | P0: GAP-005, GAP-006, GAP-009; config hardening; green tests |
+| Backend API | 🟡 Conditionally ready | P0: ~~GAP-005~~ ✅, ~~GAP-006~~ ✅, GAP-009 (MFA+audit) remaining; config hardening; green tests |
 | Patient mobile app | 🟡 Close | GAP-002 (Firebase); GAP-001 ✅ fixed |
 | Interop (DHIS2/HL7/MoMo/Orange/USSD) | 🟡 Built, unverified live | Credential/config + end-to-end test |
 | Connect dev platform (widget/SDK/webhooks) | 🔴 Not ready | GAP-003/004/010/013/014/016/018 — descope or separate track |
@@ -63,8 +63,8 @@ Changes landed locally this session that the **next production deploy must accou
 
 ## B. P0 — fix before deploy (safety / correctness / security)
 
-- [ ] **B1 — GAP-006** Visit-closure safety guards. `app/Modules/OperationalFlow/Services/VisitManagementService.php` — block `→ completed` on unacknowledged critical alert / missing consult note / open queue ticket. *(Patient safety.)*
-- [ ] **B2 — GAP-005** Data-import execution. `app/Http/Controllers/MedicalId/DataImportController.php::approve()` — make it actually create records via `PatientIdentityService` with dedup + provenance + rollback.
+- [x] **B1 — GAP-006** Visit-closure safety guards. ✅ Done 2026-06-13 (commit 869a81f5). `VisitManagementService` now blocks `→ completed` on unacknowledged critical alert / missing consult note (consultation-bearing types) / open queue ticket. 6 feature tests.
+- [x] **B2 — GAP-005** Data-import execution. ✅ Done 2026-06-13 (commit 019c2525). Patient imports run through `PatientIdentityService` (MPI dedup + canonical CM-HID + audit), provenance via `import_record_links`, real rollback. 3 feature tests. *(Requires migration `2026_06_13_000002` on production.)*
 - [ ] **B3 — GAP-009** MFA + immutable audit. Add a second factor for staff/admin login; ship audit archive to an immutable store (S3 Object Lock), replacing `Storage::append` in `ArchiveAuditLogs.php`.
 - [ ] **B4 — Config hardening (server `.env`).** `APP_ENV=production`, `APP_DEBUG=false`, `LOG_LEVEL=warning`, `SESSION_SECURE_COOKIE=true`, rotated real `APP_KEY` + secrets via env, HTTPS + HSTS. Confirm `ProductionSafetyServiceProvider` enforces debug-off. *(Working copy `.env` is currently `local`/`debug=true`.)*
 - [ ] **B5 — GAP-008** Enforce the Academy competency gate at sensitive routes (only if training-gated access is a compliance requirement for launch).
