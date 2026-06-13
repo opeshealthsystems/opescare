@@ -9,3 +9,15 @@
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
+
+# Dev-only — excluded from production deploy artifacts (git archive).
+# Source stays in the repo; it just isn't shipped to the server.
+/tests export-ignore
+/.idea export-ignore
+/.vscode export-ignore
+phpunit.xml export-ignore
+.editorconfig export-ignore
+README.md export-ignore
+.gitignore export-ignore
+.gitattributes export-ignore
+.env.example export-ignore
