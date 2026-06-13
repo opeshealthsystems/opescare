@@ -818,11 +818,16 @@ Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
     Route::get('/admin/roles/{id}/users',                       [\App\Http\Controllers\MedicalId\AdminRolesController::class, 'users'])->name('admin.roles.users');
 });
 
-// ── Document Template Preview Gallery (no auth — dev/sales preview) ─────────
-Route::prefix('document-preview')->name('document.preview.')->group(function () {
-    Route::get('/', [\App\Http\Controllers\DocumentPreviewController::class, 'index'])->name('gallery');
-    Route::get('/{type}', [\App\Http\Controllers\DocumentPreviewController::class, 'show'])->name('show');
-});
+// ── Document Template Preview Gallery (gated) ──────────────────────────────
+// Renders document templates filled with sample data. Public only when demo
+// mode is explicitly enabled (for sales walkthroughs); otherwise login-gated so
+// template mockups are never browsable by anonymous visitors in production.
+Route::prefix('document-preview')->name('document.preview.')
+    ->middleware(config('demo.enabled') ? ['web'] : ['web', 'auth'])
+    ->group(function () {
+        Route::get('/', [\App\Http\Controllers\DocumentPreviewController::class, 'index'])->name('gallery');
+        Route::get('/{type}', [\App\Http\Controllers\DocumentPreviewController::class, 'show'])->name('show');
+    });
 
 // ── Document Render — Category B (Living Clinical Forms) ─────────────────
 Route::get('/patients/{patientId}/clinical-forms/{type}', [\App\Http\Controllers\DocumentRenderController::class, 'clinicalForm'])
