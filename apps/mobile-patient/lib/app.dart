@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'core/api/api_endpoints.dart';
 import 'core/notifications/notification_service.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'core/update/force_update_service.dart';
 import 'features/auth/providers/auth_provider.dart';
 
 class OpesCareApp extends ConsumerStatefulWidget {
@@ -40,18 +42,24 @@ class _OpesCareAppState extends ConsumerState<OpesCareApp> {
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(appRouterProvider);
-    return MaterialApp.router(
-      title: 'OpesCare',
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
-      routerConfig: router,
-      debugShowCheckedModeBanner: false,
-      // Localization: English + French (Cameroon is bilingual EN/FR). Strings live in
-      // lib/l10n/*.arb. Run `flutter gen-l10n` (or `flutter pub get`) to generate
-      // AppLocalizations, then migrate screens to AppLocalizations.of(context).
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+    // Forced-update gate: fail-open, so a backend/network problem never locks
+    // users out. Calls GET {baseUrl}/mobile/app-config at startup and blocks only
+    // when the running build is below min_supported_build.
+    return ForceUpdateGate(
+      baseUrl: ApiEndpoints.baseUrl,
+      child: MaterialApp.router(
+        title: 'OpesCare',
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: ThemeMode.system,
+        routerConfig: router,
+        debugShowCheckedModeBanner: false,
+        // Localization: English + French (Cameroon is bilingual EN/FR). Strings live in
+        // lib/l10n/*.arb. Run `flutter gen-l10n` (or `flutter pub get`) to generate
+        // AppLocalizations, then migrate screens to AppLocalizations.of(context).
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
     );
   }
 }

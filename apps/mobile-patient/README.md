@@ -1,17 +1,37 @@
 # opescare_patient
 
-A new Flutter project.
+OpesCare Patient mobile app (Flutter) — Cameroon (bilingual EN/FR).
 
-## Getting Started
+## Development
 
-This project is a starting point for a Flutter application.
+```bash
+flutter pub get          # also runs gen-l10n (generate: true) → AppLocalizations
+flutter run              # uses the debug default API host (http://opescare.test/api)
+```
 
-A few resources to get you started if this is your first Flutter project:
+To point a debug run at another API host:
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+```bash
+flutter run --dart-define=API_BASE_URL=https://api.opescare.cm/api
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Release build (production)
+
+The production API URL **must** be injected at build time. Release builds refuse
+to start with the local HTTP dev default (`ApiEndpoints.baseUrl` throws), so
+cleartext PHI traffic can never ship by accident. Replace the host with the real
+production domain.
+
+```bash
+flutter build apk       --release --dart-define=API_BASE_URL=https://api.opescare.cm/api
+flutter build appbundle --release --dart-define=API_BASE_URL=https://api.opescare.cm/api
+flutter build ipa       --release --dart-define=API_BASE_URL=https://api.opescare.cm/api
+```
+
+Bump `version: x.y.z+<build>` in `pubspec.yaml` each release, and keep
+`ForceUpdateService.currentBuildNumber` in sync so the forced-update gate works.
+
+## Production readiness
+
+See `docs/superpowers/plans/2026-06-13-mobile-patient-production-readiness.md`
+for the full implementation plan (build, i18n, security, observability, release).
