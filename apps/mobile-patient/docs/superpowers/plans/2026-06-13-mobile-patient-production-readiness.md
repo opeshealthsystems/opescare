@@ -12,6 +12,23 @@
 
 ---
 
+## Progress (updated 2026-06-13)
+
+Done in the authoring session (no Flutter SDK was available, so Flutter items
+were not compiled — verify with `flutter analyze` before relying on them):
+
+- ✅ **B1** — Laravel `/api/mobile/app-config` endpoint, config, + 2 passing tests. **Built & verified.**
+- ✅ **A2** — `ApiEndpoints.baseUrl` release HTTPS guard; all getters routed through it; README release-build docs. *Code-complete, unverified.*
+- ✅ **B2** — `ForceUpdateGate` wired around `MaterialApp.router` in `app.dart`. *Code-complete, unverified.*
+
+Remaining (require Flutter SDK / external setup): **A1** (gen-l10n), **A3** (keystore),
+**C1–C3** (i18n + French translation), **D1–D6** (security packages via `flutter pub add`),
+**E1–E2** (Firebase project + flutterfire), **F1–F3** (analyze/test/build, store assets, audit).
+D tasks add new pub dependencies and were intentionally NOT written here — writing code
+that imports uninstalled packages would break the build until `flutter pub add` runs.
+
+---
+
 ## File Structure (created/modified)
 
 **Flutter (`apps/mobile-patient/`):**
