@@ -77,10 +77,9 @@ class PatientIdentityService
 
     protected function generateHealthId(): string
     {
-        $segment1 = strtoupper(Str::random(4));
-        $segment2 = strtoupper(Str::random(4));
-        $segment3 = strtoupper(Str::random(4));
-
-        return "OC-MVP-{$segment1}-{$segment2}-{$segment3}";
+        // Delegate to the canonical generator so every patient (including
+        // imports) gets the real Cameroon format CM-HID-XXXX-XXXX-XXXX with a
+        // checksum block and DB-backed uniqueness — not the legacy OC-MVP stub.
+        return app(\App\Services\Identity\HealthIdGeneratorService::class)->generate();
     }
 }

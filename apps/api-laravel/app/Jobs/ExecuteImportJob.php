@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\ImportJob;
 use App\Modules\DataImport\Services\ImportService;
+use App\Modules\PatientIdentity\Services\PatientIdentityService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -11,6 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 /**
  * Executes an approved data import job by reading the validated file,
@@ -73,12 +75,17 @@ class ExecuteImportJob implements ShouldQueue
 
     private function executeImport(ImportJob $job, ImportService $svc): int
     {
+        // Patient import has a dedicated path: dedup via the Master Patient Index,
+        // canonical Health-ID generation, audit provenance, and rollback links.
+        if ($job->import_type === 'patients') {
+            return $this->importPatients($job, $svc);
+        }
+
         $table = self::TABLE_MAP[$job->import_type] ?? null;
 
-        // Patient / staff / appointment imports touch complex domain models —
-        // they need event dispatching, health-ID generation, etc. For now mark
-        // as a manual review type so the UI can guide staff through the model-
-        // specific import path.
+        // Staff / appointment imports touch complex domain models — they need
+        // event dispatching, etc. For now mark as a manual review type so the UI
+        // can guide staff through the model-specific import path.
         if (!$table) {
             $job->forceFill(['status' => 'requires_manual_review'])->save();
             $svc->audit($job, 'deferred_to_manual', $this->actorId, [
@@ -110,5 +117,80 @@ class ExecuteImportJob implements ShouldQueue
         }
 
         return $count;
+    }
+
+    /**
+     * Patient import: create real patients with dedup + provenance.
+     *
+     * Each row is routed through PatientIdentityService::createPatientCandidate,
+     * which runs Master-Patient-Index dedup, generates a canonical Health ID, and
+     * writes an audit event. Successful creations are linked back to this import
+     * job in import_record_links so the batch can be rolled back cleanly.
+     */
+    private function importPatients(ImportJob $job, ImportService $svc): int
+    {
+        $rows     = $svc->readRows($job->stored_path, $job->file_extension, $job->detected_headers ?? []);
+        $mapping  = $job->mapping ?? [];
+        $identity = app(PatientIdentityService::class);
+
+        $created = 0;
+        $dupes   = 0;
+        $failed  = 0;
+
+        foreach ($rows as $raw) {
+            // Apply column mapping → system field names.
+            $f = [];
+            foreach ($mapping as $csvCol => $field) {
+                if ($field && isset($raw[$csvCol])) {
+                    $f[$field] = $raw[$csvCol] !== '' ? $raw[$csvCol] : null;
+                }
+            }
+
+            if (empty($f['first_name']) || empty($f['last_name'])) {
+                $failed++;
+                continue;
+            }
+
+            $data = [
+                'first_name'      => $f['first_name'],
+                'last_name'       => $f['last_name'],
+                'middle_name'     => $f['middle_name'] ?? null,
+                'date_of_birth'   => $f['date_of_birth'] ?? null,
+                'sex'             => $f['gender'] ?? $f['sex'] ?? null,
+                'phone_number'    => $f['phone'] ?? $f['phone_number'] ?? null,
+                'address'         => $f['address'] ?? null,
+                'identity_status' => 'provisional',
+            ];
+
+            try {
+                $patient = $identity->createPatientCandidate($data, $this->actorId, $job->facility_id);
+
+                DB::table('import_record_links')->insert([
+                    'id'            => (string) Str::uuid(),
+                    'import_job_id' => $job->id,
+                    'target_table'  => 'patients',
+                    'record_id'     => $patient->id,
+                    'created_at'    => now(),
+                ]);
+                $created++;
+            } catch (\Throwable $e) {
+                if (str_contains($e->getMessage(), 'Duplicate candidate')) {
+                    $dupes++;
+                } else {
+                    $failed++;
+                    Log::warning('ExecuteImportJob: patient row failed', [
+                        'import_job_id' => $job->id,
+                        'error'         => $e->getMessage(),
+                    ]);
+                }
+            }
+        }
+
+        $job->forceFill([
+            'duplicate_rows' => $dupes,
+            'failed_rows'    => $failed,
+        ])->save();
+
+        return $created;
     }
 }
