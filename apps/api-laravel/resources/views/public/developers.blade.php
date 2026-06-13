@@ -65,15 +65,15 @@
                             <span style="width:.75rem;height:.75rem;border-radius:50%;background:#fbbf24;display:inline-block;"></span>
                             <span style="width:.75rem;height:.75rem;border-radius:50%;background:#4ade80;display:inline-block;"></span>
                         </div>
-                        <div style="color:#94a3b8;">// Pull approved patient timeline</div>
-                        <div style="margin:.5rem 0;"><span style="color:#f472b6;">GET</span> <span style="color:#93c5fd;">/api/v1/patients/{id}/timeline</span></div>
+                        <div style="color:#94a3b8;">// Pull approved patient summary</div>
+                        <div style="margin:.5rem 0;"><span style="color:#f472b6;">GET</span> <span style="color:#93c5fd;">/api/v1/connect/patients/{health_id}/summary</span></div>
                         <div style="color:#94a3b8;margin-top:1rem;">Authorization: Bearer &lt;token&gt;</div>
                         <div style="color:#94a3b8;margin-bottom:1rem;">X-Purpose: clinical-review</div>
                         <div style="color:#94a3b8;">// 200 Response</div>
                         <div style="color:#fbbf24;">{</div>
                         <div style="padding-left:1.25rem;color:#f8fafc;">
                             "status": <span style="color:#4ade80;">"success"</span>,<br>
-                            "patient_id": <span style="color:#4ade80;">"OPES-123-456"</span>,<br>
+                            "health_id": <span style="color:#4ade80;">"CM-HID-7KQ9-MP42-X8D1"</span>,<br>
                             "consent_ref": <span style="color:#4ade80;">"CNS-789"</span>,<br>
                             "data": [...]
                         </div>
@@ -144,7 +144,7 @@
                         <div style="padding:1.5rem;background:#F8FAFC;">
                             <label style="font-size:.8125rem;font-weight:600;color:#374151;display:block;margin-bottom:.4rem;">Search Patient Health ID</label>
                             <div style="display:flex;gap:.5rem;margin-bottom:1.25rem;">
-                                <input type="text" value="OPES-123-456" readonly style="flex:1;height:2.5rem;padding:0 .875rem;border:1px solid #cbd5e1;border-radius:.5rem;font-size:.875rem;background:#fff;">
+                                <input type="text" value="CM-HID-7KQ9-MP42-X8D1" readonly style="flex:1;height:2.5rem;padding:0 .875rem;border:1px solid #cbd5e1;border-radius:.5rem;font-size:.8125rem;font-family:monospace;background:#fff;">
                                 <button style="height:2.5rem;padding:0 1rem;background:#0F4C81;color:#fff;border:none;border-radius:.5rem;font-size:.875rem;font-weight:600;cursor:pointer;">Search</button>
                             </div>
                             <div style="background:#fff;border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;">
@@ -277,7 +277,7 @@
                             "event": <span style="color:#4ade80;">"visit.recorded"</span>,<br>
                             "timestamp": <span style="color:#4ade80;">"2026-05-18T08:42:00Z"</span>,<br>
                             "facility_id": <span style="color:#4ade80;">"FAC-001"</span>,<br>
-                            "patient_id": <span style="color:#4ade80;">"OPES-123-456"</span>,<br>
+                            "health_id": <span style="color:#4ade80;">"CM-HID-7KQ9-MP42-X8D1"</span>,<br>
                             "consent_ref": <span style="color:#4ade80;">"CNS-789"</span>,<br>
                             "data": <span style="color:#fbbf24;">{...}</span>
                         </div>
