@@ -1,6 +1,6 @@
 abstract final class ApiEndpoints {
   // Injected at build time:
-  //   --dart-define=API_BASE_URL=https://api.opescare.cm/api
+  //   --dart-define=API_BASE_URL=https://api.opescare.com/api
   // The debug default points at the local Laragon dev host; release builds MUST
   // override it with the production HTTPS URL (enforced by [baseUrl] below).
   static const String _base =

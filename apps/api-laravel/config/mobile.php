@@ -24,7 +24,7 @@ return [
 
     'store_url' => env(
         'MOBILE_STORE_URL',
-        'https://play.google.com/store/apps/details?id=cm.opescare.patient'
+        'https://play.google.com/store/apps/details?id=com.opescare.patient'
     ),
 
 ];

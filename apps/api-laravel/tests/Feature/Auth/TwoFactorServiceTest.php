@@ -63,7 +63,7 @@ class TwoFactorServiceTest extends TestCase
 
     public function test_provisioning_uri_is_well_formed(): void
     {
-        $uri = $this->service()->provisioningUri('GEZDGNBVGY3TQOJQ', 'doctor@opescare.cm', 'OpesCare');
+        $uri = $this->service()->provisioningUri('GEZDGNBVGY3TQOJQ', 'doctor@opescare.com', 'OpesCare');
 
         $this->assertStringStartsWith('otpauth://totp/OpesCare:', $uri);
         $this->assertStringContainsString('secret=GEZDGNBVGY3TQOJQ', $uri);

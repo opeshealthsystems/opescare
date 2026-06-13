@@ -12,7 +12,7 @@ flutter run              # uses the debug default API host (http://opescare.test
 To point a debug run at another API host:
 
 ```bash
-flutter run --dart-define=API_BASE_URL=https://api.opescare.cm/api
+flutter run --dart-define=API_BASE_URL=https://api.opescare.com/api
 ```
 
 ## Release build (production)
@@ -23,9 +23,9 @@ cleartext PHI traffic can never ship by accident. Replace the host with the real
 production domain.
 
 ```bash
-flutter build apk       --release --dart-define=API_BASE_URL=https://api.opescare.cm/api
-flutter build appbundle --release --dart-define=API_BASE_URL=https://api.opescare.cm/api
-flutter build ipa       --release --dart-define=API_BASE_URL=https://api.opescare.cm/api
+flutter build apk       --release --dart-define=API_BASE_URL=https://api.opescare.com/api
+flutter build appbundle --release --dart-define=API_BASE_URL=https://api.opescare.com/api
+flutter build ipa       --release --dart-define=API_BASE_URL=https://api.opescare.com/api
 ```
 
 Bump `version: x.y.z+<build>` in `pubspec.yaml` each release, and keep

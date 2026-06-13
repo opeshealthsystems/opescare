@@ -34,7 +34,7 @@ class UssdSessionService
         return match ($inputs[0]) {
             '1' => $this->respond('CON', "My Appointments\n1. View next appointment\n2. Book appointment\n0. Back"),
             '2' => $this->respond('CON', "My Results\nPlease visit the patient portal or call your facility."),
-            '3' => $this->respond('CON', "Find a Clinic\nVisit opescare.cm/caremap"),
+            '3' => $this->respond('CON', "Find a Clinic\nVisit opescare.com/caremap"),
             '4' => $this->respond('END', "Emergency: 1510 (SAMU)\nOpesCare: +237 XXX XXX XXX"),
             '0' => $this->respond('END', "Thank you for using OpesCare. Stay healthy!"),
             default => $this->respond('END', "Invalid option. Please try again."),

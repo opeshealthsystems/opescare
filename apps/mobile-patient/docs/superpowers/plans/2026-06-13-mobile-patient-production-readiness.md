@@ -116,7 +116,7 @@ static String get baseUrl => _base;
 ```
 Replace with:
 ```dart
-// Injected at build time: --dart-define=API_BASE_URL=https://api.opescare.cm/api
+// Injected at build time: --dart-define=API_BASE_URL=https://api.opescare.com/api
 static const String _base =
     String.fromEnvironment('API_BASE_URL', defaultValue: 'http://opescare.test/api');
 
@@ -136,9 +136,9 @@ static String get baseUrl {
 
 Add to `apps/mobile-patient/README.md` a "Release build" section:
 ```bash
-flutter build apk    --release --dart-define=API_BASE_URL=https://api.opescare.cm/api
-flutter build appbundle --release --dart-define=API_BASE_URL=https://api.opescare.cm/api
-flutter build ipa    --release --dart-define=API_BASE_URL=https://api.opescare.cm/api
+flutter build apk    --release --dart-define=API_BASE_URL=https://api.opescare.com/api
+flutter build appbundle --release --dart-define=API_BASE_URL=https://api.opescare.com/api
+flutter build ipa    --release --dart-define=API_BASE_URL=https://api.opescare.com/api
 ```
 (Replace host with the real production domain.)
 
@@ -146,7 +146,7 @@ flutter build ipa    --release --dart-define=API_BASE_URL=https://api.opescare.c
 
 ```bash
 flutter analyze
-flutter run --dart-define=API_BASE_URL=https://api.opescare.cm/api
+flutter run --dart-define=API_BASE_URL=https://api.opescare.com/api
 ```
 Expected: analyze clean; debug run uses the injected URL.
 
@@ -212,7 +212,7 @@ buildTypes {
 - [ ] **Step 4: Verify a signed release build**
 
 ```bash
-flutter build appbundle --release --dart-define=API_BASE_URL=https://api.opescare.cm/api
+flutter build appbundle --release --dart-define=API_BASE_URL=https://api.opescare.com/api
 ```
 Expected: `build/app/outputs/bundle/release/app-release.aab` produced.
 
@@ -368,7 +368,7 @@ ForceUpdateGate(
 
 ```bash
 flutter analyze
-flutter run --dart-define=API_BASE_URL=https://api.opescare.cm/api
+flutter run --dart-define=API_BASE_URL=https://api.opescare.com/api
 ```
 Expected: analyze clean; app boots even if `/mobile/app-config` returns error (fail-open).
 
@@ -466,7 +466,7 @@ Dart: `l10n.greeting(patient.firstName)`
 
 ```bash
 flutter analyze
-flutter run --dart-define=API_BASE_URL=https://api.opescare.cm/api
+flutter run --dart-define=API_BASE_URL=https://api.opescare.com/api
 ```
 Toggle device language EN↔FR; confirm the screen renders fully translated, no overflow.
 
@@ -534,7 +534,7 @@ A segmented control calling `ref.read(localeProvider.notifier).set(const Locale(
 - [ ] **Step 4: Verify persistence + currency/date formatting**
 
 ```bash
-flutter run --dart-define=API_BASE_URL=https://api.opescare.cm/api
+flutter run --dart-define=API_BASE_URL=https://api.opescare.com/api
 ```
 Switch to FR, kill + relaunch → still FR. Confirm any money shows as XAF whole francs (no decimals) and dates format fr-FR.
 
@@ -605,7 +605,7 @@ In `lib/app.dart` add a `WidgetsBindingObserver`; on `AppLifecycleState.resumed`
 
 ```bash
 flutter analyze
-flutter run --dart-define=API_BASE_URL=https://api.opescare.cm/api
+flutter run --dart-define=API_BASE_URL=https://api.opescare.com/api
 ```
 Background the app >2 min → returns to lock screen; biometric/PIN unlocks.
 
@@ -627,7 +627,7 @@ git commit -m "feat(mobile): biometric/PIN app-lock + inactivity auto-logout"
 - [ ] **Step 1: Capture the production cert SHA-256 pin(s)**
 
 ```bash
-echo | openssl s_client -servername api.opescare.cm -connect api.opescare.cm:443 2>/dev/null \
+echo | openssl s_client -servername api.opescare.com -connect api.opescare.com:443 2>/dev/null \
   | openssl x509 -pubkey -noout \
   | openssl pkey -pubin -outform der \
   | openssl dgst -sha256 -binary | openssl enc -base64
@@ -661,7 +661,7 @@ Implement `_spkiSha256Base64` over the cert public key DER.
 
 ```bash
 flutter analyze
-flutter run --dart-define=API_BASE_URL=https://api.opescare.cm/api
+flutter run --dart-define=API_BASE_URL=https://api.opescare.com/api
 ```
 Real host → requests succeed; a proxy with a different cert → requests rejected.
 
@@ -699,7 +699,7 @@ override func applicationDidBecomeActive(_ application: UIApplication) {
 - [ ] **Step 2: Verify on iOS**
 
 ```bash
-flutter build ios --debug --dart-define=API_BASE_URL=https://api.opescare.cm/api
+flutter build ios --debug --dart-define=API_BASE_URL=https://api.opescare.com/api
 ```
 App switcher shows a blurred snapshot, not PHI.
 
@@ -777,7 +777,7 @@ class SafeLogger {
 - [ ] **Step 3: Verify no PHI in logs**
 
 ```bash
-flutter run --dart-define=API_BASE_URL=https://api.opescare.cm/api 2>&1 | grep -iE "token|health_id|password" || echo "clean"
+flutter run --dart-define=API_BASE_URL=https://api.opescare.com/api 2>&1 | grep -iE "token|health_id|password" || echo "clean"
 ```
 Expected: `clean`.
 
@@ -841,8 +841,8 @@ try {
 
 - [ ] **Step 1:** `flutter analyze` → zero issues.
 - [ ] **Step 2:** `flutter test` → all pass (add widget tests for lock screen + locale switch if missing).
-- [ ] **Step 3:** `flutter build appbundle --release --dart-define=API_BASE_URL=https://api.opescare.cm/api` → success.
-- [ ] **Step 4:** `flutter build ipa --release --dart-define=API_BASE_URL=https://api.opescare.cm/api` → success.
+- [ ] **Step 3:** `flutter build appbundle --release --dart-define=API_BASE_URL=https://api.opescare.com/api` → success.
+- [ ] **Step 4:** `flutter build ipa --release --dart-define=API_BASE_URL=https://api.opescare.com/api` → success.
 - [ ] **Step 5: Commit** any test additions.
 
 ### Task F2: Store assets & privacy declarations

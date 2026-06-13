@@ -235,7 +235,7 @@ return [
         'notifiable' => Notifiable::class,
 
         'mail' => [
-            'to' => env('BACKUP_ALERT_EMAIL', 'devops@opescare.cm'),
+            'to' => env('BACKUP_ALERT_EMAIL', 'devops@opescare.com'),
 
             'from' => [
                 'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
