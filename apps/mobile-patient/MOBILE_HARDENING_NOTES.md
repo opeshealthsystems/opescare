@@ -13,7 +13,7 @@ switcher — patient health data must not leak there. No build step needed.
 `applicationWillResignActive` in `AppDelegate`. Not done here.)*
 
 ### 2. French localization foundation (done, needs codegen + translation) 🟡
-Gabon is francophone; the app was English-only. Added the i18n framework:
+Cameroon is bilingual EN/FR; the app was English-only. Added the i18n framework:
 - `pubspec.yaml`: added `flutter_localizations` and `generate: true`.
 - `l10n.yaml`: gen-l10n config (output class `AppLocalizations`).
 - `lib/l10n/app_en.arb` + `lib/l10n/app_fr.arb`: 36 starter strings, full en/fr parity.

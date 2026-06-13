@@ -47,7 +47,7 @@ class _OpesCareAppState extends ConsumerState<OpesCareApp> {
       themeMode: ThemeMode.system,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
-      // Localization: English + French (Gabon is francophone). Strings live in
+      // Localization: English + French (Cameroon is bilingual EN/FR). Strings live in
       // lib/l10n/*.arb. Run `flutter gen-l10n` (or `flutter pub get`) to generate
       // AppLocalizations, then migrate screens to AppLocalizations.of(context).
       localizationsDelegates: AppLocalizations.localizationsDelegates,
