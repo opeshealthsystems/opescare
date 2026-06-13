@@ -20,12 +20,15 @@ were not compiled — verify with `flutter analyze` before relying on them):
 - ✅ **B1** — Laravel `/api/mobile/app-config` endpoint, config, + 2 passing tests. **Built & verified.**
 - ✅ **A2** — `ApiEndpoints.baseUrl` release HTTPS guard; all getters routed through it; README release-build docs. *Code-complete, unverified.*
 - ✅ **B2** — `ForceUpdateGate` wired around `MaterialApp.router` in `app.dart`. *Code-complete, unverified.*
+- ✅ **D3** — iOS app-switcher privacy blur in `AppDelegate.swift` (UIKit, parity with Android FLAG_SECURE). *Code-complete, unverified.*
+- ✅ **D5 (partial)** — `lib/core/security/safe_logger.dart` PHI-redacting, release-silent logger created (no new deps). *Wiring into the dio logging interceptor remains — touches the verified HTTP client, left for the build env.*
 
 Remaining (require Flutter SDK / external setup): **A1** (gen-l10n), **A3** (keystore),
-**C1–C3** (i18n + French translation), **D1–D6** (security packages via `flutter pub add`),
-**E1–E2** (Firebase project + flutterfire), **F1–F3** (analyze/test/build, store assets, audit).
-D tasks add new pub dependencies and were intentionally NOT written here — writing code
-that imports uninstalled packages would break the build until `flutter pub add` runs.
+**C1–C3** (i18n + French translation), **D1** (app-lock — needs `local_auth`), **D2** (cert
+pinning — needs real production cert pins), **D4** (root detection — needs `flutter_jailbreak_detection`),
+**D5 wiring**, **D6** (session timeout — touches auth flow), **E1–E2** (Firebase project + flutterfire),
+**F1–F3** (analyze/test/build, store assets, audit). The package-dependent D tasks were not
+written here — importing uninstalled packages would break the build until `flutter pub add` runs.
 
 ---
 
