@@ -7,6 +7,40 @@ Companion docs: `CLAUDE.md` (entry point) · `AS_BUILT_IMPLEMENTATION_REGISTER.m
 
 ---
 
+## Update — 2026-06-13 (deployment delta since the 2026-06-11 audit)
+
+Changes landed locally this session that the **next production deploy must account for**.
+(All commits are in local `main` but **not yet on origin** — GitHub was network-blocked;
+`git push origin main` must succeed before deploying. ~10 commits pending.)
+
+**Must run on production DB (new migration):**
+- [ ] `php artisan migrate` — applies `2026_06_13_000001_fix_subscription_currency_to_xaf`
+  (flips `subscription_plans` / `subscription_invoices` currency default NGN → **XAF** + back-fills).
+  Already run on the dev `opescare` DB this session; production still needs it. Pairs with the
+  earlier `lite_configs` XAF fix. All billing is now XAF/FCFA (Cameroon); no Naira anywhere.
+
+**New env vars to set (now in `.env.example`):**
+- [ ] `MOBILE_MIN_SUPPORTED_BUILD`, `MOBILE_LATEST_VERSION`, `MOBILE_STORE_URL` — drive the new
+  public endpoint `GET /api/mobile/app-config` (patient-app forced-update gate). Safe defaults ship;
+  set real values before publishing a mobile build.
+
+**Behaviour changes ops should know:**
+- [ ] `/document-preview` (document template gallery) is now **login-gated in production** — public
+  only when `demo.enabled=true` (sales walkthroughs). Previously open to anonymous visitors.
+- [ ] New public route `GET /api/mobile/app-config` (no auth, gates the app before login) — verify it
+  is reachable from the `mobile-api` subdomain.
+
+**Patient mobile app — NOT yet shippable (do not publish the build):**
+- Backend mobile API is complete & verified (20/20 mobile tests green). But the Flutter app still needs
+  A1 (l10n codegen — won't compile without it), C (EN/FR across 32 screens), D1/D2/D4/D6 (app-lock,
+  cert pinning, root detection, session timeout), E (Firebase), and F (release build/signing/store).
+  Full task list + status: `apps/mobile-patient/docs/superpowers/plans/2026-06-13-mobile-patient-production-readiness.md`.
+- Code-complete this session (unverified — no Flutter SDK here): production HTTPS URL guard, force-update
+  wiring, iOS privacy blur, PHI-safe logger. These need `flutter analyze` before relying on them.
+- ⇒ **Deploy the web/API platform independently of the mobile app.** The app is a fast-follow, not a blocker.
+
+---
+
 ## Component readiness at a glance
 
 | Component | State | Blocking items |
