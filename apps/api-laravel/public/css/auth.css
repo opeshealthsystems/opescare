@@ -50,7 +50,10 @@ body.auth-body {
     padding: 4rem 3rem;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    /* Top-aligned natural flow. space-between forced large empty gaps between
+       the header, content and footer on tall viewports — see register page. */
+    justify-content: flex-start;
+    gap: 2.5rem;
     position: relative;
     overflow: hidden;
 }
@@ -93,7 +96,9 @@ body.auth-body {
 }
 
 .sidebar-content {
-    margin: 4rem 0;
+    /* Spacing is handled by the parent's `gap`; the old 4rem margins stacked on
+       top of space-between produced the large empty bands between sections. */
+    margin: 0;
 }
 
 .sidebar-headline {

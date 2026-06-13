@@ -16,11 +16,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
-    
+    <!-- Stylesheets (cache-busted by file mtime so updated CSS/icons are never
+         served stale from the browser cache) -->
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}?v={{ @filemtime(public_path('css/auth.css')) ?: '1' }}">
+
     <!-- Lucide Icons -->
-    <script src="{{ asset('js/lucide.min.js') }}"></script>
+    <script src="{{ asset('js/lucide.min.js') }}?v={{ @filemtime(public_path('js/lucide.min.js')) ?: '1' }}"></script>
 </head>
 <body class="auth-body">
 
@@ -110,15 +111,24 @@
         
     </div>
 
-    <!-- Initialize Lucide Icons -->
+    <!-- Initialize Lucide Icons (robust: runs whether or not the DOM is ready,
+         with a load-event fallback so icons never silently fail to render) -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
+        (function () {
+            function renderIcons() {
+                if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                    window.lucide.createIcons();
+                }
             }
-        });
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', renderIcons);
+            } else {
+                renderIcons();
+            }
+            window.addEventListener('load', renderIcons);
+        })();
     </script>
-    
+
     @yield('scripts')
 </body>
 </html>
