@@ -23,10 +23,10 @@
                     
                     <div class="mt-8 p-6 bg-white border border-border rounded-2xl shadow-sm" style="margin-top: 2rem; padding: 1.5rem; background: white; border: 1px solid var(--color-border); border-radius: 1rem;">
                         <div class="flex items-center gap-4" style="display: flex; align-items: center; gap: 1rem;">
-                            <div class="h-12 w-12 bg-primary rounded-full flex items-center justify-center text-white" style="width: 3rem; height: 3rem; background: var(--color-primary); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center;">JD</div>
+                            <div class="h-12 w-12 bg-primary rounded-full flex items-center justify-center text-white" style="width: 3rem; height: 3rem; background: var(--color-primary); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center;">AN</div>
                             <div>
-                                <h4 style="margin: 0;">John Doe</h4>
-                                <p class="text-xs text-muted" style="font-size: 0.75rem; margin: 0;">ID: OPES-123-456</p>
+                                <h4 style="margin: 0;">Amina Nkeng</h4>
+                                <p class="text-xs text-muted" style="font-size: 0.75rem; margin: 0; font-family: monospace;">ID: CM-HID-7KQ9-MP42-X8D1</p>
                             </div>
                             <div style="margin-left: auto;">
                                 <i data-lucide="qr-code" class="icon-md"></i>
