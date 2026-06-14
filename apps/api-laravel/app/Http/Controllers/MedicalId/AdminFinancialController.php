@@ -194,7 +194,7 @@ class AdminFinancialController extends Controller
         $report = Payment::whereBetween('created_at', [$from, $to])
             ->whereIn('status', ['successful', 'completed'])
             ->selectRaw("COALESCE(service_type,'unspecified') as service_type, COALESCE(gateway,method,'unknown') as gateway, COUNT(*) as txn_count, SUM(amount) as total_collected, AVG(amount) as avg_amount, MIN(amount) as min_amount, MAX(amount) as max_amount")
-            ->groupBy('service_type', 'gateway')
+            ->groupByRaw("COALESCE(service_type,'unspecified'), COALESCE(gateway,method,'unknown')")
             ->orderByDesc('total_collected')
             ->get();
 

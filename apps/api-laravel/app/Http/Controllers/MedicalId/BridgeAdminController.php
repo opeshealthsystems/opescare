@@ -11,23 +11,32 @@ use Illuminate\Support\Str;
 
 class BridgeAdminController extends Controller
 {
-    private function demoFacilityId(): string
+    private function demoFacilityId(): ?string
     {
-        return Facility::value('id') ?? '';
+        $id = Facility::value('id');
+
+        return ($id && Str::isUuid($id)) ? $id : null;
     }
 
     public function index(Request $request)
     {
-        $agents = BridgeAgent::where('facility_id', $this->demoFacilityId())
+        $facilityId = $this->demoFacilityId();
+
+        $agents = BridgeAgent::query()
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
+            ->when(! $facilityId, fn ($q) => $q->whereRaw('1 = 0'))
             ->withCount('syncBatches')
             ->orderByDesc('created_at')
             ->paginate(20)->withQueryString();
 
+        $agentBase = fn () => BridgeAgent::query()->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->when(! $facilityId, fn ($q) => $q->whereRaw('1 = 0'));
+        $batchBase = fn () => BridgeSyncBatch::query()->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->when(! $facilityId, fn ($q) => $q->whereRaw('1 = 0'));
+
         $stats = [
-            'total'      => BridgeAgent::where('facility_id', $this->demoFacilityId())->count(),
-            'active'     => BridgeAgent::where('facility_id', $this->demoFacilityId())->where('status', 'active')->count(),
-            'totalBatches' => BridgeSyncBatch::where('facility_id', $this->demoFacilityId())->count(),
-            'failedBatches'=> BridgeSyncBatch::where('facility_id', $this->demoFacilityId())->where('status', 'failed')->count(),
+            'total'        => $agentBase()->count(),
+            'active'       => $agentBase()->where('status', 'active')->count(),
+            'totalBatches' => $batchBase()->count(),
+            'failedBatches'=> $batchBase()->where('status', 'failed')->count(),
         ];
 
         return view('portals.admin.bridge.index', compact('agents', 'stats'));

@@ -42,7 +42,8 @@ class KpiDashboardController extends Controller
         $snapshots      = $this->analytics->latestDailySnapshots($facilityId, $category);
         $platformSummary= $this->analytics->platformSummary(Carbon::today());
         $categories     = MetricDefinition::active()->distinct('category')->pluck('category')->sort()->values();
-        $recentExports  = KpiExport::where('facility_id', $facilityId)
+        $recentExports  = KpiExport::query()
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->orderByDesc('requested_at')
             ->limit(5)
             ->get();

@@ -179,8 +179,17 @@ class ProductAnalyticsService
      * Compute and store daily snapshots for a facility for a given date.
      * Idempotent — re-computing the same date overwrites the existing snapshot.
      */
-    public function computeDailySnapshots(string $facilityId, Carbon $date): void
+    public function computeDailySnapshots(?string $facilityId, Carbon $date): void
     {
+        // Platform-wide (no facility selected): compute for every facility.
+        if ($facilityId === null) {
+            \App\Models\Facility::query()->pluck('id')->each(function ($id) use ($date) {
+                $this->computeDailySnapshots((string) $id, $date->copy());
+            });
+
+            return;
+        }
+
         $from = $date->copy()->startOfDay();
         $to   = $date->copy()->endOfDay();
 
@@ -367,15 +376,16 @@ class ProductAnalyticsService
      * Get latest daily snapshots for a facility — used by KPI dashboard.
      * Returns one snapshot per metric for the most recent available date.
      */
-    public function latestDailySnapshots(string $facilityId, ?string $category = null): Collection
+    public function latestDailySnapshots(?string $facilityId, ?string $category = null): Collection
     {
+        $latestDate = MetricSnapshot::where('period_granularity', 'daily')
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
+            ->max('period_date') ?? now()->toDateString();
+
         $query = MetricSnapshot::with('metricDefinition')
-            ->where('facility_id', $facilityId)
+            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->where('period_granularity', 'daily')
-            ->where('period_date', MetricSnapshot::where('facility_id', $facilityId)
-                ->where('period_granularity', 'daily')
-                ->max('period_date') ?? now()->toDateString()
-            );
+            ->where('period_date', $latestDate);
 
         if ($category) {
             $query->whereHas('metricDefinition', fn($q) => $q->where('category', $category));
@@ -387,11 +397,24 @@ class ProductAnalyticsService
     /**
      * Trend data for a metric over a date range.
      */
-    public function metricTrend(string $facilityId, string $metricSlug, Carbon $from, Carbon $to): array
+    public function metricTrend(?string $facilityId, string $metricSlug, Carbon $from, Carbon $to): array
     {
         $definition = MetricDefinition::where('slug', $metricSlug)->first();
         if (!$definition) {
             return [];
+        }
+
+        // Platform-wide (no facility): aggregate (sum) across all facilities per day.
+        if ($facilityId === null) {
+            return MetricSnapshot::where('metric_definition_id', $definition->id)
+                ->where('period_granularity', 'daily')
+                ->whereBetween('period_date', [$from->toDateString(), $to->toDateString()])
+                ->selectRaw('period_date, SUM(value) as value')
+                ->groupBy('period_date')
+                ->orderBy('period_date')
+                ->get()
+                ->mapWithKeys(fn($s) => [Carbon::parse($s->period_date)->toDateString() => (float) $s->value])
+                ->toArray();
         }
 
         return MetricSnapshot::where('metric_definition_id', $definition->id)

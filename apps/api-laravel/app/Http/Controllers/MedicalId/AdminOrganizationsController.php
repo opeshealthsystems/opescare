@@ -59,12 +59,12 @@ class AdminOrganizationsController extends Controller
             return redirect()->route('login');
         }
 
-        $facilities = Facility::where('status', 'pending')
+        $organizations = Facility::where('status', 'pending')
             ->orderBy('created_at', 'asc')
             ->paginate(25)
             ->withQueryString();
 
-        return view('portals.admin.organizations.pending', compact('facilities'));
+        return view('portals.admin.organizations.pending', compact('organizations'));
     }
 
     public function approve(string $id): RedirectResponse

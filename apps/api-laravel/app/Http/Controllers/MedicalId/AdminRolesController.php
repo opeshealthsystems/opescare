@@ -29,7 +29,7 @@ class AdminRolesController extends Controller
             return redirect()->route('login');
         }
 
-        $roles = Role::withCount('users')->orderBy('name')->get();
+        $roles = Role::withCount('users')->orderBy('name')->paginate(25)->withQueryString();
 
         return view('portals.admin.roles.index', compact('roles'));
     }

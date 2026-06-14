@@ -66,7 +66,7 @@ class AnalyticsDashboardController extends Controller
             ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereNotNull('called_at')
             ->whereBetween('created_at', [$from, $to])
-            ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, created_at, called_at)) as avg_wait')
+            ->selectRaw('AVG(EXTRACT(EPOCH FROM (called_at - created_at))/60) as avg_wait')
             ->value('avg_wait');
 
         $byStatus = DB::table('patient_queue_entries')
@@ -127,7 +127,7 @@ class AnalyticsDashboardController extends Controller
             ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereNotNull('discharged_at')
             ->whereBetween('admitted_at', [$from, $to])
-            ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, admitted_at, discharged_at)) as avg_los')
+            ->selectRaw('AVG(EXTRACT(EPOCH FROM (discharged_at - admitted_at))/3600) as avg_los')
             ->value('avg_los');
 
         $byWard = DB::table('ward_beds')

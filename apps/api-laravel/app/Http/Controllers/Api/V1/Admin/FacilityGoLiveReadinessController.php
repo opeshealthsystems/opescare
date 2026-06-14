@@ -14,6 +14,34 @@ use RuntimeException;
 
 class FacilityGoLiveReadinessController extends Controller
 {
+    /**
+     * Render the admin go-live readiness page (web view).
+     * Resolves the active facility from session/primary, falling back to the
+     * first facility. When no facility exists, renders a clean empty state.
+     */
+    public function index(Request $request, FacilityGoLiveService $service)
+    {
+        $user = $request->user();
+        $facilityId = session('active_facility_id') ?? ($user->primary_facility_id ?? null);
+
+        $facility = $facilityId
+            ? Facility::find($facilityId)
+            : Facility::query()->orderBy('created_at')->first();
+
+        if (! $facility) {
+            return response()->view('portals.admin.go_live_readiness_empty', [], 200);
+        }
+
+        $readiness = $service->getOrCreateReadiness($facility->id);
+
+        return view('portals.admin.go_live_readiness', [
+            'facility'     => $facility,
+            'readiness'    => $readiness,
+            'missingItems' => $service->missingItems($readiness),
+            'labels'       => $service->checklistLabels(),
+        ]);
+    }
+
     public function show(Facility $facility, FacilityGoLiveService $service): JsonResponse
     {
         return response()->json([

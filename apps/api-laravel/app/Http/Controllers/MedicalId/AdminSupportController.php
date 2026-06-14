@@ -52,7 +52,7 @@ class AdminSupportController extends Controller
 
         $avgResolutionHours = SupportTicket::whereNotNull('resolved_at')
             ->whereNotNull('created_at')
-            ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, created_at, resolved_at)) as avg_hours')
+            ->selectRaw('AVG(EXTRACT(EPOCH FROM (resolved_at - created_at))/3600) as avg_hours')
             ->value('avg_hours');
 
         $stats = [

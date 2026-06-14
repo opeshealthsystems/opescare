@@ -183,14 +183,14 @@ class PlatformAdminService
         $storageOk  = $this->checkStorage();
         $queueOk    = $this->checkQueue();
         $failedJobs = $this->failedJobCount();
+        $maintenanceActive = MaintenanceWindow::where('is_active', true)->exists();
 
         return [
-            'database'    => ['status' => $dbOk  ? 'ok' : 'error',   'label' => 'Database'],
-            'storage'     => ['status' => $storageOk ? 'ok' : 'error','label' => 'Storage'],
-            'queue'       => ['status' => $queueOk ? 'ok' : 'warning','label' => 'Queue'],
-            'failed_jobs' => ['count' => $failedJobs, 'status' => $failedJobs > 0 ? 'warning' : 'ok', 'label' => 'Failed Jobs'],
-            'maintenance' => ['active' => MaintenanceWindow::where('is_active', true)->exists(), 'label' => 'Maintenance Mode'],
-            'checked_at'  => now()->toIso8601String(),
+            'database'    => ['status' => $dbOk  ? 'ok' : 'error',   'label' => 'Database', 'message' => $dbOk ? 'Connection OK' : 'Cannot connect to database'],
+            'storage'     => ['status' => $storageOk ? 'ok' : 'error','label' => 'Storage', 'message' => $storageOk ? 'Disk write OK' : 'Cannot write to disk'],
+            'queue'       => ['status' => $queueOk ? 'ok' : 'warning','label' => 'Queue', 'message' => $queueOk ? 'Queue manager available' : 'Queue manager unavailable'],
+            'failed_jobs' => ['count' => $failedJobs, 'status' => $failedJobs > 0 ? 'warning' : 'ok', 'label' => 'Failed Jobs', 'message' => $failedJobs > 0 ? "{$failedJobs} job(s) in failed_jobs table" : 'No failed jobs'],
+            'maintenance' => ['active' => $maintenanceActive, 'status' => $maintenanceActive ? 'warning' : 'ok', 'label' => 'Maintenance Mode', 'message' => $maintenanceActive ? 'Platform is in maintenance mode' : 'Platform operational'],
         ];
     }
 
