@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Patient;
 use App\Models\Facility;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\ConsentRequest;
 use App\Models\ConsentGrant;
@@ -89,6 +90,10 @@ class DataGovernancePrivacyTest extends TestCase
         $this->user->email = 'jane@opescare.org';
         $this->user->password = bcrypt('secret');
         $this->user->patient_id = $this->patient->id; // link so mobile auth resolves a user identity
+        $this->user->role_id = Role::create([
+            'name' => 'platform_admin',
+            'description' => 'Platform Administrator',
+        ])->id;
         $this->user->save();
     }
 

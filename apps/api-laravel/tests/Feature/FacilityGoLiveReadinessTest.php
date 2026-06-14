@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Facility;
+use App\Models\Role;
 use App\Models\User;
 use App\Modules\FacilityReadiness\Services\FacilityGoLiveService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -111,12 +112,19 @@ class FacilityGoLiveReadinessTest extends TestCase
             'status' => 'pending',
             'license_number' => 'LIC-GO-LIVE',
         ]);
-        $admin = User::create([
-            'name' => 'Master Admin',
-            'email' => 'master-admin@test.com',
-            'password' => 'password',
-            'primary_facility_id' => $facility->id,
+        $role = Role::create([
+            'name' => 'platform_admin',
+            'description' => 'Platform Administrator',
         ]);
+
+        $admin = new User();
+        $admin->id = '00000000-0000-0000-0000-000000000001';
+        $admin->name = 'Master Admin';
+        $admin->email = 'master-admin@test.com';
+        $admin->password = 'password';
+        $admin->primary_facility_id = $facility->id;
+        $admin->role_id = $role->id;
+        $admin->save();
 
         return [$facility, $admin];
     }
