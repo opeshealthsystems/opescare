@@ -12,6 +12,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/portal.css') }}">
+    <style>
+        .sidebar-spacer{margin-bottom:var(--p-space-3,.75rem)}
+        .min-w-0{min-width:0}
+    </style>
     @yield('head')
 </head>
 <body class="portal-body">
@@ -46,7 +50,7 @@
         <div class="sidebar-nav">
             @hasSection('sidebar_nav')
                 @yield('sidebar_role_badge')
-                <div style="margin-bottom: var(--p-space-3);"></div>
+                <div class="sidebar-spacer"></div>
                 @yield('sidebar_nav')
             @else
                 @includeIf('partials.sidebars.' . $sidebarProfileKey)
@@ -58,7 +62,7 @@
                 <div class="sidebar-avatar" aria-hidden="true">
                     {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                 </div>
-                <div style="min-width:0;">
+                <div class="min-w-0">
                     <div class="sidebar-user-name">{{ auth()->user()->name ?? 'User' }}</div>
                     <div class="sidebar-user-role">
                         @hasSection('sidebar_user_role')@yield('sidebar_user_role')@else{{ $sidebarRoleLabel }}@endif

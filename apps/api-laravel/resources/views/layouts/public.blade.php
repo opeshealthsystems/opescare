@@ -32,6 +32,10 @@
     
     <!-- Lucide Icons -->
     <script src="{{ asset('js/lucide.min.js') }}"></script>
+    <style>
+        .nav-icon{width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;flex-shrink:0}
+        .flex-shrink-0{flex-shrink:0}
+    </style>
     @yield('head_scripts')
 </head>
 <body>
@@ -40,7 +44,7 @@
     <header class="header">
         <div class="container header-inner">
             <a href="/" class="logo" style="display:flex;align-items:center;gap:0.5rem;text-decoration:none;">
-                <img src="{{ asset('favicon.svg') }}" alt="" width="28" height="28" style="flex-shrink:0;">
+                <img src="{{ asset('favicon.svg') }}" alt="" width="28" height="28" class="flex-shrink-0">
                 <span>OpesCare</span>
             </a>
 
@@ -48,45 +52,45 @@
                 <div class="nav-dropdown">
                     <a href="{{ route('public.how-it-works') }}" class="nav-link dropdown-trigger">{{ __('landing.nav.product', [], app()->getLocale()) ?: 'Product' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
                     <div class="dropdown-menu">
-                        <a href="{{ route('public.how-it-works') }}" class="dropdown-item"><i data-lucide="git-branch-plus" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.nav.how_it_works_link', [], app()->getLocale()) ?: 'How OpesCare Works' }}</a>
-                        <a href="{{ route('public.solutions.patients') }}" class="dropdown-item"><i data-lucide="id-card" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.nav.health_id', [], app()->getLocale()) ?: 'Health ID' }}</a>
-                        <a href="{{ route('public.solutions.patients') }}#timeline" class="dropdown-item"><i data-lucide="history" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.footer.link_timeline', [], app()->getLocale()) ?: 'Patient Timeline' }}</a>
-                        <a href="{{ route('public.consent') }}" class="dropdown-item"><i data-lucide="shield-check" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.nav.consent_access', [], app()->getLocale()) ?: 'Consent & Access' }}</a>
-                        <a href="{{ route('public.care-map') }}" class="dropdown-item"><i data-lucide="map-pin" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.nav.care_map', [], app()->getLocale()) ?: 'Verified Care Map' }}</a>
+                        <a href="{{ route('public.how-it-works') }}" class="dropdown-item"><i data-lucide="git-branch-plus" class="nav-icon"></i>{{ __('landing.nav.how_it_works_link', [], app()->getLocale()) ?: 'How OpesCare Works' }}</a>
+                        <a href="{{ route('public.solutions.patients') }}" class="dropdown-item"><i data-lucide="id-card" class="nav-icon"></i>{{ __('landing.nav.health_id', [], app()->getLocale()) ?: 'Health ID' }}</a>
+                        <a href="{{ route('public.solutions.patients') }}#timeline" class="dropdown-item"><i data-lucide="history" class="nav-icon"></i>{{ __('landing.footer.link_timeline', [], app()->getLocale()) ?: 'Patient Timeline' }}</a>
+                        <a href="{{ route('public.consent') }}" class="dropdown-item"><i data-lucide="shield-check" class="nav-icon"></i>{{ __('landing.nav.consent_access', [], app()->getLocale()) ?: 'Consent & Access' }}</a>
+                        <a href="{{ route('public.care-map') }}" class="dropdown-item"><i data-lucide="map-pin" class="nav-icon"></i>{{ __('landing.nav.care_map', [], app()->getLocale()) ?: 'Verified Care Map' }}</a>
                     </div>
                 </div>
                 <div class="nav-dropdown">
                     <a href="{{ route('public.solutions.patients') }}" class="nav-link dropdown-trigger">{{ __('landing.nav.solutions', [], app()->getLocale()) ?: 'Solutions' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
                     <div class="dropdown-menu">
-                        <a href="{{ route('public.solutions.patients') }}" class="dropdown-item"><i data-lucide="user" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.nav.for_patients', [], app()->getLocale()) ?: 'For Patients' }}</a>
-                        <a href="{{ route('public.solutions.hospitals') }}" class="dropdown-item"><i data-lucide="hospital" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.nav.for_hospitals', [], app()->getLocale()) ?: 'For Hospitals &amp; Clinics' }}</a>
-                        <a href="{{ route('public.solutions.pharmacies') }}" class="dropdown-item"><i data-lucide="pill" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.nav.for_pharmacies', [], app()->getLocale()) ?: 'For Pharmacies' }}</a>
-                        <a href="{{ route('public.solutions.laboratories') }}" class="dropdown-item"><i data-lucide="flask-conical" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.nav.for_labs', [], app()->getLocale()) ?: 'For Laboratories' }}</a>
-                        <a href="{{ route('public.solutions.insurers') }}" class="dropdown-item"><i data-lucide="shield" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.nav.for_insurers', [], app()->getLocale()) ?: 'For Insurers' }}</a>
-                        <a href="{{ route('public.solutions.public-health') }}" class="dropdown-item"><i data-lucide="globe" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.nav.for_public_health', [], app()->getLocale()) ?: 'For Public Health' }}</a>
+                        <a href="{{ route('public.solutions.patients') }}" class="dropdown-item"><i data-lucide="user" class="nav-icon"></i>{{ __('landing.nav.for_patients', [], app()->getLocale()) ?: 'For Patients' }}</a>
+                        <a href="{{ route('public.solutions.hospitals') }}" class="dropdown-item"><i data-lucide="hospital" class="nav-icon"></i>{{ __('landing.nav.for_hospitals', [], app()->getLocale()) ?: 'For Hospitals &amp; Clinics' }}</a>
+                        <a href="{{ route('public.solutions.pharmacies') }}" class="dropdown-item"><i data-lucide="pill" class="nav-icon"></i>{{ __('landing.nav.for_pharmacies', [], app()->getLocale()) ?: 'For Pharmacies' }}</a>
+                        <a href="{{ route('public.solutions.laboratories') }}" class="dropdown-item"><i data-lucide="flask-conical" class="nav-icon"></i>{{ __('landing.nav.for_labs', [], app()->getLocale()) ?: 'For Laboratories' }}</a>
+                        <a href="{{ route('public.solutions.insurers') }}" class="dropdown-item"><i data-lucide="shield" class="nav-icon"></i>{{ __('landing.nav.for_insurers', [], app()->getLocale()) ?: 'For Insurers' }}</a>
+                        <a href="{{ route('public.solutions.public-health') }}" class="dropdown-item"><i data-lucide="globe" class="nav-icon"></i>{{ __('landing.nav.for_public_health', [], app()->getLocale()) ?: 'For Public Health' }}</a>
                     </div>
                 </div>
                 <div class="nav-dropdown">
                     <a href="{{ route('public.interoperability') }}" class="nav-link dropdown-trigger">{{ __('landing.nav.interop', [], app()->getLocale()) ?: 'Interoperability' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
                     <div class="dropdown-menu">
-                        <a href="{{ route('public.interoperability') }}" class="dropdown-item"><i data-lucide="network" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.nav.interop_overview', [], app()->getLocale()) ?: 'Overview' }}</a>
-                        <a href="{{ route('docs.index') }}" class="dropdown-item" style="font-weight:600;color:var(--color-primary,#4F46E5);"><i data-lucide="book-open" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>Developer Docs</a>
-                        <a href="{{ route('docs.api') }}" class="dropdown-item"><i data-lucide="braces" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>Connect API</a>
-                        <a href="{{ route('docs.sdk') }}" class="dropdown-item"><i data-lucide="code-2" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>SDK</a>
-                        <a href="{{ route('docs.widget') }}" class="dropdown-item"><i data-lucide="panel-top" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>Widget</a>
-                        <a href="{{ route('docs.bridge') }}" class="dropdown-item"><i data-lucide="cpu" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>Bridge Agent</a>
-                        <a href="{{ route('docs.webhooks') }}" class="dropdown-item"><i data-lucide="radio-tower" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>Webhooks</a>
-                        <a href="{{ route('docs.playground') }}" class="dropdown-item"><i data-lucide="play-circle" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>API Playground</a>
+                        <a href="{{ route('public.interoperability') }}" class="dropdown-item"><i data-lucide="network" class="nav-icon"></i>{{ __('landing.nav.interop_overview', [], app()->getLocale()) ?: 'Overview' }}</a>
+                        <a href="{{ route('docs.index') }}" class="dropdown-item" style="font-weight:600;color:var(--color-primary,#4F46E5);"><i data-lucide="book-open" class="nav-icon"></i>Developer Docs</a>
+                        <a href="{{ route('docs.api') }}" class="dropdown-item"><i data-lucide="braces" class="nav-icon"></i>Connect API</a>
+                        <a href="{{ route('docs.sdk') }}" class="dropdown-item"><i data-lucide="code-2" class="nav-icon"></i>SDK</a>
+                        <a href="{{ route('docs.widget') }}" class="dropdown-item"><i data-lucide="panel-top" class="nav-icon"></i>Widget</a>
+                        <a href="{{ route('docs.bridge') }}" class="dropdown-item"><i data-lucide="cpu" class="nav-icon"></i>Bridge Agent</a>
+                        <a href="{{ route('docs.webhooks') }}" class="dropdown-item"><i data-lucide="radio-tower" class="nav-icon"></i>Webhooks</a>
+                        <a href="{{ route('docs.playground') }}" class="dropdown-item"><i data-lucide="play-circle" class="nav-icon"></i>API Playground</a>
                     </div>
                 </div>
                 <a href="{{ route('public.security') }}" class="nav-link">{{ __('landing.nav.security', [], app()->getLocale()) ?: 'Security' }}</a>
                 <div class="nav-dropdown">
                     <a href="{{ route('public.help') }}" class="nav-link dropdown-trigger">{{ __('landing.nav.resources', [], app()->getLocale()) ?: 'Resources' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
                     <div class="dropdown-menu">
-                        <a href="{{ route('public.faq') }}" class="dropdown-item"><i data-lucide="help-circle" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.nav.faq', [], app()->getLocale()) ?: 'FAQ' }}</a>
-                        <a href="{{ route('public.help') }}" class="dropdown-item"><i data-lucide="book-open" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.nav.help_center', [], app()->getLocale()) ?: 'Help Center' }}</a>
-                        <a href="{{ route('public.status') }}" class="dropdown-item"><i data-lucide="activity" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.nav.system_status', [], app()->getLocale()) ?: 'System Status' }}</a>
-                        <a href="{{ route('public.contact') }}" class="dropdown-item"><i data-lucide="headset" style="width:.875rem;height:.875rem;margin-right:.5rem;vertical-align:middle;"></i>{{ __('landing.nav.contact_support', [], app()->getLocale()) ?: 'Contact Support' }}</a>
+                        <a href="{{ route('public.faq') }}" class="dropdown-item"><i data-lucide="help-circle" class="nav-icon"></i>{{ __('landing.nav.faq', [], app()->getLocale()) ?: 'FAQ' }}</a>
+                        <a href="{{ route('public.help') }}" class="dropdown-item"><i data-lucide="book-open" class="nav-icon"></i>{{ __('landing.nav.help_center', [], app()->getLocale()) ?: 'Help Center' }}</a>
+                        <a href="{{ route('public.status') }}" class="dropdown-item"><i data-lucide="activity" class="nav-icon"></i>{{ __('landing.nav.system_status', [], app()->getLocale()) ?: 'System Status' }}</a>
+                        <a href="{{ route('public.contact') }}" class="dropdown-item"><i data-lucide="headset" class="nav-icon"></i>{{ __('landing.nav.contact_support', [], app()->getLocale()) ?: 'Contact Support' }}</a>
                     </div>
                 </div>
                 <a href="{{ route('public.contact') }}" class="nav-link">{{ __('landing.nav.contact', [], app()->getLocale()) ?: 'Contact' }}</a>
@@ -117,7 +121,7 @@
             <div class="container">
                 <div class="mobile-drawer-header">
                     <span class="logo" style="display:flex;align-items:center;gap:0.5rem;">
-                        <img src="{{ asset('favicon.svg') }}" alt="" width="24" height="24" style="flex-shrink:0;">
+                        <img src="{{ asset('favicon.svg') }}" alt="" width="24" height="24" class="flex-shrink-0">
                         <span>OpesCare</span>
                     </span>
                     <button id="closeMenu" style="background: none; border: none; color: var(--color-text-primary);">
@@ -182,7 +186,7 @@
             <!-- Brand col -->
             <div class="footer-logo">
                 <a href="{{ route('public.landing') }}" class="logo" style="display:flex;align-items:center;gap:0.5rem;text-decoration:none;">
-                    <img src="{{ asset('favicon.svg') }}" alt="OpesCare" width="26" height="26" style="flex-shrink:0;">
+                    <img src="{{ asset('favicon.svg') }}" alt="OpesCare" width="26" height="26" class="flex-shrink-0">
                     <span>OpesCare</span>
                 </a>
                 <p class="text-muted text-sm" style="margin-top:1rem;line-height:1.6;">{{ __('landing.footer.desc', [], app()->getLocale()) }}</p>

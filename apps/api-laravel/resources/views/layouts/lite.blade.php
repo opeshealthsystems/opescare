@@ -265,6 +265,13 @@
         .lite-badge--info    { background: #dbeafe; color: #1d4ed8; }
         .lite-badge--default { background: #f1f5f9; color: #475569; }
 
+        /* Inline-style replacements */
+        .lite-footer-link{font-size:.78rem;opacity:.7}
+        .lite-title-sm{font-size:.78rem;opacity:.8}
+        .lite-sidenav__footer{margin-top:auto;padding:12px 16px}
+        .lite-notify-row{padding:8px 16px}
+        .lite-notify-icon{width:16px;height:16px;flex-shrink:0}
+
         @media (min-width: 640px) {
             .lite-main { padding: 24px; padding-bottom: 24px; }
             .lite-bottomnav { display: none; }
@@ -363,8 +370,8 @@
            class="lite-sidenav__link {{ request()->routeIs('portals.lite.conflicts') ? 'active' : '' }}">
             <i data-lucide="git-merge"></i> Conflicts
         </a>
-        <div style="margin-top:auto;padding:12px 16px;">
-            <a href="{{ route('portals.staff.index') }}" class="lite-sidenav__link" style="font-size:0.78rem;opacity:.7;">
+        <div class="lite-sidenav__footer">
+            <a href="{{ route('portals.staff.index') }}" class="lite-sidenav__link lite-footer-link">
                 <i data-lucide="arrow-left"></i> Full Portal
             </a>
         </div>
@@ -379,7 +386,7 @@
                 <span class="lite-topbar__badge">Lite</span>
             </div>
             <div class="lite-topbar__right">
-                <span style="font-size:0.78rem;opacity:.8;">@yield('title', 'Dashboard')</span>
+                <span class="lite-title-sm">@yield('title', 'Dashboard')</span>
             </div>
         </header>
 
@@ -390,17 +397,17 @@
         </div>
 
         @if(session('success'))
-            <div style="padding:8px 16px;">
+            <div class="lite-notify-row">
                 <div class="lite-alert lite-alert--success">
-                    <i data-lucide="check-circle" style="width:16px;height:16px;flex-shrink:0;"></i>
+                    <i data-lucide="check-circle" class="lite-notify-icon"></i>
                     {{ session('success') }}
                 </div>
             </div>
         @endif
         @if(session('error'))
-            <div style="padding:8px 16px;">
+            <div class="lite-notify-row">
                 <div class="lite-alert lite-alert--danger">
-                    <i data-lucide="alert-circle" style="width:16px;height:16px;flex-shrink:0;"></i>
+                    <i data-lucide="alert-circle" class="lite-notify-icon"></i>
                     {{ session('error') }}
                 </div>
             </div>

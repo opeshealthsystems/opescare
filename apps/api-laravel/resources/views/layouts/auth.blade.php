@@ -22,6 +22,12 @@
 
     <!-- Lucide Icons -->
     <script src="{{ asset('js/lucide.min.js') }}?v={{ @filemtime(public_path('js/lucide.min.js')) ?: '1' }}"></script>
+    <style>
+        .brand-shield-icon{width:2.25rem;height:2.25rem;color:#38BDF8}
+        .auth-sep{color:var(--auth-border,#e2e8f0)}
+        .auth-layout-footer{margin-top:3rem;font-size:.8rem;text-align:center;color:var(--auth-text-muted,#94a3b8)}
+        .auth-footer-link{color:var(--auth-primary,#0F4C81);font-weight:700;text-decoration:none}
+    </style>
 </head>
 <body class="auth-body">
 
@@ -31,7 +37,7 @@
         <aside class="auth-sidebar">
             <div class="sidebar-header">
                 <a href="/" class="sidebar-logo">
-                    <i data-lucide="shield-check" style="width: 2.25rem; height: 2.25rem; color: #38BDF8;"></i>
+                    <i data-lucide="shield-check" class="brand-shield-icon"></i>
                     <span>OpesCare</span>
                 </a>
                 <div class="sidebar-tagline">{{ __('onboarding.brand.tagline') }}</div>
@@ -90,7 +96,7 @@
                 <!-- Dynamic Language Switcher -->
                 <div class="auth-lang-selector">
                     <a href="{{ route('lang.switch', 'en') }}" class="{{ app()->getLocale() == 'en' ? 'active' : '' }}">English</a>
-                    <span style="color: var(--auth-border);">|</span>
+                    <span class="auth-sep">|</span>
                     <a href="{{ route('lang.switch', 'fr') }}" class="{{ app()->getLocale() == 'fr' ? 'active' : '' }}">Français</a>
                 </div>
             </div>
@@ -100,9 +106,9 @@
             </div>
             
             <!-- Support Footer Fallback -->
-            <div class="auth-footer-links" style="margin-top: 3rem; font-size: 0.8rem; text-align: center; color: var(--auth-text-muted);">
+            <div class="auth-footer-links auth-layout-footer">
                 <p>{{ __('onboarding.brand.need_help') }} 
-                    <a href="{{ route('public.contact') }}" style="color: var(--auth-primary); font-weight: 700; text-decoration: none;">
+                    <a href="{{ route('public.contact') }}" class="auth-footer-link">
                         {{ __('onboarding.brand.contact_support') }}
                     </a>
                 </p>
