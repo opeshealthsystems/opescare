@@ -22,6 +22,11 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\SetLocale::class,
             \App\Http\Middleware\DemoSessionMiddleware::class,
             \App\Http\Middleware\DemoDataScope::class,
+            // Platform god-mode isolation — runs on every web request but is a
+            // no-op except on platform-only paths (/portals/admin/*, /admin/*
+            // god mode). Global registration guarantees no admin route can leak
+            // to a facility-tier user regardless of which route group defines it.
+            \App\Http\Middleware\RequirePlatformAdmin::class,
             \App\Http\Middleware\AddSecurityHeaders::class,
         ]);
         $middleware->api(prepend: [

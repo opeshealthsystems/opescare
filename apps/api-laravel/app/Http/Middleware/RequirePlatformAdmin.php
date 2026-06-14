@@ -71,14 +71,24 @@ class RequirePlatformAdmin
     {
         $path = ltrim($request->path(), '/');
 
-        // Only guard platform-only paths; everything else passes straight through.
-        $isPlatformOnly = false;
-        foreach (self::PLATFORM_ONLY_PREFIXES as $prefix) {
-            if ($path === $prefix || str_starts_with($path, $prefix . '/')) {
-                $isPlatformOnly = true;
-                break;
+        // The bare facility-admin dashboard (/portals/admin) IS facility-scoped
+        // and shared by facility admins; everything UNDER /portals/admin/* is
+        // platform god-mode (Control Center, Onboarding, Security, KPI, Legal,
+        // Subscriptions, god-mode data, …) and must be platform-tier only.
+        $isPlatformOnly = ($path !== 'portals/admin')
+            && str_starts_with($path, 'portals/admin/');
+
+        // Plus the bare /admin/* god-mode data routes and any other explicitly
+        // listed platform-only prefixes.
+        if (! $isPlatformOnly) {
+            foreach (self::PLATFORM_ONLY_PREFIXES as $prefix) {
+                if ($path === $prefix || str_starts_with($path, $prefix . '/')) {
+                    $isPlatformOnly = true;
+                    break;
+                }
             }
         }
+
         if (! $isPlatformOnly) {
             return $next($request);
         }

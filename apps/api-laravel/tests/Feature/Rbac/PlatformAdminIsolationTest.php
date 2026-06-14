@@ -83,4 +83,21 @@ class PlatformAdminIsolationTest extends TestCase
         // Must be blocked (403 from platform.admin, or redirected) — never 200.
         $this->assertNotSame(200, $res->getStatusCode(), 'facility admin must NOT reach the platform control center');
     }
+
+    /** Regression: clicking "Onboarding" must not silently show the god-mode view. */
+    public function test_facility_admin_blocked_from_every_godmode_subpath(): void
+    {
+        $admin = $this->userWithRole('clinic_admin');
+        foreach (['onboarding', 'kpi', 'go-live', 'security', 'legal', 'subscription', 'reports/minsante-monthly'] as $sub) {
+            $res = $this->actingAs($admin)->get('/portals/admin/' . $sub);
+            $this->assertSame(403, $res->getStatusCode(), "facility admin must get 403 on /portals/admin/{$sub}");
+        }
+    }
+
+    /** The bare facility dashboard stays reachable for a facility admin. */
+    public function test_facility_admin_can_open_scoped_dashboard(): void
+    {
+        $res = $this->actingAs($this->userWithRole('clinic_admin'))->get('/portals/admin');
+        $this->assertNotSame(403, $res->getStatusCode(), 'facility admin keeps their scoped dashboard');
+    }
 }
