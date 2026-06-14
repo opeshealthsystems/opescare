@@ -20,6 +20,7 @@ class DemoDatabaseSeeder extends Seeder
             DemoRolesAndPermissionsSeeder::class,
             DemoUsersSeeder::class,
             DemoFacilityAssignmentsSeeder::class,
+            OpesDemoOrgsSeeder::class,
             DemoPatientsSeeder::class,
             DemoConsentSeeder::class,
             DemoClinicalRecordsSeeder::class,
