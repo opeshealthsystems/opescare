@@ -59,8 +59,8 @@
             @forelse($byGateway as $row)
             <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--p-border);">
                 <div>
-                    @php $icons=['mtn_momo'=>'📱','orange_money'=>'🟠','cash'=>'💵','card'=>'💳','insurance'=>'🏥','bank_transfer'=>'🏦','wallet'=>'👛']; @endphp
-                    <span>{{ $icons[$row->gw] ?? '💳' }}</span>
+                    @php $icons=['mtn_momo'=>'smartphone','orange_money'=>'smartphone','cash'=>'banknote','card'=>'credit-card','insurance'=>'hospital','bank_transfer'=>'landmark','wallet'=>'wallet']; @endphp
+                    <i data-lucide="{{ $icons[$row->gw] ?? 'credit-card' }}" style="width:16px;height:16px;vertical-align:-2px;"></i>
                     <span style="font-size:.88rem;margin-left:.4rem;">{{ ucwords(str_replace('_',' ',$row->gw)) }}</span>
                     <span style="font-size:.78rem;color:var(--p-text-muted);margin-left:.5rem;">{{ $row->txn_count }} txn{{ $row->txn_count!=1?'s':'' }}</span>
                 </div>
@@ -118,8 +118,8 @@
         <td><code style="font-size:.78rem;">{{ $p->payment_reference }}</code></td>
         <td style="font-size:.85rem;">{{ $p->patient?->first_name.' '.$p->patient?->last_name ?? '—' }}</td>
         <td>
-            @php $icons=['mtn_momo'=>'📱','orange_money'=>'🟠','cash'=>'💵','card'=>'💳','insurance'=>'🏥','wallet'=>'👛']; @endphp
-            <span>{{ $icons[$p->gateway??$p->method] ?? '💳' }}</span>
+            @php $icons=['mtn_momo'=>'smartphone','orange_money'=>'smartphone','cash'=>'banknote','card'=>'credit-card','insurance'=>'hospital','wallet'=>'wallet']; @endphp
+            <i data-lucide="{{ $icons[$p->gateway??$p->method] ?? 'credit-card' }}" style="width:16px;height:16px;vertical-align:-2px;"></i>
             <span style="font-size:.82rem;">{{ ucwords(str_replace('_',' ',$p->gateway??$p->method??'—')) }}</span>
         </td>
         <td style="font-size:.82rem;">{{ ucwords(str_replace('_',' ',$p->service_type??'—')) }}</td>

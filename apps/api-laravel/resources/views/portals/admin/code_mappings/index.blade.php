@@ -19,10 +19,10 @@
     </div>
 
     @if(session('success'))
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;">✓ {{ session('success') }}</div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;"><i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('success') }}</div>
     @endif
     @if(session('error'))
-    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#991b1b;font-size:0.88rem;">✗ {{ session('error') }}</div>
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#991b1b;font-size:0.88rem;"><i data-lucide="x" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('error') }}</div>
     @endif
 
     {{-- Stats --}}
@@ -130,11 +130,11 @@
                                 @if($mapping->isPending())
                                 <form method="POST" action="{{ route('portals.admin.code_mappings.approve', $mapping) }}" style="display:inline;">
                                     @csrf
-                                    <button type="submit" class="btn btn--outline btn--sm" style="font-size:0.72rem;padding:3px 8px;color:#16a34a;border-color:#16a34a;">✓ Approve</button>
+                                    <button type="submit" class="btn btn--outline btn--sm" style="font-size:0.72rem;padding:3px 8px;color:#16a34a;border-color:#16a34a;"><i data-lucide="check" style="width:13px;height:13px;vertical-align:-2px;"></i> Approve</button>
                                 </form>
                                 <form method="POST" action="{{ route('portals.admin.code_mappings.reject', $mapping) }}" style="display:inline;">
                                     @csrf
-                                    <button type="submit" class="btn btn--outline btn--sm" style="font-size:0.72rem;padding:3px 8px;color:#dc2626;border-color:#dc2626;">✗ Reject</button>
+                                    <button type="submit" class="btn btn--outline btn--sm" style="font-size:0.72rem;padding:3px 8px;color:#dc2626;border-color:#dc2626;"><i data-lucide="x" style="width:13px;height:13px;vertical-align:-2px;"></i> Reject</button>
                                 </form>
                                 @endif
                                 <form method="POST" action="{{ route('portals.admin.code_mappings.destroy', $mapping) }}" style="display:inline;"

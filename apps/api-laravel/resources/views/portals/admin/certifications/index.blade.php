@@ -27,10 +27,10 @@
     </div>
 
     @if(session('success'))
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;">✓ {{ session('success') }}</div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;"><i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('success') }}</div>
     @endif
     @if(session('error'))
-    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#991b1b;font-size:0.88rem;">✗ {{ session('error') }}</div>
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#991b1b;font-size:0.88rem;"><i data-lucide="x" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('error') }}</div>
     @endif
 
     {{-- Stats --}}

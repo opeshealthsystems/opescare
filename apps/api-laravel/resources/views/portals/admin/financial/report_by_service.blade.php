@@ -43,8 +43,8 @@
         @foreach($rows as $row)
         <tr>
             <td>
-                @php $icons=['mtn_momo'=>'📱','orange_money'=>'🟠','cash'=>'💵','card'=>'💳','insurance'=>'🏥','bank_transfer'=>'🏦','wallet'=>'👛','unknown'=>'❓']; @endphp
-                {{ $icons[$row->gateway] ?? '💳' }} {{ ucwords(str_replace('_',' ',$row->gateway)) }}
+                @php $icons=['mtn_momo'=>'smartphone','orange_money'=>'smartphone','cash'=>'banknote','card'=>'credit-card','insurance'=>'hospital','bank_transfer'=>'landmark','wallet'=>'wallet','unknown'=>'help-circle']; @endphp
+                <i data-lucide="{{ $icons[$row->gateway] ?? 'credit-card' }}" style="width:16px;height:16px;vertical-align:-2px;"></i> {{ ucwords(str_replace('_',' ',$row->gateway)) }}
             </td>
             <td>{{ number_format($row->txn_count) }}</td>
             <td><strong>{{ number_format($row->total_collected,0,'.',',') }}</strong></td>

@@ -20,12 +20,12 @@
     </div>
 
     @if(session('success'))
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;">✓ {{ session('success') }}</div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;"><i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('success') }}</div>
     @endif
 
     @if(session('new_client_secret'))
     <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:16px;margin-bottom:20px;">
-        <div style="font-weight:700;color:#0369a1;margin-bottom:8px;">🔑 Save Your Credentials — Shown Only Once</div>
+        <div style="font-weight:700;color:#0369a1;margin-bottom:8px;"><i data-lucide="key" style="width:15px;height:15px;vertical-align:-2px;"></i> Save Your Credentials — Shown Only Once</div>
         <div style="background:#fff;border:1px solid #bae6fd;border-radius:6px;padding:10px;font-family:monospace;font-size:0.82rem;margin-bottom:6px;">
             <strong>Client ID:</strong> {{ session('new_client_id') }}
         </div>
@@ -68,7 +68,7 @@
                 <div class="portal-card__body" style="padding:14px 20px;font-size:0.84rem;">
                     <div style="display:flex;align-items:center;gap:12px;">
                         @if($certification->badge)
-                        <div style="font-size:2rem;">{{ $certification->badge->levelIcon() }}</div>
+                        <div><i data-lucide="{{ $certification->badge->levelIcon() }}" style="width:32px;height:32px;color:{{ $certification->badge->levelColor() }};"></i></div>
                         <div>
                             <div style="font-weight:700;text-transform:capitalize;">{{ $certification->badge->certification_level }} Certified</div>
                             <div style="font-family:monospace;color:#7c3aed;font-size:0.78rem;">{{ $certification->badge->badge_code }}</div>

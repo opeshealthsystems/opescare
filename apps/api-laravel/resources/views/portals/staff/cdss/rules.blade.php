@@ -62,9 +62,9 @@
                             </td>
                             <td style="font-size:0.82rem;">
                                 @if($rule->is_overridable)
-                                    <span style="color:#16a34a;">✓ Yes</span>
+                                    <span style="color:#16a34a;"><i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px;"></i> Yes</span>
                                 @else
-                                    <span style="color:#dc2626;">✗ No</span>
+                                    <span style="color:#dc2626;"><i data-lucide="x" style="width:14px;height:14px;vertical-align:-2px;"></i> No</span>
                                 @endif
                             </td>
                             <td>

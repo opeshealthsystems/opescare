@@ -13,7 +13,7 @@
     </div>
 
     @if(session('success'))
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;">✓ {{ session('success') }}</div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;"><i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('success') }}</div>
     @endif
 
     <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:0.84rem;color:#0369a1;">
@@ -25,7 +25,7 @@
 
     @if($requests->isEmpty())
     <div class="portal-card" style="padding:40px;text-align:center;color:#9ca3af;">
-        <div style="font-size:1.8rem;margin-bottom:12px;">🚀</div>
+        <div style="font-size:1.8rem;margin-bottom:12px;"><i data-lucide="rocket" style="width:1.8rem;height:1.8rem;"></i></div>
         <p style="font-size:0.88rem;">No production access requests yet.</p>
         <a href="{{ route('portals.developer.production_requests.create') }}" class="btn btn--primary btn--sm" style="margin-top:12px;">Request Production Access</a>
     </div>

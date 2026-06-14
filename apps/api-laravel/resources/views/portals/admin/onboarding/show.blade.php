@@ -33,12 +33,12 @@
 
     @if(session('success'))
     <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;">
-        ✓ {{ session('success') }}
+        <i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('success') }}
     </div>
     @endif
     @if(session('error'))
     <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#991b1b;font-size:0.88rem;">
-        ✗ {{ session('error') }}
+        <i data-lucide="x" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('error') }}
     </div>
     @endif
 
@@ -76,7 +76,7 @@
                         @php $done = $checklist[$key] ?? false; @endphp
                         <tr style="{{ $done ? 'background:#f9fff9;' : '' }}">
                             <td style="text-align:center;font-size:1.1rem;">
-                                {{ $done ? '✅' : '⬜' }}
+                                {!! $done ? '<i data-lucide="check" style="width:16px;height:16px;vertical-align:-2px;color:#16a34a;"></i>' : '<i data-lucide="square" style="width:16px;height:16px;vertical-align:-2px;"></i>' !!}
                             </td>
                             <td style="font-size:0.88rem;{{ $done ? 'color:#6b7280;text-decoration:line-through;' : 'font-weight:600;' }}">
                                 {{ $label }}
@@ -123,7 +123,7 @@
     {{-- Risks --}}
     @if(!empty($risks))
     <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:16px 20px;margin-top:16px;font-size:0.85rem;color:#92400e;">
-        <strong>⚠ Risks:</strong>
+        <strong><i data-lucide="alert-triangle" style="width:14px;height:14px;vertical-align:-2px;"></i> Risks:</strong>
         <ul style="margin:6px 0 0;padding-left:18px;">
             @foreach($risks as $risk)
             <li>{{ $risk }}</li>

@@ -29,7 +29,7 @@
 
     @if(session('success'))
     <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;">
-        ✓ {{ session('success') }}
+        <i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('success') }}
     </div>
     @endif
 

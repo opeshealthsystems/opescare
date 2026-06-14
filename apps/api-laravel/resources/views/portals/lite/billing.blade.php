@@ -101,9 +101,10 @@ function addLineItem() {
         <td style="width:110px;"><input type="number" name="items[${i}][amount]" class="lite-input" placeholder="0" step="1" onchange="calcTotal()" style="width:100%;min-width:0;"></td>
         <td style="width:40px;text-align:center;">
             <button type="button" onclick="this.closest('tr').remove();calcTotal()"
-                    style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:1rem;padding:0;">✕</button>
+                    style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:1rem;padding:0;"><i data-lucide="x" style="width:14px;height:14px;"></i></button>
         </td>`;
     tbody.appendChild(tr);
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function calcTotal() {

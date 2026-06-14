@@ -468,7 +468,7 @@ function updateAcuitySuggestion() {
     const hint = document.getElementById('acuity-hint');
     const sel  = document.getElementById('acuity_score');
     if (worstStatus === 'critical') {
-        hint.textContent = '⚠ ' + worstNote;
+        hint.textContent = worstNote;
         hint.style.color = 'var(--p-danger)';
         hint.style.display = 'block';
         if (sel.value === 'semi_urgent' || sel.value === 'non_urgent') sel.value = 'critical';

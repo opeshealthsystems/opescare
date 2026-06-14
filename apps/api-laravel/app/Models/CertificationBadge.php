@@ -73,13 +73,25 @@ class CertificationBadge extends Model
         ]);
     }
 
+    /** Lucide icon name for the badge level (no emoji — platform uses Lucide only). */
     public function levelIcon(): string
     {
         return match ($this->certification_level) {
-            'platinum' => '🏆',
-            'gold'     => '🥇',
-            'silver'   => '🥈',
-            default    => '🥉',
+            'platinum' => 'trophy',
+            'gold'     => 'medal',
+            'silver'   => 'award',
+            default    => 'shield',
+        };
+    }
+
+    /** Brand-appropriate colour for the badge level icon. */
+    public function levelColor(): string
+    {
+        return match ($this->certification_level) {
+            'platinum' => '#6366F1',
+            'gold'     => '#D4A017',
+            'silver'   => '#94A3B8',
+            default    => '#B45309',
         };
     }
 

@@ -37,7 +37,7 @@
             <i data-lucide="shield-check" style="width:24px;height:24px;color:#16a34a;flex-shrink:0;margin-top:2px;"></i>
             <div style="flex:1;">
                 <div style="font-weight:700;color:#15803d;font-size:1rem;margin-bottom:6px;">
-                    ⚠ New Token Issued — Copy Now
+                    <i data-lucide="alert-triangle" style="width:14px;height:14px;vertical-align:-2px;"></i> New Token Issued — Copy Now
                 </div>
                 <div style="font-size:0.85rem;color:#166534;margin-bottom:12px;">
                     This token will <strong>never be shown again</strong>. Copy it immediately and store it securely.
@@ -50,7 +50,7 @@
                     </button>
                 </div>
                 <div id="copiedMsg" style="display:none;margin-top:8px;font-size:0.82rem;color:#16a34a;font-weight:600;">
-                    ✓ Copied to clipboard!
+                    <i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px;"></i> Copied to clipboard!
                 </div>
             </div>
         </div>

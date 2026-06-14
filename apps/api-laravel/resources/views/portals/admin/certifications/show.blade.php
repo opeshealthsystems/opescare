@@ -20,10 +20,10 @@
     </div>
 
     @if(session('success'))
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;">✓ {{ session('success') }}</div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;"><i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('success') }}</div>
     @endif
     @if(session('error'))
-    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#991b1b;font-size:0.88rem;">✗ {{ session('error') }}</div>
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#991b1b;font-size:0.88rem;"><i data-lucide="x" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('error') }}</div>
     @endif
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
@@ -48,7 +48,7 @@
                         <dt style="font-weight:600;color:#374151;">Expires</dt>
                         <dd style="color:{{ $certification->isExpiringSoon() ? '#d97706' : '#6b7280' }};">
                             {{ $certification->expires_at?->format('d M Y') ?? 'No expiry' }}
-                            @if($certification->isExpiringSoon()) ⚠ Expiring soon @endif
+                            @if($certification->isExpiringSoon()) <i data-lucide="alert-triangle" style="width:14px;height:14px;vertical-align:-2px;"></i> Expiring soon @endif
                         </dd>
                     </dl>
                     @if($certification->scope_description)
@@ -66,7 +66,7 @@
                 <div class="portal-card__header"><h2 class="portal-card__title">Active Badge</h2></div>
                 <div class="portal-card__body" style="padding:16px 20px;">
                     <div style="text-align:center;padding:8px 0;">
-                        <div style="font-size:2.5rem;">{{ $certification->badge->levelIcon() }}</div>
+                        <div><i data-lucide="{{ $certification->badge->levelIcon() }}" style="width:40px;height:40px;color:{{ $certification->badge->levelColor() }};"></i></div>
                         <div style="font-size:1.1rem;font-weight:800;margin:6px 0;text-transform:capitalize;">{{ $certification->badge->certification_level }}</div>
                         <div style="font-family:monospace;font-size:0.82rem;color:#7c3aed;font-weight:700;">{{ $certification->badge->badge_code }}</div>
                         <div style="font-size:0.78rem;color:#9ca3af;margin-top:4px;">
@@ -147,8 +147,8 @@
                                     </td>
                                     <td style="padding:6px 10px;text-align:center;">
                                         <select name="results[{{ $i }}][result]" style="padding:3px 6px;border:1px solid #e5e7eb;border-radius:4px;font-size:0.78rem;">
-                                            <option value="passed">✓ Pass</option>
-                                            <option value="failed">✗ Fail</option>
+                                            <option value="passed">Pass</option>
+                                            <option value="failed">Fail</option>
                                             <option value="skipped">— Skip</option>
                                         </select>
                                     </td>

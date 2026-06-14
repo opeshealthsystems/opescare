@@ -13,12 +13,12 @@
     </div>
 
     @if(session('success'))
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;">✓ {{ session('success') }}</div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;"><i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('success') }}</div>
     @endif
 
     @if(session('new_client_secret'))
     <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:16px;margin-bottom:20px;">
-        <div style="font-weight:700;color:#0369a1;margin-bottom:8px;">🔑 App Created — Save Your Credentials Now</div>
+        <div style="font-weight:700;color:#0369a1;margin-bottom:8px;"><i data-lucide="key" style="width:15px;height:15px;vertical-align:-2px;"></i> App Created — Save Your Credentials Now</div>
         <p style="font-size:0.84rem;color:#0c4a6e;margin-bottom:10px;">Your client secret is shown <strong>only once</strong>. Store it securely — it cannot be retrieved again.</p>
         <div style="background:#fff;border:1px solid #bae6fd;border-radius:6px;padding:10px;font-family:monospace;font-size:0.82rem;margin-bottom:6px;">
             <strong>Client ID:</strong> {{ session('new_client_id') }}
@@ -31,7 +31,7 @@
 
     @if($clients->isEmpty())
     <div class="portal-card" style="padding:40px;text-align:center;color:#9ca3af;">
-        <div style="font-size:1.8rem;margin-bottom:12px;">🔌</div>
+        <div style="font-size:1.8rem;margin-bottom:12px;"><i data-lucide="plug" style="width:1.8rem;height:1.8rem;"></i></div>
         <p style="font-size:0.88rem;">No apps yet. Create your first app to receive sandbox API credentials.</p>
         <a href="{{ route('portals.developer.apps.create') }}" class="btn btn--primary btn--sm" style="margin-top:12px;">Create App</a>
     </div>

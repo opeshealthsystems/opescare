@@ -5,7 +5,7 @@
 @section('content')
 <div class="portal-content">
 
-    {{-- ⚠️ CDSS DISCLAIMER — must appear on every CDSS page --}}
+    {{-- CDSS DISCLAIMER — must appear on every CDSS page --}}
     <div style="background:#fffbeb;border:1px solid #d97706;border-radius:8px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
         <i data-lucide="shield-alert" style="width:18px;height:18px;flex-shrink:0;color:#d97706;"></i>
         <p style="margin:0;font-size:0.82rem;color:#92400e;font-weight:500;">

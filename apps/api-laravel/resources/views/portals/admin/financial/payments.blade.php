@@ -103,8 +103,8 @@
             </td>
             <td style="font-size:.85rem;font-family:monospace;">{{ $p->payer_phone ?? '—' }}</td>
             <td>
-                @php $icons=['mtn_momo'=>'📱','orange_money'=>'🟠','cash'=>'💵','card'=>'💳','insurance'=>'🏥','bank_transfer'=>'🏦','wallet'=>'👛']; $gw=$p->gateway??$p->method??''; @endphp
-                <span title="{{ $gw }}">{{ $icons[$gw] ?? '💳' }}</span>
+                @php $icons=['mtn_momo'=>'smartphone','orange_money'=>'smartphone','cash'=>'banknote','card'=>'credit-card','insurance'=>'hospital','bank_transfer'=>'landmark','wallet'=>'wallet']; $gw=$p->gateway??$p->method??''; @endphp
+                <i data-lucide="{{ $icons[$gw] ?? 'credit-card' }}" style="width:16px;height:16px;vertical-align:-2px;" title="{{ $gw }}"></i>
                 <span style="font-size:.82rem;">{{ ucwords(str_replace('_',' ',$gw)) }}</span>
             </td>
             <td style="font-size:.76rem;font-family:monospace;max-width:130px;overflow:hidden;text-overflow:ellipsis;" title="{{ $p->gateway_transaction_id }}">{{ $p->gateway_transaction_id ?? '—' }}</td>
@@ -121,8 +121,8 @@
                 @else<span class="badge" style="background:var(--p-surface-3);">{{ ucfirst($p->status) }}</span>@endif
             </td>
             <td style="font-size:.8rem;">
-                @php $di=['web'=>'🌐','android'=>'🤖','ios'=>'🍎','pos_terminal'=>'🖨️','ussd'=>'📞']; @endphp
-                {{ $di[$p->device_type??''] ?? '🖥️' }} {{ strtoupper($p->device_type ?? '—') }}
+                @php $di=['web'=>'globe','android'=>'smartphone','ios'=>'smartphone','pos_terminal'=>'printer','ussd'=>'phone']; @endphp
+                <i data-lucide="{{ $di[$p->device_type??''] ?? 'monitor' }}" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ strtoupper($p->device_type ?? '—') }}
             </td>
             <td style="font-size:.82rem;">{{ $p->facility?->name ?? '—' }}</td>
             <td style="font-size:.82rem;">{{ $p->cashier?->name ?? '—' }}</td>

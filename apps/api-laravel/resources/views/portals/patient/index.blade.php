@@ -141,7 +141,7 @@
                     <span style="font-size:0.875rem;color:#16A34A;font-weight:600;">None on record</span>
                 @else
                     @foreach($criticalAllergies->take(3) as $a)
-                        <span style="font-size:0.8125rem;font-weight:700;color:#DC2626;">⚠ {{ $a->substance }}</span>
+                        <span style="font-size:0.8125rem;font-weight:700;color:#DC2626;"><i data-lucide="alert-triangle" style="width:13px;height:13px;vertical-align:-2px;"></i> {{ $a->substance }}</span>
                     @endforeach
                     @if($criticalAllergies->count() > 3)
                         <a href="{{ route('portals.patient.allergies') }}" style="font-size:0.75rem;color:var(--p-primary);">+{{ $criticalAllergies->count() - 3 }} more →</a>

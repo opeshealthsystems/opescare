@@ -23,7 +23,7 @@
 
 {{-- Payer Information --}}
 <div class="panel" style="padding:1.25rem;">
-    <h3 style="margin-top:0;font-size:.95rem;border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;">👤 Payer Information</h3>
+    <h3 style="margin-top:0;font-size:.95rem;border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;"><i data-lucide="user" style="width:14px;height:14px;vertical-align:-2px;"></i> Payer Information</h3>
     @if($payment->patient)
     <table style="width:100%;font-size:.87rem;border-collapse:collapse;">
         <tr><td style="color:var(--p-text-muted);padding:.25rem 0;width:40%;">Full Name</td><td><strong>{{ $payment->patient->first_name }} {{ $payment->patient->last_name }}</strong></td></tr>
@@ -49,10 +49,10 @@
 
 {{-- Payment Gateway --}}
 <div class="panel" style="padding:1.25rem;">
-    <h3 style="margin-top:0;font-size:.95rem;border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;">💳 Payment Gateway</h3>
-    @php $icons=['mtn_momo'=>'📱 MTN MoMo','orange_money'=>'🟠 Orange Money','cash'=>'💵 Cash','card'=>'💳 Card','insurance'=>'🏥 Insurance','bank_transfer'=>'🏦 Bank Transfer','wallet'=>'👛 Platform Wallet']; $gw=$payment->gateway??$payment->method??''; @endphp
+    <h3 style="margin-top:0;font-size:.95rem;border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;"><i data-lucide="credit-card" style="width:14px;height:14px;vertical-align:-2px;"></i> Payment Gateway</h3>
+    @php $icons=['mtn_momo'=>'MTN MoMo','orange_money'=>'Orange Money','cash'=>'Cash','card'=>'Card','insurance'=>'Insurance','bank_transfer'=>'Bank Transfer','wallet'=>'Platform Wallet']; $gwIcons=['mtn_momo'=>'smartphone','orange_money'=>'smartphone','cash'=>'banknote','card'=>'credit-card','insurance'=>'hospital','bank_transfer'=>'landmark','wallet'=>'wallet']; $gw=$payment->gateway??$payment->method??''; @endphp
     <table style="width:100%;font-size:.87rem;border-collapse:collapse;">
-        <tr><td style="color:var(--p-text-muted);padding:.25rem 0;width:45%;">Gateway</td><td><strong>{{ $icons[$gw] ?? ucwords(str_replace('_',' ',$gw)) }}</strong></td></tr>
+        <tr><td style="color:var(--p-text-muted);padding:.25rem 0;width:45%;">Gateway</td><td><strong><i data-lucide="{{ $gwIcons[$gw] ?? 'credit-card' }}" style="width:16px;height:16px;vertical-align:-2px;"></i> {{ $icons[$gw] ?? ucwords(str_replace('_',' ',$gw)) }}</strong></td></tr>
         <tr><td style="color:var(--p-text-muted);padding:.25rem 0;">Method</td><td>{{ ucwords(str_replace('_',' ',$payment->method??'—')) }}</td></tr>
         <tr><td style="color:var(--p-text-muted);padding:.25rem 0;">Gateway Txn ID</td><td><code style="font-size:.78rem;">{{ $payment->gateway_transaction_id ?? '—' }}</code></td></tr>
         <tr><td style="color:var(--p-text-muted);padding:.25rem 0;">Gateway Status</td><td>{{ $payment->gateway_status ?? '—' }}</td></tr>
@@ -62,7 +62,7 @@
 
 {{-- Amount & Service --}}
 <div class="panel" style="padding:1.25rem;">
-    <h3 style="margin-top:0;font-size:.95rem;border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;">💰 Amount & Service</h3>
+    <h3 style="margin-top:0;font-size:.95rem;border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;"><i data-lucide="coins" style="width:14px;height:14px;vertical-align:-2px;"></i> Amount & Service</h3>
     <table style="width:100%;font-size:.87rem;border-collapse:collapse;">
         <tr><td style="color:var(--p-text-muted);padding:.25rem 0;width:45%;">Amount Paid</td><td><strong style="font-size:1.1rem;">{{ number_format($payment->amount,2) }} {{ $payment->currency ?? 'XAF' }}</strong></td></tr>
         <tr><td style="color:var(--p-text-muted);padding:.25rem 0;">Refunded</td><td>{{ number_format($payment->refunded_amount ?? 0,2) }} {{ $payment->currency ?? 'XAF' }}</td></tr>
@@ -76,9 +76,9 @@
 
 {{-- Device & Session --}}
 <div class="panel" style="padding:1.25rem;">
-    <h3 style="margin-top:0;font-size:.95rem;border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;">🖥️ Device & Session</h3>
+    <h3 style="margin-top:0;font-size:.95rem;border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;"><i data-lucide="monitor" style="width:14px;height:14px;vertical-align:-2px;"></i> Device & Session</h3>
     <table style="width:100%;font-size:.87rem;border-collapse:collapse;">
-        <tr><td style="color:var(--p-text-muted);padding:.25rem 0;width:45%;">Device Type</td><td>@php $di=['web'=>'🌐 Web Browser','android'=>'🤖 Android','ios'=>'🍎 iOS','pos_terminal'=>'🖨️ POS Terminal','ussd'=>'📞 USSD']; @endphp<strong>{{ $di[$payment->device_type??''] ?? ucfirst($payment->device_type ?? '—') }}</strong></td></tr>
+        <tr><td style="color:var(--p-text-muted);padding:.25rem 0;width:45%;">Device Type</td><td>@php $di=['web'=>'Web Browser','android'=>'Android','ios'=>'iOS','pos_terminal'=>'POS Terminal','ussd'=>'USSD']; $dIcons=['web'=>'globe','android'=>'smartphone','ios'=>'smartphone','pos_terminal'=>'printer','ussd'=>'phone']; @endphp<strong><i data-lucide="{{ $dIcons[$payment->device_type??''] ?? 'monitor' }}" style="width:16px;height:16px;vertical-align:-2px;"></i> {{ $di[$payment->device_type??''] ?? ucfirst($payment->device_type ?? '—') }}</strong></td></tr>
         <tr><td style="color:var(--p-text-muted);padding:.25rem 0;">Device ID</td><td><code style="font-size:.78rem;">{{ $payment->device_id ?? '—' }}</code></td></tr>
         <tr><td style="color:var(--p-text-muted);padding:.25rem 0;">IP Address</td><td><code>{{ $payment->ip_address ?? '—' }}</code></td></tr>
         <tr><td style="color:var(--p-text-muted);padding:.25rem 0;">User Agent</td><td style="font-size:.72rem;word-break:break-all;max-width:220px;">{{ $payment->user_agent ?? '—' }}</td></tr>
@@ -91,7 +91,7 @@
 
 {{-- Timeline --}}
 <div class="panel" style="padding:1.25rem;margin-bottom:1rem;">
-    <h3 style="margin-top:0;font-size:.95rem;border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;">⏱ Transaction Timeline</h3>
+    <h3 style="margin-top:0;font-size:.95rem;border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;"><i data-lucide="clock" style="width:14px;height:14px;vertical-align:-2px;"></i> Transaction Timeline</h3>
     <div style="display:flex;gap:2rem;flex-wrap:wrap;font-size:.87rem;">
         <div><span style="color:var(--p-text-muted);">Initiated</span><br><strong>{{ $payment->initiated_at?->format('d M Y H:i:s') ?? $payment->created_at?->format('d M Y H:i:s') ?? '—' }}</strong></div>
         <div><span style="color:var(--p-text-muted);">Record Created</span><br><strong>{{ $payment->created_at?->format('d M Y H:i:s') ?? '—' }}</strong></div>
@@ -108,7 +108,7 @@
 {{-- Invoice Line Items --}}
 @if($payment->invoice && $payment->invoice->items->count())
 <div class="panel" style="padding:1.25rem;margin-bottom:1rem;">
-    <h3 style="margin-top:0;font-size:.95rem;border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;">🧾 Invoice Line Items ({{ $payment->invoice->invoice_number }})</h3>
+    <h3 style="margin-top:0;font-size:.95rem;border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;"><i data-lucide="receipt" style="width:14px;height:14px;vertical-align:-2px;"></i> Invoice Line Items ({{ $payment->invoice->invoice_number }})</h3>
     <div class="table-wrapper"><table class="data-table"><thead><tr><th>Service Code</th><th>Description</th><th>Qty</th><th>Unit Price</th><th>Discount</th><th>Line Total</th></tr></thead><tbody>
     @foreach($payment->invoice->items as $item)
     <tr>
@@ -127,7 +127,7 @@
 {{-- Receipts --}}
 @if($payment->receipts->count())
 <div class="panel" style="padding:1.25rem;margin-bottom:1rem;">
-    <h3 style="margin-top:0;font-size:.95rem;border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;">🧾 Receipts</h3>
+    <h3 style="margin-top:0;font-size:.95rem;border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;"><i data-lucide="receipt" style="width:14px;height:14px;vertical-align:-2px;"></i> Receipts</h3>
     @foreach($payment->receipts as $r)
     <div style="display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px solid var(--p-border);font-size:.87rem;">
         <span><code>{{ $r->receipt_number }}</code></span>
@@ -141,7 +141,7 @@
 {{-- Reversals --}}
 @if($payment->reversals->count())
 <div class="panel" style="padding:1.25rem;margin-bottom:1rem;border:1px solid rgba(239,68,68,.3);">
-    <h3 style="margin-top:0;font-size:.95rem;color:var(--p-danger);border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;">🔄 Reversals / Refunds</h3>
+    <h3 style="margin-top:0;font-size:.95rem;color:var(--p-danger);border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;"><i data-lucide="refresh-cw" style="width:14px;height:14px;vertical-align:-2px;"></i> Reversals / Refunds</h3>
     @foreach($payment->reversals as $rev)
     <div style="padding:.75rem 0;border-bottom:1px solid var(--p-border);font-size:.87rem;">
         <div style="display:flex;justify-content:space-between;margin-bottom:.25rem;">
@@ -158,7 +158,7 @@
 {{-- Raw Gateway Metadata --}}
 @if($payment->gateway_metadata)
 <div class="panel" style="padding:1.25rem;margin-bottom:1rem;">
-    <h3 style="margin-top:0;font-size:.95rem;border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;">🔬 Raw Gateway Metadata</h3>
+    <h3 style="margin-top:0;font-size:.95rem;border-bottom:1px solid var(--p-border);padding-bottom:.6rem;margin-bottom:1rem;"><i data-lucide="microscope" style="width:14px;height:14px;vertical-align:-2px;"></i> Raw Gateway Metadata</h3>
     <pre style="font-size:.78rem;background:var(--p-surface-2);padding:1rem;border-radius:6px;overflow-x:auto;max-height:300px;">{{ json_encode($payment->gateway_metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
 </div>
 @endif

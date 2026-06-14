@@ -43,7 +43,7 @@
                     <tr><td style="padding:5px 0;color:#6b7280;">Discount</td><td>{{ $subscription->discount_percent }}%</td></tr>
                     <tr><td style="padding:5px 0;color:#6b7280;">Period</td><td>{{ $subscription->current_period_start->format('d M Y') }} → {{ $subscription->current_period_end->format('d M Y') }}</td></tr>
                     <tr><td style="padding:5px 0;color:#6b7280;">Days Left</td><td style="font-weight:600;color:{{ $subscription->daysUntilExpiry() < 7 ? '#dc2626' : '#16a34a' }};">{{ $subscription->daysUntilExpiry() }} days</td></tr>
-                    <tr><td style="padding:5px 0;color:#6b7280;">Auto-Renew</td><td>{{ $subscription->auto_renew ? '✓ Yes' : '✗ No' }}</td></tr>
+                    <tr><td style="padding:5px 0;color:#6b7280;">Auto-Renew</td><td>{!! $subscription->auto_renew ? '<i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px;"></i> Yes' : '<i data-lucide="x" style="width:14px;height:14px;vertical-align:-2px;"></i> No' !!}</td></tr>
                     @if($subscription->billing_email)
                         <tr><td style="padding:5px 0;color:#6b7280;">Billing Contact</td><td>{{ $subscription->billing_name }}<br><span style="color:#9ca3af;font-size:0.8rem;">{{ $subscription->billing_email }}</span></td></tr>
                     @endif

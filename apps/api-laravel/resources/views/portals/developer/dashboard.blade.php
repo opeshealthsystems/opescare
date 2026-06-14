@@ -20,16 +20,16 @@
     </div>
 
     @if(session('success'))
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;">✓ {{ session('success') }}</div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;"><i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('success') }}</div>
     @endif
     @if(session('error'))
-    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#991b1b;font-size:0.88rem;">✗ {{ session('error') }}</div>
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#991b1b;font-size:0.88rem;"><i data-lucide="x" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('error') }}</div>
     @endif
 
     {{-- Account status warning --}}
     @if(!$developer->isEmailVerified())
     <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:0.86rem;color:#92400e;">
-        ⚠ Your email address has not been verified. Some features are restricted until verification is complete.
+        <i data-lucide="alert-triangle" style="width:14px;height:14px;vertical-align:-2px;"></i> Your email address has not been verified. Some features are restricted until verification is complete.
     </div>
     @endif
 
@@ -130,19 +130,19 @@
         <div class="portal-card__header"><h2 class="portal-card__title">Quick Links</h2></div>
         <div class="portal-card__body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px;">
             <a href="{{ route('portals.developer.apps') }}" style="text-decoration:none;padding:12px;background:#f9fafb;border-radius:8px;text-align:center;border:1px solid #e5e7eb;">
-                <div style="font-size:1.4rem;">🔑</div>
+                <div style="font-size:1.4rem;"><i data-lucide="key" style="width:1.4rem;height:1.4rem;"></i></div>
                 <div style="font-size:0.8rem;font-weight:600;margin-top:6px;color:#374151;">API Keys</div>
             </a>
             <a href="{{ route('portals.developer.production_requests') }}" style="text-decoration:none;padding:12px;background:#f9fafb;border-radius:8px;text-align:center;border:1px solid #e5e7eb;">
-                <div style="font-size:1.4rem;">🚀</div>
+                <div style="font-size:1.4rem;"><i data-lucide="rocket" style="width:1.4rem;height:1.4rem;"></i></div>
                 <div style="font-size:0.8rem;font-weight:600;margin-top:6px;color:#374151;">Production Access</div>
             </a>
             <a href="{{ route('portals.developer.analytics') }}" style="text-decoration:none;padding:12px;background:#f9fafb;border-radius:8px;text-align:center;border:1px solid #e5e7eb;">
-                <div style="font-size:1.4rem;">📖</div>
+                <div style="font-size:1.4rem;"><i data-lucide="book-open" style="width:1.4rem;height:1.4rem;"></i></div>
                 <div style="font-size:0.8rem;font-weight:600;margin-top:6px;color:#374151;">API Docs</div>
             </a>
             <a href="{{ route('portals.developer.analytics') }}" style="text-decoration:none;padding:12px;background:#f9fafb;border-radius:8px;text-align:center;border:1px solid #e5e7eb;">
-                <div style="font-size:1.4rem;">📊</div>
+                <div style="font-size:1.4rem;"><i data-lucide="bar-chart-3" style="width:1.4rem;height:1.4rem;"></i></div>
                 <div style="font-size:0.8rem;font-weight:600;margin-top:6px;color:#374151;">Usage Metrics</div>
             </a>
         </div>

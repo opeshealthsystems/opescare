@@ -179,9 +179,9 @@
                             <td>
                                 @if($job->total_rows > 0)
                                     <span style="font-size:.8rem;">
-                                        <span style="color:var(--p-success);">{{ $job->valid_rows }}✓</span>
+                                        <span style="color:var(--p-success);">{{ $job->valid_rows }}<i data-lucide="check" style="width:12px;height:12px;vertical-align:-2px;"></i></span>
                                         @if($job->invalid_rows > 0)
-                                            <span style="color:var(--p-danger);">/ {{ $job->invalid_rows }}✗</span>
+                                            <span style="color:var(--p-danger);">/ {{ $job->invalid_rows }}<i data-lucide="x" style="width:12px;height:12px;vertical-align:-2px;"></i></span>
                                         @endif
                                         <span style="color:var(--p-text-muted);">/ {{ $job->total_rows }} total</span>
                                     </span>

@@ -110,7 +110,7 @@
                                 </span>
                             </td>
                             <td style="font-size:0.82rem;">
-                                {{ $sub->auto_renew ? '✓ Yes' : '✗ No' }}
+                                {!! $sub->auto_renew ? '<i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px;"></i> Yes' : '<i data-lucide="x" style="width:14px;height:14px;vertical-align:-2px;"></i> No' !!}
                             </td>
                             <td>
                                 <div style="display:flex;gap:4px;flex-wrap:wrap;">

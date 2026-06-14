@@ -15,7 +15,7 @@
         <div class="portal-card__body" style="padding:24px 28px;">
 
             <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:12px 14px;margin-bottom:20px;font-size:0.83rem;color:#92400e;">
-                ⚠ Production integrations access real patient data. Approval requires a security review.
+                <i data-lucide="alert-triangle" style="width:14px;height:14px;vertical-align:-2px;"></i> Production integrations access real patient data. Approval requires a security review.
                 Do not attempt to access production without prior approval — violations result in immediate revocation.
             </div>
 
