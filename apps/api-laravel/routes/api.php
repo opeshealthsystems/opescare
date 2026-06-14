@@ -58,7 +58,7 @@ Route::prefix('v1/support')->middleware(VerifyIntegrationClient::class)->group(f
 | OpesCare Billing and Cashier API Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/billing')->middleware(VerifyIntegrationClient::class)->group(function () {
+Route::prefix('v1/billing')->middleware([VerifyIntegrationClient::class, 'module:billing'])->group(function () {
     Route::get('/invoices', [\App\Http\Controllers\Api\V1\BillingController::class, 'invoices']);
     Route::post('/invoices', [\App\Http\Controllers\Api\V1\BillingController::class, 'createInvoice']);
     Route::post('/invoices/{invoice}/payments', [\App\Http\Controllers\Api\V1\BillingController::class, 'recordPayment']);
@@ -851,7 +851,7 @@ Route::prefix('fhir/R4')->middleware('auth.bearer:system:export')->group(functio
 | Insurance Claims & Preauthorization
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/insurance')->middleware(VerifyIntegrationClient::class)->group(function () {
+Route::prefix('v1/insurance')->middleware([VerifyIntegrationClient::class, 'module:insurance'])->group(function () {
     Route::post('/eligibility/check', [\App\Http\Controllers\Api\V1\InsuranceController::class, 'checkEligibility']);
     Route::post('/preauth', [\App\Http\Controllers\Api\V1\InsuranceController::class, 'requestPreauth']);
     Route::post('/preauth/{id}/decide', [\App\Http\Controllers\Api\V1\InsuranceController::class, 'decidePreauth']);
@@ -902,7 +902,7 @@ Route::prefix('v1/inventory')->middleware(VerifyIntegrationClient::class)->group
 | Analytics & Reporting
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/analytics')->middleware(VerifyIntegrationClient::class)->group(function () {
+Route::prefix('v1/analytics')->middleware([VerifyIntegrationClient::class, 'module:analytics'])->group(function () {
     Route::get('/facilities/{facilityId}/dashboard',  [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'facilityDashboard']);
     Route::get('/appointments',                       [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'appointmentStats']);
     Route::get('/queues',                             [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'queueStats']);
@@ -974,7 +974,7 @@ Route::prefix('v1/staff')->middleware(VerifyIntegrationClient::class)->group(fun
 | Telemedicine
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/telemedicine')->middleware(VerifyIntegrationClient::class)->group(function () {
+Route::prefix('v1/telemedicine')->middleware([VerifyIntegrationClient::class, 'module:telemedicine'])->group(function () {
     Route::post('/consultations', [\App\Http\Controllers\Api\V1\TelemedicineController::class, 'book']);
     Route::get('/consultations/{consultId}', [\App\Http\Controllers\Api\V1\TelemedicineController::class, 'show']);
     Route::post('/consultations/{consultId}/cancel', [\App\Http\Controllers\Api\V1\TelemedicineController::class, 'cancel']);

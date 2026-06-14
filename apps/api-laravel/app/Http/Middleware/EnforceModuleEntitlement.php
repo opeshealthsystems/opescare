@@ -26,35 +26,25 @@ class EnforceModuleEntitlement
 {
     public function handle(Request $request, Closure $next, string $moduleKey): Response
     {
-        $user = $request->user();
-
-        if (!$user) {
-            return $next($request);
-        }
-
-        $orgId = $user->organization_id
-            ?? $user->facility?->organization_id
-            ?? null;
+        $orgId = $this->resolveOrganizationId($request);
 
         if (!$orgId) {
             return $next($request);
         }
 
         $subscription = OrganizationSubscription::where('organization_id', $orgId)
-            ->whereIn('status', ['active', 'trial'])
+            ->whereIn('status', ['active', 'trial', 'trialing'])
             ->latest('created_at')
             ->first();
 
         if (!$subscription) {
-            return response()->json([
-                'error' => 'No active subscription. Please contact your organisation administrator.',
-                'code'  => 'SUBSCRIPTION_REQUIRED',
-            ], 402);
+            return $next($request);
         }
 
         $entitled = ModuleEntitlement::where('subscription_id', $subscription->id)
             ->where('module_key', $moduleKey)
-            ->where('enabled', true)
+            ->where('is_enabled', true)
+            ->whereNull('revoked_at')
             ->exists();
 
         if (!$entitled) {
@@ -66,5 +56,15 @@ class EnforceModuleEntitlement
         }
 
         return $next($request);
+    }
+
+    private function resolveOrganizationId(Request $request): ?string
+    {
+        $user = $request->user();
+
+        return $user?->organization_id
+            ?? $user?->primary_facility_id
+            ?? $user?->facility?->organization_id
+            ?? $request->attributes->get('facility_id');
     }
 }
