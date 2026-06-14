@@ -30,6 +30,10 @@ class MobileMoneyCallbackController extends Controller
 
     public function mtnCallback(Request $request): \Illuminate\Http\JsonResponse
     {
+        if (!$this->verifyCallbackSignature($request, config('services.mtn_momo.callback_secret'))) {
+            return response()->json(['error' => 'Invalid callback signature.'], 401);
+        }
+
         $referenceId = $request->input('referenceId') ?? $request->input('externalId');
         $status      = strtoupper((string) $request->input('status', ''));
 
@@ -48,6 +52,10 @@ class MobileMoneyCallbackController extends Controller
 
     public function orangeCallback(Request $request): \Illuminate\Http\JsonResponse
     {
+        if (!$this->verifyCallbackSignature($request, config('services.orange_money.callback_secret'))) {
+            return response()->json(['error' => 'Invalid callback signature.'], 401);
+        }
+
         $txnId  = $request->input('txnid') ?? $request->input('pay_token');
         $status = strtoupper((string) $request->input('status', ''));
 
@@ -63,6 +71,22 @@ class MobileMoneyCallbackController extends Controller
     }
 
     // ── Shared finalization ───────────────────────────────────────
+
+    private function verifyCallbackSignature(Request $request, ?string $secret): bool
+    {
+        if (!$secret) {
+            return !app()->isProduction();
+        }
+
+        $signature = (string) $request->header('X-Callback-Signature', '');
+        if ($signature === '') {
+            return false;
+        }
+
+        $expected = 'sha256=' . hash_hmac('sha256', $request->getContent(), $secret);
+
+        return hash_equals($expected, $signature);
+    }
 
     private function finalizePayment(string $reference, bool $success, string $provider): void
     {

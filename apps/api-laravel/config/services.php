@@ -57,6 +57,7 @@ return [
         'environment'      => env('MTN_MOMO_ENVIRONMENT', 'sandbox'),
         'currency'         => env('MTN_MOMO_CURRENCY', 'XAF'),
         'callback_url'     => env('MTN_MOMO_CALLBACK_URL'),
+        'callback_secret'  => env('MTN_MOMO_CALLBACK_SECRET'),
     ],
 
     'orange_money' => [
@@ -68,6 +69,7 @@ return [
         'return_url'    => env('ORANGE_MONEY_RETURN_URL'),
         'cancel_url'    => env('ORANGE_MONEY_CANCEL_URL'),
         'notif_url'     => env('ORANGE_MONEY_NOTIF_URL'),
+        'callback_secret' => env('ORANGE_MONEY_CALLBACK_SECRET'),
     ],
 
     'whatsapp' => [
