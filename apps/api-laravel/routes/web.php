@@ -148,7 +148,7 @@ Route::middleware(['web', 'throttle:verify'])->group(function () {
 });
 
 // Portal Routes — require authentication, correct portal for role, and facility context
-Route::middleware(['web', 'auth', 'portal.access', 'facility.context', 'throttle:portal'])->group(function () {
+Route::middleware(['web', 'auth', 'portal.access', 'platform.admin', 'facility.context', 'throttle:portal'])->group(function () {
     Route::get('/portals/patient', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'index'])->name('portals.patient');
     // QR generation has its own tighter rate limit (10/min) on top of the portal limit
     Route::post('/portals/patient/generate-qr', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'generateTemporaryQr'])
@@ -605,7 +605,7 @@ Route::get('/share/document/{token}', function ($token) {
 |--------------------------------------------------------------------------
 */
 Route::get('/verify/certificate/{token}', [\App\Http\Controllers\Api\V1\Academy\AcademyController::class, 'verifyPublic'])->name('academy.certificate.verify');
-Route::middleware(['web', 'auth'])->group(function () {
+Route::middleware(['web', 'auth', 'platform.admin'])->group(function () {
     Route::get('/academy/dashboard', [\App\Http\Controllers\Api\V1\Academy\AcademyController::class, 'learnerDashboard'])->name('academy.dashboard');
     Route::get('/admin/academy/readiness/{facilityId}', [\App\Http\Controllers\Api\V1\Academy\AcademyAdminController::class, 'readinessDashboard'])->name('academy.admin.readiness');
 });
@@ -618,7 +618,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 Route::get('/care-map', [\App\Http\Controllers\Api\V1\CareMapController::class, 'publicDirectory'])->name('public.care-map');
 Route::get('/care-map/facility/{id}', [\App\Http\Controllers\Api\V1\CareMapController::class, 'publicProfile'])->name('public.care-map.profile');
 Route::get('/care-map/emergency', [\App\Http\Controllers\Api\V1\CareMapController::class, 'publicEmergency'])->name('public.care-map.emergency');
-Route::middleware(['web', 'auth'])->get('/admin/care-map/governance', [\App\Http\Controllers\Api\V1\CareMapController::class, 'adminGovernance'])->name('admin.care-map.governance');
+Route::middleware(['web', 'auth', 'platform.admin'])->get('/admin/care-map/governance', [\App\Http\Controllers\Api\V1\CareMapController::class, 'adminGovernance'])->name('admin.care-map.governance');
 
 /*
 |--------------------------------------------------------------------------
@@ -775,7 +775,9 @@ Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
 });
 
 // ── God-Mode Admin — Users, Facilities, Patients, Staff, Organizations, Roles ─
-Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
+// platform.admin restricts these cross-facility god-mode routes to the platform
+// role tier (a facility admin must NOT manage all users/facilities/patients).
+Route::middleware(['web', 'auth', 'platform.admin'])->group(function () {
     // Users
     Route::get('/admin/users',                                  [\App\Http\Controllers\MedicalId\AdminUserManagementController::class, 'index'])->name('admin.users.index');
     Route::get('/admin/users/{id}',                             [\App\Http\Controllers\MedicalId\AdminUserManagementController::class, 'show'])->name('admin.users.show');

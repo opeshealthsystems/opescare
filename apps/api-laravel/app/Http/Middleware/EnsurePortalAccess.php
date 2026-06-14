@@ -166,7 +166,9 @@ class EnsurePortalAccess
             in_array($role, self::PORTAL_ROLES['portals/insurance'])  => '/portals/insurance',
             in_array($role, self::PORTAL_ROLES['portals/developer'])  => '/portals/developer',
             in_array($role, self::PORTAL_ROLES['portals/lite'])       => '/portals/lite',
-            default                                                    => '/portals/admin',
+            in_array($role, self::PORTAL_ROLES['portals/admin'])      => '/portals/admin',
+            // Unknown/unassigned role must NOT default into the admin portal.
+            default                                                    => '/login',
         };
     }
 }

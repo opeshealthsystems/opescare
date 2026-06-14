@@ -44,6 +44,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'throttle.client'  => \App\Http\Middleware\ThrottleByClient::class,
             'bridge.agent'     => \App\Http\Middleware\VerifyBridgeAgent::class,
             'portal.access'    => \App\Http\Middleware\EnsurePortalAccess::class,
+            'platform.admin'   => \App\Http\Middleware\RequirePlatformAdmin::class,
             'facility.context' => \App\Http\Middleware\RequireFacilityContext::class,
             'consent.grant'    => \App\Http\Middleware\RequireConsentGrant::class,
             'auth.mobile'      => \App\Http\Middleware\AuthenticateMobilePatient::class,
