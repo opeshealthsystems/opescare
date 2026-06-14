@@ -2014,3 +2014,45 @@ a.stat-card:hover { box-shadow: var(--p-shadow); }
   .diff-grid { grid-template-columns: 1fr; }
   .grid-2 { grid-template-columns: 1fr; }
 }
+
+/* ── Final batch refactor additions (Connect/Bridge/CDSS/Support/Reports) ── */
+/* Single-dash badge aliases for data-driven model helpers (statusColor) */
+.badge-info    { background: rgba(15,76,129,.12); color: #0F4C81; border: 1px solid rgba(15,76,129,.25); }
+.badge-default { background: var(--p-surface-2); color: var(--p-text-muted); border: 1px solid var(--p-border); }
+
+/* Dark code snippet panel (Connect widget embed generator) */
+.code-block {
+    background: var(--p-sidebar-bg);
+    color: #E2E8F0;
+    padding: var(--p-space-4);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.76rem;
+    line-height: 1.55;
+    overflow-x: auto;
+    margin: 0;
+    border-radius: 0 0 var(--p-radius-lg) var(--p-radius-lg);
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* Support ticket reply thread */
+.thread-item { padding: var(--p-space-4) var(--p-space-5); }
+.thread-item--bordered { border-bottom: 1px solid var(--p-border); }
+.thread-item__head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin-bottom: 0.5rem; }
+.thread-item__body { padding-left: 2.1rem; font-size: 0.875rem; line-height: 1.6; white-space: pre-wrap; color: var(--p-text-2); }
+.thread-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--p-primary); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 600; flex-shrink: 0;
+}
+
+/* Modal width modifiers */
+.modal--md { max-width: 540px; }
+.modal--lg { max-width: 620px; }
+/* Inline code token that wraps and fills its row */
+.code-token--block { flex: 1; min-width: 200px; word-break: break-all; }
+/* Pre-wrapped prose blocks */
+.prose-wrap { white-space: pre-wrap; }
+.prose-list { margin: 0; padding-left: 1.1rem; line-height: 1.7; }
+.filter-bar--flush { margin-bottom: 0; }

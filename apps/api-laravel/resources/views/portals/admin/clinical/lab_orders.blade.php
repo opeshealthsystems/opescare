@@ -10,74 +10,66 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title">Lab Orders Register</h1>
-        <p class="page-subtitle">Facility-wide view of all lab test orders — read-only oversight.</p>
-    </div>
-    <a href="{{ route('portals.lab.orders') }}" class="btn btn-outline btn-sm">
-        <i data-lucide="microscope" style="width:14px;height:14px;"></i>
-        Lab Work Queue
+<div class="page-head">
+    <h2>Lab Orders Register</h2>
+    <div class="page-head__spacer"></div>
+    <a href="{{ route('portals.lab.orders') }}" class="btn btn-secondary btn-sm">
+        <i data-lucide="microscope"></i> Lab Work Queue
     </a>
 </div>
+<p class="td-muted mb-6">Facility-wide view of all lab test orders — read-only oversight.</p>
 
 {{-- Summary chips --}}
-<div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.25rem;">
-    <div class="stat-card" style="flex:0 0 auto;min-width:130px;">
-        <div class="stat-card__icon" style="background:#fef3c7;color:#b45309;"><i data-lucide="clock"></i></div>
-        <div class="stat-card__val">{{ $summary['pending'] }}</div>
+<div class="stat-grid mb-6">
+    <div class="stat-card stat-card--warning">
+        <div class="stat-card__head"><i data-lucide="clock"></i></div>
+        <div class="stat-card__value">{{ $summary['pending'] }}</div>
         <div class="stat-card__label">Pending</div>
     </div>
-    <div class="stat-card" style="flex:0 0 auto;min-width:130px;">
-        <div class="stat-card__icon" style="background:#dbeafe;color:#1d4ed8;"><i data-lucide="loader"></i></div>
-        <div class="stat-card__val">{{ $summary['processing'] }}</div>
+    <div class="stat-card stat-card--primary">
+        <div class="stat-card__head"><i data-lucide="loader"></i></div>
+        <div class="stat-card__value">{{ $summary['processing'] }}</div>
         <div class="stat-card__label">Processing</div>
     </div>
-    <div class="stat-card" style="flex:0 0 auto;min-width:130px;">
-        <div class="stat-card__icon" style="background:#dcfce7;color:#15803d;"><i data-lucide="check-circle-2"></i></div>
-        <div class="stat-card__val">{{ $summary['resulted'] }}</div>
+    <div class="stat-card stat-card--success">
+        <div class="stat-card__head"><i data-lucide="check-circle-2"></i></div>
+        <div class="stat-card__value">{{ $summary['resulted'] }}</div>
         <div class="stat-card__label">Resulted Today</div>
     </div>
-    <div class="stat-card" style="flex:0 0 auto;min-width:130px;">
-        <div class="stat-card__icon" style="background:#fee2e2;color:#b91c1c;"><i data-lucide="alert-triangle"></i></div>
-        <div class="stat-card__val">{{ $summary['urgent'] }}</div>
+    <div class="stat-card stat-card--danger">
+        <div class="stat-card__head"><i data-lucide="alert-triangle"></i></div>
+        <div class="stat-card__value">{{ $summary['urgent'] }}</div>
         <div class="stat-card__label">Urgent Pending</div>
     </div>
 </div>
 
 {{-- Filters --}}
-<form method="GET" style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.25rem;align-items:flex-end;">
-    <div>
-        <label class="form-label">Status</label>
-        <select name="status" class="form-control form-control-sm" onchange="this.form.submit()">
-            <option value="">All</option>
-            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
-            <option value="collected" {{ request('status') === 'collected' ? 'selected' : '' }}>Collected</option>
-            <option value="processing" {{ request('status') === 'processing' ? 'selected' : '' }}>Processing</option>
-            <option value="resulted" {{ request('status') === 'resulted' ? 'selected' : '' }}>Resulted</option>
-            <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-        </select>
-    </div>
-    <div>
-        <label class="form-label">Urgency</label>
-        <select name="urgency" class="form-control form-control-sm" onchange="this.form.submit()">
-            <option value="">All</option>
-            <option value="urgent" {{ request('urgency') === 'urgent' ? 'selected' : '' }}>Urgent</option>
-            <option value="routine" {{ request('urgency') === 'routine' ? 'selected' : '' }}>Routine</option>
-        </select>
-    </div>
-    <div>
-        <label class="form-label">Search</label>
-        <input type="text" name="search" class="form-control form-control-sm" placeholder="Test name or patient…" value="{{ request('search') }}">
-    </div>
-    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+<form method="GET" class="filter-bar">
+    <select name="status" class="filter-select" aria-label="Status" onchange="this.form.submit()">
+        <option value="">All statuses</option>
+        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+        <option value="collected" {{ request('status') === 'collected' ? 'selected' : '' }}>Collected</option>
+        <option value="processing" {{ request('status') === 'processing' ? 'selected' : '' }}>Processing</option>
+        <option value="resulted" {{ request('status') === 'resulted' ? 'selected' : '' }}>Resulted</option>
+        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+    </select>
+    <select name="urgency" class="filter-select" aria-label="Urgency" onchange="this.form.submit()">
+        <option value="">All urgencies</option>
+        <option value="urgent" {{ request('urgency') === 'urgent' ? 'selected' : '' }}>Urgent</option>
+        <option value="routine" {{ request('urgency') === 'routine' ? 'selected' : '' }}>Routine</option>
+    </select>
+    <label class="filter-search">
+        <i data-lucide="search"></i>
+        <input type="text" name="search" placeholder="Test name or patient…" value="{{ request('search') }}" aria-label="Search">
+    </label>
+    <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> Filter</button>
     @if(request()->hasAny(['status','urgency','search']))
-        <a href="{{ route('portals.admin.clinical.lab_orders') }}" class="btn btn-outline btn-sm">Clear</a>
+        <a href="{{ route('portals.admin.clinical.lab_orders') }}" class="btn btn-ghost btn-sm">Clear</a>
     @endif
 </form>
 
-<div class="card" style="overflow:hidden;">
-    <div class="card-body" style="padding:0;overflow-x:auto;">
+<div class="panel">
+    <div class="table-wrapper">
         <table class="data-table">
             <thead>
                 <tr>
@@ -93,38 +85,29 @@
             <tbody>
                 @forelse($orders as $order)
                 <tr>
-                    <td>
-                        <div style="font-weight:600;">{{ $order->test_name }}</div>
-                        @if($order->test_code)
-                        <div style="font-size:.75rem;color:#64748b;">{{ $order->test_code }}</div>
-                        @endif
+                    <td data-label="Test">
+                        <div class="td-strong">{{ $order->test_name }}</div>
+                        @if($order->test_code)<div class="td-muted">{{ $order->test_code }}</div>@endif
                     </td>
-                    <td>
-                        <div style="font-size:.875rem;font-weight:500;">{{ $order->patient?->full_name ?? '—' }}</div>
-                        <div style="font-size:.75rem;color:#64748b;">{{ $order->patient?->health_id ?? '' }}</div>
+                    <td data-label="Patient">
+                        <div class="td-strong">{{ $order->patient?->full_name ?? '—' }}</div>
+                        <div class="td-muted">{{ $order->patient?->health_id ?? '' }}</div>
                     </td>
-                    <td>
-                        <span class="badge {{ $order->urgency === 'urgent' ? 'badge-danger' : 'badge-default' }}">
-                            {{ ucfirst($order->urgency ?? 'routine') }}
-                        </span>
+                    <td data-label="Urgency">
+                        <span class="badge {{ $order->urgency === 'urgent' ? 'badge-danger' : 'badge-neutral' }}">{{ ucfirst($order->urgency ?? 'routine') }}</span>
                     </td>
-                    <td style="font-size:.83rem;color:#64748b;">{{ $order->ordered_at?->format('d M Y H:i') ?? $order->created_at?->format('d M Y') }}</td>
-                    <td style="font-size:.83rem;color:#64748b;">{{ $order->collected_at?->format('d M Y H:i') ?? '—' }}</td>
-                    <td>
-                        <span class="badge badge-{{ $order->statusColor() }}">{{ ucfirst($order->status) }}</span>
-                    </td>
-                    <td style="font-size:.83rem;color:#64748b;">{{ $order->resulted_at?->format('d M Y H:i') ?? '—' }}</td>
+                    <td data-label="Ordered">{{ $order->ordered_at?->format('d M Y H:i') ?? $order->created_at?->format('d M Y') }}</td>
+                    <td data-label="Collected">{{ $order->collected_at?->format('d M Y H:i') ?? '—' }}</td>
+                    <td data-label="Status"><span class="badge badge-{{ $order->statusColor() }}">{{ ucfirst($order->status) }}</span></td>
+                    <td data-label="Resulted">{{ $order->resulted_at?->format('d M Y H:i') ?? '—' }}</td>
                 </tr>
                 @empty
-                <tr>
-                    <td colspan="7" style="text-align:center;padding:2rem;color:#94a3b8;">No lab orders found.</td>
-                </tr>
+                <tr><td colspan="7" class="td-muted empty-cell">No lab orders found.</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
+    <div class="panel-body">{{ $orders->links() }}</div>
 </div>
-
-<div style="margin-top:1rem;">{{ $orders->links() }}</div>
 
 @endsection

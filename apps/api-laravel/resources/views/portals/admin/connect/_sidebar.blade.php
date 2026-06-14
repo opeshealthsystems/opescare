@@ -1,7 +1,7 @@
 <nav class="portal-sidebar">
     <div class="sidebar-header">
         <div class="sidebar-logo">
-            <i data-lucide="plug-zap" style="width:22px;height:22px;color:#6366f1;"></i>
+            <i data-lucide="plug-zap"></i>
             <span>Connect Suite</span>
         </div>
     </div>

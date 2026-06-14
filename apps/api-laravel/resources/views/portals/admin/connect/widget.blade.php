@@ -3,149 +3,123 @@
 @section('sidebar') @include('portals.admin.connect._sidebar') @endsection
 
 @section('content')
-<div class="portal-content">
 
-    <div class="portal-page-header">
-        <div>
-            <h1 class="portal-page-title">Widget Embed Generator</h1>
-            <p class="portal-page-subtitle">Generate embed snippets for the OpesCare Connect Widget</p>
+<div class="page-head">
+    <h2><i data-lucide="layout-panel-left"></i> Widget Embed Generator</h2>
+    <div class="page-head__spacer"></div>
+</div>
+<p class="td-muted mb-6">Generate embed snippets for the OpesCare Connect Widget</p>
+
+<div class="field-grid">
+
+    {{-- Configuration Panel --}}
+    <div class="panel">
+        <div class="panel-header"><h3 class="panel-title"><i data-lucide="settings"></i> Widget Configuration</h3></div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="form-label">Widget Type</label>
+                <select id="widgetType" class="form-control" onchange="regenerate()">
+                    <option value="appointment">Appointment Booking</option>
+                    <option value="health_id_verify">Health ID Verification</option>
+                    <option value="patient_summary">Patient Summary</option>
+                    <option value="queue_status">Queue Status</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">API Client</label>
+                <select id="clientId" class="form-control" onchange="regenerate()">
+                    <option value="">— Select Active Client —</option>
+                    @foreach($clients as $client)
+                        <option value="{{ $client->client_id }}">{{ $client->name }} ({{ $client->environment }})</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Facility ID</label>
+                <input type="text" id="facilityId" class="form-control" placeholder="UUID of the facility" oninput="regenerate()">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Theme</label>
+                <select id="widgetTheme" class="form-control" onchange="regenerate()">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                    <option value="auto">Auto (system preference)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Language</label>
+                <select id="widgetLang" class="form-control" onchange="regenerate()">
+                    <option value="en">English</option>
+                    <option value="fr">French</option>
+                    <option value="ha">Hausa</option>
+                    <option value="yo">Yoruba</option>
+                    <option value="ig">Igbo</option>
+                    <option value="sw">Swahili</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Primary Colour</label>
+                <input type="color" id="widgetColor" class="form-control" value="#0891b2" onchange="regenerate()">
+            </div>
         </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
-
-        {{-- Configuration Panel --}}
-        <div class="portal-card">
-            <div class="portal-card__header">
-                <h2 class="portal-card__title"><i data-lucide="settings" style="width:15px;height:15px;"></i> Widget Configuration</h2>
+    {{-- Preview & Code --}}
+    <div>
+        <div class="panel mb-6">
+            <div class="panel-header">
+                <h3 class="panel-title"><i data-lucide="code-2"></i> Script Tag</h3>
+                <button class="btn btn-ghost btn-sm" onclick="copyCode('scriptCode')"><i data-lucide="copy"></i> Copy</button>
             </div>
-            <div class="portal-card__body">
-                <div class="form-group">
-                    <label class="form-label">Widget Type</label>
-                    <select id="widgetType" class="form-control" onchange="regenerate()">
-                        <option value="appointment">Appointment Booking</option>
-                        <option value="health_id_verify">Health ID Verification</option>
-                        <option value="patient_summary">Patient Summary</option>
-                        <option value="queue_status">Queue Status</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">API Client</label>
-                    <select id="clientId" class="form-control" onchange="regenerate()">
-                        <option value="">— Select Active Client —</option>
-                        @foreach($clients as $client)
-                            <option value="{{ $client->client_id }}">{{ $client->name }} ({{ $client->environment }})</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Facility ID</label>
-                    <input type="text" id="facilityId" class="form-control" placeholder="UUID of the facility" oninput="regenerate()">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Theme</label>
-                    <select id="widgetTheme" class="form-control" onchange="regenerate()">
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                        <option value="auto">Auto (system preference)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Language</label>
-                    <select id="widgetLang" class="form-control" onchange="regenerate()">
-                        <option value="en">English</option>
-                        <option value="fr">French</option>
-                        <option value="ha">Hausa</option>
-                        <option value="yo">Yoruba</option>
-                        <option value="ig">Igbo</option>
-                        <option value="sw">Swahili</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Primary Colour</label>
-                    <input type="color" id="widgetColor" class="form-control" value="#0891b2" style="height:40px;padding:4px;" onchange="regenerate()">
-                </div>
-            </div>
+            <pre id="scriptCode" class="code-block"></pre>
         </div>
 
-        {{-- Preview & Code --}}
-        <div>
-            <div class="portal-card" style="margin-bottom:16px;">
-                <div class="portal-card__header">
-                    <h2 class="portal-card__title"><i data-lucide="code-2" style="width:15px;height:15px;"></i> Script Tag</h2>
-                    <button class="btn btn--sm btn--outline" onclick="copyCode('scriptCode')">
-                        <i data-lucide="copy" style="width:13px;height:13px;"></i> Copy
-                    </button>
-                </div>
-                <div class="portal-card__body" style="padding:0;">
-                    <pre id="scriptCode" style="background:#0f172a;color:#e2e8f0;padding:16px;font-size:0.76rem;overflow-x:auto;margin:0;border-radius:0 0 8px 8px;white-space:pre-wrap;word-break:break-all;"></pre>
-                </div>
+        <div class="panel mb-6">
+            <div class="panel-header">
+                <h3 class="panel-title"><i data-lucide="code"></i> HTML Embed Tag</h3>
+                <button class="btn btn-ghost btn-sm" onclick="copyCode('embedCode')"><i data-lucide="copy"></i> Copy</button>
             </div>
-
-            <div class="portal-card" style="margin-bottom:16px;">
-                <div class="portal-card__header">
-                    <h2 class="portal-card__title"><i data-lucide="code" style="width:15px;height:15px;"></i> HTML Embed Tag</h2>
-                    <button class="btn btn--sm btn--outline" onclick="copyCode('embedCode')">
-                        <i data-lucide="copy" style="width:13px;height:13px;"></i> Copy
-                    </button>
-                </div>
-                <div class="portal-card__body" style="padding:0;">
-                    <pre id="embedCode" style="background:#0f172a;color:#e2e8f0;padding:16px;font-size:0.76rem;overflow-x:auto;margin:0;border-radius:0 0 8px 8px;white-space:pre-wrap;word-break:break-all;"></pre>
-                </div>
-            </div>
-
-            <div class="portal-card">
-                <div class="portal-card__header">
-                    <h2 class="portal-card__title"><i data-lucide="braces" style="width:15px;height:15px;"></i> JavaScript Init</h2>
-                    <button class="btn btn--sm btn--outline" onclick="copyCode('jsCode')">
-                        <i data-lucide="copy" style="width:13px;height:13px;"></i> Copy
-                    </button>
-                </div>
-                <div class="portal-card__body" style="padding:0;">
-                    <pre id="jsCode" style="background:#0f172a;color:#e2e8f0;padding:16px;font-size:0.76rem;overflow-x:auto;margin:0;border-radius:0 0 8px 8px;white-space:pre-wrap;word-break:break-all;"></pre>
-                </div>
-            </div>
+            <pre id="embedCode" class="code-block"></pre>
         </div>
 
-    </div>
-
-    {{-- Documentation --}}
-    <div class="portal-card" style="margin-top:24px;">
-        <div class="portal-card__header">
-            <h2 class="portal-card__title"><i data-lucide="book-open" style="width:15px;height:15px;"></i> Integration Guide</h2>
-        </div>
-        <div class="portal-card__body">
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
-                <div style="background:#f0fdf4;border-radius:8px;padding:16px;">
-                    <div style="font-weight:600;font-size:0.88rem;color:#166534;margin-bottom:6px;">
-                        <i data-lucide="check-circle" style="width:14px;height:14px;"></i> Step 1 — Add Script
-                    </div>
-                    <div style="font-size:0.8rem;color:#4b5563;">Place the script tag in the <code>&lt;head&gt;</code> of your page. The widget loads asynchronously and will not block rendering.</div>
-                </div>
-                <div style="background:#eff6ff;border-radius:8px;padding:16px;">
-                    <div style="font-weight:600;font-size:0.88rem;color:#1e40af;margin-bottom:6px;">
-                        <i data-lucide="code" style="width:14px;height:14px;"></i> Step 2 — Place Embed Tag
-                    </div>
-                    <div style="font-size:0.8rem;color:#4b5563;">Drop the <code>&lt;opescare-widget&gt;</code> tag anywhere in your HTML where you want the widget to render.</div>
-                </div>
-                <div style="background:#fefce8;border-radius:8px;padding:16px;">
-                    <div style="font-weight:600;font-size:0.88rem;color:#854d0e;margin-bottom:6px;">
-                        <i data-lucide="key" style="width:14px;height:14px;"></i> Step 3 — Authenticate
-                    </div>
-                    <div style="font-size:0.8rem;color:#4b5563;">Pass a short-lived session token from your server via <code>OpesCareWidget.setToken(token)</code> after the user logs in.</div>
-                </div>
-                <div style="background:#fdf4ff;border-radius:8px;padding:16px;">
-                    <div style="font-weight:600;font-size:0.88rem;color:#7e22ce;margin-bottom:6px;">
-                        <i data-lucide="shield-check" style="width:14px;height:14px;"></i> Security
-                    </div>
-                    <div style="font-size:0.8rem;color:#4b5563;">Never embed your API secret in front-end code. Widget sessions are scoped and expire. All traffic is HTTPS.</div>
-                </div>
+        <div class="panel">
+            <div class="panel-header">
+                <h3 class="panel-title"><i data-lucide="braces"></i> JavaScript Init</h3>
+                <button class="btn btn-ghost btn-sm" onclick="copyCode('jsCode')"><i data-lucide="copy"></i> Copy</button>
             </div>
+            <pre id="jsCode" class="code-block"></pre>
         </div>
     </div>
 
 </div>
 
+{{-- Documentation --}}
+<div class="panel mt-6">
+    <div class="panel-header"><h3 class="panel-title"><i data-lucide="book-open"></i> Integration Guide</h3></div>
+    <div class="panel-body">
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-card__head"><i data-lucide="check-circle"></i> <span class="kv-strong">Step 1 — Add Script</span></div>
+                <p class="td-muted">Place the script tag in the <code class="code-token">&lt;head&gt;</code> of your page. The widget loads asynchronously and will not block rendering.</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card__head"><i data-lucide="code"></i> <span class="kv-strong">Step 2 — Place Embed Tag</span></div>
+                <p class="td-muted">Drop the <code class="code-token">&lt;opescare-widget&gt;</code> tag anywhere in your HTML where you want the widget to render.</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card__head"><i data-lucide="key"></i> <span class="kv-strong">Step 3 — Authenticate</span></div>
+                <p class="td-muted">Pass a short-lived session token from your server via <code class="code-token">OpesCareWidget.setToken(token)</code> after the user logs in.</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card__head"><i data-lucide="shield-check"></i> <span class="kv-strong">Security</span></div>
+                <p class="td-muted">Never embed your API secret in front-end code. Widget sessions are scoped and expire. All traffic is HTTPS.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@endsection
+@section('scripts')
 <script>
 const BASE_URL = '{{ $baseUrl }}';
 
@@ -197,13 +171,12 @@ function copyCode(id) {
     navigator.clipboard.writeText(text).then(() => {
         const btn = event.currentTarget;
         const orig = btn.innerHTML;
-        btn.innerHTML = '<i data-lucide="check" style="width:13px;height:13px;"></i> Copied!';
-        lucide.createIcons();
-        setTimeout(() => { btn.innerHTML = orig; lucide.createIcons(); }, 2000);
+        btn.innerHTML = '<i data-lucide="check"></i> Copied!';
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        setTimeout(() => { btn.innerHTML = orig; if (typeof lucide !== 'undefined') lucide.createIcons(); }, 2000);
     });
 }
 
-// Init on load
 document.addEventListener('DOMContentLoaded', regenerate);
 </script>
 @endsection

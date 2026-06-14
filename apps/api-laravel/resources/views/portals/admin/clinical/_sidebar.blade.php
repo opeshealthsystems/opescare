@@ -1,6 +1,6 @@
 @section('sidebar_role_badge')
-<div class="sidebar-role-badge" style="background:rgba(15,76,129,.2);border-color:rgba(15,76,129,.4);color:#93c5fd;">
-    <i data-lucide="hospital" style="width:.75rem;height:.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+<div class="sidebar-role-badge sidebar-role-badge--primary">
+    <i data-lucide="hospital"></i>
     Facility Admin
 </div>
 @endsection
