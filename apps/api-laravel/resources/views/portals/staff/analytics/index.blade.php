@@ -121,15 +121,11 @@
 
 @include('portals.staff.analytics._tabs')
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title">Analytics Dashboard</h1>
-        <p class="page-subtitle">
-            {{ \Carbon\Carbon::parse($periodFrom)->format('M d') }} – {{ \Carbon\Carbon::parse($periodTo)->format('M d, Y') }}
-        </p>
-    </div>
+<div class="page-head">
+    <h2>Analytics dashboard</h2>
+    <div class="page-head__spacer"></div>
     {{-- Period Selector --}}
-    <form method="GET" action="{{ route('portals.staff.analytics') }}" style="display:flex;gap:.4rem;align-items:center;">
+    <form method="GET" action="{{ route('portals.staff.analytics') }}" class="filter-bar filter-bar--flush">
         @foreach(['7d' => '7 Days', '30d' => '30 Days', '90d' => '90 Days', '1y' => '1 Year'] as $val => $label)
             <button type="submit" name="period" value="{{ $val }}"
                 class="btn btn-sm {{ $period === $val ? 'btn-primary' : 'btn-ghost' }}">
@@ -138,91 +134,67 @@
         @endforeach
     </form>
 </div>
+<p class="page-subtitle mb-6">
+    {{ \Carbon\Carbon::parse($periodFrom)->format('M d') }} – {{ \Carbon\Carbon::parse($periodTo)->format('M d, Y') }}
+</p>
 
 {{-- ── Row 1: KPI Cards ───────────────────────────────────────── --}}
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:.75rem;margin-bottom:1.25rem;">
+<div class="stat-grid mb-6">
 
     {{-- Visits --}}
-    <div class="panel" style="padding:1.1rem 1rem;">
-        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;">
-            <i data-lucide="stethoscope" style="width:16px;height:16px;color:var(--p-primary);"></i>
-            <span style="font-size:.75rem;color:var(--p-text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Visits</span>
-        </div>
-        <div style="font-size:2rem;font-weight:700;line-height:1;">{{ number_format($visits['total']) }}</div>
-        <div style="font-size:.75rem;color:var(--p-text-secondary);margin-top:.25rem;">
-            <span style="color:var(--p-success);">{{ $visits['completed'] }} done</span>
-            · {{ $visits['active'] }} active
-        </div>
+    <div class="stat-card stat-card--primary">
+        <div class="stat-card__head"><i data-lucide="stethoscope"></i> <span class="stat-card__label">Visits</span></div>
+        <div class="stat-card__value">{{ number_format($visits['total']) }}</div>
+        <div class="stat-card__hint">{{ $visits['completed'] }} done · {{ $visits['active'] }} active</div>
     </div>
 
     {{-- Appointments --}}
-    <div class="panel" style="padding:1.1rem 1rem;">
-        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;">
-            <i data-lucide="calendar-check-2" style="width:16px;height:16px;color:var(--p-primary);"></i>
-            <span style="font-size:.75rem;color:var(--p-text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Appointments</span>
-        </div>
-        <div style="font-size:2rem;font-weight:700;line-height:1;">{{ number_format($appointments['total']) }}</div>
-        <div style="font-size:.75rem;color:var(--p-text-secondary);margin-top:.25rem;">
+    <div class="stat-card stat-card--primary">
+        <div class="stat-card__head"><i data-lucide="calendar-check-2"></i> <span class="stat-card__label">Appointments</span></div>
+        <div class="stat-card__value">{{ number_format($appointments['total']) }}</div>
+        <div class="stat-card__hint">
             @if($appointments['show_rate'] !== null)
-                <span style="color:var(--p-success);">{{ $appointments['show_rate'] }}% show rate</span>
+                {{ $appointments['show_rate'] }}% show rate
             @else
-                <span>No data</span>
+                No data
             @endif
         </div>
     </div>
 
     {{-- Revenue --}}
-    <div class="panel" style="padding:1.1rem 1rem;">
-        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;">
-            <i data-lucide="trending-up" style="width:16px;height:16px;color:var(--p-success);"></i>
-            <span style="font-size:.75rem;color:var(--p-text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Collected</span>
-        </div>
-        <div style="font-size:2rem;font-weight:700;line-height:1;">{{ number_format($revenue['total_collected'], 0) }}</div>
-        <div style="font-size:.75rem;color:var(--p-text-secondary);margin-top:.25rem;">
+    <div class="stat-card stat-card--success">
+        <div class="stat-card__head"><i data-lucide="trending-up"></i> <span class="stat-card__label">Collected</span></div>
+        <div class="stat-card__value">{{ number_format($revenue['total_collected'], 0) }}</div>
+        <div class="stat-card__hint">
             of {{ number_format($revenue['total_invoiced'], 0) }} invoiced
             @if($revenue['collection_rate'] !== null)
-                · <span style="color:var(--p-success);">{{ $revenue['collection_rate'] }}%</span>
+                · {{ $revenue['collection_rate'] }}%
             @endif
         </div>
     </div>
 
     {{-- Outstanding --}}
-    <div class="panel" style="padding:1.1rem 1rem;">
-        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;">
-            <i data-lucide="clock" style="width:16px;height:16px;color:var(--p-warning);"></i>
-            <span style="font-size:.75rem;color:var(--p-text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Outstanding</span>
-        </div>
-        <div style="font-size:2rem;font-weight:700;line-height:1;color:{{ $revenue['total_outstanding'] > 0 ? 'var(--p-warning)' : 'var(--p-success)' }};">
-            {{ number_format($revenue['total_outstanding'], 0) }}
-        </div>
-        <div style="font-size:.75rem;color:var(--p-text-secondary);margin-top:.25rem;">
-            {{ $revenue['overdue_count'] }} overdue invoices
-        </div>
+    <div class="stat-card {{ $revenue['total_outstanding'] > 0 ? 'stat-card--warning' : 'stat-card--success' }}">
+        <div class="stat-card__head"><i data-lucide="clock"></i> <span class="stat-card__label">Outstanding</span></div>
+        <div class="stat-card__value">{{ number_format($revenue['total_outstanding'], 0) }}</div>
+        <div class="stat-card__hint">{{ $revenue['overdue_count'] }} overdue invoices</div>
     </div>
 
     {{-- New Patients --}}
-    <div class="panel" style="padding:1.1rem 1rem;">
-        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;">
-            <i data-lucide="user-plus" style="width:16px;height:16px;color:var(--p-primary);"></i>
-            <span style="font-size:.75rem;color:var(--p-text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">New Patients</span>
-        </div>
-        <div style="font-size:2rem;font-weight:700;line-height:1;">{{ number_format($patients['new_in_period']) }}</div>
-        <div style="font-size:.75rem;color:var(--p-text-secondary);margin-top:.25rem;">
-            {{ number_format($patients['total_registered']) }} total registered
-        </div>
+    <div class="stat-card stat-card--primary">
+        <div class="stat-card__head"><i data-lucide="user-plus"></i> <span class="stat-card__label">New Patients</span></div>
+        <div class="stat-card__value">{{ number_format($patients['new_in_period']) }}</div>
+        <div class="stat-card__hint">{{ number_format($patients['total_registered']) }} total registered</div>
     </div>
 
     {{-- Staff on Leave --}}
-    <div class="panel" style="padding:1.1rem 1rem;">
-        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;">
-            <i data-lucide="plane-takeoff" style="width:16px;height:16px;color:var(--p-warning);"></i>
-            <span style="font-size:.75rem;color:var(--p-text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Staff</span>
-        </div>
-        <div style="font-size:2rem;font-weight:700;line-height:1;">{{ number_format($staff['active']) }}</div>
-        <div style="font-size:.75rem;color:var(--p-text-secondary);margin-top:.25rem;">
+    <div class="stat-card {{ $staff['on_leave'] > 0 ? 'stat-card--warning' : '' }}">
+        <div class="stat-card__head"><i data-lucide="plane-takeoff"></i> <span class="stat-card__label">Staff</span></div>
+        <div class="stat-card__value">{{ number_format($staff['active']) }}</div>
+        <div class="stat-card__hint">
             active of {{ $staff['total'] }}
             @if($staff['on_leave'] > 0)
-                · <span style="color:var(--p-warning);">{{ $staff['on_leave'] }} on leave</span>
+                · {{ $staff['on_leave'] }} on leave
             @endif
         </div>
     </div>
@@ -230,21 +202,21 @@
 </div>
 
 {{-- ── Row 2: Visit Trend + Appointment Breakdown ─────────────── --}}
-<div style="display:grid;grid-template-columns:2fr 1fr;gap:.75rem;margin-bottom:1.25rem;">
+<div class="grid-2 mb-6">
 
     {{-- Visit Trend Chart --}}
     <div class="panel">
         <div class="panel-header">
-            <h2 class="panel-title">
-                <i data-lucide="activity" style="width:14px;height:14px;"></i>
+            <h3 class="panel-title">
+                <i data-lucide="activity"></i>
                 Visit Trend
-            </h2>
+            </h3>
         </div>
-        <div class="panel-body" style="padding:.75rem;">
+        <div class="panel-body">
             @if(empty($visitTrend))
-                <div class="empty-state" style="padding:2rem 0;">
-                    <div class="empty-state-icon" style="width:36px;height:36px;"><i data-lucide="bar-chart-2"></i></div>
-                    <p style="margin:.5rem 0 0;font-size:.85rem;color:var(--p-text-secondary);">No visit data for this period.</p>
+                <div class="empty-state">
+                    <div class="empty-state-icon"><i data-lucide="bar-chart-2"></i></div>
+                    <p>No visit data for this period.</p>
                 </div>
             @else
                 <div style="height:160px;position:relative;">
@@ -257,32 +229,30 @@
     {{-- Appointment Breakdown --}}
     <div class="panel">
         <div class="panel-header">
-            <h2 class="panel-title">
-                <i data-lucide="calendar-check-2" style="width:14px;height:14px;"></i>
+            <h3 class="panel-title">
+                <i data-lucide="calendar-check-2"></i>
                 Appointments
-            </h2>
+            </h3>
         </div>
-        <div class="panel-body" style="padding:.75rem;">
+        <div class="panel-body">
             @if($appointments['total'] === 0)
-                <p style="text-align:center;color:var(--p-text-secondary);font-size:.85rem;padding:1.5rem 0;">No appointments.</p>
+                <p class="td-muted">No appointments.</p>
             @else
+                <div class="breakdown">
                 @foreach([
-                    ['label'=>'Completed', 'key'=>'completed', 'color'=>'var(--p-success)'],
-                    ['label'=>'Confirmed', 'key'=>'confirmed', 'color'=>'var(--p-primary)'],
-                    ['label'=>'Cancelled', 'key'=>'cancelled', 'color'=>'var(--p-danger)'],
-                    ['label'=>'No Show',   'key'=>'no_show',   'color'=>'var(--p-warning)'],
+                    ['label'=>'Completed', 'key'=>'completed', 'fill'=>''],
+                    ['label'=>'Confirmed', 'key'=>'confirmed', 'fill'=>''],
+                    ['label'=>'Cancelled', 'key'=>'cancelled', 'fill'=>'breakdown__fill--danger'],
+                    ['label'=>'No Show',   'key'=>'no_show',   'fill'=>'breakdown__fill--warning'],
                 ] as $row)
                 @php $val = $appointments[$row['key']]; $pct = $appointments['total'] > 0 ? round($val / $appointments['total'] * 100) : 0; @endphp
-                <div style="margin-bottom:.6rem;">
-                    <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:.2rem;">
-                        <span>{{ $row['label'] }}</span>
-                        <span style="font-weight:600;">{{ $val }} <span style="color:var(--p-text-secondary);">({{ $pct }}%)</span></span>
-                    </div>
-                    <div style="height:6px;background:var(--p-surface-alt);border-radius:3px;overflow:hidden;">
-                        <div style="height:100%;width:{{ $pct }}%;background:{{ $row['color'] }};border-radius:3px;transition:width .3s;"></div>
-                    </div>
+                <div class="breakdown__row">
+                    <span class="breakdown__label">{{ $row['label'] }}</span>
+                    <div class="breakdown__track"><div class="breakdown__fill {{ $row['fill'] }}" style="width:{{ $pct }}%;"></div></div>
+                    <span class="breakdown__value">{{ $val }} ({{ $pct }}%)</span>
                 </div>
                 @endforeach
+                </div>
             @endif
         </div>
     </div>
@@ -290,21 +260,21 @@
 </div>
 
 {{-- ── Row 3: Revenue Trend + Visit by Type ───────────────────── --}}
-<div style="display:grid;grid-template-columns:2fr 1fr;gap:.75rem;margin-bottom:1.25rem;">
+<div class="grid-2 mb-6">
 
     {{-- Revenue Trend --}}
     <div class="panel">
         <div class="panel-header">
-            <h2 class="panel-title">
-                <i data-lucide="trending-up" style="width:14px;height:14px;"></i>
+            <h3 class="panel-title">
+                <i data-lucide="trending-up"></i>
                 Revenue Trend
-            </h2>
+            </h3>
         </div>
-        <div class="panel-body" style="padding:.75rem;">
+        <div class="panel-body">
             @if(empty($revTrend))
-                <div class="empty-state" style="padding:2rem 0;">
-                    <div class="empty-state-icon" style="width:36px;height:36px;"><i data-lucide="trending-up"></i></div>
-                    <p style="margin:.5rem 0 0;font-size:.85rem;color:var(--p-text-secondary);">No revenue data for this period.</p>
+                <div class="empty-state">
+                    <div class="empty-state-icon"><i data-lucide="trending-up"></i></div>
+                    <p>No revenue data for this period.</p>
                 </div>
             @else
                 <div style="height:160px;position:relative;">
@@ -317,28 +287,26 @@
     {{-- Visits by Type --}}
     <div class="panel">
         <div class="panel-header">
-            <h2 class="panel-title">
-                <i data-lucide="stethoscope" style="width:14px;height:14px;"></i>
+            <h3 class="panel-title">
+                <i data-lucide="stethoscope"></i>
                 Visit Types
-            </h2>
+            </h3>
         </div>
-        <div class="panel-body" style="padding:.75rem;">
+        <div class="panel-body">
             @if(empty($visits['by_type']))
-                <p style="text-align:center;color:var(--p-text-secondary);font-size:.85rem;padding:1.5rem 0;">No visits.</p>
+                <p class="td-muted">No visits.</p>
             @else
                 @php $maxType = max(array_values($visits['by_type'])); @endphp
+                <div class="breakdown">
                 @foreach($visits['by_type'] as $type => $count)
                 @php $pct = $maxType > 0 ? round($count / $maxType * 100) : 0; @endphp
-                <div style="margin-bottom:.6rem;">
-                    <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:.2rem;">
-                        <span>{{ ucwords(str_replace('_',' ',$type)) }}</span>
-                        <span style="font-weight:600;">{{ $count }}</span>
-                    </div>
-                    <div style="height:6px;background:var(--p-surface-alt);border-radius:3px;overflow:hidden;">
-                        <div style="height:100%;width:{{ $pct }}%;background:var(--p-primary);border-radius:3px;"></div>
-                    </div>
+                <div class="breakdown__row">
+                    <span class="breakdown__label">{{ ucwords(str_replace('_',' ',$type)) }}</span>
+                    <div class="breakdown__track"><div class="breakdown__fill" style="width:{{ $pct }}%;"></div></div>
+                    <span class="breakdown__value">{{ $count }}</span>
                 </div>
                 @endforeach
+                </div>
             @endif
         </div>
     </div>
@@ -346,36 +314,38 @@
 </div>
 
 {{-- ── Row 4: Staff Distribution + Inventory Alerts ───────────── --}}
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.25rem;">
+<div class="grid-2 mb-6">
 
     {{-- Staff by Category --}}
     <div class="panel">
         <div class="panel-header">
-            <h2 class="panel-title">
-                <i data-lucide="users" style="width:14px;height:14px;"></i>
+            <h3 class="panel-title">
+                <i data-lucide="users"></i>
                 Staff Distribution
-            </h2>
+            </h3>
         </div>
-        <div class="panel-body" style="padding:.75rem;">
+        <div class="panel-body">
             @if(empty($staff['by_category']))
-                <p style="text-align:center;color:var(--p-text-secondary);font-size:.85rem;padding:1.5rem 0;">No staff records.</p>
+                <p class="td-muted">No staff records.</p>
             @else
                 @php $totalByCategory = array_sum($staff['by_category']); @endphp
+                <div class="breakdown">
                 @foreach($staff['by_category'] as $cat => $count)
                 @php $pct = $totalByCategory > 0 ? round($count / $totalByCategory * 100) : 0; @endphp
-                <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem;">
-                    <span style="font-size:.75rem;min-width:90px;color:var(--p-text-secondary);">{{ ucfirst($cat) }}</span>
-                    <div style="flex:1;height:8px;background:var(--p-surface-alt);border-radius:4px;overflow:hidden;">
-                        <div style="height:100%;width:{{ $pct }}%;background:var(--p-primary);border-radius:4px;"></div>
-                    </div>
-                    <span style="font-size:.75rem;font-weight:600;min-width:30px;text-align:right;">{{ $count }}</span>
+                <div class="breakdown__row">
+                    <span class="breakdown__label">{{ ucfirst($cat) }}</span>
+                    <div class="breakdown__track"><div class="breakdown__fill" style="width:{{ $pct }}%;"></div></div>
+                    <span class="breakdown__value">{{ $count }}</span>
                 </div>
                 @endforeach
+                </div>
                 @if($staff['pending_leaves'] > 0)
-                <div style="margin-top:.75rem;padding:.5rem .75rem;background:rgba(var(--p-warning-rgb,245,158,11),.08);border-radius:var(--p-radius);border-left:3px solid var(--p-warning);font-size:.78rem;">
-                    <i data-lucide="clock" style="width:12px;height:12px;"></i>
-                    {{ $staff['pending_leaves'] }} pending leave request{{ $staff['pending_leaves'] !== 1 ? 's' : '' }}
-                    <a href="{{ route('portals.staff.hr.leave') }}" style="margin-left:.35rem;text-decoration:underline;">Review →</a>
+                <div class="alert alert-warning mt-6">
+                    <i data-lucide="clock"></i>
+                    <div>
+                        {{ $staff['pending_leaves'] }} pending leave request{{ $staff['pending_leaves'] !== 1 ? 's' : '' }}
+                        <a href="{{ route('portals.staff.hr.leave') }}">Review →</a>
+                    </div>
                 </div>
                 @endif
             @endif
@@ -385,12 +355,12 @@
     {{-- Inventory Alerts --}}
     <div class="panel">
         <div class="panel-header">
-            <h2 class="panel-title">
-                <i data-lucide="package" style="width:14px;height:14px;"></i>
+            <h3 class="panel-title">
+                <i data-lucide="package"></i>
                 Inventory Alerts
-            </h2>
+            </h3>
         </div>
-        <div class="panel-body" style="padding:.75rem;">
+        <div class="panel-body">
             @php
                 $alerts = [];
                 if ($inventory['pharma_out'] > 0)     $alerts[] = ['type'=>'danger',  'msg'=> $inventory['pharma_out']    . ' medicine(s) out of stock', 'url'=> route('portals.staff.inventory.pharmacy')];
@@ -401,25 +371,28 @@
             @endphp
 
             @if(empty($alerts))
-                <div style="text-align:center;padding:1.5rem 0;color:var(--p-success);">
-                    <i data-lucide="check-circle" style="width:28px;height:28px;margin-bottom:.35rem;display:block;margin:0 auto .35rem;"></i>
-                    <p style="font-size:.85rem;margin:0;">All inventory levels look good.</p>
+                <div class="empty-state">
+                    <div class="empty-state-icon"><i data-lucide="check-circle"></i></div>
+                    <p>All inventory levels look good.</p>
                 </div>
             @else
                 @foreach($alerts as $alert)
-                <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .6rem;margin-bottom:.4rem;border-radius:var(--p-radius);background:{{ $alert['type']==='danger' ? 'rgba(220,38,38,.07)' : 'rgba(245,158,11,.07)' }};border-left:3px solid {{ $alert['type']==='danger' ? 'var(--p-danger)' : 'var(--p-warning)' }};">
-                    <span style="font-size:.78rem;">{{ $alert['msg'] }}</span>
-                    <a href="{{ $alert['url'] }}" style="font-size:.72rem;text-decoration:underline;white-space:nowrap;margin-left:.5rem;">Fix →</a>
+                <div class="alert {{ $alert['type']==='danger' ? 'alert-danger' : 'alert-warning' }} mb-6">
+                    <i data-lucide="{{ $alert['type']==='danger' ? 'alert-circle' : 'alert-triangle' }}"></i>
+                    <div class="flex-between">
+                        <span>{{ $alert['msg'] }}</span>
+                        <a href="{{ $alert['url'] }}">Fix →</a>
+                    </div>
                 </div>
                 @endforeach
             @endif
 
-            <div style="margin-top:.75rem;display:flex;gap:.5rem;flex-wrap:wrap;">
+            <div class="row-actions-inline mt-6">
                 <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="btn btn-ghost btn-xs">
-                    <i data-lucide="pill" style="width:11px;height:11px;"></i> Pharmacy
+                    <i data-lucide="pill"></i> Pharmacy
                 </a>
                 <a href="{{ route('portals.staff.inventory.blood') }}" class="btn btn-ghost btn-xs">
-                    <i data-lucide="droplets" style="width:11px;height:11px;"></i> Blood Bank
+                    <i data-lucide="droplets"></i> Blood Bank
                 </a>
             </div>
         </div>
@@ -429,25 +402,27 @@
 
 {{-- ── Row 5: Insurance Revenue breakdown ─────────────────────── --}}
 @if($revenue['insurance_covered'] > 0)
-<div class="panel" style="margin-bottom:1.25rem;">
+<div class="panel mb-6">
     <div class="panel-header">
-        <h2 class="panel-title">
-            <i data-lucide="shield-check" style="width:14px;height:14px;"></i>
+        <h3 class="panel-title">
+            <i data-lucide="shield-check"></i>
             Revenue Breakdown
-        </h2>
+        </h3>
     </div>
-    <div class="panel-body" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;padding:1rem;">
+    <div class="panel-body">
+        <div class="stat-grid">
         @foreach([
-            ['label'=>'Total Invoiced',    'value'=> $revenue['total_invoiced'],    'color'=>'var(--p-primary)'],
-            ['label'=>'Collected',         'value'=> $revenue['total_collected'],   'color'=>'var(--p-success)'],
-            ['label'=>'Insurance Covered', 'value'=> $revenue['insurance_covered'], 'color'=>'var(--p-teal,#0d9488)'],
-            ['label'=>'Outstanding',       'value'=> $revenue['total_outstanding'], 'color'=>'var(--p-warning)'],
+            ['label'=>'Total Invoiced',    'value'=> $revenue['total_invoiced'],    'mod'=>'stat-card--primary'],
+            ['label'=>'Collected',         'value'=> $revenue['total_collected'],   'mod'=>'stat-card--success'],
+            ['label'=>'Insurance Covered', 'value'=> $revenue['insurance_covered'], 'mod'=>'stat-card--teal'],
+            ['label'=>'Outstanding',       'value'=> $revenue['total_outstanding'], 'mod'=>'stat-card--warning'],
         ] as $item)
-        <div style="text-align:center;">
-            <div style="font-size:1.4rem;font-weight:700;color:{{ $item['color'] }};">{{ number_format($item['value'], 2) }}</div>
-            <div style="font-size:.72rem;color:var(--p-text-secondary);margin-top:.1rem;">{{ $item['label'] }}</div>
+        <div class="stat-card {{ $item['mod'] }}">
+            <div class="stat-card__value">{{ number_format($item['value'], 2) }}</div>
+            <div class="stat-card__label">{{ $item['label'] }}</div>
         </div>
         @endforeach
+        </div>
     </div>
 </div>
 @endif
@@ -471,8 +446,8 @@
                 datasets: [{
                     label: 'Visits',
                     data: visitData,
-                    backgroundColor: 'rgba(79,70,229,.6)',
-                    borderColor: 'rgba(79,70,229,1)',
+                    backgroundColor: 'rgba(15,76,129,.6)',
+                    borderColor: 'rgba(15,76,129,1)',
                     borderWidth: 1,
                     borderRadius: 3,
                 }]
@@ -513,7 +488,7 @@
                     {
                         label: 'Invoiced',
                         data: revInvoiced,
-                        borderColor: 'rgba(79,70,229,.6)',
+                        borderColor: 'rgba(15,76,129,.6)',
                         backgroundColor: 'transparent',
                         borderDash: [4,3],
                         tension: 0.3,

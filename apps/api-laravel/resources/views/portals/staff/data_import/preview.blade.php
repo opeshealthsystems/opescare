@@ -30,47 +30,38 @@
 
 @include('portals.staff.data_import._wizard_steps', ['step' => 3])
 
-<div style="max-width:760px;margin:0 auto;">
-
     @if(session('success'))
-        <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;">
-            <i data-lucide="check-circle"></i><div>{{ session('success') }}</div>
-        </div>
+        <div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
     @endif
     @if(session('error'))
-        <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;">
-            <i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div>
-        </div>
+        <div class="alert alert-danger mb-6"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
     @endif
 
     {{-- Summary panel --}}
-    <div class="panel" style="margin-bottom:1rem;">
-        <div class="panel-body" style="padding:1.5rem;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
-                <div>
-                    <h2 style="font-size:1.1rem;margin:0 0 .2rem;">Validation Summary</h2>
-                    <p style="color:var(--p-text-muted);font-size:.83rem;margin:0;">
-                        {{ $job->original_filename }} · {{ $importTypes[$job->import_type]['label'] ?? $job->import_type }}
-                    </p>
-                </div>
-                <span class="badge {{ $job->status === 'validated' ? 'badge-success' : 'badge-danger' }}" style="font-size:.82rem;">
-                    {{ ucwords(str_replace('_', ' ', $job->status)) }}
-                </span>
-            </div>
-
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1rem;margin-top:1.25rem;">
-                @php
-                    $cards = [
-                        ['Total Rows',   $job->total_rows,   'neutral', 'rows-height'],
-                        ['Valid',        $job->valid_rows,   'success', 'check-circle'],
-                        ['Invalid',      $job->invalid_rows, $job->invalid_rows > 0 ? 'danger' : 'neutral', 'alert-triangle'],
-                    ];
-                @endphp
-                @foreach($cards as [$label, $value, $color, $icon])
-                <div style="background:var(--p-surface-2,#f8f9fa);border-radius:var(--p-radius);padding:.85rem 1rem;text-align:center;">
-                    <i data-lucide="{{ $icon }}" style="width:18px;height:18px;color:var(--p-{{ $color === 'neutral' ? 'text-muted' : $color }});"></i>
-                    <div style="font-size:1.5rem;font-weight:700;margin:.25rem 0;">{{ number_format($value) }}</div>
-                    <div style="font-size:.75rem;color:var(--p-text-muted);">{{ $label }}</div>
+    <div class="panel mb-6">
+        <div class="panel-header">
+            <h3 class="panel-title">Validation Summary</h3>
+            <span class="badge {{ $job->status === 'validated' ? 'badge-success' : 'badge-danger' }}">
+                {{ ucwords(str_replace('_', ' ', $job->status)) }}
+            </span>
+        </div>
+        <div class="panel-body">
+            <p class="td-muted mb-6">
+                {{ $job->original_filename }} · {{ $importTypes[$job->import_type]['label'] ?? $job->import_type }}
+            </p>
+            @php
+                $cards = [
+                    ['Total Rows', $job->total_rows,   '',                                                  'rows-height'],
+                    ['Valid',      $job->valid_rows,   'stat-card--success',                                'check-circle'],
+                    ['Invalid',    $job->invalid_rows, $job->invalid_rows > 0 ? 'stat-card--danger' : '',   'alert-triangle'],
+                ];
+            @endphp
+            <div class="stat-grid">
+                @foreach($cards as [$label, $value, $mod, $icon])
+                <div class="stat-card {{ $mod }}">
+                    <div class="stat-card__head"><i data-lucide="{{ $icon }}"></i></div>
+                    <div class="stat-card__value">{{ number_format($value) }}</div>
+                    <div class="stat-card__label">{{ $label }}</div>
                 </div>
                 @endforeach
             </div>
@@ -79,12 +70,12 @@
 
     {{-- Errors --}}
     @if($job->rowErrors->count() > 0)
-    <div class="panel" style="margin-bottom:1rem;">
-        <div style="padding:1rem 1.5rem;border-bottom:1px solid var(--p-border);display:flex;justify-content:space-between;align-items:center;">
-            <h3 style="margin:0;font-size:.95rem;">Validation Errors <span class="badge badge-danger" style="margin-left:.4rem;">{{ $job->rowErrors->count() }}</span></h3>
-            <span style="font-size:.78rem;color:var(--p-text-muted);">Showing up to 200 errors</span>
+    <div class="panel mb-6">
+        <div class="panel-header">
+            <h3 class="panel-title">Validation Errors <span class="badge badge-danger">{{ $job->rowErrors->count() }}</span></h3>
+            <span class="td-muted">Showing up to 200 errors</span>
         </div>
-        <div class="panel-body" style="padding:0;">
+        <div class="panel-body panel-body--flush">
             <div class="table-wrapper">
                 <table class="data-table">
                     <thead>
@@ -98,10 +89,10 @@
                     <tbody>
                         @foreach($job->rowErrors as $err)
                         <tr>
-                            <td>{{ $err->row_number }}</td>
-                            <td><span class="badge badge-neutral">{{ $err->field ?? '—' }}</span></td>
-                            <td><code style="font-size:.78rem;">{{ $err->error_code }}</code></td>
-                            <td style="font-size:.83rem;">{{ $err->message }}</td>
+                            <td data-label="Row #">{{ $err->row_number }}</td>
+                            <td data-label="Field"><span class="badge badge-neutral">{{ $err->field ?? '—' }}</span></td>
+                            <td data-label="Error"><span class="mono">{{ $err->error_code }}</span></td>
+                            <td data-label="Message">{{ $err->message }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -113,56 +104,52 @@
 
     {{-- Action panel --}}
     <div class="panel">
-        <div class="panel-body" style="padding:1.5rem;">
+        <div class="panel-body">
             @if($job->canBeApproved())
-                <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:var(--p-radius);padding:1rem;margin-bottom:1rem;">
-                    <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.35rem;">
-                        <i data-lucide="shield-check" style="width:16px;height:16px;color:var(--p-success);"></i>
-                        <strong style="font-size:.9rem;">Ready to import</strong>
+                <div class="alert alert-success mb-6">
+                    <i data-lucide="shield-check"></i>
+                    <div>
+                        <strong>Ready to import</strong>
+                        <p>
+                            {{ number_format($job->valid_rows) }} valid row(s) will be created.
+                            @if($job->invalid_rows > 0)
+                                {{ number_format($job->invalid_rows) }} invalid rows will be skipped.
+                            @endif
+                            This action cannot be undone without a rollback.
+                        </p>
                     </div>
-                    <p style="font-size:.83rem;color:var(--p-text-muted);margin:0;">
-                        {{ number_format($job->valid_rows) }} valid row(s) will be created.
-                        @if($job->invalid_rows > 0)
-                            {{ number_format($job->invalid_rows) }} invalid rows will be skipped.
-                        @endif
-                        This action cannot be undone without a rollback.
-                    </p>
                 </div>
-                <div style="display:flex;gap:.5rem;justify-content:flex-end;flex-wrap:wrap;">
+                <div class="row-actions-inline">
                     <a href="{{ route('portals.staff.data_import.mapping', $job->id) }}" class="btn btn-ghost btn-sm">Edit Mapping</a>
-                    <form method="POST" action="{{ route('portals.staff.data_import.approve', $job->id) }}" style="display:inline;">
+                    <form method="POST" action="{{ route('portals.staff.data_import.approve', $job->id) }}" class="inline-form">
                         @csrf
                         <button type="submit" class="btn btn-primary btn-sm"
                             onclick="return confirm('Approve and execute this import? This will create {{ $job->valid_rows }} record(s).')">
-                            <i data-lucide="check-circle" style="width:13px;height:13px;"></i>
+                            <i data-lucide="check-circle"></i>
                             Approve &amp; Import {{ number_format($job->valid_rows) }} Records
                         </button>
                     </form>
                 </div>
 
             @elseif($job->status === 'validation_failed')
-                <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:var(--p-radius);padding:1rem;margin-bottom:1rem;">
-                    <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.35rem;">
-                        <i data-lucide="alert-triangle" style="width:16px;height:16px;color:var(--p-danger);"></i>
-                        <strong style="font-size:.9rem;">All rows failed validation</strong>
+                <div class="alert alert-danger mb-6">
+                    <i data-lucide="alert-triangle"></i>
+                    <div>
+                        <strong>All rows failed validation</strong>
+                        <p>Fix the errors in your file and re-upload, or go back to edit the column mapping.</p>
                     </div>
-                    <p style="font-size:.83rem;color:var(--p-text-muted);margin:0;">
-                        Fix the errors in your file and re-upload, or go back to edit the column mapping.
-                    </p>
                 </div>
-                <div style="display:flex;gap:.5rem;justify-content:flex-end;">
+                <div class="row-actions-inline">
                     <a href="{{ route('portals.staff.data_import.mapping', $job->id) }}" class="btn btn-ghost btn-sm">Edit Mapping</a>
                     <a href="{{ route('portals.staff.data_import.create') }}" class="btn btn-primary btn-sm">Re-upload File</a>
                 </div>
 
             @else
-                <div style="display:flex;gap:.5rem;justify-content:flex-end;">
+                <div class="row-actions-inline">
                     <a href="{{ route('portals.staff.data_import.index') }}" class="btn btn-ghost btn-sm">Back to History</a>
                 </div>
             @endif
         </div>
     </div>
-
-</div>
 
 @endsection

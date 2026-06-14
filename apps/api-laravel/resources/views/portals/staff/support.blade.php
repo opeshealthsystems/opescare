@@ -15,7 +15,7 @@
     </div>
     <div class="page-actions">
         <a href="{{ route('portals.staff.support') }}?create=1" class="btn btn-primary">
-            <i data-lucide="plus" style="width:14px;height:14px;"></i>
+            <i data-lucide="plus"></i>
             {{ __('public.staff_portal.create_ticket', [], app()->getLocale()) ?: 'Create Ticket' }}
         </a>
     </div>
@@ -39,7 +39,7 @@
         <option value="normal"   @selected(request('priority') === 'normal')>{{ __('public.staff_portal.priority_normal', [], app()->getLocale()) ?: 'Normal' }}</option>
     </select>
     <button type="submit" class="btn btn-primary btn-sm">
-        <i data-lucide="filter" style="width:13px;height:13px;"></i>
+        <i data-lucide="filter"></i>
         {{ __('public.staff_portal.filter_apply', [], app()->getLocale()) ?: 'Filter' }}
     </button>
     <a href="{{ route('portals.staff.support') }}" class="btn btn-ghost btn-sm">
@@ -48,7 +48,7 @@
 </form>
 
 <div class="panel">
-    <div class="panel-body" style="padding: 0;">
+    <div class="panel-body panel-body--flush">
         @if(count($tickets) === 0)
             <div class="empty-state">
                 <div class="empty-state-icon">
@@ -56,9 +56,9 @@
                 </div>
                 <h3>{{ __('public.staff_portal.no_tickets_title', [], app()->getLocale()) ?: 'No Tickets Found' }}</h3>
                 <p>{{ __('public.staff_portal.no_tickets_desc', [], app()->getLocale()) ?: 'There are no support tickets matching your current filters.' }}</p>
-                <div style="margin-top: var(--p-space-4);">
+                <div class="mt-6">
                     <a href="{{ route('portals.staff.support') }}?create=1" class="btn btn-primary">
-                        <i data-lucide="plus" style="width:14px;height:14px;"></i>
+                        <i data-lucide="plus"></i>
                         {{ __('public.staff_portal.create_ticket', [], app()->getLocale()) ?: 'Create Ticket' }}
                     </a>
                 </div>
@@ -98,7 +98,7 @@
                         @endphp
                         <tr>
                             <td data-label="{{ __('public.staff_portal.col_ticket_no', [], app()->getLocale()) ?: 'Ticket #' }}">
-                                <strong style="font-family: monospace; font-size: var(--p-text-xs);">
+                                <strong class="mono">
                                     {{ $ticket->ticket_number ?? $ticket->reference ?? '#' . ($ticket->id ?? '?') }}
                                 </strong>
                             </td>
@@ -116,7 +116,7 @@
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_actions', [], app()->getLocale()) ?: 'Actions' }}">
                                 <a href="{{ route('portals.staff.support') }}?view={{ $ticket->id ?? $ticket->uuid ?? '' }}" class="btn btn-ghost btn-sm">
-                                    <i data-lucide="eye" style="width:13px;height:13px;"></i>
+                                    <i data-lucide="eye"></i>
                                     {{ __('public.staff_portal.action_view', [], app()->getLocale()) ?: 'View' }}
                                 </a>
                             </td>

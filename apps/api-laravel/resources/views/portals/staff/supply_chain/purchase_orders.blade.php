@@ -11,44 +11,35 @@
             <p class="portal-page-subtitle">Manage procurement orders to suppliers</p>
         </div>
         <button class="btn btn--primary" onclick="openModal('createModal')">
-            <i data-lucide="plus" style="width:15px;height:15px;"></i> New PO
+            <i data-lucide="plus"></i> New PO
         </button>
     </div>
 
-    @if(session('success'))<div class="alert alert--success">{{ session('success') }}</div>@endif
-    @if(session('error'))<div class="alert alert--danger">{{ session('error') }}</div>@endif
+    @if(session('success'))<div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
+    @if(session('error'))<div class="alert alert-danger mb-6"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>@endif
 
     {{-- Filters --}}
-    <div class="portal-card" style="margin-bottom:18px;">
-        <div class="portal-card__body">
-            <form method="GET" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
-                <div>
-                    <label class="form-label">Status</label>
-                    <select name="status" class="form-control form-control--sm">
-                        <option value="">All</option>
-                        @foreach(['draft','submitted','approved','sent','partial','received','cancelled'] as $s)
-                            <option value="{{ $s }}" {{ request('status') == $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="form-label">Supplier</label>
-                    <select name="supplier" class="form-control form-control--sm" style="min-width:180px;">
-                        <option value="">All Suppliers</option>
-                        @foreach($suppliers as $sup)
-                            <option value="{{ $sup->id }}" {{ request('supplier') == $sup->id ? 'selected' : '' }}>{{ $sup->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <button type="submit" class="btn btn--primary btn--sm">Filter</button>
-                <a href="{{ route('portals.staff.supply.purchase_orders') }}" class="btn btn--outline btn--sm">Reset</a>
-            </form>
-        </div>
-    </div>
+    <form method="GET" class="filter-bar">
+        <select name="status" class="filter-select">
+            <option value="">All statuses</option>
+            @foreach(['draft','submitted','approved','sent','partial','received','cancelled'] as $s)
+                <option value="{{ $s }}" {{ request('status') == $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
+            @endforeach
+        </select>
+        <select name="supplier" class="filter-select">
+            <option value="">All Suppliers</option>
+            @foreach($suppliers as $sup)
+                <option value="{{ $sup->id }}" {{ request('supplier') == $sup->id ? 'selected' : '' }}>{{ $sup->name }}</option>
+            @endforeach
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> Filter</button>
+        <a href="{{ route('portals.staff.supply.purchase_orders') }}" class="btn btn-ghost btn-sm">Reset</a>
+    </form>
 
     <div class="portal-card">
-        <div class="portal-card__body" style="padding:0;">
-            <table class="portal-table">
+        <div class="portal-card__body panel-body--flush">
+            <div class="table-wrapper">
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th>PO Number</th>
@@ -64,18 +55,18 @@
                 <tbody>
                     @forelse($purchaseOrders as $po)
                         <tr>
-                            <td>
-                                <div style="font-weight:600;font-size:0.88rem;">{{ $po->po_number }}</div>
+                            <td data-label="PO Number">
+                                <div class="td-strong">{{ $po->po_number }}</div>
                                 @if($po->notes)
-                                    <div style="font-size:0.75rem;color:#9ca3af;">{{ Str::limit($po->notes, 40) }}</div>
+                                    <div class="td-muted">{{ Str::limit($po->notes, 40) }}</div>
                                 @endif
                             </td>
-                            <td style="font-size:0.83rem;">{{ $po->supplier->name ?? '—' }}</td>
-                            <td style="font-size:0.83rem;">{{ $po->items->count() }} item(s)</td>
-                            <td style="font-weight:600;font-size:0.88rem;">
+                            <td data-label="Supplier">{{ $po->supplier->name ?? '—' }}</td>
+                            <td data-label="Lines">{{ $po->items->count() }} item(s)</td>
+                            <td data-label="Total" class="td-strong">
                                 {{ number_format($po->total_amount, 2) }}
                             </td>
-                            <td>
+                            <td data-label="Status">
                                 @php
                                     $statusColor = match($po->status) {
                                         'draft'     => 'default',
@@ -90,15 +81,15 @@
                                 @endphp
                                 <span class="badge badge--{{ $statusColor }}">{{ $po->status }}</span>
                             </td>
-                            <td style="font-size:0.82rem;color:#6b7280;">{{ $po->order_date?->format('d M Y') ?? '—' }}</td>
-                            <td style="font-size:0.82rem;color:#6b7280;">{{ $po->expected_delivery_date?->format('d M Y') ?? '—' }}</td>
-                            <td>
+                            <td data-label="Order Date" class="td-muted">{{ $po->order_date?->format('d M Y') ?? '—' }}</td>
+                            <td data-label="Expected" class="td-muted">{{ $po->expected_delivery_date?->format('d M Y') ?? '—' }}</td>
+                            <td data-label="Actions">
                                 @if(in_array($po->status, ['draft','submitted']))
-                                    <form method="POST" action="{{ route('portals.staff.supply.purchase_orders.approve', $po->id) }}" style="display:inline;">
+                                    <form method="POST" action="{{ route('portals.staff.supply.purchase_orders.approve', $po->id) }}" class="inline-form">
                                         @csrf
                                         <button type="submit" class="btn btn--sm btn--success"
                                                 onclick="return confirm('Approve PO {{ $po->po_number }}?')">
-                                            <i data-lucide="check" style="width:13px;height:13px;"></i>
+                                            <i data-lucide="check"></i>
                                             Approve
                                         </button>
                                     </form>
@@ -106,32 +97,32 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="8" style="text-align:center;padding:40px;color:#9ca3af;">
-                            <i data-lucide="file-text" style="width:32px;height:32px;display:block;margin:0 auto 10px;"></i>
-                            No purchase orders yet.
+                        <tr><td colspan="8">
+                            <div class="empty-state">
+                                <div class="empty-state-icon"><i data-lucide="file-text"></i></div>
+                                <p>No purchase orders yet.</p>
+                            </div>
                         </td></tr>
                     @endforelse
                 </tbody>
             </table>
+            </div>
         </div>
-        @if($purchaseOrders->hasPages())<div class="portal-card__footer">{{ $purchaseOrders->links() }}</div>@endif
+        @if($purchaseOrders->hasPages())<div class="panel-footer">{{ $purchaseOrders->links() }}</div>@endif
     </div>
 
 </div>
 
 {{-- Create Purchase Order Modal --}}
-<div id="createModal" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal('createModal')">
-    <div class="modal-box" style="max-width:680px;width:97%;">
-        <div class="modal-header">
-            <h3 class="modal-title"><i data-lucide="file-plus" style="width:18px;height:18px;"></i> New Purchase Order</h3>
-            <button class="modal-close" onclick="closeModal('createModal')">&times;</button>
-        </div>
+<div id="createModal" class="modal-backdrop mt-6" hidden onclick="if(event.target===this)closeModal('createModal')">
+    <div class="modal modal--lg" role="dialog" aria-modal="true">
+        <h3 class="modal__title"><i data-lucide="file-plus"></i> New Purchase Order</h3>
         <form method="POST" action="{{ route('portals.staff.supply.purchase_orders.store') }}">
             @csrf
-            <div class="modal-body">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+            <div class="modal__body">
+                <div class="form-row mb-6">
                     <div class="form-group">
-                        <label class="form-label">Supplier <span style="color:red">*</span></label>
+                        <label class="form-label form-label-required">Supplier</label>
                         <select name="supplier_id" class="form-control" required>
                             <option value="">— Select —</option>
                             @foreach($suppliers as $sup)
@@ -143,39 +134,39 @@
                         <label class="form-label">Expected Delivery</label>
                         <input type="date" name="expected_delivery_date" class="form-control">
                     </div>
-                    <div class="form-group" style="grid-column:1/-1;">
-                        <label class="form-label">Notes</label>
-                        <textarea name="notes" class="form-control" rows="2" placeholder="Optional notes or instructions"></textarea>
-                    </div>
+                </div>
+                <div class="form-group mb-6">
+                    <label class="form-label">Notes</label>
+                    <textarea name="notes" class="form-control" rows="2" placeholder="Optional notes or instructions"></textarea>
                 </div>
 
                 {{-- Line Items --}}
-                <div style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                    <strong style="font-size:0.88rem;">Order Lines</strong>
+                <div class="flex-between mb-6">
+                    <strong>Order Lines</strong>
                     <button type="button" class="btn btn--sm btn--outline" onclick="addPOLine()">
-                        <i data-lucide="plus" style="width:13px;height:13px;"></i> Add Line
+                        <i data-lucide="plus"></i> Add Line
                     </button>
                 </div>
                 <div id="po-lines">
                     <div class="po-line" style="display:grid;grid-template-columns:3fr 1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:center;">
-                        <select name="items[0][inventory_item_id]" class="form-control form-control--sm" required>
+                        <select name="items[0][inventory_item_id]" class="form-control" required>
                             <option value="">— Item —</option>
                             @foreach($items as $item)
                                 <option value="{{ $item->id }}">{{ $item->name }} ({{ $item->unit }})</option>
                             @endforeach
                         </select>
-                        <input type="number" name="items[0][quantity_ordered]" class="form-control form-control--sm" placeholder="Qty" min="1" required onchange="recalcTotal()">
-                        <input type="number" name="items[0][unit_price]" class="form-control form-control--sm" placeholder="Unit Price" min="0" step="0.0001" onchange="recalcTotal()">
-                        <button type="button" class="btn btn--sm btn--danger" onclick="removePOLine(this)" style="padding:4px 8px;" disabled title="At least one line required">
-                            <i data-lucide="x" style="width:13px;height:13px;"></i>
+                        <input type="number" name="items[0][quantity_ordered]" class="form-control" placeholder="Qty" min="1" required onchange="recalcTotal()">
+                        <input type="number" name="items[0][unit_price]" class="form-control" placeholder="Unit Price" min="0" step="0.0001" onchange="recalcTotal()">
+                        <button type="button" class="btn btn--sm btn--danger" onclick="removePOLine(this)" disabled title="At least one line required">
+                            <i data-lucide="x"></i>
                         </button>
                     </div>
                 </div>
-                <div style="text-align:right;font-size:0.88rem;color:#6b7280;margin-top:4px;">
-                    Estimated Total: <strong id="po-total" style="color:#111827;">0.00</strong>
-                </div>
+                <p class="td-muted mt-6">
+                    Estimated Total: <strong id="po-total" class="td-strong">0.00</strong>
+                </p>
             </div>
-            <div class="modal-footer">
+            <div class="modal__footer">
                 <button type="button" class="btn btn--outline" onclick="closeModal('createModal')">Cancel</button>
                 <button type="submit" class="btn btn--primary">Create PO (Draft)</button>
             </div>
@@ -184,8 +175,8 @@
 </div>
 
 <script>
-function openModal(id){ document.getElementById(id).style.display='flex'; lucide.createIcons(); }
-function closeModal(id){ document.getElementById(id).style.display='none'; }
+function openModal(id){ document.getElementById(id).removeAttribute('hidden'); lucide.createIcons(); }
+function closeModal(id){ document.getElementById(id).setAttribute('hidden',''); }
 
 let poLineCount = 1;
 const itemOptions = `@foreach($items as $item)<option value="{{ $item->id }}">{{ addslashes($item->name) }} ({{ $item->unit }})</option>@endforeach`;
@@ -197,14 +188,14 @@ function addPOLine(){
     div.className = 'po-line';
     div.style.cssText = 'display:grid;grid-template-columns:3fr 1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:center;';
     div.innerHTML = `
-        <select name="items[${idx}][inventory_item_id]" class="form-control form-control--sm" required>
+        <select name="items[${idx}][inventory_item_id]" class="form-control" required>
             <option value="">— Item —</option>
             ${itemOptions}
         </select>
-        <input type="number" name="items[${idx}][quantity_ordered]" class="form-control form-control--sm" placeholder="Qty" min="1" required onchange="recalcTotal()">
-        <input type="number" name="items[${idx}][unit_price]" class="form-control form-control--sm" placeholder="Unit Price" min="0" step="0.0001" onchange="recalcTotal()">
-        <button type="button" class="btn btn--sm btn--danger" onclick="removePOLine(this)" style="padding:4px 8px;">
-            <i data-lucide="x" style="width:13px;height:13px;"></i>
+        <input type="number" name="items[${idx}][quantity_ordered]" class="form-control" placeholder="Qty" min="1" required onchange="recalcTotal()">
+        <input type="number" name="items[${idx}][unit_price]" class="form-control" placeholder="Unit Price" min="0" step="0.0001" onchange="recalcTotal()">
+        <button type="button" class="btn btn--sm btn--danger" onclick="removePOLine(this)">
+            <i data-lucide="x"></i>
         </button>
     `;
     container.appendChild(div);

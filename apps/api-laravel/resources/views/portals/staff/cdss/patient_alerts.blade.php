@@ -3,35 +3,34 @@
 @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
 
 @section('content')
-<div class="portal-content">
 
-    {{-- CDSS Disclaimer --}}
-    <div style="background:#fffbeb;border:1px solid #d97706;border-radius:8px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
-        <i data-lucide="shield-alert" style="width:18px;height:18px;flex-shrink:0;color:#d97706;"></i>
-        <p style="margin:0;font-size:0.82rem;color:#92400e;font-weight:500;">
-            <strong>Clinical Decision Support:</strong>
-            Clinical alerts are decision-support tools only. They do not replace professional clinical judgment.
-        </p>
+{{-- CDSS Disclaimer --}}
+<div class="alert alert-warning mb-6">
+    <i data-lucide="shield-alert"></i>
+    <div>
+        <strong>Clinical Decision Support:</strong>
+        Clinical alerts are decision-support tools only. They do not replace professional clinical judgment.
     </div>
+</div>
 
-    <div class="portal-page-header">
-        <div>
-            <h1 class="portal-page-title">Alert History</h1>
-            <p class="portal-page-subtitle">
-                {{ $patient->full_name ?? $patient->name ?? '—' }}
-                @if(isset($patient->health_id))
-                    · <code style="font-size:0.8rem;">{{ $patient->health_id }}</code>
-                @endif
-            </p>
-        </div>
-        <a href="{{ route('portals.staff.cdss') }}" class="btn btn--outline btn--sm">
-            <i data-lucide="arrow-left" style="width:13px;height:13px;"></i> All Alerts
-        </a>
-    </div>
+<div class="page-head">
+    <h2>Alert History</h2>
+    <div class="page-head__spacer"></div>
+    <a href="{{ route('portals.staff.cdss') }}" class="btn btn-secondary btn-sm">
+        <i data-lucide="arrow-left"></i> All Alerts
+    </a>
+</div>
+<p class="page-subtitle mb-4">
+    {{ $patient->full_name ?? $patient->name ?? '—' }}
+    @if(isset($patient->health_id))
+        · <code class="mono">{{ $patient->health_id }}</code>
+    @endif
+</p>
 
-    <div class="portal-card">
-        <div class="portal-card__body" style="padding:0;">
-            <table class="portal-table">
+<div class="panel">
+    <div class="panel-body panel-body--flush">
+        <div class="table-wrapper">
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th>Severity</th>
@@ -45,35 +44,31 @@
                 <tbody>
                     @forelse($alerts as $alert)
                         <tr>
-                            <td>
-                                <span class="badge badge--{{ $alert->severityColor() }}" style="font-size:0.72rem;">
-                                    {{ ucfirst($alert->severity) }}
-                                </span>
+                            <td data-label="Severity">
+                                <span class="badge badge-{{ $alert->severityColor() }}">{{ ucfirst($alert->severity) }}</span>
                             </td>
-                            <td>
-                                <span class="badge badge--default" style="font-size:0.72rem;">
-                                    {{ str_replace('_',' ', $alert->alert_type) }}
-                                </span>
+                            <td data-label="Type">
+                                <span class="badge badge-neutral">{{ str_replace('_',' ', $alert->alert_type) }}</span>
                             </td>
-                            <td style="max-width:300px;font-size:0.83rem;">
+                            <td data-label="Alert Message">
                                 {{ Str::limit($alert->alert_message, 120) }}
                             </td>
-                            <td style="font-size:0.79rem;color:#6b7280;white-space:nowrap;">
+                            <td data-label="Triggered" class="td-muted">
                                 {{ $alert->triggered_at->format('d M Y H:i') }}
                             </td>
-                            <td>
-                                <span class="badge badge--{{ match($alert->status) {
+                            <td data-label="Status">
+                                <span class="badge badge-{{ match($alert->status) {
                                     'active'       => 'danger',
                                     'acknowledged' => 'warning',
                                     'overridden'   => 'success',
-                                    'dismissed'    => 'default',
-                                    default        => 'default',
-                                } }}" style="font-size:0.72rem;">{{ $alert->status }}</span>
+                                    'dismissed'    => 'neutral',
+                                    default        => 'neutral',
+                                } }}">{{ $alert->status }}</span>
                             </td>
-                            <td style="font-size:0.8rem;color:#6b7280;">
+                            <td data-label="Override Reason" class="td-muted">
                                 @if($alert->latestOverride)
                                     <div>{{ Str::limit($alert->latestOverride->override_reason, 60) }}</div>
-                                    <div style="font-size:0.72rem;">by {{ $alert->latestOverride->overridden_by }}</div>
+                                    <div>by {{ $alert->latestOverride->overridden_by }}</div>
                                 @else
                                     —
                                 @endif
@@ -81,8 +76,11 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" style="text-align:center;padding:40px;color:#9ca3af;">
-                                No clinical alerts found for this patient.
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon"><i data-lucide="shield-check"></i></div>
+                                    <p>No clinical alerts found for this patient.</p>
+                                </div>
                             </td>
                         </tr>
                     @endforelse
@@ -90,6 +88,6 @@
             </table>
         </div>
     </div>
-
 </div>
+
 @endsection

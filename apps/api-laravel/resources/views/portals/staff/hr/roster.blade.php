@@ -116,24 +116,24 @@
         <p class="page-subtitle">Create and publish staff duty schedules by department and period.</p>
     </div>
     <button type="button" class="btn btn-primary btn-sm" onclick="openRosterModal()">
-        <i data-lucide="plus-circle" style="width:14px;height:14px;"></i>
+        <i data-lucide="plus-circle"></i>
         New Roster
     </button>
 </div>
 
 @if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;">
+    <div class="auth-alert auth-alert-success mb-4">
         <i data-lucide="check-circle"></i><div>{{ session('success') }}</div>
     </div>
 @endif
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;">
+    <div class="auth-alert auth-alert-danger mb-4">
         <i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div>
     </div>
 @endif
 
 {{-- Filters --}}
-<form method="GET" action="{{ route('portals.staff.hr.roster') }}" class="filter-bar" style="flex-wrap:wrap;gap:.5rem;">
+<form method="GET" action="{{ route('portals.staff.hr.roster') }}" class="filter-bar">
     <select name="status" class="form-control">
         <option value="">All Statuses</option>
         @foreach(['draft','published','archived'] as $s)
@@ -149,19 +149,19 @@
     </select>
     @endif
     <button type="submit" class="btn btn-primary btn-sm">
-        <i data-lucide="filter" style="width:13px;height:13px;"></i> Filter
+        <i data-lucide="filter"></i> Filter
     </button>
     <a href="{{ route('portals.staff.hr.roster') }}" class="btn btn-ghost btn-sm">Clear</a>
 </form>
 
 <div class="panel">
-    <div class="panel-body" style="padding:0;">
+    <div class="panel-body panel-body--flush">
         @if($rosters->isEmpty())
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="calendar-range"></i></div>
                 <h3>No Rosters Yet</h3>
                 <p>Create a duty roster to schedule staff shifts for a period.</p>
-                <button type="button" class="btn btn-primary btn-sm" style="margin-top:1rem;" onclick="openRosterModal()">New Roster</button>
+                <button type="button" class="btn btn-primary btn-sm mt-6" onclick="openRosterModal()">New Roster</button>
             </div>
         @else
             <div class="table-wrapper">
@@ -187,7 +187,7 @@
                             };
                         @endphp
                         <tr>
-                            <td data-label="Department"><strong>{{ $roster->department }}</strong></td>
+                            <td data-label="Department"><strong class="td-strong">{{ $roster->department }}</strong></td>
                             <td data-label="Period">
                                 {{ \Carbon\Carbon::parse($roster->period_start)->format('M d') }} –
                                 {{ \Carbon\Carbon::parse($roster->period_end)->format('M d, Y') }}
@@ -200,30 +200,27 @@
                                 {{ $roster->published_at ? \Carbon\Carbon::parse($roster->published_at)->format('M d, Y') : '—' }}
                             </td>
                             <td data-label="Actions">
-                                <div style="display:flex;gap:.35rem;flex-wrap:wrap;">
+                                <div class="row-actions-inline">
                                     @if($roster->status === 'draft')
                                         <button type="button" class="btn btn-ghost btn-xs"
                                             onclick="openAssignModal('{{ $roster->id }}', '{{ addslashes($roster->department) }}')">
-                                            <i data-lucide="user-plus" style="width:11px;height:11px;"></i>
+                                            <i data-lucide="user-plus"></i>
                                             Assign
                                         </button>
-                                        <form method="POST" action="{{ route('portals.staff.hr.roster.publish', $roster->id) }}" style="display:inline;">
+                                        <form method="POST" action="{{ route('portals.staff.hr.roster.publish', $roster->id) }}" class="inline-form">
                                             @csrf
                                             <button type="submit" class="btn btn-primary btn-xs">
-                                                <i data-lucide="send" style="width:11px;height:11px;"></i>
+                                                <i data-lucide="send"></i>
                                                 Publish
                                             </button>
                                         </form>
                                     @endif
                                     @if(in_array($roster->status, ['draft','published']))
-                                        <form method="POST" action="{{ route('portals.staff.hr.roster.archive', $roster->id) }}" style="display:inline;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-ghost btn-xs"
-                                                onclick="return confirm('Archive this roster?')">
-                                                <i data-lucide="archive" style="width:11px;height:11px;"></i>
-                                                Archive
-                                            </button>
-                                        </form>
+                                        <button type="button" class="btn btn-ghost btn-xs"
+                                            onclick="openArchiveModal('{{ route('portals.staff.hr.roster.archive', $roster->id) }}')">
+                                            <i data-lucide="archive"></i>
+                                            Archive
+                                        </button>
                                     @endif
                                 </div>
                             </td>
@@ -237,16 +234,18 @@
 </div>
 
 {{-- New Roster Modal --}}
-<div id="roster-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:440px;margin:1rem;">
-        <h3 style="margin:0 0 1.25rem;font-size:1.1rem;">New Duty Roster</h3>
+<div id="roster-modal" class="modal-fixed">
+    <div class="modal-fixed__panel modal-fixed__panel--md">
+        <div class="modal-fixed__head">
+            <h3 class="modal-fixed__title">New Duty Roster</h3>
+        </div>
         <form method="POST" action="{{ route('portals.staff.hr.roster.store') }}">
             @csrf
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Department *</label>
                 <input type="text" name="department" class="form-control" required maxlength="100" placeholder="e.g. Emergency, ICU, Lab">
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label">Period Start *</label>
                     <input type="date" name="period_start" class="form-control" required>
@@ -256,14 +255,14 @@
                     <input type="date" name="period_end" class="form-control" required>
                 </div>
             </div>
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Notes</label>
                 <textarea name="notes" class="form-control" rows="2" maxlength="500"></textarea>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeRosterModal()">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">
-                    <i data-lucide="calendar-range" style="width:13px;height:13px;"></i>
+                    <i data-lucide="calendar-range"></i>
                     Create Roster
                 </button>
             </div>
@@ -272,13 +271,15 @@
 </div>
 
 {{-- Assign Staff Modal --}}
-<div id="assign-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:460px;margin:1rem;">
-        <h3 style="margin:0 0 .25rem;font-size:1.1rem;">Assign Staff to Roster</h3>
-        <p id="assign-dept-label" style="font-size:.85rem;color:var(--p-text-secondary);margin:0 0 1.25rem;"></p>
+<div id="assign-modal" class="modal-fixed">
+    <div class="modal-fixed__panel modal-fixed__panel--md">
+        <div class="modal-fixed__head">
+            <h3 class="modal-fixed__title">Assign Staff to Roster</h3>
+        </div>
+        <p id="assign-dept-label" class="td-muted mb-4"></p>
         <form id="assign-form" method="POST" action="">
             @csrf
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Staff Member *</label>
                 <select name="staff_profile_id" class="form-control" required>
                     <option value="">— Select —</option>
@@ -287,7 +288,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Shift *</label>
                 <select name="staff_shift_id" class="form-control" required>
                     <option value="">— Select —</option>
@@ -296,19 +297,39 @@
                     @endforeach
                 </select>
             </div>
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Work Date *</label>
                 <input type="date" name="work_date" class="form-control" required>
             </div>
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Notes</label>
                 <textarea name="notes" class="form-control" rows="2" maxlength="300"></textarea>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeAssignModal()">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">
-                    <i data-lucide="user-plus" style="width:13px;height:13px;"></i>
+                    <i data-lucide="user-plus"></i>
                     Assign
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Archive confirm modal --}}
+<div id="archive-modal" class="modal-fixed">
+    <div class="modal-fixed__panel modal-fixed__panel--sm">
+        <div class="modal-fixed__head">
+            <h3 class="modal-fixed__title"><i data-lucide="archive"></i> Archive roster</h3>
+        </div>
+        <div class="modal__body">Archive this roster? It will no longer be editable.</div>
+        <form id="archive-form" method="POST" action="">
+            @csrf
+            <div class="modal__footer">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeArchiveModal()">Cancel</button>
+                <button type="submit" class="btn btn-warning btn-sm">
+                    <i data-lucide="archive"></i>
+                    Archive
                 </button>
             </div>
         </form>
@@ -319,8 +340,8 @@
 
 @section('scripts')
 <script>
-    function openRosterModal()  { document.getElementById('roster-modal').style.display = 'flex'; }
-    function closeRosterModal() { document.getElementById('roster-modal').style.display = 'none'; }
+    function openRosterModal()  { document.getElementById('roster-modal').classList.add('open'); }
+    function closeRosterModal() { document.getElementById('roster-modal').classList.remove('open'); }
     document.getElementById('roster-modal').addEventListener('click', function(e) {
         if (e.target === this) closeRosterModal();
     });
@@ -328,11 +349,20 @@
     function openAssignModal(rosterId, dept) {
         document.getElementById('assign-dept-label').textContent = 'Department: ' + dept;
         document.getElementById('assign-form').action = '{{ url('/portals/staff/hr/roster') }}/' + rosterId + '/assign';
-        document.getElementById('assign-modal').style.display = 'flex';
+        document.getElementById('assign-modal').classList.add('open');
     }
-    function closeAssignModal() { document.getElementById('assign-modal').style.display = 'none'; }
+    function closeAssignModal() { document.getElementById('assign-modal').classList.remove('open'); }
     document.getElementById('assign-modal').addEventListener('click', function(e) {
         if (e.target === this) closeAssignModal();
+    });
+
+    function openArchiveModal(action) {
+        document.getElementById('archive-form').action = action;
+        document.getElementById('archive-modal').classList.add('open');
+    }
+    function closeArchiveModal() { document.getElementById('archive-modal').classList.remove('open'); }
+    document.getElementById('archive-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeArchiveModal();
     });
 </script>
 @endsection

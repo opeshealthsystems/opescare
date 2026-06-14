@@ -7,61 +7,51 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title">{{ __('public.staff_portal.dashboard_title', [], app()->getLocale()) ?: 'Staff Clinical Portal' }}</h1>
-        <p class="page-subtitle">{{ __('public.staff_portal.dashboard_subtitle', [], app()->getLocale()) ?: 'Manage appointments, queues, and patient care from one place.' }}</p>
-    </div>
+<div class="page-head">
+    <h2>{{ __('public.staff_portal.dashboard_title', [], app()->getLocale()) ?: 'Staff Clinical Portal' }}</h2>
 </div>
+<p class="page-subtitle mb-6">{{ __('public.staff_portal.dashboard_subtitle', [], app()->getLocale()) ?: 'Manage appointments, queues, and patient care from one place.' }}</p>
 
 {{-- KPI Cards --}}
-<div class="kpi-grid">
-    <div class="kpi-card">
-        <div class="kpi-icon blue">
-            <i data-lucide="calendar-check-2"></i>
-        </div>
-        <div class="kpi-label">{{ __('public.staff_portal.kpi_todays_appointments', [], app()->getLocale()) ?: "Today's Appointments" }}</div>
-        <div class="kpi-value">{{ $kpis['todays_appointments'] ?? 0 }}</div>
-        <div class="kpi-sub">{{ __('public.staff_portal.kpi_scheduled_today', [], app()->getLocale()) ?: 'Scheduled today' }}</div>
+<div class="stat-grid">
+    <div class="stat-card stat-card--primary">
+        <div class="stat-card__head"><i data-lucide="calendar-check-2"></i></div>
+        <div class="stat-card__label">{{ __('public.staff_portal.kpi_todays_appointments', [], app()->getLocale()) ?: "Today's Appointments" }}</div>
+        <div class="stat-card__value">{{ $kpis['todays_appointments'] ?? 0 }}</div>
+        <div class="stat-card__hint">{{ __('public.staff_portal.kpi_scheduled_today', [], app()->getLocale()) ?: 'Scheduled today' }}</div>
     </div>
-    <div class="kpi-card">
-        <div class="kpi-icon teal">
-            <i data-lucide="list-ordered"></i>
-        </div>
-        <div class="kpi-label">{{ __('public.staff_portal.kpi_patient_queue', [], app()->getLocale()) ?: 'Patient Queue' }}</div>
-        <div class="kpi-value">{{ $kpis['in_queue'] ?? 0 }}</div>
-        <div class="kpi-sub">{{ __('public.staff_portal.kpi_currently_waiting', [], app()->getLocale()) ?: 'Currently waiting' }}</div>
+    <div class="stat-card stat-card--teal">
+        <div class="stat-card__head"><i data-lucide="list-ordered"></i></div>
+        <div class="stat-card__label">{{ __('public.staff_portal.kpi_patient_queue', [], app()->getLocale()) ?: 'Patient Queue' }}</div>
+        <div class="stat-card__value">{{ $kpis['in_queue'] ?? 0 }}</div>
+        <div class="stat-card__hint">{{ __('public.staff_portal.kpi_currently_waiting', [], app()->getLocale()) ?: 'Currently waiting' }}</div>
     </div>
-    <div class="kpi-card">
-        <div class="kpi-icon warning">
-            <i data-lucide="send"></i>
-        </div>
-        <div class="kpi-label">{{ __('public.staff_portal.kpi_pending_referrals', [], app()->getLocale()) ?: 'Pending Referrals' }}</div>
-        <div class="kpi-value">{{ $kpis['pending_referrals'] ?? 0 }}</div>
-        <div class="kpi-sub">{{ __('public.staff_portal.kpi_awaiting_action', [], app()->getLocale()) ?: 'Awaiting action' }}</div>
+    <div class="stat-card stat-card--warning">
+        <div class="stat-card__head"><i data-lucide="send"></i></div>
+        <div class="stat-card__label">{{ __('public.staff_portal.kpi_pending_referrals', [], app()->getLocale()) ?: 'Pending Referrals' }}</div>
+        <div class="stat-card__value">{{ $kpis['pending_referrals'] ?? 0 }}</div>
+        <div class="stat-card__hint">{{ __('public.staff_portal.kpi_awaiting_action', [], app()->getLocale()) ?: 'Awaiting action' }}</div>
     </div>
-    <div class="kpi-card">
-        <div class="kpi-icon purple">
-            <i data-lucide="receipt"></i>
-        </div>
-        <div class="kpi-label">{{ __('public.staff_portal.kpi_open_invoices', [], app()->getLocale()) ?: 'Open Invoices' }}</div>
-        <div class="kpi-value">{{ $kpis['open_invoices'] ?? 0 }}</div>
-        <div class="kpi-sub">{{ __('public.staff_portal.kpi_unpaid_balance', [], app()->getLocale()) ?: 'Unpaid balance' }}</div>
+    <div class="stat-card stat-card--primary">
+        <div class="stat-card__head"><i data-lucide="receipt"></i></div>
+        <div class="stat-card__label">{{ __('public.staff_portal.kpi_open_invoices', [], app()->getLocale()) ?: 'Open Invoices' }}</div>
+        <div class="stat-card__value">{{ $kpis['open_invoices'] ?? 0 }}</div>
+        <div class="stat-card__hint">{{ __('public.staff_portal.kpi_unpaid_balance', [], app()->getLocale()) ?: 'Unpaid balance' }}</div>
     </div>
 </div>
 
-<div class="grid-main-side" style="margin-top: var(--p-space-6);">
+<div class="grid-main-side mt-6">
 
     {{-- Patient Verification Form --}}
     <div class="panel">
         <div class="panel-header">
             <h2 class="panel-title">
-                <i data-lucide="shield-check" style="width:16px;height:16px;"></i>
+                <i data-lucide="shield-check"></i>
                 {{ __('public.staff_portal.patient_verification', [], app()->getLocale()) ?: 'Patient Verification' }}
             </h2>
         </div>
         <div class="panel-body">
-            <p style="margin-bottom: var(--p-space-4); color: var(--p-text-secondary); font-size: var(--p-text-sm);">
+            <p class="form-hint mb-4">
                 {{ __('public.staff_portal.verification_desc', [], app()->getLocale()) ?: 'Enter a patient Health ID to verify their identity before providing care.' }}
             </p>
             <form method="GET" action="{{ route('portals.staff') }}" autocomplete="off">
@@ -71,16 +61,15 @@
                     </label>
                     <div class="form-search">
                         <span class="search-icon">
-                            <i data-lucide="search" style="width:14px;height:14px;"></i>
+                            <i data-lucide="search"></i>
                         </span>
                         <input
                             type="text"
                             id="health_id"
                             name="health_id"
-                            class="form-control"
+                            class="form-control mono"
                             placeholder="e.g. CM-HID-7KQ9-MP42-X8D1"
                             value="{{ request('health_id') }}"
-                            style="padding-left: 2.25rem; font-family: monospace; text-transform: uppercase; letter-spacing: 0.05em;"
                         >
                     </div>
                     <span class="form-hint">{{ __('public.staff_portal.health_id_hint', [], app()->getLocale()) ?: 'Enter the full Health ID as printed on the patient card.' }}</span>
@@ -111,9 +100,9 @@
                         >
                     </div>
                 </div>
-                <div style="margin-top: var(--p-space-4);">
+                <div class="mt-3">
                     <button type="submit" class="btn btn-primary">
-                        <i data-lucide="search" style="width:14px;height:14px;"></i>
+                        <i data-lucide="search"></i>
                         {{ __('public.medical_id.verify_health_id', [], app()->getLocale()) ?: 'Verify Patient' }}
                     </button>
                 </div>
@@ -125,74 +114,74 @@
     <div class="panel">
         <div class="panel-header">
             <h2 class="panel-title">
-                <i data-lucide="zap" style="width:16px;height:16px;"></i>
+                <i data-lucide="zap"></i>
                 {{ __('public.staff_portal.quick_links', [], app()->getLocale()) ?: 'Quick Links' }}
             </h2>
         </div>
         <div class="panel-body">
             <div class="grid-2">
-                <a href="{{ route('portals.staff.appointments') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="calendar-check-2" style="width:15px;height:15px;"></i>
+                <a href="{{ route('portals.staff.appointments') }}" class="btn btn-secondary">
+                    <i data-lucide="calendar-check-2"></i>
                     {{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}
                 </a>
-                <a href="{{ route('portals.staff.queue') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="list-ordered" style="width:15px;height:15px;"></i>
+                <a href="{{ route('portals.staff.queue') }}" class="btn btn-secondary">
+                    <i data-lucide="list-ordered"></i>
                     {{ __('public.portal.nav_queue', [], app()->getLocale()) ?: 'Patient Queue' }}
                 </a>
-                <a href="{{ route('portals.staff.billing') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="receipt" style="width:15px;height:15px;"></i>
+                <a href="{{ route('portals.staff.billing') }}" class="btn btn-secondary">
+                    <i data-lucide="receipt"></i>
                     {{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}
                 </a>
-                <a href="{{ route('portals.staff.support') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="headset" style="width:15px;height:15px;"></i>
+                <a href="{{ route('portals.staff.support') }}" class="btn btn-secondary">
+                    <i data-lucide="headset"></i>
                     {{ __('public.portal.nav_support', [], app()->getLocale()) ?: 'Support' }}
                 </a>
-                <a href="{{ route('portals.staff.immunizations') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="syringe" style="width:15px;height:15px;"></i>
+                <a href="{{ route('portals.staff.immunizations') }}" class="btn btn-secondary">
+                    <i data-lucide="syringe"></i>
                     {{ __('public.portal.nav_immunizations', [], app()->getLocale()) ?: 'Immunizations' }}
                 </a>
-                <a href="{{ route('portals.staff.referrals') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="send" style="width:15px;height:15px;"></i>
+                <a href="{{ route('portals.staff.referrals') }}" class="btn btn-secondary">
+                    <i data-lucide="send"></i>
                     {{ __('public.portal.nav_referrals', [], app()->getLocale()) ?: 'Referrals' }}
                 </a>
-                <a href="{{ route('portals.staff.visits') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="stethoscope" style="width:15px;height:15px;"></i> Visits
+                <a href="{{ route('portals.staff.visits') }}" class="btn btn-secondary">
+                    <i data-lucide="stethoscope"></i> Visits
                 </a>
-                <a href="{{ route('portals.staff.cdss') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="brain-circuit" style="width:15px;height:15px;"></i> CDSS Alerts
+                <a href="{{ route('portals.staff.cdss') }}" class="btn btn-secondary">
+                    <i data-lucide="brain-circuit"></i> CDSS Alerts
                 </a>
-                <a href="{{ route('portals.staff.analytics') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="bar-chart-3" style="width:15px;height:15px;"></i> Analytics
+                <a href="{{ route('portals.staff.analytics') }}" class="btn btn-secondary">
+                    <i data-lucide="bar-chart-3"></i> Analytics
                 </a>
-                <a href="{{ route('portals.staff.telemedicine.index') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="video" style="width:15px;height:15px;"></i> Telemedicine
+                <a href="{{ route('portals.staff.telemedicine.index') }}" class="btn btn-secondary">
+                    <i data-lucide="video"></i> Telemedicine
                 </a>
-                <a href="{{ route('portals.staff.hr.directory') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="users" style="width:15px;height:15px;"></i> HR Directory
+                <a href="{{ route('portals.staff.hr.directory') }}" class="btn btn-secondary">
+                    <i data-lucide="users"></i> HR Directory
                 </a>
-                <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="pill" style="width:15px;height:15px;"></i> Pharmacy Stock
+                <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="btn btn-secondary">
+                    <i data-lucide="pill"></i> Pharmacy Stock
                 </a>
-                <a href="{{ route('portals.staff.supply') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="package" style="width:15px;height:15px;"></i> Supply Chain
+                <a href="{{ route('portals.staff.supply') }}" class="btn btn-secondary">
+                    <i data-lucide="package"></i> Supply Chain
                 </a>
-                <a href="{{ route('portals.staff.wards') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="bed" style="width:15px;height:15px;"></i> Wards
+                <a href="{{ route('portals.staff.wards') }}" class="btn btn-secondary">
+                    <i data-lucide="bed"></i> Wards
                 </a>
-                <a href="{{ route('portals.staff.files.index') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="folder" style="width:15px;height:15px;"></i> Files
+                <a href="{{ route('portals.staff.files.index') }}" class="btn btn-secondary">
+                    <i data-lucide="folder"></i> Files
                 </a>
-                <a href="{{ route('portals.staff.search') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="search" style="width:15px;height:15px;"></i> Global Search
+                <a href="{{ route('portals.staff.search') }}" class="btn btn-secondary">
+                    <i data-lucide="search"></i> Global Search
                 </a>
-                <a href="{{ route('portals.staff.data_import.index') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="upload" style="width:15px;height:15px;"></i> Data Import
+                <a href="{{ route('portals.staff.data_import.index') }}" class="btn btn-secondary">
+                    <i data-lucide="upload"></i> Data Import
                 </a>
-                <a href="{{ route('portals.staff.prescriptions') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="clipboard-plus" style="width:15px;height:15px;"></i> Prescriptions
+                <a href="{{ route('portals.staff.prescriptions') }}" class="btn btn-secondary">
+                    <i data-lucide="clipboard-plus"></i> Prescriptions
                 </a>
-                <a href="{{ route('portals.staff.lab_orders') }}" class="btn btn-secondary" style="justify-content: flex-start; gap: var(--p-space-2);">
-                    <i data-lucide="flask-conical" style="width:15px;height:15px;"></i> Lab Orders
+                <a href="{{ route('portals.staff.lab_orders') }}" class="btn btn-secondary">
+                    <i data-lucide="flask-conical"></i> Lab Orders
                 </a>
             </div>
         </div>
@@ -201,8 +190,8 @@
 </div>
 
 {{-- Clinical Safety Disclaimer --}}
-<div class="alert alert-warning" style="margin-top: var(--p-space-6);">
-    <i data-lucide="triangle-alert" style="width:16px;height:16px; flex-shrink:0;"></i>
+<div class="alert alert-warning mt-6">
+    <i data-lucide="triangle-alert"></i>
     <div>
         <strong>{{ __('public.staff_portal.disclaimer_title', [], app()->getLocale()) ?: 'Clinical Safety Disclaimer' }}</strong>
         {{ __('public.staff_portal.disclaimer_text', [], app()->getLocale()) ?: 'This portal is for authorised clinical staff only. All access is logged and audited. Do not share login credentials. Patient data must be handled in accordance with applicable data protection regulations and facility privacy policies. In an emergency, use the break-glass access procedure and document the clinical justification.' }}

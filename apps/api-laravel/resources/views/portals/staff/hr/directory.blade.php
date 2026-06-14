@@ -116,24 +116,24 @@
         <p class="page-subtitle">Manage staff profiles, licenses, and employment records.</p>
     </div>
     <button type="button" class="btn btn-primary btn-sm" onclick="openAddStaffModal()">
-        <i data-lucide="user-plus" style="width:14px;height:14px;"></i>
+        <i data-lucide="user-plus"></i>
         Add Staff Member
     </button>
 </div>
 
 @if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;">
+    <div class="auth-alert auth-alert-success mb-4">
         <i data-lucide="check-circle"></i><div>{{ session('success') }}</div>
     </div>
 @endif
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;">
+    <div class="auth-alert auth-alert-danger mb-4">
         <i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div>
     </div>
 @endif
 
 {{-- Filters --}}
-<form method="GET" action="{{ route('portals.staff.hr.directory') }}" class="filter-bar" style="flex-wrap:wrap;gap:.5rem;">
+<form method="GET" action="{{ route('portals.staff.hr.directory') }}" class="filter-bar">
     <select name="status" class="form-control">
         <option value="">All Statuses</option>
         @foreach(['active','inactive','on_leave','suspended','terminated'] as $s)
@@ -156,19 +156,19 @@
     @endif
     <input type="text" name="search" class="form-control" placeholder="Search name / ID…" value="{{ request('search') }}">
     <button type="submit" class="btn btn-primary btn-sm">
-        <i data-lucide="filter" style="width:13px;height:13px;"></i> Filter
+        <i data-lucide="filter"></i> Filter
     </button>
     <a href="{{ route('portals.staff.hr.directory') }}" class="btn btn-ghost btn-sm">Clear</a>
 </form>
 
 <div class="panel">
-    <div class="panel-body" style="padding:0;">
+    <div class="panel-body panel-body--flush">
         @if($staff->isEmpty())
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="users"></i></div>
                 <h3>No Staff Members Found</h3>
                 <p>Add your first staff member to get started.</p>
-                <button type="button" class="btn btn-primary btn-sm" style="margin-top:1rem;" onclick="openAddStaffModal()">
+                <button type="button" class="btn btn-primary btn-sm mt-6" onclick="openAddStaffModal()">
                     Add Staff Member
                 </button>
             </div>
@@ -200,13 +200,13 @@
                         @endphp
                         <tr>
                             <td data-label="Name">
-                                <strong>{{ $member->full_name }}</strong>
+                                <strong class="td-strong">{{ $member->full_name }}</strong>
                                 @if($member->job_title)
-                                    <br><span style="font-size:var(--p-text-xs);color:var(--p-text-secondary);">{{ $member->job_title }}</span>
+                                    <br><span class="td-muted">{{ $member->job_title }}</span>
                                 @endif
                             </td>
                             <td data-label="Employee #">
-                                <span style="font-family:monospace;font-size:var(--p-text-xs);">{{ $member->employee_number ?? '—' }}</span>
+                                <span class="mono">{{ $member->employee_number ?? '—' }}</span>
                             </td>
                             <td data-label="Category">
                                 <span class="badge badge-neutral">{{ ucfirst($member->staff_category) }}</span>
@@ -221,25 +221,25 @@
                             <td data-label="Licenses">
                                 @if($member->licenses->isNotEmpty())
                                     @foreach($member->licenses as $lic)
-                                        <span class="badge {{ $lic->status === 'active' ? 'badge-success' : 'badge-danger' }}" style="font-size:.65rem;margin:.1rem;">
+                                        <span class="badge badge-sm {{ $lic->status === 'active' ? 'badge-success' : 'badge-danger' }}">
                                             {{ $lic->profession }}
                                         </span>
                                     @endforeach
                                 @else
-                                    <span style="color:var(--p-text-secondary);">—</span>
+                                    <span class="td-muted">—</span>
                                 @endif
                             </td>
                             <td data-label="Actions">
-                                <div style="display:flex;gap:.35rem;flex-wrap:wrap;">
+                                <div class="row-actions-inline">
                                     <button type="button" class="btn btn-ghost btn-xs"
                                         onclick="openLicenseModal('{{ $member->id }}', '{{ addslashes($member->full_name) }}')">
-                                        <i data-lucide="badge-check" style="width:11px;height:11px;"></i>
+                                        <i data-lucide="badge-check"></i>
                                         License
                                     </button>
                                     @if($member->status !== 'terminated')
                                     <button type="button" class="btn btn-ghost btn-xs"
                                         onclick="openStatusModal('{{ $member->id }}', '{{ $member->status }}', '{{ addslashes($member->full_name) }}')">
-                                        <i data-lucide="refresh-cw" style="width:11px;height:11px;"></i>
+                                        <i data-lucide="refresh-cw"></i>
                                         Status
                                     </button>
                                     @endif
@@ -255,12 +255,14 @@
 </div>
 
 {{-- Add Staff Modal --}}
-<div id="add-staff-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;overflow-y:auto;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:560px;margin:1rem;">
-        <h3 style="margin:0 0 1.25rem;font-size:1.1rem;">Add Staff Member</h3>
+<div id="add-staff-modal" class="modal-fixed">
+    <div class="modal-fixed__panel">
+        <div class="modal-fixed__head">
+            <h3 class="modal-fixed__title">Add Staff Member</h3>
+        </div>
         <form method="POST" action="{{ route('portals.staff.hr.directory.store') }}">
             @csrf
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label">First Name *</label>
                     <input type="text" name="first_name" class="form-control" required maxlength="100">
@@ -270,7 +272,7 @@
                     <input type="text" name="last_name" class="form-control" required maxlength="100">
                 </div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label">Email</label>
                     <input type="email" name="email" class="form-control" maxlength="200">
@@ -280,7 +282,7 @@
                     <input type="text" name="phone" class="form-control" maxlength="30">
                 </div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label">Job Title</label>
                     <input type="text" name="job_title" class="form-control" maxlength="150">
@@ -290,7 +292,7 @@
                     <input type="text" name="department" class="form-control" maxlength="100" placeholder="e.g. Emergency, Lab">
                 </div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label">Staff Category *</label>
                     <select name="staff_category" class="form-control" required>
@@ -310,7 +312,7 @@
                     </select>
                 </div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label">Hire Date</label>
                     <input type="date" name="hire_date" class="form-control">
@@ -320,10 +322,10 @@
                     <input type="text" name="employee_number" class="form-control" placeholder="Auto-generated if blank">
                 </div>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeAddStaffModal()">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">
-                    <i data-lucide="user-plus" style="width:13px;height:13px;"></i>
+                    <i data-lucide="user-plus"></i>
                     Add Staff
                 </button>
             </div>
@@ -332,25 +334,27 @@
 </div>
 
 {{-- License Modal --}}
-<div id="license-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:460px;margin:1rem;">
-        <h3 style="margin:0 0 .25rem;font-size:1.1rem;">Add License</h3>
-        <p id="license-staff-name" style="font-size:.85rem;color:var(--p-text-secondary);margin:0 0 1.25rem;"></p>
+<div id="license-modal" class="modal-fixed">
+    <div class="modal-fixed__panel modal-fixed__panel--md">
+        <div class="modal-fixed__head">
+            <h3 class="modal-fixed__title">Add License</h3>
+        </div>
+        <p id="license-staff-name" class="td-muted mb-4"></p>
         <form id="license-form" method="POST" action="">
             @csrf
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Profession *</label>
                 <input type="text" name="profession" class="form-control" required placeholder="e.g. Doctor, Nurse, Pharmacist">
             </div>
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">License Number *</label>
                 <input type="text" name="license_number" class="form-control" required maxlength="100">
             </div>
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Issuing Body *</label>
                 <input type="text" name="issuing_body" class="form-control" required maxlength="200" placeholder="e.g. Medical Council of Cameroon">
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label">Issue Date</label>
                     <input type="date" name="issue_date" class="form-control">
@@ -360,10 +364,10 @@
                     <input type="date" name="expiry_date" class="form-control">
                 </div>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeLicenseModal()">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">
-                    <i data-lucide="badge-check" style="width:13px;height:13px;"></i>
+                    <i data-lucide="badge-check"></i>
                     Add License
                 </button>
             </div>
@@ -372,17 +376,19 @@
 </div>
 
 {{-- Status Modal --}}
-<div id="status-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:360px;margin:1rem;">
-        <h3 style="margin:0 0 .25rem;font-size:1.1rem;">Update Staff Status</h3>
-        <p id="status-staff-name" style="font-size:.85rem;color:var(--p-text-secondary);margin:0 0 1.25rem;"></p>
+<div id="status-modal" class="modal-fixed">
+    <div class="modal-fixed__panel modal-fixed__panel--sm">
+        <div class="modal-fixed__head">
+            <h3 class="modal-fixed__title">Update Staff Status</h3>
+        </div>
+        <p id="status-staff-name" class="td-muted mb-4"></p>
         <form id="status-form" method="POST" action="">
             @csrf
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">New Status *</label>
                 <select id="status-select" name="status" class="form-control" required></select>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeStatusModal()">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">Update</button>
             </div>
@@ -394,8 +400,8 @@
 
 @section('scripts')
 <script>
-    function openAddStaffModal()  { document.getElementById('add-staff-modal').style.display = 'flex'; }
-    function closeAddStaffModal() { document.getElementById('add-staff-modal').style.display = 'none'; }
+    function openAddStaffModal()  { document.getElementById('add-staff-modal').classList.add('open'); }
+    function closeAddStaffModal() { document.getElementById('add-staff-modal').classList.remove('open'); }
     document.getElementById('add-staff-modal').addEventListener('click', function(e) {
         if (e.target === this) closeAddStaffModal();
     });
@@ -403,9 +409,9 @@
     function openLicenseModal(staffId, staffName) {
         document.getElementById('license-staff-name').textContent = staffName;
         document.getElementById('license-form').action = '{{ url('/portals/staff/hr/directory') }}/' + staffId + '/license';
-        document.getElementById('license-modal').style.display = 'flex';
+        document.getElementById('license-modal').classList.add('open');
     }
-    function closeLicenseModal() { document.getElementById('license-modal').style.display = 'none'; }
+    function closeLicenseModal() { document.getElementById('license-modal').classList.remove('open'); }
     document.getElementById('license-modal').addEventListener('click', function(e) {
         if (e.target === this) closeLicenseModal();
     });
@@ -432,9 +438,9 @@
             select.appendChild(opt);
         });
 
-        document.getElementById('status-modal').style.display = 'flex';
+        document.getElementById('status-modal').classList.add('open');
     }
-    function closeStatusModal() { document.getElementById('status-modal').style.display = 'none'; }
+    function closeStatusModal() { document.getElementById('status-modal').classList.remove('open'); }
     document.getElementById('status-modal').addEventListener('click', function(e) {
         if (e.target === this) closeStatusModal();
     });

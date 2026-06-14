@@ -116,24 +116,24 @@
         <p class="page-subtitle">Submit and review staff leave requests.</p>
     </div>
     <button type="button" class="btn btn-primary btn-sm" onclick="openLeaveModal()">
-        <i data-lucide="plus-circle" style="width:14px;height:14px;"></i>
+        <i data-lucide="plus-circle"></i>
         New Leave Request
     </button>
 </div>
 
 @if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;">
+    <div class="auth-alert auth-alert-success mb-4">
         <i data-lucide="check-circle"></i><div>{{ session('success') }}</div>
     </div>
 @endif
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;">
+    <div class="auth-alert auth-alert-danger mb-4">
         <i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div>
     </div>
 @endif
 
 {{-- Filters --}}
-<form method="GET" action="{{ route('portals.staff.hr.leave') }}" class="filter-bar" style="flex-wrap:wrap;gap:.5rem;">
+<form method="GET" action="{{ route('portals.staff.hr.leave') }}" class="filter-bar">
     <select name="status" class="form-control">
         <option value="">All Statuses</option>
         @foreach(['pending','approved','rejected','withdrawn','cancelled'] as $s)
@@ -147,19 +147,19 @@
         @endforeach
     </select>
     <button type="submit" class="btn btn-primary btn-sm">
-        <i data-lucide="filter" style="width:13px;height:13px;"></i> Filter
+        <i data-lucide="filter"></i> Filter
     </button>
     <a href="{{ route('portals.staff.hr.leave') }}" class="btn btn-ghost btn-sm">Clear</a>
 </form>
 
 <div class="panel">
-    <div class="panel-body" style="padding:0;">
+    <div class="panel-body panel-body--flush">
         @if($requests->isEmpty())
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="plane-takeoff"></i></div>
                 <h3>No Leave Requests</h3>
                 <p>Submit leave requests on behalf of staff members here.</p>
-                <button type="button" class="btn btn-primary btn-sm" style="margin-top:1rem;" onclick="openLeaveModal()">New Leave Request</button>
+                <button type="button" class="btn btn-primary btn-sm mt-6" onclick="openLeaveModal()">New Leave Request</button>
             </div>
         @else
             <div class="table-wrapper">
@@ -189,7 +189,7 @@
                         @endphp
                         <tr>
                             <td data-label="Staff Member">
-                                <strong>{{ $req->staffProfile?->full_name ?? '—' }}</strong>
+                                <strong class="td-strong">{{ $req->staffProfile?->full_name ?? '—' }}</strong>
                             </td>
                             <td data-label="Type">
                                 <span class="badge badge-neutral">{{ ucfirst($req->leave_type) }}</span>
@@ -203,31 +203,28 @@
                                 <span class="badge {{ $lBadge }}">{{ ucfirst($req->status) }}</span>
                             </td>
                             <td data-label="Reviewed By">
-                                <span style="font-size:var(--p-text-xs);">{{ $req->reviewed_by ?? '—' }}</span>
+                                <span class="td-muted">{{ $req->reviewed_by ?? '—' }}</span>
                             </td>
                             <td data-label="Actions">
-                                <div style="display:flex;gap:.35rem;flex-wrap:wrap;">
+                                <div class="row-actions-inline">
                                     @if($req->status === 'pending')
                                         <button type="button" class="btn btn-success btn-xs"
                                             onclick="openReviewModal('{{ $req->id }}', 'approve')">
-                                            <i data-lucide="check" style="width:11px;height:11px;"></i>
+                                            <i data-lucide="check"></i>
                                             Approve
                                         </button>
                                         <button type="button" class="btn btn-ghost btn-xs"
                                             onclick="openReviewModal('{{ $req->id }}', 'reject')">
-                                            <i data-lucide="x" style="width:11px;height:11px;"></i>
+                                            <i data-lucide="x"></i>
                                             Reject
                                         </button>
                                     @endif
                                     @if(in_array($req->status, ['pending','approved']))
-                                        <form method="POST" action="{{ route('portals.staff.hr.leave.withdraw', $req->id) }}" style="display:inline;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-ghost btn-xs"
-                                                onclick="return confirm('Withdraw this leave request?')">
-                                                <i data-lucide="undo-2" style="width:11px;height:11px;"></i>
-                                                Withdraw
-                                            </button>
-                                        </form>
+                                        <button type="button" class="btn btn-ghost btn-xs"
+                                            onclick="openWithdrawModal('{{ route('portals.staff.hr.leave.withdraw', $req->id) }}')">
+                                            <i data-lucide="undo-2"></i>
+                                            Withdraw
+                                        </button>
                                     @endif
                                 </div>
                             </td>
@@ -241,12 +238,14 @@
 </div>
 
 {{-- New Leave Request Modal --}}
-<div id="leave-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:480px;margin:1rem;">
-        <h3 style="margin:0 0 1.25rem;font-size:1.1rem;">New Leave Request</h3>
+<div id="leave-modal" class="modal-fixed">
+    <div class="modal-fixed__panel modal-fixed__panel--md">
+        <div class="modal-fixed__head">
+            <h3 class="modal-fixed__title">New Leave Request</h3>
+        </div>
         <form method="POST" action="{{ route('portals.staff.hr.leave.store') }}">
             @csrf
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Staff Member *</label>
                 <select name="staff_profile_id" class="form-control" required>
                     <option value="">— Select —</option>
@@ -255,7 +254,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Leave Type *</label>
                 <select name="leave_type" class="form-control" required>
                     @foreach(['annual','sick','emergency','maternity','paternity','study','unpaid'] as $t)
@@ -263,7 +262,7 @@
                     @endforeach
                 </select>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label">Start Date *</label>
                     <input type="date" name="start_date" class="form-control" required>
@@ -273,14 +272,14 @@
                     <input type="date" name="end_date" class="form-control" required>
                 </div>
             </div>
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Reason</label>
                 <textarea name="reason" class="form-control" rows="3" maxlength="1000"></textarea>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeLeaveModal()">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">
-                    <i data-lucide="send" style="width:13px;height:13px;"></i>
+                    <i data-lucide="send"></i>
                     Submit Request
                 </button>
             </div>
@@ -289,18 +288,40 @@
 </div>
 
 {{-- Review Modal (approve / reject) --}}
-<div id="review-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:400px;margin:1rem;">
-        <h3 id="review-modal-title" style="margin:0 0 1.25rem;font-size:1.1rem;">Review Leave</h3>
+<div id="review-modal" class="modal-fixed">
+    <div class="modal-fixed__panel modal-fixed__panel--sm">
+        <div class="modal-fixed__head">
+            <h3 id="review-modal-title" class="modal-fixed__title">Review Leave</h3>
+        </div>
         <form id="review-form" method="POST" action="">
             @csrf
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Review Notes</label>
                 <textarea name="review_notes" class="form-control" rows="3" maxlength="500"></textarea>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeReviewModal()">Cancel</button>
                 <button type="submit" id="review-submit-btn" class="btn btn-primary btn-sm">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Withdraw confirm modal --}}
+<div id="withdraw-modal" class="modal-fixed">
+    <div class="modal-fixed__panel modal-fixed__panel--sm">
+        <div class="modal-fixed__head">
+            <h3 class="modal-fixed__title"><i data-lucide="undo-2"></i> Withdraw leave request</h3>
+        </div>
+        <div class="modal__body">Withdraw this leave request? This action cannot be undone.</div>
+        <form id="withdraw-form" method="POST" action="">
+            @csrf
+            <div class="modal__footer">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeWithdrawModal()">Cancel</button>
+                <button type="submit" class="btn btn-danger btn-sm">
+                    <i data-lucide="undo-2"></i>
+                    Withdraw
+                </button>
             </div>
         </form>
     </div>
@@ -310,8 +331,8 @@
 
 @section('scripts')
 <script>
-    function openLeaveModal()  { document.getElementById('leave-modal').style.display = 'flex'; }
-    function closeLeaveModal() { document.getElementById('leave-modal').style.display = 'none'; }
+    function openLeaveModal()  { document.getElementById('leave-modal').classList.add('open'); }
+    function closeLeaveModal() { document.getElementById('leave-modal').classList.remove('open'); }
     document.getElementById('leave-modal').addEventListener('click', function(e) {
         if (e.target === this) closeLeaveModal();
     });
@@ -323,11 +344,20 @@
         var btn = document.getElementById('review-submit-btn');
         btn.className = action === 'approve' ? 'btn btn-success btn-sm' : 'btn btn-danger btn-sm';
         btn.textContent = action === 'approve' ? 'Approve' : 'Reject';
-        document.getElementById('review-modal').style.display = 'flex';
+        document.getElementById('review-modal').classList.add('open');
     }
-    function closeReviewModal() { document.getElementById('review-modal').style.display = 'none'; }
+    function closeReviewModal() { document.getElementById('review-modal').classList.remove('open'); }
     document.getElementById('review-modal').addEventListener('click', function(e) {
         if (e.target === this) closeReviewModal();
+    });
+
+    function openWithdrawModal(action) {
+        document.getElementById('withdraw-form').action = action;
+        document.getElementById('withdraw-modal').classList.add('open');
+    }
+    function closeWithdrawModal() { document.getElementById('withdraw-modal').classList.remove('open'); }
+    document.getElementById('withdraw-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeWithdrawModal();
     });
 </script>
 @endsection

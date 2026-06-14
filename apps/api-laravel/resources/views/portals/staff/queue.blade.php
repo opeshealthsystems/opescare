@@ -15,7 +15,7 @@
     </div>
     <div class="page-actions">
         <a href="{{ route('portals.staff.queue-display') }}" target="_blank" class="btn btn-secondary btn-sm">
-            <i data-lucide="monitor" style="width:13px;height:13px;"></i>
+            <i data-lucide="monitor"></i>
             Display Board
         </a>
     </div>
@@ -44,7 +44,7 @@
         <option value="served"   @selected(request('status') === 'served')>{{ __('public.staff_portal.status_served', [], app()->getLocale()) ?: 'Served' }}</option>
     </select>
     <button type="submit" class="btn btn-primary btn-sm">
-        <i data-lucide="filter" style="width:13px;height:13px;"></i>
+        <i data-lucide="filter"></i>
         {{ __('public.staff_portal.filter_apply', [], app()->getLocale()) ?: 'Filter' }}
     </button>
     <a href="{{ route('portals.staff.queue') }}" class="btn btn-ghost btn-sm">
@@ -53,7 +53,7 @@
 </form>
 
 <div class="panel">
-    <div class="panel-body" style="padding: 0;">
+    <div class="panel-body panel-body--flush">
         @if(count($entries) === 0)
             <div class="empty-state">
                 <div class="empty-state-icon">
@@ -91,7 +91,7 @@
                                 <strong>{{ $entry->position ?? ($index + 1) }}</strong>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_patient_id', [], app()->getLocale()) ?: 'Patient ID' }}">
-                                <span style="font-family: monospace; font-size: var(--p-text-xs);">{{ $entry->patient_id ?? '--' }}</span>
+                                <span class="mono">{{ $entry->patient_id ?? '--' }}</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_queue_name', [], app()->getLocale()) ?: 'Queue Name' }}">
                                 {{ $entry->queue_name ?? '--' }}

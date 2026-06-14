@@ -8,33 +8,36 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <a href="{{ route('portals.staff.immunizations', ['patient_id' => request('patient_id')]) }}" class="btn btn-ghost btn-sm" style="margin-bottom:var(--p-space-3);">
-            <i data-lucide="arrow-left"></i> Back to Immunizations
-        </a>
-        <h1 class="page-title">Record Vaccine Administration</h1>
-        <p class="page-subtitle">Record a new or historical immunization for a patient.</p>
-    </div>
+<div class="breadcrumb">
+    <a href="{{ route('portals.staff.immunizations') }}">Immunizations</a>
+    <i data-lucide="chevron-right"></i>
+    <span>Record</span>
 </div>
 
+<div class="page-head">
+    <h2>Record Vaccine Administration</h2>
+    <div class="page-head__spacer"></div>
+    <a href="{{ route('portals.staff.immunizations', ['patient_id' => request('patient_id')]) }}" class="btn btn-ghost btn-sm">
+        <i data-lucide="arrow-left"></i> Back to Immunizations
+    </a>
+</div>
+<p class="page-subtitle mb-4">Record a new or historical immunization for a patient.</p>
+
 @if($errors->any())
-<div class="alert alert-danger mb-6" style="margin-bottom:var(--p-space-6);" role="alert">
+<div class="alert alert-danger mb-6" role="alert">
     <i data-lucide="triangle-alert"></i>
     <div>
         <strong>Please fix the following errors:</strong>
-        <ul style="margin:var(--p-space-2) 0 0;padding-left:1.25rem;">
+        <ul class="alert-list">
             @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
         </ul>
     </div>
 </div>
 @endif
 
-<div style="max-width:760px;">
-
-<div class="alert alert-warning mb-6" style="margin-bottom:var(--p-space-6);">
+<div class="alert alert-warning mb-6">
     <i data-lucide="alert-triangle"></i>
-    <div style="font-size:0.8125rem;">Duplicate prevention is enforced: recording the same vaccine code on the same date with the same lot number will be rejected. Check existing records before proceeding.</div>
+    <div>Duplicate prevention is enforced: recording the same vaccine code on the same date with the same lot number will be rejected. Check existing records before proceeding.</div>
 </div>
 
 <div class="panel">
@@ -46,27 +49,27 @@
             @csrf
 
             <!-- Patient & Facility -->
-            <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--p-text-muted);border-bottom:1px solid var(--p-border);padding-bottom:var(--p-space-2);margin-bottom:var(--p-space-4);">Patient &amp; Facility</div>
+            <h3 class="panel-title mb-4">Patient &amp; Facility</h3>
 
-            <div class="form-row" style="margin-bottom:var(--p-space-5);">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label form-label-required" for="patient_id">Patient Health ID</label>
-                    <input id="patient_id" name="patient_id" class="form-control"
+                    <input id="patient_id" name="patient_id" class="form-control mono"
                            value="{{ old('patient_id', request('patient_id')) }}" required aria-required="true"
-                           style="font-family:monospace;font-weight:700;text-transform:uppercase;" placeholder="Patient UUID">
-                    @error('patient_id')<div style="color:var(--p-danger);font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
+                           placeholder="Patient UUID">
+                    @error('patient_id')<div class="form-hint">{{ $message }}</div>@enderror
                 </div>
                 <div class="form-group">
                     <label class="form-label form-label-required" for="facility_id">Facility ID</label>
                     <input id="facility_id" name="facility_id" class="form-control" value="{{ old('facility_id') }}" required aria-required="true">
-                    @error('facility_id')<div style="color:var(--p-danger);font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
+                    @error('facility_id')<div class="form-hint">{{ $message }}</div>@enderror
                 </div>
             </div>
 
             <!-- Vaccine Details -->
-            <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--p-text-muted);border-bottom:1px solid var(--p-border);padding-bottom:var(--p-space-2);margin-bottom:var(--p-space-4);margin-top:var(--p-space-6);">Vaccine Details</div>
+            <h3 class="panel-title mt-6 mb-4">Vaccine Details</h3>
 
-            <div class="form-row" style="margin-bottom:var(--p-space-5);">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label form-label-required" for="vaccine_code">Vaccine Code</label>
                     <input id="vaccine_code" name="vaccine_code" class="form-control" value="{{ old('vaccine_code') }}" placeholder="e.g. BCG, OPV, DPT" required aria-required="true">
@@ -78,7 +81,7 @@
                 </div>
             </div>
 
-            <div class="form-row-3" style="margin-bottom:var(--p-space-5);">
+            <div class="form-row-3 mb-4">
                 <div class="form-group">
                     <label class="form-label" for="dose_number">Dose Number</label>
                     <input type="number" id="dose_number" name="dose_number" class="form-control" value="{{ old('dose_number') }}" min="1" placeholder="1">
@@ -93,7 +96,7 @@
                 </div>
             </div>
 
-            <div class="form-row" style="margin-bottom:var(--p-space-5);">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label" for="manufacturer">Manufacturer</label>
                     <input id="manufacturer" name="manufacturer" class="form-control" value="{{ old('manufacturer') }}">
@@ -106,9 +109,9 @@
             </div>
 
             <!-- Administration Details -->
-            <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--p-text-muted);border-bottom:1px solid var(--p-border);padding-bottom:var(--p-space-2);margin-bottom:var(--p-space-4);margin-top:var(--p-space-6);">Administration Details</div>
+            <h3 class="panel-title mt-6 mb-4">Administration Details</h3>
 
-            <div class="form-row-3" style="margin-bottom:var(--p-space-5);">
+            <div class="form-row-3 mb-4">
                 <div class="form-group">
                     <label class="form-label" for="route">Route</label>
                     <select id="route" name="route" class="form-control">
@@ -130,7 +133,7 @@
                 </div>
             </div>
 
-            <div class="form-row" style="margin-bottom:var(--p-space-5);">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label form-label-required" for="status">Status</label>
                     <select id="status" name="status" class="form-control" required aria-required="true">
@@ -144,15 +147,18 @@
                 </div>
             </div>
 
-            <div class="form-group" style="margin-bottom:var(--p-space-8);">
-                <label style="display:flex;align-items:center;gap:var(--p-space-3);cursor:pointer;font-size:0.875rem;font-weight:600;color:var(--p-text-2);">
-                    <input type="checkbox" name="is_historical" value="1" @checked(old('is_historical')) style="width:1rem;height:1rem;accent-color:var(--p-primary);">
-                    This is a historical / self-reported record
+            <div class="toggle-row mb-6">
+                <div class="toggle-row__body">
+                    <div class="toggle-row__title">This is a historical / self-reported record</div>
+                    <div class="toggle-row__desc">Historical records are clearly labelled and not treated as facility-verified administrations.</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" name="is_historical" value="1" @checked(old('is_historical'))>
+                    <span class="switch__track"></span>
                 </label>
-                <div class="form-hint" style="margin-left:1.75rem;">Historical records are clearly labelled and not treated as facility-verified administrations.</div>
             </div>
 
-            <div style="display:flex;gap:var(--p-space-3);">
+            <div class="row-actions">
                 <button type="submit" class="btn btn-primary">
                     <i data-lucide="syringe"></i>
                     Record Immunization
@@ -163,7 +169,6 @@
             </div>
         </form>
     </div>
-</div>
 </div>
 
 @endsection

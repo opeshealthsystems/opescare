@@ -3,25 +3,35 @@
 @section('title', 'Schedule Teleconsultation')
 
 @section('content')
-<div class="page-header">
-    <div class="page-header__left">
-        <a href="{{ route('portals.staff.telemedicine.index') }}" class="back-link">← Telemedicine</a>
-        <h1 class="page-title">Schedule Consultation</h1>
-    </div>
+<div class="breadcrumb">
+    <a href="{{ route('portals.staff.telemedicine.index') }}">Telemedicine</a>
+    <i data-lucide="chevron-right"></i>
+    <span>Schedule</span>
 </div>
 
-<div class="card" style="max-width: 640px;">
-    <div class="card__header">
-        <h3 class="card__title">New Teleconsultation</h3>
+<div class="page-head">
+    <h2>Schedule Consultation</h2>
+    <div class="page-head__spacer"></div>
+    <a href="{{ route('portals.staff.telemedicine.index') }}" class="btn btn-ghost btn-sm">
+        <i data-lucide="arrow-left"></i> Telemedicine
+    </a>
+</div>
+
+<div class="panel">
+    <div class="panel-header">
+        <h3 class="panel-title">New Teleconsultation</h3>
     </div>
-    <div class="card__body">
+    <div class="panel-body">
         @if($errors->any())
-            <div class="alert alert--danger mb-4">
-                <ul class="m-0">
-                    @foreach($errors->all() as $e)
-                        <li>{{ $e }}</li>
-                    @endforeach
-                </ul>
+            <div class="alert alert-danger mb-4">
+                <i data-lucide="triangle-alert"></i>
+                <div>
+                    <ul class="alert-list">
+                        @foreach($errors->all() as $e)
+                            <li>{{ $e }}</li>
+                        @endforeach
+                    </ul>
+                </div>
             </div>
         @endif
 
@@ -29,7 +39,7 @@
             @csrf
 
             <div class="form-group">
-                <label class="form-label" for="patient_id">Patient <span class="text-danger">*</span></label>
+                <label class="form-label form-label-required" for="patient_id">Patient *</label>
                 <select name="patient_id" id="patient_id" class="form-control" required>
                     <option value="">— Select patient —</option>
                     @foreach($patients as $p)
@@ -42,7 +52,7 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="scheduled_at">Scheduled At <span class="text-danger">*</span></label>
+                <label class="form-label form-label-required" for="scheduled_at">Scheduled At *</label>
                 <input type="datetime-local" name="scheduled_at" id="scheduled_at"
                        class="form-control" value="{{ old('scheduled_at') }}" required>
             </div>
@@ -57,14 +67,17 @@
                 </select>
             </div>
 
-            <div class="alert alert--info mt-2 mb-4">
-                <strong>Consent required:</strong> Patient informed consent must be recorded before the
-                teleconsultation session can begin. You will be prompted after scheduling.
+            <div class="alert alert-info mb-4">
+                <i data-lucide="info"></i>
+                <div>
+                    <strong>Consent required:</strong> Patient informed consent must be recorded before the
+                    teleconsultation session can begin. You will be prompted after scheduling.
+                </div>
             </div>
 
-            <div class="form-actions">
-                <button type="submit" class="btn btn--primary">Schedule Consultation</button>
-                <a href="{{ route('portals.staff.telemedicine.index') }}" class="btn btn--outline ml-2">Cancel</a>
+            <div class="row-actions">
+                <button type="submit" class="btn btn-primary">Schedule Consultation</button>
+                <a href="{{ route('portals.staff.telemedicine.index') }}" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>

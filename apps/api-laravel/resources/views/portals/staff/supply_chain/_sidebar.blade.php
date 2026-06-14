@@ -1,7 +1,7 @@
 <nav class="portal-sidebar">
     <div class="sidebar-header">
         <div class="sidebar-logo">
-            <i data-lucide="package" style="width:22px;height:22px;color:#0891b2;"></i>
+            <i data-lucide="package"></i>
             <span>Supply Chain</span>
         </div>
     </div>

@@ -8,34 +8,27 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title">Immunization Records</h1>
-        <p class="page-subtitle">Review vaccination history and record new immunizations.</p>
-    </div>
-    <div class="page-actions">
-        <a href="{{ route('portals.staff.immunizations.record') }}" class="btn btn-primary">
-            <i data-lucide="syringe"></i>
-            Record Immunization
-        </a>
-    </div>
+<div class="page-head">
+    <h2>Immunization Records</h2>
+    <div class="page-head__spacer"></div>
+    <a href="{{ route('portals.staff.immunizations.record') }}" class="btn btn-primary">
+        <i data-lucide="syringe"></i>
+        Record Immunization
+    </a>
 </div>
+<p class="page-subtitle mb-4">Review vaccination history and record new immunizations.</p>
 
 <!-- Filters -->
-<div class="panel mb-6" style="margin-bottom:var(--p-space-6);">
-    <form method="GET" action="{{ route('portals.staff.immunizations') }}">
+<div class="panel mb-6">
+    <form method="GET" action="{{ route('portals.staff.immunizations') }}" class="panel-body">
         <div class="filter-bar">
-            <div class="form-group" style="flex:1;min-width:180px;">
-                <div class="form-search">
-                    <span class="search-icon"><i data-lucide="search"></i></span>
-                    <input type="text" name="patient_id" class="form-control" placeholder="Patient Health ID…" value="{{ request('patient_id') }}" aria-label="Filter by patient health ID">
-                </div>
-            </div>
-            <div class="form-group" style="min-width:160px;">
-                <input type="text" name="facility_id" class="form-control" placeholder="Facility ID…" value="{{ request('facility_id') }}" aria-label="Filter by facility ID">
-            </div>
-            <button type="submit" class="btn btn-primary"><i data-lucide="filter"></i> Filter</button>
-            <a href="{{ route('portals.staff.immunizations') }}" class="btn btn-secondary"><i data-lucide="x"></i> Clear</a>
+            <label class="filter-search">
+                <i data-lucide="search"></i>
+                <input type="text" name="patient_id" placeholder="Patient Health ID…" value="{{ request('patient_id') }}" aria-label="Filter by patient health ID">
+            </label>
+            <input type="text" name="facility_id" class="filter-search" placeholder="Facility ID…" value="{{ request('facility_id') }}" aria-label="Filter by facility ID">
+            <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> Filter</button>
+            <a href="{{ route('portals.staff.immunizations') }}" class="btn btn-secondary btn-sm"><i data-lucide="x"></i> Clear</a>
         </div>
     </form>
 </div>

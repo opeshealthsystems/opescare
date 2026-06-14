@@ -110,80 +110,75 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title">Blood Bank Inventory</h1>
-        <p class="page-subtitle">Track blood group availability and component status.</p>
-    </div>
+<div class="page-head">
+    <h2>Blood bank inventory</h2>
+    <div class="page-head__spacer"></div>
     <button type="button" class="btn btn-primary btn-sm" onclick="openUpsertModal()">
-        <i data-lucide="plus-circle" style="width:14px;height:14px;"></i>
+        <i data-lucide="plus-circle"></i>
         Update Stock
     </button>
 </div>
+<p class="page-subtitle mb-6">Track blood group availability and component status.</p>
 
 @if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;">
-        <i data-lucide="check-circle"></i><div>{{ session('success') }}</div>
-    </div>
+    <div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
 @endif
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;">
-        <i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div>
-    </div>
+    <div class="alert alert-danger mb-6"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
 @endif
 
 {{-- Summary Cards --}}
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;margin-bottom:1.25rem;">
-    <div class="panel" style="text-align:center;padding:1rem .5rem;">
-        <div style="font-size:1.75rem;font-weight:700;color:var(--p-primary);">{{ $summary['total_units'] }}</div>
-        <div style="font-size:.75rem;color:var(--p-text-secondary);">Total Units</div>
+<div class="stat-grid mb-6">
+    <div class="stat-card stat-card--primary">
+        <div class="stat-card__value">{{ $summary['total_units'] }}</div>
+        <div class="stat-card__label">Total Units</div>
     </div>
-    <div class="panel" style="text-align:center;padding:1rem .5rem;">
-        <div style="font-size:1.75rem;font-weight:700;color:var(--p-success);">{{ $summary['groups_covered'] }}</div>
-        <div style="font-size:.75rem;color:var(--p-text-secondary);">Groups in Stock</div>
+    <div class="stat-card stat-card--success">
+        <div class="stat-card__value">{{ $summary['groups_covered'] }}</div>
+        <div class="stat-card__label">Groups in Stock</div>
     </div>
-    <div class="panel" style="text-align:center;padding:1rem .5rem;">
-        <div style="font-size:1.75rem;font-weight:700;color:var(--p-danger);">{{ $summary['expired'] }}</div>
-        <div style="font-size:.75rem;color:var(--p-text-secondary);">Expired</div>
+    <div class="stat-card stat-card--danger">
+        <div class="stat-card__value">{{ $summary['expired'] }}</div>
+        <div class="stat-card__label">Expired</div>
     </div>
-    <div class="panel" style="text-align:center;padding:1rem .5rem;">
-        <div style="font-size:1.75rem;font-weight:700;color:var(--p-danger);">{{ $summary['unsafe'] }}</div>
-        <div style="font-size:.75rem;color:var(--p-text-secondary);">Unsafe</div>
+    <div class="stat-card stat-card--danger">
+        <div class="stat-card__value">{{ $summary['unsafe'] }}</div>
+        <div class="stat-card__label">Unsafe</div>
     </div>
-    <div class="panel" style="text-align:center;padding:1rem .5rem;">
-        <div style="font-size:1.75rem;font-weight:700;color:var(--p-warning);">{{ $summary['quarantined'] }}</div>
-        <div style="font-size:.75rem;color:var(--p-text-secondary);">Quarantined</div>
+    <div class="stat-card stat-card--warning">
+        <div class="stat-card__value">{{ $summary['quarantined'] }}</div>
+        <div class="stat-card__label">Quarantined</div>
     </div>
 </div>
 
 {{-- Filters --}}
-<form method="GET" action="{{ route('portals.staff.inventory.blood') }}" class="filter-bar" style="flex-wrap:wrap;gap:.5rem;">
-    <select name="blood_group" class="form-control">
+<form method="GET" action="{{ route('portals.staff.inventory.blood') }}" class="filter-bar">
+    <select name="blood_group" class="filter-select">
         <option value="">All Groups</option>
         @foreach(['O+','O-','A+','A-','B+','B-','AB+','AB-'] as $g)
             <option value="{{ $g }}" {{ request('blood_group') === $g ? 'selected' : '' }}>{{ $g }}</option>
         @endforeach
     </select>
-    <select name="component" class="form-control">
+    <select name="component" class="filter-select">
         <option value="">All Components</option>
         @foreach(['whole_blood','packed_red_cells','fresh_frozen_plasma','platelets'] as $c)
             <option value="{{ $c }}" {{ request('component') === $c ? 'selected' : '' }}>{{ ucwords(str_replace('_',' ',$c)) }}</option>
         @endforeach
     </select>
     <button type="submit" class="btn btn-primary btn-sm">
-        <i data-lucide="filter" style="width:13px;height:13px;"></i> Filter
+        <i data-lucide="filter"></i> Filter
     </button>
     <a href="{{ route('portals.staff.inventory.blood') }}" class="btn btn-ghost btn-sm">Clear</a>
 </form>
 
 <div class="panel">
-    <div class="panel-body" style="padding:0;">
+    <div class="panel-body panel-body--flush">
         @if($items->isEmpty())
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="droplets"></i></div>
                 <h3>No Blood Inventory</h3>
                 <p>Add blood stock records by blood group and component.</p>
-                <button type="button" class="btn btn-primary btn-sm" style="margin-top:1rem;" onclick="openUpsertModal()">Update Stock</button>
+                <button type="button" class="btn btn-primary btn-sm mt-6" onclick="openUpsertModal()">Update Stock</button>
             </div>
         @else
             <div class="table-wrapper">
@@ -201,44 +196,44 @@
                     <tbody>
                         @foreach($items as $item)
                         @php
-                            $qtyColor = $item->available_units <= 0 ? 'var(--p-danger)' : ($item->available_units <= 5 ? 'var(--p-warning)' : 'var(--p-success)');
+                            $qtyBadge = $item->available_units <= 0 ? 'badge-danger' : ($item->available_units <= 5 ? 'badge-warning' : 'badge-success');
                         @endphp
                         <tr>
                             <td data-label="Blood Group">
-                                <strong style="font-size:1.05rem;">{{ $item->blood_group }}</strong>
+                                <span class="td-strong">{{ $item->blood_group }}</span>
                             </td>
                             <td data-label="Component">
                                 <span class="badge badge-neutral">{{ ucwords(str_replace('_',' ',$item->component)) }}</span>
                             </td>
                             <td data-label="Units Available">
-                                <strong style="color:{{ $qtyColor }};">{{ $item->available_units }}</strong> units
+                                <span class="badge {{ $qtyBadge }}">{{ $item->available_units }}</span> units
                             </td>
                             <td data-label="Flags">
-                                @if($item->is_expired)    <span class="badge badge-danger" style="font-size:.65rem;margin:.1rem;">Expired</span> @endif
-                                @if($item->is_unsafe)     <span class="badge badge-danger" style="font-size:.65rem;margin:.1rem;">Unsafe</span> @endif
-                                @if($item->is_quarantined)<span class="badge badge-warning" style="font-size:.65rem;margin:.1rem;">Quarantine</span> @endif
+                                @if($item->is_expired)    <span class="badge badge-danger badge-sm">Expired</span> @endif
+                                @if($item->is_unsafe)     <span class="badge badge-danger badge-sm">Unsafe</span> @endif
+                                @if($item->is_quarantined)<span class="badge badge-warning badge-sm">Quarantine</span> @endif
                                 @if(!$item->is_expired && !$item->is_unsafe && !$item->is_quarantined)
-                                    <span style="color:var(--p-text-secondary);font-size:var(--p-text-xs);">—</span>
+                                    <span class="td-muted">—</span>
                                 @endif
                             </td>
-                            <td data-label="Last Updated" style="font-size:var(--p-text-xs);">
+                            <td data-label="Last Updated" class="td-muted">
                                 {{ \Carbon\Carbon::parse($item->last_stock_update)->format('M d, H:i') }}
                             </td>
                             <td data-label="Actions">
-                                <div style="display:flex;gap:.35rem;flex-wrap:wrap;">
+                                <div class="row-actions-inline">
                                     <button type="button" class="btn btn-primary btn-xs"
                                         onclick="openAdjustModal('{{ $item->id }}', '{{ $item->blood_group }}', '{{ addslashes($item->component) }}', 'add')">
-                                        <i data-lucide="plus" style="width:11px;height:11px;"></i>
+                                        <i data-lucide="plus"></i>
                                         Add
                                     </button>
                                     <button type="button" class="btn btn-ghost btn-xs"
                                         onclick="openAdjustModal('{{ $item->id }}', '{{ $item->blood_group }}', '{{ addslashes($item->component) }}', 'subtract')">
-                                        <i data-lucide="minus" style="width:11px;height:11px;"></i>
+                                        <i data-lucide="minus"></i>
                                         Use
                                     </button>
                                     <button type="button" class="btn btn-ghost btn-xs"
                                         onclick="openBloodFlagModal('{{ $item->id }}', '{{ $item->blood_group }} {{ addslashes($item->component) }}', {{ $item->is_expired ? 1 : 0 }}, {{ $item->is_unsafe ? 1 : 0 }}, {{ $item->is_quarantined ? 1 : 0 }})">
-                                        <i data-lucide="flag" style="width:11px;height:11px;"></i>
+                                        <i data-lucide="flag"></i>
                                         Flags
                                     </button>
                                 </div>
@@ -253,38 +248,40 @@
 </div>
 
 {{-- Upsert (Add/Update) Modal --}}
-<div id="upsert-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:420px;margin:1rem;">
-        <h3 style="margin:0 0 1.25rem;font-size:1.1rem;">Set Blood Stock</h3>
-        <p style="font-size:.8rem;color:var(--p-text-secondary);margin:-1rem 0 1rem;">Existing entry for this group+component will be updated.</p>
+<div id="upsert-modal" class="modal-backdrop mt-6" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+        <h3 class="modal__title"><i data-lucide="droplets"></i> Set Blood Stock</h3>
         <form method="POST" action="{{ route('portals.staff.inventory.blood.upsert') }}">
             @csrf
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
-                <div class="form-group">
-                    <label class="form-label">Blood Group *</label>
-                    <select name="blood_group" class="form-control" required>
-                        @foreach(['O+','O-','A+','A-','B+','B-','AB+','AB-'] as $g)
-                            <option value="{{ $g }}">{{ $g }}</option>
-                        @endforeach
-                    </select>
+            <div class="modal__body">
+                <p>Existing entry for this group+component will be updated.</p>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Blood Group *</label>
+                        <select name="blood_group" class="form-control" required>
+                            @foreach(['O+','O-','A+','A-','B+','B-','AB+','AB-'] as $g)
+                                <option value="{{ $g }}">{{ $g }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Component *</label>
+                        <select name="component" class="form-control" required>
+                            @foreach(['whole_blood','packed_red_cells','fresh_frozen_plasma','platelets'] as $c)
+                                <option value="{{ $c }}">{{ ucwords(str_replace('_',' ',$c)) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Component *</label>
-                    <select name="component" class="form-control" required>
-                        @foreach(['whole_blood','packed_red_cells','fresh_frozen_plasma','platelets'] as $c)
-                            <option value="{{ $c }}">{{ ucwords(str_replace('_',' ',$c)) }}</option>
-                        @endforeach
-                    </select>
+                    <label class="form-label">Available Units *</label>
+                    <input type="number" name="available_units" class="form-control" required min="0" value="0">
                 </div>
             </div>
-            <div class="form-group" style="margin-bottom:.75rem;">
-                <label class="form-label">Available Units *</label>
-                <input type="number" name="available_units" class="form-control" required min="0" value="0">
-            </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeUpsertModal()">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">
-                    <i data-lucide="save" style="width:13px;height:13px;"></i>
+                    <i data-lucide="save"></i>
                     Save
                 </button>
             </div>
@@ -293,18 +290,20 @@
 </div>
 
 {{-- Adjust Modal --}}
-<div id="adjust-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:360px;margin:1rem;">
-        <h3 id="adjust-title" style="margin:0 0 .25rem;font-size:1.1rem;">Adjust Units</h3>
-        <p id="adjust-label" style="font-size:.85rem;color:var(--p-text-secondary);margin:0 0 1.25rem;"></p>
+<div id="adjust-modal" class="modal-backdrop mt-6" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+        <h3 id="adjust-title" class="modal__title"><i data-lucide="plus-minus"></i> Adjust Units</h3>
         <form id="adjust-form" method="POST" action="">
             @csrf
             <input type="hidden" id="adjust-direction" name="direction" value="add">
-            <div class="form-group" style="margin-bottom:.75rem;">
-                <label class="form-label">Units *</label>
-                <input type="number" name="units" class="form-control" required min="1" value="1">
+            <div class="modal__body">
+                <p id="adjust-label"></p>
+                <div class="form-group">
+                    <label class="form-label">Units *</label>
+                    <input type="number" name="units" class="form-control" required min="1" value="1">
+                </div>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeAdjustModal()">Cancel</button>
                 <button type="submit" id="adjust-btn" class="btn btn-primary btn-sm">Confirm</button>
             </div>
@@ -313,24 +312,24 @@
 </div>
 
 {{-- Blood Flag Modal --}}
-<div id="blood-flag-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:360px;margin:1rem;">
-        <h3 style="margin:0 0 .25rem;font-size:1.1rem;">Update Flags</h3>
-        <p id="blood-flag-label" style="font-size:.85rem;color:var(--p-text-secondary);margin:0 0 1.25rem;"></p>
+<div id="blood-flag-modal" class="modal-backdrop mt-6" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+        <h3 class="modal__title"><i data-lucide="flag"></i> Update Flags</h3>
         <form id="blood-flag-form" method="POST" action="">
             @csrf
-            <div style="display:flex;flex-direction:column;gap:.75rem;margin-bottom:1rem;">
-                <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
+            <div class="modal__body">
+                <p id="blood-flag-label"></p>
+                <label class="form-check">
                     <input type="checkbox" id="bf-expired" name="is_expired" value="1"> Expired
                 </label>
-                <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
+                <label class="form-check">
                     <input type="checkbox" id="bf-unsafe" name="is_unsafe" value="1"> Unsafe
                 </label>
-                <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
+                <label class="form-check">
                     <input type="checkbox" id="bf-quarantined" name="is_quarantined" value="1"> Quarantined
                 </label>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeBloodFlagModal()">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">Save Flags</button>
             </div>
@@ -344,8 +343,8 @@
 <script>
     var bloodBase = '{{ url('/portals/staff/inventory/blood') }}';
 
-    function openUpsertModal()  { document.getElementById('upsert-modal').style.display = 'flex'; }
-    function closeUpsertModal() { document.getElementById('upsert-modal').style.display = 'none'; }
+    function openUpsertModal()  { document.getElementById('upsert-modal').removeAttribute('hidden'); }
+    function closeUpsertModal() { document.getElementById('upsert-modal').setAttribute('hidden',''); }
     document.getElementById('upsert-modal').addEventListener('click', function(e) { if(e.target===this) closeUpsertModal(); });
 
     function openAdjustModal(id, group, component, direction) {
@@ -356,9 +355,9 @@
         var btn = document.getElementById('adjust-btn');
         btn.className = direction === 'add' ? 'btn btn-primary btn-sm' : 'btn btn-warning btn-sm';
         btn.textContent = direction === 'add' ? 'Add' : 'Use';
-        document.getElementById('adjust-modal').style.display = 'flex';
+        document.getElementById('adjust-modal').removeAttribute('hidden');
     }
-    function closeAdjustModal() { document.getElementById('adjust-modal').style.display = 'none'; }
+    function closeAdjustModal() { document.getElementById('adjust-modal').setAttribute('hidden',''); }
     document.getElementById('adjust-modal').addEventListener('click', function(e) { if(e.target===this) closeAdjustModal(); });
 
     function openBloodFlagModal(id, label, expired, unsafe, quarantined) {
@@ -367,9 +366,9 @@
         document.getElementById('bf-expired').checked = !!expired;
         document.getElementById('bf-unsafe').checked = !!unsafe;
         document.getElementById('bf-quarantined').checked = !!quarantined;
-        document.getElementById('blood-flag-modal').style.display = 'flex';
+        document.getElementById('blood-flag-modal').removeAttribute('hidden');
     }
-    function closeBloodFlagModal() { document.getElementById('blood-flag-modal').style.display = 'none'; }
+    function closeBloodFlagModal() { document.getElementById('blood-flag-modal').setAttribute('hidden',''); }
     document.getElementById('blood-flag-modal').addEventListener('click', function(e) { if(e.target===this) closeBloodFlagModal(); });
 </script>
 @endsection

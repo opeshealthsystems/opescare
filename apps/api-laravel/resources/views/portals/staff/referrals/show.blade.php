@@ -8,96 +8,93 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <a href="{{ route('portals.staff.referrals') }}" class="btn btn-ghost btn-sm" style="margin-bottom:var(--p-space-3);">
-            <i data-lucide="arrow-left"></i> Back to Referrals
-        </a>
-        <h1 class="page-title">Referral Detail</h1>
-        <p class="page-subtitle">Referral ID: <span style="font-family:monospace;">{{ $referral->id }}</span></p>
-    </div>
-    <div class="page-actions">
-        @php
-            $stCls = match($referral->status ?? 'draft') {
-                'accepted'  => 'badge-success',
-                'completed' => 'badge-teal',
-                'sent'      => 'badge-primary',
-                'rejected'  => 'badge-danger',
-                'cancelled' => 'badge-neutral',
-                'expired'   => 'badge-neutral',
-                default     => 'badge-warning',
-            };
-        @endphp
-        <span class="badge {{ $stCls }}" style="font-size:0.9rem;padding:0.4rem 1rem;">{{ ucfirst($referral->status ?? 'draft') }}</span>
-    </div>
+@php
+    $stCls = match($referral->status ?? 'draft') {
+        'accepted'  => 'badge-success',
+        'completed' => 'badge-teal',
+        'sent'      => 'badge-primary',
+        'rejected'  => 'badge-danger',
+        'cancelled' => 'badge-neutral',
+        'expired'   => 'badge-neutral',
+        default     => 'badge-warning',
+    };
+    $prCls = match($referral->priority ?? 'routine') {
+        'emergency' => 'badge-critical',
+        'urgent'    => 'badge-danger',
+        default     => 'badge-neutral',
+    };
+    $isExpired = $referral->expires_at && \Carbon\Carbon::parse($referral->expires_at)->isPast();
+@endphp
+
+<div class="breadcrumb">
+    <a href="{{ route('portals.staff.referrals') }}">Referrals</a>
+    <i data-lucide="chevron-right"></i>
+    <span>Detail</span>
 </div>
+
+<div class="page-head">
+    <h2>Referral Detail</h2>
+    <span class="badge {{ $stCls }}">{{ ucfirst($referral->status ?? 'draft') }}</span>
+    <div class="page-head__spacer"></div>
+    <a href="{{ route('portals.staff.referrals') }}" class="btn btn-ghost btn-sm">
+        <i data-lucide="arrow-left"></i> Back to Referrals
+    </a>
+</div>
+<p class="page-subtitle mb-4">Referral ID: <span class="mono">{{ $referral->id }}</span></p>
 
 <div class="grid-main-side">
 
-    <div style="display:flex;flex-direction:column;gap:var(--p-space-5);">
+    <div>
 
         <!-- Core Details -->
-        <div class="panel">
+        <div class="panel mb-6">
             <div class="panel-header">
                 <h2 class="panel-title"><i data-lucide="file-text"></i> Referral Information</h2>
             </div>
-            <div class="panel-body">
-                <div class="form-row" style="margin-bottom:var(--p-space-5);">
-                    <div>
-                        <div class="form-label">Patient ID</div>
-                        <div style="font-family:monospace;color:var(--p-primary);font-weight:700;">{{ $referral->patient_id }}</div>
-                    </div>
-                    <div>
-                        <div class="form-label">Priority</div>
-                        @php
-                            $prCls = match($referral->priority ?? 'routine') {
-                                'emergency' => 'badge-critical',
-                                'urgent'    => 'badge-danger',
-                                default     => 'badge-neutral',
-                            };
-                        @endphp
-                        <span class="badge {{ $prCls }}">{{ ucfirst($referral->priority ?? 'routine') }}</span>
-                    </div>
-                </div>
-                <div class="form-row" style="margin-bottom:var(--p-space-5);">
-                    <div>
-                        <div class="form-label">Referring Facility</div>
-                        <div style="font-weight:600;">{{ $referral->referring_facility_id ?? '—' }}</div>
-                    </div>
-                    <div>
-                        <div class="form-label">Receiving Facility</div>
-                        <div style="font-weight:600;">{{ $referral->receiving_facility_id ?? '—' }}</div>
-                    </div>
-                </div>
-                <div class="form-row" style="margin-bottom:var(--p-space-5);">
-                    <div>
-                        <div class="form-label">Specialty</div>
-                        <div style="font-weight:600;">{{ $referral->specialty ?? '—' }}</div>
-                    </div>
-                    <div>
-                        <div class="form-label">Expires At</div>
-                        <div style="{{ $referral->expires_at && \Carbon\Carbon::parse($referral->expires_at)->isPast() ? 'color:var(--p-danger);font-weight:700;' : 'font-weight:600;' }}">
+            <div class="panel-body panel-body--flush">
+                <table class="kv-table">
+                    <tr>
+                        <td class="kv-strong">Patient ID</td>
+                        <td class="mono">{{ $referral->patient_id }}</td>
+                    </tr>
+                    <tr>
+                        <td class="kv-strong">Priority</td>
+                        <td><span class="badge {{ $prCls }}">{{ ucfirst($referral->priority ?? 'routine') }}</span></td>
+                    </tr>
+                    <tr>
+                        <td class="kv-strong">Referring Facility</td>
+                        <td>{{ $referral->referring_facility_id ?? '—' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="kv-strong">Receiving Facility</td>
+                        <td>{{ $referral->receiving_facility_id ?? '—' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="kv-strong">Specialty</td>
+                        <td>{{ $referral->specialty ?? '—' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="kv-strong">Expires At</td>
+                        <td>
                             {{ $referral->expires_at ? \Carbon\Carbon::parse($referral->expires_at)->format('d M Y H:i') : '—' }}
-                            @if($referral->expires_at && \Carbon\Carbon::parse($referral->expires_at)->isPast())
-                                <span class="badge badge-danger" style="margin-left:var(--p-space-2);">Expired</span>
-                            @endif
-                        </div>
+                            @if($isExpired)<span class="badge badge-danger">Expired</span>@endif
+                        </td>
+                    </tr>
+                </table>
+                @if(!empty($referral->reason) || !empty($referral->clinical_summary))
+                <div class="panel-body">
+                    @if(!empty($referral->reason))
+                    <div class="form-group">
+                        <div class="form-label">Reason for Referral</div>
+                        <p>{{ $referral->reason }}</p>
                     </div>
-                </div>
-                @if(!empty($referral->reason))
-                <div style="margin-bottom:var(--p-space-4);">
-                    <div class="form-label">Reason for Referral</div>
-                    <div style="margin-top:var(--p-space-2);padding:var(--p-space-4);background:var(--p-surface-2);border:1px solid var(--p-border);border-radius:var(--p-radius);font-size:0.9rem;line-height:1.6;">
-                        {{ $referral->reason }}
+                    @endif
+                    @if(!empty($referral->clinical_summary))
+                    <div class="form-group">
+                        <div class="form-label">Clinical Summary</div>
+                        <p class="td-muted">{{ $referral->clinical_summary }}</p>
                     </div>
-                </div>
-                @endif
-                @if(!empty($referral->clinical_summary))
-                <div style="margin-bottom:var(--p-space-4);">
-                    <div class="form-label">Clinical Summary</div>
-                    <div style="margin-top:var(--p-space-2);padding:var(--p-space-4);background:var(--p-surface-2);border:1px solid var(--p-border);border-radius:var(--p-radius);font-size:0.9rem;line-height:1.6;color:var(--p-text-2);">
-                        {{ $referral->clinical_summary }}
-                    </div>
+                    @endif
                 </div>
                 @endif
             </div>
@@ -110,9 +107,9 @@
                 <h2 class="panel-title"><i data-lucide="zap"></i> Actions</h2>
             </div>
             <div class="panel-body">
-                <div style="display:flex;gap:var(--p-space-3);flex-wrap:wrap;">
+                <div class="row-actions">
                     @if(($referral->status ?? 'draft') === 'draft')
-                    <form method="POST" action="{{ route('portals.staff.referrals.send', $referral->id) }}" style="display:inline;">
+                    <form method="POST" action="{{ route('portals.staff.referrals.send', $referral->id) }}" class="inline-form">
                         @csrf
                         <button type="submit" class="btn btn-primary">
                             <i data-lucide="send"></i> Send Referral
@@ -121,13 +118,13 @@
                     @endif
 
                     @if($referral->status === 'sent')
-                    <form method="POST" action="{{ route('portals.staff.referrals.accept', $referral->id) }}" style="display:inline;">
+                    <form method="POST" action="{{ route('portals.staff.referrals.accept', $referral->id) }}" class="inline-form">
                         @csrf
                         <button type="submit" class="btn btn-teal">
                             <i data-lucide="check-circle-2"></i> Accept
                         </button>
                     </form>
-                    <form method="POST" action="{{ route('portals.staff.referrals.reject', $referral->id) }}" style="display:inline;">
+                    <form method="POST" action="{{ route('portals.staff.referrals.reject', $referral->id) }}" class="inline-form">
                         @csrf
                         <button type="submit" class="btn btn-secondary">
                             <i data-lucide="x-circle"></i> Reject
@@ -136,7 +133,7 @@
                     @endif
 
                     @if($referral->status === 'accepted')
-                    <form method="POST" action="{{ route('portals.staff.referrals.complete', $referral->id) }}" style="display:inline;">
+                    <form method="POST" action="{{ route('portals.staff.referrals.complete', $referral->id) }}" class="inline-form">
                         @csrf
                         <button type="submit" class="btn btn-primary">
                             <i data-lucide="check-circle-2"></i> Mark Completed
@@ -145,13 +142,9 @@
                     @endif
 
                     @if(in_array($referral->status ?? 'draft', ['draft','sent']))
-                    <form method="POST" action="{{ route('portals.staff.referrals.cancel', $referral->id) }}" style="display:inline;"
-                          onsubmit="return confirm('Cancel this referral?')">
-                        @csrf
-                        <button type="submit" class="btn btn-danger">
-                            <i data-lucide="x"></i> Cancel
-                        </button>
-                    </form>
+                    <button type="button" class="btn btn-danger" onclick="opOpenModal('cancel-modal')">
+                        <i data-lucide="x"></i> Cancel
+                    </button>
                     @endif
                 </div>
             </div>
@@ -161,8 +154,8 @@
     </div>
 
     <!-- Sidebar Info -->
-    <div style="display:flex;flex-direction:column;gap:var(--p-space-5);">
-        <div class="panel">
+    <div>
+        <div class="panel mb-6">
             <div class="panel-header">
                 <h2 class="panel-title"><i data-lucide="clock"></i> Timeline</h2>
             </div>
@@ -194,7 +187,7 @@
             <div class="panel-body">
                 <div class="alert alert-warning" role="note">
                     <i data-lucide="shield-alert"></i>
-                    <div style="font-size:0.8125rem;">All referral actions are fully audited and logged for clinical governance.</div>
+                    <div>All referral actions are fully audited and logged for clinical governance.</div>
                 </div>
             </div>
         </div>
@@ -202,4 +195,32 @@
 
 </div>
 
+{{-- Cancel confirm modal --}}
+@if(in_array($referral->status ?? 'draft', ['draft','sent']))
+<div id="cancel-modal" class="modal-backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cancel-modal-title">
+        <h3 class="modal__title" id="cancel-modal-title"><i data-lucide="x-circle"></i> Cancel referral</h3>
+        <form method="POST" action="{{ route('portals.staff.referrals.cancel', $referral->id) }}">
+            @csrf
+            <div class="modal__body">
+                <p>Cancel this referral? This action is logged for the audit trail.</p>
+            </div>
+            <div class="modal__footer">
+                <button type="button" class="btn btn-ghost" onclick="opCloseModal('cancel-modal')">Keep referral</button>
+                <button type="submit" class="btn btn-danger">Cancel referral</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
+
+@endsection
+@section('scripts')
+<script>
+function opOpenModal(id){ document.getElementById(id).removeAttribute('hidden'); }
+function opCloseModal(id){ document.getElementById(id).setAttribute('hidden',''); }
+document.addEventListener('keydown', function(e){
+    if(e.key==='Escape'){ document.querySelectorAll('.modal-backdrop').forEach(function(m){ m.setAttribute('hidden',''); }); }
+});
+</script>
 @endsection

@@ -122,51 +122,50 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title">Patient Visits</h1>
-        <p class="page-subtitle">Track active patient visits through the care journey.</p>
-    </div>
+<div class="page-head">
+    <h2>Patient Visits</h2>
+    <div class="page-head__spacer"></div>
     <button type="button" class="btn btn-primary btn-sm" onclick="openVisitModal()">
-        <i data-lucide="plus-circle" style="width:14px;height:14px;"></i>
+        <i data-lucide="plus-circle"></i>
         New Visit
     </button>
 </div>
+<p class="page-subtitle mb-4">Track active patient visits through the care journey.</p>
 
 @if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;">
+    <div class="alert alert-success mb-4">
         <i data-lucide="check-circle"></i><div>{{ session('success') }}</div>
     </div>
 @endif
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;">
+    <div class="alert alert-danger mb-4">
         <i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div>
     </div>
 @endif
 
 {{-- Filters --}}
-<form method="GET" action="{{ route('portals.staff.visits') }}" class="filter-bar" style="flex-wrap:wrap;gap:.5rem;">
-    <select name="status" class="form-control">
+<form method="GET" action="{{ route('portals.staff.visits') }}" class="filter-bar">
+    <select name="status" class="filter-select">
         <option value="">Active Visits</option>
         @foreach(['open','in_triage','in_consultation','awaiting_lab','awaiting_pharmacy','awaiting_billing','awaiting_discharge','completed','cancelled'] as $s)
             <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ ucwords(str_replace('_',' ',$s)) }}</option>
         @endforeach
     </select>
-    <input type="text" name="patient_id" class="form-control" placeholder="Patient ID…" value="{{ request('patient_id') }}">
+    <input type="text" name="patient_id" class="filter-search" placeholder="Patient ID…" value="{{ request('patient_id') }}">
     <button type="submit" class="btn btn-primary btn-sm">
-        <i data-lucide="filter" style="width:13px;height:13px;"></i> Filter
+        <i data-lucide="filter"></i> Filter
     </button>
     <a href="{{ route('portals.staff.visits') }}" class="btn btn-ghost btn-sm">Clear</a>
 </form>
 
 <div class="panel">
-    <div class="panel-body" style="padding:0;">
+    <div class="panel-body panel-body--flush">
         @if(count($visits) === 0)
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="stethoscope"></i></div>
                 <h3>No Active Visits</h3>
                 <p>All current visits are shown here. Start a new visit to begin tracking a patient's care journey.</p>
-                <button type="button" class="btn btn-primary btn-sm" style="margin-top:1rem;" onclick="openVisitModal()">
+                <button type="button" class="btn btn-primary btn-sm mt-3" onclick="openVisitModal()">
                     New Visit
                 </button>
             </div>
@@ -203,10 +202,10 @@
                         @endphp
                         <tr>
                             <td data-label="Visit ID">
-                                <span style="font-family:monospace;font-size:var(--p-text-xs);">{{ substr($visit->id, 0, 8) }}…</span>
+                                <span class="mono">{{ substr($visit->id, 0, 8) }}…</span>
                             </td>
                             <td data-label="Patient">
-                                <span style="font-family:monospace;font-size:var(--p-text-xs);">{{ $visit->patient?->health_id ?? $visit->patient_id }}</span>
+                                <span class="mono">{{ $visit->patient?->health_id ?? $visit->patient_id }}</span>
                             </td>
                             <td data-label="Type">
                                 <span class="badge badge-neutral">{{ ucwords($visit->visit_type ?? '--') }}</span>
@@ -221,12 +220,12 @@
                                 {{ $durationMin }} min
                             </td>
                             <td data-label="Actions">
-                                <div style="display:flex;gap:.35rem;flex-wrap:wrap;">
+                                <div class="row-actions">
                                     {{-- Triage --}}
                                     @if(in_array($visit->status, ['open','in_triage']))
                                         <a href="{{ route('portals.staff.visits.triage', $visit->id) }}"
                                             class="btn btn-warning btn-xs">
-                                            <i data-lucide="activity" style="width:11px;height:11px;"></i>
+                                            <i data-lucide="activity"></i>
                                             Triage
                                         </a>
                                     @endif
@@ -235,7 +234,7 @@
                                     @if(in_array($visit->status, ['open','in_triage','in_consultation','awaiting_lab']))
                                         <a href="{{ route('portals.staff.visits.consult', $visit->id) }}"
                                             class="btn btn-primary btn-xs">
-                                            <i data-lucide="stethoscope" style="width:11px;height:11px;"></i>
+                                            <i data-lucide="stethoscope"></i>
                                             Consult
                                         </a>
                                     @endif
@@ -244,22 +243,22 @@
                                     @if(!in_array($visit->status, ['completed','cancelled']))
                                         <button type="button" class="btn btn-ghost btn-xs"
                                             onclick="openTransitionModal('{{ $visit->id }}', '{{ $visit->status }}')">
-                                            <i data-lucide="arrow-right-circle" style="width:11px;height:11px;"></i>
+                                            <i data-lucide="arrow-right-circle"></i>
                                             Advance
                                         </button>
                                     @endif
 
                                     {{-- Complete --}}
                                     @if(!in_array($visit->status, ['completed','cancelled']))
-                                        <form method="POST" action="{{ route('portals.staff.visits.complete', $visit->id) }}" style="display:inline;">
+                                        <form method="POST" action="{{ route('portals.staff.visits.complete', $visit->id) }}" class="inline-form">
                                             @csrf
                                             <button type="submit" class="btn btn-success btn-xs"
                                                 onclick="return confirm('Mark this visit as completed?')">
-                                                <i data-lucide="check-check" style="width:11px;height:11px;"></i>
+                                                <i data-lucide="check-check"></i>
                                                 Done
                                             </button>
                                         </form>
-                                        <form method="POST" action="{{ route('portals.staff.visits.cancel', $visit->id) }}" style="display:inline;">
+                                        <form method="POST" action="{{ route('portals.staff.visits.cancel', $visit->id) }}" class="inline-form">
                                             @csrf
                                             <button type="submit" class="btn btn-ghost btn-xs"
                                                 onclick="return confirm('Cancel this visit?')">
@@ -279,41 +278,43 @@
 </div>
 
 {{-- New Visit Modal --}}
-<div id="visit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:440px;margin:1rem;">
-        <h3 style="margin:0 0 1.25rem;font-size:1.1rem;">Start New Visit</h3>
+<div id="visit-modal" class="modal-backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="visit-modal-title">
+        <h3 class="modal__title" id="visit-modal-title">Start New Visit</h3>
         <form method="POST" action="{{ route('portals.staff.visits.store') }}">
             @csrf
-            <div class="form-group" style="margin-bottom:.75rem;">
-                <label class="form-label">Patient *</label>
-                @if(count($patients) > 0)
-                    <select name="patient_id" class="form-control" required>
-                        <option value="">— Select Patient —</option>
-                        @foreach($patients as $p)
-                            <option value="{{ $p->id }}">
-                                {{ $p->health_id ?? $p->id }} ({{ $p->first_name ?? '' }} {{ $p->last_name ?? '' }})
-                            </option>
-                        @endforeach
+            <div class="modal__body">
+                <div class="form-group">
+                    <label class="form-label">Patient *</label>
+                    @if(count($patients) > 0)
+                        <select name="patient_id" class="form-control" required>
+                            <option value="">— Select Patient —</option>
+                            @foreach($patients as $p)
+                                <option value="{{ $p->id }}">
+                                    {{ $p->health_id ?? $p->id }} ({{ $p->first_name ?? '' }} {{ $p->last_name ?? '' }})
+                                </option>
+                            @endforeach
+                        </select>
+                    @else
+                        <input type="text" name="patient_id" class="form-control" required placeholder="Patient ID">
+                    @endif
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Visit Type *</label>
+                    <select name="visit_type" class="form-control" required>
+                        <option value="general">General Consultation</option>
+                        <option value="followup">Follow-Up</option>
+                        <option value="specialist">Specialist</option>
+                        <option value="emergency">Emergency</option>
+                        <option value="lab">Lab Only</option>
+                        <option value="pharmacy">Pharmacy Only</option>
                     </select>
-                @else
-                    <input type="text" name="patient_id" class="form-control" required placeholder="Patient ID">
-                @endif
+                </div>
             </div>
-            <div class="form-group" style="margin-bottom:.75rem;">
-                <label class="form-label">Visit Type *</label>
-                <select name="visit_type" class="form-control" required>
-                    <option value="general">General Consultation</option>
-                    <option value="followup">Follow-Up</option>
-                    <option value="specialist">Specialist</option>
-                    <option value="emergency">Emergency</option>
-                    <option value="lab">Lab Only</option>
-                    <option value="pharmacy">Pharmacy Only</option>
-                </select>
-            </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeVisitModal()">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">
-                    <i data-lucide="stethoscope" style="width:13px;height:13px;"></i>
+                    <i data-lucide="stethoscope"></i>
                     Start Visit
                 </button>
             </div>
@@ -322,19 +323,21 @@
 </div>
 
 {{-- Transition Modal --}}
-<div id="transition-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:380px;margin:1rem;">
-        <h3 style="margin:0 0 1.25rem;font-size:1.1rem;">Advance Visit Status</h3>
+<div id="transition-modal" class="modal-backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="transition-modal-title">
+        <h3 class="modal__title" id="transition-modal-title">Advance Visit Status</h3>
         <form id="transition-form" method="POST" action="">
             @csrf
-            <div class="form-group" style="margin-bottom:.75rem;">
-                <label class="form-label">Move to Status *</label>
-                <select id="transition-status" name="status" class="form-control" required></select>
+            <div class="modal__body">
+                <div class="form-group">
+                    <label class="form-label">Move to Status *</label>
+                    <select id="transition-status" name="status" class="form-control" required></select>
+                </div>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeTransitionModal()">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">
-                    <i data-lucide="arrow-right-circle" style="width:13px;height:13px;"></i>
+                    <i data-lucide="arrow-right-circle"></i>
                     Advance
                 </button>
             </div>
@@ -356,8 +359,8 @@
         'awaiting_discharge': [],
     };
 
-    function openVisitModal() { document.getElementById('visit-modal').style.display = 'flex'; }
-    function closeVisitModal() { document.getElementById('visit-modal').style.display = 'none'; }
+    function openVisitModal() { document.getElementById('visit-modal').removeAttribute('hidden'); }
+    function closeVisitModal() { document.getElementById('visit-modal').setAttribute('hidden',''); }
     document.getElementById('visit-modal').addEventListener('click', function(e) {
         if (e.target === this) closeVisitModal();
     });
@@ -381,9 +384,9 @@
             select.appendChild(opt);
         });
 
-        document.getElementById('transition-modal').style.display = 'flex';
+        document.getElementById('transition-modal').removeAttribute('hidden');
     }
-    function closeTransitionModal() { document.getElementById('transition-modal').style.display = 'none'; }
+    function closeTransitionModal() { document.getElementById('transition-modal').setAttribute('hidden',''); }
     document.getElementById('transition-modal').addEventListener('click', function(e) {
         if (e.target === this) closeTransitionModal();
     });

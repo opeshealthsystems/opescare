@@ -94,58 +94,57 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title">Clinical Consultation</h1>
-        <p class="page-subtitle">
-            Patient: <strong style="font-family:monospace;">{{ $visit->patient?->health_id ?? $visit->patient_id }}</strong>
-            &nbsp;·&nbsp; Status: <span class="badge badge-primary">{{ ucwords(str_replace('_',' ',$visit->status)) }}</span>
-        </p>
-    </div>
+<div class="page-head">
+    <h2>Clinical Consultation</h2>
+    <div class="page-head__spacer"></div>
     <a href="{{ route('portals.staff.visits') }}" class="btn btn-ghost btn-sm">
-        <i data-lucide="arrow-left" style="width:14px;height:14px;"></i>
+        <i data-lucide="arrow-left"></i>
         Back to Visits
     </a>
 </div>
+<p class="page-subtitle mb-4">
+    Patient: <strong class="mono">{{ $visit->patient?->health_id ?? $visit->patient_id }}</strong>
+    &nbsp;·&nbsp; Status: <span class="badge badge-primary">{{ ucwords(str_replace('_',' ',$visit->status)) }}</span>
+</p>
 
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;">
+    <div class="alert alert-danger mb-4">
         <i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div>
     </div>
 @endif
 
-<div class="grid-main-side" style="margin-top:0;">
+<div class="grid-main-side">
 
     {{-- Consultation Form --}}
     <div class="panel">
         <div class="panel-header">
             <h2 class="panel-title">
-                <i data-lucide="file-pen" style="width:15px;height:15px;"></i>
+                <i data-lucide="file-pen"></i>
                 Clinical Note
             </h2>
         </div>
         <div class="panel-body">
             <form method="POST" action="{{ route('portals.staff.visits.consult.store', $visit->id) }}">
                 @csrf
-                <div class="form-group" style="margin-bottom:1rem;">
+                <div class="form-group mb-4">
                     <label class="form-label form-label-required">History of Present Illness *</label>
                     <textarea name="history_of_present_illness" class="form-control" rows="5"
                         required minlength="10" maxlength="5000"
                         placeholder="Describe the presenting complaint, onset, duration, character, associated symptoms…">{{ old('history_of_present_illness') }}</textarea>
                 </div>
-                <div class="form-group" style="margin-bottom:1rem;">
+                <div class="form-group mb-4">
                     <label class="form-label">Examination Findings</label>
                     <textarea name="examination_findings" class="form-control" rows="4"
                         maxlength="5000"
                         placeholder="Physical examination findings, system review…">{{ old('examination_findings') }}</textarea>
                 </div>
-                <div class="form-group" style="margin-bottom:1rem;">
+                <div class="form-group mb-4">
                     <label class="form-label">Treatment Plan / Assessment</label>
                     <textarea name="treatment_plan" class="form-control" rows="4"
                         maxlength="5000"
                         placeholder="Diagnosis, management plan, prescriptions, referrals, follow-up instructions…">{{ old('treatment_plan') }}</textarea>
                 </div>
-                <div class="form-group" style="margin-bottom:1.25rem;">
+                <div class="form-group mb-6">
                     <label class="form-label">Note Status</label>
                     <select name="status" class="form-control">
                         <option value="draft">Save as Draft</option>
@@ -153,9 +152,9 @@
                     </select>
                     <span class="form-hint">Signed notes cannot be edited — only amended.</span>
                 </div>
-                <div style="display:flex;gap:.75rem;">
+                <div class="row-actions">
                     <button type="submit" class="btn btn-primary">
-                        <i data-lucide="file-pen" style="width:14px;height:14px;"></i>
+                        <i data-lucide="file-pen"></i>
                         Save Note
                     </button>
                     <a href="{{ route('portals.staff.visits') }}" class="btn btn-ghost">Cancel</a>
@@ -168,30 +167,28 @@
     <div>
         {{-- Triage Summary --}}
         @if($visit->triageRecords->isNotEmpty())
-        <div class="panel" style="margin-bottom:1.25rem;">
+        <div class="panel mb-6">
             <div class="panel-header">
-                <h2 class="panel-title" style="font-size:.85rem;">
-                    <i data-lucide="activity" style="width:13px;height:13px;"></i>
+                <h2 class="panel-title">
+                    <i data-lucide="activity"></i>
                     Triage Summary
                 </h2>
             </div>
-            <div class="panel-body">
+            <div class="panel-body panel-body--flush">
                 @php $triage = $visit->triageRecords->sortByDesc('created_at')->first(); @endphp
-                <div style="font-size:var(--p-text-sm);line-height:1.7;">
-                    <div><strong>Complaint:</strong> {{ $triage->presenting_complaint ?? '--' }}</div>
-                    <div><strong>Acuity:</strong> {{ ucwords(str_replace('_',' ',$triage->acuity_score ?? '--')) }}</div>
-                    <div><strong>Pain:</strong> {{ $triage->pain_score !== null ? $triage->pain_score . '/10' : '--' }}</div>
+                <table class="kv-table">
+                    <tr><td class="kv-strong">Complaint</td><td>{{ $triage->presenting_complaint ?? '--' }}</td></tr>
+                    <tr><td class="kv-strong">Acuity</td><td>{{ ucwords(str_replace('_',' ',$triage->acuity_score ?? '--')) }}</td></tr>
+                    <tr><td class="kv-strong">Pain</td><td>{{ $triage->pain_score !== null ? $triage->pain_score . '/10' : '--' }}</td></tr>
                     @if($triage->vitalSigns->isNotEmpty())
                         @php $v = $triage->vitalSigns->first(); @endphp
-                        <div style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--p-border);">
-                            <div><strong>T:</strong> {{ $v->temperature ?? '--' }}°C</div>
-                            <div><strong>BP:</strong> {{ $v->blood_pressure_systolic ?? '--' }}/{{ $v->blood_pressure_diastolic ?? '--' }} mmHg</div>
-                            <div><strong>Pulse:</strong> {{ $v->pulse ?? '--' }} bpm</div>
-                            <div><strong>SpO₂:</strong> {{ $v->oxygen_saturation ?? '--' }}%</div>
-                            @if($v->weight) <div><strong>Weight:</strong> {{ $v->weight }} kg</div> @endif
-                        </div>
+                        <tr><td class="kv-strong">T</td><td>{{ $v->temperature ?? '--' }}°C</td></tr>
+                        <tr><td class="kv-strong">BP</td><td>{{ $v->blood_pressure_systolic ?? '--' }}/{{ $v->blood_pressure_diastolic ?? '--' }} mmHg</td></tr>
+                        <tr><td class="kv-strong">Pulse</td><td>{{ $v->pulse ?? '--' }} bpm</td></tr>
+                        <tr><td class="kv-strong">SpO₂</td><td>{{ $v->oxygen_saturation ?? '--' }}%</td></tr>
+                        @if($v->weight)<tr><td class="kv-strong">Weight</td><td>{{ $v->weight }} kg</td></tr>@endif
                     @endif
-                </div>
+                </table>
             </div>
         </div>
         @endif
@@ -200,27 +197,27 @@
         @if($visit->clinicalNotes->isNotEmpty())
         <div class="panel">
             <div class="panel-header">
-                <h2 class="panel-title" style="font-size:.85rem;">
-                    <i data-lucide="notebook-text" style="width:13px;height:13px;"></i>
+                <h2 class="panel-title">
+                    <i data-lucide="notebook-text"></i>
                     Previous Notes ({{ $visit->clinicalNotes->count() }})
                 </h2>
             </div>
-            <div class="panel-body" style="padding:0;">
-                @foreach($visit->clinicalNotes->sortByDesc('created_at') as $note)
-                <div style="padding:.75rem 1rem;border-bottom:1px solid var(--p-border);">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem;">
-                        <span style="font-size:var(--p-text-xs);color:var(--p-text-secondary);">
-                            {{ \Carbon\Carbon::parse($note->created_at)->format('M d, Y H:i') }}
-                        </span>
-                        <span class="badge {{ $note->status === 'signed' ? 'badge-success' : 'badge-neutral' }}">
-                            {{ ucwords($note->status) }}
-                        </span>
-                    </div>
-                    <p style="font-size:var(--p-text-sm);margin:0;color:var(--p-text-secondary);">
-                        {{ Str::limit($note->history_of_present_illness ?? '', 120) }}
-                    </p>
+            <div class="panel-body panel-body--flush">
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <tbody>
+                        @foreach($visit->clinicalNotes->sortByDesc('created_at') as $note)
+                        <tr>
+                            <td data-label="Date">{{ \Carbon\Carbon::parse($note->created_at)->format('M d, Y H:i') }}</td>
+                            <td data-label="Status">
+                                <span class="badge {{ $note->status === 'signed' ? 'badge-success' : 'badge-neutral' }}">{{ ucwords($note->status) }}</span>
+                            </td>
+                            <td data-label="Summary" class="td-muted">{{ Str::limit($note->history_of_present_illness ?? '', 120) }}</td>
+                        </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
                 </div>
-                @endforeach
             </div>
         </div>
         @endif

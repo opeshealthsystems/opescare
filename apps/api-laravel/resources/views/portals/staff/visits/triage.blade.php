@@ -130,94 +130,86 @@
     }
 @endphp
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title" style="{{ $isCritical ? 'color:var(--p-danger);' : '' }}">
-            @if($isEmergency)
-                <i data-lucide="siren" style="width:20px;height:20px;display:inline;vertical-align:middle;margin-right:6px;color:var(--p-danger);"></i>
-            @endif
-            Triage Assessment
-        </h1>
-        <p class="page-subtitle">
-            Patient: <strong style="font-family:monospace;">{{ $visit->patient?->health_id ?? $visit->patient_id }}</strong>
-            &nbsp;·&nbsp; Visit ID: <span style="font-family:monospace;">{{ substr($visit->id, 0, 8) }}…</span>
-            &nbsp;·&nbsp;
-            @php
-                $statusBadge = match($visit->status) {
-                    'emergency' => 'badge-danger',
-                    'in_triage' => 'badge-warning',
-                    'completed' => 'badge-success',
-                    default     => 'badge-neutral',
-                };
-            @endphp
-            <span class="badge {{ $statusBadge }}">{{ ucwords(str_replace('_', ' ', $visit->status)) }}</span>
-        </p>
-    </div>
-    <div style="display:flex;gap:.5rem;">
-        @if(!$isEmergency)
-            <button type="button" class="btn btn-danger btn-sm" onclick="openEscalateModal()">
-                <i data-lucide="siren" style="width:13px;height:13px;"></i> Declare Emergency
-            </button>
-        @endif
-        <a href="{{ route('portals.staff.visits') }}" class="btn btn-ghost btn-sm">
-            <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Back
-        </a>
-    </div>
+<div class="page-head">
+    <h2>
+        @if($isEmergency)<i data-lucide="siren"></i> @endif
+        Triage Assessment
+    </h2>
+    <div class="page-head__spacer"></div>
+    @if(!$isEmergency)
+        <button type="button" class="btn btn-danger btn-sm" onclick="openEscalateModal()">
+            <i data-lucide="siren"></i> Declare Emergency
+        </button>
+    @endif
+    <a href="{{ route('portals.staff.visits') }}" class="btn btn-ghost btn-sm">
+        <i data-lucide="arrow-left"></i> Back
+    </a>
 </div>
+
+<p class="page-subtitle mb-4">
+    Patient: <strong class="mono">{{ $visit->patient?->health_id ?? $visit->patient_id }}</strong>
+    &nbsp;·&nbsp; Visit ID: <span class="mono">{{ substr($visit->id, 0, 8) }}…</span>
+    &nbsp;·&nbsp;
+    @php
+        $statusBadge = match($visit->status) {
+            'emergency' => 'badge-danger',
+            'in_triage' => 'badge-warning',
+            'completed' => 'badge-success',
+            default     => 'badge-neutral',
+        };
+    @endphp
+    <span class="badge {{ $statusBadge }}">{{ ucwords(str_replace('_', ' ', $visit->status)) }}</span>
+</p>
 
 {{-- Emergency Banner --}}
 @if($isEmergency)
-<div style="background:rgba(239,68,68,.15);border:2px solid rgba(239,68,68,.4);border-radius:var(--p-radius);padding:1rem;margin-bottom:1rem;display:flex;gap:.75rem;align-items:center;">
-    <i data-lucide="siren" style="width:22px;height:22px;color:var(--p-danger);flex-shrink:0;"></i>
+<div class="alert alert-danger mb-4">
+    <i data-lucide="siren"></i>
     <div>
-        <strong style="color:var(--p-danger);font-size:.95rem;">EMERGENCY — Resuscitation Level</strong>
-        <div style="font-size:.82rem;color:var(--p-danger);opacity:.85;margin-top:2px;">This visit has been declared an emergency. Acuity: Resuscitation (Level 1).</div>
+        <strong>EMERGENCY — Resuscitation Level</strong>
+        <div>This visit has been declared an emergency. Acuity: Resuscitation (Level 1).</div>
     </div>
 </div>
 @elseif($isCritical)
-<div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:var(--p-radius);padding:.85rem 1rem;margin-bottom:1rem;display:flex;gap:.75rem;align-items:center;">
-    <i data-lucide="alert-triangle" style="width:18px;height:18px;color:var(--p-danger);flex-shrink:0;"></i>
+<div class="alert alert-danger mb-4">
+    <i data-lucide="alert-triangle"></i>
     <div>
-        <strong style="color:var(--p-danger);">Critical acuity detected.</strong>
-        <span style="font-size:.82rem;color:var(--p-text-muted);margin-left:.5rem;">Last triage: {{ ucwords(str_replace('_',' ',$lastTriage->acuity_score)) }}</span>
+        <strong>Critical acuity detected.</strong>
+        <span>Last triage: {{ ucwords(str_replace('_',' ',$lastTriage->acuity_score)) }}</span>
     </div>
-    <button type="button" class="btn btn-danger btn-xs" style="margin-left:auto;" onclick="openEscalateModal()">Escalate to Emergency</button>
+    <button type="button" class="btn btn-danger btn-sm" onclick="openEscalateModal()">Escalate to Emergency</button>
 </div>
 @endif
 
 {{-- Vital Sign Clinical Alerts --}}
 @if(count($vitalAlerts) > 0)
-<div style="margin-bottom:1rem;">
+<div class="mb-4">
     @foreach($vitalAlerts as $alert)
-    <div style="background:{{ $alert['status'] === 'critical' ? 'rgba(239,68,68,.1)' : 'rgba(245,158,11,.1)' }};
-                border:1px solid {{ $alert['status'] === 'critical' ? 'rgba(239,68,68,.3)' : 'rgba(245,158,11,.3)' }};
-                border-radius:var(--p-radius);padding:.6rem 1rem;margin-bottom:.35rem;
-                display:flex;align-items:center;gap:.5rem;font-size:.82rem;">
-        <i data-lucide="{{ $alert['status'] === 'critical' ? 'x-circle' : 'alert-circle' }}"
-           style="width:14px;height:14px;color:{{ $alert['status'] === 'critical' ? 'var(--p-danger)' : 'var(--p-warning)' }};flex-shrink:0;"></i>
-        <strong>{{ $alert['vital'] }}:</strong> {{ $alert['value'] }} — {{ $alert['note'] }}
+    <div class="alert {{ $alert['status'] === 'critical' ? 'alert-danger' : 'alert-warning' }} mb-3">
+        <i data-lucide="{{ $alert['status'] === 'critical' ? 'x-circle' : 'alert-circle' }}"></i>
+        <div><strong>{{ $alert['vital'] }}:</strong> {{ $alert['value'] }} — {{ $alert['note'] }}</div>
     </div>
     @endforeach
 </div>
 @endif
 
 @if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
+    <div class="alert alert-success mb-4"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
 @endif
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
+    <div class="alert alert-danger mb-4"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
 @endif
 
 {{-- Previous triage records --}}
 @if($visit->triageRecords->isNotEmpty())
-<div class="panel" style="margin-bottom:1.25rem;">
+<div class="panel mb-6">
     <div class="panel-header">
         <h2 class="panel-title">
-            <i data-lucide="clock" style="width:15px;height:15px;"></i>
+            <i data-lucide="clock"></i>
             Previous Triage Records
         </h2>
     </div>
-    <div class="panel-body" style="padding:0;">
+    <div class="panel-body panel-body--flush">
         <div class="table-wrapper">
             <table class="data-table">
                 <thead>
@@ -244,21 +236,23 @@
                         ]) : [];
                         $hasCriticalVital = collect($triageAlerts)->where('status','critical')->count() > 0;
                     @endphp
-                    <tr style="{{ $hasCriticalVital ? 'background:rgba(239,68,68,.04);' : '' }}">
-                        <td>{{ \Carbon\Carbon::parse($triage->created_at)->format('M d, H:i') }}</td>
-                        <td>{{ Str::limit($triage->presenting_complaint ?? '--', 50) }}</td>
-                        <td><span class="badge {{ $acuityBadge }}">{{ ucwords(str_replace('_',' ',$triage->acuity_score ?? '--')) }}</span></td>
-                        <td>{{ $triage->pain_score !== null ? $triage->pain_score . '/10' : '--' }}</td>
-                        <td style="font-size:.78rem;">
+                    <tr>
+                        <td data-label="Time">{{ \Carbon\Carbon::parse($triage->created_at)->format('M d, H:i') }}
+                            @if($hasCriticalVital)<span class="badge badge-critical">Critical</span>@endif
+                        </td>
+                        <td data-label="Complaint">{{ Str::limit($triage->presenting_complaint ?? '--', 50) }}</td>
+                        <td data-label="Acuity"><span class="badge {{ $acuityBadge }}">{{ ucwords(str_replace('_',' ',$triage->acuity_score ?? '--')) }}</span></td>
+                        <td data-label="Pain">{{ $triage->pain_score !== null ? $triage->pain_score . '/10' : '--' }}</td>
+                        <td data-label="Vitals" class="mono">
                             @if($v)
                                 @php
-                                    $spo2Color = isset($v->oxygen_saturation) && $v->oxygen_saturation < 90 ? 'color:var(--p-danger);font-weight:600;' : '';
-                                    $pulseColor = isset($v->pulse) && ($v->pulse < 50 || $v->pulse > 150) ? 'color:var(--p-danger);font-weight:600;' : '';
+                                    $spo2Crit = isset($v->oxygen_saturation) && $v->oxygen_saturation < 90;
+                                    $pulseCrit = isset($v->pulse) && ($v->pulse < 50 || $v->pulse > 150);
                                 @endphp
-                                <span>T:{{ $v->temperature ?? '--' }}°C</span>
-                                <span style="margin:0 4px;">BP:{{ $v->blood_pressure_systolic ?? '--' }}/{{ $v->blood_pressure_diastolic ?? '--' }}</span>
-                                <span style="{{ $pulseColor }}">P:{{ $v->pulse ?? '--' }}</span>
-                                <span style="{{ $spo2Color }}">SpO₂:{{ $v->oxygen_saturation ?? '--' }}%</span>
+                                T:{{ $v->temperature ?? '--' }}°C
+                                BP:{{ $v->blood_pressure_systolic ?? '--' }}/{{ $v->blood_pressure_diastolic ?? '--' }}
+                                @if($pulseCrit)<span class="badge badge-critical">P:{{ $v->pulse }}</span>@else P:{{ $v->pulse ?? '--' }} @endif
+                                @if($spo2Crit)<span class="badge badge-critical">SpO₂:{{ $v->oxygen_saturation }}%</span>@else SpO₂:{{ $v->oxygen_saturation ?? '--' }}% @endif
                             @else
                                 —
                             @endif
@@ -273,10 +267,10 @@
 @endif
 
 {{-- New Triage Form --}}
-<div class="panel" style="max-width:760px;">
+<div class="panel">
     <div class="panel-header">
         <h2 class="panel-title">
-            <i data-lucide="activity" style="width:15px;height:15px;"></i>
+            <i data-lucide="activity"></i>
             Record Triage
         </h2>
     </div>
@@ -284,13 +278,13 @@
         <form method="POST" action="{{ route('portals.staff.visits.triage.store', $visit->id) }}">
             @csrf
 
-            <div class="form-group" style="margin-bottom:1rem;">
+            <div class="form-group mb-4">
                 <label class="form-label form-label-required">Presenting Complaint *</label>
                 <textarea name="presenting_complaint" class="form-control" rows="3" required
                     maxlength="1000" placeholder="Chief complaint / reason for visit…">{{ old('presenting_complaint') }}</textarea>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1rem;">
+            <div class="field-grid mb-4">
                 <div class="form-group">
                     <label class="form-label form-label-required">Acuity Score *</label>
                     <select name="acuity_score" id="acuity_score" class="form-control" required>
@@ -300,7 +294,7 @@
                         <option value="semi_urgent" selected>Semi-Urgent (Level 4)</option>
                         <option value="non_urgent">Non-Urgent (Level 5)</option>
                     </select>
-                    <div id="acuity-hint" style="font-size:.75rem;margin-top:3px;display:none;"></div>
+                    <div id="acuity-hint" class="form-hint" style="display:none;"></div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Pain Score (0–10)</label>
@@ -318,54 +312,54 @@
                 </div>
             </div>
 
-            <h3 style="font-size:.9rem;font-weight:700;color:var(--p-text-secondary);margin:1.25rem 0 .75rem;display:flex;align-items:center;gap:.4rem;">
-                <i data-lucide="heart-pulse" style="width:14px;height:14px;color:var(--p-danger);"></i>
+            <h3 class="panel-title mt-6 mb-3">
+                <i data-lucide="heart-pulse"></i>
                 Vital Signs
-                <span id="vitals-alert-badge" style="display:none;margin-left:auto;"></span>
+                <span id="vitals-alert-badge" style="display:none;"></span>
             </h3>
-            <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:.75rem;margin-bottom:1.25rem;">
+            <div class="field-grid mb-6">
                 <div class="form-group">
-                    <label class="form-label" style="font-size:.75rem;">Temperature (°C)</label>
+                    <label class="form-label">Temperature (°C)</label>
                     <input type="number" id="v_temp" name="temperature" class="form-control" step="0.1" min="20" max="45" placeholder="36.5">
-                    <div class="vital-hint" style="font-size:.72rem;margin-top:2px;"></div>
+                    <div class="vital-hint form-hint"></div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" style="font-size:.75rem;">BP Systolic</label>
+                    <label class="form-label">BP Systolic</label>
                     <input type="number" id="v_sys" name="blood_pressure_systolic" class="form-control" min="40" max="300" placeholder="120">
-                    <div class="vital-hint" style="font-size:.72rem;margin-top:2px;"></div>
+                    <div class="vital-hint form-hint"></div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" style="font-size:.75rem;">BP Diastolic</label>
+                    <label class="form-label">BP Diastolic</label>
                     <input type="number" name="blood_pressure_diastolic" class="form-control" min="20" max="200" placeholder="80">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" style="font-size:.75rem;">Pulse (bpm)</label>
+                    <label class="form-label">Pulse (bpm)</label>
                     <input type="number" id="v_pulse" name="pulse" class="form-control" min="20" max="300" placeholder="72">
-                    <div class="vital-hint" style="font-size:.72rem;margin-top:2px;"></div>
+                    <div class="vital-hint form-hint"></div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" style="font-size:.75rem;">Resp. Rate (/min)</label>
+                    <label class="form-label">Resp. Rate (/min)</label>
                     <input type="number" id="v_rr" name="respiratory_rate" class="form-control" min="4" max="60" placeholder="16">
-                    <div class="vital-hint" style="font-size:.72rem;margin-top:2px;"></div>
+                    <div class="vital-hint form-hint"></div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" style="font-size:.75rem;">SpO₂ (%)</label>
+                    <label class="form-label">SpO₂ (%)</label>
                     <input type="number" id="v_spo2" name="oxygen_saturation" class="form-control" step="0.1" min="50" max="100" placeholder="98">
-                    <div class="vital-hint" style="font-size:.72rem;margin-top:2px;"></div>
+                    <div class="vital-hint form-hint"></div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" style="font-size:.75rem;">Weight (kg)</label>
+                    <label class="form-label">Weight (kg)</label>
                     <input type="number" name="weight" class="form-control" step="0.1" min="0.5" max="500" placeholder="70">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" style="font-size:.75rem;">Height (cm)</label>
+                    <label class="form-label">Height (cm)</label>
                     <input type="number" name="height" class="form-control" step="0.1" min="20" max="250" placeholder="170">
                 </div>
             </div>
 
-            <div style="display:flex;gap:.75rem;">
+            <div class="row-actions">
                 <button type="submit" class="btn btn-primary">
-                    <i data-lucide="activity" style="width:14px;height:14px;"></i>
+                    <i data-lucide="activity"></i>
                     Save Triage
                 </button>
                 <a href="{{ route('portals.staff.visits') }}" class="btn btn-ghost">Cancel</a>
@@ -375,26 +369,25 @@
 </div>
 
 {{-- Emergency Escalation Modal --}}
-<div id="escalate-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:420px;margin:1rem;border:2px solid rgba(239,68,68,.3);">
-        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;">
-            <i data-lucide="siren" style="width:22px;height:22px;color:var(--p-danger);flex-shrink:0;"></i>
-            <h3 style="margin:0;font-size:1.05rem;color:var(--p-danger);">Declare Emergency</h3>
-        </div>
-        <p style="font-size:.85rem;color:var(--p-text-muted);margin:0 0 1rem;">
-            This will set acuity to <strong>Resuscitation (Level 1)</strong> and mark the visit as an emergency. This action is logged and cannot be undone without re-assessment.
-        </p>
+<div id="escalate-modal" class="modal-backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="escalate-modal-title">
+        <h3 class="modal__title" id="escalate-modal-title"><i data-lucide="siren"></i> Declare Emergency</h3>
         <form method="POST" action="{{ route('portals.staff.visits.triage.escalate', $visit->id) }}">
             @csrf
-            <div class="form-group" style="margin-bottom:1rem;">
-                <label class="form-label">Reason for Emergency Escalation *</label>
-                <textarea name="reason" class="form-control" rows="3" required maxlength="500"
-                    placeholder="e.g. Sudden cardiac arrest, severe respiratory distress…"></textarea>
+            <div class="modal__body">
+                <p>
+                    This will set acuity to <strong>Resuscitation (Level 1)</strong> and mark the visit as an emergency. This action is logged and cannot be undone without re-assessment.
+                </p>
+                <div class="form-group">
+                    <label class="form-label">Reason for Emergency Escalation *</label>
+                    <textarea name="reason" class="form-control" rows="3" required maxlength="500"
+                        placeholder="e.g. Sudden cardiac arrest, severe respiratory distress…"></textarea>
+                </div>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeEscalateModal()">Cancel</button>
                 <button type="submit" class="btn btn-danger btn-sm">
-                    <i data-lucide="siren" style="width:13px;height:13px;"></i> Confirm Emergency
+                    <i data-lucide="siren"></i> Confirm Emergency
                 </button>
             </div>
         </form>
@@ -406,8 +399,8 @@
 @section('scripts')
 <script>
 // Emergency modal
-function openEscalateModal()  { document.getElementById('escalate-modal').style.display = 'flex'; }
-function closeEscalateModal() { document.getElementById('escalate-modal').style.display = 'none'; }
+function openEscalateModal()  { document.getElementById('escalate-modal').removeAttribute('hidden'); }
+function closeEscalateModal() { document.getElementById('escalate-modal').setAttribute('hidden',''); }
 document.getElementById('escalate-modal').addEventListener('click', function(e) { if (e.target === this) closeEscalateModal(); });
 
 // Live vital sign range feedback + auto-acuity suggestion

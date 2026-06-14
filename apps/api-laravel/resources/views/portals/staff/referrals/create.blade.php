@@ -8,22 +8,27 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <a href="{{ route('portals.staff.referrals') }}" class="btn btn-ghost btn-sm" style="margin-bottom:var(--p-space-3);">
-            <i data-lucide="arrow-left"></i> Back to Referrals
-        </a>
-        <h1 class="page-title">Create New Referral</h1>
-        <p class="page-subtitle">Complete the form below to create a patient referral draft.</p>
-    </div>
+<div class="breadcrumb">
+    <a href="{{ route('portals.staff.referrals') }}">Referrals</a>
+    <i data-lucide="chevron-right"></i>
+    <span>New</span>
 </div>
 
+<div class="page-head">
+    <h2>Create New Referral</h2>
+    <div class="page-head__spacer"></div>
+    <a href="{{ route('portals.staff.referrals') }}" class="btn btn-ghost btn-sm">
+        <i data-lucide="arrow-left"></i> Back to Referrals
+    </a>
+</div>
+<p class="page-subtitle mb-4">Complete the form below to create a patient referral draft.</p>
+
 @if($errors->any())
-<div class="alert alert-danger mb-6" style="margin-bottom:var(--p-space-6);" role="alert">
+<div class="alert alert-danger mb-6" role="alert">
     <i data-lucide="triangle-alert"></i>
     <div>
-        <div style="font-weight:700;margin-bottom:var(--p-space-2);">Please fix the following errors:</div>
-        <ul style="margin:0;padding-left:1.25rem;">
+        <strong>Please fix the following errors:</strong>
+        <ul class="alert-list">
             @foreach($errors->all() as $error)
                 <li>{{ $error }}</li>
             @endforeach
@@ -32,7 +37,6 @@
 </div>
 @endif
 
-<div style="max-width:760px;">
 <div class="panel">
     <div class="panel-header">
         <h2 class="panel-title"><i data-lucide="send"></i> Referral Details</h2>
@@ -41,18 +45,17 @@
         <form method="POST" action="{{ route('portals.staff.referrals.store') }}" novalidate>
             @csrf
 
-            <div class="alert alert-info mb-6" style="margin-bottom:var(--p-space-6);">
+            <div class="alert alert-info mb-6">
                 <i data-lucide="info"></i>
-                <div style="font-size:0.8125rem;">Referrals are created as drafts. Review and send when ready. All referral activity is audited.</div>
+                <div>Referrals are created as drafts. Review and send when ready. All referral activity is audited.</div>
             </div>
 
-            <div class="form-row" style="margin-bottom:var(--p-space-5);">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label form-label-required" for="patient_id">Patient Health ID</label>
-                    <input id="patient_id" name="patient_id" class="form-control" value="{{ old('patient_id') }}" required
-                           placeholder="Patient UUID" style="font-family:monospace;font-weight:700;text-transform:uppercase;"
-                           aria-required="true">
-                    @error('patient_id')<div style="color:var(--p-danger);font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
+                    <input id="patient_id" name="patient_id" class="form-control mono" value="{{ old('patient_id') }}" required
+                           placeholder="Patient UUID" aria-required="true">
+                    @error('patient_id')<div class="form-hint">{{ $message }}</div>@enderror
                 </div>
                 <div class="form-group">
                     <label class="form-label form-label-required" for="urgency">Priority / Urgency</label>
@@ -64,12 +67,12 @@
                 </div>
             </div>
 
-            <div class="form-row" style="margin-bottom:var(--p-space-5);">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label form-label-required" for="referring_facility_id">Referring Facility ID</label>
                     <input id="referring_facility_id" name="referring_facility_id" class="form-control"
                            value="{{ old('referring_facility_id') }}" required aria-required="true">
-                    @error('referring_facility_id')<div style="color:var(--p-danger);font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
+                    @error('referring_facility_id')<div class="form-hint">{{ $message }}</div>@enderror
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="referring_provider_id">Referring Provider ID</label>
@@ -78,7 +81,7 @@
                 </div>
             </div>
 
-            <div class="form-row" style="margin-bottom:var(--p-space-5);">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label" for="receiving_facility_id">Receiving Facility ID</label>
                     <input id="receiving_facility_id" name="receiving_facility_id" class="form-control"
@@ -91,25 +94,25 @@
                 </div>
             </div>
 
-            <div class="form-group" style="margin-bottom:var(--p-space-5);">
+            <div class="form-group mb-4">
                 <label class="form-label form-label-required" for="reason">Reason for Referral</label>
                 <textarea id="reason" name="reason" rows="3" class="form-control" required aria-required="true">{{ old('reason') }}</textarea>
-                @error('reason')<div style="color:var(--p-danger);font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
+                @error('reason')<div class="form-hint">{{ $message }}</div>@enderror
             </div>
 
-            <div class="form-group" style="margin-bottom:var(--p-space-5);">
+            <div class="form-group mb-4">
                 <label class="form-label" for="clinical_summary">Clinical Summary</label>
                 <textarea id="clinical_summary" name="clinical_summary" rows="5" class="form-control">{{ old('clinical_summary') }}</textarea>
                 <div class="form-hint">Include relevant diagnoses, current medications, known allergies, and care context.</div>
             </div>
 
-            <div class="form-group" style="margin-bottom:var(--p-space-8);">
+            <div class="form-group mb-6">
                 <label class="form-label" for="expires_at">Access Expires At</label>
                 <input type="datetime-local" id="expires_at" name="expires_at" class="form-control" value="{{ old('expires_at') }}">
                 <div class="form-hint">Defaults to 30 days if not set. The receiving facility's access grant expires at this time.</div>
             </div>
 
-            <div style="display:flex;gap:var(--p-space-3);">
+            <div class="row-actions">
                 <button type="submit" class="btn btn-primary">
                     <i data-lucide="send"></i>
                     Create Referral (Draft)
@@ -120,7 +123,6 @@
             </div>
         </form>
     </div>
-</div>
 </div>
 
 @endsection

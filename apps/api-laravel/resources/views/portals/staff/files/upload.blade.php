@@ -5,29 +5,28 @@
 @section('breadcrumb_section', 'Upload File')
 
 @section('content')
-<div class="page-header">
-    <div>
-        <h1 class="page-title">Upload Medical File</h1>
-        <p class="page-subtitle">Attach a document or image to a clinical resource.</p>
-    </div>
+<div class="page-head">
+    <h2>Upload medical file</h2>
+    <div class="page-head__spacer"></div>
     <a href="{{ route('portals.staff.files.index') }}" class="btn btn-ghost btn-sm">
-        <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Back
+        <i data-lucide="arrow-left"></i> Back
     </a>
 </div>
+<p class="page-subtitle mb-6">Attach a document or image to a clinical resource.</p>
 
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
+    <div class="alert alert-danger mb-6"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
 @endif
 
-<div class="panel" style="max-width:560px;">
+<div class="panel">
     <div class="panel-body">
         <form method="POST" action="{{ route('portals.staff.files.store') }}" enctype="multipart/form-data">
             @csrf
 
             {{-- Resource context --}}
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem;">
+            <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label form-label-required">Resource Type *</label>
+                    <label class="form-label form-label-required">Resource Type</label>
                     <select name="resource_type" class="form-control" required>
                         @foreach(['patient','visit','triage_record','clinical_note','invoice','support_ticket'] as $rt)
                             <option value="{{ $rt }}" {{ $resourceType === $rt ? 'selected' : '' }}>{{ ucwords(str_replace('_',' ',$rt)) }}</option>
@@ -35,29 +34,29 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label form-label-required">Resource ID *</label>
+                    <label class="form-label form-label-required">Resource ID</label>
                     <input type="text" name="resource_id" value="{{ old('resource_id', $resourceId) }}"
                         class="form-control" required placeholder="Paste UUID of the resource">
                 </div>
             </div>
 
-            <div class="form-group" style="margin-bottom:.75rem;">
-                <label class="form-label form-label-required">File *</label>
-                <div id="drop-zone" style="border:2px dashed var(--p-border);border-radius:var(--p-radius);padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:border-color .15s;"
+            <div class="form-group">
+                <label class="form-label form-label-required">File</label>
+                <div id="drop-zone" class="empty-state" style="border:2px dashed var(--p-border);border-radius:var(--p-radius);cursor:pointer;"
                      onclick="document.getElementById('file-input').click()">
-                    <i data-lucide="upload-cloud" style="width:32px;height:32px;color:var(--p-text-muted);margin:0 auto .5rem;display:block;"></i>
-                    <div style="font-size:.85rem;font-weight:500;">Click to browse or drag file here</div>
-                    <div id="file-name" style="font-size:.75rem;color:var(--p-text-muted);margin-top:.25rem;">
+                    <div class="empty-state-icon"><i data-lucide="upload-cloud"></i></div>
+                    <div class="td-strong">Click to browse or drag file here</div>
+                    <div id="file-name" class="td-muted">
                         Max {{ $maxSizeMb }} MB · PDF, Images, Word, Excel, CSV
                     </div>
                 </div>
-                <input type="file" id="file-input" name="file" required style="display:none;"
+                <input type="file" id="file-input" name="file" required class="sr-only"
                     accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx,.txt,.csv"
                     onchange="updateFileName(this)">
-                @error('file')<div style="font-size:.78rem;color:var(--p-danger);margin-top:3px;">{{ $message }}</div>@enderror
+                @error('file')<div class="form-hint">{{ $message }}</div>@enderror
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+            <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Category</label>
                     <select name="category" class="form-control">
@@ -74,9 +73,9 @@
                 </div>
             </div>
 
-            <div style="display:flex;gap:.75rem;margin-top:1.25rem;">
+            <div class="row-actions-inline mt-6">
                 <button type="submit" class="btn btn-primary">
-                    <i data-lucide="upload" style="width:14px;height:14px;"></i> Upload & Attach
+                    <i data-lucide="upload"></i> Upload &amp; Attach
                 </button>
                 <a href="{{ route('portals.staff.files.index') }}" class="btn btn-ghost">Cancel</a>
             </div>

@@ -7,76 +7,73 @@
 
     <div class="portal-page-header">
         <div>
-            <h1 class="portal-page-title">
-                <i data-lucide="package" style="width:22px;height:22px;vertical-align:middle;margin-right:8px;color:#0891b2;"></i>
-                Supply Chain
-            </h1>
-            <p class="portal-page-subtitle">Inventory, procurement & stock management</p>
+            <h1 class="portal-page-title">Supply Chain</h1>
+            <p class="portal-page-subtitle">Inventory, procurement &amp; stock management</p>
         </div>
         <a href="{{ route('portals.staff.supply.stock.receive') }}" class="btn btn--primary" onclick="event.preventDefault();openModal('receiveModal')">
-            <i data-lucide="plus" style="width:15px;height:15px;"></i> Receive Stock
+            <i data-lucide="plus"></i> Receive Stock
         </a>
     </div>
 
     @if(session('success'))
-        <div class="alert alert--success">{{ session('success') }}</div>
+        <div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
     @endif
     @if(session('error'))
-        <div class="alert alert--danger">{{ session('error') }}</div>
+        <div class="alert alert-danger mb-6"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
     @endif
 
     {{-- KPI Cards --}}
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:16px;margin-bottom:24px;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#e0f2fe;"><i data-lucide="list" style="color:#0891b2;"></i></div>
-            <div class="stat-card__body"><div class="stat-card__value">{{ $stats['items'] }}</div><div class="stat-card__label">Items in Catalog</div></div>
+    <div class="stat-grid mb-6">
+        <div class="stat-card stat-card--primary">
+            <div class="stat-card__head"><i data-lucide="list"></i></div>
+            <div class="stat-card__value">{{ $stats['items'] }}</div><div class="stat-card__label">Items in Catalog</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#fee2e2;"><i data-lucide="triangle-alert" style="color:#dc2626;"></i></div>
-            <div class="stat-card__body"><div class="stat-card__value" style="color:#dc2626;">{{ $stats['lowStock'] }}</div><div class="stat-card__label">Low / Out of Stock</div></div>
+        <div class="stat-card stat-card--danger">
+            <div class="stat-card__head"><i data-lucide="triangle-alert"></i></div>
+            <div class="stat-card__value">{{ $stats['lowStock'] }}</div><div class="stat-card__label">Low / Out of Stock</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#fef3c7;"><i data-lucide="clock" style="color:#d97706;"></i></div>
-            <div class="stat-card__body"><div class="stat-card__value" style="color:#d97706;">{{ $stats['expiring'] }}</div><div class="stat-card__label">Expiring (30 days)</div></div>
+        <div class="stat-card stat-card--warning">
+            <div class="stat-card__head"><i data-lucide="clock"></i></div>
+            <div class="stat-card__value">{{ $stats['expiring'] }}</div><div class="stat-card__label">Expiring (30 days)</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#fce7f3;"><i data-lucide="x-circle" style="color:#be185d;"></i></div>
-            <div class="stat-card__body"><div class="stat-card__value" style="color:#be185d;">{{ $stats['expired'] }}</div><div class="stat-card__label">Expired Batches</div></div>
+        <div class="stat-card stat-card--danger">
+            <div class="stat-card__head"><i data-lucide="x-circle"></i></div>
+            <div class="stat-card__value">{{ $stats['expired'] }}</div><div class="stat-card__label">Expired Batches</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#f0fdf4;"><i data-lucide="truck" style="color:#16a34a;"></i></div>
-            <div class="stat-card__body"><div class="stat-card__value">{{ $stats['suppliers'] }}</div><div class="stat-card__label">Active Suppliers</div></div>
+        <div class="stat-card stat-card--success">
+            <div class="stat-card__head"><i data-lucide="truck"></i></div>
+            <div class="stat-card__value">{{ $stats['suppliers'] }}</div><div class="stat-card__label">Active Suppliers</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#ede9fe;"><i data-lucide="file-text" style="color:#7c3aed;"></i></div>
-            <div class="stat-card__body"><div class="stat-card__value">{{ $stats['openPOs'] }}</div><div class="stat-card__label">Open POs</div></div>
+        <div class="stat-card stat-card--teal">
+            <div class="stat-card__head"><i data-lucide="file-text"></i></div>
+            <div class="stat-card__value">{{ $stats['openPOs'] }}</div><div class="stat-card__label">Open POs</div>
         </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
+    <div class="grid-2 mb-6">
 
         {{-- Low Stock Alerts --}}
         <div class="portal-card">
             <div class="portal-card__header">
-                <h2 class="portal-card__title"><i data-lucide="triangle-alert" style="width:15px;height:15px;color:#dc2626;"></i> Low / Out of Stock</h2>
+                <h2 class="portal-card__title"><i data-lucide="triangle-alert"></i> Low / Out of Stock</h2>
                 <a href="{{ route('portals.staff.supply.items') }}" class="btn btn--sm btn--outline">All Items</a>
             </div>
-            <div class="portal-card__body" style="padding:0;">
+            <div class="portal-card__body panel-body--flush">
                 @forelse($lowStock as $item)
-                    <div style="padding:12px 18px;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center;">
+                    <div class="list-row">
                         <div>
-                            <div style="font-weight:600;font-size:0.88rem;">{{ $item->name }}</div>
-                            <div style="font-size:0.76rem;color:#9ca3af;">{{ $item->code }} · {{ ucfirst($item->category) }}</div>
+                            <div class="td-strong">{{ $item->name }}</div>
+                            <div class="td-muted">{{ $item->code }} · {{ ucfirst($item->category) }}</div>
                         </div>
-                        <div style="text-align:right;">
-                            <div style="font-size:0.9rem;font-weight:700;color:#dc2626;">{{ $item->totalStock(request()->facilityId ?? \App\Models\Facility::value('id')) }} {{ $item->unit }}</div>
-                            <div style="font-size:0.72rem;color:#9ca3af;">Reorder at {{ $item->reorder_level }}</div>
+                        <div>
+                            <span class="badge badge-danger">{{ $item->totalStock(request()->facilityId ?? \App\Models\Facility::value('id')) }} {{ $item->unit }}</span>
+                            <div class="td-muted">Reorder at {{ $item->reorder_level }}</div>
                         </div>
                     </div>
                 @empty
-                    <div style="padding:24px;text-align:center;color:#9ca3af;font-size:0.875rem;">
-                        <i data-lucide="check-circle" style="width:28px;height:28px;display:block;margin:0 auto 8px;color:#16a34a;"></i>
-                        All stock levels are healthy
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i data-lucide="check-circle"></i></div>
+                        <p>All stock levels are healthy</p>
                     </div>
                 @endforelse
             </div>
@@ -85,26 +82,24 @@
         {{-- Expiring Soon --}}
         <div class="portal-card">
             <div class="portal-card__header">
-                <h2 class="portal-card__title"><i data-lucide="clock" style="width:15px;height:15px;color:#d97706;"></i> Expiring in 30 Days</h2>
+                <h2 class="portal-card__title"><i data-lucide="clock"></i> Expiring in 30 Days</h2>
                 <a href="{{ route('portals.staff.supply.stock') }}" class="btn btn--sm btn--outline">Stock View</a>
             </div>
-            <div class="portal-card__body" style="padding:0;">
+            <div class="portal-card__body panel-body--flush">
                 @forelse($expiring as $batch)
-                    <div style="padding:12px 18px;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center;">
+                    <div class="list-row">
                         <div>
-                            <div style="font-weight:600;font-size:0.88rem;">{{ $batch->item->name ?? '—' }}</div>
-                            <div style="font-size:0.76rem;color:#9ca3af;">
-                                Batch: {{ $batch->batch_number ?: 'N/A' }}
-                            </div>
+                            <div class="td-strong">{{ $batch->item->name ?? '—' }}</div>
+                            <div class="td-muted">Batch: {{ $batch->batch_number ?: 'N/A' }}</div>
                         </div>
-                        <div style="text-align:right;">
-                            <div style="font-size:0.88rem;font-weight:700;color:#d97706;">{{ $batch->expiry_date?->format('d M Y') }}</div>
-                            <div style="font-size:0.76rem;color:#9ca3af;">{{ $batch->availableQty() }} units</div>
+                        <div>
+                            <span class="badge badge-warning">{{ $batch->expiry_date?->format('d M Y') }}</span>
+                            <div class="td-muted">{{ $batch->availableQty() }} units</div>
                         </div>
                     </div>
                 @empty
-                    <div style="padding:24px;text-align:center;color:#9ca3af;font-size:0.875rem;">
-                        No batches expiring in the next 30 days
+                    <div class="empty-state">
+                        <p>No batches expiring in the next 30 days</p>
                     </div>
                 @endforelse
             </div>
@@ -115,11 +110,12 @@
     {{-- Recent Stock Movements --}}
     <div class="portal-card">
         <div class="portal-card__header">
-            <h2 class="portal-card__title"><i data-lucide="arrow-left-right" style="width:15px;height:15px;"></i> Recent Stock Movements</h2>
+            <h2 class="portal-card__title"><i data-lucide="arrow-left-right"></i> Recent Stock Movements</h2>
             <a href="{{ route('portals.staff.supply.movements') }}" class="btn btn--sm btn--outline">All Movements</a>
         </div>
-        <div class="portal-card__body" style="padding:0;">
-            <table class="portal-table">
+        <div class="portal-card__body panel-body--flush">
+            <div class="table-wrapper">
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th>Item</th>
@@ -132,8 +128,8 @@
                 <tbody>
                     @forelse($recentMovements as $mv)
                         <tr>
-                            <td style="font-size:0.85rem;font-weight:500;">{{ $mv->item->name ?? '—' }}</td>
-                            <td>
+                            <td data-label="Item" class="td-strong">{{ $mv->item->name ?? '—' }}</td>
+                            <td data-label="Type">
                                 <span class="badge badge--{{
                                     $mv->movement_type === 'receipt' ? 'success' :
                                     ($mv->movement_type === 'dispense' ? 'info' :
@@ -141,15 +137,16 @@
                                     ($mv->movement_type === 'adjustment' ? 'warning' : 'default')))
                                 }}">{{ str_replace('_', ' ', $mv->movement_type) }}</span>
                             </td>
-                            <td style="font-weight:600;">{{ $mv->quantity }}</td>
-                            <td style="font-size:0.8rem;color:#6b7280;">{{ $mv->performed_by ?: '—' }}</td>
-                            <td style="font-size:0.8rem;color:#9ca3af;">{{ $mv->created_at->diffForHumans() }}</td>
+                            <td data-label="Quantity" class="td-strong">{{ $mv->quantity }}</td>
+                            <td data-label="By" class="td-muted">{{ $mv->performed_by ?: '—' }}</td>
+                            <td data-label="When" class="td-muted">{{ $mv->created_at->diffForHumans() }}</td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" style="text-align:center;padding:24px;color:#9ca3af;">No movements yet</td></tr>
+                        <tr><td colspan="5" class="empty-cell td-muted">No movements yet</td></tr>
                     @endforelse
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 

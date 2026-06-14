@@ -120,23 +120,23 @@
         <p class="page-subtitle">{{ __('public.staff_portal.appointments_subtitle', [], app()->getLocale()) ?: 'Schedule a new patient appointment.' }}</p>
     </div>
     <a href="{{ route('portals.staff.appointments') }}" class="btn btn-ghost btn-sm">
-        <i data-lucide="arrow-left" style="width:14px;height:14px;"></i>
+        <i data-lucide="arrow-left"></i>
         Back
     </a>
 </div>
 
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;">
+    <div class="auth-alert auth-alert-danger mb-4">
         <i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div>
     </div>
 @endif
 
-<div class="panel" style="max-width:640px;">
+<div class="panel">
     <div class="panel-body">
         <form method="POST" action="{{ route('portals.staff.appointments.store') }}">
             @csrf
 
-            <div class="form-group" style="margin-bottom:1rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Patient ID *</label>
                 @if(count($patients) > 0)
                     <select name="patient_id" class="form-control" required>
@@ -154,7 +154,7 @@
                 @error('patient_id')<p class="form-error">{{ $message }}</p>@enderror
             </div>
 
-            <div class="form-group" style="margin-bottom:1rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Facility *</label>
                 @if(count($facilities) > 0)
                     <select name="facility_id" class="form-control" required>
@@ -172,7 +172,7 @@
                 @error('facility_id')<p class="form-error">{{ $message }}</p>@enderror
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label">Appointment Type *</label>
                     <select name="appointment_type" class="form-control" required>
@@ -205,15 +205,15 @@
                 </div>
             </div>
 
-            <div class="form-group" style="margin-bottom:1.5rem;">
+            <div class="form-group mb-6">
                 <label class="form-label">Reason / Notes</label>
                 <textarea name="reason" class="form-control" rows="3" maxlength="500"
                     placeholder="Reason for appointment…">{{ old('reason') }}</textarea>
             </div>
 
-            <div style="display:flex;gap:.75rem;">
+            <div class="row-actions-inline">
                 <button type="submit" class="btn btn-primary">
-                    <i data-lucide="calendar-plus" style="width:14px;height:14px;"></i>
+                    <i data-lucide="calendar-plus"></i>
                     {{ __('public.staff_portal.btn_book_appointment', [], app()->getLocale()) ?: 'Book Appointment' }}
                 </button>
                 <a href="{{ route('portals.staff.appointments') }}" class="btn btn-ghost">Cancel</a>

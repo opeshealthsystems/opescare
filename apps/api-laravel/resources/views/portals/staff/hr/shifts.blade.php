@@ -116,30 +116,30 @@
         <p class="page-subtitle">Define the shift templates used across duty rosters.</p>
     </div>
     <button type="button" class="btn btn-primary btn-sm" onclick="openShiftModal()">
-        <i data-lucide="plus-circle" style="width:14px;height:14px;"></i>
+        <i data-lucide="plus-circle"></i>
         New Shift
     </button>
 </div>
 
 @if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;">
+    <div class="auth-alert auth-alert-success mb-4">
         <i data-lucide="check-circle"></i><div>{{ session('success') }}</div>
     </div>
 @endif
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;">
+    <div class="auth-alert auth-alert-danger mb-4">
         <i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div>
     </div>
 @endif
 
 <div class="panel">
-    <div class="panel-body" style="padding:0;">
+    <div class="panel-body panel-body--flush">
         @if($shifts->isEmpty())
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="clock"></i></div>
                 <h3>No Shifts Defined</h3>
                 <p>Create shift templates like Morning, Afternoon, Night, or On-Call.</p>
-                <button type="button" class="btn btn-primary btn-sm" style="margin-top:1rem;" onclick="openShiftModal()">
+                <button type="button" class="btn btn-primary btn-sm mt-6" onclick="openShiftModal()">
                     New Shift
                 </button>
             </div>
@@ -161,7 +161,7 @@
                     <tbody>
                         @foreach($shifts as $shift)
                         <tr>
-                            <td data-label="Name"><strong>{{ $shift->name }}</strong></td>
+                            <td data-label="Name"><strong class="td-strong">{{ $shift->name }}</strong></td>
                             <td data-label="Department">{{ $shift->department ?? '—' }}</td>
                             <td data-label="Start">{{ $shift->start_time }}</td>
                             <td data-label="End">{{ $shift->end_time }}</td>
@@ -179,10 +179,10 @@
                                 </span>
                             </td>
                             <td data-label="Actions">
-                                <form method="POST" action="{{ route('portals.staff.hr.shifts.toggle', $shift->id) }}" style="display:inline;">
+                                <form method="POST" action="{{ route('portals.staff.hr.shifts.toggle', $shift->id) }}" class="inline-form">
                                     @csrf
                                     <button type="submit" class="btn btn-ghost btn-xs">
-                                        <i data-lucide="{{ $shift->status === 'active' ? 'pause-circle' : 'play-circle' }}" style="width:11px;height:11px;"></i>
+                                        <i data-lucide="{{ $shift->status === 'active' ? 'pause-circle' : 'play-circle' }}"></i>
                                         {{ $shift->status === 'active' ? 'Deactivate' : 'Activate' }}
                                     </button>
                                 </form>
@@ -197,20 +197,22 @@
 </div>
 
 {{-- New Shift Modal --}}
-<div id="shift-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:440px;margin:1rem;">
-        <h3 style="margin:0 0 1.25rem;font-size:1.1rem;">New Shift</h3>
+<div id="shift-modal" class="modal-fixed">
+    <div class="modal-fixed__panel modal-fixed__panel--md">
+        <div class="modal-fixed__head">
+            <h3 class="modal-fixed__title">New Shift</h3>
+        </div>
         <form method="POST" action="{{ route('portals.staff.hr.shifts.store') }}">
             @csrf
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Shift Name *</label>
                 <input type="text" name="name" class="form-control" required maxlength="100" placeholder="e.g. Morning, Night, On-Call">
             </div>
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Department</label>
                 <input type="text" name="department" class="form-control" maxlength="100" placeholder="Leave blank for all departments">
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label">Start Time *</label>
                     <input type="time" name="start_time" class="form-control" required>
@@ -220,7 +222,7 @@
                     <input type="time" name="end_time" class="form-control" required>
                 </div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+            <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label">Duration (hours)</label>
                     <input type="number" name="duration_hours" class="form-control" min="1" max="24" placeholder="8">
@@ -233,10 +235,10 @@
                     </select>
                 </div>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeShiftModal()">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">
-                    <i data-lucide="clock" style="width:13px;height:13px;"></i>
+                    <i data-lucide="clock"></i>
                     Create Shift
                 </button>
             </div>
@@ -248,8 +250,8 @@
 
 @section('scripts')
 <script>
-    function openShiftModal()  { document.getElementById('shift-modal').style.display = 'flex'; }
-    function closeShiftModal() { document.getElementById('shift-modal').style.display = 'none'; }
+    function openShiftModal()  { document.getElementById('shift-modal').classList.add('open'); }
+    function closeShiftModal() { document.getElementById('shift-modal').classList.remove('open'); }
     document.getElementById('shift-modal').addEventListener('click', function(e) {
         if (e.target === this) closeShiftModal();
     });

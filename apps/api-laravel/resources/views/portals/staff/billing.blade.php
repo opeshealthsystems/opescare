@@ -19,7 +19,7 @@
 <form method="GET" action="{{ route('portals.staff.billing') }}" class="filter-bar">
     <div class="form-search">
         <span class="search-icon">
-            <i data-lucide="search" style="width:13px;height:13px;"></i>
+            <i data-lucide="search"></i>
         </span>
         <input
             type="text"
@@ -27,11 +27,10 @@
             class="form-control"
             placeholder="{{ __('public.staff_portal.filter_patient_id', [], app()->getLocale()) ?: 'Patient ID…' }}"
             value="{{ request('patient_id') }}"
-            style="padding-left: 2.1rem;"
         >
     </div>
     <button type="submit" class="btn btn-primary btn-sm">
-        <i data-lucide="filter" style="width:13px;height:13px;"></i>
+        <i data-lucide="filter"></i>
         {{ __('public.staff_portal.filter_apply', [], app()->getLocale()) ?: 'Filter' }}
     </button>
     <a href="{{ route('portals.staff.billing') }}" class="btn btn-ghost btn-sm">
@@ -40,7 +39,7 @@
 </form>
 
 <div class="panel">
-    <div class="panel-body" style="padding: 0;">
+    <div class="panel-body panel-body--flush">
         @if(count($invoices) === 0)
             <div class="empty-state">
                 <div class="empty-state-icon">
@@ -76,17 +75,17 @@
                             };
                             $statusLabel  = ucfirst($invoice->status ?? 'unknown');
                             $balance      = $invoice->balance_due ?? $invoice->balance ?? 0;
-                            $balanceClass = $balance > 0 ? 'color: var(--p-danger)' : 'color: var(--p-teal)';
+                            $balanceBadge = $balance > 0 ? 'badge-danger' : 'badge-teal';
                             $canPayment   = in_array($invoice->status ?? '', ['issued', 'overdue']);
                         @endphp
                         <tr>
                             <td data-label="{{ __('public.staff_portal.col_invoice_no', [], app()->getLocale()) ?: 'Invoice #' }}">
-                                <strong style="font-family: monospace; font-size: var(--p-text-xs);">
+                                <strong class="mono">
                                     {{ $invoice->invoice_number ?? $invoice->reference ?? '#' . ($invoice->id ?? '?') }}
                                 </strong>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_patient_id', [], app()->getLocale()) ?: 'Patient ID' }}">
-                                <span style="font-family: monospace; font-size: var(--p-text-xs);">{{ $invoice->patient?->health_id ?? ($invoice->patient_id ? '#'.$invoice->patient_id : '—') }}</span>
+                                <span class="mono">{{ $invoice->patient?->health_id ?? ($invoice->patient_id ? '#'.$invoice->patient_id : '—') }}</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_description', [], app()->getLocale()) ?: 'Description' }}">
                                 {{ $invoice->description ?? '--' }}
@@ -96,10 +95,10 @@
                                 {{ $invoice->currency ?? '' }}
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_balance', [], app()->getLocale()) ?: 'Balance' }}">
-                                <strong style="{{ $balanceClass }};">
+                                <span class="badge {{ $balanceBadge }}">
                                     {{ number_format($balance, 2) }}
                                     {{ $invoice->currency ?? '' }}
-                                </strong>
+                                </span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_status', [], app()->getLocale()) ?: 'Status' }}">
                                 <span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span>
@@ -107,11 +106,11 @@
                             <td data-label="{{ __('public.staff_portal.col_actions', [], app()->getLocale()) ?: 'Actions' }}">
                                 @if($canPayment)
                                     <a href="{{ route('portals.staff.billing') }}?record_payment={{ $invoice->id ?? $invoice->uuid ?? '' }}" class="btn btn-teal btn-sm">
-                                        <i data-lucide="circle-dollar-sign" style="width:13px;height:13px;"></i>
+                                        <i data-lucide="circle-dollar-sign"></i>
                                         {{ __('public.staff_portal.action_record_payment', [], app()->getLocale()) ?: 'Record Payment' }}
                                     </a>
                                 @else
-                                    <span style="color: var(--p-text-muted); font-size: var(--p-text-xs);">—</span>
+                                    <span class="td-muted">—</span>
                                 @endif
                             </td>
                         </tr>

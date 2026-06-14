@@ -86,56 +86,51 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title">Data Import</h1>
-        <p class="page-subtitle">Upload, map, validate, and import CSV/Excel data into OpesCare.</p>
-    </div>
+<div class="page-head">
+    <h2>Data import</h2>
+    <div class="page-head__spacer"></div>
     <a href="{{ route('portals.staff.data_import.create') }}" class="btn btn-primary btn-sm">
-        <i data-lucide="plus-circle" style="width:14px;height:14px;"></i>
+        <i data-lucide="plus-circle"></i>
         New Import
     </a>
 </div>
+<p class="page-subtitle mb-6">Upload, map, validate, and import CSV/Excel data into OpesCare.</p>
 
 @if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;">
-        <i data-lucide="check-circle"></i><div>{{ session('success') }}</div>
-    </div>
+    <div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
 @endif
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;">
-        <i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div>
-    </div>
+    <div class="alert alert-danger mb-6"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
 @endif
 
 {{-- Filters --}}
-<form method="GET" action="{{ route('portals.staff.data_import.index') }}" class="filter-bar" style="flex-wrap:wrap;gap:.5rem;">
-    <select name="status" class="form-control">
+<form method="GET" action="{{ route('portals.staff.data_import.index') }}" class="filter-bar">
+    <select name="status" class="filter-select">
         <option value="">All Statuses</option>
         @foreach(['uploaded','mapping_required','preview_ready','validated','validation_failed','approved_for_import','importing','completed','completed_with_errors','failed','rolled_back','cancelled'] as $s)
             <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ ucwords(str_replace('_',' ',$s)) }}</option>
         @endforeach
     </select>
-    <select name="import_type" class="form-control">
+    <select name="import_type" class="filter-select">
         <option value="">All Types</option>
         @foreach($importTypes as $key => $def)
             <option value="{{ $key }}" {{ request('import_type') === $key ? 'selected' : '' }}>{{ $def['label'] }}</option>
         @endforeach
     </select>
     <button type="submit" class="btn btn-primary btn-sm">
-        <i data-lucide="filter" style="width:13px;height:13px;"></i> Filter
+        <i data-lucide="filter"></i> Filter
     </button>
     <a href="{{ route('portals.staff.data_import.index') }}" class="btn btn-ghost btn-sm">Clear</a>
 </form>
 
 <div class="panel">
-    <div class="panel-body" style="padding:0;">
+    <div class="panel-body panel-body--flush">
         @if(count($jobs) === 0)
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="upload-cloud"></i></div>
                 <h3>No imports yet</h3>
                 <p>Start by uploading a CSV or Excel file to import data into OpesCare.</p>
-                <a href="{{ route('portals.staff.data_import.create') }}" class="btn btn-primary btn-sm" style="margin-top:1rem;">
+                <a href="{{ route('portals.staff.data_import.create') }}" class="btn btn-primary btn-sm mt-6">
                     Start Import
                 </a>
             </div>
@@ -166,40 +161,38 @@
                             };
                         @endphp
                         <tr>
-                            <td>
-                                <span style="font-weight:500;font-size:.88rem;">{{ $job->original_filename }}</span>
-                                <div style="font-size:.74rem;color:var(--p-text-muted);">{{ strtoupper($job->file_extension) }} · {{ number_format($job->file_size_bytes / 1024, 1) }} KB</div>
+                            <td data-label="File">
+                                <span class="td-strong">{{ $job->original_filename }}</span>
+                                <div class="td-muted">{{ strtoupper($job->file_extension) }} · {{ number_format($job->file_size_bytes / 1024, 1) }} KB</div>
                             </td>
-                            <td>
+                            <td data-label="Type">
                                 <span class="badge badge-neutral">{{ $importTypes[$job->import_type]['label'] ?? $job->import_type }}</span>
                             </td>
-                            <td>
+                            <td data-label="Status">
                                 <span class="badge {{ $statusBadge }}">{{ ucwords(str_replace('_',' ',$job->status)) }}</span>
                             </td>
-                            <td>
+                            <td data-label="Rows">
                                 @if($job->total_rows > 0)
-                                    <span style="font-size:.8rem;">
-                                        <span style="color:var(--p-success);">{{ $job->valid_rows }}<i data-lucide="check" style="width:12px;height:12px;vertical-align:-2px;"></i></span>
-                                        @if($job->invalid_rows > 0)
-                                            <span style="color:var(--p-danger);">/ {{ $job->invalid_rows }}<i data-lucide="x" style="width:12px;height:12px;vertical-align:-2px;"></i></span>
-                                        @endif
-                                        <span style="color:var(--p-text-muted);">/ {{ $job->total_rows }} total</span>
-                                    </span>
+                                    <span class="badge badge-success">{{ $job->valid_rows }}</span>
+                                    @if($job->invalid_rows > 0)
+                                        <span class="badge badge-danger">{{ $job->invalid_rows }}</span>
+                                    @endif
+                                    <span class="td-muted">/ {{ $job->total_rows }} total</span>
                                 @else
-                                    <span style="color:var(--p-text-muted);font-size:.8rem;">—</span>
+                                    <span class="td-muted">—</span>
                                 @endif
                             </td>
-                            <td style="font-size:.8rem;color:var(--p-text-muted);">
+                            <td data-label="Created" class="td-muted">
                                 {{ \Carbon\Carbon::parse($job->created_at)->format('M d, Y H:i') }}
                             </td>
-                            <td>
-                                <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
+                            <td data-label="Actions">
+                                <div class="row-actions-inline">
                                     {{-- Continue wizard --}}
                                     @if($job->status === 'mapping_required')
                                         <a href="{{ route('portals.staff.data_import.mapping', $job->id) }}" class="btn btn-primary btn-xs">Map Columns</a>
                                     @elseif(in_array($job->status, ['preview_ready']))
                                         <a href="{{ route('portals.staff.data_import.mapping', $job->id) }}" class="btn btn-ghost btn-xs">Edit Mapping</a>
-                                        <form method="POST" action="{{ route('portals.staff.data_import.validate', $job->id) }}" style="display:inline;">@csrf
+                                        <form method="POST" action="{{ route('portals.staff.data_import.validate', $job->id) }}" class="inline-form">@csrf
                                             <button type="submit" class="btn btn-primary btn-xs">Validate</button>
                                         </form>
                                     @elseif(in_array($job->status, ['validated','validation_failed']))
@@ -210,12 +203,12 @@
 
                                     {{-- Audit log --}}
                                     <a href="{{ route('portals.staff.data_import.audit', $job->id) }}" class="btn btn-ghost btn-xs">
-                                        <i data-lucide="scroll-text" style="width:11px;height:11px;"></i> Log
+                                        <i data-lucide="scroll-text"></i> Log
                                     </a>
 
                                     {{-- Cancel --}}
                                     @if($job->canBeCancelled())
-                                        <form method="POST" action="{{ route('portals.staff.data_import.cancel', $job->id) }}" style="display:inline;">@csrf
+                                        <form method="POST" action="{{ route('portals.staff.data_import.cancel', $job->id) }}" class="inline-form">@csrf
                                             <button type="submit" class="btn btn-ghost btn-xs" onclick="return confirm('Cancel this import?')">Cancel</button>
                                         </form>
                                     @endif
@@ -231,22 +224,22 @@
 </div>
 
 {{-- Rollback Modal --}}
-<div id="rollback-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:420px;margin:1rem;">
-        <h3 style="margin:0 0 .5rem;font-size:1.05rem;">Rollback Import</h3>
-        <p style="color:var(--p-text-muted);font-size:.85rem;margin:0 0 1rem;">
-            This will reverse the import. Records created by this import batch will be removed.
-        </p>
+<div id="rollback-modal" class="modal-backdrop mt-6" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+        <h3 class="modal__title"><i data-lucide="rotate-ccw"></i> Rollback Import</h3>
         <form id="rollback-form" method="POST" action="">
             @csrf
-            <div class="form-group" style="margin-bottom:.75rem;">
-                <label class="form-label">Reason <span style="color:var(--p-text-muted)">(optional)</span></label>
-                <textarea name="reason" class="form-control" rows="3" maxlength="500" placeholder="Why are you rolling back?"></textarea>
+            <div class="modal__body">
+                <p>This will reverse the import. Records created by this import batch will be removed.</p>
+                <div class="form-group">
+                    <label class="form-label">Reason <span class="td-muted">(optional)</span></label>
+                    <textarea name="reason" class="form-control" rows="3" maxlength="500" placeholder="Why are you rolling back?"></textarea>
+                </div>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeRollbackModal()">Back</button>
                 <button type="submit" class="btn btn-danger btn-sm">
-                    <i data-lucide="rotate-ccw" style="width:13px;height:13px;"></i> Rollback
+                    <i data-lucide="rotate-ccw"></i> Rollback
                 </button>
             </div>
         </form>
@@ -259,9 +252,9 @@
 <script>
     function openRollbackModal(jobId) {
         document.getElementById('rollback-form').setAttribute('action', '{{ url('/portals/staff/data-import') }}/' + jobId + '/rollback');
-        document.getElementById('rollback-modal').style.display = 'flex';
+        document.getElementById('rollback-modal').removeAttribute('hidden');
     }
-    function closeRollbackModal() { document.getElementById('rollback-modal').style.display = 'none'; }
+    function closeRollbackModal() { document.getElementById('rollback-modal').setAttribute('hidden',''); }
     document.getElementById('rollback-modal').addEventListener('click', function(e) {
         if (e.target === this) closeRollbackModal();
     });

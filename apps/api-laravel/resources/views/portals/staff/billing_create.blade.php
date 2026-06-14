@@ -120,23 +120,23 @@
         <p class="page-subtitle">{{ __('public.staff_portal.billing_subtitle', [], app()->getLocale()) ?: 'Create a new patient invoice.' }}</p>
     </div>
     <a href="{{ route('portals.staff.billing') }}" class="btn btn-ghost btn-sm">
-        <i data-lucide="arrow-left" style="width:14px;height:14px;"></i>
+        <i data-lucide="arrow-left"></i>
         Back
     </a>
 </div>
 
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;">
+    <div class="auth-alert auth-alert-danger mb-4">
         <i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div>
     </div>
 @endif
 
-<div class="panel" style="max-width:760px;">
+<div class="panel">
     <div class="panel-body">
         <form method="POST" action="{{ route('portals.staff.billing.store') }}" id="invoice-form">
             @csrf
 
-            <div class="form-group" style="margin-bottom:1rem;">
+            <div class="form-group mb-4">
                 <label class="form-label">Patient *</label>
                 @if(count($patients) > 0)
                     <select name="patient_id" class="form-control" required>
@@ -154,39 +154,38 @@
             </div>
 
             {{-- Line items --}}
-            <h3 style="font-size:.9rem;font-weight:700;margin:1.5rem 0 .75rem;color:var(--p-text-secondary);">
-                Line Items
-            </h3>
+            <h3 class="diff-label">Line Items</h3>
             <div id="line-items">
-                <div class="line-item" style="display:grid;grid-template-columns:1fr auto auto auto;gap:.5rem;margin-bottom:.5rem;align-items:end;">
-                    <div>
-                        <label class="form-label" style="font-size:.75rem;">{{ __('public.staff_portal.lbl_description', [], app()->getLocale()) ?: 'Description' }} *</label>
+                {{-- Structural line-item grid: no kit class exists for a multi-column repeated input row; layout kept inline (see report) --}}
+                <div class="line-item" style="display:grid;grid-template-columns:1fr 70px 120px auto;gap:.5rem;margin-bottom:.5rem;align-items:end;">
+                    <div class="form-group">
+                        <label class="form-label">{{ __('public.staff_portal.lbl_description', [], app()->getLocale()) ?: 'Description' }} *</label>
                         <input type="text" name="items[0][description]" class="form-control" required placeholder="Service description…">
                     </div>
-                    <div style="width:70px;">
-                        <label class="form-label" style="font-size:.75rem;">{{ __('public.staff_portal.lbl_qty', [], app()->getLocale()) ?: 'Qty' }}</label>
+                    <div class="form-group">
+                        <label class="form-label">{{ __('public.staff_portal.lbl_qty', [], app()->getLocale()) ?: 'Qty' }}</label>
                         <input type="number" name="items[0][quantity]" class="form-control" value="1" min="1" step="1" required>
                     </div>
-                    <div style="width:120px;">
-                        <label class="form-label" style="font-size:.75rem;">{{ __('public.staff_portal.lbl_unit_price', [], app()->getLocale()) ?: 'Unit Price' }} *</label>
+                    <div class="form-group">
+                        <label class="form-label">{{ __('public.staff_portal.lbl_unit_price', [], app()->getLocale()) ?: 'Unit Price' }} *</label>
                         <input type="number" name="items[0][unit_price]" class="form-control" value="0.00" min="0" step="0.01" required>
                     </div>
-                    <div style="padding-bottom:2px;">
-                        <button type="button" class="btn btn-ghost btn-xs" disabled style="visibility:hidden;">
-                            <i data-lucide="trash-2" style="width:12px;height:12px;"></i>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-ghost btn-xs" disabled hidden>
+                            <i data-lucide="trash-2"></i>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <button type="button" class="btn btn-ghost btn-sm" onclick="addLineItem()" style="margin-bottom:1.5rem;">
-                <i data-lucide="plus" style="width:13px;height:13px;"></i>
+            <button type="button" class="btn btn-ghost btn-sm mb-6" onclick="addLineItem()">
+                <i data-lucide="plus"></i>
                 {{ __('public.staff_portal.btn_add_item', [], app()->getLocale()) ?: 'Add Line Item' }}
             </button>
 
-            <div style="display:flex;gap:.75rem;margin-top:.5rem;">
+            <div class="row-actions-inline">
                 <button type="submit" class="btn btn-primary">
-                    <i data-lucide="file-plus" style="width:14px;height:14px;"></i>
+                    <i data-lucide="file-plus"></i>
                     {{ __('public.staff_portal.btn_create_invoice', [], app()->getLocale()) ?: 'Create Invoice' }}
                 </button>
                 <a href="{{ route('portals.staff.billing') }}" class="btn btn-ghost">Cancel</a>
@@ -205,13 +204,13 @@
         var idx = lineCount++;
         var row = document.createElement('div');
         row.className = 'line-item';
-        row.style.cssText = 'display:grid;grid-template-columns:1fr auto auto auto;gap:.5rem;margin-bottom:.5rem;align-items:end;';
+        row.style.cssText = 'display:grid;grid-template-columns:1fr 70px 120px auto;gap:.5rem;margin-bottom:.5rem;align-items:end;';
         row.innerHTML =
-            '<div><input type="text" name="items[' + idx + '][description]" class="form-control" required placeholder="Service description…"></div>' +
-            '<div style="width:70px;"><input type="number" name="items[' + idx + '][quantity]" class="form-control" value="1" min="1" step="1" required></div>' +
-            '<div style="width:120px;"><input type="number" name="items[' + idx + '][unit_price]" class="form-control" value="0.00" min="0" step="0.01" required></div>' +
-            '<div style="padding-bottom:2px;"><button type="button" class="btn btn-ghost btn-xs" onclick="this.closest(\'.line-item\').remove()">' +
-            '<i data-lucide="trash-2" style="width:12px;height:12px;"></i></button></div>';
+            '<div class="form-group"><input type="text" name="items[' + idx + '][description]" class="form-control" required placeholder="Service description…"></div>' +
+            '<div class="form-group"><input type="number" name="items[' + idx + '][quantity]" class="form-control" value="1" min="1" step="1" required></div>' +
+            '<div class="form-group"><input type="number" name="items[' + idx + '][unit_price]" class="form-control" value="0.00" min="0" step="0.01" required></div>' +
+            '<div class="form-group"><button type="button" class="btn btn-ghost btn-xs" onclick="this.closest(\'.line-item\').remove()">' +
+            '<i data-lucide="trash-2"></i></button></div>';
         container.appendChild(row);
         if (typeof lucide !== 'undefined') lucide.createIcons();
     }

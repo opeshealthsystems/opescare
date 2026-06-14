@@ -19,7 +19,7 @@
 <form method="GET" action="{{ route('portals.staff.appointments') }}" class="filter-bar">
     <div class="form-search">
         <span class="search-icon">
-            <i data-lucide="search" style="width:13px;height:13px;"></i>
+            <i data-lucide="search"></i>
         </span>
         <input
             type="text"
@@ -27,7 +27,6 @@
             class="form-control"
             placeholder="{{ __('public.staff_portal.filter_patient_id', [], app()->getLocale()) ?: 'Patient ID…' }}"
             value="{{ request('patient_id') }}"
-            style="padding-left: 2.1rem;"
         >
     </div>
     <input
@@ -51,7 +50,7 @@
         value="{{ request('date') }}"
     >
     <button type="submit" class="btn btn-primary btn-sm">
-        <i data-lucide="filter" style="width:13px;height:13px;"></i>
+        <i data-lucide="filter"></i>
         {{ __('public.staff_portal.filter_apply', [], app()->getLocale()) ?: 'Filter' }}
     </button>
     <a href="{{ route('portals.staff.appointments') }}" class="btn btn-ghost btn-sm">
@@ -60,7 +59,7 @@
 </form>
 
 <div class="panel">
-    <div class="panel-body" style="padding: 0;">
+    <div class="panel-body panel-body--flush">
         @if(count($appointments) === 0)
             <div class="empty-state">
                 <div class="empty-state-icon">
@@ -100,7 +99,7 @@
                                 {{ \Carbon\Carbon::parse($appointment->scheduled_at ?? $appointment->created_at)->format('M d, Y H:i') }}
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_patient_id', [], app()->getLocale()) ?: 'Patient ID' }}">
-                                <span style="font-family: monospace; font-size: var(--p-text-xs);">{{ $appointment->patient?->health_id ?? ($appointment->patient_id ? '#'.$appointment->patient_id : '—') }}</span>
+                                <span class="mono">{{ $appointment->patient?->health_id ?? ($appointment->patient_id ? '#'.$appointment->patient_id : '—') }}</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_provider', [], app()->getLocale()) ?: 'Provider' }}">
                                 {{ $appointment->provider_name ?? $appointment->provider_id ?? '--' }}
@@ -116,7 +115,7 @@
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_actions', [], app()->getLocale()) ?: 'Actions' }}">
                                 <a href="{{ route('portals.staff.appointments') }}?view={{ $appointment->id ?? $appointment->uuid ?? '' }}" class="btn btn-ghost btn-sm">
-                                    <i data-lucide="eye" style="width:13px;height:13px;"></i>
+                                    <i data-lucide="eye"></i>
                                     {{ __('public.staff_portal.action_view', [], app()->getLocale()) ?: 'View' }}
                                 </a>
                             </td>

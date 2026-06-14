@@ -5,43 +5,42 @@
 @section('breadcrumb_section', 'Wards')
 
 @section('content')
-<div class="page-header">
-    <div>
-        <h1 class="page-title">Ward & Bed Management</h1>
-        <p class="page-subtitle">Live bed map, occupancy overview, and ward administration.</p>
-    </div>
-    <div style="display:flex;gap:.5rem;">
-        <a href="{{ route('portals.staff.wards.admissions') }}" class="btn btn-ghost btn-sm">
-            <i data-lucide="bed" style="width:13px;height:13px;"></i> Admissions
-        </a>
-        <button type="button" class="btn btn-primary btn-sm" onclick="openCreateWardModal()">
-            <i data-lucide="plus" style="width:13px;height:13px;"></i> Add Ward
-        </button>
-    </div>
+<div class="page-head">
+    <h2>Ward &amp; bed management</h2>
+    <div class="page-head__spacer"></div>
+    <a href="{{ route('portals.staff.wards.admissions') }}" class="btn btn-ghost btn-sm">
+        <i data-lucide="bed"></i> Admissions
+    </a>
+    <button type="button" class="btn btn-primary btn-sm" onclick="openCreateWardModal()">
+        <i data-lucide="plus"></i> Add Ward
+    </button>
 </div>
+<p class="page-subtitle mb-6">Live bed map, occupancy overview, and ward administration.</p>
 
 @if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
+    <div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
 @endif
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
+    <div class="alert alert-danger mb-6"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
 @endif
 
 {{-- Occupancy KPIs --}}
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem;">
-    @php $kpis = [
-        ['Total Beds',      $summary['total_beds'],      'bed',           'var(--p-text-muted)'],
-        ['Occupied',        $summary['total_occupied'],  'user-check',    'var(--p-danger)'],
-        ['Available',       $summary['total_available'], 'check-circle',  'var(--p-success)'],
-        ['Occupancy Rate',  $summary['occupancy_rate'].'%', 'percent',    $summary['occupancy_rate'] >= 85 ? 'var(--p-danger)' : ($summary['occupancy_rate'] >= 70 ? 'var(--p-warning)' : 'var(--p-success)')],
-    ]; @endphp
-    @foreach($kpis as [$label, $val, $icon, $color])
-    <div class="panel" style="padding:1.25rem;">
-        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem;">
-            <i data-lucide="{{ $icon }}" style="width:16px;height:16px;color:{{ $color }};flex-shrink:0;"></i>
-            <span style="font-size:.8rem;color:var(--p-text-muted);">{{ $label }}</span>
-        </div>
-        <div style="font-size:1.65rem;font-weight:700;color:{{ $color }};">{{ $val }}</div>
+@php
+    $occRate = $summary['occupancy_rate'];
+    $occMod  = $occRate >= 85 ? 'stat-card--danger' : ($occRate >= 70 ? 'stat-card--warning' : 'stat-card--success');
+    $kpis = [
+        ['Total Beds',      $summary['total_beds'],      'bed',          ''],
+        ['Occupied',        $summary['total_occupied'],  'user-check',   'stat-card--danger'],
+        ['Available',       $summary['total_available'], 'check-circle', 'stat-card--success'],
+        ['Occupancy Rate',  $occRate.'%',                'percent',      $occMod],
+    ];
+@endphp
+<div class="stat-grid mb-6">
+    @foreach($kpis as [$label, $val, $icon, $mod])
+    <div class="stat-card {{ $mod }}">
+        <div class="stat-card__head"><i data-lucide="{{ $icon }}"></i></div>
+        <div class="stat-card__value">{{ $val }}</div>
+        <div class="stat-card__label">{{ $label }}</div>
     </div>
     @endforeach
 </div>
@@ -52,7 +51,7 @@
     <div class="empty-state-icon"><i data-lucide="building-2"></i></div>
     <h3>No active wards</h3>
     <p>Create a ward to start managing bed allocations.</p>
-    <button type="button" class="btn btn-primary btn-sm" onclick="openCreateWardModal()" style="margin-top:.75rem;">Add First Ward</button>
+    <button type="button" class="btn btn-primary btn-sm mt-6" onclick="openCreateWardModal()">Add First Ward</button>
 </div>
 @else
 @foreach($wards as $ward)
@@ -61,20 +60,20 @@
     $available = $ward->beds->where('status','available')->count();
     $total     = $ward->beds->count();
     $occ       = $total > 0 ? round(($occupied / $total) * 100) : 0;
-    $barColor  = $occ >= 90 ? 'var(--p-danger)' : ($occ >= 70 ? 'var(--p-warning)' : 'var(--p-success)');
+    $barFill   = $occ >= 90 ? 'breakdown__fill--danger' : ($occ >= 70 ? 'breakdown__fill--warning' : '');
+    $occBadge  = $occ >= 90 ? 'badge-danger' : ($occ >= 70 ? 'badge-warning' : 'badge-success');
 @endphp
-<div class="panel" style="margin-bottom:1rem;">
-    <div style="padding:.75rem 1.25rem;border-bottom:1px solid var(--p-border);display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
-        <span style="font-weight:600;font-size:.95rem;">{{ $ward->name }}</span>
-        <span class="badge badge-neutral" style="font-size:.7rem;">{{ \App\Models\Ward::wardTypes()[$ward->ward_type] ?? $ward->ward_type }}</span>
-        @if($ward->floor)<span style="font-size:.78rem;color:var(--p-text-muted);">Floor {{ $ward->floor }}</span>@endif
-        <div style="margin-left:auto;display:flex;align-items:center;gap:.75rem;">
-            <span style="font-size:.8rem;color:var(--p-text-muted);">{{ $occupied }}/{{ $total }} occupied</span>
-            <div style="width:100px;height:7px;background:var(--p-border);border-radius:4px;overflow:hidden;">
-                <div style="width:{{ $occ }}%;height:100%;background:{{ $barColor }};border-radius:4px;transition:width .3s;"></div>
-            </div>
-            <span style="font-size:.8rem;font-weight:600;color:{{ $barColor }};">{{ $occ }}%</span>
-        </div>
+<div class="panel mb-6">
+    <div class="panel-header">
+        <span class="section-head">
+            <h3 class="panel-title">{{ $ward->name }}</h3>
+            <span class="badge badge-neutral badge-sm">{{ \App\Models\Ward::wardTypes()[$ward->ward_type] ?? $ward->ward_type }}</span>
+            @if($ward->floor)<span class="td-muted">Floor {{ $ward->floor }}</span>@endif
+        </span>
+        <span class="section-head">
+            <span class="td-muted">{{ $occupied }}/{{ $total }} occupied</span>
+            <span class="badge {{ $occBadge }}">{{ $occ }}%</span>
+        </span>
     </div>
     <div class="panel-body">
         <div style="display:flex;flex-wrap:wrap;gap:.4rem;">
@@ -118,40 +117,42 @@
 @endif
 
 {{-- Create Ward Modal --}}
-<div id="create-ward-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:480px;margin:1rem;max-height:90vh;overflow-y:auto;">
-        <h3 style="margin:0 0 1rem;font-size:1.05rem;">Create Ward</h3>
+<div id="create-ward-modal" class="modal-backdrop mt-6" hidden>
+    <div class="modal modal--md" role="dialog" aria-modal="true">
+        <h3 class="modal__title"><i data-lucide="building-2"></i> Create Ward</h3>
         <form method="POST" action="{{ route('portals.staff.wards.store') }}">
             @csrf
-            <div class="form-group" style="margin-bottom:.75rem;">
-                <label class="form-label">Ward Name *</label>
-                <input type="text" name="name" class="form-control" required maxlength="100" placeholder="e.g. General Ward A">
+            <div class="modal__body">
+                <div class="form-group">
+                    <label class="form-label form-label-required">Ward Name</label>
+                    <input type="text" name="name" class="form-control" required maxlength="100" placeholder="e.g. General Ward A">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label form-label-required">Ward Type</label>
+                        <select name="ward_type" class="form-control" required>
+                            @foreach(\App\Models\Ward::wardTypes() as $key => $label)
+                                <option value="{{ $key }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label form-label-required">Number of Beds</label>
+                        <input type="number" name="total_beds" class="form-control" required min="1" max="200" value="10">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Floor</label>
+                        <input type="text" name="floor" class="form-control" maxlength="20" placeholder="e.g. 2">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Building</label>
+                        <input type="text" name="building" class="form-control" maxlength="50" placeholder="e.g. Block A">
+                    </div>
+                </div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
-                <div class="form-group">
-                    <label class="form-label">Ward Type *</label>
-                    <select name="ward_type" class="form-control" required>
-                        @foreach(\App\Models\Ward::wardTypes() as $key => $label)
-                            <option value="{{ $key }}">{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Number of Beds *</label>
-                    <input type="number" name="total_beds" class="form-control" required min="1" max="200" value="10">
-                </div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem;">
-                <div class="form-group">
-                    <label class="form-label">Floor</label>
-                    <input type="text" name="floor" class="form-control" maxlength="20" placeholder="e.g. 2">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Building</label>
-                    <input type="text" name="building" class="form-control" maxlength="50" placeholder="e.g. Block A">
-                </div>
-            </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeCreateWardModal()">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">Create Ward</button>
             </div>
@@ -162,8 +163,8 @@
 
 @section('scripts')
 <script>
-function openCreateWardModal()  { document.getElementById('create-ward-modal').style.display = 'flex'; }
-function closeCreateWardModal() { document.getElementById('create-ward-modal').style.display = 'none'; }
+function openCreateWardModal()  { document.getElementById('create-ward-modal').removeAttribute('hidden'); }
+function closeCreateWardModal() { document.getElementById('create-ward-modal').setAttribute('hidden',''); }
 document.getElementById('create-ward-modal').addEventListener('click', function(e) { if(e.target===this) closeCreateWardModal(); });
 </script>
 @endsection

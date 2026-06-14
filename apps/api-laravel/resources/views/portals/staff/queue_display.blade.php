@@ -242,6 +242,10 @@
             .queue-section { padding: 1.5rem 1.25rem; }
             .queue-grid { grid-template-columns: repeat(2, 1fr); }
         }
+
+        .topbar-clockwrap { text-align: right; }
+        .ticket-wait { font-size: .75rem; color: var(--muted); margin-top: .25rem; }
+        .empty-state h2 { font-size: 1.5rem; font-weight: 800; color: #fff; margin-top: .5rem; }
     </style>
 </head>
 <body>
@@ -255,7 +259,7 @@
                 <div class="topbar-facility">Patient Queue</div>
             </div>
         </div>
-        <div style="text-align:right;">
+        <div class="topbar-clockwrap">
             <div class="topbar-clock" id="clock">--:--</div>
             <div class="topbar-date" id="date-display"></div>
         </div>
@@ -317,7 +321,7 @@
                     {{ ucfirst($ticket['status'] ?? 'waiting') }}
                 </div>
                 @if(!empty($ticket['wait_minutes']))
-                <div style="font-size:.75rem;color:#64748b;margin-top:.25rem;">~{{ $ticket['wait_minutes'] }} min wait</div>
+                <div class="ticket-wait">~{{ $ticket['wait_minutes'] }} min wait</div>
                 @endif
             </div>
             @endforeach
@@ -326,7 +330,7 @@
     @else
     <div class="empty-state">
         <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <h2 style="font-size:1.5rem;font-weight:800;color:#fff;margin-top:.5rem;">No patients in queue</h2>
+        <h2>No patients in queue</h2>
         <p>The waiting room is currently empty. This screen refreshes automatically every 30 seconds.</p>
     </div>
     @endif

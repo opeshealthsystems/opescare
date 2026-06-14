@@ -8,31 +8,26 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title">Referrals</h1>
-        <p class="page-subtitle">Manage patient referrals between facilities and specialists.</p>
-    </div>
-    <div class="page-actions">
-        <a href="{{ route('portals.staff.referrals.create') }}" class="btn btn-primary">
-            <i data-lucide="plus"></i>
-            New Referral
-        </a>
-    </div>
+<div class="page-head">
+    <h2>Referrals</h2>
+    <div class="page-head__spacer"></div>
+    <a href="{{ route('portals.staff.referrals.create') }}" class="btn btn-primary">
+        <i data-lucide="plus"></i>
+        New Referral
+    </a>
 </div>
+<p class="page-subtitle mb-4">Manage patient referrals between facilities and specialists.</p>
 
 <!-- Filters -->
-<div class="panel mb-6" style="margin-bottom:var(--p-space-6);">
-    <form method="GET" action="{{ route('portals.staff.referrals') }}">
+<div class="panel mb-6">
+    <form method="GET" action="{{ route('portals.staff.referrals') }}" class="panel-body">
         <div class="filter-bar">
-            <div class="form-group" style="flex:1;min-width:180px;">
-                <div class="form-search">
-                    <span class="search-icon"><i data-lucide="search"></i></span>
-                    <input type="text" name="patient_id" class="form-control" placeholder="Patient Health ID…" value="{{ request('patient_id') }}" aria-label="Filter by patient health ID">
-                </div>
-            </div>
-            <div class="form-group" style="min-width:150px;">
-                <select name="status" class="form-control" aria-label="Filter by status">
+            <label class="filter-search">
+                <i data-lucide="search"></i>
+                <input type="text" name="patient_id" placeholder="Patient Health ID…" value="{{ request('patient_id') }}" aria-label="Filter by patient health ID">
+            </label>
+            <div class="form-group">
+                <select name="status" class="filter-select" aria-label="Filter by status">
                     <option value="">All Status</option>
                     <option value="draft"     @selected(request('status')==='draft')>Draft</option>
                     <option value="sent"      @selected(request('status')==='sent')>Sent</option>
@@ -43,16 +38,16 @@
                     <option value="expired"   @selected(request('status')==='expired')>Expired</option>
                 </select>
             </div>
-            <div class="form-group" style="min-width:140px;">
-                <select name="priority" class="form-control" aria-label="Filter by priority">
+            <div class="form-group">
+                <select name="priority" class="filter-select" aria-label="Filter by priority">
                     <option value="">All Priority</option>
                     <option value="routine"   @selected(request('priority')==='routine')>Routine</option>
                     <option value="urgent"    @selected(request('priority')==='urgent')>Urgent</option>
                     <option value="emergency" @selected(request('priority')==='emergency')>Emergency</option>
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary"><i data-lucide="filter"></i> Filter</button>
-            <a href="{{ route('portals.staff.referrals') }}" class="btn btn-secondary"><i data-lucide="x"></i> Clear</a>
+            <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> Filter</button>
+            <a href="{{ route('portals.staff.referrals') }}" class="btn btn-secondary btn-sm"><i data-lucide="x"></i> Clear</a>
         </div>
     </form>
 </div>
@@ -85,7 +80,7 @@
                         <th>Specialty</th>
                         <th>Status</th>
                         <th>Created</th>
-                        <th><span class="sr-only">Actions</span></th>
+                        <th class="row-actions"><span class="sr-only">Actions</span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -130,7 +125,7 @@
                         <td data-label="Created">
                             <span class="td-muted">{{ $referral->created_at?->format('d M Y') ?? '—' }}</span>
                         </td>
-                        <td data-label="Action" style="text-align:right;">
+                        <td data-label="Action" class="row-actions">
                             <a href="{{ route('portals.staff.referrals.show', $referral->id) }}" class="btn btn-ghost btn-sm">
                                 <i data-lucide="eye"></i> View
                             </a>
