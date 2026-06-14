@@ -1,93 +1,150 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', 'All Invoices')
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', 'Admin')
 @section('breadcrumb_home_url', route('portals.admin'))
 @section('breadcrumb_section', 'Invoices')
 @section('content')
-<div class="page-header">
-    <div>
-        <h1 class="page-title">All Invoices</h1>
-        <p class="page-subtitle">Full invoice ledger across all facilities.</p>
-    </div>
-    <a href="{{ route('portals.admin.financial.payments') }}" class="btn btn-ghost btn-sm">Payments</a>
-</div>
-@if(session('success'))<div class="auth-alert auth-alert-success" style="margin-bottom:1rem;"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
-@if(session('error'))<div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;"><i data-lucide="alert-circle"></i><div>{{ session('error') }}</div></div>@endif
 
-<form method="GET" action="{{ route('portals.admin.financial.invoices') }}" class="panel" style="padding:1rem;margin-bottom:1rem;">
-    <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end;">
-        <div style="flex:1;min-width:160px;"><label style="font-size:.78rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">Search</label><input type="text" name="search" value="{{ request('search') }}" placeholder="Invoice number..." class="form-control form-control-sm"></div>
-        <div><label style="font-size:.78rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">Status</label>
-            <select name="status" class="form-control form-control-sm">
-                <option value="">All</option>
-                @foreach(['draft','unpaid','paid','partial','cancelled','overdue'] as $s)
-                <option value="{{ $s }}" {{ request('status')===$s?'selected':'' }}>{{ ucfirst($s) }}</option>
-                @endforeach
-            </select></div>
-        <div><label style="font-size:.78rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">Facility</label>
-            <select name="facility_id" class="form-control form-control-sm">
-                <option value="">All</option>
-                @foreach($facilities as $f)<option value="{{ $f->id }}" {{ request('facility_id')==$f->id?'selected':'' }}>{{ $f->name }}</option>@endforeach
-            </select></div>
-        <div><label style="font-size:.78rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">From</label><input type="date" name="from_date" value="{{ request('from_date') }}" class="form-control form-control-sm"></div>
-        <div><label style="font-size:.78rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">To</label><input type="date" name="to_date" value="{{ request('to_date') }}" class="form-control form-control-sm"></div>
-        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-        <a href="{{ route('portals.admin.financial.invoices') }}" class="btn btn-ghost btn-sm">Reset</a>
-    </div>
+<div class="breadcrumb">
+    <a href="{{ route('portals.admin.financial.index') }}">Financial</a>
+    <i data-lucide="chevron-right"></i>
+    <span>Invoices</span>
+</div>
+
+<div class="page-head">
+    <h2>All invoices</h2>
+    <div class="page-head__spacer"></div>
+    <a href="{{ route('portals.admin.financial.payments') }}" class="btn btn-secondary btn-sm"><i data-lucide="receipt"></i> Payments</a>
+</div>
+
+<p class="td-muted mb-6">Full invoice ledger across all facilities.</p>
+
+@if(session('success'))<div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
+@if(session('error'))<div class="alert alert-danger mb-6"><i data-lucide="alert-circle"></i><div>{{ session('error') }}</div></div>@endif
+
+<form method="GET" action="{{ route('portals.admin.financial.invoices') }}" class="filter-bar">
+    <label class="filter-search">
+        <i data-lucide="search"></i>
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Invoice number..." aria-label="Search">
+    </label>
+    <select name="status" class="filter-select" aria-label="Status">
+        <option value="">All statuses</option>
+        @foreach(['draft','unpaid','paid','partial','cancelled','overdue'] as $s)
+        <option value="{{ $s }}" {{ request('status')===$s?'selected':'' }}>{{ ucfirst($s) }}</option>
+        @endforeach
+    </select>
+    <select name="facility_id" class="filter-select" aria-label="Facility">
+        <option value="">All facilities</option>
+        @foreach($facilities as $f)<option value="{{ $f->id }}" {{ request('facility_id')==$f->id?'selected':'' }}>{{ $f->name }}</option>@endforeach
+    </select>
+    <label class="filter-search">
+        <i data-lucide="calendar"></i>
+        <input type="date" name="from_date" value="{{ request('from_date') }}" aria-label="From date">
+    </label>
+    <label class="filter-search">
+        <i data-lucide="calendar"></i>
+        <input type="date" name="to_date" value="{{ request('to_date') }}" aria-label="To date">
+    </label>
+    <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> Filter</button>
+    <a href="{{ route('portals.admin.financial.invoices') }}" class="btn btn-ghost btn-sm">Reset</a>
 </form>
 
 <div class="panel">
-    <div style="padding:.75rem 1.25rem;border-bottom:1px solid var(--p-border);"><span style="font-size:.85rem;color:var(--p-text-muted);">{{ $invoices->total() }} invoices</span></div>
+    <div class="panel-header"><h3 class="panel-title"><i data-lucide="file-text"></i> {{ $invoices->total() }} invoices</h3></div>
     <div class="table-wrapper"><table class="data-table"><thead><tr>
-        <th>Invoice #</th><th>Patient</th><th>Facility</th><th>Subtotal</th><th>Paid</th><th>Balance</th><th>Status</th><th>Issued</th><th>Actions</th>
+        <th>Invoice #</th><th>Patient</th><th>Facility</th><th>Subtotal</th><th>Paid</th><th>Balance</th><th>Status</th><th>Issued</th><th class="row-actions">Actions</th>
     </tr></thead><tbody>
     @forelse($invoices as $inv)
     <tr>
-        <td><code style="font-size:.8rem;">{{ $inv->invoice_number }}</code></td>
-        <td style="font-size:.85rem;">{{ $inv->patient?->first_name.' '.$inv->patient?->last_name ?? '—' }}<br><span style="font-size:.75rem;color:var(--p-text-muted);">{{ $inv->patient?->health_id }}</span></td>
-        <td style="font-size:.82rem;">{{ $inv->facility?->name ?? '—' }}</td>
-        <td>{{ number_format($inv->subtotal_amount,0,'.',',') }}</td>
-        <td style="color:var(--p-success);">{{ number_format($inv->paid_amount ?? 0,0,'.',',') }}</td>
-        <td style="{{ ($inv->balance_amount ?? 0) > 0 ? 'color:var(--p-danger);' : '' }}">{{ number_format($inv->balance_amount ?? 0,0,'.',',') }}</td>
-        <td>
+        <td data-label="Invoice #"><span class="mono">{{ $inv->invoice_number }}</span></td>
+        <td data-label="Patient">{{ $inv->patient?->first_name.' '.$inv->patient?->last_name ?? '—' }}<br><span class="td-muted">{{ $inv->patient?->health_id }}</span></td>
+        <td data-label="Facility">{{ $inv->facility?->name ?? '—' }}</td>
+        <td data-label="Subtotal">{{ number_format($inv->subtotal_amount,0,'.',',') }}</td>
+        <td data-label="Paid">{{ number_format($inv->paid_amount ?? 0,0,'.',',') }}</td>
+        <td data-label="Balance">{{ number_format($inv->balance_amount ?? 0,0,'.',',') }}</td>
+        <td data-label="Status">
             @if($inv->status==='paid')<span class="badge badge-success">Paid</span>
             @elseif($inv->status==='partial')<span class="badge badge-warning">Partial</span>
-            @elseif($inv->status==='cancelled')<span class="badge" style="background:var(--p-surface-3);color:var(--p-text-muted);">Voided</span>
+            @elseif($inv->status==='cancelled')<span class="badge badge-neutral">Voided</span>
             @elseif($inv->status==='overdue')<span class="badge badge-danger">Overdue</span>
             @else<span class="badge badge-warning">{{ ucfirst($inv->status) }}</span>@endif
         </td>
-        <td style="font-size:.8rem;">{{ $inv->issued_at?->format('d M Y') ?? '—' }}</td>
-        <td>
-            <div style="display:flex;gap:.35rem;">
+        <td data-label="Issued">{{ $inv->issued_at?->format('d M Y') ?? '—' }}</td>
+        <td class="row-actions" data-label="Actions">
+            <div class="row-actions-inline">
                 @if(in_array($inv->status,['draft','unpaid']))
-                <form method="POST" action="{{ route('portals.admin.financial.void-invoice',$inv->id) }}" onsubmit="return confirm('Void invoice?')">@csrf<button class="btn btn-warning btn-xs">Void</button></form>
+                <button type="button" class="btn btn-warning btn-sm" onclick="opOpenModal('void-modal-{{ $inv->id }}')">Void</button>
                 @endif
                 @if(!in_array($inv->status,['paid','cancelled']))
-                <button class="btn btn-success btn-xs" onclick="document.getElementById('pay-modal-{{ $inv->id }}').style.display='flex'">Mark Paid</button>
+                <button type="button" class="btn btn-success btn-sm" onclick="opOpenModal('pay-modal-{{ $inv->id }}')">Mark paid</button>
                 @endif
-            </div>
-            {{-- Mark Paid Modal --}}
-            <div id="pay-modal-{{ $inv->id }}" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
-                <div class="panel" style="width:380px;max-width:95vw;padding:1.5rem;">
-                    <h3 style="margin-top:0;font-size:.95rem;">Mark Invoice #{{ $inv->invoice_number }} Paid</h3>
-                    <form method="POST" action="{{ route('portals.admin.financial.mark-paid',$inv->id) }}">@csrf
-                        <div style="margin-bottom:.75rem;"><label class="form-label" style="font-size:.82rem;">Amount (XAF)</label><input type="number" name="amount" value="{{ $inv->balance_amount ?? $inv->subtotal_amount }}" class="form-control form-control-sm" step="0.01" required></div>
-                        <div style="margin-bottom:.75rem;"><label class="form-label" style="font-size:.82rem;">Gateway</label>
-                            <select name="method" class="form-control form-control-sm">@foreach(['cash'=>'Cash','mtn_momo'=>'MTN MoMo','orange_money'=>'Orange Money','card'=>'Card','insurance'=>'Insurance','bank_transfer'=>'Bank Transfer'] as $k=>$l)<option value="{{ $k }}">{{ $l }}</option>@endforeach</select></div>
-                        <div style="margin-bottom:.75rem;"><label class="form-label" style="font-size:.82rem;">Payer Phone</label><input type="text" name="payer_phone" class="form-control form-control-sm" placeholder="+237..."></div>
-                        <div style="margin-bottom:1rem;"><label class="form-label" style="font-size:.82rem;">Payer Name</label><input type="text" name="payer_name" class="form-control form-control-sm"></div>
-                        <div style="display:flex;gap:.75rem;justify-content:flex-end;">
-                            <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('pay-modal-{{ $inv->id }}').style.display='none'">Cancel</button>
-                            <button type="submit" class="btn btn-success btn-sm">Record Payment</button>
-                        </div>
-                    </form>
-                </div>
             </div>
         </td>
     </tr>
-    @empty<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--p-text-muted);">No invoices found.</td></tr>@endforelse
+    @empty<tr><td colspan="9" class="td-muted empty-cell">No invoices found.</td></tr>@endforelse
     </tbody></table></div>
-    <div style="padding:.75rem 1.25rem;">{{ $invoices->links() }}</div>
+    <div class="panel-body">{{ $invoices->links() }}</div>
 </div>
+
+{{-- Modals (rendered outside the table) --}}
+@foreach($invoices as $inv)
+    @if(in_array($inv->status,['draft','unpaid']))
+    <div id="void-modal-{{ $inv->id }}" class="modal-backdrop mt-6" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="void-modal-title-{{ $inv->id }}">
+            <h3 class="modal__title" id="void-modal-title-{{ $inv->id }}"><i data-lucide="alert-triangle"></i> Void invoice</h3>
+            <form method="POST" action="{{ route('portals.admin.financial.void-invoice',$inv->id) }}">@csrf
+                <div class="modal__body">
+                    <p>Void invoice <strong>{{ $inv->invoice_number }}</strong>? This cannot be undone.</p>
+                </div>
+                <div class="modal__footer">
+                    <button type="button" class="btn btn-ghost" onclick="opCloseModal('void-modal-{{ $inv->id }}')">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Void</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
+    @if(!in_array($inv->status,['paid','cancelled']))
+    <div id="pay-modal-{{ $inv->id }}" class="modal-backdrop mt-6" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pay-modal-title-{{ $inv->id }}">
+            <h3 class="modal__title" id="pay-modal-title-{{ $inv->id }}"><i data-lucide="check-circle"></i> Mark invoice {{ $inv->invoice_number }} paid</h3>
+            <form method="POST" action="{{ route('portals.admin.financial.mark-paid',$inv->id) }}">@csrf
+                <div class="modal__body">
+                    <div class="form-group">
+                        <label class="form-label">Amount (XAF)</label>
+                        <input type="number" name="amount" value="{{ $inv->balance_amount ?? $inv->subtotal_amount }}" class="form-control" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Gateway</label>
+                        <select name="method" class="form-control">@foreach(['cash'=>'Cash','mtn_momo'=>'MTN MoMo','orange_money'=>'Orange Money','card'=>'Card','insurance'=>'Insurance','bank_transfer'=>'Bank Transfer'] as $k=>$l)<option value="{{ $k }}">{{ $l }}</option>@endforeach</select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Payer phone</label>
+                        <input type="text" name="payer_phone" class="form-control" placeholder="+237...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Payer name</label>
+                        <input type="text" name="payer_name" class="form-control">
+                    </div>
+                </div>
+                <div class="modal__footer">
+                    <button type="button" class="btn btn-ghost" onclick="opCloseModal('pay-modal-{{ $inv->id }}')">Cancel</button>
+                    <button type="submit" class="btn btn-success">Record payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
+@endforeach
+
+@endsection
+@section('scripts')
+<script>
+function opOpenModal(id){ document.getElementById(id).removeAttribute('hidden'); }
+function opCloseModal(id){ document.getElementById(id).setAttribute('hidden',''); }
+document.addEventListener('keydown', function(e){
+    if(e.key==='Escape'){ document.querySelectorAll('.modal-backdrop').forEach(function(m){ m.setAttribute('hidden',''); }); }
+});
+</script>
 @endsection
