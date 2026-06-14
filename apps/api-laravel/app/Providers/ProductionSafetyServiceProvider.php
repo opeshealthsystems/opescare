@@ -32,6 +32,8 @@ class ProductionSafetyServiceProvider extends ServiceProvider
                 'message' => 'APP_DEBUG is true in production. Stack traces will be exposed to users.',
                 'action'  => 'Set APP_DEBUG=false immediately.',
             ]);
+
+            throw new \RuntimeException('Unsafe production configuration: APP_DEBUG must be false.');
         }
     }
 
@@ -43,6 +45,8 @@ class ProductionSafetyServiceProvider extends ServiceProvider
                 'message' => 'Demo mode is enabled in production. This allows unauthenticated demo access.',
                 'action'  => 'Set OPESCARE_DEMO_MODE=false immediately.',
             ]);
+
+            throw new \RuntimeException('Unsafe production configuration: OPESCARE_DEMO_MODE must be false.');
         }
     }
 
