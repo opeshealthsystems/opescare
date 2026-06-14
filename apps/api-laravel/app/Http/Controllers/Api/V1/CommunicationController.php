@@ -44,6 +44,18 @@ class CommunicationController extends Controller
         private readonly BroadcastService             $broadcastService,
     ) {}
 
+    private function actorUserId(Request $request): string
+    {
+        $userId = $request->user()?->id
+            ?? $request->attributes->get('provider_id');
+
+        if (!is_string($userId) || !Str::isUuid($userId)) {
+            abort(401, 'Authenticated user context is required.');
+        }
+
+        return $userId;
+    }
+
     // ═══════════════════════════════════════════════════════════════
     // NOTIFICATIONS
     // ═══════════════════════════════════════════════════════════════
@@ -54,9 +66,9 @@ class CommunicationController extends Controller
      */
     public function getNotifications(Request $request): JsonResponse
     {
-        $validated = $request->validate(['user_id' => ['required', 'uuid']]);
+        $userId = $this->actorUserId($request);
 
-        $notifications = NotificationEvent::where('recipient_user_id', $validated['user_id'])
+        $notifications = NotificationEvent::where('recipient_user_id', $userId)
             ->orderByDesc('created_at')
             ->get();
 
@@ -69,9 +81,9 @@ class CommunicationController extends Controller
      */
     public function getUnreadCount(Request $request): JsonResponse
     {
-        $validated = $request->validate(['user_id' => ['required', 'uuid']]);
+        $userId = $this->actorUserId($request);
 
-        $count = NotificationEvent::where('recipient_user_id', $validated['user_id'])
+        $count = NotificationEvent::where('recipient_user_id', $userId)
             ->where('status', 'pending')
             ->count();
 
@@ -92,11 +104,11 @@ class CommunicationController extends Controller
      */
     public function acknowledgeNotification(Request $request, string $id): JsonResponse
     {
-        $validated = $request->validate(['user_id' => ['required', 'uuid']]);
+        $userId = $this->actorUserId($request);
 
         $notification = NotificationEvent::findOrFail($id);
         $notification->acknowledgement_status = 'acknowledged';
-        $notification->acknowledged_by        = $validated['user_id'];
+        $notification->acknowledged_by        = $userId;
         $notification->acknowledged_at        = now();
         $notification->save();
 
@@ -109,9 +121,9 @@ class CommunicationController extends Controller
      */
     public function markAllRead(Request $request): JsonResponse
     {
-        $validated = $request->validate(['user_id' => ['required', 'uuid']]);
+        $userId = $this->actorUserId($request);
 
-        NotificationEvent::where('recipient_user_id', $validated['user_id'])
+        NotificationEvent::where('recipient_user_id', $userId)
             ->where('status', 'pending')
             ->update(['status' => 'read']);
 
@@ -133,12 +145,12 @@ class CommunicationController extends Controller
     public function getPreferences(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'user_id'  => ['required', 'uuid'],
             'category' => ['nullable', 'string'],
         ]);
+        $userId = $this->actorUserId($request);
 
         $prefs = $this->preferenceService->getPreferences(
-            $validated['user_id'],
+            $userId,
             $validated['category'] ?? 'health_updates'
         );
 
@@ -152,12 +164,12 @@ class CommunicationController extends Controller
     public function updatePreferences(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'user_id'  => ['required', 'uuid'],
             'category' => ['nullable', 'string'],
         ]);
+        $userId = $this->actorUserId($request);
 
         $prefs = $this->preferenceService->updatePreferences(
-            $validated['user_id'],
+            $userId,
             $validated['category'] ?? 'health_updates',
             $request->except(['user_id', 'category'])
         );
@@ -176,11 +188,11 @@ class CommunicationController extends Controller
     public function getTasks(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'user_id' => ['required', 'uuid'],
             'role'    => ['nullable', 'string', 'max:100'],
         ]);
+        $userId = $this->actorUserId($request);
 
-        $tasks = ActionTask::where('assigned_to', $validated['user_id'])
+        $tasks = ActionTask::where('assigned_to', $userId)
             ->when($validated['role'] ?? null, fn ($q, $role) =>
                 $q->orWhere('assigned_role', $role)
             )
@@ -200,10 +212,10 @@ class CommunicationController extends Controller
      */
     public function acknowledgeTask(Request $request, string $id): JsonResponse
     {
-        $validated = $request->validate(['user_id' => ['required', 'uuid']]);
+        $userId = $this->actorUserId($request);
 
         $task = ActionTask::findOrFail($id);
-        $this->taskService->acknowledgeTask($task->uuid, $validated['user_id']);
+        $this->taskService->acknowledgeTask($task->uuid, $userId);
 
         return response()->json(['message' => 'Task acknowledged']);
     }
@@ -359,10 +371,10 @@ class CommunicationController extends Controller
      */
     public function getThreads(Request $request): JsonResponse
     {
-        $validated = $request->validate(['user_id' => ['required', 'uuid']]);
+        $userId = $this->actorUserId($request);
 
         $threads = MessageThread::whereHas('participants', fn ($q) =>
-            $q->where('user_id', $validated['user_id'])
+            $q->where('user_id', $userId)
         )->get();
 
         return response()->json($threads);
@@ -375,13 +387,13 @@ class CommunicationController extends Controller
     public function createThread(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'user_id' => ['required', 'uuid'],
             'role'    => ['required', 'string', 'max:100'],
         ]);
+        $userId = $this->actorUserId($request);
 
         try {
             $thread = $this->messagingService->createThread(
-                $validated['user_id'],
+                $userId,
                 $validated['role'],
                 $request->except(['user_id', 'role'])
             );
@@ -397,11 +409,11 @@ class CommunicationController extends Controller
      */
     public function getThread(Request $request, string $id): JsonResponse
     {
-        $validated = $request->validate(['user_id' => ['required', 'uuid']]);
+        $userId = $this->actorUserId($request);
 
         $thread = MessageThread::findOrFail($id);
 
-        if (!$this->permissionService->canViewThread($validated['user_id'], $thread->uuid)) {
+        if (!$this->permissionService->canViewThread($userId, $thread->uuid)) {
             return response()->json(['error' => 'MESSAGE_ACCESS_DENIED'], 403);
         }
 
@@ -420,16 +432,16 @@ class CommunicationController extends Controller
     public function sendMessage(Request $request, string $id): JsonResponse
     {
         $validated = $request->validate([
-            'user_id' => ['required', 'uuid'],
             'body'    => ['required', 'string'],
         ]);
+        $userId = $this->actorUserId($request);
 
         $thread = MessageThread::findOrFail($id);
 
         try {
             $message = $this->messagingService->sendMessage(
                 $thread->uuid,
-                $validated['user_id'],
+                $userId,
                 $validated['body']
             );
             return response()->json($message, 201);
@@ -625,7 +637,7 @@ class CommunicationController extends Controller
      */
     public function acknowledgeBroadcast(Request $request, string $id): JsonResponse
     {
-        $validated = $request->validate(['user_id' => ['required', 'uuid']]);
+        $userId = $this->actorUserId($request);
 
         $broadcast  = Broadcast::findOrFail($id);
         $facilityId = $request->attributes->get('facility_id');
@@ -633,7 +645,7 @@ class CommunicationController extends Controller
         try {
             $ack = $this->broadcastService->acknowledge(
                 $broadcast,
-                $validated['user_id'],
+                $userId,
                 $facilityId,
                 $request->ip()
             );
