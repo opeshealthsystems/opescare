@@ -4,66 +4,64 @@
 
 @section('content')
 
-    <div class="portal-page-header">
-        <div>
-            <a href="{{ route('portals.developer.dashboard') }}" style="font-size:0.83rem;color:#6b7280;text-decoration:none;">← Developer Portal</a>
-            <h1 class="portal-page-title" style="margin-top:4px;">My Apps</h1>
-        </div>
-        <a href="{{ route('portals.developer.apps.create') }}" class="btn btn--primary">+ New App</a>
+    <div class="breadcrumb">
+        <a href="{{ route('portals.developer.dashboard') }}">Developer portal</a>
+        <i data-lucide="chevron-right"></i>
+        <span>My apps</span>
     </div>
 
-    @if(session('success'))
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;"><i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('success') }}</div>
-    @endif
+    <div class="page-head">
+        <h2>My apps</h2>
+        <div class="page-head__spacer"></div>
+        <a href="{{ route('portals.developer.apps.create') }}" class="btn btn-primary"><i data-lucide="plus"></i> New app</a>
+    </div>
+
+    @if(session('success'))<div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
 
     @if(session('new_client_secret'))
-    <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:16px;margin-bottom:20px;">
-        <div style="font-weight:700;color:#0369a1;margin-bottom:8px;"><i data-lucide="key" style="width:15px;height:15px;vertical-align:-2px;"></i> App Created — Save Your Credentials Now</div>
-        <p style="font-size:0.84rem;color:#0c4a6e;margin-bottom:10px;">Your client secret is shown <strong>only once</strong>. Store it securely — it cannot be retrieved again.</p>
-        <div style="background:#fff;border:1px solid #bae6fd;border-radius:6px;padding:10px;font-family:monospace;font-size:0.82rem;margin-bottom:6px;">
-            <strong>Client ID:</strong> {{ session('new_client_id') }}
-        </div>
-        <div style="background:#fff;border:1px solid #bae6fd;border-radius:6px;padding:10px;font-family:monospace;font-size:0.82rem;">
-            <strong>Client Secret:</strong> {{ session('new_client_secret') }}
+    <div class="panel mb-6">
+        <div class="panel-header"><h3 class="panel-title"><i data-lucide="key"></i> App created — save your credentials now</h3></div>
+        <div class="panel-body">
+            <p class="mb-6">Your client secret is shown <strong>only once</strong>. Store it securely — it cannot be retrieved again.</p>
+            <div class="code-block mb-6"><strong>Client ID:</strong> <span class="code-token" data-copy="{{ session('new_client_id') }}">{{ session('new_client_id') }}</span></div>
+            <div class="code-block"><strong>Client Secret:</strong> <span class="code-token" data-copy="{{ session('new_client_secret') }}">{{ session('new_client_secret') }}</span></div>
         </div>
     </div>
     @endif
 
     @if($clients->isEmpty())
-    <div class="portal-card" style="padding:40px;text-align:center;color:#9ca3af;">
-        <div style="font-size:1.8rem;margin-bottom:12px;"><i data-lucide="plug" style="width:1.8rem;height:1.8rem;"></i></div>
-        <p style="font-size:0.88rem;">No apps yet. Create your first app to receive sandbox API credentials.</p>
-        <a href="{{ route('portals.developer.apps.create') }}" class="btn btn--primary btn--sm" style="margin-top:12px;">Create App</a>
+    <div class="panel">
+        <div class="empty-state">
+            <i data-lucide="plug" class="empty-state-icon"></i>
+            <p>No apps yet. Create your first app to receive sandbox API credentials.</p>
+            <a href="{{ route('portals.developer.apps.create') }}" class="btn btn-primary btn-sm"><i data-lucide="plus"></i> Create app</a>
+        </div>
     </div>
     @else
-    <div class="portal-card">
-        <div class="portal-card__body" style="padding:0;">
-            <table class="portal-table">
+    <div class="panel">
+        <div class="table-wrapper">
+            <table class="data-table">
                 <thead><tr>
-                    <th>App Name</th><th>Client ID</th><th>Environment</th><th>Status</th><th>Created</th><th></th>
+                    <th>App name</th><th>Client ID</th><th>Environment</th><th>Status</th><th>Created</th><th class="row-actions"></th>
                 </tr></thead>
                 <tbody>
                 @foreach($clients as $client)
                 <tr>
-                    <td>
-                        <strong>{{ $client->name ?? 'Unnamed App' }}</strong>
+                    <td data-label="App name">
+                        <span class="td-strong">{{ $client->name ?? 'Unnamed App' }}</span>
                         @if($client->description)
-                        <div style="font-size:0.75rem;color:#9ca3af;">{{ Str::limit($client->description, 60) }}</div>
+                        <div class="td-muted">{{ Str::limit($client->description, 60) }}</div>
                         @endif
                     </td>
-                    <td style="font-family:monospace;font-size:0.78rem;color:#7c3aed;">{{ Str::limit($client->client_id, 28) }}</td>
-                    <td>
-                        <span class="badge {{ ($client->environment ?? 'sandbox') === 'production' ? 'badge--success' : 'badge--info' }}" style="font-size:0.7rem;">
-                            {{ ucfirst($client->environment ?? 'sandbox') }}
-                        </span>
+                    <td data-label="Client ID"><span class="code-token" data-copy="{{ $client->client_id }}">{{ Str::limit($client->client_id, 28) }}</span></td>
+                    <td data-label="Environment">
+                        <span class="badge {{ ($client->environment ?? 'sandbox') === 'production' ? 'badge-success' : 'badge-info' }}">{{ ucfirst($client->environment ?? 'sandbox') }}</span>
                     </td>
-                    <td>
-                        <span class="badge {{ ($client->status ?? 'active') === 'active' ? 'badge--success' : 'badge--neutral' }}" style="font-size:0.7rem;">
-                            {{ ucfirst($client->status ?? 'active') }}
-                        </span>
+                    <td data-label="Status">
+                        <span class="badge {{ ($client->status ?? 'active') === 'active' ? 'badge-success' : 'badge-neutral' }}">{{ ucfirst($client->status ?? 'active') }}</span>
                     </td>
-                    <td style="color:#9ca3af;font-size:0.8rem;">{{ $client->created_at->format('d M Y') }}</td>
-                    <td><a href="{{ route('portals.developer.apps.show', $client->id) }}" class="btn btn--outline btn--sm">Details</a></td>
+                    <td data-label="Created" class="td-muted">{{ $client->created_at->format('d M Y') }}</td>
+                    <td class="row-actions" data-label=""><a href="{{ route('portals.developer.apps.show', $client->id) }}" class="btn btn-secondary btn-sm">Details</a></td>
                 </tr>
                 @endforeach
                 </tbody>
@@ -72,4 +70,14 @@
     </div>
     @endif
 
+@endsection
+@section('scripts')
+<script>
+document.addEventListener('click', function(e){
+    var t = e.target.closest('.code-token[data-copy]');
+    if(!t) return;
+    navigator.clipboard && navigator.clipboard.writeText(t.getAttribute('data-copy'));
+    var prev = t.textContent; t.textContent = 'Copied'; setTimeout(function(){ t.textContent = prev; }, 1200);
+});
+</script>
 @endsection

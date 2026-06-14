@@ -4,79 +4,72 @@
 
 @section('content')
 
-    <div class="portal-page-header">
+    <div class="breadcrumb">
+        <a href="{{ route('portals.developer.apps') }}">My apps</a>
+        <i data-lucide="chevron-right"></i>
+        <span>{{ $client->name ?? 'Unnamed App' }}</span>
+    </div>
+
+    <div class="entity-head">
+        <div class="entity-head__icon"><i data-lucide="plug"></i></div>
         <div>
-            <a href="{{ route('portals.developer.apps') }}" style="font-size:0.83rem;color:#6b7280;text-decoration:none;">← My Apps</a>
-            <h1 class="portal-page-title" style="margin-top:4px;">{{ $client->name ?? 'Unnamed App' }}</h1>
-            <p class="portal-page-subtitle" style="display:flex;gap:8px;align-items:center;">
-                <span class="badge {{ ($client->environment ?? 'sandbox') === 'production' ? 'badge--success' : 'badge--info' }}" style="font-size:0.7rem;">
-                    {{ ucfirst($client->environment ?? 'sandbox') }}
-                </span>
-                <span class="badge {{ ($client->status ?? 'active') === 'active' ? 'badge--success' : 'badge--neutral' }}" style="font-size:0.7rem;">
-                    {{ ucfirst($client->status ?? 'active') }}
-                </span>
-            </p>
+            <h2 class="entity-head__title">{{ $client->name ?? 'Unnamed App' }}</h2>
+            <div class="entity-head__sub">
+                <span class="badge {{ ($client->environment ?? 'sandbox') === 'production' ? 'badge-success' : 'badge-info' }}">{{ ucfirst($client->environment ?? 'sandbox') }}</span>
+                <span class="badge {{ ($client->status ?? 'active') === 'active' ? 'badge-success' : 'badge-neutral' }}">{{ ucfirst($client->status ?? 'active') }}</span>
+            </div>
         </div>
     </div>
 
-    @if(session('success'))
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;"><i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('success') }}</div>
-    @endif
+    @if(session('success'))<div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
 
     @if(session('new_client_secret'))
-    <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:16px;margin-bottom:20px;">
-        <div style="font-weight:700;color:#0369a1;margin-bottom:8px;"><i data-lucide="key" style="width:15px;height:15px;vertical-align:-2px;"></i> Save Your Credentials — Shown Only Once</div>
-        <div style="background:#fff;border:1px solid #bae6fd;border-radius:6px;padding:10px;font-family:monospace;font-size:0.82rem;margin-bottom:6px;">
-            <strong>Client ID:</strong> {{ session('new_client_id') }}
-        </div>
-        <div style="background:#fff;border:1px solid #bae6fd;border-radius:6px;padding:10px;font-family:monospace;font-size:0.82rem;">
-            <strong>Client Secret:</strong> {{ session('new_client_secret') }}
+    <div class="panel mb-6">
+        <div class="panel-header"><h3 class="panel-title"><i data-lucide="key"></i> Save your credentials — shown only once</h3></div>
+        <div class="panel-body">
+            <div class="code-block mb-6"><strong>Client ID:</strong> <span class="code-token" data-copy="{{ session('new_client_id') }}">{{ session('new_client_id') }}</span></div>
+            <div class="code-block"><strong>Client Secret:</strong> <span class="code-token" data-copy="{{ session('new_client_secret') }}">{{ session('new_client_secret') }}</span></div>
         </div>
     </div>
     @endif
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+    <div class="field-grid mb-6">
 
         {{-- Credentials & Config --}}
         <div>
-            <div class="portal-card" style="margin-bottom:16px;">
-                <div class="portal-card__header"><h2 class="portal-card__title">Credentials</h2></div>
-                <div class="portal-card__body" style="padding:16px 20px;font-size:0.84rem;">
-                    <dl style="display:grid;grid-template-columns:auto 1fr;gap:6px 16px;">
-                        <dt style="font-weight:600;color:#374151;">Client ID</dt>
-                        <dd style="font-family:monospace;color:#7c3aed;font-size:0.8rem;word-break:break-all;">{{ $client->client_id }}</dd>
-                        <dt style="font-weight:600;color:#374151;">Secret</dt>
-                        <dd style="color:#9ca3af;font-size:0.8rem;">••••••••••••••••  (shown once at creation)</dd>
-                        <dt style="font-weight:600;color:#374151;">Environment</dt>
-                        <dd>{{ ucfirst($client->environment ?? 'sandbox') }}</dd>
-                        <dt style="font-weight:600;color:#374151;">Scopes</dt>
-                        <dd style="font-size:0.78rem;">
+            <div class="panel mb-6">
+                <div class="panel-header"><h3 class="panel-title"><i data-lucide="key"></i> Credentials</h3></div>
+                <div class="panel-body">
+                    <table class="kv-table">
+                        <tr><th>Client ID</th><td><span class="code-token" data-copy="{{ $client->client_id }}">{{ $client->client_id }}</span></td></tr>
+                        <tr><th>Secret</th><td class="td-muted mono">••••••••••••••••  (shown once at creation)</td></tr>
+                        <tr><th>Environment</th><td>{{ ucfirst($client->environment ?? 'sandbox') }}</td></tr>
+                        <tr><th>Scopes</th><td>
                             @foreach(json_decode($client->scopes ?? '[]', true) ?? [] as $scope)
-                            <span style="display:inline-block;background:#f3f4f6;border-radius:4px;padding:1px 6px;margin:1px;font-family:monospace;">{{ $scope }}</span>
+                            <span class="code-token">{{ $scope }}</span>
                             @endforeach
-                        </dd>
-                        <dt style="font-weight:600;color:#374151;">Created</dt>
-                        <dd style="color:#6b7280;">{{ $client->created_at->format('d M Y H:i') }}</dd>
-                    </dl>
+                        </td></tr>
+                        <tr><th>Created</th><td class="td-muted">{{ $client->created_at->format('d M Y H:i') }}</td></tr>
+                    </table>
                 </div>
             </div>
 
             {{-- Integration Certification --}}
             @if($certification)
-            <div class="portal-card" style="border-color:{{ $certification->badge ? '#bbf7d0' : '#e5e7eb' }};">
-                <div class="portal-card__header"><h2 class="portal-card__title">Integration Certification</h2></div>
-                <div class="portal-card__body" style="padding:14px 20px;font-size:0.84rem;">
-                    <div style="display:flex;align-items:center;gap:12px;">
+            <div class="panel">
+                <div class="panel-header"><h3 class="panel-title"><i data-lucide="award"></i> Integration certification</h3></div>
+                <div class="panel-body">
+                    <div class="entity-head">
                         @if($certification->badge)
-                        <div><i data-lucide="{{ $certification->badge->levelIcon() }}" style="width:32px;height:32px;color:{{ $certification->badge->levelColor() }};"></i></div>
+                        <div class="entity-head__icon"><i data-lucide="{{ $certification->badge->levelIcon() }}" style="color:{{ $certification->badge->levelColor() }};"></i></div>
                         <div>
-                            <div style="font-weight:700;text-transform:capitalize;">{{ $certification->badge->certification_level }} Certified</div>
-                            <div style="font-family:monospace;color:#7c3aed;font-size:0.78rem;">{{ $certification->badge->badge_code }}</div>
+                            <div class="td-strong">{{ ucfirst($certification->badge->certification_level) }} certified</div>
+                            <div class="mono">{{ $certification->badge->badge_code }}</div>
                         </div>
                         @else
                         <div>
-                            <span class="{{ $certification->statusBadgeClass() }}" style="font-size:0.75rem;">{{ ucfirst(str_replace('_',' ',$certification->status)) }}</span>
-                            <div style="font-size:0.8rem;color:#6b7280;margin-top:4px;">Certification in progress</div>
+                            <span class="{{ $certification->statusBadgeClass() }}">{{ ucfirst(str_replace('_',' ',$certification->status)) }}</span>
+                            <div class="td-muted">Certification in progress</div>
                         </div>
                         @endif
                     </div>
@@ -89,20 +82,23 @@
         <div>
 
             {{-- 30-day usage --}}
-            <div class="portal-card" style="margin-bottom:16px;">
-                <div class="portal-card__header"><h2 class="portal-card__title">API Usage (30 days)</h2></div>
+            <div class="panel mb-6">
+                <div class="panel-header"><h3 class="panel-title"><i data-lucide="bar-chart-3"></i> API usage (30 days)</h3></div>
                 @if(empty($usageSummary))
-                <div class="portal-card__body" style="padding:16px;color:#9ca3af;font-size:0.83rem;text-align:center;">No usage recorded yet in the last 30 days.</div>
+                <div class="panel-body empty-state"><p>No usage recorded yet in the last 30 days.</p></div>
                 @else
-                <div class="portal-card__body" style="padding:0;">
-                    <table class="portal-table" style="font-size:0.81rem;">
-                        <thead><tr><th>Endpoint Group</th><th>Requests</th><th>Errors</th></tr></thead>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead><tr><th>Endpoint group</th><th>Requests</th><th>Errors</th></tr></thead>
                         <tbody>
                         @foreach($usageSummary as $group => $stats)
                         <tr>
-                            <td style="font-family:monospace;">{{ $group }}</td>
-                            <td>{{ number_format($stats['total_requests']) }}</td>
-                            <td style="color:{{ $stats['total_errors'] > 0 ? '#dc2626' : '#16a34a' }};">{{ number_format($stats['total_errors']) }}</td>
+                            <td data-label="Endpoint group" class="mono">{{ $group }}</td>
+                            <td data-label="Requests">{{ number_format($stats['total_requests']) }}</td>
+                            <td data-label="Errors">
+                                @if($stats['total_errors'] > 0)<span class="badge badge-danger">{{ number_format($stats['total_errors']) }}</span>
+                                @else<span class="badge badge-success">0</span>@endif
+                            </td>
                         </tr>
                         @endforeach
                         </tbody>
@@ -112,23 +108,23 @@
             </div>
 
             {{-- Webhook Subscriptions --}}
-            <div class="portal-card">
-                <div class="portal-card__header" style="display:flex;justify-content:space-between;align-items:center;">
-                    <h2 class="portal-card__title">Webhook Subscriptions</h2>
-                    <a href="{{ route('portals.developer.webhook_deliveries', $client->id) }}" style="font-size:0.78rem;color:#7c3aed;">Delivery Logs</a>
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 class="panel-title"><i data-lucide="webhook"></i> Webhook subscriptions</h3>
+                    <a href="{{ route('portals.developer.webhook_deliveries', $client->id) }}" class="btn btn-ghost btn-sm">Delivery logs</a>
                 </div>
                 @if($webhooks->isEmpty())
-                <div class="portal-card__body" style="padding:14px;color:#9ca3af;font-size:0.83rem;">No webhook subscriptions. Use the API to create subscriptions.</div>
+                <div class="panel-body empty-state"><p>No webhook subscriptions. Use the API to create subscriptions.</p></div>
                 @else
-                <div class="portal-card__body" style="padding:0;">
-                    <table class="portal-table" style="font-size:0.8rem;">
+                <div class="table-wrapper">
+                    <table class="data-table">
                         <thead><tr><th>Endpoint</th><th>Events</th><th>Status</th></tr></thead>
                         <tbody>
                         @foreach($webhooks as $wh)
                         <tr>
-                            <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $wh->callback_url }}</td>
-                            <td style="color:#9ca3af;font-size:0.75rem;">{{ count((array)$wh->subscribed_events) }} events</td>
-                            <td><span class="badge {{ $wh->status === 'active' ? 'badge--success' : 'badge--neutral' }}" style="font-size:0.68rem;">{{ $wh->status }}</span></td>
+                            <td data-label="Endpoint" class="mono">{{ $wh->callback_url }}</td>
+                            <td data-label="Events" class="td-muted">{{ count((array)$wh->subscribed_events) }} events</td>
+                            <td data-label="Status"><span class="badge {{ $wh->status === 'active' ? 'badge-success' : 'badge-neutral' }}">{{ $wh->status }}</span></td>
                         </tr>
                         @endforeach
                         </tbody>
@@ -140,4 +136,14 @@
         </div>
     </div>
 
+@endsection
+@section('scripts')
+<script>
+document.addEventListener('click', function(e){
+    var t = e.target.closest('.code-token[data-copy]');
+    if(!t) return;
+    navigator.clipboard && navigator.clipboard.writeText(t.getAttribute('data-copy'));
+    var prev = t.textContent; t.textContent = 'Copied'; setTimeout(function(){ t.textContent = prev; }, 1200);
+});
+</script>
 @endsection

@@ -19,13 +19,13 @@
 </div>
 
 @if(session('success'))
-<div class="alert alert-info" style="margin-bottom:var(--p-space-4);"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
+<div class="alert alert-info mb-4"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
 @endif
 
 @if(!$patient)
 <div class="panel">
     <div class="empty-state">
-        <div class="empty-state-icon" style="color:var(--p-warning);"><i data-lucide="alert-circle"></i></div>
+        <div class="empty-state-icon"><i data-lucide="alert-circle"></i></div>
         <h3>No Patient Profile Found</h3>
         <p>Your patient profile could not be loaded. Please contact support.</p>
     </div>
@@ -40,64 +40,52 @@
 </div>
 @else
 @foreach($prescriptions as $rx)
-<div class="panel" style="margin-bottom:var(--p-space-4);">
-    <div class="panel-header" style="display:flex;justify-content:space-between;align-items:center;">
+<div class="panel mb-4">
+    <div class="panel-header">
         <div>
-            <h2 class="panel-title" style="font-size:0.9375rem;">
+            <h2 class="panel-title">
                 <i data-lucide="pill"></i>
                 Prescription — {{ $rx->prescribed_at?->format('d M Y') ?? 'Unknown date' }}
             </h2>
             @if($rx->facility)
-            <p style="font-size:0.8125rem;color:var(--p-text-muted);margin-top:2px;">{{ $rx->facility->name }}</p>
+            <p class="text-sm text-muted mt-1">{{ $rx->facility->name }}</p>
             @endif
         </div>
-        <div style="display:flex;align-items:center;gap:var(--p-space-2);">
+        <div class="row-actions">
             @php
-                $bgColor = match($rx->statusColor()) {
-                    'success' => '#D1FAE5', 'info' => '#DBEAFE', default => 'var(--p-surface-2)'
-                };
-                $textColor = match($rx->statusColor()) {
-                    'success' => '#059669', 'info' => '#2563EB', default => 'var(--p-text-muted)'
+                $stCls = match($rx->statusColor()) {
+                    'success' => 'badge-success', 'info' => 'badge-info', default => 'badge-neutral'
                 };
             @endphp
-            <span style="padding:3px 10px;border-radius:9999px;font-size:0.75rem;font-weight:700;background:{{ $bgColor }};color:{{ $textColor }};">
-                {{ ucfirst($rx->status) }}
-            </span>
+            <span class="badge {{ $stCls }}">{{ ucfirst($rx->status) }}</span>
             @if(in_array($rx->status, ['dispensed', 'active', 'partial']))
-            <form method="POST" action="{{ route('portals.patient.prescriptions.refill', $rx->id) }}"
-                  onsubmit="return confirm('Request a refill for this prescription?')">
-                @csrf
-                <button type="submit" class="btn btn-sm"
-                    style="font-size:0.75rem;background:var(--p-primary-50,#EFF6FF);color:var(--p-primary,#1565C0);border:1px solid #BFDBFE;padding:3px 10px;border-radius:var(--p-radius-sm);">
-                    <i data-lucide="refresh-cw" style="width:0.75rem;height:0.75rem;vertical-align:middle;margin-right:2px;"></i>Request Refill
-                </button>
-            </form>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="opOpenModal('refill-rx-{{ $rx->id }}')">
+                <i data-lucide="refresh-cw"></i> Request Refill
+            </button>
             @endif
         </div>
     </div>
     @if($rx->items->isNotEmpty())
-    <div class="panel-body" style="padding:0;">
-        <table style="width:100%;border-collapse:collapse;">
+    <div class="table-wrapper">
+        <table class="data-table" aria-label="Prescription items">
             <thead>
-                <tr style="background:var(--p-surface-2);font-size:0.8125rem;color:var(--p-text-muted);">
-                    <th style="padding:var(--p-space-2) var(--p-space-4);text-align:left;">Medication</th>
-                    <th style="padding:var(--p-space-2) var(--p-space-4);text-align:left;">Dose</th>
-                    <th style="padding:var(--p-space-2) var(--p-space-4);text-align:left;">Frequency</th>
-                    <th style="padding:var(--p-space-2) var(--p-space-4);text-align:left;">Duration</th>
-                    <th style="padding:var(--p-space-2) var(--p-space-4);text-align:left;">Status</th>
+                <tr>
+                    <th>Medication</th>
+                    <th>Dose</th>
+                    <th>Frequency</th>
+                    <th>Duration</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($rx->items as $item)
-                <tr style="border-top:1px solid var(--p-border);font-size:0.875rem;">
-                    <td style="padding:var(--p-space-2) var(--p-space-4);font-weight:600;">{{ $item->drug_name }}</td>
-                    <td style="padding:var(--p-space-2) var(--p-space-4);">{{ $item->dose }} ({{ $item->route }})</td>
-                    <td style="padding:var(--p-space-2) var(--p-space-4);">{{ $item->frequency }}</td>
-                    <td style="padding:var(--p-space-2) var(--p-space-4);">{{ $item->duration_days ? $item->duration_days . ' days' : '—' }}</td>
-                    <td style="padding:var(--p-space-2) var(--p-space-4);">
-                        <span style="font-size:0.75rem;color:{{ $item->isDispensed() ? '#059669' : 'var(--p-text-muted)' }};">
-                            {{ ucfirst($item->status) }}
-                        </span>
+                <tr>
+                    <td data-label="Medication"><span class="td-strong">{{ $item->drug_name }}</span></td>
+                    <td data-label="Dose">{{ $item->dose }} ({{ $item->route }})</td>
+                    <td data-label="Frequency">{{ $item->frequency }}</td>
+                    <td data-label="Duration">{{ $item->duration_days ? $item->duration_days . ' days' : '—' }}</td>
+                    <td data-label="Status">
+                        <span class="badge {{ $item->isDispensed() ? 'badge-success' : 'badge-neutral' }}">{{ ucfirst($item->status) }}</span>
                     </td>
                 </tr>
                 @endforeach
@@ -109,11 +97,41 @@
 @endforeach
 
 @if(method_exists($prescriptions, 'links') && $prescriptions->hasPages())
-<div style="margin-top:var(--p-space-4);">
+<div class="mt-3">
     {{ $prescriptions->links() }}
 </div>
 @endif
 
+@foreach($prescriptions as $rx)
+    @if(in_array($rx->status, ['dispensed', 'active', 'partial']))
+    <div id="refill-rx-{{ $rx->id }}" class="modal-backdrop mt-6" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="refill-rx-{{ $rx->id }}-title">
+            <h3 class="modal__title" id="refill-rx-{{ $rx->id }}-title"><i data-lucide="refresh-cw"></i> Request refill</h3>
+            <form method="POST" action="{{ route('portals.patient.prescriptions.refill', $rx->id) }}">
+                @csrf
+                <div class="modal__body">
+                    <p>Request a refill for this prescription?</p>
+                </div>
+                <div class="modal__footer">
+                    <button type="button" class="btn btn-ghost" onclick="opCloseModal('refill-rx-{{ $rx->id }}')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Request Refill</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
+@endforeach
+
 @endif
 
+@endsection
+
+@section('scripts')
+<script>
+function opOpenModal(id){ document.getElementById(id).removeAttribute('hidden'); }
+function opCloseModal(id){ document.getElementById(id).setAttribute('hidden',''); }
+document.addEventListener('keydown', function(e){
+    if(e.key==='Escape'){ document.querySelectorAll('.modal-backdrop').forEach(function(m){ m.setAttribute('hidden',''); }); }
+});
+</script>
 @endsection

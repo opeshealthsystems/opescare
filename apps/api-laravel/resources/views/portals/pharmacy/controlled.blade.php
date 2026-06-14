@@ -3,8 +3,8 @@
 @section('title', 'Controlled Substances')
 
 @section('sidebar_role_badge')
-<div class="sidebar-role-badge" style="background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.4);color:#34d399;">
-    <i data-lucide="pill" style="width:.75rem;height:.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+<div class="sidebar-role-badge">
+    <i data-lucide="pill"></i>
     Pharmacy
 </div>
 @endsection
@@ -20,67 +20,52 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title">Controlled Substances</h1>
-        <p class="page-subtitle">Stock overview and recent dispensing log for controlled drugs.</p>
-    </div>
+<div class="page-head">
+    <h2>Controlled substances</h2>
+    <p class="page-subtitle">Stock overview and recent dispensing log for controlled drugs.</p>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+<div class="field-grid">
 
-    <div class="card" style="overflow:hidden;">
-        <div class="card-header" style="font-weight:700;">Controlled Drug Stock</div>
-        <div class="card-body" style="padding:0;overflow-x:auto;">
+    <div class="panel">
+        <div class="panel-header"><h3 class="panel-title"><i data-lucide="lock"></i> Controlled drug stock</h3></div>
+        <div class="table-wrapper">
             <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Drug</th>
-                        <th>Form</th>
-                        <th>Qty</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Drug</th><th>Form</th><th>Qty</th><th>Status</th></tr></thead>
                 <tbody>
                     @forelse($controlled as $drug)
                     <tr>
-                        <td style="font-weight:600;">{{ $drug->medicine_name }}</td>
-                        <td style="font-size:.83rem;color:#64748b;">{{ $drug->form }} {{ $drug->strength }}</td>
-                        <td style="font-weight:700;">{{ $drug->available_quantity }}</td>
-                        <td>
-                            <span class="badge badge-{{ match($drug->stock_status) { 'in_stock' => 'success', 'low_stock' => 'warning', 'out_of_stock' => 'danger', default => 'default' } }}">
+                        <td data-label="Drug" class="td-strong">{{ $drug->medicine_name }}</td>
+                        <td data-label="Form" class="td-muted">{{ $drug->form }} {{ $drug->strength }}</td>
+                        <td data-label="Qty" class="td-strong">{{ $drug->available_quantity }}</td>
+                        <td data-label="Status">
+                            <span class="badge badge-{{ match($drug->stock_status) { 'in_stock' => 'success', 'low_stock' => 'warning', 'out_of_stock' => 'danger', default => 'neutral' } }}">
                                 {{ ucfirst(str_replace('_', ' ', $drug->stock_status)) }}
                             </span>
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="4" style="text-align:center;padding:2rem;color:#94a3b8;">No controlled substances on record.</td></tr>
+                    <tr><td colspan="4" class="td-muted empty-cell">No controlled substances on record.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
     </div>
 
-    <div class="card" style="overflow:hidden;">
-        <div class="card-header" style="font-weight:700;">Recent Dispensing Log</div>
-        <div class="card-body" style="padding:0;overflow-x:auto;">
+    <div class="panel">
+        <div class="panel-header"><h3 class="panel-title"><i data-lucide="history"></i> Recent dispensing log</h3></div>
+        <div class="table-wrapper">
             <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Patient</th>
-                        <th>Items</th>
-                        <th>Dispensed</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Patient</th><th>Items</th><th>Dispensed</th></tr></thead>
                 <tbody>
                     @forelse($recentRx as $rx)
                     <tr>
-                        <td style="font-weight:600;font-size:.85rem;">{{ $rx->patient?->full_name ?? '—' }}</td>
-                        <td style="font-size:.8rem;color:#64748b;">{{ $rx->items->count() }} item(s)</td>
-                        <td style="font-size:.8rem;color:#64748b;">{{ $rx->dispensed_at?->format('d M Y H:i') ?? '—' }}</td>
+                        <td data-label="Patient" class="td-strong">{{ $rx->patient?->full_name ?? '—' }}</td>
+                        <td data-label="Items" class="td-muted">{{ $rx->items->count() }} item(s)</td>
+                        <td data-label="Dispensed" class="td-muted">{{ $rx->dispensed_at?->format('d M Y H:i') ?? '—' }}</td>
                     </tr>
                     @empty
-                    <tr><td colspan="3" style="text-align:center;padding:2rem;color:#94a3b8;">No dispensing records.</td></tr>
+                    <tr><td colspan="3" class="td-muted empty-cell">No dispensing records.</td></tr>
                     @endforelse
                 </tbody>
             </table>

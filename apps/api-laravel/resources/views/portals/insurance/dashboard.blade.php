@@ -3,8 +3,8 @@
 @section('title', 'Insurance Portal')
 
 @section('sidebar_role_badge')
-<div class="sidebar-role-badge" style="background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.4);color:#818cf8;">
-    <i data-lucide="shield-check" style="width:.75rem;height:.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+<div class="sidebar-role-badge sidebar-role-badge--primary">
+    <i data-lucide="shield-check"></i>
     Insurance
 </div>
 @endsection
@@ -45,101 +45,83 @@
 </div>
 
 @if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;">
+    <div class="alert alert-success mb-4">
         <i data-lucide="check-circle"></i><div>{{ session('success') }}</div>
     </div>
 @endif
 
 {{-- Stat cards --}}
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem;">
-    <a href="{{ route('portals.insurance.providers') }}" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#ede9fe;color:#7c3aed;"><i data-lucide="building-2"></i></div>
-            <div class="stat-card__val">{{ $stats['providers'] }}</div>
-            <div class="stat-card__label">Providers</div>
-        </div>
+<div class="stat-grid mb-6">
+    <a href="{{ route('portals.insurance.providers') }}" class="stat-card stat-card--primary">
+        <div class="stat-card__label">Providers</div>
+        <div class="stat-card__value">{{ $stats['providers'] }}</div>
     </a>
-    <a href="{{ route('portals.insurance.providers') }}" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#dbeafe;color:#1d4ed8;"><i data-lucide="layers"></i></div>
-            <div class="stat-card__val">{{ $stats['active_plans'] }}</div>
-            <div class="stat-card__label">Active Plans</div>
-        </div>
+    <a href="{{ route('portals.insurance.providers') }}" class="stat-card stat-card--primary">
+        <div class="stat-card__label">Active Plans</div>
+        <div class="stat-card__value">{{ $stats['active_plans'] }}</div>
     </a>
-    <a href="{{ route('portals.insurance.policies') }}" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#dcfce7;color:#15803d;"><i data-lucide="shield-check"></i></div>
-            <div class="stat-card__val">{{ $stats['policies'] }}</div>
-            <div class="stat-card__label">Policies</div>
-        </div>
+    <a href="{{ route('portals.insurance.policies') }}" class="stat-card stat-card--success">
+        <div class="stat-card__label">Policies</div>
+        <div class="stat-card__value">{{ $stats['policies'] }}</div>
     </a>
-    <a href="{{ route('portals.insurance.preauths') }}" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#fef3c7;color:#b45309;"><i data-lucide="clock"></i></div>
-            <div class="stat-card__val">{{ $stats['pending_auth'] }}</div>
-            <div class="stat-card__label">Pending Preauth</div>
-        </div>
+    <a href="{{ route('portals.insurance.preauths') }}" class="stat-card stat-card--warning">
+        <div class="stat-card__label">Pending Preauth</div>
+        <div class="stat-card__value">{{ $stats['pending_auth'] }}</div>
     </a>
-    <a href="{{ route('portals.insurance.claims') }}" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#fee2e2;color:#b91c1c;"><i data-lucide="file-text"></i></div>
-            <div class="stat-card__val">{{ $stats['open_claims'] }}</div>
-            <div class="stat-card__label">Open Claims</div>
-        </div>
+    <a href="{{ route('portals.insurance.claims') }}" class="stat-card stat-card--danger">
+        <div class="stat-card__label">Open Claims</div>
+        <div class="stat-card__value">{{ $stats['open_claims'] }}</div>
     </a>
-    <a href="{{ route('portals.insurance.claims') }}" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#dcfce7;color:#15803d;"><i data-lucide="check-circle-2"></i></div>
-            <div class="stat-card__val">{{ $stats['paid_claims'] }}</div>
-            <div class="stat-card__label">Paid Claims</div>
-        </div>
+    <a href="{{ route('portals.insurance.claims') }}" class="stat-card stat-card--success">
+        <div class="stat-card__label">Paid Claims</div>
+        <div class="stat-card__value">{{ $stats['paid_claims'] }}</div>
     </a>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+<div class="grid-2">
 
     {{-- Recent Claims --}}
-    <div class="card">
-        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-weight:700;">Recent Claims</span>
-            <a href="{{ route('portals.insurance.claims') }}" class="btn btn-outline btn-sm">View all</a>
+    <div class="panel">
+        <div class="panel-header">
+            <h2 class="panel-title">Recent Claims</h2>
+            <a href="{{ route('portals.insurance.claims') }}" class="btn btn-secondary btn-sm">View all</a>
         </div>
-        <div class="card-body" style="padding:0;">
+        <div class="panel-body--flush">
             @forelse($recentClaims as $claim)
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;border-bottom:1px solid #f1f5f9;">
-                <div>
-                    <div style="font-weight:600;font-size:.875rem;">{{ $claim->patient?->full_name ?? 'Unknown Patient' }}</div>
-                    <div style="font-size:.75rem;color:#64748b;">{{ $claim->created_at?->format('d M Y') }}</div>
+            <div class="list-row">
+                <div class="list-row__main">
+                    <div class="td-strong">{{ $claim->patient?->full_name ?? 'Unknown Patient' }}</div>
+                    <div class="td-muted">{{ $claim->created_at?->format('d M Y') }}</div>
                 </div>
-                <span class="badge badge-{{ match($claim->status) { 'paid' => 'success', 'submitted' => 'info', 'rejected' => 'danger', 'cancelled' => 'default', default => 'warning' } }}">
+                <span class="badge badge-{{ match($claim->status) { 'paid' => 'success', 'submitted' => 'info', 'rejected' => 'danger', 'cancelled' => 'neutral', default => 'warning' } }}">
                     {{ ucfirst($claim->status) }}
                 </span>
             </div>
             @empty
-            <div style="padding:1.5rem;text-align:center;color:#94a3b8;font-size:.875rem;">No claims yet.</div>
+            <div class="empty-state"><p>No claims yet.</p></div>
             @endforelse
         </div>
     </div>
 
     {{-- Recent Preauths --}}
-    <div class="card">
-        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-weight:700;">Recent Preauthorizations</span>
-            <a href="{{ route('portals.insurance.preauths') }}" class="btn btn-outline btn-sm">View all</a>
+    <div class="panel">
+        <div class="panel-header">
+            <h2 class="panel-title">Recent Preauthorizations</h2>
+            <a href="{{ route('portals.insurance.preauths') }}" class="btn btn-secondary btn-sm">View all</a>
         </div>
-        <div class="card-body" style="padding:0;">
+        <div class="panel-body--flush">
             @forelse($recentPreauths as $auth)
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;border-bottom:1px solid #f1f5f9;">
-                <div>
-                    <div style="font-weight:600;font-size:.875rem;">{{ $auth->patient?->full_name ?? 'Unknown Patient' }}</div>
-                    <div style="font-size:.75rem;color:#64748b;">{{ $auth->created_at?->format('d M Y') }}</div>
+            <div class="list-row">
+                <div class="list-row__main">
+                    <div class="td-strong">{{ $auth->patient?->full_name ?? 'Unknown Patient' }}</div>
+                    <div class="td-muted">{{ $auth->created_at?->format('d M Y') }}</div>
                 </div>
-                <span class="badge badge-{{ match($auth->status) { 'approved' => 'success', 'submitted' => 'info', 'rejected' => 'danger', 'cancelled' => 'default', default => 'warning' } }}">
+                <span class="badge badge-{{ match($auth->status) { 'approved' => 'success', 'submitted' => 'info', 'rejected' => 'danger', 'cancelled' => 'neutral', default => 'warning' } }}">
                     {{ ucfirst($auth->status) }}
                 </span>
             </div>
             @empty
-            <div style="padding:1.5rem;text-align:center;color:#94a3b8;font-size:.875rem;">No preauth requests yet.</div>
+            <div class="empty-state"><p>No preauth requests yet.</p></div>
             @endforelse
         </div>
     </div>

@@ -21,7 +21,7 @@
 </div>
 
 @if(session('success'))
-<div class="alert alert-info" style="margin-bottom:var(--p-space-4);"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
+<div class="alert alert-info mb-4"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
 @endif
 
 @php $apptCount = method_exists($appointments, 'total') ? $appointments->total() : $appointments->count(); @endphp
@@ -93,16 +93,11 @@
                         @endphp
                         <span class="badge {{ $stCls }}">{{ ucfirst(str_replace('_', ' ', $appt->status ?? 'Scheduled')) }}</span>
                     </td>
-                    <td>
+                    <td class="row-actions">
                         @if(in_array($appt->status, ['scheduled', 'confirmed']))
-                        <form method="POST" action="{{ route('portals.patient.appointments.cancel', $appt->id) }}"
-                              onsubmit="return confirm('Cancel this appointment?')">
-                            @csrf
-                            <button type="submit" class="btn btn-sm"
-                                style="font-size:0.75rem;background:var(--p-surface-2);color:#DC2626;border:1px solid #FECACA;padding:3px 10px;border-radius:var(--p-radius-sm);">
-                                <i data-lucide="x-circle" style="width:0.75rem;height:0.75rem;vertical-align:middle;margin-right:2px;"></i>Cancel
-                            </button>
-                        </form>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="opOpenModal('cancel-appt-{{ $appt->id }}')">
+                            <i data-lucide="x-circle"></i> Cancel
+                        </button>
                         @endif
                     </td>
                 </tr>
@@ -111,11 +106,41 @@
         </table>
     </div>
     @if(method_exists($appointments, 'links'))
-    <div style="padding:var(--p-space-4);border-top:1px solid var(--p-border);">
+    <div class="panel-body">
         {{ $appointments->links() }}
     </div>
     @endif
 </div>
+
+@foreach($appointments as $appt)
+    @if(in_array($appt->status, ['scheduled', 'confirmed']))
+    <div id="cancel-appt-{{ $appt->id }}" class="modal-backdrop mt-6" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cancel-appt-{{ $appt->id }}-title">
+            <h3 class="modal__title" id="cancel-appt-{{ $appt->id }}-title"><i data-lucide="x-circle"></i> Cancel appointment</h3>
+            <form method="POST" action="{{ route('portals.patient.appointments.cancel', $appt->id) }}">
+                @csrf
+                <div class="modal__body">
+                    <p>Cancel this appointment? This action cannot be undone.</p>
+                </div>
+                <div class="modal__footer">
+                    <button type="button" class="btn btn-ghost" onclick="opCloseModal('cancel-appt-{{ $appt->id }}')">Keep appointment</button>
+                    <button type="submit" class="btn btn-danger">Cancel appointment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
+@endforeach
 @endif
 
+@endsection
+
+@section('scripts')
+<script>
+function opOpenModal(id){ document.getElementById(id).removeAttribute('hidden'); }
+function opCloseModal(id){ document.getElementById(id).setAttribute('hidden',''); }
+document.addEventListener('keydown', function(e){
+    if(e.key==='Escape'){ document.querySelectorAll('.modal-backdrop').forEach(function(m){ m.setAttribute('hidden',''); }); }
+});
+</script>
 @endsection

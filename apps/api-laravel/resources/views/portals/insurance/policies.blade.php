@@ -3,7 +3,7 @@
 @section('title', 'Patient Insurance Policies')
 
 @section('sidebar_role_badge')
-<div class="sidebar-role-badge">Insurance</div>
+<div class="sidebar-role-badge sidebar-role-badge--primary">Insurance</div>
 @endsection
 @section('sidebar_user_role', 'Insurance Admin')
 
@@ -45,45 +45,48 @@
         <p class="page-subtitle">Register and manage patient insurance coverage.</p>
     </div>
     <button type="button" class="btn btn-primary btn-sm" onclick="openPolicyModal()">
-        <i data-lucide="plus-circle" style="width:14px;height:14px;"></i>
+        <i data-lucide="plus-circle"></i>
         Register Policy
     </button>
 </div>
 
 @if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;">
+    <div class="alert alert-success mb-4">
         <i data-lucide="check-circle"></i><div>{{ session('success') }}</div>
     </div>
 @endif
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;">
+    <div class="alert alert-danger mb-4">
         <i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div>
     </div>
 @endif
 
 {{-- Filters --}}
-<form method="GET" action="{{ route('portals.insurance.policies') }}" class="filter-bar" style="flex-wrap:wrap;gap:.5rem;">
-    <select name="status" class="form-control">
+<form method="GET" action="{{ route('portals.insurance.policies') }}" class="filter-bar">
+    <select name="status" class="filter-select">
         <option value="">All Statuses</option>
         @foreach(['pending','active','inactive','expired','cancelled'] as $s)
             <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ ucwords($s) }}</option>
         @endforeach
     </select>
-    <input type="text" name="patient_id" class="form-control" placeholder="Patient ID…" value="{{ request('patient_id') }}">
+    <label class="filter-search">
+        <i data-lucide="search"></i>
+        <input type="text" name="patient_id" placeholder="Patient ID…" value="{{ request('patient_id') }}">
+    </label>
     <button type="submit" class="btn btn-primary btn-sm">
-        <i data-lucide="filter" style="width:13px;height:13px;"></i> Filter
+        <i data-lucide="filter"></i> Filter
     </button>
     <a href="{{ route('portals.insurance.policies') }}" class="btn btn-ghost btn-sm">Clear</a>
 </form>
 
 <div class="panel">
-    <div class="panel-body" style="padding:0;">
+    <div class="panel-body--flush">
         @if(count($policies) === 0)
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="shield-check"></i></div>
                 <h3>No Patient Policies</h3>
                 <p>Register a patient insurance policy to begin tracking coverage.</p>
-                <button type="button" class="btn btn-primary btn-sm" style="margin-top:1rem;" onclick="openPolicyModal()">
+                <button type="button" class="btn btn-primary btn-sm" onclick="openPolicyModal()">
                     Register Policy
                 </button>
             </div>
@@ -122,16 +125,14 @@
                         @endphp
                         <tr>
                             <td data-label="Patient">
-                                <span style="font-family:monospace;font-size:var(--p-text-xs);">{{ $policy->patient_id }}</span>
+                                <span class="td-mono">{{ $policy->patient_id }}</span>
                             </td>
                             <td data-label="Provider / Plan">
-                                <div style="font-size:var(--p-text-xs);">
-                                    <strong>{{ $policy->plan->provider->name ?? '--' }}</strong><br>
-                                    {{ $policy->plan->name ?? '--' }}
-                                </div>
+                                <span class="td-strong">{{ $policy->plan->provider->name ?? '--' }}</span>
+                                <div class="td-muted">{{ $policy->plan->name ?? '--' }}</div>
                             </td>
                             <td data-label="Policy #">
-                                <span style="font-family:monospace;font-size:var(--p-text-xs);">{{ $policy->policy_number }}</span>
+                                <span class="td-mono">{{ $policy->policy_number }}</span>
                             </td>
                             <td data-label="Member ID">{{ $policy->member_id ?? '--' }}</td>
                             <td data-label="Expiry">
@@ -147,33 +148,23 @@
                             <td data-label="Status">
                                 <span class="badge {{ $statusBadge }}">{{ ucwords($policy->status) }}</span>
                             </td>
-                            <td data-label="Actions">
-                                <div style="display:flex;gap:.35rem;flex-wrap:wrap;">
-                                    {{-- Eligibility check --}}
-                                    <button type="button" class="btn btn-ghost btn-xs"
-                                        onclick="openEligModal('{{ $policy->id }}')">
-                                        <i data-lucide="activity" style="width:11px;height:11px;"></i>
-                                        Check
+                            <td data-label="Actions" class="row-actions">
+                                {{-- Eligibility check --}}
+                                <button type="button" class="btn btn-ghost btn-sm" onclick="openEligModal('{{ $policy->id }}')">
+                                    <i data-lucide="activity"></i> Check
+                                </button>
+                                @if($policy->status === 'pending')
+                                    <form method="POST" action="{{ route('portals.insurance.policies.activate', $policy->id) }}" class="inline-form">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <i data-lucide="check-circle"></i> Activate
+                                        </button>
+                                    </form>
+                                @elseif($policy->status === 'active')
+                                    <button type="button" class="btn btn-ghost btn-sm" onclick="openDeactivateModal('{{ $policy->id }}')">
+                                        <i data-lucide="pause-circle"></i> Deactivate
                                     </button>
-                                    @if($policy->status === 'pending')
-                                        <form method="POST" action="{{ route('portals.insurance.policies.activate', $policy->id) }}" style="display:inline;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-success btn-xs">
-                                                <i data-lucide="check-circle" style="width:11px;height:11px;"></i>
-                                                Activate
-                                            </button>
-                                        </form>
-                                    @elseif($policy->status === 'active')
-                                        <form method="POST" action="{{ route('portals.insurance.policies.deactivate', $policy->id) }}" style="display:inline;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-ghost btn-xs"
-                                                onclick="return confirm('Deactivate this policy?')">
-                                                <i data-lucide="pause-circle" style="width:11px;height:11px;"></i>
-                                                Deactivate
-                                            </button>
-                                        </form>
-                                    @endif
-                                </div>
+                                @endif
                             </td>
                         </tr>
                         @endforeach
@@ -185,13 +176,13 @@
 </div>
 
 {{-- Register Policy Modal --}}
-<div id="policy-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;overflow-y:auto;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:540px;margin:1rem;">
-        <h3 style="margin:0 0 1.25rem;font-size:1.1rem;">Register Patient Insurance Policy</h3>
+<div id="policy-modal" class="modal-fixed">
+    <div class="modal-fixed__panel modal-fixed__panel--lg">
+        <div class="modal-fixed__head"><h3 class="modal-fixed__title">Register Patient Insurance Policy</h3></div>
         <form method="POST" action="{{ route('portals.insurance.policies.store') }}">
             @csrf
-            <div class="form-group" style="margin-bottom:.75rem;">
-                <label class="form-label">Patient *</label>
+            <div class="form-group">
+                <label class="form-label form-label-required">Patient</label>
                 @if(count($patients) > 0)
                     <select name="patient_id" class="form-control" required>
                         <option value="">— Select Patient —</option>
@@ -205,8 +196,8 @@
                     <input type="text" name="patient_id" class="form-control" required placeholder="Patient ID">
                 @endif
             </div>
-            <div class="form-group" style="margin-bottom:.75rem;">
-                <label class="form-label">Insurance Plan *</label>
+            <div class="form-group">
+                <label class="form-label form-label-required">Insurance Plan</label>
                 @if(count($plans) > 0)
                     <select name="insurance_plan_id" class="form-control" required>
                         <option value="">— Select Plan —</option>
@@ -217,13 +208,13 @@
                         @endforeach
                     </select>
                 @else
-                    <p class="form-hint" style="color:var(--p-danger);">No active plans found. Add a provider and plan first.</p>
+                    <p class="form-hint">No active plans found. Add a provider and plan first.</p>
                     <input type="text" name="insurance_plan_id" class="form-control" required placeholder="Plan ID">
                 @endif
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+            <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">Policy Number *</label>
+                    <label class="form-label form-label-required">Policy Number</label>
                     <input type="text" name="policy_number" class="form-control" required maxlength="100">
                 </div>
                 <div class="form-group">
@@ -231,7 +222,7 @@
                     <input type="text" name="member_id" class="form-control" maxlength="100">
                 </div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+            <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Effective Date</label>
                     <input type="date" name="effective_date" class="form-control">
@@ -241,7 +232,7 @@
                     <input type="date" name="expiry_date" class="form-control">
                 </div>
             </div>
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group">
                 <label class="form-label">Relationship to Primary</label>
                 <select name="relationship_to_primary" class="form-control">
                     <option value="self">Self</option>
@@ -250,11 +241,10 @@
                     <option value="other">Other</option>
                 </select>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+            <div class="form-actions-end">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closePolicyModal()">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">
-                    <i data-lucide="shield-check" style="width:13px;height:13px;"></i>
-                    Register Policy
+                    <i data-lucide="shield-check"></i> Register Policy
                 </button>
             </div>
         </form>
@@ -262,13 +252,13 @@
 </div>
 
 {{-- Eligibility Check Modal --}}
-<div id="elig-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:400px;margin:1rem;">
-        <h3 style="margin:0 0 1.25rem;font-size:1.1rem;">Eligibility Check</h3>
+<div id="elig-modal" class="modal-fixed">
+    <div class="modal-fixed__panel modal-fixed__panel--sm">
+        <div class="modal-fixed__head"><h3 class="modal-fixed__title">Eligibility Check</h3></div>
         <form id="elig-form" method="POST" action="">
             @csrf
-            <div class="form-group" style="margin-bottom:.75rem;">
-                <label class="form-label">Eligibility Result *</label>
+            <div class="form-group">
+                <label class="form-label form-label-required">Eligibility Result</label>
                 <select name="status" class="form-control" required>
                     <option value="eligible">Eligible</option>
                     <option value="not_eligible">Not Eligible</option>
@@ -277,16 +267,30 @@
                     <option value="failed">Failed to Verify</option>
                 </select>
             </div>
-            <div class="form-group" style="margin-bottom:.75rem;">
+            <div class="form-group">
                 <label class="form-label">Notes</label>
                 <textarea name="notes" class="form-control" rows="3" maxlength="500"></textarea>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;">
+            <div class="form-actions-end">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeEligModal()">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">
-                    <i data-lucide="activity" style="width:13px;height:13px;"></i>
-                    Save Check
+                    <i data-lucide="activity"></i> Save Check
                 </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Deactivate Policy Modal --}}
+<div id="deactivate-modal" class="modal-fixed">
+    <div class="modal-fixed__panel modal-fixed__panel--sm">
+        <div class="modal-fixed__head"><h3 class="modal-fixed__title"><i data-lucide="alert-triangle"></i> Deactivate policy</h3></div>
+        <form id="deactivate-form" method="POST" action="">
+            @csrf
+            <p>Deactivate this policy?</p>
+            <div class="form-actions-end">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeDeactivateModal()">Cancel</button>
+                <button type="submit" class="btn btn-danger btn-sm">Deactivate</button>
             </div>
         </form>
     </div>
@@ -296,8 +300,8 @@
 
 @section('scripts')
 <script>
-    function openPolicyModal() { document.getElementById('policy-modal').style.display = 'flex'; }
-    function closePolicyModal() { document.getElementById('policy-modal').style.display = 'none'; }
+    function openPolicyModal() { document.getElementById('policy-modal').classList.add('open'); }
+    function closePolicyModal() { document.getElementById('policy-modal').classList.remove('open'); }
     document.getElementById('policy-modal').addEventListener('click', function(e) {
         if (e.target === this) closePolicyModal();
     });
@@ -305,11 +309,21 @@
     function openEligModal(policyId) {
         var form = document.getElementById('elig-form');
         form.setAttribute('action', '{{ url("/portals/insurance/policies") }}/' + policyId + '/eligibility');
-        document.getElementById('elig-modal').style.display = 'flex';
+        document.getElementById('elig-modal').classList.add('open');
     }
-    function closeEligModal() { document.getElementById('elig-modal').style.display = 'none'; }
+    function closeEligModal() { document.getElementById('elig-modal').classList.remove('open'); }
     document.getElementById('elig-modal').addEventListener('click', function(e) {
         if (e.target === this) closeEligModal();
+    });
+
+    function openDeactivateModal(policyId) {
+        document.getElementById('deactivate-form').setAttribute('action',
+            '{{ url("/portals/insurance/policies") }}/' + policyId + '/deactivate');
+        document.getElementById('deactivate-modal').classList.add('open');
+    }
+    function closeDeactivateModal() { document.getElementById('deactivate-modal').classList.remove('open'); }
+    document.getElementById('deactivate-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeactivateModal();
     });
 </script>
 @endsection

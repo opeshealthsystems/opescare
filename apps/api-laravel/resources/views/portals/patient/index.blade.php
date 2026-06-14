@@ -10,12 +10,12 @@
 @if($patient)
 
 <!-- Health ID Card -->
-<div class="health-id-card mb-8" style="margin-bottom:var(--p-space-8);">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:var(--p-space-5);">
+<div class="health-id-card mb-8" style="background:#0F2744;">
+    <div class="flex-between" style="align-items:flex-start;gap:var(--p-space-5);">
         <div style="flex:1;">
-            <div style="display:flex;align-items:center;gap:var(--p-space-3);margin-bottom:var(--p-space-5);">
+            <div class="flex-between" style="justify-content:flex-start;gap:var(--p-space-3);margin-bottom:var(--p-space-5);">
                 <div style="padding:var(--p-space-2);background:rgba(255,255,255,.15);border-radius:var(--p-radius);">
-                    <i data-lucide="fingerprint" style="width:1.25rem;height:1.25rem;"></i>
+                    <i data-lucide="fingerprint"></i>
                 </div>
                 <span class="health-id-label">{{ __('public.medical_id.health_id', [], app()->getLocale()) ?: 'OpesCare Health ID' }}</span>
             </div>
@@ -25,8 +25,7 @@
             <div class="health-id-meta">
                 <div>
                     <div class="health-id-meta-label">{{ __('public.portal.status', [], app()->getLocale()) ?: 'Status' }}</div>
-                    <div class="health-id-meta-value" style="display:flex;align-items:center;gap:0.35rem;">
-                        <span style="width:7px;height:7px;background:#34D399;border-radius:50%;display:inline-block;"></span>
+                    <div class="health-id-meta-value">
                         {{ ucfirst(($patient->verification_status instanceof \BackedEnum ? $patient->verification_status->value : $patient->verification_status) ?? 'Active') }}
                     </div>
                 </div>
@@ -48,8 +47,8 @@
                      alt="{{ __('public.medical_id.health_id_qr_alt', [], app()->getLocale()) ?: 'Health ID QR Code' }}"
                      style="width:5rem;height:5rem;border-radius:var(--p-radius-sm);" />
             @else
-                <div style="width:5rem;height:5rem;display:flex;align-items:center;justify-content:center;background:#F1F5F9;border-radius:var(--p-radius-sm);">
-                    <i data-lucide="qr-code" style="width:3rem;height:3rem;color:var(--p-text);"></i>
+                <div style="width:5rem;height:5rem;display:flex;align-items:center;justify-content:center;background:var(--p-surface-2);border-radius:var(--p-radius-sm);">
+                    <i data-lucide="qr-code" style="width:3rem;height:3rem;"></i>
                 </div>
             @endif
             <span>{{ __('public.medical_id.scan_qr', [], app()->getLocale()) ?: 'Scan QR' }}</span>
@@ -58,7 +57,7 @@
 </div>
 
 <!-- Quick Actions -->
-<div class="quick-actions mb-8" style="margin-bottom:var(--p-space-8);">
+<div class="quick-actions mb-8">
     <a href="{{ route('portals.patient.appointments') }}" class="quick-action-btn">
         <div class="quick-action-icon"><i data-lucide="calendar-check-2"></i></div>
         <span class="quick-action-label">{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
@@ -114,69 +113,65 @@
 </div>
 
 <!-- Clinical Safety Banner -->
-<div class="panel mb-6" style="margin-bottom:var(--p-space-6);border-left:4px solid #DC2626;">
+<div class="panel mb-6">
     <div class="panel-header">
-        <h2 class="panel-title" style="color:#DC2626;">
+        <h2 class="panel-title">
             <i data-lucide="shield-alert"></i> Clinical Safety Summary
         </h2>
     </div>
     <div class="panel-body">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--p-space-4);">
+        <div class="stat-grid">
 
             {{-- Blood Group --}}
-            <div style="display:flex;flex-direction:column;gap:4px;">
-                <span style="font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.05em;">Blood Group</span>
-                <span style="font-size:1.25rem;font-weight:800;color:var(--p-text);">
-                    {{ $patient->blood_group ?? '—' }}
-                </span>
+            <div class="stat-card stat-card--danger">
+                <div class="stat-card__label">Blood Group</div>
+                <div class="stat-card__value">{{ $patient->blood_group ?? '—' }}</div>
                 @if(!$patient->blood_group)
-                    <a href="{{ route('portals.patient.profile') }}" style="font-size:0.75rem;color:var(--p-primary);">Add in profile →</a>
+                    <a href="{{ route('portals.patient.profile') }}" class="stat-card__hint">Add in profile →</a>
                 @endif
             </div>
 
             {{-- Critical Allergies --}}
-            <div style="display:flex;flex-direction:column;gap:4px;">
-                <span style="font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.05em;">Critical Allergies</span>
+            <div class="stat-card stat-card--danger">
+                <div class="stat-card__label">Critical Allergies</div>
                 @if($criticalAllergies->isEmpty())
-                    <span style="font-size:0.875rem;color:#16A34A;font-weight:600;">None on record</span>
+                    <div class="stat-card__value text-success">None on record</div>
                 @else
-                    @foreach($criticalAllergies->take(3) as $a)
-                        <span style="font-size:0.8125rem;font-weight:700;color:#DC2626;"><i data-lucide="alert-triangle" style="width:13px;height:13px;vertical-align:-2px;"></i> {{ $a->substance }}</span>
-                    @endforeach
+                    <div class="stat-card__value">
+                        @foreach($criticalAllergies->take(3) as $a)
+                            <div class="text-sm"><span class="badge badge-danger"><i data-lucide="alert-triangle"></i> {{ $a->substance }}</span></div>
+                        @endforeach
+                    </div>
                     @if($criticalAllergies->count() > 3)
-                        <a href="{{ route('portals.patient.allergies') }}" style="font-size:0.75rem;color:var(--p-primary);">+{{ $criticalAllergies->count() - 3 }} more →</a>
+                        <a href="{{ route('portals.patient.allergies') }}" class="stat-card__hint">+{{ $criticalAllergies->count() - 3 }} more →</a>
                     @endif
                 @endif
             </div>
 
             {{-- All Active Allergies count --}}
-            <div style="display:flex;flex-direction:column;gap:4px;">
-                <span style="font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.05em;">Active Allergies</span>
-                <span style="font-size:1.25rem;font-weight:800;color:{{ $activeAllergies->isEmpty() ? 'var(--p-text-muted)' : '#F59E0B' }};">
-                    {{ $activeAllergies->count() }}
-                </span>
-                <a href="{{ route('portals.patient.allergies') }}" style="font-size:0.75rem;color:var(--p-primary);">View all →</a>
+            <div class="stat-card {{ $activeAllergies->isEmpty() ? '' : 'stat-card--warning' }}">
+                <div class="stat-card__label">Active Allergies</div>
+                <div class="stat-card__value">{{ $activeAllergies->count() }}</div>
+                <a href="{{ route('portals.patient.allergies') }}" class="stat-card__hint">View all →</a>
             </div>
 
             {{-- Active Conditions --}}
-            <div style="display:flex;flex-direction:column;gap:4px;">
-                <span style="font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.05em;">Active Conditions</span>
-                <span style="font-size:1.25rem;font-weight:800;color:var(--p-text);">
-                    {{ $activeConditions->count() }}
-                </span>
+            <div class="stat-card">
+                <div class="stat-card__label">Active Conditions</div>
+                <div class="stat-card__value">{{ $activeConditions->count() }}</div>
                 @if($activeConditions->isNotEmpty())
-                    <a href="{{ route('portals.patient.clinical') }}" style="font-size:0.75rem;color:var(--p-primary);">View all →</a>
+                    <a href="{{ route('portals.patient.clinical') }}" class="stat-card__hint">View all →</a>
                 @endif
             </div>
 
         </div>
 
         @if($activeAllergies->isNotEmpty() || $activeConditions->isNotEmpty())
-        <div class="alert alert-warning" style="margin-top:var(--p-space-4);">
+        <div class="alert alert-warning mt-3">
             <i data-lucide="alert-triangle"></i>
-            <div style="font-size:0.8125rem;">
+            <div>
                 Ensure your care team has your up-to-date allergy and condition list before any procedure or prescription.
-                <a href="{{ route('portals.patient.allergies') }}" style="font-weight:700;">View full allergy list</a>.
+                <a href="{{ route('portals.patient.allergies') }}">View full allergy list</a>.
             </div>
         </div>
         @endif
@@ -195,32 +190,32 @@
             </h2>
         </div>
         <div class="panel-body" style="text-align:center;">
-            <p style="font-size:0.9rem;color:var(--p-text-muted);margin-bottom:var(--p-space-6);">
+            <p class="text-muted mb-6">
                 {{ __('public.portal.temp_qr_desc', [], app()->getLocale()) ?: 'Generate a secure, time-limited QR code to share with a new healthcare provider. Expires in 1 hour.' }}
             </p>
 
-            <button id="generate-temp-qr" class="btn btn-primary" style="margin:0 auto;">
+            <button id="generate-temp-qr" class="btn btn-primary">
                 <i data-lucide="refresh-cw"></i>
                 {{ __('public.portal.generate_qr', [], app()->getLocale()) ?: 'Generate Temporary QR' }}
             </button>
 
-            <div id="temp-qr-container" style="margin-top:var(--p-space-6);display:none;flex-direction:column;align-items:center;" aria-live="polite">
-                <div style="background:white;padding:var(--p-space-3);border-radius:var(--p-radius);border:1px solid var(--p-border);">
+            <div id="temp-qr-container" class="mt-6" style="display:none;flex-direction:column;align-items:center;" aria-live="polite">
+                <div style="padding:var(--p-space-3);border-radius:var(--p-radius);border:1px solid var(--p-border);background:var(--p-surface);">
                     <img id="temp-qr-img" src="" alt="{{ __('public.portal.temp_qr_alt', [], app()->getLocale()) ?: 'Temporary Access QR Code' }}"
                          style="width:8rem;height:8rem;border-radius:var(--p-radius-sm);display:none;" />
-                    <div id="temp-qr-placeholder" style="width:8rem;height:8rem;display:flex;align-items:center;justify-content:center;background:#F1F5F9;border-radius:var(--p-radius-sm);">
-                        <i data-lucide="qr-code" style="width:4rem;height:4rem;color:var(--p-text);"></i>
+                    <div id="temp-qr-placeholder" style="width:8rem;height:8rem;display:flex;align-items:center;justify-content:center;background:var(--p-surface-2);border-radius:var(--p-radius-sm);">
+                        <i data-lucide="qr-code" style="width:4rem;height:4rem;"></i>
                     </div>
                 </div>
-                <p style="margin-top:var(--p-space-3);font-size:0.8125rem;color:var(--p-warning);font-weight:700;display:flex;align-items:center;gap:var(--p-space-2);">
-                    <i data-lucide="clock" style="width:0.9rem;height:0.9rem;"></i>
+                <p class="mt-3 text-sm" style="color:var(--p-warning);font-weight:700;display:flex;align-items:center;gap:var(--p-space-2);">
+                    <i data-lucide="clock"></i>
                     {{ __('public.portal.expires_in', [], app()->getLocale()) ?: 'Expires in' }}: <span id="countdown">60:00</span>
                 </p>
             </div>
 
-            <div class="alert alert-info mt-6" style="margin-top:var(--p-space-6);text-align:left;">
+            <div class="alert alert-info mt-6" style="text-align:left;">
                 <i data-lucide="info"></i>
-                <div style="font-size:0.8125rem;">{{ __('public.portal.qr_audit_notice', [], app()->getLocale()) ?: 'Each QR scan is audited. You can view access history in your Access Logs.' }}</div>
+                <div>{{ __('public.portal.qr_audit_notice', [], app()->getLocale()) ?: 'Each QR scan is audited. You can view access history in your Access Logs.' }}</div>
             </div>
         </div>
     </div>
@@ -231,8 +226,8 @@
         <!-- Profile prompt -->
         <div class="panel">
             <div class="panel-body" style="text-align:center;">
-                <p style="font-size:0.8125rem;color:var(--p-text-muted);margin-bottom:var(--p-space-3);">{{ __('public.portal.profile_prompt_desc', [], app()->getLocale()) ?: 'Manage your privacy preferences, contact details and emergency contacts in your profile.' }}</p>
-                <a href="{{ route('portals.patient.profile') }}" class="btn btn-primary" style="font-size:0.8125rem;">
+                <p class="text-sm text-muted mb-3">{{ __('public.portal.profile_prompt_desc', [], app()->getLocale()) ?: 'Manage your privacy preferences, contact details and emergency contacts in your profile.' }}</p>
+                <a href="{{ route('portals.patient.profile') }}" class="btn btn-primary btn-sm">
                     <i data-lucide="user-cog"></i> {{ __('public.portal.profile_prompt_btn', [], app()->getLocale()) ?: 'Go to Profile' }}
                 </a>
             </div>
@@ -243,7 +238,7 @@
             <div class="panel-body">
                 <div class="alert alert-warning">
                     <i data-lucide="alert-triangle"></i>
-                    <div style="font-size:0.8125rem;">
+                    <div>
                         {{ __('onboarding.brand.clinical_disclaimer', [], app()->getLocale()) ?: 'OpesCare facilitates access to your health records but is not a substitute for clinical advice. Always consult a licensed healthcare provider for medical decisions.' }}
                     </div>
                 </div>
@@ -257,7 +252,7 @@
 <!-- No patient profile -->
 <div class="panel">
     <div class="empty-state">
-        <div class="empty-state-icon" style="color:var(--p-warning);">
+        <div class="empty-state-icon">
             <i data-lucide="alert-circle"></i>
         </div>
         <h3>{{ __('public.portal.no_profile_title', [], app()->getLocale()) ?: 'No Patient Profile Found' }}</h3>

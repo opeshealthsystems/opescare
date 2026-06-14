@@ -19,16 +19,16 @@
 </div>
 
 @if(session('success'))
-<div class="alert alert-info" style="margin-bottom:var(--p-space-4);"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
+<div class="alert alert-info mb-4"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
 @endif
 @if(session('warning'))
-<div class="alert" style="margin-bottom:var(--p-space-4);background:#FEF3C7;border-color:#FCD34D;color:#92400E;"><i data-lucide="alert-circle"></i><div>{{ session('warning') }}</div></div>
+<div class="alert alert-warning mb-4"><i data-lucide="alert-circle"></i><div>{{ session('warning') }}</div></div>
 @endif
 
 @if(!$patient)
 <div class="panel">
     <div class="empty-state">
-        <div class="empty-state-icon" style="color:var(--p-warning);"><i data-lucide="alert-circle"></i></div>
+        <div class="empty-state-icon"><i data-lucide="alert-circle"></i></div>
         <h3>No Patient Profile Found</h3>
         <p>Your patient profile could not be loaded. Please contact support.</p>
     </div>
@@ -70,16 +70,13 @@
                         <span class="td-muted">{{ str_replace('_', ' ', ucfirst($doc->document_type)) }}</span>
                     </td>
                     <td data-label="Number">
-                        <span style="font-family:monospace;font-size:0.8125rem;color:var(--p-text-muted);">{{ $doc->document_number ?? '—' }}</span>
+                        <span class="td-mono">{{ $doc->document_number ?? '—' }}</span>
                     </td>
                     <td data-label="Status">
                         @php
-                            $statusBg   = match($doc->status) { 'released' => '#D1FAE5', 'revoked' => '#FEE2E2', default => 'var(--p-surface-2)' };
-                            $statusText = match($doc->status) { 'released' => '#059669', 'revoked' => '#DC2626', default => 'var(--p-text-muted)' };
+                            $statusCls = match($doc->status) { 'released' => 'badge-success', 'revoked' => 'badge-danger', default => 'badge-neutral' };
                         @endphp
-                        <span style="padding:2px 8px;border-radius:9999px;font-size:0.75rem;font-weight:700;background:{{ $statusBg }};color:{{ $statusText }};">
-                            {{ ucfirst($doc->status) }}
-                        </span>
+                        <span class="badge {{ $statusCls }}">{{ ucfirst($doc->status) }}</span>
                     </td>
                     <td data-label="Issued">
                         <span class="td-muted">{{ $doc->issued_at?->format('d M Y') ?? '—' }}</span>
@@ -87,14 +84,13 @@
                     <td data-label="Expires">
                         <span class="td-muted">{{ $doc->expires_at?->format('d M Y') ?? 'No expiry' }}</span>
                     </td>
-                    <td>
+                    <td class="row-actions">
                         @if($doc->status === 'released' && $doc->pdf_path)
-                        <a href="{{ route('portals.patient.documents.download', $doc->id) }}"
-                           style="display:inline-flex;align-items:center;gap:4px;font-size:0.75rem;color:var(--p-primary);font-weight:600;text-decoration:none;">
-                            <i data-lucide="download" style="width:0.75rem;height:0.75rem;"></i>Download
+                        <a href="{{ route('portals.patient.documents.download', $doc->id) }}" class="btn btn-secondary btn-sm">
+                            <i data-lucide="download"></i> Download
                         </a>
                         @elseif($doc->status === 'released')
-                        <span style="font-size:0.75rem;color:var(--p-text-muted);">Processing…</span>
+                        <span class="td-muted">Processing…</span>
                         @endif
                     </td>
                 </tr>
@@ -103,7 +99,7 @@
         </table>
     </div>
     @if(method_exists($documents, 'links') && $documents->hasPages())
-    <div style="padding:var(--p-space-4);border-top:1px solid var(--p-border);">
+    <div class="panel-body">
         {{ $documents->links() }}
     </div>
     @endif

@@ -6,20 +6,19 @@
 @section('breadcrumb_section', 'My Family')
 
 @section('content')
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--p-space-6);">
-    <h1 style="font-size:1.25rem;font-weight:700;color:var(--p-text);">My Family</h1>
-    <div style="display:flex;gap:var(--p-space-3);">
-        <a href="{{ route('portals.patient.family.add') }}" class="btn btn-primary" style="font-size:0.875rem;">
-            <i data-lucide="user-plus"></i> Add Dependent
-        </a>
-        <a href="{{ route('portals.patient.family.invite') }}" class="btn btn-primary" style="font-size:0.875rem;background:var(--p-surface-2);color:var(--p-text);">
-            <i data-lucide="mail"></i> Invite Member
-        </a>
-    </div>
+<div class="page-head">
+    <h2>My Family</h2>
+    <div class="page-head__spacer"></div>
+    <a href="{{ route('portals.patient.family.add') }}" class="btn btn-primary">
+        <i data-lucide="user-plus"></i> Add Dependent
+    </a>
+    <a href="{{ route('portals.patient.family.invite') }}" class="btn btn-secondary">
+        <i data-lucide="mail"></i> Invite Member
+    </a>
 </div>
 
 @if(session('success'))
-<div class="alert alert-success" style="margin-bottom:var(--p-space-5);">
+<div class="alert alert-success mb-6">
     <i data-lucide="check-circle"></i> {{ session('success') }}
 </div>
 @endif
@@ -33,46 +32,42 @@
     </div>
 </div>
 @else
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--p-space-5);">
+<div class="card-grid">
     @foreach($links as $link)
     <div class="panel">
         <div class="panel-body">
-            <div style="display:flex;align-items:center;gap:var(--p-space-3);margin-bottom:var(--p-space-4);">
-                <div style="width:2.5rem;height:2.5rem;background:var(--p-primary-soft);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--p-primary);font-size:1rem;">
-                    {{ strtoupper(substr($link->dependentPatient->first_name ?? 'D', 0, 1)) }}
-                </div>
+            <div class="entity-head mb-4">
+                <div class="entity-head__icon">{{ strtoupper(substr($link->dependentPatient->first_name ?? 'D', 0, 1)) }}</div>
                 <div>
-                    <div style="font-weight:600;">{{ $link->dependentPatient->first_name }} {{ $link->dependentPatient->last_name }}</div>
-                    <div style="font-size:0.75rem;color:var(--p-text-muted);">{{ $link->dependentPatient->health_id }}</div>
+                    <div class="td-strong">{{ $link->dependentPatient->first_name }} {{ $link->dependentPatient->last_name }}</div>
+                    <div class="td-muted">{{ $link->dependentPatient->health_id }}</div>
                 </div>
+                <div class="entity-head__spacer"></div>
                 @if($link->status === 'pending_invite')
-                <span style="margin-left:auto;font-size:0.7rem;background:#FEF3C7;color:#92400E;padding:2px 8px;border-radius:99px;">Pending</span>
+                <span class="badge badge-warning">Pending</span>
                 @else
-                <span style="margin-left:auto;font-size:0.7rem;background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:99px;">Active</span>
+                <span class="badge badge-success">Active</span>
                 @endif
             </div>
-            <div style="font-size:0.8125rem;color:var(--p-text-muted);margin-bottom:var(--p-space-4);">
+            <div class="text-sm text-muted mb-4">
                 {{ ucfirst(str_replace('_', ' ', $link->relationship)) }} &middot;
                 {{ $link->access_level === 'full' ? 'Full access' : 'Read only' }}
             </div>
             @if($link->isExpiredByAge())
-            <div class="alert alert-warning" style="margin-bottom:var(--p-space-3);font-size:0.8rem;">
+            <div class="alert alert-warning mb-3">
                 <i data-lucide="alert-triangle"></i>
                 Access in grace period — expires {{ $link->age_transition_expires_at->format('M d, Y') }}
             </div>
             @endif
-            <div style="display:flex;gap:var(--p-space-2);flex-wrap:wrap;">
+            <div class="row-actions">
                 @if($link->status === 'active')
                 <form method="POST" action="{{ route('portals.patient.family.switch', $link->dependent_patient_id) }}">
                     @csrf
-                    <button type="submit" class="btn btn-primary" style="font-size:0.8rem;">View Records</button>
+                    <button type="submit" class="btn btn-primary btn-sm">View Records</button>
                 </form>
                 @endif
-                <a href="{{ route('portals.patient.family.edit', $link->id) }}" class="btn" style="font-size:0.8rem;background:var(--p-surface-2);color:var(--p-text);">Edit</a>
-                <form method="POST" action="{{ route('portals.patient.family.revoke', $link->id) }}" onsubmit="return confirm('Remove this family link?')">
-                    @csrf
-                    <button type="submit" class="btn" style="font-size:0.8rem;background:#FEE2E2;color:#991B1B;">Remove</button>
-                </form>
+                <a href="{{ route('portals.patient.family.edit', $link->id) }}" class="btn btn-secondary btn-sm">Edit</a>
+                <button type="button" class="btn btn-danger btn-sm" onclick="opOpenModal('remove-link-{{ $link->id }}')">Remove</button>
             </div>
         </div>
     </div>
@@ -81,33 +76,71 @@
 @endif
 
 @if($incomingConsent->isNotEmpty())
-<div data-section="guardian-consent" style="margin-top:var(--p-space-8);">
-    <h2 style="font-size:1rem;font-weight:700;color:var(--p-text);margin-bottom:var(--p-space-4);">
-        <i data-lucide="shield-alert"></i> Guardian Access — Your Approval Needed
-    </h2>
+<div data-section="guardian-consent" class="mt-8">
+    <div class="page-head">
+        <h2><i data-lucide="shield-alert"></i> Guardian Access — Your Approval Needed</h2>
+    </div>
     @foreach($incomingConsent as $cl)
-    <div class="panel" style="margin-bottom:var(--p-space-4);border-left:3px solid #F59E0B;">
+    <div class="panel mb-4">
         <div class="panel-body">
-            <p style="font-size:0.875rem;margin-bottom:var(--p-space-3);">
+            <p class="mb-3">
                 <strong>{{ $cl->guardianUser?->name ?? $cl->guardianUser?->email ?? 'Unknown guardian' }}</strong>
                 has guardian access to your records. This access will expire on
                 <strong>{{ $cl->age_transition_expires_at->format('M d, Y') }}</strong>
                 unless you approve continued access.
             </p>
-            <div style="display:flex;gap:var(--p-space-3);">
+            <div class="row-actions">
                 <form method="POST" action="{{ route('portals.patient.family.guardian_consent.approve', $cl->id) }}">
                     @csrf
-                    <button type="submit" class="btn btn-primary" style="font-size:0.8125rem;">Keep Access</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Keep Access</button>
                 </form>
-                <form method="POST" action="{{ route('portals.patient.family.guardian_consent.deny', $cl->id) }}"
-                      onsubmit="return confirm('Remove this guardian\'s access?')">
-                    @csrf
-                    <button type="submit" class="btn" style="font-size:0.8125rem;background:#FEE2E2;color:#991B1B;">Remove Access</button>
-                </form>
+                <button type="button" class="btn btn-danger btn-sm" onclick="opOpenModal('deny-guardian-{{ $cl->id }}')">Remove Access</button>
             </div>
         </div>
     </div>
     @endforeach
 </div>
 @endif
+
+@foreach($links as $link)
+<div id="remove-link-{{ $link->id }}" class="modal-backdrop mt-6" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="remove-link-{{ $link->id }}-title">
+        <h3 class="modal__title" id="remove-link-{{ $link->id }}-title"><i data-lucide="user-x"></i> Remove family link</h3>
+        <form method="POST" action="{{ route('portals.patient.family.revoke', $link->id) }}">
+            @csrf
+            <div class="modal__body"><p>Remove this family link?</p></div>
+            <div class="modal__footer">
+                <button type="button" class="btn btn-ghost" onclick="opCloseModal('remove-link-{{ $link->id }}')">Cancel</button>
+                <button type="submit" class="btn btn-danger">Remove</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endforeach
+
+@foreach($incomingConsent as $cl)
+<div id="deny-guardian-{{ $cl->id }}" class="modal-backdrop mt-6" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="deny-guardian-{{ $cl->id }}-title">
+        <h3 class="modal__title" id="deny-guardian-{{ $cl->id }}-title"><i data-lucide="shield-off"></i> Remove guardian access</h3>
+        <form method="POST" action="{{ route('portals.patient.family.guardian_consent.deny', $cl->id) }}">
+            @csrf
+            <div class="modal__body"><p>Remove this guardian's access?</p></div>
+            <div class="modal__footer">
+                <button type="button" class="btn btn-ghost" onclick="opCloseModal('deny-guardian-{{ $cl->id }}')">Cancel</button>
+                <button type="submit" class="btn btn-danger">Remove Access</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endforeach
+@endsection
+
+@section('scripts')
+<script>
+function opOpenModal(id){ document.getElementById(id).removeAttribute('hidden'); }
+function opCloseModal(id){ document.getElementById(id).setAttribute('hidden',''); }
+document.addEventListener('keydown', function(e){
+    if(e.key==='Escape'){ document.querySelectorAll('.modal-backdrop').forEach(function(m){ m.setAttribute('hidden',''); }); }
+});
+</script>
 @endsection

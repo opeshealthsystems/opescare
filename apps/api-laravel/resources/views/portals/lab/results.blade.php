@@ -3,8 +3,8 @@
 @section('title', 'Lab Results')
 
 @section('sidebar_role_badge')
-<div class="sidebar-role-badge" style="background:rgba(14,165,233,.15);border-color:rgba(14,165,233,.4);color:#38bdf8;">
-    <i data-lucide="microscope" style="width:.75rem;height:.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+<div class="sidebar-role-badge">
+    <i data-lucide="microscope"></i>
     Laboratory
 </div>
 @endsection
@@ -20,75 +20,57 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title">Lab Results</h1>
-        <p class="page-subtitle">View all resulted tests — filter by flag or patient.</p>
-    </div>
+<div class="page-head">
+    <h2>Lab results</h2>
+    <p class="page-subtitle">View all resulted tests — filter by flag or patient.</p>
 </div>
 
-<form method="GET" style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.25rem;align-items:flex-end;">
-    <div>
-        <label class="form-label">Flag</label>
-        <select name="flag" class="form-control form-control-sm" onchange="this.form.submit()">
-            <option value="">All</option>
-            <option value="H" {{ request('flag') === 'H' ? 'selected' : '' }}>High</option>
-            <option value="HH" {{ request('flag') === 'HH' ? 'selected' : '' }}>Critical High</option>
-            <option value="L" {{ request('flag') === 'L' ? 'selected' : '' }}>Low</option>
-            <option value="LL" {{ request('flag') === 'LL' ? 'selected' : '' }}>Critical Low</option>
-            <option value="abnormal" {{ request('flag') === 'abnormal' ? 'selected' : '' }}>Abnormal</option>
-            <option value="normal" {{ request('flag') === 'normal' ? 'selected' : '' }}>Normal</option>
-        </select>
-    </div>
-    <div>
-        <label class="form-label">Search</label>
-        <input type="text" name="search" class="form-control form-control-sm" placeholder="Parameter or patient…" value="{{ request('search') }}">
-    </div>
-    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+<form method="GET" class="filter-bar">
+    <label class="filter-search">
+        <i data-lucide="search"></i>
+        <input type="text" name="search" placeholder="Parameter or patient…" value="{{ request('search') }}" aria-label="Search results">
+    </label>
+    <select name="flag" class="filter-select" aria-label="Flag" onchange="this.form.submit()">
+        <option value="">All flags</option>
+        <option value="H" {{ request('flag') === 'H' ? 'selected' : '' }}>High</option>
+        <option value="HH" {{ request('flag') === 'HH' ? 'selected' : '' }}>Critical high</option>
+        <option value="L" {{ request('flag') === 'L' ? 'selected' : '' }}>Low</option>
+        <option value="LL" {{ request('flag') === 'LL' ? 'selected' : '' }}>Critical low</option>
+        <option value="abnormal" {{ request('flag') === 'abnormal' ? 'selected' : '' }}>Abnormal</option>
+        <option value="normal" {{ request('flag') === 'normal' ? 'selected' : '' }}>Normal</option>
+    </select>
+    <button type="submit" class="btn btn-secondary btn-sm"><i data-lucide="filter"></i> Filter</button>
     @if(request()->hasAny(['flag','search']))
-        <a href="{{ route('portals.lab.results') }}" class="btn btn-outline btn-sm">Clear</a>
+        <a href="{{ route('portals.lab.results') }}" class="btn btn-ghost btn-sm">Clear</a>
     @endif
 </form>
 
-<div class="card" style="overflow:hidden;">
-    <div class="card-body" style="padding:0;overflow-x:auto;">
+<div class="panel">
+    <div class="table-wrapper">
         <table class="data-table">
             <thead>
-                <tr>
-                    <th>Parameter</th>
-                    <th>Patient</th>
-                    <th>Value</th>
-                    <th>Reference</th>
-                    <th>Flag</th>
-                    <th>Resulted At</th>
-                </tr>
+                <tr><th>Parameter</th><th>Patient</th><th>Value</th><th>Reference</th><th>Flag</th><th>Resulted at</th></tr>
             </thead>
             <tbody>
                 @forelse($results as $result)
-                <tr class="{{ $result->isAbnormal() ? 'bg-danger-subtle' : '' }}">
-                    <td style="font-weight:600;">{{ $result->parameter_name }}</td>
-                    <td style="font-size:.875rem;">{{ $result->patient?->full_name ?? '—' }}</td>
-                    <td style="font-weight:700;{{ $result->isAbnormal() ? 'color:#b91c1c;' : '' }}">
-                        {{ $result->value }} {{ $result->unit }}
+                <tr class="{{ $result->isAbnormal() ? 'row-emergency' : '' }}">
+                    <td data-label="Parameter" class="td-strong">{{ $result->parameter_name }}</td>
+                    <td data-label="Patient">{{ $result->patient?->full_name ?? '—' }}</td>
+                    <td data-label="Value">
+                        @if($result->isAbnormal())<span class="badge badge-danger">{{ $result->value }} {{ $result->unit }}</span>
+                        @else<span class="td-strong">{{ $result->value }} {{ $result->unit }}</span>@endif
                     </td>
-                    <td style="font-size:.83rem;color:#64748b;">{{ $result->reference_range ?? '—' }}</td>
-                    <td>
-                        <span class="badge badge-{{ $result->isAbnormal() ? 'danger' : 'success' }}">
-                            {{ $result->flagLabel() }}
-                        </span>
-                    </td>
-                    <td style="font-size:.8rem;color:#64748b;">{{ $result->resulted_at?->format('d M Y H:i') ?? '—' }}</td>
+                    <td data-label="Reference" class="td-muted">{{ $result->reference_range ?? '—' }}</td>
+                    <td data-label="Flag"><span class="badge badge-{{ $result->isAbnormal() ? 'danger' : 'success' }}">{{ $result->flagLabel() }}</span></td>
+                    <td data-label="Resulted at" class="td-muted">{{ $result->resulted_at?->format('d M Y H:i') ?? '—' }}</td>
                 </tr>
                 @empty
-                <tr>
-                    <td colspan="6" style="text-align:center;padding:2rem;color:#94a3b8;">No results found.</td>
-                </tr>
+                <tr><td colspan="6" class="td-muted empty-cell">No results found.</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
+    <div class="panel-body">{{ $results->links() }}</div>
 </div>
-
-<div style="margin-top:1rem;">{{ $results->links() }}</div>
 
 @endsection

@@ -5,6 +5,6 @@
     <a href="{{ route('portals.developer.production_requests') }}" class="portal-sidebar__link {{ request()->routeIs('portals.developer.production_requests*') ? 'active' : '' }}">Production Access</a>
     <a href="{{ route('portals.developer.analytics') }}" class="portal-sidebar__link {{ request()->routeIs('portals.developer.analytics') ? 'active' : '' }}">API Analytics</a>
 
-    <div class="portal-sidebar__section-title" style="margin-top:16px;">Resources</div>
+    <div class="portal-sidebar__section-title mt-6">Resources</div>
     <a href="{{ route('portals.developer.analytics') }}" class="portal-sidebar__link {{ request()->routeIs('portals.developer.analytics') ? 'active' : '' }}">API Analytics</a>
 </nav>

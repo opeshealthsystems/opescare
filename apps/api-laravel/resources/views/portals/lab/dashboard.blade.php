@@ -3,8 +3,8 @@
 @section('title', 'Laboratory Portal')
 
 @section('sidebar_role_badge')
-<div class="sidebar-role-badge" style="background:rgba(14,165,233,.15);border-color:rgba(14,165,233,.4);color:#38bdf8;">
-    <i data-lucide="microscope" style="width:.75rem;height:.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+<div class="sidebar-role-badge">
+    <i data-lucide="microscope"></i>
     Laboratory
 </div>
 @endsection
@@ -20,131 +20,109 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title">Laboratory Dashboard</h1>
-        <p class="page-subtitle">Today's work queue, urgent orders, and recent results.</p>
-    </div>
+<div class="page-head">
+    <h2>Laboratory dashboard</h2>
+    <p class="page-subtitle">Today's work queue, urgent orders, and recent results.</p>
+    <div class="page-head__spacer"></div>
     <a href="{{ route('portals.lab.orders') }}" class="btn btn-primary btn-sm">
-        <i data-lucide="clipboard-list" style="width:14px;height:14px;"></i>
-        Work Queue
+        <i data-lucide="clipboard-list"></i> Work queue
     </a>
 </div>
 
-@if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;">
-        <i data-lucide="check-circle"></i><div>{{ session('success') }}</div>
-    </div>
-@endif
+@if(session('success'))<div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
 
-{{-- Stats --}}
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;margin-bottom:1.5rem;">
-    <a href="{{ route('portals.lab.orders') }}?status=pending" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#fef3c7;color:#b45309;"><i data-lucide="clock"></i></div>
-            <div class="stat-card__val">{{ $stats['pending'] }}</div>
-            <div class="stat-card__label">Pending Orders</div>
-        </div>
+{{-- Pipeline: order → sample → result --}}
+<div class="stat-grid mb-6">
+    <a href="{{ route('portals.lab.orders') }}?status=pending" class="stat-card stat-card--warning">
+        <div class="stat-card__label">Pending orders</div>
+        <div class="stat-card__value">{{ $stats['pending'] }}</div>
     </a>
-    <a href="{{ route('portals.lab.samples') }}" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#e0f2fe;color:#0369a1;"><i data-lucide="test-tube"></i></div>
-            <div class="stat-card__val">{{ $stats['collected'] }}</div>
-            <div class="stat-card__label">Samples Collected</div>
-        </div>
+    <a href="{{ route('portals.lab.samples') }}" class="stat-card stat-card--teal">
+        <div class="stat-card__label">Samples collected</div>
+        <div class="stat-card__value">{{ $stats['collected'] }}</div>
     </a>
-    <a href="{{ route('portals.lab.orders') }}?status=processing" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#dbeafe;color:#1d4ed8;"><i data-lucide="loader"></i></div>
-            <div class="stat-card__val">{{ $stats['processing'] }}</div>
-            <div class="stat-card__label">Processing</div>
-        </div>
+    <a href="{{ route('portals.lab.orders') }}?status=processing" class="stat-card stat-card--primary">
+        <div class="stat-card__label">Processing</div>
+        <div class="stat-card__value">{{ $stats['processing'] }}</div>
     </a>
-    <a href="{{ route('portals.lab.results') }}" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#dcfce7;color:#15803d;"><i data-lucide="check-circle-2"></i></div>
-            <div class="stat-card__val">{{ $stats['resulted'] }}</div>
-            <div class="stat-card__label">Resulted Today</div>
-        </div>
+    <a href="{{ route('portals.lab.results') }}" class="stat-card stat-card--success">
+        <div class="stat-card__label">Resulted today</div>
+        <div class="stat-card__value">{{ $stats['resulted'] }}</div>
     </a>
-    <a href="{{ route('portals.lab.orders') }}?urgency=urgent" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#fee2e2;color:#b91c1c;"><i data-lucide="alert-triangle"></i></div>
-            <div class="stat-card__val">{{ $stats['urgent'] }}</div>
-            <div class="stat-card__label">Urgent Pending</div>
-        </div>
+    <a href="{{ route('portals.lab.orders') }}?urgency=urgent" class="stat-card stat-card--danger">
+        <div class="stat-card__label">Urgent pending</div>
+        <div class="stat-card__value">{{ $stats['urgent'] }}</div>
     </a>
-    <a href="{{ route('portals.lab.results') }}?flag=H" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#f3e8ff;color:#7c3aed;"><i data-lucide="activity"></i></div>
-            <div class="stat-card__val">{{ $stats['abnormal'] }}</div>
-            <div class="stat-card__label">Abnormal Today</div>
-        </div>
+    <a href="{{ route('portals.lab.results') }}?flag=H" class="stat-card stat-card--danger">
+        <div class="stat-card__label">Abnormal today</div>
+        <div class="stat-card__value">{{ $stats['abnormal'] }}</div>
     </a>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+<div class="field-grid">
 
     {{-- Urgent Orders --}}
-    <div class="card">
-        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-weight:700;display:flex;align-items:center;gap:.5rem;">
-                <i data-lucide="alert-triangle" style="width:15px;height:15px;color:#ef4444;"></i>
-                Urgent Orders
-            </span>
-            <a href="{{ route('portals.lab.orders') }}?urgency=urgent" class="btn btn-outline btn-sm">View all</a>
+    <div class="panel">
+        <div class="panel-header">
+            <h3 class="panel-title"><i data-lucide="alert-triangle"></i> Urgent orders</h3>
+            <a href="{{ route('portals.lab.orders') }}?urgency=urgent" class="btn btn-secondary btn-sm">View all</a>
         </div>
-        <div class="card-body" style="padding:0;">
-            @forelse($urgentOrders as $order)
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;border-bottom:1px solid #f1f5f9;">
-                <div>
-                    <div style="font-weight:600;font-size:.875rem;">{{ $order->test_name }}</div>
-                    <div style="font-size:.75rem;color:#64748b;">{{ $order->patient?->full_name ?? '—' }} &middot; {{ $order->ordered_at?->diffForHumans() }}</div>
-                </div>
-                <div style="display:flex;gap:.5rem;align-items:center;">
-                    <span class="badge badge-{{ $order->statusColor() }}">{{ ucfirst($order->status) }}</span>
-                    @if($order->status === 'pending')
-                    <form method="POST" action="{{ route('portals.lab.orders.collect', $order->id) }}" style="margin:0;">
-                        @csrf
-                        <button type="submit" class="btn btn-outline btn-sm">Collect</button>
-                    </form>
-                    @elseif($order->status === 'collected')
-                    <form method="POST" action="{{ route('portals.lab.orders.process', $order->id) }}" style="margin:0;">
-                        @csrf
-                        <button type="submit" class="btn btn-primary btn-sm">Process</button>
-                    </form>
-                    @endif
-                </div>
-            </div>
-            @empty
-            <div style="padding:2rem;text-align:center;color:#94a3b8;font-size:.875rem;">No urgent pending orders.</div>
-            @endforelse
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead><tr><th>Test</th><th>Patient</th><th>Status</th><th class="row-actions"></th></tr></thead>
+                <tbody>
+                @forelse($urgentOrders as $order)
+                <tr>
+                    <td data-label="Test">
+                        <span class="td-strong">{{ $order->test_name }}</span>
+                        <div class="td-muted">{{ $order->ordered_at?->diffForHumans() }}</div>
+                    </td>
+                    <td data-label="Patient">{{ $order->patient?->full_name ?? '—' }}</td>
+                    <td data-label="Status"><span class="badge badge-{{ $order->statusColor() }}">{{ ucfirst($order->status) }}</span></td>
+                    <td class="row-actions" data-label="">
+                        @if($order->status === 'pending')
+                        <form method="POST" action="{{ route('portals.lab.orders.collect', $order->id) }}" class="inline-form">@csrf
+                            <button type="submit" class="btn btn-secondary btn-sm">Collect</button>
+                        </form>
+                        @elseif($order->status === 'collected')
+                        <form method="POST" action="{{ route('portals.lab.orders.process', $order->id) }}" class="inline-form">@csrf
+                            <button type="submit" class="btn btn-primary btn-sm">Process</button>
+                        </form>
+                        @endif
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="4" class="td-muted empty-cell">No urgent pending orders.</td></tr>
+                @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 
     {{-- Recent Results --}}
-    <div class="card">
-        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-weight:700;">Recent Results</span>
-            <a href="{{ route('portals.lab.results') }}" class="btn btn-outline btn-sm">View all</a>
+    <div class="panel">
+        <div class="panel-header">
+            <h3 class="panel-title"><i data-lucide="file-bar-chart"></i> Recent results</h3>
+            <a href="{{ route('portals.lab.results') }}" class="btn btn-secondary btn-sm">View all</a>
         </div>
-        <div class="card-body" style="padding:0;">
-            @forelse($recentResults as $result)
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;border-bottom:1px solid #f1f5f9;">
-                <div>
-                    <div style="font-weight:600;font-size:.875rem;">{{ $result->parameter_name }}</div>
-                    <div style="font-size:.75rem;color:#64748b;">
-                        {{ $result->patient?->full_name ?? '—' }} &middot;
-                        {{ $result->value }} {{ $result->unit }}
-                    </div>
-                </div>
-                <span class="badge badge-{{ $result->isAbnormal() ? 'danger' : 'success' }}">
-                    {{ $result->flagLabel() }}
-                </span>
-            </div>
-            @empty
-            <div style="padding:2rem;text-align:center;color:#94a3b8;font-size:.875rem;">No results yet today.</div>
-            @endforelse
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead><tr><th>Parameter</th><th>Value</th><th>Flag</th></tr></thead>
+                <tbody>
+                @forelse($recentResults as $result)
+                <tr>
+                    <td data-label="Parameter">
+                        <span class="td-strong">{{ $result->parameter_name }}</span>
+                        <div class="td-muted">{{ $result->patient?->full_name ?? '—' }}</div>
+                    </td>
+                    <td data-label="Value">{{ $result->value }} {{ $result->unit }}</td>
+                    <td data-label="Flag"><span class="badge badge-{{ $result->isAbnormal() ? 'danger' : 'success' }}">{{ $result->flagLabel() }}</span></td>
+                </tr>
+                @empty
+                <tr><td colspan="3" class="td-muted empty-cell">No results yet today.</td></tr>
+                @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 

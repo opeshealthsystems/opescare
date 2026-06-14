@@ -21,7 +21,7 @@
 @if(!$patient)
 <div class="panel">
     <div class="empty-state">
-        <div class="empty-state-icon" style="color:var(--p-warning);"><i data-lucide="alert-circle"></i></div>
+        <div class="empty-state-icon"><i data-lucide="alert-circle"></i></div>
         <h3>No Patient Profile Found</h3>
         <p>Your patient profile could not be loaded. Please contact support.</p>
     </div>
@@ -42,43 +42,33 @@
 @endphp
 
 @if($active->isNotEmpty())
-<div class="panel" style="margin-bottom:var(--p-space-5);">
+<div class="panel mb-6">
     <div class="panel-header">
         <h2 class="panel-title"><i data-lucide="stethoscope"></i> Active & Chronic Conditions ({{ $active->count() }})</h2>
     </div>
-    <div class="panel-body" style="padding:0;">
-        <div style="overflow-x:auto;">
-            <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
-                <thead>
-                    <tr style="background:var(--p-surface-2);border-bottom:1px solid var(--p-border);">
-                        <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.04em;">Condition</th>
-                        <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.04em;">Code</th>
-                        <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.04em;">Status</th>
-                        <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.04em;">Recorded</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($active as $condition)
-                    <tr style="border-bottom:1px solid var(--p-border);">
-                        <td style="padding:var(--p-space-3) var(--p-space-4);font-weight:600;color:var(--p-text);">
-                            {{ $condition->display_name ?? $condition->code ?? '—' }}
-                        </td>
-                        <td style="padding:var(--p-space-3) var(--p-space-4);color:var(--p-text-muted);font-size:0.8125rem;font-family:monospace;">
-                            {{ $condition->code ?? '—' }}
-                        </td>
-                        <td style="padding:var(--p-space-3) var(--p-space-4);">
-                            <span style="display:inline-block;padding:2px 8px;border-radius:999px;font-size:0.75rem;font-weight:700;background:{{ $condition->status === 'chronic' ? '#7C3AED20' : '#2563EB20' }};color:{{ $condition->status === 'chronic' ? '#7C3AED' : '#2563EB' }};">
-                                {{ ucfirst($condition->status) }}
-                            </span>
-                        </td>
-                        <td style="padding:var(--p-space-3) var(--p-space-4);color:var(--p-text-muted);font-size:0.8125rem;">
-                            {{ $condition->created_at?->format('d M Y') ?? '—' }}
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+    <div class="table-wrapper">
+        <table class="data-table" aria-label="Active and chronic conditions">
+            <thead>
+                <tr>
+                    <th>Condition</th>
+                    <th>Code</th>
+                    <th>Status</th>
+                    <th>Recorded</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($active as $condition)
+                <tr>
+                    <td data-label="Condition"><span class="td-strong">{{ $condition->display_name ?? $condition->code ?? '—' }}</span></td>
+                    <td data-label="Code"><span class="td-mono">{{ $condition->code ?? '—' }}</span></td>
+                    <td data-label="Status">
+                        <span class="badge {{ $condition->status === 'chronic' ? 'badge-teal' : 'badge-primary' }}">{{ ucfirst($condition->status) }}</span>
+                    </td>
+                    <td data-label="Recorded"><span class="td-muted">{{ $condition->created_at?->format('d M Y') ?? '—' }}</span></td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </div>
 @endif
@@ -86,29 +76,27 @@
 @if($resolved->isNotEmpty())
 <div class="panel">
     <div class="panel-header">
-        <h2 class="panel-title" style="color:var(--p-text-muted);"><i data-lucide="check-circle"></i> Resolved Conditions ({{ $resolved->count() }})</h2>
+        <h2 class="panel-title"><i data-lucide="check-circle"></i> Resolved Conditions ({{ $resolved->count() }})</h2>
     </div>
-    <div class="panel-body" style="padding:0;">
-        <div style="overflow-x:auto;">
-            <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
-                <thead>
-                    <tr style="background:var(--p-surface-2);border-bottom:1px solid var(--p-border);">
-                        <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.04em;">Condition</th>
-                        <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.04em;">Code</th>
-                        <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.04em;">Recorded</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($resolved as $condition)
-                    <tr style="border-bottom:1px solid var(--p-border);opacity:0.7;">
-                        <td style="padding:var(--p-space-3) var(--p-space-4);color:var(--p-text-muted);">{{ $condition->display_name ?? $condition->code ?? '—' }}</td>
-                        <td style="padding:var(--p-space-3) var(--p-space-4);color:var(--p-text-muted);font-size:0.8125rem;font-family:monospace;">{{ $condition->code ?? '—' }}</td>
-                        <td style="padding:var(--p-space-3) var(--p-space-4);color:var(--p-text-muted);font-size:0.8125rem;">{{ $condition->created_at?->format('d M Y') ?? '—' }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+    <div class="table-wrapper">
+        <table class="data-table" aria-label="Resolved conditions">
+            <thead>
+                <tr>
+                    <th>Condition</th>
+                    <th>Code</th>
+                    <th>Recorded</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($resolved as $condition)
+                <tr>
+                    <td data-label="Condition"><span class="td-muted">{{ $condition->display_name ?? $condition->code ?? '—' }}</span></td>
+                    <td data-label="Code"><span class="td-mono">{{ $condition->code ?? '—' }}</span></td>
+                    <td data-label="Recorded"><span class="td-muted">{{ $condition->created_at?->format('d M Y') ?? '—' }}</span></td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </div>
 @endif

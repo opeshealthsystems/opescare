@@ -21,7 +21,7 @@
 @if(!$patient)
 <div class="panel">
     <div class="empty-state">
-        <div class="empty-state-icon" style="color:var(--p-warning);"><i data-lucide="alert-circle"></i></div>
+        <div class="empty-state-icon"><i data-lucide="alert-circle"></i></div>
         <h3>No Patient Profile Found</h3>
         <p>Your patient profile could not be loaded. Please contact support.</p>
     </div>
@@ -40,43 +40,31 @@
     <div class="panel-header">
         <h2 class="panel-title"><i data-lucide="syringe"></i> Vaccination History ({{ $immunizations->count() }} record{{ $immunizations->count() !== 1 ? 's' : '' }})</h2>
     </div>
-    <div class="panel-body" style="padding:0;">
-        <div style="overflow-x:auto;">
-            <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
-                <thead>
-                    <tr style="background:var(--p-surface-2);border-bottom:1px solid var(--p-border);">
-                        <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.04em;">Vaccine</th>
-                        <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.04em;">Lot Number</th>
-                        <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.04em;">Dose</th>
-                        <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.04em;">Administered</th>
-                        <th style="padding:var(--p-space-3) var(--p-space-4);text-align:left;font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.04em;">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($immunizations as $imm)
-                    <tr style="border-bottom:1px solid var(--p-border);">
-                        <td style="padding:var(--p-space-3) var(--p-space-4);font-weight:600;color:var(--p-text);">
-                            {{ $imm->vaccine_name }}
-                        </td>
-                        <td style="padding:var(--p-space-3) var(--p-space-4);color:var(--p-text-muted);font-size:0.8125rem;font-family:monospace;">
-                            {{ $imm->lot_number ?? '—' }}
-                        </td>
-                        <td style="padding:var(--p-space-3) var(--p-space-4);color:var(--p-text-muted);">
-                            {{ $imm->dose_number ?? '—' }}
-                        </td>
-                        <td style="padding:var(--p-space-3) var(--p-space-4);color:var(--p-text-muted);font-size:0.8125rem;">
-                            {{ $imm->administered_at?->format('d M Y') ?? '—' }}
-                        </td>
-                        <td style="padding:var(--p-space-3) var(--p-space-4);">
-                            <span style="display:inline-block;padding:2px 8px;border-radius:999px;font-size:0.75rem;font-weight:600;background:#16A34A20;color:#16A34A;">
-                                {{ ucfirst($imm->status ?? 'completed') }}
-                            </span>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+    <div class="table-wrapper">
+        <table class="data-table" aria-label="Vaccination history">
+            <thead>
+                <tr>
+                    <th>Vaccine</th>
+                    <th>Lot Number</th>
+                    <th>Dose</th>
+                    <th>Administered</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($immunizations as $imm)
+                <tr>
+                    <td data-label="Vaccine"><span class="td-strong">{{ $imm->vaccine_name }}</span></td>
+                    <td data-label="Lot Number"><span class="td-mono">{{ $imm->lot_number ?? '—' }}</span></td>
+                    <td data-label="Dose"><span class="td-muted">{{ $imm->dose_number ?? '—' }}</span></td>
+                    <td data-label="Administered"><span class="td-muted">{{ $imm->administered_at?->format('d M Y') ?? '—' }}</span></td>
+                    <td data-label="Status">
+                        <span class="badge badge-success">{{ ucfirst($imm->status ?? 'completed') }}</span>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </div>
 

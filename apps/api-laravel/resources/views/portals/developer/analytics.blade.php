@@ -4,14 +4,12 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title">API Usage Analytics</h1>
-        <p class="page-subtitle">Request volume, error rates, and response times across your apps — last 30 days.</p>
-    </div>
-    <form method="GET" style="display:flex;gap:.5rem;align-items:center;">
-        <label class="form-label" style="margin:0;white-space:nowrap;">Period</label>
-        <select name="period" class="form-control form-control-sm" onchange="this.form.submit()">
+<div class="page-head">
+    <h2>API usage analytics</h2>
+    <p class="portal-page-subtitle">Request volume, error rates, and response times across your apps — last 30 days.</p>
+    <div class="page-head__spacer"></div>
+    <form method="GET" class="filter-bar filter-bar--flush">
+        <select name="period" class="filter-select" aria-label="Period" onchange="this.form.submit()">
             <option value="daily" {{ $period === 'daily' ? 'selected' : '' }}>Daily</option>
             <option value="hourly" {{ $period === 'hourly' ? 'selected' : '' }}>Hourly</option>
             <option value="monthly" {{ $period === 'monthly' ? 'selected' : '' }}>Monthly</option>
@@ -20,72 +18,59 @@
 </div>
 
 {{-- Totals --}}
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem;">
-    <div class="stat-card">
-        <div class="stat-card__icon" style="background:#dbeafe;color:#1d4ed8;"><i data-lucide="zap"></i></div>
-        <div class="stat-card__val">{{ number_format($totals['requests']) }}</div>
-        <div class="stat-card__label">Total Requests</div>
+<div class="stat-grid mb-6">
+    <div class="stat-card stat-card--primary">
+        <div class="stat-card__label">Total requests</div>
+        <div class="stat-card__value">{{ number_format($totals['requests']) }}</div>
     </div>
-    <div class="stat-card">
-        <div class="stat-card__icon" style="background:#fee2e2;color:#b91c1c;"><i data-lucide="alert-triangle"></i></div>
-        <div class="stat-card__val">{{ number_format($totals['errors']) }}</div>
-        <div class="stat-card__label">Total Errors</div>
+    <div class="stat-card stat-card--danger">
+        <div class="stat-card__label">Total errors</div>
+        <div class="stat-card__value">{{ number_format($totals['errors']) }}</div>
     </div>
-    <div class="stat-card">
-        <div class="stat-card__icon" style="background:#dcfce7;color:#15803d;"><i data-lucide="percent"></i></div>
-        <div class="stat-card__val">
-            {{ $totals['requests'] > 0 ? round(($totals['errors'] / $totals['requests']) * 100, 1) : 0 }}%
-        </div>
-        <div class="stat-card__label">Error Rate</div>
+    <div class="stat-card stat-card--success">
+        <div class="stat-card__label">Error rate</div>
+        <div class="stat-card__value">{{ $totals['requests'] > 0 ? round(($totals['errors'] / $totals['requests']) * 100, 1) : 0 }}%</div>
     </div>
-    <div class="stat-card">
-        <div class="stat-card__icon" style="background:#fef3c7;color:#b45309;"><i data-lucide="timer"></i></div>
-        <div class="stat-card__val">{{ round($totals['avg_ms']) }}ms</div>
-        <div class="stat-card__label">Avg Response</div>
+    <div class="stat-card stat-card--warning">
+        <div class="stat-card__label">Avg response</div>
+        <div class="stat-card__value">{{ round($totals['avg_ms']) }}ms</div>
     </div>
-    <div class="stat-card">
-        <div class="stat-card__icon" style="background:#f3e8ff;color:#7c3aed;"><i data-lucide="cpu"></i></div>
-        <div class="stat-card__val">{{ $clients->count() }}</div>
-        <div class="stat-card__label">Active Apps</div>
+    <div class="stat-card stat-card--teal">
+        <div class="stat-card__label">Active apps</div>
+        <div class="stat-card__value">{{ $clients->count() }}</div>
     </div>
 </div>
 
 @if($metrics->isEmpty())
-<div class="auth-alert" style="background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;margin-bottom:1.25rem;">
+<div class="alert alert-info mb-6">
     <i data-lucide="info"></i>
     <div>No usage data yet for the selected period. Make your first API call to see metrics here.</div>
 </div>
 @endif
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+<div class="field-grid mb-6">
 
     {{-- Top Endpoints --}}
-    <div class="card">
-        <div class="card-header" style="font-weight:700;">Top Endpoints</div>
-        <div class="card-body" style="padding:0;overflow-x:auto;">
+    <div class="panel">
+        <div class="panel-header"><h3 class="panel-title"><i data-lucide="list"></i> Top endpoints</h3></div>
+        <div class="table-wrapper">
             <table class="data-table">
                 <thead>
-                    <tr>
-                        <th>Endpoint</th>
-                        <th>Requests</th>
-                        <th>Errors</th>
-                        <th>Avg ms</th>
-                    </tr>
+                    <tr><th>Endpoint</th><th>Requests</th><th>Errors</th><th>Avg ms</th></tr>
                 </thead>
                 <tbody>
                     @forelse($byEndpoint as $row)
                     <tr>
-                        <td style="font-family:monospace;font-size:.8rem;">{{ $row['endpoint'] }}</td>
-                        <td style="font-weight:700;">{{ number_format($row['requests']) }}</td>
-                        <td style="{{ $row['errors'] > 0 ? 'color:#b91c1c;font-weight:600;' : 'color:#94a3b8;' }}">
-                            {{ number_format($row['errors']) }}
+                        <td data-label="Endpoint" class="mono">{{ $row['endpoint'] }}</td>
+                        <td data-label="Requests" class="td-strong">{{ number_format($row['requests']) }}</td>
+                        <td data-label="Errors">
+                            @if($row['errors'] > 0)<span class="badge badge-danger">{{ number_format($row['errors']) }}</span>
+                            @else<span class="td-muted">0</span>@endif
                         </td>
-                        <td style="color:#64748b;font-size:.83rem;">{{ $row['avg_ms'] }}ms</td>
+                        <td data-label="Avg ms" class="td-muted">{{ $row['avg_ms'] }}ms</td>
                     </tr>
                     @empty
-                    <tr>
-                        <td colspan="4" style="text-align:center;padding:2rem;color:#94a3b8;">No data yet.</td>
-                    </tr>
+                    <tr><td colspan="4" class="td-muted empty-cell">No data yet.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -93,59 +78,60 @@
     </div>
 
     {{-- Your Apps --}}
-    <div class="card">
-        <div class="card-header" style="font-weight:700;display:flex;justify-content:space-between;align-items:center;">
-            <span>Your Apps</span>
-            <a href="{{ route('portals.developer.apps') }}" class="btn btn-outline btn-sm">Manage</a>
+    <div class="panel">
+        <div class="panel-header">
+            <h3 class="panel-title"><i data-lucide="cpu"></i> Your apps</h3>
+            <a href="{{ route('portals.developer.apps') }}" class="btn btn-secondary btn-sm">Manage</a>
         </div>
-        <div class="card-body" style="padding:0;">
-            @forelse($clients as $client)
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;border-bottom:1px solid #f1f5f9;">
-                <div>
-                    <div style="font-weight:600;font-size:.875rem;">{{ $client->name }}</div>
-                    <div style="font-size:.75rem;color:#64748b;font-family:monospace;">{{ $client->client_id }}</div>
-                </div>
-                <span class="badge badge-{{ $client->status === 'active' ? 'success' : ($client->status === 'pending' ? 'warning' : 'default') }}">
-                    {{ ucfirst($client->status) }}
-                </span>
-            </div>
-            @empty
-            <div style="padding:2rem;text-align:center;color:#94a3b8;font-size:.875rem;">
-                No apps yet. <a href="{{ route('portals.developer.apps.create') }}">Create your first app</a>.
-            </div>
-            @endforelse
+        @if($clients->isEmpty())
+        <div class="panel-body empty-state">
+            <p>No apps yet. <a href="{{ route('portals.developer.apps.create') }}">Create your first app</a>.</p>
         </div>
+        @else
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead><tr><th>App</th><th>Status</th></tr></thead>
+                <tbody>
+                @foreach($clients as $client)
+                <tr>
+                    <td data-label="App">
+                        <span class="td-strong">{{ $client->name }}</span>
+                        <div class="mono">{{ $client->client_id }}</div>
+                    </td>
+                    <td data-label="Status">
+                        <span class="badge badge-{{ $client->status === 'active' ? 'success' : ($client->status === 'pending' ? 'warning' : 'neutral') }}">{{ ucfirst($client->status) }}</span>
+                    </td>
+                </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+        @endif
     </div>
 
 </div>
 
 {{-- Recent metrics table --}}
 @if($metrics->isNotEmpty())
-<div class="card" style="margin-top:1.25rem;overflow:hidden;">
-    <div class="card-header" style="font-weight:700;">Recent Metric Records</div>
-    <div class="card-body" style="padding:0;overflow-x:auto;">
+<div class="panel">
+    <div class="panel-header"><h3 class="panel-title"><i data-lucide="history"></i> Recent metric records</h3></div>
+    <div class="table-wrapper">
         <table class="data-table">
             <thead>
-                <tr>
-                    <th>Endpoint</th>
-                    <th>Method</th>
-                    <th>Period Start</th>
-                    <th>Requests</th>
-                    <th>Errors</th>
-                    <th>Avg ms</th>
-                </tr>
+                <tr><th>Endpoint</th><th>Method</th><th>Period start</th><th>Requests</th><th>Errors</th><th>Avg ms</th></tr>
             </thead>
             <tbody>
                 @foreach($metrics->take(20) as $m)
                 <tr>
-                    <td style="font-family:monospace;font-size:.8rem;">{{ $m->endpoint }}</td>
-                    <td><span class="badge badge-default">{{ $m->method }}</span></td>
-                    <td style="font-size:.8rem;color:#64748b;">{{ $m->period_start?->format('d M Y H:i') }}</td>
-                    <td>{{ number_format($m->request_count) }}</td>
-                    <td style="{{ $m->error_count > 0 ? 'color:#b91c1c;font-weight:600;' : 'color:#94a3b8;' }}">
-                        {{ $m->error_count }}
+                    <td data-label="Endpoint" class="mono">{{ $m->endpoint }}</td>
+                    <td data-label="Method"><span class="badge badge-neutral">{{ $m->method }}</span></td>
+                    <td data-label="Period start" class="td-muted">{{ $m->period_start?->format('d M Y H:i') }}</td>
+                    <td data-label="Requests">{{ number_format($m->request_count) }}</td>
+                    <td data-label="Errors">
+                        @if($m->error_count > 0)<span class="badge badge-danger">{{ $m->error_count }}</span>
+                        @else<span class="td-muted">0</span>@endif
                     </td>
-                    <td style="color:#64748b;font-size:.83rem;">{{ round($m->avg_response_ms) }}ms</td>
+                    <td data-label="Avg ms" class="td-muted">{{ round($m->avg_response_ms) }}ms</td>
                 </tr>
                 @endforeach
             </tbody>

@@ -3,8 +3,8 @@
 @section('title', 'Pharmacy Portal')
 
 @section('sidebar_role_badge')
-<div class="sidebar-role-badge" style="background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.4);color:#34d399;">
-    <i data-lucide="pill" style="width:.75rem;height:.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+<div class="sidebar-role-badge">
+    <i data-lucide="pill"></i>
     Pharmacy
 </div>
 @endsection
@@ -20,121 +20,110 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <h1 class="page-title">Pharmacy Dashboard</h1>
-        <p class="page-subtitle">Today's prescription queue, stock alerts, and dispensing activity.</p>
-    </div>
+<div class="page-head">
+    <h2>Pharmacy dashboard</h2>
+    <p class="page-subtitle">Today's prescription queue, stock alerts, and dispensing activity.</p>
+    <div class="page-head__spacer"></div>
     <a href="{{ route('portals.pharmacy.prescriptions') }}" class="btn btn-primary btn-sm">
-        <i data-lucide="clipboard-list" style="width:14px;height:14px;"></i>
-        View Full Queue
+        <i data-lucide="clipboard-list"></i> View full queue
     </a>
 </div>
 
-@if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;">
-        <i data-lucide="check-circle"></i><div>{{ session('success') }}</div>
-    </div>
-@endif
+@if(session('success'))<div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
 
 {{-- Stat cards --}}
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;margin-bottom:1.5rem;">
-    <a href="{{ route('portals.pharmacy.prescriptions') }}" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#fef3c7;color:#b45309;"><i data-lucide="clipboard-list"></i></div>
-            <div class="stat-card__val">{{ $stats['pending_rx'] }}</div>
-            <div class="stat-card__label">Pending Rx</div>
-        </div>
+<div class="stat-grid mb-6">
+    <a href="{{ route('portals.pharmacy.prescriptions') }}" class="stat-card stat-card--warning">
+        <div class="stat-card__label">Pending Rx</div>
+        <div class="stat-card__value">{{ $stats['pending_rx'] }}</div>
     </a>
-    <div class="stat-card">
-        <div class="stat-card__icon" style="background:#dcfce7;color:#15803d;"><i data-lucide="check-circle-2"></i></div>
-        <div class="stat-card__val">{{ $stats['dispensed_today'] }}</div>
-        <div class="stat-card__label">Dispensed Today</div>
+    <div class="stat-card stat-card--success">
+        <div class="stat-card__label">Dispensed today</div>
+        <div class="stat-card__value">{{ $stats['dispensed_today'] }}</div>
     </div>
-    <a href="{{ route('portals.pharmacy.inventory') }}" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#dbeafe;color:#1d4ed8;"><i data-lucide="package"></i></div>
-            <div class="stat-card__val">{{ $stats['total_drugs'] }}</div>
-            <div class="stat-card__label">Drug Lines</div>
-        </div>
+    <a href="{{ route('portals.pharmacy.inventory') }}" class="stat-card stat-card--primary">
+        <div class="stat-card__label">Drug lines</div>
+        <div class="stat-card__value">{{ $stats['total_drugs'] }}</div>
     </a>
-    <a href="{{ route('portals.pharmacy.inventory') }}?stock_status=low_stock" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#fef3c7;color:#b45309;"><i data-lucide="alert-triangle"></i></div>
-            <div class="stat-card__val">{{ $stats['low_stock'] }}</div>
-            <div class="stat-card__label">Low Stock</div>
-        </div>
+    <a href="{{ route('portals.pharmacy.inventory') }}?stock_status=low_stock" class="stat-card stat-card--warning">
+        <div class="stat-card__label">Low stock</div>
+        <div class="stat-card__value">{{ $stats['low_stock'] }}</div>
     </a>
-    <a href="{{ route('portals.pharmacy.inventory') }}?stock_status=out_of_stock" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#fee2e2;color:#b91c1c;"><i data-lucide="x-circle"></i></div>
-            <div class="stat-card__val">{{ $stats['out_of_stock'] }}</div>
-            <div class="stat-card__label">Out of Stock</div>
-        </div>
+    <a href="{{ route('portals.pharmacy.inventory') }}?stock_status=out_of_stock" class="stat-card stat-card--danger">
+        <div class="stat-card__label">Out of stock</div>
+        <div class="stat-card__value">{{ $stats['out_of_stock'] }}</div>
     </a>
-    <div class="stat-card">
-        <div class="stat-card__icon" style="background:#f3e8ff;color:#7c3aed;"><i data-lucide="trash-2"></i></div>
-        <div class="stat-card__val">{{ $stats['expired'] }}</div>
+    <div class="stat-card stat-card--danger">
         <div class="stat-card__label">Expired</div>
+        <div class="stat-card__value">{{ $stats['expired'] }}</div>
     </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+<div class="field-grid">
 
-    {{-- Pending Prescriptions --}}
-    <div class="card">
-        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-weight:700;">Pending Prescriptions</span>
-            <a href="{{ route('portals.pharmacy.prescriptions') }}" class="btn btn-outline btn-sm">View all</a>
+    {{-- Pending Prescriptions (dispense queue) --}}
+    <div class="panel">
+        <div class="panel-header">
+            <h3 class="panel-title"><i data-lucide="clipboard-list"></i> Pending prescriptions</h3>
+            <a href="{{ route('portals.pharmacy.prescriptions') }}" class="btn btn-secondary btn-sm">View all</a>
         </div>
-        <div class="card-body" style="padding:0;">
-            @forelse($pendingRx as $rx)
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;border-bottom:1px solid #f1f5f9;">
-                <div>
-                    <div style="font-weight:600;font-size:.875rem;">{{ $rx->patient?->full_name ?? '—' }}</div>
-                    <div style="font-size:.75rem;color:#64748b;">
-                        {{ $rx->items->count() }} item(s) &middot; {{ $rx->created_at?->diffForHumans() }}
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead><tr><th>Patient</th><th>Status</th><th class="row-actions"></th></tr></thead>
+                <tbody>
+                @forelse($pendingRx as $rx)
+                <tr>
+                    <td data-label="Patient">
+                        <span class="td-strong">{{ $rx->patient?->full_name ?? '—' }}</span>
+                        <div class="td-muted">{{ $rx->items->count() }} item(s) &middot; {{ $rx->created_at?->diffForHumans() }}</div>
+                    </td>
+                    <td data-label="Status"><span class="badge badge-{{ $rx->statusColor() }}">{{ ucfirst(str_replace('_', ' ', $rx->status)) }}</span></td>
+                    <td class="row-actions" data-label="">
+                        <form method="POST" action="{{ route('portals.pharmacy.dispense', $rx->id) }}" class="inline-form">@csrf
+                            <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('Mark as dispensed?')">Dispense</button>
+                        </form>
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="3" class="empty-cell">
+                    <div class="empty-state">
+                        <i data-lucide="check-circle-2" class="empty-state-icon"></i>
+                        <p>All prescriptions are up to date.</p>
                     </div>
-                </div>
-                <div style="display:flex;gap:.5rem;align-items:center;">
-                    <span class="badge badge-{{ $rx->statusColor() }}">{{ ucfirst(str_replace('_', ' ', $rx->status)) }}</span>
-                    <form method="POST" action="{{ route('portals.pharmacy.dispense', $rx->id) }}" style="margin:0;">
-                        @csrf
-                        <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('Mark as dispensed?')">
-                            Dispense
-                        </button>
-                    </form>
-                </div>
-            </div>
-            @empty
-            <div style="padding:2rem;text-align:center;color:#94a3b8;font-size:.875rem;">
-                <i data-lucide="check-circle-2" style="width:32px;height:32px;display:block;margin:0 auto 8px;color:#86efac;"></i>
-                All prescriptions are up to date.
-            </div>
-            @endforelse
+                </td></tr>
+                @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 
-    {{-- Stock Alerts --}}
-    <div class="card">
-        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-weight:700;">Stock Alerts</span>
-            <a href="{{ route('portals.pharmacy.inventory') }}" class="btn btn-outline btn-sm">Inventory</a>
+    {{-- Stock Alerts (low-stock) --}}
+    <div class="panel">
+        <div class="panel-header">
+            <h3 class="panel-title"><i data-lucide="alert-triangle"></i> Stock alerts</h3>
+            <a href="{{ route('portals.pharmacy.inventory') }}" class="btn btn-secondary btn-sm">Inventory</a>
         </div>
-        <div class="card-body" style="padding:0;">
-            @forelse($alerts as $drug)
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;border-bottom:1px solid #f1f5f9;">
-                <div>
-                    <div style="font-weight:600;font-size:.875rem;">{{ $drug->medicine_name }}</div>
-                    <div style="font-size:.75rem;color:#64748b;">{{ $drug->generic_name }} &middot; {{ $drug->form }} {{ $drug->strength }}</div>
-                </div>
-                <span class="badge badge-{{ $drug->is_expired ? 'danger' : ($drug->stock_status === 'out_of_stock' ? 'danger' : 'warning') }}">
-                    {{ $drug->is_expired ? 'Expired' : ucfirst(str_replace('_', ' ', $drug->stock_status)) }}
-                </span>
-            </div>
-            @empty
-            <div style="padding:2rem;text-align:center;color:#94a3b8;font-size:.875rem;">No stock alerts.</div>
-            @endforelse
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead><tr><th>Medicine</th><th>Status</th></tr></thead>
+                <tbody>
+                @forelse($alerts as $drug)
+                <tr>
+                    <td data-label="Medicine">
+                        <span class="td-strong">{{ $drug->medicine_name }}</span>
+                        <div class="td-muted">{{ $drug->generic_name }} &middot; {{ $drug->form }} {{ $drug->strength }}</div>
+                    </td>
+                    <td data-label="Status">
+                        <span class="badge badge-{{ $drug->is_expired ? 'danger' : ($drug->stock_status === 'out_of_stock' ? 'danger' : 'warning') }}">
+                            {{ $drug->is_expired ? 'Expired' : ucfirst(str_replace('_', ' ', $drug->stock_status)) }}
+                        </span>
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="2" class="td-muted empty-cell">No stock alerts.</td></tr>
+                @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 

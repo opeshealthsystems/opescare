@@ -20,9 +20,9 @@
 </div>
 
 <!-- Info Banner -->
-<div class="alert alert-info mb-6" style="margin-bottom:var(--p-space-6);">
+<div class="alert alert-info mb-6">
     <i data-lucide="shield-check"></i>
-    <div style="font-size:0.8125rem;">
+    <div>
         {{ __('public.portal.access_logs_info', [], app()->getLocale()) ?: 'Every access to your Health ID is recorded here for your review. If you see an access you don\'t recognise, contact support immediately.' }}
     </div>
 </div>
@@ -65,34 +65,28 @@
                             <div class="td-muted">{{ \Carbon\Carbon::parse($log->created_at)->format('H:i') }}</div>
                         </td>
                         <td data-label="{{ __('public.portal.access_type', [], app()->getLocale()) ?: 'Access Type' }}">
-                            <div style="display:flex;align-items:center;gap:var(--p-space-2);">
+                            <span class="cell-with-icon">
                                 @if(str_contains($log->access_type ?? '', 'qr'))
-                                    <i data-lucide="qr-code" style="width:1rem;height:1rem;color:var(--p-primary);"></i>
+                                    <i data-lucide="qr-code"></i>
                                     <span>{{ __('public.portal.qr_scan', [], app()->getLocale()) ?: 'QR Scan' }}</span>
                                 @else
-                                    <i data-lucide="search" style="width:1rem;height:1rem;color:var(--p-primary);"></i>
+                                    <i data-lucide="search"></i>
                                     <span>{{ __('public.portal.id_lookup', [], app()->getLocale()) ?: 'ID Lookup' }}</span>
                                 @endif
-                            </div>
+                            </span>
                         </td>
                         <td data-label="{{ __('public.portal.purpose', [], app()->getLocale()) ?: 'Purpose' }}">
-                            <span class="td-muted" style="text-transform:capitalize;">{{ str_replace('_', ' ', $log->purpose ?? '—') }}</span>
+                            <span class="td-muted">{{ ucfirst(str_replace('_', ' ', $log->purpose ?? '—')) }}</span>
                         </td>
                         <td data-label="{{ __('public.portal.result', [], app()->getLocale()) ?: 'Result' }}">
                             @if(($log->result ?? '') === 'success')
-                                <span class="badge badge-success">
-                                    <span style="width:6px;height:6px;background:#22C55E;border-radius:50%;display:inline-block;margin-right:4px;"></span>
-                                    {{ __('public.portal.granted', [], app()->getLocale()) ?: 'Granted' }}
-                                </span>
+                                <span class="badge badge-success">{{ __('public.portal.granted', [], app()->getLocale()) ?: 'Granted' }}</span>
                             @else
-                                <span class="badge badge-danger">
-                                    <span style="width:6px;height:6px;background:#EF4444;border-radius:50%;display:inline-block;margin-right:4px;"></span>
-                                    {{ __('public.portal.denied', [], app()->getLocale()) ?: 'Denied' }}
-                                </span>
+                                <span class="badge badge-danger">{{ __('public.portal.denied', [], app()->getLocale()) ?: 'Denied' }}</span>
                             @endif
                         </td>
                         <td data-label="{{ __('public.portal.details', [], app()->getLocale()) ?: 'Details' }}">
-                            <span class="td-muted" style="font-size:0.8rem;">{{ $log->ip_address ?? '—' }}</span>
+                            <span class="td-mono">{{ $log->ip_address ?? '—' }}</span>
                         </td>
                     </tr>
                     @endforeach
@@ -100,7 +94,7 @@
             </table>
         </div>
         @if(method_exists($logs, 'links') && $logs->hasPages())
-        <div style="padding:var(--p-space-4);border-top:1px solid var(--p-border);">
+        <div class="panel-body">
             {{ $logs->links() }}
         </div>
         @endif

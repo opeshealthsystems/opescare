@@ -3,8 +3,8 @@
 @section('title', 'Health Programs')
 
 @section('sidebar_role_badge')
-<div class="sidebar-role-badge" style="background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.4);color:#fbbf24;">
-    <i data-lucide="heart-handshake" style="width:.75rem;height:.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+<div class="sidebar-role-badge">
+    <i data-lucide="heart-handshake"></i>
     Health Org
 </div>
 @endsection
@@ -27,46 +27,44 @@
     </div>
 </div>
 
-<div class="card" style="overflow:hidden;">
-    <div class="card-body" style="padding:0;overflow-x:auto;">
+<div class="panel">
+    <div class="table-wrapper">
         <table class="data-table">
             <thead>
                 <tr>
                     <th>Facility / Site</th>
                     <th>Type</th>
                     <th>Status</th>
-                    <th>Care Map</th>
+                    <th class="row-actions">Care Map</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($facilities as $facility)
                 <tr>
-                    <td style="font-weight:600;">{{ $facility->name }}</td>
-                    <td>
-                        <span class="badge badge-default">{{ ucfirst(str_replace('_', ' ', $facility->type)) }}</span>
+                    <td data-label="Facility / Site"><span class="td-strong">{{ $facility->name }}</span></td>
+                    <td data-label="Type">
+                        <span class="badge badge-neutral">{{ ucfirst(str_replace('_', ' ', $facility->type)) }}</span>
                     </td>
-                    <td>
-                        <span class="badge badge-{{ $facility->status === 'active' ? 'success' : 'default' }}">
+                    <td data-label="Status">
+                        <span class="badge badge-{{ $facility->status === 'active' ? 'success' : 'neutral' }}">
                             {{ ucfirst($facility->status) }}
                         </span>
                     </td>
-                    <td>
-                        <a href="{{ route('public.care-map.profile', $facility->id) }}" target="_blank" class="btn btn-outline btn-sm">
-                            <i data-lucide="external-link" style="width:12px;height:12px;"></i>
-                            View
+                    <td data-label="Care Map" class="row-actions">
+                        <a href="{{ route('public.care-map.profile', $facility->id) }}" target="_blank" class="btn btn-secondary btn-sm">
+                            <i data-lucide="external-link"></i> View
                         </a>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" style="text-align:center;padding:2rem;color:#94a3b8;">No facilities found.</td>
+                    <td colspan="4" class="td-muted empty-cell">No facilities found.</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
+    <div class="panel-body">{{ $facilities->links() }}</div>
 </div>
-
-<div style="margin-top:1rem;">{{ $facilities->links() }}</div>
 
 @endsection

@@ -3,8 +3,8 @@
 @section('title', 'Health Organization Portal')
 
 @section('sidebar_role_badge')
-<div class="sidebar-role-badge" style="background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.4);color:#fbbf24;">
-    <i data-lucide="heart-handshake" style="width:.75rem;height:.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+<div class="sidebar-role-badge">
+    <i data-lucide="heart-handshake"></i>
     Health Org
 </div>
 @endsection
@@ -28,81 +28,83 @@
 </div>
 
 @if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;">
+    <div class="alert alert-success mb-4">
         <i data-lucide="check-circle"></i><div>{{ session('success') }}</div>
     </div>
 @endif
 
 {{-- Stat Cards --}}
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem;">
-    <div class="stat-card">
-        <div class="stat-card__icon" style="background:#dbeafe;color:#1d4ed8;"><i data-lucide="users"></i></div>
-        <div class="stat-card__val">{{ number_format($stats['patients']) }}</div>
+<div class="stat-grid mb-6">
+    <div class="stat-card stat-card--primary">
         <div class="stat-card__label">Registered Patients</div>
+        <div class="stat-card__value">{{ number_format($stats['patients']) }}</div>
     </div>
-    <a href="{{ route('portals.healthorg.programs') }}" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#dcfce7;color:#15803d;"><i data-lucide="building-2"></i></div>
-            <div class="stat-card__val">{{ $stats['facilities'] }}</div>
-            <div class="stat-card__label">Active Facilities</div>
-        </div>
+    <a href="{{ route('portals.healthorg.programs') }}" class="stat-card stat-card--success">
+        <div class="stat-card__label">Active Facilities</div>
+        <div class="stat-card__value">{{ $stats['facilities'] }}</div>
     </a>
-    <a href="{{ route('portals.healthorg.reports') }}" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#fef3c7;color:#b45309;"><i data-lucide="file-bar-chart-2"></i></div>
-            <div class="stat-card__val">{{ $stats['reports_draft'] }}</div>
-            <div class="stat-card__label">Draft Reports</div>
-        </div>
+    <a href="{{ route('portals.healthorg.reports') }}" class="stat-card stat-card--warning">
+        <div class="stat-card__label">Draft Reports</div>
+        <div class="stat-card__value">{{ $stats['reports_draft'] }}</div>
     </a>
-    <a href="{{ route('portals.healthorg.reports') }}" style="text-decoration:none;">
-        <div class="stat-card">
-            <div class="stat-card__icon" style="background:#dcfce7;color:#15803d;"><i data-lucide="send"></i></div>
-            <div class="stat-card__val">{{ $stats['reports_sent'] }}</div>
-            <div class="stat-card__label">Submitted Reports</div>
-        </div>
+    <a href="{{ route('portals.healthorg.reports') }}" class="stat-card stat-card--success">
+        <div class="stat-card__label">Submitted Reports</div>
+        <div class="stat-card__value">{{ $stats['reports_sent'] }}</div>
     </a>
 </div>
 
 {{-- Quick Actions --}}
-<div class="card" style="margin-bottom:1.25rem;">
-    <div class="card-header" style="font-weight:700;">Quick Actions</div>
-    <div class="card-body">
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.75rem;">
-            <a href="{{ route('portals.healthorg.programs') }}" class="btn btn-outline" style="justify-content:flex-start;gap:.75rem;">
-                <i data-lucide="folder-open" style="width:18px;height:18px;color:#7c3aed;"></i>
-                View Programs
+<div class="panel mb-6">
+    <div class="panel-header"><h2 class="panel-title">Quick Actions</h2></div>
+    <div class="panel-body">
+        <div class="card-grid">
+            <a href="{{ route('portals.healthorg.programs') }}" class="nav-card">
+                <div class="nav-card__head">
+                    <i data-lucide="folder-open"></i>
+                    <span class="nav-card__title">View Programs</span>
+                </div>
             </a>
-            <a href="{{ route('portals.healthorg.outreach') }}" class="btn btn-outline" style="justify-content:flex-start;gap:.75rem;">
-                <i data-lucide="map-pin" style="width:18px;height:18px;color:#0ea5e9;"></i>
-                Outreach Sites
+            <a href="{{ route('portals.healthorg.outreach') }}" class="nav-card">
+                <div class="nav-card__head">
+                    <i data-lucide="map-pin"></i>
+                    <span class="nav-card__title">Outreach Sites</span>
+                </div>
             </a>
-            <a href="{{ route('portals.healthorg.reports') }}" class="btn btn-outline" style="justify-content:flex-start;gap:.75rem;">
-                <i data-lucide="file-bar-chart-2" style="width:18px;height:18px;color:#f59e0b;"></i>
-                Public Health Reports
+            <a href="{{ route('portals.healthorg.reports') }}" class="nav-card">
+                <div class="nav-card__head">
+                    <i data-lucide="file-bar-chart-2"></i>
+                    <span class="nav-card__title">Public Health Reports</span>
+                </div>
             </a>
-            <a href="{{ route('portals.healthorg.signals') }}" class="btn btn-outline" style="justify-content:flex-start;gap:.75rem;">
-                <i data-lucide="activity" style="width:18px;height:18px;color:#ef4444;"></i>
-                Outbreak Signals
+            <a href="{{ route('portals.healthorg.signals') }}" class="nav-card nav-card--danger">
+                <div class="nav-card__head">
+                    <i data-lucide="activity"></i>
+                    <span class="nav-card__title">Outbreak Signals</span>
+                </div>
             </a>
-            <a href="{{ route('public.care-map') }}" target="_blank" class="btn btn-outline" style="justify-content:flex-start;gap:.75rem;">
-                <i data-lucide="map" style="width:18px;height:18px;color:#10b981;"></i>
-                Care Map
+            <a href="{{ route('public.care-map') }}" target="_blank" class="nav-card">
+                <div class="nav-card__head">
+                    <i data-lucide="map"></i>
+                    <span class="nav-card__title">Care Map</span>
+                </div>
             </a>
-            <a href="{{ route('portals.healthorg.outreach') }}" class="btn btn-outline" style="justify-content:flex-start;gap:.75rem;">
-                <i data-lucide="syringe" style="width:18px;height:18px;color:#8b5cf6;"></i>
-                Immunization Outreach
+            <a href="{{ route('portals.healthorg.outreach') }}" class="nav-card">
+                <div class="nav-card__head">
+                    <i data-lucide="syringe"></i>
+                    <span class="nav-card__title">Immunization Outreach</span>
+                </div>
             </a>
         </div>
     </div>
 </div>
 
 {{-- Info banner --}}
-<div class="auth-alert" style="background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;margin-bottom:0;">
+<div class="alert alert-info">
     <i data-lucide="info"></i>
     <div>
         Advanced public health reporting, disease surveillance, and outbreak intelligence are available via the
-        <strong>Public Health API</strong> at <code>/api/v1/public-health</code>.
-        Use the <a href="{{ route('portals.developer.dashboard') }}" style="color:#1d4ed8;">Developer Portal</a> to obtain API credentials.
+        <strong>Public Health API</strong> at <code class="mono">/api/v1/public-health</code>.
+        Use the <a href="{{ route('portals.developer.dashboard') }}">Developer Portal</a> to obtain API credentials.
     </div>
 </div>
 

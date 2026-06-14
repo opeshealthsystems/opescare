@@ -3,8 +3,8 @@
 @section('title', 'Outreach Sites')
 
 @section('sidebar_role_badge')
-<div class="sidebar-role-badge" style="background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.4);color:#fbbf24;">
-    <i data-lucide="heart-handshake" style="width:.75rem;height:.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+<div class="sidebar-role-badge">
+    <i data-lucide="heart-handshake"></i>
     Health Org
 </div>
 @endsection
@@ -25,33 +25,35 @@
         <h1 class="page-title">Outreach & Mobile Clinic Sites</h1>
         <p class="page-subtitle">Active outreach locations visible on the Care Map.</p>
     </div>
-    <a href="{{ route('public.care-map') }}" target="_blank" class="btn btn-outline btn-sm">
-        <i data-lucide="external-link" style="width:14px;height:14px;"></i>
-        Open Care Map
+    <a href="{{ route('public.care-map') }}" target="_blank" class="btn btn-secondary btn-sm">
+        <i data-lucide="external-link"></i> Open Care Map
     </a>
 </div>
 
 @forelse($sites as $site)
-<div class="card" style="margin-bottom:.75rem;">
-    <div class="card-body" style="display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;">
-        <div>
-            <div style="font-weight:700;font-size:.95rem;">{{ $site->name }}</div>
-            <div style="font-size:.8rem;color:#64748b;margin-top:2px;">
-                {{ ucfirst(str_replace('_', ' ', $site->type)) }}
-                &middot;
-                <span class="badge badge-{{ $site->status === 'active' ? 'success' : 'default' }}" style="font-size:.7rem;">{{ ucfirst($site->status) }}</span>
+<div class="panel mb-3">
+    <div class="panel-body">
+        <div class="list-row">
+            <div class="list-row__main">
+                <div class="td-strong">{{ $site->name }}</div>
+                <div class="td-muted">
+                    {{ ucfirst(str_replace('_', ' ', $site->type)) }}
+                    &middot;
+                    <span class="badge badge-{{ $site->status === 'active' ? 'success' : 'neutral' }}">{{ ucfirst($site->status) }}</span>
+                </div>
             </div>
+            <a href="{{ route('public.care-map.profile', $site->id) }}" target="_blank" class="btn btn-secondary btn-sm">
+                <i data-lucide="map-pin"></i> Profile
+            </a>
         </div>
-        <a href="{{ route('public.care-map.profile', $site->id) }}" target="_blank" class="btn btn-outline btn-sm">
-            <i data-lucide="map-pin" style="width:13px;height:13px;"></i>
-            Profile
-        </a>
     </div>
 </div>
 @empty
-<div style="text-align:center;padding:3rem;color:#94a3b8;">
-    <i data-lucide="map-pin" style="width:40px;height:40px;display:block;margin:0 auto 12px;opacity:.4;"></i>
-    No outreach sites registered yet.
+<div class="panel">
+    <div class="empty-state">
+        <div class="empty-state-icon"><i data-lucide="map-pin"></i></div>
+        <p>No outreach sites registered yet.</p>
+    </div>
 </div>
 @endforelse
 

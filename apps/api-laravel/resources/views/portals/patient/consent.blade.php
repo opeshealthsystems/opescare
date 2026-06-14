@@ -19,13 +19,13 @@
 </div>
 
 @if(session('success'))
-<div class="alert alert-info" style="margin-bottom:var(--p-space-4);"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
+<div class="alert alert-info mb-4"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
 @endif
 
 @if(!$patient)
 <div class="panel">
     <div class="empty-state">
-        <div class="empty-state-icon" style="color:var(--p-warning);"><i data-lucide="alert-circle"></i></div>
+        <div class="empty-state-icon"><i data-lucide="alert-circle"></i></div>
         <h3>No Patient Profile Found</h3>
         <p>Your patient profile could not be loaded. Please contact support.</p>
     </div>
@@ -39,76 +39,85 @@
     </div>
 </div>
 @else
-<div style="display:flex;flex-direction:column;gap:var(--p-space-4);">
 @foreach($consentRequests as $req)
-<div class="panel">
+<div class="panel mb-4">
     <div class="panel-body">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:var(--p-space-4);">
+        <div class="flex-between" style="align-items:flex-start;gap:var(--p-space-4);">
             <div style="flex:1;">
-                <div style="font-weight:700;font-size:0.9375rem;margin-bottom:4px;">
-                    {{ $req->requestingFacility?->name ?? 'Unknown Facility' }}
-                </div>
-                <div style="font-size:0.875rem;color:var(--p-text-muted);margin-bottom:var(--p-space-3);">
-                    {{ $req->purpose ?? 'Access request' }}
-                </div>
-                <div style="display:flex;gap:var(--p-space-2);flex-wrap:wrap;">
+                <div class="td-strong">{{ $req->requestingFacility?->name ?? 'Unknown Facility' }}</div>
+                <div class="text-muted mb-3">{{ $req->purpose ?? 'Access request' }}</div>
+                <div class="gap-2" style="display:flex;flex-wrap:wrap;">
                     @foreach(($req->requested_scope ?? []) as $scope)
-                    <span style="padding:2px 8px;border-radius:9999px;font-size:0.75rem;background:var(--p-surface-2);color:var(--p-text-muted);">{{ $scope }}</span>
+                    <span class="badge badge-neutral">{{ $scope }}</span>
                     @endforeach
                 </div>
-                <div style="font-size:0.8125rem;color:var(--p-text-muted);margin-top:var(--p-space-2);">
+                <div class="text-sm text-muted mt-1">
                     Requested {{ $req->created_at->diffForHumans() }}
                     @if($req->duration_minutes)
                      · Valid for {{ round($req->duration_minutes / 60, 1) }} hours
                     @endif
                 </div>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:var(--p-space-2);">
+            <div class="row-actions" style="flex-direction:column;align-items:flex-end;">
                 @if($req->status === 'pending')
                 <form method="POST" action="{{ route('portals.patient.consent.approve', $req->id) }}">
                     @csrf
-                    <button type="submit" class="btn btn-primary" style="font-size:0.8125rem;">
-                        <i data-lucide="check" style="width:0.875rem;height:0.875rem;"></i> Approve
-                    </button>
+                    <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="check"></i> Approve</button>
                 </form>
                 <form method="POST" action="{{ route('portals.patient.consent.deny', $req->id) }}">
                     @csrf
-                    <button type="submit" class="btn" style="font-size:0.8125rem;background:var(--p-surface-2);color:var(--p-text-muted);">
-                        <i data-lucide="x" style="width:0.875rem;height:0.875rem;"></i> Deny
-                    </button>
+                    <button type="submit" class="btn btn-secondary btn-sm"><i data-lucide="x"></i> Deny</button>
                 </form>
                 @else
-                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-                    <span style="padding:3px 10px;border-radius:9999px;font-size:0.75rem;font-weight:700;
-                        background:{{ $req->status === 'approved' ? '#D1FAE5' : 'var(--p-surface-2)' }};
-                        color:{{ $req->status === 'approved' ? '#059669' : 'var(--p-text-muted)' }};">
-                        {{ ucfirst($req->status) }}
-                    </span>
-                    @if($req->status === 'approved')
-                    <form method="POST" action="{{ route('portals.patient.consent.revoke', $req->id) }}"
-                          onsubmit="return confirm('Revoke this consent? The facility will immediately lose access.')">
-                        @csrf
-                        <button type="submit"
-                            style="font-size:0.75rem;background:none;border:none;color:#DC2626;cursor:pointer;padding:0;text-decoration:underline;">
-                            Revoke access
-                        </button>
-                    </form>
-                    @endif
-                </div>
+                <span class="badge {{ $req->status === 'approved' ? 'badge-success' : 'badge-neutral' }}">{{ ucfirst($req->status) }}</span>
+                @if($req->status === 'approved')
+                <button type="button" class="btn btn-danger btn-sm" onclick="opOpenModal('revoke-consent-{{ $req->id }}')">
+                    <i data-lucide="shield-off"></i> Revoke access
+                </button>
+                @endif
                 @endif
             </div>
         </div>
     </div>
 </div>
 @endforeach
-</div>
 
 @if(method_exists($consentRequests, 'links') && $consentRequests->hasPages())
-<div style="margin-top:var(--p-space-4);">
+<div class="mt-3">
     {{ $consentRequests->links() }}
 </div>
 @endif
 
+@foreach($consentRequests as $req)
+    @if($req->status === 'approved')
+    <div id="revoke-consent-{{ $req->id }}" class="modal-backdrop mt-6" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="revoke-consent-{{ $req->id }}-title">
+            <h3 class="modal__title" id="revoke-consent-{{ $req->id }}-title"><i data-lucide="shield-off"></i> Revoke access</h3>
+            <form method="POST" action="{{ route('portals.patient.consent.revoke', $req->id) }}">
+                @csrf
+                <div class="modal__body">
+                    <p>Revoke this consent? The facility will immediately lose access.</p>
+                </div>
+                <div class="modal__footer">
+                    <button type="button" class="btn btn-ghost" onclick="opCloseModal('revoke-consent-{{ $req->id }}')">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Revoke access</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
+@endforeach
+
 @endif
 
+@endsection
+
+@section('scripts')
+<script>
+function opOpenModal(id){ document.getElementById(id).removeAttribute('hidden'); }
+function opCloseModal(id){ document.getElementById(id).setAttribute('hidden',''); }
+document.addEventListener('keydown', function(e){
+    if(e.key==='Escape'){ document.querySelectorAll('.modal-backdrop').forEach(function(m){ m.setAttribute('hidden',''); }); }
+});
+</script>
 @endsection

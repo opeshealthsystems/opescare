@@ -1,8 +1,8 @@
-<div class="sidebar-role-badge" style="background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.4);color:#fbbf24;">
-    <i data-lucide="heart-handshake" style="width:.75rem;height:.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+<div class="sidebar-role-badge">
+    <i data-lucide="heart-handshake"></i>
     Health Org
 </div>
-<div style="margin-bottom:var(--p-space-3);"></div>
+<div class="mb-3"></div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">Organization</div>
     <a href="{{ route('portals.healthorg.dashboard') }}" class="sidebar-link {{ request()->routeIs('portals.healthorg.dashboard') ? 'active' : '' }}">
