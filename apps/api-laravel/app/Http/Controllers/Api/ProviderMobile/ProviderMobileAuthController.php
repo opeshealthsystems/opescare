@@ -7,9 +7,11 @@ use App\Models\Facility;
 use App\Models\MobileFacilityContext;
 use App\Models\ProviderDevice;
 use App\Models\ProviderMobileSession;
+use App\Models\ProviderOtpCode;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
@@ -47,10 +49,29 @@ class ProviderMobileAuthController extends Controller
             return response()->json(['error' => 'Account is not active.'], 403);
         }
 
-        return response()->json([
+        if (!Hash::check($validated['pin_hash'], $user->password)) {
+            return response()->json(['error' => 'Invalid credentials.'], 401);
+        }
+
+        $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        ProviderOtpCode::create([
+            'user_id' => $user->id,
+            'device_fingerprint' => $validated['device_fingerprint'],
+            'code_hash' => Hash::make($otp),
+            'expires_at' => now()->addMinutes(10),
+        ]);
+
+        $payload = [
             'status'  => 'pending_2fa',
             'message' => 'Credentials accepted. OTP sent to registered contact.',
-        ]);
+        ];
+
+        if (!app()->isProduction()) {
+            $payload['debug_otp'] = $otp;
+        }
+
+        return response()->json($payload);
     }
 
     /**
@@ -68,14 +89,23 @@ class ProviderMobileAuthController extends Controller
             'app_version'        => 'sometimes|string|max:30',
         ]);
 
-        // Stub: accept any 6-digit OTP
-        // Production: validate against OTP store, then create real session
+        $otpRecord = ProviderOtpCode::where('device_fingerprint', $validated['device_fingerprint'])
+            ->whereNull('used_at')
+            ->where('expires_at', '>', now())
+            ->latest()
+            ->first();
+
+        if (!$otpRecord || !Hash::check($validated['otp_code'], $otpRecord->code_hash)) {
+            return response()->json(['error' => 'Invalid or expired OTP.'], 401);
+        }
+
+        $otpRecord->update(['used_at' => now()]);
 
         $accessToken = 'prov_' . Str::random(40);
         $tokenHash   = hash('sha256', $accessToken);
 
         // Register or update device record
-        $userId = $this->resolveUserId($request);
+        $userId = $otpRecord->user_id;
 
         ProviderDevice::updateOrCreate(
             ['device_fingerprint' => $validated['device_fingerprint']],
