@@ -112,6 +112,30 @@
     </a>
 </div>
 
+@if(isset($upcomingAppointments) && $upcomingAppointments->isNotEmpty())
+<div class="panel mb-6">
+  <div class="panel-header">
+    <h3 class="panel-title"><i data-lucide="calendar-clock"></i> Upcoming Appointments</h3>
+    <a href="{{ route('portals.patient.appointments') }}" class="btn btn-ghost btn-sm">View all</a>
+  </div>
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead><tr><th>Date</th><th>Doctor</th><th>Facility</th><th>Type</th></tr></thead>
+      <tbody>
+      @foreach($upcomingAppointments->take(3) as $appt)
+      <tr>
+        <td data-label="Date">{{ $appt->appointment_date?->format('d M Y, H:i') ?? '—' }}</td>
+        <td data-label="Doctor">{{ $appt->doctor?->user?->name ?? '—' }}</td>
+        <td data-label="Facility">{{ $appt->facility?->name ?? '—' }}</td>
+        <td data-label="Type"><span class="badge badge-info">{{ ucfirst($appt->type ?? 'consultation') }}</span></td>
+      </tr>
+      @endforeach
+      </tbody>
+    </table>
+  </div>
+</div>
+@endif
+
 <!-- Clinical Safety Banner -->
 <div class="panel mb-6">
     <div class="panel-header">
@@ -134,39 +158,39 @@
             {{-- Critical Allergies --}}
             <div class="stat-card stat-card--danger">
                 <div class="stat-card__label">Critical Allergies</div>
-                @if($criticalAllergies->isEmpty())
+                @if(($criticalAllergies ?? collect())->isEmpty())
                     <div class="stat-card__value text-success">None on record</div>
                 @else
                     <div class="stat-card__value">
-                        @foreach($criticalAllergies->take(3) as $a)
+                        @foreach(($criticalAllergies ?? collect())->take(3) as $a)
                             <div class="text-sm"><span class="badge badge-danger"><i data-lucide="alert-triangle"></i> {{ $a->substance }}</span></div>
                         @endforeach
                     </div>
-                    @if($criticalAllergies->count() > 3)
-                        <a href="{{ route('portals.patient.allergies') }}" class="stat-card__hint">+{{ $criticalAllergies->count() - 3 }} more →</a>
+                    @if(($criticalAllergies ?? collect())->count() > 3)
+                        <a href="{{ route('portals.patient.allergies') }}" class="stat-card__hint">+{{ ($criticalAllergies ?? collect())->count() - 3 }} more →</a>
                     @endif
                 @endif
             </div>
 
             {{-- All Active Allergies count --}}
-            <div class="stat-card {{ $activeAllergies->isEmpty() ? '' : 'stat-card--warning' }}">
+            <div class="stat-card {{ ($activeAllergies ?? collect())->isEmpty() ? '' : 'stat-card--warning' }}">
                 <div class="stat-card__label">Active Allergies</div>
-                <div class="stat-card__value">{{ $activeAllergies->count() }}</div>
+                <div class="stat-card__value">{{ ($activeAllergies ?? collect())->count() }}</div>
                 <a href="{{ route('portals.patient.allergies') }}" class="stat-card__hint">View all →</a>
             </div>
 
             {{-- Active Conditions --}}
             <div class="stat-card">
                 <div class="stat-card__label">Active Conditions</div>
-                <div class="stat-card__value">{{ $activeConditions->count() }}</div>
-                @if($activeConditions->isNotEmpty())
+                <div class="stat-card__value">{{ ($activeConditions ?? collect())->count() }}</div>
+                @if(($activeConditions ?? collect())->isNotEmpty())
                     <a href="{{ route('portals.patient.clinical') }}" class="stat-card__hint">View all →</a>
                 @endif
             </div>
 
         </div>
 
-        @if($activeAllergies->isNotEmpty() || $activeConditions->isNotEmpty())
+        @if(($activeAllergies ?? collect())->isNotEmpty() || ($activeConditions ?? collect())->isNotEmpty())
         <div class="alert alert-warning mt-3">
             <i data-lucide="alert-triangle"></i>
             <div>

@@ -119,7 +119,9 @@
             </h2>
         </div>
         <div class="panel-body">
+            @php $roleSlug = auth()->user()->role?->slug ?? ''; @endphp
             <div class="grid-2">
+                {{-- All roles --}}
                 <a href="{{ route('portals.staff.appointments') }}" class="btn btn-secondary">
                     <i data-lucide="calendar-check-2"></i>
                     {{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}
@@ -127,10 +129,6 @@
                 <a href="{{ route('portals.staff.queue') }}" class="btn btn-secondary">
                     <i data-lucide="list-ordered"></i>
                     {{ __('public.portal.nav_queue', [], app()->getLocale()) ?: 'Patient Queue' }}
-                </a>
-                <a href="{{ route('portals.staff.billing') }}" class="btn btn-secondary">
-                    <i data-lucide="receipt"></i>
-                    {{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}
                 </a>
                 <a href="{{ route('portals.staff.support') }}" class="btn btn-secondary">
                     <i data-lucide="headset"></i>
@@ -140,33 +138,11 @@
                     <i data-lucide="syringe"></i>
                     {{ __('public.portal.nav_immunizations', [], app()->getLocale()) ?: 'Immunizations' }}
                 </a>
-                <a href="{{ route('portals.staff.referrals') }}" class="btn btn-secondary">
-                    <i data-lucide="send"></i>
-                    {{ __('public.portal.nav_referrals', [], app()->getLocale()) ?: 'Referrals' }}
-                </a>
                 <a href="{{ route('portals.staff.visits') }}" class="btn btn-secondary">
                     <i data-lucide="stethoscope"></i> Visits
                 </a>
                 <a href="{{ route('portals.staff.cdss') }}" class="btn btn-secondary">
                     <i data-lucide="brain-circuit"></i> CDSS Alerts
-                </a>
-                <a href="{{ route('portals.staff.analytics') }}" class="btn btn-secondary">
-                    <i data-lucide="bar-chart-3"></i> Analytics
-                </a>
-                <a href="{{ route('portals.staff.telemedicine.index') }}" class="btn btn-secondary">
-                    <i data-lucide="video"></i> Telemedicine
-                </a>
-                <a href="{{ route('portals.staff.hr.directory') }}" class="btn btn-secondary">
-                    <i data-lucide="users"></i> HR Directory
-                </a>
-                <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="btn btn-secondary">
-                    <i data-lucide="pill"></i> Pharmacy Stock
-                </a>
-                <a href="{{ route('portals.staff.supply') }}" class="btn btn-secondary">
-                    <i data-lucide="package"></i> Supply Chain
-                </a>
-                <a href="{{ route('portals.staff.wards') }}" class="btn btn-secondary">
-                    <i data-lucide="bed"></i> Wards
                 </a>
                 <a href="{{ route('portals.staff.files.index') }}" class="btn btn-secondary">
                     <i data-lucide="folder"></i> Files
@@ -174,15 +150,81 @@
                 <a href="{{ route('portals.staff.search') }}" class="btn btn-secondary">
                     <i data-lucide="search"></i> Global Search
                 </a>
+                <a href="{{ route('portals.staff.wards') }}" class="btn btn-secondary">
+                    <i data-lucide="bed"></i> Wards
+                </a>
+
+                {{-- Billing: receptionist, hospital_admin, clinic_admin, doctor --}}
+                @if(in_array($roleSlug, ['receptionist', 'hospital_admin', 'clinic_admin', 'doctor']))
+                <a href="{{ route('portals.staff.billing') }}" class="btn btn-secondary">
+                    <i data-lucide="receipt"></i>
+                    {{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}
+                </a>
+                @endif
+
+                {{-- Referrals: doctor, hospital_admin, clinic_admin --}}
+                @if(in_array($roleSlug, ['doctor', 'hospital_admin', 'clinic_admin']))
+                <a href="{{ route('portals.staff.referrals') }}" class="btn btn-secondary">
+                    <i data-lucide="send"></i>
+                    {{ __('public.portal.nav_referrals', [], app()->getLocale()) ?: 'Referrals' }}
+                </a>
+                @endif
+
+                {{-- Analytics: hospital_admin, clinic_admin, doctor --}}
+                @if(in_array($roleSlug, ['hospital_admin', 'clinic_admin', 'doctor']))
+                <a href="{{ route('portals.staff.analytics') }}" class="btn btn-secondary">
+                    <i data-lucide="bar-chart-3"></i> Analytics
+                </a>
+                @endif
+
+                {{-- Telemedicine: doctor only --}}
+                @if($roleSlug === 'doctor')
+                <a href="{{ route('portals.staff.telemedicine.index') }}" class="btn btn-secondary">
+                    <i data-lucide="video"></i> Telemedicine
+                </a>
+                @endif
+
+                {{-- HR Directory: hospital_admin, clinic_admin --}}
+                @if(in_array($roleSlug, ['hospital_admin', 'clinic_admin']))
+                <a href="{{ route('portals.staff.hr.directory') }}" class="btn btn-secondary">
+                    <i data-lucide="users"></i> HR Directory
+                </a>
+                @endif
+
+                {{-- Pharmacy Stock: pharmacist, hospital_admin, clinic_admin --}}
+                @if(in_array($roleSlug, ['pharmacist', 'hospital_admin', 'clinic_admin']))
+                <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="btn btn-secondary">
+                    <i data-lucide="pill"></i> Pharmacy Stock
+                </a>
+                @endif
+
+                {{-- Supply Chain: hospital_admin, clinic_admin, pharmacist --}}
+                @if(in_array($roleSlug, ['hospital_admin', 'clinic_admin', 'pharmacist']))
+                <a href="{{ route('portals.staff.supply') }}" class="btn btn-secondary">
+                    <i data-lucide="package"></i> Supply Chain
+                </a>
+                @endif
+
+                {{-- Data Import: hospital_admin, clinic_admin --}}
+                @if(in_array($roleSlug, ['hospital_admin', 'clinic_admin']))
                 <a href="{{ route('portals.staff.data_import.index') }}" class="btn btn-secondary">
                     <i data-lucide="upload"></i> Data Import
                 </a>
+                @endif
+
+                {{-- Prescriptions: doctor, nurse, pharmacist --}}
+                @if(in_array($roleSlug, ['doctor', 'nurse', 'pharmacist']))
                 <a href="{{ route('portals.staff.prescriptions') }}" class="btn btn-secondary">
                     <i data-lucide="clipboard-plus"></i> Prescriptions
                 </a>
+                @endif
+
+                {{-- Lab Orders: doctor, nurse, lab_technician --}}
+                @if(in_array($roleSlug, ['doctor', 'nurse', 'lab_technician']))
                 <a href="{{ route('portals.staff.lab_orders') }}" class="btn btn-secondary">
                     <i data-lucide="flask-conical"></i> Lab Orders
                 </a>
+                @endif
             </div>
         </div>
     </div>

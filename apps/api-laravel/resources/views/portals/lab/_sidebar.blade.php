@@ -19,7 +19,7 @@
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">CDSS</div>
-    <a href="{{ route('portals.staff.cdss.lab_rules') }}" class="sidebar-link">
-        <i data-lucide="alert-triangle"></i><span>Lab alert rules</span>
+    <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link" target="_self">
+        <i data-lucide="brain"></i><span>CDSS Rules</span>
     </a>
 </div>

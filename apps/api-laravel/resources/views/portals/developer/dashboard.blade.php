@@ -126,8 +126,8 @@
                 <div class="stat-card__label">Production access</div>
             </a>
             <a href="{{ route('portals.developer.analytics') }}" class="stat-card">
-                <i data-lucide="book-open"></i>
-                <div class="stat-card__label">API docs</div>
+                <i data-lucide="bar-chart-3"></i>
+                <div class="stat-card__label">API Analytics</div>
             </a>
             <a href="{{ route('portals.developer.analytics') }}" class="stat-card">
                 <i data-lucide="bar-chart-3"></i>

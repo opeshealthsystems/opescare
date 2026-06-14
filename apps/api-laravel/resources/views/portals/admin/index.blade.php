@@ -24,13 +24,54 @@
     </div>
 </div>
 
+{{-- Platform overview stats --}}
+<div class="stat-grid mb-6" style="--cols:4">
+  <a href="{{ route('portals.admin.facilities.index') }}" class="stat-card">
+    <div class="stat-card__icon"><i data-lucide="hospital"></i></div>
+    <div class="stat-card__value">{{ $platformStats['facilities'] ?? '—' }}</div>
+    <div class="stat-card__label">Total Facilities</div>
+  </a>
+  <a href="{{ route('portals.admin.organizations.index') }}" class="stat-card">
+    <div class="stat-card__icon"><i data-lucide="building-2"></i></div>
+    <div class="stat-card__value">{{ $platformStats['organizations'] ?? '—' }}</div>
+    <div class="stat-card__label">Organizations</div>
+  </a>
+  <a href="{{ route('portals.admin.subscription') }}" class="stat-card">
+    <div class="stat-card__icon"><i data-lucide="credit-card"></i></div>
+    <div class="stat-card__value">{{ $platformStats['active_subscriptions'] ?? '—' }}</div>
+    <div class="stat-card__label">Active Subscriptions</div>
+  </a>
+  <a href="{{ route('portals.admin.support.index') }}" class="stat-card">
+    <div class="stat-card__icon"><i data-lucide="life-buoy"></i></div>
+    <div class="stat-card__value">{{ $platformStats['open_tickets'] ?? '—' }}</div>
+    <div class="stat-card__label">Open Support Tickets</div>
+  </a>
+</div>
+<div class="stat-grid mb-6" style="--cols:3">
+  <a href="{{ route('portals.admin.users.index') }}" class="stat-card">
+    <div class="stat-card__icon"><i data-lucide="users"></i></div>
+    <div class="stat-card__value">{{ $platformStats['total_users'] ?? '—' }}</div>
+    <div class="stat-card__label">Total Users</div>
+  </a>
+  <a href="{{ route('portals.admin.onboarding') }}" class="stat-card">
+    <div class="stat-card__icon"><i data-lucide="rocket"></i></div>
+    <div class="stat-card__value">{{ $platformStats['pending_onboarding'] ?? '—' }}</div>
+    <div class="stat-card__label">Pending Onboardings</div>
+  </a>
+  <a href="{{ route('portals.admin.financial.index') }}" class="stat-card">
+    <div class="stat-card__icon"><i data-lucide="banknote"></i></div>
+    <div class="stat-card__value">{{ number_format($platformStats['monthly_revenue'] ?? 0) }} XAF</div>
+    <div class="stat-card__label">This Month Revenue</div>
+  </a>
+</div>
+
 <!-- KPI Cards -->
 <div class="kpi-grid">
     <div class="kpi-card">
         <div class="kpi-icon blue"><i data-lucide="id-card"></i></div>
         <div class="kpi-body">
             <div class="kpi-label">{{ __('public.admin_governance.kpi_total_health_ids', [], app()->getLocale()) ?: 'Total Health IDs' }}</div>
-            <div class="kpi-value">{{ number_format($stats['total_ids']) }}</div>
+            <div class="kpi-value">{{ number_format($stats['total_ids'] ?? 0) }}</div>
             <div class="kpi-sub">{{ __('public.admin_governance.kpi_registered_patients', [], app()->getLocale()) ?: 'Registered patients' }}</div>
         </div>
     </div>
@@ -38,7 +79,7 @@
         <div class="kpi-icon teal"><i data-lucide="qr-code"></i></div>
         <div class="kpi-body">
             <div class="kpi-label">{{ __('public.admin_governance.kpi_active_tokens', [], app()->getLocale()) ?: 'Active Tokens' }}</div>
-            <div class="kpi-value">{{ number_format($stats['active_tokens']) }}</div>
+            <div class="kpi-value">{{ number_format($stats['active_tokens'] ?? 0) }}</div>
             <div class="kpi-sub">{{ __('public.admin_governance.kpi_live_tokens', [], app()->getLocale()) ?: 'Live access tokens' }}</div>
         </div>
     </div>
@@ -46,7 +87,7 @@
         <div class="kpi-icon blue"><i data-lucide="activity"></i></div>
         <div class="kpi-body">
             <div class="kpi-label">{{ __('public.admin_governance.kpi_total_lookups', [], app()->getLocale()) ?: 'Total Lookups' }}</div>
-            <div class="kpi-value">{{ number_format($stats['total_access_logs']) }}</div>
+            <div class="kpi-value">{{ number_format($stats['total_access_logs'] ?? 0) }}</div>
             <div class="kpi-sub">{{ __('public.admin_governance.kpi_alltime_events', [], app()->getLocale()) ?: 'All-time access events' }}</div>
         </div>
     </div>
@@ -54,12 +95,13 @@
         <div class="kpi-icon danger"><i data-lucide="shield-x"></i></div>
         <div class="kpi-body">
             <div class="kpi-label">{{ __('public.admin_governance.kpi_denied_lookups', [], app()->getLocale()) ?: 'Denied Lookups' }}</div>
-            <div class="kpi-value">{{ number_format($stats['denied_access']) }}</div>
+            <div class="kpi-value">{{ number_format($stats['denied_access'] ?? 0) }}</div>
             <div class="kpi-sub">{{ __('public.admin_governance.kpi_failed_denied', [], app()->getLocale()) ?: 'Failed / denied' }}</div>
         </div>
     </div>
 </div>
 
+@if(isset($facility) && $facility)
 <!-- Clinical Register Quick Links (visible to hospital_admin / clinic_admin) -->
 <div class="panel mb-6">
     <div class="panel-header">
@@ -88,6 +130,7 @@
         </a>
     </div>
 </div>
+@endif
 
 <!-- Partner Governance -->
 <div class="panel mb-6" id="partners">
@@ -170,6 +213,7 @@
                 </tr>
             </thead>
             <tbody>
+                @isset($recentLogs)
                 @forelse($recentLogs as $log)
                 <tr>
                     <td data-label="{{ __('public.admin_governance.col_timestamp', [], app()->getLocale()) ?: 'Timestamp' }}">
@@ -203,6 +247,7 @@
                     </td>
                 </tr>
                 @endforelse
+                @endisset
             </tbody>
         </table>
     </div>

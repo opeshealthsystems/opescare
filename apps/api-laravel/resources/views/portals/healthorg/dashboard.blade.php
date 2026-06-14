@@ -37,19 +37,23 @@
 <div class="stat-grid mb-6">
     <div class="stat-card stat-card--primary">
         <div class="stat-card__label">Registered Patients</div>
-        <div class="stat-card__value">{{ number_format($stats['patients']) }}</div>
+        <div class="stat-card__value">{{ number_format($stats['patients'] ?? 0) }}</div>
     </div>
-    <a href="{{ route('portals.healthorg.programs') }}" class="stat-card stat-card--success">
+    <div class="stat-card stat-card--success">
         <div class="stat-card__label">Active Facilities</div>
-        <div class="stat-card__value">{{ $stats['facilities'] }}</div>
+        <div class="stat-card__value">{{ $stats['facilities'] ?? 0 }}</div>
+    </div>
+    <a href="{{ route('portals.healthorg.programs') }}" class="stat-card stat-card--info">
+        <div class="stat-card__label">Active Programs</div>
+        <div class="stat-card__value">{{ $stats['programs'] ?? '—' }}</div>
     </a>
     <a href="{{ route('portals.healthorg.reports') }}" class="stat-card stat-card--warning">
         <div class="stat-card__label">Draft Reports</div>
-        <div class="stat-card__value">{{ $stats['reports_draft'] }}</div>
+        <div class="stat-card__value">{{ $stats['reports_draft'] ?? 0 }}</div>
     </a>
     <a href="{{ route('portals.healthorg.reports') }}" class="stat-card stat-card--success">
         <div class="stat-card__label">Submitted Reports</div>
-        <div class="stat-card__value">{{ $stats['reports_sent'] }}</div>
+        <div class="stat-card__value">{{ $stats['reports_sent'] ?? 0 }}</div>
     </a>
 </div>
 

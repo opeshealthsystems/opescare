@@ -35,27 +35,27 @@
 <div class="stat-grid mb-6">
     <a href="{{ route('portals.lab.orders') }}?status=pending" class="stat-card stat-card--warning">
         <div class="stat-card__label">Pending orders</div>
-        <div class="stat-card__value">{{ $stats['pending'] }}</div>
+        <div class="stat-card__value">{{ $stats['pending'] ?? 0 }}</div>
     </a>
     <a href="{{ route('portals.lab.samples') }}" class="stat-card stat-card--teal">
         <div class="stat-card__label">Samples collected</div>
-        <div class="stat-card__value">{{ $stats['collected'] }}</div>
+        <div class="stat-card__value">{{ $stats['collected'] ?? 0 }}</div>
     </a>
     <a href="{{ route('portals.lab.orders') }}?status=processing" class="stat-card stat-card--primary">
         <div class="stat-card__label">Processing</div>
-        <div class="stat-card__value">{{ $stats['processing'] }}</div>
+        <div class="stat-card__value">{{ $stats['processing'] ?? 0 }}</div>
     </a>
     <a href="{{ route('portals.lab.results') }}" class="stat-card stat-card--success">
         <div class="stat-card__label">Resulted today</div>
-        <div class="stat-card__value">{{ $stats['resulted'] }}</div>
+        <div class="stat-card__value">{{ $stats['resulted'] ?? 0 }}</div>
     </a>
     <a href="{{ route('portals.lab.orders') }}?urgency=urgent" class="stat-card stat-card--danger">
         <div class="stat-card__label">Urgent pending</div>
-        <div class="stat-card__value">{{ $stats['urgent'] }}</div>
+        <div class="stat-card__value">{{ $stats['urgent'] ?? 0 }}</div>
     </a>
     <a href="{{ route('portals.lab.results') }}?flag=H" class="stat-card stat-card--danger">
         <div class="stat-card__label">Abnormal today</div>
-        <div class="stat-card__value">{{ $stats['abnormal'] }}</div>
+        <div class="stat-card__value">{{ $stats['abnormal'] ?? 0 }}</div>
     </a>
 </div>
 
@@ -74,7 +74,7 @@
                 @forelse($urgentOrders as $order)
                 <tr>
                     <td data-label="Test">
-                        <span class="td-strong">{{ $order->test_name }}</span>
+                        <span class="td-strong">{{ $order->test_name ?? '—' }}</span>
                         <div class="td-muted">{{ $order->ordered_at?->diffForHumans() }}</div>
                     </td>
                     <td data-label="Patient">{{ $order->patient?->full_name ?? '—' }}</td>

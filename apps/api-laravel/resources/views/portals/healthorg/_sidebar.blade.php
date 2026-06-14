@@ -1,8 +1,3 @@
-<div class="sidebar-role-badge">
-    <i data-lucide="heart-handshake"></i>
-    Health Org
-</div>
-<div class="mb-3"></div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">Organization</div>
     <a href="{{ route('portals.healthorg.dashboard') }}" class="sidebar-link {{ request()->routeIs('portals.healthorg.dashboard') ? 'active' : '' }}">

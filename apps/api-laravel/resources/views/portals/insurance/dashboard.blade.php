@@ -54,28 +54,33 @@
 <div class="stat-grid mb-6">
     <a href="{{ route('portals.insurance.providers') }}" class="stat-card stat-card--primary">
         <div class="stat-card__label">Providers</div>
-        <div class="stat-card__value">{{ $stats['providers'] }}</div>
+        <div class="stat-card__value">{{ $stats['providers'] ?? 0 }}</div>
     </a>
     <a href="{{ route('portals.insurance.providers') }}" class="stat-card stat-card--primary">
         <div class="stat-card__label">Active Plans</div>
-        <div class="stat-card__value">{{ $stats['active_plans'] }}</div>
+        <div class="stat-card__value">{{ $stats['active_plans'] ?? 0 }}</div>
     </a>
     <a href="{{ route('portals.insurance.policies') }}" class="stat-card stat-card--success">
         <div class="stat-card__label">Policies</div>
-        <div class="stat-card__value">{{ $stats['policies'] }}</div>
+        <div class="stat-card__value">{{ $stats['policies'] ?? 0 }}</div>
     </a>
     <a href="{{ route('portals.insurance.preauths') }}" class="stat-card stat-card--warning">
         <div class="stat-card__label">Pending Preauth</div>
-        <div class="stat-card__value">{{ $stats['pending_auth'] }}</div>
+        <div class="stat-card__value">{{ $stats['pending_auth'] ?? 0 }}</div>
     </a>
     <a href="{{ route('portals.insurance.claims') }}" class="stat-card stat-card--danger">
         <div class="stat-card__label">Open Claims</div>
-        <div class="stat-card__value">{{ $stats['open_claims'] }}</div>
+        <div class="stat-card__value">{{ $stats['open_claims'] ?? 0 }}</div>
     </a>
     <a href="{{ route('portals.insurance.claims') }}" class="stat-card stat-card--success">
         <div class="stat-card__label">Paid Claims</div>
-        <div class="stat-card__value">{{ $stats['paid_claims'] }}</div>
+        <div class="stat-card__value">{{ $stats['paid_claims'] ?? 0 }}</div>
     </a>
+    <div class="stat-card">
+        <div class="stat-card__icon"><i data-lucide="banknote"></i></div>
+        <div class="stat-card__value">{{ number_format($stats['total_claim_value'] ?? 0) }} XAF</div>
+        <div class="stat-card__label">Total Claims Value</div>
+    </div>
 </div>
 
 <div class="grid-2">

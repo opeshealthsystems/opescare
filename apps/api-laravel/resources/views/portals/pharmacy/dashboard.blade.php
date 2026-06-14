@@ -35,28 +35,28 @@
 <div class="stat-grid mb-6">
     <a href="{{ route('portals.pharmacy.prescriptions') }}" class="stat-card stat-card--warning">
         <div class="stat-card__label">Pending Rx</div>
-        <div class="stat-card__value">{{ $stats['pending_rx'] }}</div>
+        <div class="stat-card__value">{{ $stats['pending_rx'] ?? 0 }}</div>
     </a>
-    <div class="stat-card stat-card--success">
+    <a href="{{ route('portals.pharmacy.prescriptions', ['status' => 'dispensed']) }}" class="stat-card stat-card--success">
         <div class="stat-card__label">Dispensed today</div>
-        <div class="stat-card__value">{{ $stats['dispensed_today'] }}</div>
-    </div>
+        <div class="stat-card__value">{{ $stats['dispensed_today'] ?? 0 }}</div>
+    </a>
     <a href="{{ route('portals.pharmacy.inventory') }}" class="stat-card stat-card--primary">
         <div class="stat-card__label">Drug lines</div>
-        <div class="stat-card__value">{{ $stats['total_drugs'] }}</div>
+        <div class="stat-card__value">{{ $stats['total_drugs'] ?? 0 }}</div>
     </a>
     <a href="{{ route('portals.pharmacy.inventory') }}?stock_status=low_stock" class="stat-card stat-card--warning">
         <div class="stat-card__label">Low stock</div>
-        <div class="stat-card__value">{{ $stats['low_stock'] }}</div>
+        <div class="stat-card__value">{{ $stats['low_stock'] ?? 0 }}</div>
     </a>
     <a href="{{ route('portals.pharmacy.inventory') }}?stock_status=out_of_stock" class="stat-card stat-card--danger">
         <div class="stat-card__label">Out of stock</div>
-        <div class="stat-card__value">{{ $stats['out_of_stock'] }}</div>
+        <div class="stat-card__value">{{ $stats['out_of_stock'] ?? 0 }}</div>
     </a>
-    <div class="stat-card stat-card--danger">
+    <a href="{{ route('portals.pharmacy.inventory', ['stock_status' => 'expired']) }}" class="stat-card stat-card--danger">
         <div class="stat-card__label">Expired</div>
-        <div class="stat-card__value">{{ $stats['expired'] }}</div>
-    </div>
+        <div class="stat-card__value">{{ $stats['expired'] ?? 0 }}</div>
+    </a>
 </div>
 
 <div class="field-grid">
@@ -75,7 +75,7 @@
                 <tr>
                     <td data-label="Patient">
                         <span class="td-strong">{{ $rx->patient?->full_name ?? '—' }}</span>
-                        <div class="td-muted">{{ $rx->items->count() }} item(s) &middot; {{ $rx->created_at?->diffForHumans() }}</div>
+                        <div class="td-muted">{{ $rx->items()->count() }} item(s) &middot; {{ $rx->created_at?->diffForHumans() }}</div>
                     </td>
                     <td data-label="Status"><span class="badge badge-{{ $rx->statusColor() }}">{{ ucfirst(str_replace('_', ' ', $rx->status)) }}</span></td>
                     <td class="row-actions" data-label="">
