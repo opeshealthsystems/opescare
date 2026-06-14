@@ -84,6 +84,10 @@ return [
         'server_key'           => env('FCM_SERVER_KEY'), // Legacy — kept for backward compat
     ],
 
+    'africastalking' => [
+        'ussd_callback_secret' => env('AFRICASTALKING_USSD_CALLBACK_SECRET'),
+    ],
+
     'pacs' => [
         'wado_url' => env('PACS_WADO_URL', ''),
         'stow_url' => env('PACS_STOW_URL', ''),

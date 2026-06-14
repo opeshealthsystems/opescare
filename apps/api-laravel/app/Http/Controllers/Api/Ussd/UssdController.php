@@ -10,6 +10,11 @@ class UssdController extends Controller {
     public function __construct(private readonly UssdMenuService $menuService) {}
 
     public function callback(Request $request): Response {
+        $secret = config('services.africastalking.ussd_callback_secret');
+        if ($secret && !hash_equals($secret, (string) $request->header('X-USSD-Callback-Secret'))) {
+            return response('Unauthorized', 401);
+        }
+
         $sessionId   = $request->input('sessionId', '');
         $serviceCode = $request->input('serviceCode', '');
         $phoneNumber = $request->input('phoneNumber', '');
