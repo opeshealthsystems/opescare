@@ -374,7 +374,7 @@ Route::prefix('v1/public-health')->middleware(VerifyIntegrationClient::class)->g
 | OpesCare Admin Data Governance & Compliance Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/admin')->middleware(VerifyIntegrationClient::class)->group(function () {
+Route::prefix('v1/admin')->middleware([VerifyIntegrationClient::class, 'api.admin'])->group(function () {
     Route::get('/global-search', \App\Http\Controllers\Api\V1\Admin\GlobalSearchController::class);
     Route::get('/facilities/{facility}/go-live-readiness', [\App\Http\Controllers\Api\V1\Admin\FacilityGoLiveReadinessController::class, 'show']);
     Route::post('/facilities/{facility}/go-live-readiness', [\App\Http\Controllers\Api\V1\Admin\FacilityGoLiveReadinessController::class, 'store']);

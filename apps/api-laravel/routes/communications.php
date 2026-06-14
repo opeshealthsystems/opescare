@@ -28,7 +28,7 @@ Route::prefix('v1')->group(function () {
     // [RBAC FIX] These admin endpoints previously had NO middleware — any unauthenticated
     // caller could create/update/publish notification templates. Now protected by
     // VerifyIntegrationClient (B2B Argon2id credential check).
-    Route::prefix('admin')->middleware(['verify.integration.client'])->group(function () {
+    Route::prefix('admin')->middleware(['verify.integration.client', 'api.admin'])->group(function () {
         Route::get('/notification-templates', [CommunicationController::class, 'getAdminTemplates']);
         Route::post('/notification-templates', [CommunicationController::class, 'createAdminTemplate']);
         Route::put('/notification-templates/{id}', [CommunicationController::class, 'updateAdminTemplate']);

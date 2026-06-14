@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -45,7 +46,7 @@ class RequireApiAdminRole
 
     public function handle(Request $request, Closure $next): mixed
     {
-        $user = Auth::user();
+        $user = Auth::user() ?? $this->integrationClientOwner($request);
 
         if (!$user) {
             return response()->json([
@@ -72,5 +73,17 @@ class RequireApiAdminRole
         }
 
         return $next($request);
+    }
+
+    private function integrationClientOwner(Request $request): ?User
+    {
+        $client = $request->attributes->get('integration_client');
+        $ownerId = $client?->created_by ?? $request->attributes->get('provider_id');
+
+        if (!is_string($ownerId) || $ownerId === '') {
+            return null;
+        }
+
+        return User::with('role')->find($ownerId);
     }
 }
