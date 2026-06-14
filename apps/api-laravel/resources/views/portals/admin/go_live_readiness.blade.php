@@ -1,105 +1,108 @@
-<!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ __('public.admin_governance.golive_page_title', [], app()->getLocale()) ?: 'Facility Go-Live Readiness' }}</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 32px; color: #172033; background: #f7f9fc; }
-        main { max-width: 980px; margin: 0 auto; }
-        header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; }
-        h1 { margin: 0 0 8px; font-size: 28px; }
-        .status { padding: 8px 12px; border-radius: 6px; background: #e8eefc; font-weight: 700; text-transform: uppercase; }
-        .approved { background: #dff5e6; color: #166534; }
-        .blocked { background: #fee2e2; color: #991b1b; }
-        section { background: white; border: 1px solid #dbe3ef; border-radius: 8px; padding: 20px; margin-bottom: 18px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #edf1f7; }
-        th { font-size: 12px; text-transform: uppercase; color: #526071; }
-        .ok { color: #166534; font-weight: 700; }
-        .missing { color: #991b1b; font-weight: 700; }
-        .meta { color: #526071; }
-        @media (max-width: 640px) {
-            body { margin: 16px; }
-            main { max-width: 100%; }
-            header { flex-direction: column; gap: 12px; }
-            h1 { font-size: 20px; }
-            th, td { padding: 8px 6px; font-size: 13px; }
-            th { display: none; }
-            td { display: block; padding: 6px 8px; }
-            td::before { content: attr(data-label); font-size: 11px; text-transform: uppercase; color: #526071; display: block; margin-bottom: 2px; }
-            tr { border-bottom: 1px solid #dbe3ef; margin-bottom: 8px; display: block; }
-        }
-    </style>
-</head>
-<body>
-<main>
-    <header>
-        <div>
-            <h1>{{ $facility->name }} — {{ __('public.admin_governance.golive_page_title', [], app()->getLocale()) ?: 'Go-Live Readiness' }}</h1>
-            <div class="meta">
-                {{ __('public.admin_governance.golive_facility_status', [], app()->getLocale()) ?: 'Facility status:' }} {{ $facility->status }}
-                &nbsp;|&nbsp;
-                {{ __('public.admin_governance.golive_facility_type', [], app()->getLocale()) ?: 'Type:' }} {{ $facility->type }}
+@extends('layouts.portal')
+@section('title', ($facility->name ?? 'Facility') . ' — Go-Live Readiness')
+@section('sidebar') @include('portals.admin.control_center._sidebar') @endsection
+
+@section('content')
+
+@php
+    $total = count($labels);
+    $done  = collect($labels)->filter(fn($l, $key) => ($readiness->checklist_json[$key] ?? false))->count();
+    $pct   = $total > 0 ? round($done / $total * 100) : 0;
+    $ringColor = $readiness->can_go_live ? 'var(--p-success)' : ($pct >= 50 ? 'var(--p-warning)' : 'var(--p-danger)');
+@endphp
+
+<div class="breadcrumb">
+    <a href="{{ route('portals.admin.onboarding') }}">Go-Live Readiness</a>
+    <i data-lucide="chevron-right"></i>
+    <span>{{ $facility->name }}</span>
+</div>
+
+<div class="entity-head">
+    <div class="entity-head__icon"><i data-lucide="rocket"></i></div>
+    <div>
+        <h2 class="entity-head__title">{{ $facility->name }} — {{ __('public.admin_governance.golive_page_title', [], app()->getLocale()) ?: 'Go-Live Readiness' }}</h2>
+        <div class="entity-head__sub">
+            <span class="td-muted text-sm">{{ __('public.admin_governance.golive_facility_status', [], app()->getLocale()) ?: 'Facility status:' }} {{ $facility->status }}</span>
+            <span class="badge badge-neutral badge-sm">{{ $facility->type }}</span>
+        </div>
+    </div>
+    <div class="entity-head__spacer"></div>
+    <span class="badge {{ $readiness->can_go_live ? 'badge-success' : 'badge-danger' }}">{{ str_replace('_', ' ', ucfirst($readiness->status)) }}</span>
+</div>
+
+{{-- Stepper --}}
+@php
+    $steps = [
+        ['Onboarding', $total > 0],
+        ['Checklist', $done > 0],
+        ['Review', $done === $total && $total > 0],
+        ['Go-Live', $readiness->can_go_live],
+    ];
+    $activeIndex = $readiness->can_go_live ? 3 : ($done === $total && $total > 0 ? 2 : ($done > 0 ? 1 : 0));
+@endphp
+<div class="stepper">
+    @foreach($steps as $i => [$label, $isDone])
+    <div class="stepper__step {{ $i < $activeIndex || $isDone ? 'done' : '' }} {{ $i === $activeIndex ? 'active' : '' }}">
+        <div class="stepper__dot">
+            @if($i < $activeIndex || ($isDone && $i !== $activeIndex))<i data-lucide="check"></i>@else{{ $i + 1 }}@endif
+        </div>
+        <span class="stepper__label">{{ $label }}</span>
+    </div>
+    @endforeach
+</div>
+
+<div class="grid-2 mb-6">
+    {{-- Score ring --}}
+    <div class="panel">
+        <div class="panel-header"><h3 class="panel-title"><i data-lucide="gauge"></i> {{ __('public.admin_governance.golive_section_result', [], app()->getLocale()) ?: 'Readiness Result' }}</h3></div>
+        <div class="panel-body">
+            <div class="ring-row">
+                <div class="score-ring" style="--ring-pct: {{ $pct }}; --ring-color: {{ $ringColor }};">
+                    <div class="score-ring__inner">
+                        <div class="score-ring__value">{{ $pct }}%</div>
+                        <div class="score-ring__label">Ready</div>
+                    </div>
+                </div>
+                <div>
+                    <table class="kv-table">
+                        <tr><td>{{ __('public.admin_governance.golive_can_go_live', [], app()->getLocale()) ?: 'Can go live:' }}</td>
+                            <td class="kv-strong">{{ $readiness->can_go_live ? (__('public.admin_governance.golive_yes', [], app()->getLocale()) ?: 'Yes') : (__('public.admin_governance.golive_no', [], app()->getLocale()) ?: 'No') }}</td></tr>
+                        <tr><td>{{ __('public.admin_governance.golive_missing', [], app()->getLocale()) ?: 'Missing:' }}</td>
+                            <td class="kv-strong">{{ empty($missingItems) ? (__('public.admin_governance.golive_none', [], app()->getLocale()) ?: 'None') : implode(', ', $missingItems) }}</td></tr>
+                        <tr><td>{{ __('public.admin_governance.golive_risks', [], app()->getLocale()) ?: 'Risks:' }}</td>
+                            <td class="kv-strong">{{ empty($missingItems) ? (__('public.admin_governance.golive_none', [], app()->getLocale()) ?: 'None') : (__('public.admin_governance.golive_risks_blocked', [], app()->getLocale()) ?: 'Go-live is blocked until all missing readiness items are complete.') }}</td></tr>
+                        @if ($readiness->approval_note)
+                        <tr><td>{{ __('public.admin_governance.golive_approval_note', [], app()->getLocale()) ?: 'Approval note:' }}</td>
+                            <td class="kv-strong">{{ $readiness->approval_note }}</td></tr>
+                        @endif
+                    </table>
+                </div>
             </div>
         </div>
-        <div class="status {{ $readiness->can_go_live ? 'approved' : 'blocked' }}">
-            {{ $readiness->status }}
+    </div>
+
+    {{-- Checklist scorecard --}}
+    <div class="panel">
+        <div class="panel-header"><h3 class="panel-title"><i data-lucide="list-checks"></i> {{ __('public.admin_governance.golive_section_checklist', [], app()->getLocale()) ?: 'Checklist' }}</h3></div>
+        <div class="panel-body">
+            <div class="checklist">
+                @foreach ($labels as $key => $label)
+                    @php $ok = $readiness->checklist_json[$key] ?? false; @endphp
+                    <div class="checklist__item">
+                        <span class="checklist__icon {{ $ok ? 'ok' : 'fail' }}">
+                            <i data-lucide="{{ $ok ? 'check-circle-2' : 'x-circle' }}"></i>
+                        </span>
+                        <div class="checklist__body">
+                            <div class="checklist__title">{{ $label }}</div>
+                        </div>
+                        <span class="badge {{ $ok ? 'badge-success' : 'badge-danger' }} badge-sm">
+                            {{ $ok ? (__('public.admin_governance.golive_complete', [], app()->getLocale()) ?: 'Complete') : (__('public.admin_governance.golive_missing_status', [], app()->getLocale()) ?: 'Missing') }}
+                        </span>
+                    </div>
+                @endforeach
+            </div>
         </div>
-    </header>
+    </div>
+</div>
 
-    <section>
-        <h2>{{ __('public.admin_governance.golive_section_result', [], app()->getLocale()) ?: 'Readiness Result' }}</h2>
-        <p>
-            <strong>{{ __('public.admin_governance.golive_can_go_live', [], app()->getLocale()) ?: 'Can go live:' }}</strong>
-            {{ $readiness->can_go_live
-                ? (__('public.admin_governance.golive_yes', [], app()->getLocale()) ?: 'Yes')
-                : (__('public.admin_governance.golive_no', [], app()->getLocale()) ?: 'No') }}
-        </p>
-        <p>
-            <strong>{{ __('public.admin_governance.golive_missing', [], app()->getLocale()) ?: 'Missing:' }}</strong>
-            {{ empty($missingItems)
-                ? (__('public.admin_governance.golive_none', [], app()->getLocale()) ?: 'None')
-                : implode(', ', $missingItems) }}
-        </p>
-        <p>
-            <strong>{{ __('public.admin_governance.golive_risks', [], app()->getLocale()) ?: 'Risks:' }}</strong>
-            {{ empty($missingItems)
-                ? (__('public.admin_governance.golive_none', [], app()->getLocale()) ?: 'None')
-                : (__('public.admin_governance.golive_risks_blocked', [], app()->getLocale()) ?: 'Go-live is blocked until all missing readiness items are complete.') }}
-        </p>
-        @if ($readiness->approval_note)
-            <p>
-                <strong>{{ __('public.admin_governance.golive_approval_note', [], app()->getLocale()) ?: 'Approval note:' }}</strong>
-                {{ $readiness->approval_note }}
-            </p>
-        @endif
-    </section>
-
-    <section>
-        <h2>{{ __('public.admin_governance.golive_section_checklist', [], app()->getLocale()) ?: 'Checklist' }}</h2>
-        <table>
-            <thead>
-            <tr>
-                <th>{{ __('public.admin_governance.golive_col_item', [], app()->getLocale()) ?: 'Item' }}</th>
-                <th>{{ __('public.admin_governance.golive_col_status', [], app()->getLocale()) ?: 'Status' }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach ($labels as $key => $label)
-                <tr>
-                    <td data-label="{{ __('public.admin_governance.golive_col_item', [], app()->getLocale()) ?: 'Item' }}">{{ $label }}</td>
-                    <td data-label="{{ __('public.admin_governance.golive_col_status', [], app()->getLocale()) ?: 'Status' }}"
-                        class="{{ ($readiness->checklist_json[$key] ?? false) ? 'ok' : 'missing' }}">
-                        {{ ($readiness->checklist_json[$key] ?? false)
-                            ? (__('public.admin_governance.golive_complete', [], app()->getLocale()) ?: 'Complete')
-                            : (__('public.admin_governance.golive_missing_status', [], app()->getLocale()) ?: 'Missing') }}
-                    </td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-    </section>
-</main>
-</body>
-</html>
+@endsection

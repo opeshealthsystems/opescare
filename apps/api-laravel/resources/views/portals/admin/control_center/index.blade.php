@@ -14,7 +14,7 @@
 </div>
 
 @if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
+    <div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
 @endif
 
 {{-- System Health Banner --}}
@@ -23,26 +23,28 @@
     $anyWarn  = collect($health)->whereIn('status', ['warning'])->count() > 0 || ($health['failed_jobs']['count'] ?? 0) > 0;
 @endphp
 @if($anyError)
-<div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:var(--p-radius);padding:1rem;margin-bottom:1rem;display:flex;gap:.75rem;align-items:center;">
-    <i data-lucide="alert-triangle" style="width:18px;height:18px;color:var(--p-danger);flex-shrink:0;"></i>
+<div class="banner banner--danger">
+    <i data-lucide="alert-triangle"></i>
     <div><strong>System issues detected.</strong> Check System Health for details.</div>
-    <a href="{{ route('portals.admin.cc.health') }}" class="btn btn-danger btn-sm" style="margin-left:auto;">View Health</a>
+    <div class="banner__spacer"></div>
+    <a href="{{ route('portals.admin.cc.health') }}" class="btn btn-danger btn-sm">View Health</a>
 </div>
 @elseif($anyWarn)
-<div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:var(--p-radius);padding:1rem;margin-bottom:1rem;display:flex;gap:.75rem;align-items:center;">
-    <i data-lucide="alert-circle" style="width:18px;height:18px;color:var(--p-warning);flex-shrink:0;"></i>
+<div class="banner banner--warning">
+    <i data-lucide="alert-circle"></i>
     <div><strong>Warning:</strong> Some system checks need attention.</div>
-    <a href="{{ route('portals.admin.cc.health') }}" class="btn btn-ghost btn-sm" style="margin-left:auto;">View Health</a>
+    <div class="banner__spacer"></div>
+    <a href="{{ route('portals.admin.cc.health') }}" class="btn btn-secondary btn-sm">View Health</a>
 </div>
 @endif
 
 {{-- God Mode — Platform Management --}}
-<div style="margin-bottom:1.75rem;">
-    <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;">
-        <i data-lucide="zap" style="width:18px;height:18px;color:var(--p-danger);"></i>
-        <h2 style="margin:0;font-size:1rem;font-weight:700;color:var(--p-danger);">God Mode — Platform Management</h2>
+<div class="mb-6">
+    <div class="section-head section-head--danger">
+        <i data-lucide="zap"></i>
+        <h2>God Mode — Platform Management</h2>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;">
+    <div class="card-grid">
         @php $godCards = [
             ['Users',               'users',        '/portals/admin/users',         'Manage all platform users'],
             ['Facilities',          'building',     '/portals/admin/facilities',     'Hospitals, clinics & labs'],
@@ -56,21 +58,19 @@
             ['Organizations',       'landmark',     '/portals/admin/organizations',  'Tenant & org management'],
         ]; @endphp
         @foreach($godCards as [$title, $icon, $url, $desc])
-        <a href="{{ $url }}" style="text-decoration:none;">
-            <div class="panel" style="padding:1.25rem;border-left:3px solid var(--p-danger);transition:box-shadow .15s;cursor:pointer;" onmouseover="this.style.boxShadow='0 4px 12px rgba(239,68,68,.15)'" onmouseout="this.style.boxShadow=''">
-                <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;">
-                    <i data-lucide="{{ $icon }}" style="width:20px;height:20px;color:var(--p-danger);"></i>
-                    <span style="font-weight:600;font-size:.92rem;">{{ $title }}</span>
-                </div>
-                <p style="font-size:.78rem;color:var(--p-text-muted);margin:0;">{{ $desc }}</p>
+        <a href="{{ $url }}" class="nav-card nav-card--danger">
+            <div class="nav-card__head">
+                <i data-lucide="{{ $icon }}"></i>
+                <span class="nav-card__title">{{ $title }}</span>
             </div>
+            <p class="nav-card__desc">{{ $desc }}</p>
         </a>
         @endforeach
     </div>
 </div>
 
 {{-- Quick nav cards --}}
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem;">
+<div class="card-grid mb-6">
     @php $cards = [
         ['Platform Settings', 'sliders-horizontal', route('portals.admin.cc.settings'),   'Manage system-wide configuration'],
         ['Feature Flags',     'toggle-right',       route('portals.admin.cc.feature_flags'),'Enable/disable product features'],
@@ -80,27 +80,25 @@
         ['Admin Log',         'scroll-text',        route('portals.admin.cc.audit'),       'Track all admin actions'],
     ]; @endphp
     @foreach($cards as [$title, $icon, $url, $desc])
-    <a href="{{ $url }}" style="text-decoration:none;">
-        <div class="panel" style="padding:1.25rem;transition:box-shadow .15s;cursor:pointer;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.1)'" onmouseout="this.style.boxShadow=''">
-            <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;">
-                <i data-lucide="{{ $icon }}" style="width:20px;height:20px;color:var(--p-primary);"></i>
-                <span style="font-weight:600;font-size:.95rem;">{{ $title }}</span>
-            </div>
-            <p style="font-size:.8rem;color:var(--p-text-muted);margin:0;">{{ $desc }}</p>
+    <a href="{{ $url }}" class="nav-card">
+        <div class="nav-card__head">
+            <i data-lucide="{{ $icon }}"></i>
+            <span class="nav-card__title">{{ $title }}</span>
         </div>
+        <p class="nav-card__desc">{{ $desc }}</p>
     </a>
     @endforeach
 </div>
 
 {{-- Recent Admin Actions --}}
 <div class="panel">
-    <div style="padding:.85rem 1.25rem;border-bottom:1px solid var(--p-border);display:flex;justify-content:space-between;align-items:center;">
-        <h3 style="margin:0;font-size:.95rem;">Recent Admin Actions</h3>
-        <a href="{{ route('portals.admin.cc.audit') }}" class="btn btn-ghost btn-xs">View All</a>
+    <div class="panel-header">
+        <h3 class="panel-title"><i data-lucide="scroll-text"></i> Recent admin actions</h3>
+        <a href="{{ route('portals.admin.cc.audit') }}" class="btn btn-ghost btn-sm">View All</a>
     </div>
-    <div class="panel-body" style="padding:0;">
+    <div class="panel-body panel-body--flush">
         @if($actions->count() === 0)
-            <div style="padding:1.5rem;text-align:center;color:var(--p-text-muted);font-size:.85rem;">No actions recorded yet.</div>
+            <div class="td-muted empty-cell">No actions recorded yet.</div>
         @else
         <div class="table-wrapper">
             <table class="data-table">
@@ -110,10 +108,10 @@
                 <tbody>
                     @foreach($actions as $a)
                     <tr>
-                        <td><code style="font-size:.78rem;">{{ $a->action }}</code></td>
-                        <td><span class="badge badge-neutral" style="font-size:.74rem;">{{ $a->resource_type ?? '—' }}</span></td>
-                        <td style="font-size:.82rem;">{{ $a->actor_id }}</td>
-                        <td style="font-size:.78rem;color:var(--p-text-muted);">{{ \Carbon\Carbon::parse($a->occurred_at)->diffForHumans() }}</td>
+                        <td data-label="Action"><span class="code-token">{{ $a->action }}</span></td>
+                        <td data-label="Resource"><span class="badge badge-neutral badge-sm">{{ $a->resource_type ?? '—' }}</span></td>
+                        <td data-label="Actor">{{ $a->actor_id }}</td>
+                        <td data-label="When" class="td-muted">{{ \Carbon\Carbon::parse($a->occurred_at)->diffForHumans() }}</td>
                     </tr>
                     @endforeach
                 </tbody>

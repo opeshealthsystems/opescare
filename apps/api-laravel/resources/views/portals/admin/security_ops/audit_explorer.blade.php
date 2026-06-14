@@ -14,62 +14,63 @@
 </div>
 
 {{-- Filter panel --}}
-<div class="panel" style="margin-bottom:1rem;">
+<div class="panel mb-4">
     <div class="panel-body">
-        <form method="GET" action="{{ route('portals.admin.security.audit_explorer') }}"
-              style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.65rem;">
-            <div class="form-group" style="margin:0;">
-                <label class="form-label" style="font-size:.75rem;">Action Type</label>
-                <select name="action_type" class="form-control form-control-sm">
+        <form method="GET" action="{{ route('portals.admin.security.audit_explorer') }}" class="field-grid">
+            <div class="form-group">
+                <label class="form-label">Action Type</label>
+                <select name="action_type" class="form-control">
                     <option value="">All Actions</option>
                     @foreach($actionTypes as $at)
                         <option value="{{ $at }}" {{ request('action_type') === $at ? 'selected' : '' }}>{{ $at }}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="form-group" style="margin:0;">
-                <label class="form-label" style="font-size:.75rem;">Resource Type</label>
-                <select name="resource_type" class="form-control form-control-sm">
+            <div class="form-group">
+                <label class="form-label">Resource Type</label>
+                <select name="resource_type" class="form-control">
                     <option value="">All Resources</option>
                     @foreach($resourceTypes as $rt)
                         <option value="{{ $rt }}" {{ request('resource_type') === $rt ? 'selected' : '' }}>{{ $rt }}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="form-group" style="margin:0;">
-                <label class="form-label" style="font-size:.75rem;">Actor ID</label>
+            <div class="form-group">
+                <label class="form-label">Actor ID</label>
                 <input type="text" name="actor_id" value="{{ request('actor_id') }}"
-                    class="form-control form-control-sm" placeholder="Actor UUID or email">
+                    class="form-control" placeholder="Actor UUID or email">
             </div>
-            <div class="form-group" style="margin:0;">
-                <label class="form-label" style="font-size:.75rem;">Date From</label>
-                <input type="date" name="date_from" value="{{ request('date_from') }}" class="form-control form-control-sm">
+            <div class="form-group">
+                <label class="form-label">Date From</label>
+                <input type="date" name="date_from" value="{{ request('date_from') }}" class="form-control">
             </div>
-            <div class="form-group" style="margin:0;">
-                <label class="form-label" style="font-size:.75rem;">Date To</label>
-                <input type="date" name="date_to" value="{{ request('date_to') }}" class="form-control form-control-sm">
+            <div class="form-group">
+                <label class="form-label">Date To</label>
+                <input type="date" name="date_to" value="{{ request('date_to') }}" class="form-control">
             </div>
-            <div class="form-group" style="margin:0;align-self:flex-end;">
-                <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.8rem;height:35px;">
+            <div class="form-group">
+                <label class="form-label">Emergency</label>
+                <label class="form-check">
                     <input type="checkbox" name="emergency_only" value="1" {{ request('emergency_only') ? 'checked' : '' }}>
                     Emergency overrides only
                 </label>
             </div>
-            <div style="align-self:flex-end;display:flex;gap:.4rem;">
-                <button type="submit" class="btn btn-primary btn-sm">Search</button>
-                <a href="{{ route('portals.admin.security.audit_explorer') }}" class="btn btn-ghost btn-sm">Clear</a>
+            <div class="form-group form-actions-end">
+                <div class="row-actions-inline">
+                    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                    <a href="{{ route('portals.admin.security.audit_explorer') }}" class="btn btn-ghost btn-sm">Clear</a>
+                </div>
             </div>
         </form>
     </div>
 </div>
 
 <div class="panel">
-    <div style="padding:.75rem 1.25rem;border-bottom:1px solid var(--p-border);display:flex;align-items:center;gap:.5rem;">
-        <i data-lucide="search-code" style="width:15px;height:15px;color:var(--p-primary);"></i>
-        <span style="font-weight:600;font-size:.9rem;">Audit Events</span>
-        <span class="badge badge-neutral" style="font-size:.72rem;margin-left:auto;">{{ $events->total() }} total</span>
+    <div class="panel-header">
+        <h3 class="panel-title"><i data-lucide="search-code"></i> Audit Events</h3>
+        <span class="badge badge-neutral badge-sm">{{ $events->total() }} total</span>
     </div>
-    <div class="panel-body" style="padding:0;">
+    <div class="panel-body panel-body--flush">
         @if($events->isEmpty())
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="search-x"></i></div>
@@ -83,35 +84,35 @@
                 </tr></thead>
                 <tbody>
                     @foreach($events as $ev)
-                    <tr style="{{ $ev->emergency_override ? 'background:rgba(239,68,68,.04);' : '' }}">
-                        <td><code style="font-size:.77rem;">{{ $ev->action_type }}</code></td>
-                        <td style="font-size:.78rem;">
+                    <tr class="{{ $ev->emergency_override ? 'row-emergency' : '' }}">
+                        <td data-label="Action"><span class="code-token">{{ $ev->action_type }}</span></td>
+                        <td data-label="Resource">
                             @if($ev->resource_type)
-                                <span class="badge badge-neutral" style="font-size:.7rem;">{{ $ev->resource_type }}</span>
+                                <span class="badge badge-neutral badge-sm">{{ $ev->resource_type }}</span>
                                 @if($ev->resource_id)
-                                    <code style="font-size:.72rem;color:var(--p-text-muted);">{{ substr($ev->resource_id,0,8) }}…</code>
+                                    <span class="code-muted">{{ substr($ev->resource_id,0,8) }}…</span>
                                 @endif
                             @else —
                             @endif
                         </td>
-                        <td style="font-size:.78rem;">{{ $ev->actor_id ? Str::limit($ev->actor_id,16) : '—' }}</td>
-                        <td style="font-size:.78rem;color:var(--p-text-muted);">{{ $ev->patient_id ? substr($ev->patient_id,0,8).'…' : '—' }}</td>
-                        <td style="font-size:.75rem;color:var(--p-text-muted);">{{ $ev->ip_address ?? '—' }}</td>
-                        <td>
+                        <td data-label="Actor">{{ $ev->actor_id ? Str::limit($ev->actor_id,16) : '—' }}</td>
+                        <td data-label="Patient" class="td-muted">{{ $ev->patient_id ? substr($ev->patient_id,0,8).'…' : '—' }}</td>
+                        <td data-label="IP" class="td-muted">{{ $ev->ip_address ?? '—' }}</td>
+                        <td data-label="Emergency">
                             @if($ev->emergency_override)
-                                <span class="badge badge-danger" style="font-size:.7rem;">Yes</span>
+                                <span class="badge badge-emergency badge-sm">Emergency</span>
                             @else
-                                <span style="color:var(--p-text-muted);font-size:.78rem;">—</span>
+                                <span class="badge badge-allowed badge-sm">Allowed</span>
                             @endif
                         </td>
-                        <td style="font-size:.75rem;color:var(--p-text-muted);">
+                        <td data-label="When" class="td-muted">
                             {{ \Carbon\Carbon::parse($ev->created_at)->format('M d, H:i') }}
                         </td>
-                        <td>
+                        <td class="row-actions">
                             @if($ev->before_state || $ev->after_state)
-                                <button type="button" class="btn btn-ghost btn-xs"
+                                <button type="button" class="icon-btn" aria-label="View details"
                                     onclick="showDetail({{ json_encode($ev->before_state) }}, {{ json_encode($ev->after_state) }}, '{{ addslashes($ev->action_type) }}', '{{ $ev->reason ? addslashes($ev->reason) : '' }}')">
-                                    <i data-lucide="eye" style="width:11px;height:11px;"></i>
+                                    <i data-lucide="eye"></i>
                                 </button>
                             @endif
                         </td>
@@ -120,7 +121,7 @@
                 </tbody>
             </table>
         </div>
-        <div style="padding:.75rem 1.25rem;border-top:1px solid var(--p-border);">
+        <div class="panel-footer">
             {{ $events->links() }}
         </div>
         @endif
@@ -128,23 +129,23 @@
 </div>
 
 {{-- Detail modal --}}
-<div id="detail-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:660px;margin:1rem;max-height:88vh;overflow-y:auto;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
-            <h3 id="detail-title" style="margin:0;font-size:1rem;"></h3>
-            <button type="button" class="btn btn-ghost btn-xs" onclick="closeDetail()">
-                <i data-lucide="x" style="width:13px;height:13px;"></i>
+<div id="detail-modal" class="modal-fixed">
+    <div class="modal-fixed__panel">
+        <div class="modal-fixed__head">
+            <h3 id="detail-title" class="modal-fixed__title"></h3>
+            <button type="button" class="icon-btn" aria-label="Close" onclick="closeDetail()">
+                <i data-lucide="x"></i>
             </button>
         </div>
-        <div id="detail-reason" style="font-size:.8rem;color:var(--p-text-muted);margin-bottom:.75rem;"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div id="detail-reason" class="text-muted text-sm mb-3"></div>
+        <div class="diff-grid">
             <div>
-                <div style="font-size:.73rem;font-weight:600;text-transform:uppercase;color:var(--p-text-muted);margin-bottom:.3rem;">Before</div>
-                <pre id="detail-before" style="background:var(--p-surface-2,#f8f9fa);border:1px solid var(--p-border);border-radius:var(--p-radius);padding:.65rem;font-size:.73rem;overflow-x:auto;margin:0;max-height:260px;overflow-y:auto;"></pre>
+                <div class="diff-label">Before</div>
+                <pre id="detail-before" class="diff-pre"></pre>
             </div>
             <div>
-                <div style="font-size:.73rem;font-weight:600;text-transform:uppercase;color:var(--p-text-muted);margin-bottom:.3rem;">After</div>
-                <pre id="detail-after" style="background:var(--p-surface-2,#f8f9fa);border:1px solid var(--p-border);border-radius:var(--p-radius);padding:.65rem;font-size:.73rem;overflow-x:auto;margin:0;max-height:260px;overflow-y:auto;"></pre>
+                <div class="diff-label">After</div>
+                <pre id="detail-after" class="diff-pre"></pre>
             </div>
         </div>
     </div>

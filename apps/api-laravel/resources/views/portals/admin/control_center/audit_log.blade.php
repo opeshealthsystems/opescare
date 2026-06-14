@@ -14,7 +14,7 @@
 </div>
 
 <div class="panel">
-    <div class="panel-body" style="padding:0;">
+    <div class="panel-body panel-body--flush">
         @if($logs->count() === 0)
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="scroll-text"></i></div>
@@ -25,37 +25,37 @@
         <div class="table-wrapper">
             <table class="data-table">
                 <thead><tr>
-                    <th>Action</th><th>Resource</th><th>Resource ID</th><th>Actor</th><th>IP Address</th><th>When</th><th></th>
+                    <th>Action</th><th>Resource</th><th>Resource ID</th><th>Actor</th><th>IP Address</th><th>When</th><th class="row-actions"></th>
                 </tr></thead>
                 <tbody>
                     @foreach($logs as $log)
                     <tr>
-                        <td><code style="font-size:.78rem;">{{ $log->action }}</code></td>
-                        <td>
+                        <td data-label="Action"><span class="code-token">{{ $log->action }}</span></td>
+                        <td data-label="Resource">
                             @if($log->resource_type)
-                                <span class="badge badge-neutral" style="font-size:.72rem;">{{ $log->resource_type }}</span>
+                                <span class="badge badge-neutral badge-sm">{{ $log->resource_type }}</span>
                             @else
-                                <span style="color:var(--p-text-muted);">—</span>
+                                <span class="td-muted">—</span>
                             @endif
                         </td>
-                        <td style="font-size:.78rem;color:var(--p-text-muted);">
+                        <td data-label="Resource ID" class="td-muted">
                             @if($log->resource_id)
-                                <code style="font-size:.75rem;">{{ Str::limit($log->resource_id, 12) }}</code>
+                                <span class="code-muted">{{ Str::limit($log->resource_id, 12) }}</span>
                             @else
                                 —
                             @endif
                         </td>
-                        <td style="font-size:.82rem;">{{ $log->actor_id }}</td>
-                        <td style="font-size:.78rem;color:var(--p-text-muted);">{{ $log->ip_address ?? '—' }}</td>
-                        <td style="font-size:.78rem;color:var(--p-text-muted);">
+                        <td data-label="Actor">{{ $log->actor_id }}</td>
+                        <td data-label="IP Address" class="td-muted">{{ $log->ip_address ?? '—' }}</td>
+                        <td data-label="When" class="td-muted">
                             {{ \Carbon\Carbon::parse($log->occurred_at)->format('M d, Y H:i') }}
-                            <div style="font-size:.72rem;">{{ \Carbon\Carbon::parse($log->occurred_at)->diffForHumans() }}</div>
+                            <div class="code-muted">{{ \Carbon\Carbon::parse($log->occurred_at)->diffForHumans() }}</div>
                         </td>
-                        <td>
+                        <td class="row-actions">
                             @if($log->after || $log->before)
-                                <button type="button" class="btn btn-ghost btn-xs"
+                                <button type="button" class="icon-btn" aria-label="View diff"
                                     onclick="showDiff({{ json_encode($log->before) }}, {{ json_encode($log->after) }}, '{{ addslashes($log->action) }}')">
-                                    <i data-lucide="eye" style="width:11px;height:11px;"></i> Diff
+                                    <i data-lucide="eye"></i>
                                 </button>
                             @endif
                         </td>
@@ -67,7 +67,7 @@
 
         {{-- Pagination --}}
         @if(method_exists($logs, 'links'))
-        <div style="padding:.75rem 1.25rem;border-top:1px solid var(--p-border);">
+        <div class="panel-footer">
             {{ $logs->links() }}
         </div>
         @endif
@@ -76,22 +76,22 @@
 </div>
 
 {{-- Diff Modal --}}
-<div id="diff-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:640px;margin:1rem;max-height:85vh;overflow-y:auto;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-            <h3 id="diff-title" style="margin:0;font-size:1.05rem;"></h3>
-            <button type="button" class="btn btn-ghost btn-xs" onclick="closeDiff()">
-                <i data-lucide="x" style="width:13px;height:13px;"></i>
+<div id="diff-modal" class="modal-fixed">
+    <div class="modal-fixed__panel">
+        <div class="modal-fixed__head">
+            <h3 id="diff-title" class="modal-fixed__title"></h3>
+            <button type="button" class="icon-btn" aria-label="Close" onclick="closeDiff()">
+                <i data-lucide="x"></i>
             </button>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="diff-grid">
             <div>
-                <div style="font-size:.75rem;font-weight:600;text-transform:uppercase;color:var(--p-text-muted);margin-bottom:.35rem;">Before</div>
-                <pre id="diff-before" style="background:var(--p-surface-2,#f8f9fa);border:1px solid var(--p-border);border-radius:var(--p-radius);padding:.75rem;font-size:.75rem;overflow-x:auto;margin:0;max-height:300px;overflow-y:auto;"></pre>
+                <div class="diff-label">Before</div>
+                <pre id="diff-before" class="diff-pre"></pre>
             </div>
             <div>
-                <div style="font-size:.75rem;font-weight:600;text-transform:uppercase;color:var(--p-text-muted);margin-bottom:.35rem;">After</div>
-                <pre id="diff-after" style="background:var(--p-surface-2,#f8f9fa);border:1px solid var(--p-border);border-radius:var(--p-radius);padding:.75rem;font-size:.75rem;overflow-x:auto;margin:0;max-height:300px;overflow-y:auto;"></pre>
+                <div class="diff-label">After</div>
+                <pre id="diff-after" class="diff-pre"></pre>
             </div>
         </div>
     </div>
@@ -104,9 +104,9 @@
         document.getElementById('diff-title').textContent = 'Change diff: ' + action;
         document.getElementById('diff-before').textContent = before ? JSON.stringify(before, null, 2) : '(empty)';
         document.getElementById('diff-after').textContent  = after  ? JSON.stringify(after,  null, 2) : '(empty)';
-        document.getElementById('diff-modal').style.display = 'flex';
+        document.getElementById('diff-modal').classList.add('open');
     }
-    function closeDiff() { document.getElementById('diff-modal').style.display = 'none'; }
+    function closeDiff() { document.getElementById('diff-modal').classList.remove('open'); }
     document.getElementById('diff-modal').addEventListener('click', function(e) { if (e.target === this) closeDiff(); });
 </script>
 @endsection

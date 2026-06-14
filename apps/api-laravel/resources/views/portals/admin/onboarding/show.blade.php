@@ -3,163 +3,162 @@
 @section('sidebar') @include('portals.admin.control_center._sidebar') @endsection
 
 @section('content')
-<div class="portal-content">
 
-    <div class="portal-page-header">
-        <div>
-            <a href="{{ route('portals.admin.onboarding') }}" style="font-size:0.83rem;color:#6b7280;text-decoration:none;">← Facility Onboarding</a>
-            <h1 class="portal-page-title" style="margin-top:4px;">{{ $facility->name }}</h1>
-            <p class="portal-page-subtitle" style="display:flex;align-items:center;gap:8px;">
-                @php
-                    $statusColor = match($readiness->status) {
-                        'approved' => 'success', 'ready_for_approval' => 'info', default => 'warning',
-                    };
-                @endphp
-                <span class="badge badge--{{ $statusColor }}">{{ str_replace('_', ' ', ucfirst($readiness->status)) }}</span>
-                <span style="font-size:0.8rem;color:#6b7280;">{{ $completedCount }}/{{ $totalCount }} items completed</span>
-            </p>
+<div class="breadcrumb">
+    <a href="{{ route('portals.admin.onboarding') }}">Facility Onboarding</a>
+    <i data-lucide="chevron-right"></i>
+    <span>{{ $facility->name }}</span>
+</div>
+
+@php
+    $statusColor = match($readiness->status) {
+        'approved' => 'success', 'ready_for_approval' => 'info', default => 'warning',
+    };
+@endphp
+
+<div class="entity-head">
+    <div class="entity-head__icon"><i data-lucide="rocket"></i></div>
+    <div>
+        <h2 class="entity-head__title">{{ $facility->name }}</h2>
+        <div class="entity-head__sub">
+            <span class="badge badge--{{ $statusColor }} badge-sm">{{ str_replace('_', ' ', ucfirst($readiness->status)) }}</span>
+            <span class="td-muted text-sm">{{ $completedCount }}/{{ $totalCount }} items completed</span>
         </div>
-        @if($readiness->status === 'ready_for_approval' && !$readiness->can_go_live)
-        <button onclick="document.getElementById('approveModal').style.display='flex'" class="btn btn--primary btn--sm">
-            <i data-lucide="check-circle" style="width:14px;height:14px;"></i> Approve Go-Live
-        </button>
-        @elseif($readiness->status === 'approved')
-        <span class="badge badge--success" style="font-size:0.85rem;padding:8px 16px;">
-            <i data-lucide="check-circle-2" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
-            Go-Live Approved
-        </span>
+    </div>
+    <div class="entity-head__spacer"></div>
+    @if($readiness->status === 'ready_for_approval' && !$readiness->can_go_live)
+    <button onclick="opOpenModal('approveModal')" class="btn btn-primary btn-sm">
+        <i data-lucide="check-circle"></i> Approve Go-Live
+    </button>
+    @elseif($readiness->status === 'approved')
+    <span class="badge badge-success">
+        <i data-lucide="check-circle-2"></i> Go-Live Approved
+    </span>
+    @endif
+</div>
+
+@if(session('success'))<div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
+@if(session('error'))<div class="alert alert-danger mb-6"><i data-lucide="alert-circle"></i><div>{{ session('error') }}</div></div>@endif
+
+{{-- Progress --}}
+@php $pct = $totalCount > 0 ? round($completedCount / $totalCount * 100) : 0; @endphp
+<div class="panel mb-6">
+    <div class="panel-body">
+        <div class="flex-between mb-3">
+            <span class="kv-strong">Onboarding progress</span>
+            <span class="kv-strong {{ $pct === 100 ? 'trend-up' : '' }}">{{ $pct }}%</span>
+        </div>
+        <div class="breakdown__track breakdown__track--lg">
+            <div class="breakdown__fill {{ $pct === 100 ? 'breakdown__fill--teal' : '' }}" style="width: {{ $pct }}%"></div>
+        </div>
+        @if(!empty($missingItems))
+        <p class="text-sm trend-down mt-3">Remaining: {{ implode(', ', array_values($missingItems)) }}</p>
         @endif
     </div>
+</div>
 
-    @if(session('success'))
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#166534;font-size:0.88rem;">
-        <i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('success') }}
+{{-- Checklist --}}
+<div class="panel">
+    <div class="panel-header">
+        <h3 class="panel-title"><i data-lucide="list-checks"></i> Go-live checklist</h3>
     </div>
-    @endif
-    @if(session('error'))
-    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#991b1b;font-size:0.88rem;">
-        <i data-lucide="x" style="width:14px;height:14px;vertical-align:-2px;"></i> {{ session('error') }}
+    <div class="panel-body">
+        <div class="checklist">
+            @foreach($labels as $key => $label)
+                @php $done = $checklist[$key] ?? false; @endphp
+                <div class="checklist__item">
+                    <span class="checklist__icon {{ $done ? 'ok' : '' }}">
+                        <i data-lucide="{{ $done ? 'check-circle-2' : 'circle' }}"></i>
+                    </span>
+                    <div class="checklist__body">
+                        <div class="checklist__title {{ $done ? 'checklist__title--done' : '' }}">{{ $label }}</div>
+                    </div>
+                    @if($readiness->status !== 'approved')
+                    <form method="POST" action="{{ route('portals.admin.onboarding.mark', $facility) }}" class="inline-form">
+                        @csrf
+                        <input type="hidden" name="item" value="{{ $key }}">
+                        <input type="hidden" name="complete" value="{{ $done ? '0' : '1' }}">
+                        <button type="submit" class="btn btn-secondary btn-sm">
+                            {{ $done ? 'Mark Incomplete' : 'Mark Complete' }}
+                        </button>
+                    </form>
+                    @else
+                    <span class="td-muted text-sm">Locked</span>
+                    @endif
+                </div>
+            @endforeach
+        </div>
     </div>
-    @endif
+</div>
 
-    {{-- Progress bar --}}
-    @php $pct = $totalCount > 0 ? round($completedCount / $totalCount * 100) : 0; @endphp
-    <div class="portal-card" style="margin-bottom:16px;">
-        <div class="portal-card__body" style="padding:16px 20px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                <span style="font-size:0.88rem;font-weight:600;color:#374151;">Onboarding Progress</span>
-                <span style="font-size:0.88rem;font-weight:700;color:{{ $pct === 100 ? '#16a34a' : '#7c3aed' }};">{{ $pct }}%</span>
-            </div>
-            <div style="background:#e5e7eb;border-radius:99px;height:10px;">
-                <div style="width:{{ $pct }}%;background:{{ $pct === 100 ? '#16a34a' : '#7c3aed' }};border-radius:99px;height:10px;transition:width .4s;"></div>
-            </div>
-            @if(!empty($missingItems))
-            <p style="margin:8px 0 0;font-size:0.8rem;color:#dc2626;">
-                Remaining: {{ implode(', ', array_values($missingItems)) }}
-            </p>
+{{-- Approval info --}}
+@if($readiness->approved_at)
+<div class="panel mt-6">
+    <div class="panel-body">
+        <div class="section-head"><i data-lucide="check-circle-2" class="text-success"></i><h2 class="trend-up">Go-live approved</h2></div>
+        <table class="kv-table">
+            <tr><td>Approved on</td><td class="kv-strong">{{ $readiness->approved_at->format('d F Y H:i') }}</td></tr>
+            @if($readiness->approval_note)
+            <tr><td>Note</td><td class="kv-strong">{{ $readiness->approval_note }}</td></tr>
             @endif
-        </div>
+        </table>
     </div>
+</div>
+@endif
 
-    {{-- Checklist --}}
-    <div class="portal-card">
-        <div class="portal-card__header">
-            <h2 class="portal-card__title">Go-Live Checklist</h2>
-        </div>
-        <div class="portal-card__body" style="padding:0;">
-            <table class="portal-table">
-                <thead>
-                    <tr><th style="width:60px;">Done</th><th>Checklist Item</th><th style="text-align:right;">Action</th></tr>
-                </thead>
-                <tbody>
-                    @foreach($labels as $key => $label)
-                        @php $done = $checklist[$key] ?? false; @endphp
-                        <tr style="{{ $done ? 'background:#f9fff9;' : '' }}">
-                            <td style="text-align:center;font-size:1.1rem;">
-                                {!! $done ? '<i data-lucide="check" style="width:16px;height:16px;vertical-align:-2px;color:#16a34a;"></i>' : '<i data-lucide="square" style="width:16px;height:16px;vertical-align:-2px;"></i>' !!}
-                            </td>
-                            <td style="font-size:0.88rem;{{ $done ? 'color:#6b7280;text-decoration:line-through;' : 'font-weight:600;' }}">
-                                {{ $label }}
-                            </td>
-                            <td style="text-align:right;">
-                                @if($readiness->status !== 'approved')
-                                <form method="POST" action="{{ route('portals.admin.onboarding.mark', $facility) }}" style="display:inline;">
-                                    @csrf
-                                    <input type="hidden" name="item" value="{{ $key }}">
-                                    <input type="hidden" name="complete" value="{{ $done ? '0' : '1' }}">
-                                    <button type="submit" class="btn btn--outline btn--sm" style="font-size:0.75rem;padding:4px 10px;">
-                                        {{ $done ? 'Mark Incomplete' : 'Mark Complete' }}
-                                    </button>
-                                </form>
-                                @else
-                                <span style="font-size:0.75rem;color:#9ca3af;">Locked</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    {{-- Approval info --}}
-    @if($readiness->approved_at)
-    <div class="portal-card" style="margin-top:16px;border-color:#bbf7d0;">
-        <div class="portal-card__body" style="padding:16px 20px;">
-            <h3 style="margin:0 0 8px;font-size:0.9rem;font-weight:700;color:#166534;">
-                <i data-lucide="check-circle-2" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;"></i>
-                Go-Live Approved
-            </h3>
-            <div style="font-size:0.83rem;color:#374151;">
-                <strong>Approved on:</strong> {{ $readiness->approved_at->format('d F Y H:i') }}<br>
-                @if($readiness->approval_note)
-                <strong>Note:</strong> {{ $readiness->approval_note }}
-                @endif
-            </div>
-        </div>
-    </div>
-    @endif
-
-    {{-- Risks --}}
-    @if(!empty($risks))
-    <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:16px 20px;margin-top:16px;font-size:0.85rem;color:#92400e;">
-        <strong><i data-lucide="alert-triangle" style="width:14px;height:14px;vertical-align:-2px;"></i> Risks:</strong>
-        <ul style="margin:6px 0 0;padding-left:18px;">
+{{-- Risks --}}
+@if(!empty($risks))
+<div class="alert alert-warning mt-6">
+    <i data-lucide="alert-triangle"></i>
+    <div>
+        <strong>Risks:</strong>
+        <ul class="alert-list">
             @foreach($risks as $risk)
             <li>{{ $risk }}</li>
             @endforeach
         </ul>
     </div>
-    @endif
-
 </div>
+@endif
 
 {{-- Approve Go-Live Modal --}}
 @if($readiness->status !== 'approved')
-<div id="approveModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;"
-     onclick="if(event.target===this)this.style.display='none'">
-    <div style="background:#fff;border-radius:12px;padding:28px;width:90%;max-width:500px;">
-        <h3 style="margin:0 0 8px;font-size:1rem;font-weight:700;color:#0F4C81;">Approve Go-Live</h3>
-        <p style="font-size:0.83rem;color:#6b7280;margin:0 0 16px;">
+<div id="approveModal" class="modal-fixed">
+    <div class="modal-fixed__panel modal-fixed__panel--lg">
+        <div class="modal-fixed__head">
+            <h3 class="modal-fixed__title">Approve go-live</h3>
+            <button type="button" class="icon-btn" aria-label="Close" onclick="opCloseModal('approveModal')"><i data-lucide="x"></i></button>
+        </div>
+        <p class="td-muted text-sm mb-4">
             Approving go-live for <strong>{{ $facility->name }}</strong> marks this facility as ready for live patient operations.
             Ensure all checklist items are completed before approving.
         </p>
         <form method="POST" action="{{ route('portals.admin.onboarding.approve', $facility) }}">
             @csrf
-            <div style="margin-bottom:12px;">
-                <label style="display:block;font-size:0.82rem;font-weight:600;margin-bottom:4px;">Approval Note *</label>
-                <textarea name="approval_note" rows="4" required
-                          placeholder="Describe the approval basis, any conditions, and the approving authority..."
-                          style="width:100%;padding:8px 10px;border:1px solid #e5e7eb;border-radius:6px;font-size:0.85rem;resize:vertical;"></textarea>
+            <div class="form-group mb-4">
+                <label class="form-label form-label-required">Approval Note</label>
+                <textarea name="approval_note" rows="4" required class="form-control"
+                          placeholder="Describe the approval basis, any conditions, and the approving authority..."></textarea>
             </div>
-            <div style="display:flex;gap:10px;">
-                <button type="submit" class="btn btn--primary" style="flex:1;">Confirm Approval</button>
-                <button type="button" onclick="document.getElementById('approveModal').style.display='none'"
-                        class="btn btn--outline" style="flex:1;">Cancel</button>
+            <div class="modal__footer">
+                <button type="button" onclick="opCloseModal('approveModal')" class="btn btn-ghost">Cancel</button>
+                <button type="submit" class="btn btn-primary">Confirm Approval</button>
             </div>
         </form>
     </div>
 </div>
 @endif
 
+@endsection
+@section('scripts')
+<script>
+function opOpenModal(id){ document.getElementById(id).classList.add('open'); }
+function opCloseModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-fixed').forEach(function(m){
+    m.addEventListener('click', function(e){ if(e.target===m) m.classList.remove('open'); });
+});
+document.addEventListener('keydown', function(e){
+    if(e.key==='Escape'){ document.querySelectorAll('.modal-fixed').forEach(function(m){ m.classList.remove('open'); }); }
+});
+</script>
 @endsection

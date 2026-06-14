@@ -14,81 +14,76 @@
 </div>
 
 @if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
+    <div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
 @endif
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
+    <div class="alert alert-danger mb-6"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
 @endif
 
 <div class="panel">
-    <div class="panel-body" style="padding:0;">
-        @if($modules->count() === 0)
-            <div class="empty-state">
-                <div class="empty-state-icon"><i data-lucide="puzzle"></i></div>
-                <h3>No module toggles</h3>
-                <p>Visit the Control Center dashboard to seed default modules.</p>
-            </div>
-        @else
-        <div class="table-wrapper">
-            <table class="data-table">
-                <thead><tr>
-                    <th>Module</th><th>Key</th><th>Scope</th><th>Status</th><th>Disable Reason</th><th>Updated By</th><th>Actions</th>
-                </tr></thead>
-                <tbody>
-                    @foreach($modules as $mod)
-                    <tr>
-                        <td style="font-weight:500;">{{ $mod->module_label }}</td>
-                        <td><code style="font-size:.78rem;">{{ $mod->module_key }}</code></td>
-                        <td>
-                            <span class="badge badge-neutral" style="font-size:.72rem;">{{ $mod->scope }}</span>
-                            @if($mod->scope_value)
-                                <span style="font-size:.72rem;color:var(--p-text-muted);margin-left:4px;">{{ $mod->scope_value }}</span>
-                            @endif
-                        </td>
-                        <td>
-                            <span class="badge {{ $mod->enabled ? 'badge-success' : 'badge-neutral' }}">
-                                {{ $mod->enabled ? 'Enabled' : 'Disabled' }}
-                            </span>
-                        </td>
-                        <td style="font-size:.78rem;color:var(--p-text-muted);">{{ $mod->disable_reason ?? '—' }}</td>
-                        <td style="font-size:.78rem;color:var(--p-text-muted);">{{ $mod->updated_by ?? '—' }}</td>
-                        <td>
-                            @if($mod->enabled)
-                                <button type="button" class="btn btn-ghost btn-xs"
-                                    onclick="openDisableModal('{{ $mod->module_key }}', '{{ addslashes($mod->module_label) }}')">
-                                    Disable
-                                </button>
-                            @else
-                                <form method="POST" action="{{ route('portals.admin.cc.modules.toggle', urlencode($mod->module_key)) }}" style="display:inline;">
-                                    @csrf
-                                    <input type="hidden" name="enabled" value="1">
-                                    <input type="hidden" name="disable_reason" value="">
-                                    <button type="submit" class="btn btn-success btn-xs">Enable</button>
-                                </form>
-                            @endif
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+    @if($modules->count() === 0)
+        <div class="empty-state">
+            <div class="empty-state-icon"><i data-lucide="puzzle"></i></div>
+            <h3>No module toggles</h3>
+            <p>Visit the Control Center dashboard to seed default modules.</p>
         </div>
-        @endif
+    @else
+    <div class="panel-body">
+        @foreach($modules as $mod)
+        <div class="toggle-row">
+            <div class="toggle-row__body">
+                <div class="toggle-row__title">{{ $mod->module_label }}</div>
+                <div class="toggle-row__desc">
+                    <span class="code-token">{{ $mod->module_key }}</span>
+                    <span class="badge badge-neutral badge-sm">{{ $mod->scope }}</span>
+                    @if($mod->scope_value)<span class="td-muted">{{ $mod->scope_value }}</span>@endif
+                    @if(!$mod->enabled && $mod->disable_reason)<span class="td-muted">· {{ $mod->disable_reason }}</span>@endif
+                    @if($mod->updated_by)<span class="td-muted">· Updated by {{ $mod->updated_by }}</span>@endif
+                </div>
+            </div>
+            <span class="badge {{ $mod->enabled ? 'badge-success' : 'badge-neutral' }} badge-sm">
+                {{ $mod->enabled ? 'Enabled' : 'Disabled' }}
+            </span>
+            @if($mod->enabled)
+                <label class="switch">
+                    <input type="checkbox" checked
+                           onclick="event.preventDefault(); openDisableModal('{{ $mod->module_key }}', '{{ addslashes($mod->module_label) }}');"
+                           aria-label="Disable {{ $mod->module_label }}">
+                    <span class="switch__track"></span>
+                </label>
+            @else
+                <form method="POST" action="{{ route('portals.admin.cc.modules.toggle', urlencode($mod->module_key)) }}" class="inline-form">
+                    @csrf
+                    <input type="hidden" name="enabled" value="1">
+                    <input type="hidden" name="disable_reason" value="">
+                    <label class="switch">
+                        <input type="checkbox" onchange="this.form.submit()" aria-label="Enable {{ $mod->module_label }}">
+                        <span class="switch__track"></span>
+                    </label>
+                </form>
+            @endif
+        </div>
+        @endforeach
     </div>
+    @endif
 </div>
 
 {{-- Disable Modal --}}
-<div id="disable-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:400px;margin:1rem;">
-        <h3 style="margin:0 0 .5rem;font-size:1.05rem;">Disable Module</h3>
-        <p id="disable-module-name" style="font-size:.85rem;color:var(--p-text-muted);margin:0 0 1rem;"></p>
+<div id="disable-modal" class="modal-fixed">
+    <div class="modal-fixed__panel modal-fixed__panel--sm">
+        <div class="modal-fixed__head">
+            <h3 class="modal-fixed__title">Disable module</h3>
+            <button type="button" class="icon-btn" aria-label="Close" onclick="closeDisableModal()"><i data-lucide="x"></i></button>
+        </div>
+        <p id="disable-module-name" class="td-muted text-sm mb-4"></p>
         <form id="disable-form" method="POST" action="">
             @csrf
             <input type="hidden" name="enabled" value="0">
-            <div class="form-group" style="margin-bottom:1rem;">
-                <label class="form-label">Reason for disabling <span style="color:var(--p-text-muted);font-weight:400;">(optional)</span></label>
+            <div class="form-group mb-4">
+                <label class="form-label">Reason for disabling <span class="td-muted">(optional)</span></label>
                 <textarea name="disable_reason" class="form-control" rows="2" maxlength="255" placeholder="e.g. Scheduled maintenance…"></textarea>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeDisableModal()">Cancel</button>
                 <button type="submit" class="btn btn-danger btn-sm">Disable Module</button>
             </div>
@@ -102,9 +97,9 @@
     function openDisableModal(id, label) {
         document.getElementById('disable-module-name').textContent = 'Module: ' + label;
         document.getElementById('disable-form').action = '/portals/admin/cc/modules/' + encodeURIComponent(id) + '/toggle';
-        document.getElementById('disable-modal').style.display = 'flex';
+        document.getElementById('disable-modal').classList.add('open');
     }
-    function closeDisableModal() { document.getElementById('disable-modal').style.display = 'none'; }
+    function closeDisableModal() { document.getElementById('disable-modal').classList.remove('open'); }
     document.getElementById('disable-modal').addEventListener('click', function(e) { if (e.target === this) closeDisableModal(); });
 </script>
 @endsection

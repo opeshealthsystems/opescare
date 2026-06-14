@@ -38,62 +38,61 @@
         <div class="kpi-icon teal"><i data-lucide="qr-code"></i></div>
         <div class="kpi-body">
             <div class="kpi-label">{{ __('public.admin_governance.kpi_active_tokens', [], app()->getLocale()) ?: 'Active Tokens' }}</div>
-            <div class="kpi-value" style="color:var(--p-teal);">{{ number_format($stats['active_tokens']) }}</div>
+            <div class="kpi-value">{{ number_format($stats['active_tokens']) }}</div>
             <div class="kpi-sub">{{ __('public.admin_governance.kpi_live_tokens', [], app()->getLocale()) ?: 'Live access tokens' }}</div>
         </div>
     </div>
     <div class="kpi-card">
-        <div class="kpi-icon purple"><i data-lucide="activity"></i></div>
+        <div class="kpi-icon blue"><i data-lucide="activity"></i></div>
         <div class="kpi-body">
             <div class="kpi-label">{{ __('public.admin_governance.kpi_total_lookups', [], app()->getLocale()) ?: 'Total Lookups' }}</div>
-            <div class="kpi-value" style="color:#7C3AED;">{{ number_format($stats['total_access_logs']) }}</div>
+            <div class="kpi-value">{{ number_format($stats['total_access_logs']) }}</div>
             <div class="kpi-sub">{{ __('public.admin_governance.kpi_alltime_events', [], app()->getLocale()) ?: 'All-time access events' }}</div>
         </div>
     </div>
-    <div class="kpi-card" style="border-color:rgba(185,28,28,.2);">
+    <div class="kpi-card">
         <div class="kpi-icon danger"><i data-lucide="shield-x"></i></div>
         <div class="kpi-body">
             <div class="kpi-label">{{ __('public.admin_governance.kpi_denied_lookups', [], app()->getLocale()) ?: 'Denied Lookups' }}</div>
-            <div class="kpi-value" style="color:var(--p-danger);">{{ number_format($stats['denied_access']) }}</div>
+            <div class="kpi-value">{{ number_format($stats['denied_access']) }}</div>
             <div class="kpi-sub">{{ __('public.admin_governance.kpi_failed_denied', [], app()->getLocale()) ?: 'Failed / denied' }}</div>
         </div>
     </div>
 </div>
 
 <!-- Clinical Register Quick Links (visible to hospital_admin / clinic_admin) -->
-<div class="card" style="margin-bottom:1.5rem;">
-    <div class="card-header" style="font-weight:700;display:flex;align-items:center;gap:.5rem;">
-        <i data-lucide="stethoscope" style="width:16px;height:16px;color:#0f4c81;"></i>
-        Clinical Register
+<div class="panel mb-6">
+    <div class="panel-header">
+        <h3 class="panel-title"><i data-lucide="stethoscope"></i> Clinical Register</h3>
     </div>
-    <div class="card-body" style="display:flex;gap:1rem;flex-wrap:wrap;">
-        <a href="{{ route('portals.admin.clinical.prescriptions') }}" class="btn btn-outline" style="gap:.6rem;">
-            <i data-lucide="clipboard-list" style="width:16px;height:16px;color:#7c3aed;"></i>
+    <div class="panel-body row-actions-inline">
+        <a href="{{ route('portals.admin.clinical.prescriptions') }}" class="btn btn-secondary">
+            <i data-lucide="clipboard-list"></i>
             Prescription Register
         </a>
-        <a href="{{ route('portals.admin.clinical.lab_orders') }}" class="btn btn-outline" style="gap:.6rem;">
-            <i data-lucide="microscope" style="width:16px;height:16px;color:#0ea5e9;"></i>
+        <a href="{{ route('portals.admin.clinical.lab_orders') }}" class="btn btn-secondary">
+            <i data-lucide="microscope"></i>
             Lab Orders Register
         </a>
-        <a href="{{ route('portals.staff.analytics') }}" class="btn btn-outline" style="gap:.6rem;">
-            <i data-lucide="bar-chart-2" style="width:16px;height:16px;color:#10b981;"></i>
+        <a href="{{ route('portals.staff.analytics') }}" class="btn btn-secondary">
+            <i data-lucide="bar-chart-2"></i>
             Analytics
         </a>
-        <a href="{{ route('portals.staff.wards') }}" class="btn btn-outline" style="gap:.6rem;">
-            <i data-lucide="bed" style="width:16px;height:16px;color:#f59e0b;"></i>
+        <a href="{{ route('portals.staff.wards') }}" class="btn btn-secondary">
+            <i data-lucide="bed"></i>
             Wards & Admissions
         </a>
-        <a href="{{ route('portals.staff.billing') }}" class="btn btn-outline" style="gap:.6rem;">
-            <i data-lucide="receipt" style="width:16px;height:16px;color:#ef4444;"></i>
+        <a href="{{ route('portals.staff.billing') }}" class="btn btn-secondary">
+            <i data-lucide="receipt"></i>
             Billing
         </a>
     </div>
 </div>
 
 <!-- Partner Governance -->
-<div class="panel mb-6" id="partners" style="margin-bottom:var(--p-space-6);">
+<div class="panel mb-6" id="partners">
     <div class="panel-header">
-        <h2 class="panel-title" style="color:var(--p-primary);">
+        <h2 class="panel-title">
             <i data-lucide="building-2"></i>
             {{ __('public.admin_governance.section_partner_governance', [], app()->getLocale()) ?: 'Partner Governance' }}
         </h2>
@@ -111,8 +110,8 @@
             </thead>
             <tbody id="partners-body">
                 <tr>
-                    <td colspan="5" style="text-align:center;padding:var(--p-space-8);color:var(--p-text-muted);">
-                        <i data-lucide="loader" style="width:1.25rem;height:1.25rem;display:inline-block;animation:spin 1s linear infinite;vertical-align:middle;margin-right:var(--p-space-2);"></i>
+                    <td colspan="5" class="td-muted empty-cell">
+                        <i data-lucide="loader" class="spin"></i>
                         {{ __('public.admin_governance.loading_partners', [], app()->getLocale()) ?: 'Loading partners…' }}
                     </td>
                 </tr>
@@ -122,9 +121,9 @@
 </div>
 
 <!-- Pending Duplicate Reviews -->
-<div class="panel mb-6" id="duplicates" style="margin-bottom:var(--p-space-6);">
+<div class="panel mb-6" id="duplicates">
     <div class="panel-header">
-        <h2 class="panel-title" style="color:var(--p-warning);">
+        <h2 class="panel-title">
             <i data-lucide="users"></i>
             {{ __('public.admin_governance.section_duplicate_reviews', [], app()->getLocale()) ?: 'Pending Duplicate Reviews' }}
         </h2>
@@ -141,8 +140,8 @@
             </thead>
             <tbody id="duplicates-body">
                 <tr>
-                    <td colspan="4" style="text-align:center;padding:var(--p-space-8);color:var(--p-text-muted);">
-                        <i data-lucide="loader" style="width:1.25rem;height:1.25rem;display:inline-block;animation:spin 1s linear infinite;vertical-align:middle;margin-right:var(--p-space-2);"></i>
+                    <td colspan="4" class="td-muted empty-cell">
+                        <i data-lucide="loader" class="spin"></i>
                         {{ __('public.admin_governance.loading_cases', [], app()->getLocale()) ?: 'Loading pending cases…' }}
                     </td>
                 </tr>
@@ -175,7 +174,7 @@
                 <tr>
                     <td data-label="{{ __('public.admin_governance.col_timestamp', [], app()->getLocale()) ?: 'Timestamp' }}">
                         <span class="td-muted">{{ \Carbon\Carbon::parse($log->created_at)->format('d M Y') }}</span>
-                        <div class="td-muted" style="font-size:0.75rem;">{{ \Carbon\Carbon::parse($log->created_at)->format('H:i:s') }}</div>
+                        <div class="td-muted code-muted">{{ \Carbon\Carbon::parse($log->created_at)->format('H:i:s') }}</div>
                     </td>
                     <td data-label="{{ __('public.admin_governance.col_event_type', [], app()->getLocale()) ?: 'Event' }}">
                         <span class="td-strong">{{ $log->access_type }}</span>
@@ -186,20 +185,20 @@
                     <td data-label="{{ __('public.admin_governance.col_actor', [], app()->getLocale()) ?: 'Actor' }}">
                         <span class="td-muted">{{ $log->actor_type ?? '—' }}</span>
                         @if(!empty($log->ip_address))
-                        <div class="td-muted" style="font-size:0.75rem;">{{ $log->ip_address }}</div>
+                        <div class="td-muted code-muted">{{ $log->ip_address }}</div>
                         @endif
                     </td>
                     <td data-label="{{ __('public.admin_governance.col_result', [], app()->getLocale()) ?: 'Result' }}">
                         @if(($log->result ?? '') === 'success')
-                            <span class="badge badge-success">{{ __('public.admin_governance.result_success', [], app()->getLocale()) ?: 'Success' }}</span>
+                            <span class="badge badge-allowed">{{ __('public.admin_governance.result_success', [], app()->getLocale()) ?: 'Success' }}</span>
                         @else
-                            <span class="badge badge-danger">{{ __('public.admin_governance.result_denied', [], app()->getLocale()) ?: 'Denied' }}</span>
+                            <span class="badge badge-denied">{{ __('public.admin_governance.result_denied', [], app()->getLocale()) ?: 'Denied' }}</span>
                         @endif
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" style="text-align:center;padding:var(--p-space-8);color:var(--p-text-muted);">
+                    <td colspan="5" class="td-muted empty-cell">
                         {{ __('public.admin_governance.no_security_events', [], app()->getLocale()) ?: 'No security events recorded yet.' }}
                     </td>
                 </tr>
@@ -210,57 +209,55 @@
 </div>
 
 <!-- Duplicate Review Modal -->
-<div id="duplicate-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;background:rgba(15,23,42,.7);backdrop-filter:blur(4px);padding:var(--p-space-4);" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <div style="background:var(--p-surface);border:1px solid var(--p-border);border-radius:var(--p-radius-xl);width:100%;max-width:800px;overflow:hidden;box-shadow:var(--p-shadow-lg);">
-        <div style="padding:var(--p-space-5) var(--p-space-6);border-bottom:1px solid var(--p-border);display:flex;align-items:center;justify-content:space-between;">
-            <h3 id="modal-title" style="font-size:1rem;font-weight:700;color:var(--p-text);margin:0;">{{ __('public.admin_governance.modal_review_title', [], app()->getLocale()) ?: 'Review Suspected Duplicate' }}</h3>
-            <button id="close-duplicate" class="topbar-icon-btn" aria-label="Close modal" style="color:var(--p-text-muted);">
+<div id="duplicate-modal" class="modal-fixed" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-fixed__panel">
+        <div class="modal-fixed__head">
+            <h3 id="modal-title" class="modal-fixed__title">{{ __('public.admin_governance.modal_review_title', [], app()->getLocale()) ?: 'Review Suspected Duplicate' }}</h3>
+            <button id="close-duplicate" class="icon-btn" aria-label="Close modal">
                 <i data-lucide="x"></i>
             </button>
         </div>
-        <div style="padding:var(--p-space-6);">
-            <div class="grid-2" style="margin-bottom:var(--p-space-5);">
-                <!-- Primary -->
-                <div style="background:var(--p-surface-2);border:1px solid var(--p-border);border-left:4px solid var(--p-primary);border-radius:var(--p-radius-lg);padding:var(--p-space-5);">
-                    <div style="margin-bottom:var(--p-space-3);">
-                        <span class="badge badge-primary">{{ __('public.admin_governance.badge_primary_record', [], app()->getLocale()) ?: 'Primary Record' }}</span>
-                    </div>
-                    <div style="display:flex;flex-direction:column;gap:var(--p-space-2);font-size:0.875rem;">
-                        <div><span style="color:var(--p-text-muted);">{{ __('public.admin_governance.lbl_health_id', [], app()->getLocale()) ?: 'Health ID:' }}</span> <span id="m-primary-id" style="font-family:monospace;font-weight:700;color:var(--p-primary);"></span></div>
-                        <div><span style="color:var(--p-text-muted);">{{ __('public.admin_governance.lbl_name', [], app()->getLocale()) ?: 'Name:' }}</span> <strong id="m-primary-name" style="margin-left:4px;"></strong></div>
-                        <div><span style="color:var(--p-text-muted);">{{ __('public.admin_governance.lbl_dob', [], app()->getLocale()) ?: 'DOB:' }}</span> <span id="m-primary-dob" style="margin-left:4px;"></span></div>
-                        <div><span style="color:var(--p-text-muted);">{{ __('public.admin_governance.lbl_sex', [], app()->getLocale()) ?: 'Sex:' }}</span> <span id="m-primary-sex" style="margin-left:4px;"></span></div>
-                    </div>
+        <div class="grid-2 mb-4">
+            <!-- Primary -->
+            <div class="stat-card">
+                <div class="mb-3">
+                    <span class="badge badge-primary">{{ __('public.admin_governance.badge_primary_record', [], app()->getLocale()) ?: 'Primary Record' }}</span>
                 </div>
-                <!-- Secondary -->
-                <div style="background:var(--p-surface-2);border:1px solid var(--p-border);border-left:4px solid var(--p-warning);border-radius:var(--p-radius-lg);padding:var(--p-space-5);">
-                    <div style="margin-bottom:var(--p-space-3);">
-                        <span class="badge badge-warning">{{ __('public.admin_governance.badge_suspected_duplicate', [], app()->getLocale()) ?: 'Suspected Duplicate' }}</span>
-                    </div>
-                    <div style="display:flex;flex-direction:column;gap:var(--p-space-2);font-size:0.875rem;">
-                        <div><span style="color:var(--p-text-muted);">{{ __('public.admin_governance.lbl_health_id', [], app()->getLocale()) ?: 'Health ID:' }}</span> <span id="m-secondary-id" style="font-family:monospace;font-weight:700;color:var(--p-warning);"></span></div>
-                        <div><span style="color:var(--p-text-muted);">{{ __('public.admin_governance.lbl_name', [], app()->getLocale()) ?: 'Name:' }}</span> <strong id="m-secondary-name" style="margin-left:4px;"></strong></div>
-                        <div><span style="color:var(--p-text-muted);">{{ __('public.admin_governance.lbl_dob', [], app()->getLocale()) ?: 'DOB:' }}</span> <span id="m-secondary-dob" style="margin-left:4px;"></span></div>
-                        <div><span style="color:var(--p-text-muted);">{{ __('public.admin_governance.lbl_sex', [], app()->getLocale()) ?: 'Sex:' }}</span> <span id="m-secondary-sex" style="margin-left:4px;"></span></div>
-                    </div>
+                <table class="kv-table">
+                    <tr><td>{{ __('public.admin_governance.lbl_health_id', [], app()->getLocale()) ?: 'Health ID:' }}</td><td><span id="m-primary-id" class="kv-strong mono"></span></td></tr>
+                    <tr><td>{{ __('public.admin_governance.lbl_name', [], app()->getLocale()) ?: 'Name:' }}</td><td><strong id="m-primary-name"></strong></td></tr>
+                    <tr><td>{{ __('public.admin_governance.lbl_dob', [], app()->getLocale()) ?: 'DOB:' }}</td><td><span id="m-primary-dob"></span></td></tr>
+                    <tr><td>{{ __('public.admin_governance.lbl_sex', [], app()->getLocale()) ?: 'Sex:' }}</td><td><span id="m-primary-sex"></span></td></tr>
+                </table>
+            </div>
+            <!-- Secondary -->
+            <div class="stat-card">
+                <div class="mb-3">
+                    <span class="badge badge-warning">{{ __('public.admin_governance.badge_suspected_duplicate', [], app()->getLocale()) ?: 'Suspected Duplicate' }}</span>
                 </div>
+                <table class="kv-table">
+                    <tr><td>{{ __('public.admin_governance.lbl_health_id', [], app()->getLocale()) ?: 'Health ID:' }}</td><td><span id="m-secondary-id" class="kv-strong mono"></span></td></tr>
+                    <tr><td>{{ __('public.admin_governance.lbl_name', [], app()->getLocale()) ?: 'Name:' }}</td><td><strong id="m-secondary-name"></strong></td></tr>
+                    <tr><td>{{ __('public.admin_governance.lbl_dob', [], app()->getLocale()) ?: 'DOB:' }}</td><td><span id="m-secondary-dob"></span></td></tr>
+                    <tr><td>{{ __('public.admin_governance.lbl_sex', [], app()->getLocale()) ?: 'Sex:' }}</td><td><span id="m-secondary-sex"></span></td></tr>
+                </table>
             </div>
+        </div>
 
-            <div class="form-group" style="margin-bottom:var(--p-space-5);">
-                <label class="form-label" for="review-reason">{{ __('public.admin_governance.lbl_reviewer_notes', [], app()->getLocale()) ?: 'Reviewer Notes (Optional)' }}</label>
-                <textarea id="review-reason" rows="2" class="form-control" placeholder="{{ __('public.admin_governance.lbl_reviewer_notes_ph', [], app()->getLocale()) ?: 'e.g. Verified via National ID…' }}"></textarea>
-            </div>
+        <div class="form-group mb-4">
+            <label class="form-label" for="review-reason">{{ __('public.admin_governance.lbl_reviewer_notes', [], app()->getLocale()) ?: 'Reviewer Notes (Optional)' }}</label>
+            <textarea id="review-reason" rows="2" class="form-control" placeholder="{{ __('public.admin_governance.lbl_reviewer_notes_ph', [], app()->getLocale()) ?: 'e.g. Verified via National ID…' }}"></textarea>
+        </div>
 
-            <div style="display:flex;gap:var(--p-space-3);">
-                <button id="btn-reject-merge" class="btn btn-secondary" style="flex:1;">
-                    <i data-lucide="x-circle"></i>
-                    {{ __('public.admin_governance.btn_reject_match', [], app()->getLocale()) ?: 'Reject Match (Keep Separate)' }}
-                </button>
-                <button id="btn-approve-merge" class="btn btn-warning" style="flex:1;background:var(--p-warning);color:white;border-color:var(--p-warning);">
-                    <i data-lucide="merge"></i>
-                    {{ __('public.admin_governance.btn_confirm_merge', [], app()->getLocale()) ?: 'Confirm Merge' }}
-                </button>
-            </div>
+        <div class="modal__footer">
+            <button id="btn-reject-merge" class="btn btn-secondary">
+                <i data-lucide="x-circle"></i>
+                {{ __('public.admin_governance.btn_reject_match', [], app()->getLocale()) ?: 'Reject Match (Keep Separate)' }}
+            </button>
+            <button id="btn-approve-merge" class="btn btn-warning">
+                <i data-lucide="merge"></i>
+                {{ __('public.admin_governance.btn_confirm_merge', [], app()->getLocale()) ?: 'Confirm Merge' }}
+            </button>
         </div>
     </div>
 </div>
@@ -268,9 +265,6 @@
 @endsection
 
 @section('scripts')
-<style>
-@keyframes spin { to { transform: rotate(360deg); } }
-</style>
 <script>
 var _ag = {
     noPartners:        @json(__('public.admin_governance.no_partners',           [], app()->getLocale()) ?: 'No partners found.'),
@@ -306,7 +300,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const data = await res.json();
             const tbody = document.getElementById('partners-body');
             if (!data.data || data.data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:var(--p-space-8);color:var(--p-text-muted);">' + _ag.noPartners + '</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="td-muted empty-cell">' + _ag.noPartners + '</td></tr>';
                 return;
             }
             tbody.innerHTML = data.data.map(p => {
@@ -322,11 +316,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 ].filter(Boolean).join(' ');
 
                 return `<tr>
-                    <td data-label="Partner"><span class="td-strong">${p.legal_name}</span><div class="td-muted" style="font-size:0.75rem;">${p.uuid}</div></td>
+                    <td data-label="Partner"><span class="td-strong">${p.legal_name}</span><div class="td-muted code-muted">${p.uuid}</div></td>
                     <td data-label="Type"><span class="badge badge-neutral">${p.partner_type}</span></td>
                     <td data-label="Status">${stBadge}</td>
                     <td data-label="Trust">${p.trust_level.replace('level_','').replace(/_/g,' ')}</td>
-                    <td data-label="Actions" style="text-align:right;">${actions}</td>
+                    <td data-label="Actions" class="row-actions">${actions}</td>
                 </tr>`;
             }).join('');
             if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -366,11 +360,11 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (data.status === 'success') {
                 mergeCases = data.cases;
                 if (mergeCases.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:var(--p-space-8);color:var(--p-text-muted);">' + _ag.noDuplicates + '</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" class="td-muted empty-cell">' + _ag.noDuplicates + '</td></tr>';
                     return;
                 }
                 tbody.innerHTML = mergeCases.map(c => `<tr>
-                    <td data-label="${_ag.col_match_score ?? 'Score'}"><span class="badge badge-warning" style="font-size:0.875rem;">${c.match_score}%</span></td>
+                    <td data-label="${_ag.col_match_score ?? 'Score'}"><span class="badge badge-warning">${c.match_score}%</span></td>
                     <td data-label="${_ag.col_primary_patient ?? 'Primary'}">
                         <span class="td-strong">${c.primary_patient.first_name} ${c.primary_patient.last_name}</span>
                         <div class="td-mono">${c.primary_patient.health_id}</div>
@@ -379,14 +373,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                         <span class="td-strong">${c.secondary_patient.first_name} ${c.secondary_patient.last_name}</span>
                         <div class="td-mono">${c.secondary_patient.health_id}</div>
                     </td>
-                    <td data-label="Action" style="text-align:right;">
+                    <td data-label="Action" class="row-actions">
                         <button onclick="openReviewModal('${c.uuid}')" class="btn btn-primary btn-sm">${_ag.btnReview}</button>
                     </td>
                 </tr>`).join('');
                 if (typeof lucide !== 'undefined') lucide.createIcons();
             }
         } catch(e) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--p-danger);padding:var(--p-space-6);">' + _ag.errDuplicates + '</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" class="td-muted empty-cell">' + _ag.errDuplicates + '</td></tr>';
         }
     };
 
@@ -419,7 +413,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const btn = resolution === 'approve' ? btnApprove : btnReject;
         const oldHtml = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<i data-lucide="loader" style="width:1rem;height:1rem;"></i> ' + _ag.lblProcessing;
+        btn.innerHTML = '<i data-lucide="loader" class="spin"></i> ' + _ag.lblProcessing;
         if (typeof lucide !== 'undefined') lucide.createIcons();
 
         try {

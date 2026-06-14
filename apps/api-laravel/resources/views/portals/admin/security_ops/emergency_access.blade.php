@@ -14,18 +14,21 @@
 </div>
 
 {{-- Filter --}}
-<form method="GET" action="{{ route('portals.admin.security.emergency_access') }}"
-      style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;">
-    <input type="text" name="provider_id" value="{{ request('provider_id') }}"
-        class="form-control form-control-sm" style="max-width:200px;" placeholder="Filter by Provider ID">
-    <input type="text" name="facility_id" value="{{ request('facility_id') }}"
-        class="form-control form-control-sm" style="max-width:200px;" placeholder="Filter by Facility ID">
-    <button type="submit" class="btn btn-ghost btn-sm">Filter</button>
+<form method="GET" action="{{ route('portals.admin.security.emergency_access') }}" class="filter-bar">
+    <label class="filter-search">
+        <i data-lucide="search"></i>
+        <input type="text" name="provider_id" value="{{ request('provider_id') }}" placeholder="Filter by Provider ID" aria-label="Provider ID">
+    </label>
+    <label class="filter-search">
+        <i data-lucide="search"></i>
+        <input type="text" name="facility_id" value="{{ request('facility_id') }}" placeholder="Filter by Facility ID" aria-label="Facility ID">
+    </label>
+    <button type="submit" class="btn btn-secondary btn-sm"><i data-lucide="filter"></i> Filter</button>
     <a href="{{ route('portals.admin.security.emergency_access') }}" class="btn btn-ghost btn-sm">Clear</a>
 </form>
 
 <div class="panel">
-    <div class="panel-body" style="padding:0;">
+    <div class="panel-body panel-body--flush">
         @if($events->isEmpty())
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="shield-check"></i></div>
@@ -41,35 +44,35 @@
                 <tbody>
                     @foreach($events as $ev)
                     <tr>
-                        <td style="font-weight:500;font-size:.82rem;">
+                        <td data-label="Patient" class="td-strong">
                             {{ $ev->patient?->health_id ?? ($ev->patient_id ? substr($ev->patient_id,0,12).'…' : '—') }}
                         </td>
-                        <td style="font-size:.78rem;color:var(--p-text-muted);">
-                            <code style="font-size:.73rem;">{{ $ev->provider_id ? substr($ev->provider_id,0,12).'…' : '—' }}</code>
+                        <td data-label="Provider" class="td-muted">
+                            <span class="code-muted">{{ $ev->provider_id ? substr($ev->provider_id,0,12).'…' : '—' }}</span>
                         </td>
-                        <td style="font-size:.78rem;color:var(--p-text-muted);">
-                            <code style="font-size:.73rem;">{{ $ev->facility_id ? substr($ev->facility_id,0,12).'…' : '—' }}</code>
+                        <td data-label="Facility" class="td-muted">
+                            <span class="code-muted">{{ $ev->facility_id ? substr($ev->facility_id,0,12).'…' : '—' }}</span>
                         </td>
-                        <td style="font-size:.8rem;">{{ Str::limit($ev->reason ?? '—', 60) }}</td>
-                        <td style="font-size:.78rem;">
+                        <td data-label="Reason">{{ Str::limit($ev->reason ?? '—', 60) }}</td>
+                        <td data-label="Records Viewed">
                             @if($ev->records_viewed)
-                                <span class="badge badge-warning" style="font-size:.7rem;">
+                                <span class="badge badge-warning badge-sm">
                                     {{ is_array($ev->records_viewed) ? count($ev->records_viewed) : '?' }} records
                                 </span>
                             @else
-                                <span style="color:var(--p-text-muted);">—</span>
+                                <span class="td-muted">—</span>
                             @endif
                         </td>
-                        <td style="font-size:.78rem;color:var(--p-text-muted);">
+                        <td data-label="Date/Time" class="td-muted">
                             {{ \Carbon\Carbon::parse($ev->created_at)->format('M d, Y H:i') }}
-                            <div style="font-size:.72rem;">{{ \Carbon\Carbon::parse($ev->created_at)->diffForHumans() }}</div>
+                            <div class="code-muted">{{ \Carbon\Carbon::parse($ev->created_at)->diffForHumans() }}</div>
                         </td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
         </div>
-        <div style="padding:.75rem 1.25rem;border-top:1px solid var(--p-border);">
+        <div class="panel-footer">
             {{ $events->links() }}
         </div>
         @endif

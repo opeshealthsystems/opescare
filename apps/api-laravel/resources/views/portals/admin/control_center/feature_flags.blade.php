@@ -14,53 +14,45 @@
 </div>
 
 @if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
+    <div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
 @endif
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
+    <div class="alert alert-danger mb-6"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
 @endif
 
 <div class="panel">
-    <div class="panel-body" style="padding:0;">
-        @if($flags->count() === 0)
-            <div class="empty-state">
-                <div class="empty-state-icon"><i data-lucide="toggle-right"></i></div>
-                <h3>No feature flags</h3>
-                <p>Visit the Control Center dashboard to seed default flags.</p>
-            </div>
-        @else
-        <div class="table-wrapper">
-            <table class="data-table">
-                <thead><tr>
-                    <th>Feature</th><th>Key</th><th>Scope</th><th>Status</th><th>Updated By</th><th>Actions</th>
-                </tr></thead>
-                <tbody>
-                    @foreach($flags as $flag)
-                    <tr>
-                        <td style="font-weight:500;">{{ $flag->label }}</td>
-                        <td><code style="font-size:.78rem;">{{ $flag->key }}</code></td>
-                        <td><span class="badge badge-neutral" style="font-size:.72rem;">{{ $flag->scope }}</span></td>
-                        <td>
-                            <span class="badge {{ $flag->enabled ? 'badge-success' : 'badge-neutral' }}">
-                                {{ $flag->enabled ? 'Enabled' : 'Disabled' }}
-                            </span>
-                        </td>
-                        <td style="font-size:.78rem;color:var(--p-text-muted);">{{ $flag->updated_by ?? '—' }}</td>
-                        <td>
-                            <form method="POST" action="{{ route('portals.admin.cc.feature_flags.toggle', urlencode($flag->key)) }}" style="display:inline;">
-                                @csrf
-                                <input type="hidden" name="enabled" value="{{ $flag->enabled ? '0' : '1' }}">
-                                <button type="submit" class="btn {{ $flag->enabled ? 'btn-ghost' : 'btn-success' }} btn-xs">
-                                    {{ $flag->enabled ? 'Disable' : 'Enable' }}
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+    @if($flags->count() === 0)
+        <div class="empty-state">
+            <div class="empty-state-icon"><i data-lucide="toggle-right"></i></div>
+            <h3>No feature flags</h3>
+            <p>Visit the Control Center dashboard to seed default flags.</p>
         </div>
-        @endif
+    @else
+    <div class="panel-body">
+        @foreach($flags as $flag)
+        <div class="toggle-row">
+            <div class="toggle-row__body">
+                <div class="toggle-row__title">{{ $flag->label }}</div>
+                <div class="toggle-row__desc">
+                    <span class="code-token">{{ $flag->key }}</span>
+                    <span class="badge badge-neutral badge-sm">{{ $flag->scope }}</span>
+                    @if($flag->updated_by)<span class="td-muted">· Updated by {{ $flag->updated_by }}</span>@endif
+                </div>
+            </div>
+            <span class="badge {{ $flag->enabled ? 'badge-success' : 'badge-neutral' }} badge-sm">
+                {{ $flag->enabled ? 'Enabled' : 'Disabled' }}
+            </span>
+            <form method="POST" action="{{ route('portals.admin.cc.feature_flags.toggle', urlencode($flag->key)) }}" class="inline-form">
+                @csrf
+                <input type="hidden" name="enabled" value="{{ $flag->enabled ? '0' : '1' }}">
+                <label class="switch">
+                    <input type="checkbox" {{ $flag->enabled ? 'checked' : '' }} onchange="this.form.submit()" aria-label="Toggle {{ $flag->label }}">
+                    <span class="switch__track"></span>
+                </label>
+            </form>
+        </div>
+        @endforeach
     </div>
+    @endif
 </div>
 @endsection

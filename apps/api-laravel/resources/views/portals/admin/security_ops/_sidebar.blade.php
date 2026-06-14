@@ -1,6 +1,6 @@
 @section('sidebar_role_badge')
-<div class="sidebar-role-badge" style="background:rgba(220,38,38,.25);border-color:rgba(220,38,38,.4);color:#FCA5A5;">
-    <i data-lucide="shield-alert" style="width:.75rem;height:.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+<div class="sidebar-role-badge sidebar-role-badge--danger">
+    <i data-lucide="shield-alert"></i>
     Security Ops
 </div>
 @endsection

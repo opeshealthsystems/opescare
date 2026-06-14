@@ -11,36 +11,33 @@
         <h1 class="page-title">Maintenance Windows</h1>
         <p class="page-subtitle">Schedule and manage platform downtime windows.</p>
     </div>
-    <div class="page-header-actions">
-        <button type="button" class="btn btn-primary btn-sm" onclick="openCreateModal()">
-            <i data-lucide="plus" style="width:14px;height:14px;"></i> Schedule Maintenance
-        </button>
-    </div>
+    <div class="page-head__spacer"></div>
+    <button type="button" class="btn btn-primary btn-sm" onclick="openCreateModal()">
+        <i data-lucide="plus"></i> Schedule Maintenance
+    </button>
 </div>
 
 @if(session('success'))
-    <div class="auth-alert auth-alert-success" style="margin-bottom:1rem;"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
+    <div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
 @endif
 @if(session('error'))
-    <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
+    <div class="alert alert-danger mb-6"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
 @endif
 
 {{-- Active Window Banner --}}
 @php $active = $windows->firstWhere('is_active', true); @endphp
 @if($active && $active->isCurrentlyActive())
-<div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:var(--p-radius);padding:1rem;margin-bottom:1rem;display:flex;gap:.75rem;align-items:center;">
-    <i data-lucide="wrench" style="width:18px;height:18px;color:var(--p-danger);flex-shrink:0;"></i>
+<div class="banner banner--danger">
+    <i data-lucide="wrench"></i>
     <div>
         <strong>Maintenance in progress:</strong> {{ $active->title }}
-        <span style="font-size:.8rem;color:var(--p-text-muted);margin-left:.5rem;">
-            Until {{ \Carbon\Carbon::parse($active->ends_at)->format('M d, Y H:i') }}
-        </span>
+        <span class="td-muted text-sm">Until {{ \Carbon\Carbon::parse($active->ends_at)->format('M d, Y H:i') }}</span>
     </div>
 </div>
 @endif
 
 <div class="panel">
-    <div class="panel-body" style="padding:0;">
+    <div class="panel-body panel-body--flush">
         @if($windows->count() === 0)
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="wrench"></i></div>
@@ -63,40 +60,41 @@
                         $upcoming = $win->is_active && $now->lt($starts);
                     @endphp
                     <tr>
-                        <td style="font-weight:500;">
+                        <td data-label="Title" class="td-strong">
                             {{ $win->title }}
                             @if($win->message)
-                                <div style="font-size:.75rem;color:var(--p-text-muted);margin-top:2px;">{{ Str::limit($win->message, 60) }}</div>
+                                <div class="td-muted text-sm">{{ Str::limit($win->message, 60) }}</div>
                             @endif
                         </td>
-                        <td style="font-size:.82rem;">{{ $starts->format('M d, Y H:i') }}</td>
-                        <td style="font-size:.82rem;">{{ $ends->format('M d, Y H:i') }}</td>
-                        <td>
+                        <td data-label="Starts">{{ $starts->format('M d, Y H:i') }}</td>
+                        <td data-label="Ends">{{ $ends->format('M d, Y H:i') }}</td>
+                        <td data-label="Status">
                             @if($live)
-                                <span class="badge badge-danger">Live</span>
+                                <span class="badge badge-danger badge-sm">Live</span>
                             @elseif($upcoming)
-                                <span class="badge badge-warning">Upcoming</span>
+                                <span class="badge badge-warning badge-sm">Upcoming</span>
                             @elseif(!$win->is_active)
-                                <span class="badge badge-neutral">Inactive</span>
+                                <span class="badge badge-neutral badge-sm">Inactive</span>
                             @else
-                                <span class="badge badge-neutral">Expired</span>
+                                <span class="badge badge-neutral badge-sm">Expired</span>
                             @endif
                         </td>
-                        <td>
+                        <td data-label="Emergency Access">
                             @if($win->allow_emergency_access)
-                                <span class="badge badge-success" style="font-size:.72rem;">Allowed</span>
+                                <span class="badge badge-success badge-sm">Allowed</span>
                             @else
-                                <span class="badge badge-neutral" style="font-size:.72rem;">Blocked</span>
+                                <span class="badge badge-neutral badge-sm">Blocked</span>
                             @endif
                         </td>
-                        <td style="font-size:.78rem;color:var(--p-text-muted);">{{ $win->created_by ?? '—' }}</td>
-                        <td>
-                            <form method="POST" action="{{ route('portals.admin.cc.maintenance.toggle', $win->id) }}" style="display:inline;">
+                        <td data-label="Created By" class="td-muted">{{ $win->created_by ?? '—' }}</td>
+                        <td class="row-actions">
+                            <form method="POST" action="{{ route('portals.admin.cc.maintenance.toggle', $win->id) }}" class="inline-form">
                                 @csrf
                                 <input type="hidden" name="active" value="{{ $win->is_active ? '0' : '1' }}">
-                                <button type="submit" class="btn {{ $win->is_active ? 'btn-ghost' : 'btn-success' }} btn-xs">
-                                    {{ $win->is_active ? 'Deactivate' : 'Activate' }}
-                                </button>
+                                <label class="switch">
+                                    <input type="checkbox" {{ $win->is_active ? 'checked' : '' }} onchange="this.form.submit()" aria-label="Toggle {{ $win->title }}">
+                                    <span class="switch__track"></span>
+                                </label>
                             </form>
                         </td>
                     </tr>
@@ -109,36 +107,39 @@
 </div>
 
 {{-- Create Modal --}}
-<div id="create-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--p-surface);border-radius:var(--p-radius-lg);padding:2rem;width:100%;max-width:480px;margin:1rem;max-height:90vh;overflow-y:auto;">
-        <h3 style="margin:0 0 1rem;font-size:1.05rem;">Schedule Maintenance Window</h3>
+<div id="create-modal" class="modal-fixed">
+    <div class="modal-fixed__panel modal-fixed__panel--md">
+        <div class="modal-fixed__head">
+            <h3 class="modal-fixed__title">Schedule maintenance window</h3>
+            <button type="button" class="icon-btn" aria-label="Close" onclick="closeCreateModal()"><i data-lucide="x"></i></button>
+        </div>
         <form method="POST" action="{{ route('portals.admin.cc.maintenance.store') }}">
             @csrf
-            <div class="form-group" style="margin-bottom:.75rem;">
-                <label class="form-label">Title *</label>
+            <div class="form-group mb-3">
+                <label class="form-label form-label-required">Title</label>
                 <input type="text" name="title" class="form-control" required maxlength="150" placeholder="e.g. Database migration v2.1">
             </div>
-            <div class="form-group" style="margin-bottom:.75rem;">
-                <label class="form-label">Message <span style="color:var(--p-text-muted);font-weight:400;">(shown to users)</span></label>
+            <div class="form-group mb-3">
+                <label class="form-label">Message <span class="td-muted">(shown to users)</span></label>
                 <textarea name="message" class="form-control" rows="2" maxlength="500" placeholder="e.g. The platform will be temporarily unavailable for scheduled maintenance."></textarea>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+            <div class="form-row mb-3">
                 <div class="form-group">
-                    <label class="form-label">Start Time *</label>
+                    <label class="form-label form-label-required">Start Time</label>
                     <input type="datetime-local" name="starts_at" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">End Time *</label>
+                    <label class="form-label form-label-required">End Time</label>
                     <input type="datetime-local" name="ends_at" class="form-control" required>
                 </div>
             </div>
-            <div class="form-group" style="margin-bottom:1rem;">
-                <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.875rem;">
-                    <input type="checkbox" name="allow_emergency_access" value="1" style="width:15px;height:15px;">
+            <div class="form-group mb-4">
+                <label class="form-check">
+                    <input type="checkbox" name="allow_emergency_access" value="1">
                     Allow emergency access during maintenance
                 </label>
             </div>
-            <div style="display:flex;gap:.5rem;justify-content:flex-end;">
+            <div class="modal__footer">
                 <button type="button" class="btn btn-ghost btn-sm" onclick="closeCreateModal()">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">Schedule</button>
             </div>
@@ -149,8 +150,8 @@
 
 @section('scripts')
 <script>
-    function openCreateModal()  { document.getElementById('create-modal').style.display = 'flex'; }
-    function closeCreateModal() { document.getElementById('create-modal').style.display = 'none'; }
+    function openCreateModal()  { document.getElementById('create-modal').classList.add('open'); }
+    function closeCreateModal() { document.getElementById('create-modal').classList.remove('open'); }
     document.getElementById('create-modal').addEventListener('click', function(e) { if (e.target === this) closeCreateModal(); });
 </script>
 @endsection

@@ -1,6 +1,6 @@
 ﻿@section('sidebar_role_badge')
-<div class="sidebar-role-badge" style="background:rgba(109,40,217,.3);border-color:rgba(109,40,217,.5);color:#C4B5FD;">
-    <i data-lucide="shield-check" style="width:.75rem;height:.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
+<div class="sidebar-role-badge sidebar-role-badge--primary">
+    <i data-lucide="shield-check"></i>
     Super Admin
 </div>
 @endsection
