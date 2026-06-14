@@ -1,12 +1,50 @@
-// STUB — replace this file by running:
-//   flutterfire configure --project=opescare-patient
-// from the apps/mobile-patient directory.
-// See Task 8 in docs/superpowers/plans/2026-05-30-mobile-production-readiness.md
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform, kIsWeb;
 
 class DefaultFirebaseOptions {
-  static FirebaseOptions get currentPlatform => throw UnimplementedError(
-    'Run flutterfire configure to generate real Firebase options. '
-    'See docs/superpowers/plans/2026-05-30-mobile-production-readiness.md Task 8.',
+  static FirebaseOptions get currentPlatform {
+    if (kIsWeb) {
+      return web;
+    }
+
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        return android;
+      case TargetPlatform.iOS:
+        return ios;
+      default:
+        return android;
+    }
+  }
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: String.fromEnvironment('FIREBASE_WEB_API_KEY'),
+    appId: String.fromEnvironment('FIREBASE_WEB_APP_ID'),
+    messagingSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('FIREBASE_PROJECT_ID'),
+    authDomain: String.fromEnvironment('FIREBASE_AUTH_DOMAIN'),
+    storageBucket: String.fromEnvironment('FIREBASE_STORAGE_BUCKET'),
+    measurementId: String.fromEnvironment('FIREBASE_WEB_MEASUREMENT_ID'),
+  );
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: String.fromEnvironment('FIREBASE_ANDROID_API_KEY'),
+    appId: String.fromEnvironment('FIREBASE_ANDROID_APP_ID'),
+    messagingSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('FIREBASE_PROJECT_ID'),
+    storageBucket: String.fromEnvironment('FIREBASE_STORAGE_BUCKET'),
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: String.fromEnvironment('FIREBASE_IOS_API_KEY'),
+    appId: String.fromEnvironment('FIREBASE_IOS_APP_ID'),
+    messagingSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('FIREBASE_PROJECT_ID'),
+    storageBucket: String.fromEnvironment('FIREBASE_STORAGE_BUCKET'),
+    iosBundleId: String.fromEnvironment(
+      'FIREBASE_IOS_BUNDLE_ID',
+      defaultValue: 'cloud.opescare.patient',
+    ),
   );
 }

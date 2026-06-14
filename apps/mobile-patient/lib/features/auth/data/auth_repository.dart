@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform, kIsWeb;
+
 import '../../../core/api/api_client.dart';
 import '../../../core/api/api_endpoints.dart';
 import '../../../core/storage/secure_storage.dart';
@@ -81,12 +84,17 @@ class AuthRepository {
   }
 
   String _platform() {
-    try {
-      // ignore: do_not_use_environment
-      const isAndroid = bool.fromEnvironment('dart.library.html');
-      return isAndroid ? 'web' : 'android';
-    } catch (_) {
-      return 'android';
+    if (kIsWeb) {
+      return 'web';
+    }
+
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.iOS:
+        return 'ios';
+      case TargetPlatform.android:
+        return 'android';
+      default:
+        return defaultTargetPlatform.name;
     }
   }
 }
