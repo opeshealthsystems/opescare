@@ -54,6 +54,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'consent.grant'    => \App\Http\Middleware\RequireConsentGrant::class,
             'auth.mobile'      => \App\Http\Middleware\AuthenticateMobilePatient::class,
             'guardian.context' => \App\Http\Middleware\GuardianAccessMiddleware::class,
+            'mfa.verified'     => \App\Http\Middleware\EnsureTwoFactorVerified::class,
             'api.admin'        => \App\Http\Middleware\RequireApiAdminRole::class,
             'verify.integration.client' => \App\Http\Middleware\VerifyIntegrationClient::class,
             'module'                    => \App\Http\Middleware\EnforceModuleEntitlement::class,

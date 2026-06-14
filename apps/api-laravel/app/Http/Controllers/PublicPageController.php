@@ -7,6 +7,7 @@ use App\Models\Facility;
 use App\Models\Patient;
 use App\Models\Role;
 use App\Models\User;
+use App\Modules\Auth\Services\TwoFactorService;
 use App\Services\Dashboard\DashboardProfileService;
 use App\Services\Identity\HealthIdGeneratorService;
 use Illuminate\Http\Request;
@@ -182,9 +183,56 @@ class PublicPageController extends Controller
             return redirect()->route('account.pending');
         }
 
+        if ($user->requiresTwoFactor() && $user->hasTwoFactorEnabled()) {
+            Auth::logout();
+            $request->session()->regenerate();
+            $request->session()->put('mfa.user_id', $user->id);
+            $request->session()->put('mfa.remember', $remember);
+
+            return redirect()->route('mfa.challenge');
+        }
+
         $request->session()->regenerate();
+        $request->session()->put('mfa.verified', true);
 
         // Route to correct portal based on role
+        $landingUrl = app(DashboardProfileService::class)->landingUrlForUser($user);
+
+        return redirect()->intended($landingUrl);
+    }
+
+    public function showMfaChallenge(Request $request)
+    {
+        if (! $request->session()->has('mfa.user_id')) {
+            return redirect()->route('login');
+        }
+
+        return view('auth.mfa_challenge');
+    }
+
+    public function submitMfaChallenge(Request $request, TwoFactorService $twoFactor)
+    {
+        $validated = $request->validate([
+            'code' => 'required|string|max:20',
+        ]);
+
+        $user = User::find($request->session()->get('mfa.user_id'));
+
+        if (! $user || ! $user->hasTwoFactorEnabled()) {
+            $request->session()->forget(['mfa.user_id', 'mfa.remember']);
+
+            return redirect()->route('login')->with('error', 'Your secure session expired. Please sign in again.');
+        }
+
+        if (! $twoFactor->verify($user->two_factor_secret, $validated['code'])) {
+            return back()->withErrors(['code' => 'The authentication code is invalid.']);
+        }
+
+        Auth::login($user, (bool) $request->session()->get('mfa.remember', false));
+        $request->session()->regenerate();
+        $request->session()->put('mfa.verified', true);
+        $request->session()->forget(['mfa.user_id', 'mfa.remember']);
+
         $landingUrl = app(DashboardProfileService::class)->landingUrlForUser($user);
 
         return redirect()->intended($landingUrl);

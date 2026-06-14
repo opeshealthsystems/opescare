@@ -112,6 +112,8 @@ Route::post('/select-facility', [PublicPageController::class, 'submitSelectFacil
 // Secure Portal Access Override
 Route::get('/login', [PublicPageController::class, 'showLogin'])->name('login');
 Route::post('/login', [PublicPageController::class, 'submitLogin'])->name('login.submit');
+Route::get('/mfa/challenge', [PublicPageController::class, 'showMfaChallenge'])->name('mfa.challenge');
+Route::post('/mfa/challenge', [PublicPageController::class, 'submitMfaChallenge'])->name('mfa.challenge.submit');
 
 // Session / Logout
 Route::post('/logout', function () {
@@ -148,7 +150,7 @@ Route::middleware(['web', 'throttle:verify'])->group(function () {
 });
 
 // Portal Routes — require authentication, correct portal for role, and facility context
-Route::middleware(['web', 'auth', 'portal.access', 'platform.admin', 'facility.context', 'throttle:portal'])->group(function () {
+Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.admin', 'facility.context', 'throttle:portal'])->group(function () {
     Route::get('/portals/patient', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'index'])->name('portals.patient');
     // QR generation has its own tighter rate limit (10/min) on top of the portal limit
     Route::post('/portals/patient/generate-qr', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'generateTemporaryQr'])
@@ -625,7 +627,7 @@ Route::middleware(['web', 'auth', 'platform.admin'])->get('/admin/care-map/gover
 | OpesCare Health Organization Portal
 |--------------------------------------------------------------------------
 */
-Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
+Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access'])->group(function () {
     Route::get('/portals/healthorg',           [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'dashboard'])->name('portals.healthorg.dashboard');
     Route::get('/portals/healthorg/programs',  [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'programs'])->name('portals.healthorg.programs');
     Route::get('/portals/healthorg/outreach',  [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'outreach'])->name('portals.healthorg.outreach');
@@ -638,7 +640,7 @@ Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
 | OpesCare Lab / Diagnostic Portal
 |--------------------------------------------------------------------------
 */
-Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
+Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access'])->group(function () {
     Route::get('/portals/lab',                                   [\App\Http\Controllers\MedicalId\LabPortalController::class, 'dashboard'])->name('portals.lab.dashboard');
     Route::get('/portals/lab/orders',                            [\App\Http\Controllers\MedicalId\LabPortalController::class, 'orders'])->name('portals.lab.orders');
     Route::get('/portals/lab/results',                           [\App\Http\Controllers\MedicalId\LabPortalController::class, 'results'])->name('portals.lab.results');
@@ -652,7 +654,7 @@ Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
 | OpesCare Pharmacy Portal
 |--------------------------------------------------------------------------
 */
-Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
+Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access'])->group(function () {
     Route::get('/portals/pharmacy',                              [\App\Http\Controllers\MedicalId\PharmacyPortalController::class, 'dashboard'])->name('portals.pharmacy.dashboard');
     Route::get('/portals/pharmacy/prescriptions',               [\App\Http\Controllers\MedicalId\PharmacyPortalController::class, 'prescriptions'])->name('portals.pharmacy.prescriptions');
     Route::post('/portals/pharmacy/prescriptions/{id}/dispense',[\App\Http\Controllers\MedicalId\PharmacyPortalController::class, 'dispense'])->name('portals.pharmacy.dispense');
@@ -777,7 +779,7 @@ Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
 // ── God-Mode Admin — Users, Facilities, Patients, Staff, Organizations, Roles ─
 // platform.admin restricts these cross-facility god-mode routes to the platform
 // role tier (a facility admin must NOT manage all users/facilities/patients).
-Route::middleware(['web', 'auth', 'platform.admin'])->group(function () {
+Route::middleware(['web', 'auth', 'mfa.verified', 'platform.admin'])->group(function () {
     // Users
     Route::get('/admin/users',                                  [\App\Http\Controllers\MedicalId\AdminUserManagementController::class, 'index'])->name('admin.users.index');
     Route::get('/admin/users/{id}',                             [\App\Http\Controllers\MedicalId\AdminUserManagementController::class, 'show'])->name('admin.users.show');
