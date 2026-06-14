@@ -11,7 +11,7 @@
 </p>
 
 <div class="docs-callout info">
-    <i data-lucide="info" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <i data-lucide="info" class="docs-icon"></i>
     <div>
         <strong>Sandbox environment:</strong> All examples use sandbox credentials.
         No real patient data is accessed. You can start immediately — no approval needed for sandbox.
@@ -76,7 +76,7 @@
 </table>
 
 <div class="docs-callout info">
-    <i data-lucide="info" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <i data-lucide="info" class="docs-icon"></i>
     <div><strong>Integration workflow for OpesCare HIS:</strong> (1) Call <code>/auth/token</code> with production credentials. (2) For each patient, call <code>/patients/resolve</code> — OpesCare returns or creates a Health ID. (3) Push clinical data using the Health ID via <code>/records/encounters</code>, <code>/records/lab-results</code>, or the Bridge Agent. See <a href="{{ route('docs.api') }}#health-id-resolution">Health ID Resolution</a> for full examples.</div>
 </div>
 

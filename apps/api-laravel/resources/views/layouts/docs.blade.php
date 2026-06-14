@@ -26,7 +26,7 @@
 <!-- Topbar -->
 <header class="docs-topbar">
     <button class="docs-menu-toggle" id="docsMenuToggle" aria-label="Toggle navigation">
-        <i data-lucide="menu" style="width:1.25rem;height:1.25rem;"></i>
+        <i data-lucide="menu" class="docs-icon-lg"></i>
     </button>
     <a href="{{ route('docs.index') }}" class="docs-topbar-logo">
         <svg width="24" height="24" viewBox="0 0 40 40" fill="none">

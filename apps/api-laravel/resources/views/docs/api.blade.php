@@ -10,7 +10,7 @@
 </p>
 
 <div class="docs-callout info">
-    <i data-lucide="info" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <i data-lucide="info" class="docs-icon"></i>
     <div>All Connect API endpoints require a Bearer token in the <code>Authorization</code> header. See <a href="{{ route('docs.authentication') }}">Authentication</a> for how to obtain one.</div>
 </div>
 
@@ -28,7 +28,7 @@
 </div>
 <p>Issues an OAuth 2.0 Bearer token using <code>client_credentials</code> grant. See <a href="{{ route('docs.authentication') }}">Authentication</a> for full code examples and available scopes.</p>
 
-<h2 id="health-id-resolution">Health ID Resolution <span style="background:#22C55E;color:#fff;font-size:.65rem;font-weight:700;padding:2px 6px;border-radius:4px;vertical-align:middle;margin-left:.5rem;">KEY ENDPOINT</span></h2>
+<h2 id="health-id-resolution">Health ID Resolution <span class="badge-key">KEY ENDPOINT</span></h2>
 
 <p>The primary interoperability endpoint. Accepts a Health ID <em>or</em> patient demographics. Returns the existing Health ID if the patient is found, or auto-creates a new patient record and issues a fresh Health ID if they are not yet registered in OpesCare.</p>
 
@@ -147,7 +147,7 @@ health_id = data['health_id']</pre>
 </div>
 
 <div class="docs-callout info">
-    <i data-lucide="info" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <i data-lucide="info" class="docs-icon"></i>
     <div><strong>Recommended flow for HIS integration:</strong> On every patient encounter, call <code>/patients/resolve</code> first. Store the returned <code>health_id</code> in your system. Use it for all subsequent record pushes. This ensures the patient exists in OpesCare before any clinical data is sent.</div>
 </div>
 
@@ -294,7 +294,7 @@ health_id = data['health_id']</pre>
 <p>Blood bank inventory by blood group and component. Requires <code>blood:inventory:read</code> scope.</p>
 
 <div class="docs-callout warning">
-    <i data-lucide="alert-triangle" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <i data-lucide="alert-triangle" class="docs-icon"></i>
     <div>Blood and medicine availability shown via the API is indicative only and does not guarantee supply. Always confirm directly with the facility before making clinical decisions.</div>
 </div>
 

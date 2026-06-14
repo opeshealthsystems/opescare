@@ -13,17 +13,46 @@
 
 @section('content')
 
+<style>
+.demo-warning-sub { margin-top:.25rem;font-size:.8rem;opacity:.85; }
+.di-pw-notice { background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:.75rem 1rem;margin-bottom:1.75rem;font-size:.875rem;color:#166534;display:flex;align-items:center;gap:.625rem; }
+.di-pw-notice code { background:#dcfce7;padding:.1rem .4rem;border-radius:4px;font-size:.85rem; }
+.di-page-head { margin-bottom:2rem; }
+.di-dev-card { border-color:#0ea5e9 !important;grid-column:span 2; }
+.di-dev-icon { background:#e0f2fe;color:#0284c7; }
+.di-dev-inner { display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.75rem; }
+.di-dev-portal { background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:.875rem; }
+.di-dev-portal-label { font-size:.75rem;font-weight:600;color:#0369a1;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem; }
+.di-dev-portal-desc { font-size:.8rem;color:#0c4a6e;margin-bottom:.75rem; }
+.di-dev-meta-gap { margin-bottom:.75rem; }
+.di-btn-sky { background:#0284c7;width:100%; }
+.di-dev-creds { background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:.875rem; }
+.di-dev-creds-label { font-size:.75rem;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem; }
+.di-creds-meta { margin-bottom:.5rem; }
+.di-creds-endpoint { font-size:.72rem; }
+.di-creds-scopes { font-size:.775rem;color:#64748b;margin-bottom:.5rem;line-height:1.5; }
+.di-sandbox-warn { background:#fef9c3;border:1px solid #fde047;border-radius:6px;padding:.5rem .625rem;font-size:.775rem;color:#713f12; }
+.di-admin-card { border-color:#fbbf24 !important; }
+.di-btn-admin { background:#0F4C81; }
+.di-reset-section { background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:2rem; }
+.di-reset-title { font-weight:600;color:#9f1239;margin-bottom:.5rem;font-size:.9375rem;display:flex;align-items:center;gap:.5rem; }
+.di-reset-desc { font-size:.875rem;color:#be123c;margin-bottom:.875rem; }
+.di-footer { text-align:center;padding-top:1rem;font-size:.8125rem;color:#94a3b8; }
+.di-footer a { color:#64748b;text-decoration:none; }
+@media (max-width:640px) { .di-dev-inner { grid-template-columns:1fr; } .di-dev-card { grid-column:span 1; } }
+</style>
+
 {{-- Warning Banner --}}
-<div class="demo-warning" role="alert" style="background:#fef3c7;border-color:#f59e0b;">
+<div class="demo-warning" role="alert">
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
     <div>
         <strong>{{ $t('warning_banner', 'DEMO ENVIRONMENT') }}</strong>
-        <div style="margin-top:0.25rem;font-size:0.8rem;opacity:0.85;">Internal demo — For product team, developers, and QA only. All data is fake.</div>
+        <div class="demo-warning-sub">Internal demo — For product team, developers, and QA only. All data is fake.</div>
     </div>
 </div>
 
 {{-- Header --}}
-<div style="margin-bottom:2rem;">
+<div class="di-page-head">
     <h1 class="demo-section-title">{{ $t('page_title', 'OpesCare Demo Access') }} — {{ $t('internal_label', 'Internal') }}</h1>
     <p class="demo-section-sub">{{ $t('internal_desc', 'Full-access demo for the product team, developers, and QA.') }}</p>
     <a href="{{ route('demo.public') }}" class="demo-switch-link">
@@ -33,9 +62,9 @@
 </div>
 
 {{-- Common Password Notice --}}
-<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:0.75rem 1rem;margin-bottom:1.75rem;font-size:0.875rem;color:#166534;display:flex;align-items:center;gap:0.625rem;">
+<div class="di-pw-notice">
     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-    <span>{{ $t('common_password', 'Common demo password') }}: <code style="background:#dcfce7;padding:0.1rem 0.4rem;border-radius:4px;font-size:0.85rem;">DemoPass!2026</code></span>
+    <span>{{ $t('common_password', 'Common demo password') }}: <code>DemoPass!2026</code></span>
 </div>
 
 {{-- All roles grid --}}
@@ -279,9 +308,9 @@
     </div>
 
     {{-- Developer / API Partner --}}
-    <div class="demo-card" role="listitem" style="border-color:#0ea5e9;grid-column:span 2;" aria-label="Developer and API access">
+    <div class="demo-card di-dev-card" role="listitem" aria-label="Developer and API access">
         <div class="demo-card-header">
-            <div class="demo-card-icon" style="background:#e0f2fe;color:#0284c7;" aria-hidden="true">
+            <div class="demo-card-icon di-dev-icon" aria-hidden="true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             </div>
             <div>
@@ -291,24 +320,25 @@
         </div>
 
         {{-- Two-column layout: portal login | api credentials --}}
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0.75rem;">
+        <div class="di-dev-inner">
 
             {{-- Left: Portal login --}}
-            <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:0.875rem;">
-                <div style="font-size:0.75rem;font-weight:600;color:#0369a1;text-transform:uppercase;letter-spacing:.05em;margin-bottom:0.5rem;">
-                    🌐 Developer Portal
+            <div class="di-dev-portal">
+                <div class="di-dev-portal-label">
+                    <i data-lucide="globe" style="width:.8rem;height:.8rem;display:inline;vertical-align:middle;margin-right:.25rem;" aria-hidden="true"></i>
+                    Developer Portal
                 </div>
-                <div class="demo-card-meta" style="margin-bottom:0.75rem;">
+                <div class="demo-card-meta di-dev-meta-gap">
                     <div><strong>Email:</strong> <code>demo.developer@opescare.test</code></div>
                     <div><strong>Password:</strong> <code>DemoPass!2026</code></div>
                 </div>
-                <div style="font-size:0.8rem;color:#0c4a6e;margin-bottom:0.75rem;">Access the API Connect portal, manage sandbox apps, view webhook logs, and explore integration docs.</div>
+                <div class="di-dev-portal-desc">Access the API Connect portal, manage sandbox apps, view webhook logs, and explore integration docs.</div>
                 <form method="POST" action="{{ route('demo.login-as') }}">
                     @csrf
                     <input type="hidden" name="role" value="developer">
                     <input type="hidden" name="email" value="demo.developer@opescare.test">
                     <input type="hidden" name="mode" value="internal">
-                    <button type="submit" class="demo-login-btn" style="background:#0284c7;width:100%;">
+                    <button type="submit" class="demo-login-btn di-btn-sky">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
                         Open Developer Portal
                     </button>
@@ -316,28 +346,30 @@
             </div>
 
             {{-- Right: API credentials --}}
-            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:0.875rem;">
-                <div style="font-size:0.75rem;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:.05em;margin-bottom:0.5rem;">
-                    🔑 Sandbox API Credentials
+            <div class="di-dev-creds">
+                <div class="di-dev-creds-label">
+                    <i data-lucide="key-round" style="width:.8rem;height:.8rem;display:inline;vertical-align:middle;margin-right:.25rem;" aria-hidden="true"></i>
+                    Sandbox API Credentials
                 </div>
-                <div class="demo-card-meta" style="margin-bottom:0.5rem;">
-                    <div><strong>Endpoint:</strong> <code style="font-size:0.72rem;">POST /api/v1/connect/auth/token</code></div>
+                <div class="demo-card-meta di-creds-meta">
+                    <div><strong>Endpoint:</strong> <code class="di-creds-endpoint">POST /api/v1/connect/auth/token</code></div>
                     <div><strong>client_id:</strong> <code>demo_dev_sandbox</code></div>
                     <div><strong>client_secret:</strong> <code>demo_secret_sandbox_2026</code></div>
                     <div><strong>grant_type:</strong> <code>client_credentials</code></div>
                 </div>
-                <div style="font-size:0.775rem;color:#64748b;margin-bottom:0.5rem;line-height:1.5;">
+                <div class="di-creds-scopes">
                     <strong>Scopes:</strong> pharmacy_stock.sync &middot; blood_stock.sync &middot; lab_results.push &middot; records.push &middot; patients.search
                 </div>
-                <div style="background:#fef9c3;border:1px solid #fde047;border-radius:6px;padding:0.5rem 0.625rem;font-size:0.775rem;color:#713f12;">
-                    ⚠️ Sandbox only — no real data is written or read.
+                <div class="di-sandbox-warn">
+                    <i data-lucide="triangle-alert" style="width:.8rem;height:.8rem;display:inline;vertical-align:middle;margin-right:.25rem;" aria-hidden="true"></i>
+                    Sandbox only — no real data is written or read.
                 </div>
             </div>
         </div>
     </div>
 
     {{-- Platform Admin --}}
-    <div class="demo-card" role="listitem" style="border-color:#fbbf24;">
+    <div class="demo-card di-admin-card" role="listitem">
         <div class="demo-card-header">
             <div class="demo-card-icon purple" aria-hidden="true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
@@ -356,7 +388,7 @@
             <input type="hidden" name="role" value="platform_admin">
             <input type="hidden" name="email" value="demo.admin@opescare.test">
             <input type="hidden" name="mode" value="internal">
-            <button type="submit" class="demo-login-btn" style="background:#7c3aed;">
+            <button type="submit" class="demo-login-btn di-btn-admin">
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
                 {{ $t('login_as', 'Login as') }} {{ $t('role_admin', 'Platform Admin') }}
             </button>
@@ -368,12 +400,12 @@
 <hr class="demo-divider">
 
 {{-- Demo Reset Section --}}
-<div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:2rem;">
-    <h4 style="font-weight:600;color:#9f1239;margin-bottom:0.5rem;font-size:0.9375rem;display:flex;align-items:center;gap:0.5rem;">
+<div class="di-reset-section">
+    <h4 class="di-reset-title">
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
         {{ $t('reset_title', 'Demo Reset') }}
     </h4>
-    <p style="font-size:0.875rem;color:#be123c;margin-bottom:0.875rem;">{{ $t('reset_desc', 'Reset all demo data to its default state.') }}</p>
+    <p class="di-reset-desc">{{ $t('reset_desc', 'Reset all demo data to its default state.') }}</p>
     <form method="POST" action="{{ url('/artisan/demo-reset') }}" onsubmit="return confirm('This will reset all demo data. Continue?');">
         @csrf
         <button type="submit" class="demo-reset-btn">
@@ -396,10 +428,10 @@
     </ul>
 </div>
 
-<div style="text-align:center;padding-top:1rem;font-size:0.8125rem;color:#94a3b8;">
+<div class="di-footer">
     {{ $t('warning_data_note', 'DEMO DATA — NOT REAL PATIENT INFORMATION') }}
     &nbsp;·&nbsp;
-    <a href="{{ url('/') }}" style="color:#64748b;text-decoration:none;">Return to OpesCare</a>
+    <a href="{{ url('/') }}">Return to OpesCare</a>
 </div>
 
 @endsection

@@ -144,7 +144,7 @@ var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandler
 </table>
 
 <div class="docs-callout info">
-    <i data-lucide="info" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <i data-lucide="info" class="docs-icon"></i>
     <div>
         Tokens expire after <strong>3600 seconds (1 hour)</strong>. Cache them and re-request when they expire.
         Never request a new token for every API call. The OpesCare SDKs handle token caching and refresh automatically.
@@ -161,7 +161,7 @@ var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandler
 </p>
 
 <div class="docs-callout warning">
-    <i data-lucide="alert-triangle" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <i data-lucide="alert-triangle" class="docs-icon"></i>
     <div>Never include client credentials in client-side JavaScript or mobile apps. Use server-side code only.</div>
 </div>
 

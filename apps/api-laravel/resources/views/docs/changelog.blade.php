@@ -9,7 +9,7 @@
 </p>
 
 <div class="docs-callout info">
-    <i data-lucide="info" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <i data-lucide="info" class="docs-icon"></i>
     <div>Breaking changes will be announced via the developer mailing list at least <strong>60 days</strong> in advance. Subscribe at <a href="{{ route('public.developers') }}">the Developer Hub</a>.</div>
 </div>
 

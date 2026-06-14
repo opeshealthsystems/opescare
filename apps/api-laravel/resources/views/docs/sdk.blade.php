@@ -127,7 +127,7 @@ result2 = client.health_ids.resolve(
 </div>
 
 <div class="docs-callout info">
-    <i data-lucide="info" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <i data-lucide="info" class="docs-icon"></i>
     <div>SDK responses are plain dictionaries/arrays — use <code>result['key']</code>, not <code>result.key</code>.</div>
 </div>
 

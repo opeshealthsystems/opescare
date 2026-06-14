@@ -1,7 +1,9 @@
 @php $l = app()->getLocale(); @endphp
 @auth
 @if(auth()->user()->is_demo && !request()->routeIs('portals.developer.*'))
-<div id="portal-demo-banner" style="
+
+<style>
+.demo-banner {
     position: sticky;
     top: 0;
     z-index: 9999;
@@ -16,14 +18,40 @@
     padding: 0.45rem 1.25rem;
     letter-spacing: 0.01em;
     box-shadow: 0 2px 8px rgba(0,0,0,.18);
-">
-    <span style="display:flex;align-items:center;gap:.5rem;">
-        <i data-lucide="flask-conical" style="width:.9rem;height:.9rem;flex-shrink:0;"></i>
+}
+.demo-banner-msg {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+.demo-banner-msg i {
+    width: .9rem;
+    height: .9rem;
+    flex-shrink: 0;
+}
+.demo-banner-expiry {
+    font-size: 0.75rem;
+    opacity: .85;
+    white-space: nowrap;
+    margin-left: 1rem;
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+}
+.demo-banner-expiry i {
+    width: .75rem;
+    height: .75rem;
+}
+</style>
+
+<div id="portal-demo-banner" class="demo-banner">
+    <span class="demo-banner-msg">
+        <i data-lucide="flask-conical" aria-hidden="true"></i>
         {{ __('public.portal.demo_banner', [], $l) ?: 'Demo Mode — You are viewing sample data only. No real patient records are accessible.' }}
     </span>
     @if(session('demo_session_expires_at'))
-    <span style="font-size:0.75rem;opacity:.85;white-space:nowrap;margin-left:1rem;">
-        <i data-lucide="clock" style="width:.75rem;height:.75rem;display:inline;vertical-align:middle;"></i>
+    <span class="demo-banner-expiry">
+        <i data-lucide="clock" aria-hidden="true"></i>
         {{ __('public.portal.demo_expires', [], $l) ?: 'Session expires' }}:
         {{ \Carbon\Carbon::parse(session('demo_session_expires_at'))->diffForHumans() }}
     </span>

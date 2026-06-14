@@ -138,7 +138,7 @@ webhook_secret = subscription['webhook_secret']  # "whsec_xxxxxxxxxxxxxxxx"</pre
 </div>
 
 <div class="docs-callout info">
-    <i data-lucide="info" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <i data-lucide="info" class="docs-icon"></i>
     <div>The event type is in the <code>type</code> field (not <code>event</code>). Payload sensitivity varies by event — most deliver only metadata by default. Contact support to request full payload delivery for specific events.</div>
 </div>
 
@@ -359,7 +359,7 @@ public class WebhookVerifier {
 </div>
 
 <div class="docs-callout warning">
-    <i data-lucide="alert-triangle" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <i data-lucide="alert-triangle" class="docs-icon"></i>
     <div>
         If you are using an OpesCare SDK, call <code>client.webhooks.verify_signature()</code> — it handles
         parsing, HMAC verification, and replay protection correctly in all three languages.

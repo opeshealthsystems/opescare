@@ -38,7 +38,7 @@ OpesCareWidget.init({
 </div>
 
 <div class="docs-callout warning">
-    <i data-lucide="alert-triangle" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <i data-lucide="alert-triangle" class="docs-icon"></i>
     <div>
         <strong>Server-rendered pages only.</strong> The SDK token must never appear in publicly accessible
         JavaScript bundles or client-side code. Render this snippet on the server (PHP, Node SSR, etc.).
@@ -127,7 +127,7 @@ window.addEventListener('opescare:error', function(e) {
 </div>
 
 <div class="docs-callout info">
-    <i data-lucide="info" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <i data-lucide="info" class="docs-icon"></i>
     <div>OpesCare does not allow QR codes or the widget to expose full medical records. The widget shows a summary view only. Full record access requires the Connect API with patient consent.</div>
 </div>
 

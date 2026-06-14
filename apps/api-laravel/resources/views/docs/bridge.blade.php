@@ -22,7 +22,7 @@
 </ol>
 
 <div class="docs-callout info">
-    <i data-lucide="info" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <i data-lucide="info" class="docs-icon"></i>
     <div>
         If your system goes offline, records are queued in a local SQLite database and synced automatically
         when the connection is restored. Records are only removed from the queue after OpesCare confirms receipt.

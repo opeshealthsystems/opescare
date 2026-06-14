@@ -13,17 +13,40 @@
 
 @section('content')
 
+<style>
+.demo-warning-sub { margin-top:.25rem;font-size:.8rem;opacity:.85; }
+.dp-page-head { margin-bottom:2rem; }
+.dp-dev-card { border-color:#0ea5e9 !important;grid-column:span 2; }
+.dp-dev-icon { background:#e0f2fe;color:#0284c7; }
+.dp-dev-inner { display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.75rem; }
+.dp-dev-portal { background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:.875rem; }
+.dp-dev-portal-label { font-size:.75rem;font-weight:600;color:#0369a1;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem; }
+.dp-dev-portal-desc { font-size:.8rem;color:#0c4a6e;margin-bottom:.75rem; }
+.dp-dev-meta-gap { margin-bottom:.75rem; }
+.dp-btn-sky { background:#0284c7;width:100%; }
+.dp-dev-creds { background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:.875rem; }
+.dp-dev-creds-label { font-size:.75rem;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem; }
+.dp-creds-meta { margin-bottom:.5rem; }
+.dp-creds-endpoint { font-size:.72rem; }
+.dp-creds-scopes { font-size:.775rem;color:#64748b;margin-bottom:.5rem;line-height:1.5; }
+.dp-sandbox-warn { background:#fef9c3;border:1px solid #fde047;border-radius:6px;padding:.5rem .625rem;font-size:.775rem;color:#713f12; }
+.dp-limitations-icon { vertical-align:middle;margin-right:.375rem; }
+.dp-footer { text-align:center;padding-top:1rem;font-size:.8125rem;color:#94a3b8; }
+.dp-footer a { color:#64748b;text-decoration:none; }
+@media (max-width:640px) { .dp-dev-inner { grid-template-columns:1fr; } .dp-dev-card { grid-column:span 1; } }
+</style>
+
 {{-- Warning Banner --}}
 <div class="demo-warning" role="alert" aria-live="polite">
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
     <div>
         <strong>{{ $t('warning_banner', 'DEMO ENVIRONMENT') }}</strong>
-        <div style="margin-top:0.25rem;font-size:0.8rem;opacity:0.85;">{{ $t('warning_data_note', 'DEMO DATA — NOT REAL PATIENT INFORMATION') }}</div>
+        <div class="demo-warning-sub">{{ $t('warning_data_note', 'DEMO DATA — NOT REAL PATIENT INFORMATION') }}</div>
     </div>
 </div>
 
 {{-- Page Header --}}
-<div style="margin-bottom:2rem;">
+<div class="dp-page-head">
     <h1 class="demo-section-title">{{ $t('page_title', 'OpesCare Demo Access') }}</h1>
     <p class="demo-section-sub">{{ $t('page_subtitle', 'Explore OpesCare using safe demo accounts and fake healthcare data.') }}</p>
     <a href="{{ route('demo.internal') }}" class="demo-switch-link">
@@ -256,9 +279,9 @@
     </div>
 
     {{-- Developer / API Partner --}}
-    <div class="demo-card" role="listitem" style="border-color:#0ea5e9;grid-column:span 2;" aria-label="Developer and API access">
+    <div class="demo-card dp-dev-card" role="listitem" aria-label="Developer and API access">
         <div class="demo-card-header">
-            <div class="demo-card-icon" style="background:#e0f2fe;color:#0284c7;" aria-hidden="true">
+            <div class="demo-card-icon dp-dev-icon" aria-hidden="true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             </div>
             <div>
@@ -267,24 +290,25 @@
             </div>
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0.75rem;">
+        <div class="dp-dev-inner">
 
             {{-- Left: Portal login --}}
-            <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:0.875rem;">
-                <div style="font-size:0.75rem;font-weight:600;color:#0369a1;text-transform:uppercase;letter-spacing:.05em;margin-bottom:0.5rem;">
-                    🌐 Developer Portal
+            <div class="dp-dev-portal">
+                <div class="dp-dev-portal-label">
+                    <i data-lucide="globe" style="width:.8rem;height:.8rem;display:inline;vertical-align:middle;margin-right:.25rem;" aria-hidden="true"></i>
+                    Developer Portal
                 </div>
-                <div class="demo-card-meta" style="margin-bottom:0.75rem;">
+                <div class="demo-card-meta dp-dev-meta-gap">
                     <div><strong>Email:</strong> <code>demo.developer@opescare.test</code></div>
                     <div><strong>Password:</strong> <code>DemoPass!2026</code></div>
                 </div>
-                <div style="font-size:0.8rem;color:#0c4a6e;margin-bottom:0.75rem;">Access the API Connect portal, manage sandbox apps, view webhook logs, and explore integration docs.</div>
+                <div class="dp-dev-portal-desc">Access the API Connect portal, manage sandbox apps, view webhook logs, and explore integration docs.</div>
                 <form method="POST" action="{{ route('demo.login-as') }}">
                     @csrf
                     <input type="hidden" name="role" value="developer">
                     <input type="hidden" name="email" value="demo.developer@opescare.test">
                     <input type="hidden" name="mode" value="public">
-                    <button type="submit" class="demo-login-btn" style="background:#0284c7;width:100%;">
+                    <button type="submit" class="demo-login-btn dp-btn-sky">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
                         Open Developer Portal
                     </button>
@@ -292,21 +316,23 @@
             </div>
 
             {{-- Right: Sandbox API credentials --}}
-            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:0.875rem;">
-                <div style="font-size:0.75rem;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:.05em;margin-bottom:0.5rem;">
-                    🔑 Sandbox API Credentials
+            <div class="dp-dev-creds">
+                <div class="dp-dev-creds-label">
+                    <i data-lucide="key-round" style="width:.8rem;height:.8rem;display:inline;vertical-align:middle;margin-right:.25rem;" aria-hidden="true"></i>
+                    Sandbox API Credentials
                 </div>
-                <div class="demo-card-meta" style="margin-bottom:0.5rem;">
-                    <div><strong>Endpoint:</strong> <code style="font-size:0.72rem;">POST /api/v1/connect/auth/token</code></div>
+                <div class="demo-card-meta dp-creds-meta">
+                    <div><strong>Endpoint:</strong> <code class="dp-creds-endpoint">POST /api/v1/connect/auth/token</code></div>
                     <div><strong>client_id:</strong> <code>demo_dev_sandbox</code></div>
                     <div><strong>client_secret:</strong> <code>demo_secret_sandbox_2026</code></div>
                     <div><strong>grant_type:</strong> <code>client_credentials</code></div>
                 </div>
-                <div style="font-size:0.775rem;color:#64748b;margin-bottom:0.5rem;line-height:1.5;">
+                <div class="dp-creds-scopes">
                     <strong>Scopes:</strong> pharmacy_stock.sync &middot; blood_stock.sync &middot; lab_results.push &middot; records.push &middot; patients.search
                 </div>
-                <div style="background:#fef9c3;border:1px solid #fde047;border-radius:6px;padding:0.5rem 0.625rem;font-size:0.775rem;color:#713f12;">
-                    ⚠️ Sandbox only — no real data is written or read.
+                <div class="dp-sandbox-warn">
+                    <i data-lucide="triangle-alert" style="width:.8rem;height:.8rem;display:inline;vertical-align:middle;margin-right:.25rem;" aria-hidden="true"></i>
+                    Sandbox only — no real data is written or read.
                 </div>
             </div>
         </div>
@@ -319,7 +345,7 @@
 {{-- Limitations --}}
 <div class="demo-limitations">
     <h4>
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:0.375rem;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="dp-limitations-icon" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         {{ $t('limitations_title', 'Known Demo Limitations') }}
     </h4>
     <ul>
@@ -331,10 +357,10 @@
     </ul>
 </div>
 
-<div style="text-align:center;padding-top:1rem;font-size:0.8125rem;color:#94a3b8;">
+<div class="dp-footer">
     {{ $t('warning_data_note', 'DEMO DATA — NOT REAL PATIENT INFORMATION') }}
     &nbsp;·&nbsp;
-    <a href="{{ url('/') }}" style="color:#64748b;text-decoration:none;">Return to OpesCare</a>
+    <a href="{{ url('/') }}">Return to OpesCare</a>
 </div>
 
 @endsection

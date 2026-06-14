@@ -132,7 +132,7 @@ def search_patient(health_id: str, token: str, retry: int = 1):
 </div>
 
 <div class="docs-callout info">
-    <i data-lucide="info" style="width:1rem;height:1rem;flex-shrink:0;margin-top:2px;"></i>
+    <i data-lucide="info" class="docs-icon"></i>
     <div>If you're hitting persistent <code>500</code> errors, check the <a href="{{ route('public.status') }}">OpesCare system status page</a>. For integration issues, <a href="{{ route('public.contact') }}">contact developer support</a>.</div>
 </div>
 

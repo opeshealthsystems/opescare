@@ -148,6 +148,61 @@
         }
         .lite-stat-chip__val { font-size: 1.5rem; font-weight: 800; color: var(--lite-primary); line-height: 1; }
         .lite-stat-chip__label { font-size: 0.68rem; color: var(--lite-muted); margin-top: 2px; }
+        .lite-stat-chip--warning .lite-stat-chip__val { color: var(--lite-warning); }
+        .lite-stat-chip--success .lite-stat-chip__val { color: var(--lite-success); }
+        .lite-stat-chip--danger  .lite-stat-chip__val { color: var(--lite-danger); }
+
+        /* Layout + content helpers (replace per-view inline styles) */
+        .lite-page-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+        .lite-btn--sm { padding: 6px 12px; font-size: 0.78rem; }
+        .lite-btn--xs { padding: 4px 10px; font-size: 0.75rem; }
+        .lite-btn--icon { padding: 0; background: none; border: none; cursor: pointer; color: var(--lite-danger); }
+        .lite-row { display: flex; gap: 8px; align-items: center; }
+        .lite-row--end { justify-content: flex-end; }
+        .lite-row--between { justify-content: space-between; }
+        .lite-flex-1 { flex: 1; min-width: 0; }
+        .lite-mt { margin-top: 8px; }
+        .lite-ml-auto { margin-left: auto; }
+        .lite-mb { margin-bottom: 14px; }
+        .lite-td-strong { font-weight: 600; }
+        .lite-td-right { text-align: right; }
+        .lite-mono { font-family: monospace; font-size: 0.8rem; }
+        .lite-mono--accent { font-family: monospace; font-size: 0.8rem; color: var(--lite-success); }
+        .lite-muted-link { font-size: 0.78rem; color: var(--lite-muted); text-decoration: none; }
+        .lite-alert__link { color: inherit; font-weight: 700; }
+        .lite-empty { text-align: center; padding: 40px 0; color: var(--lite-muted); }
+        .lite-empty i { width: 40px; height: 40px; margin-bottom: 12px; opacity: .4; }
+        .lite-empty--success i { color: var(--lite-success); opacity: .5; }
+        .lite-total { font-size: 1.3rem; font-weight: 800; color: var(--lite-success); }
+        .lite-patient-chip { display: flex; align-items: center; gap: 12px; }
+        .lite-patient-chip__avatar { width: 44px; height: 44px; border-radius: 50%; background: #f0fdf4; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--lite-success); }
+        .lite-patient-chip__avatar--primary { background: #e7eef6; color: var(--lite-primary); }
+        .lite-mono--primary { font-family: monospace; font-size: 0.78rem; color: var(--lite-primary); }
+        .lite-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .lite-form-group--flush { margin: 0; }
+        .lite-radio-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .lite-radio-chip { display: flex; align-items: center; gap: 5px; cursor: pointer; padding: 6px 12px; border: 1px solid var(--lite-border); border-radius: 8px; font-size: 0.83rem; font-weight: 500; }
+        .lite-radio-chip input { accent-color: var(--lite-primary); }
+        .lite-alert--column { flex-direction: column; align-items: flex-start; gap: 4px; }
+        .lite-alert--sm { font-size: 0.8rem; }
+        .lite-card__body--flush { padding: 0; }
+        .lite-card__body--scroll { padding: 0; overflow-x: auto; }
+        .lite-code { font-size: 0.78rem; background: #e7eef6; padding: 1px 5px; border-radius: 3px; font-family: monospace; }
+        .lite-sub-id { margin-left: 8px; font-size: 0.78rem; font-family: monospace; color: var(--lite-muted); }
+        .lite-applied { color: var(--lite-success); }
+        .lite-back { color: var(--lite-muted); display: inline-flex; }
+        .lite-page-head--plain { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+        .lite-card__head--row { display: flex; justify-content: space-between; align-items: center; }
+        .lite-input--cell { width: 100%; min-width: 0; }
+        .lite-col-narrow { width: 70px; }
+        .lite-col-amt { width: 110px; }
+        .lite-col-x { width: 40px; text-align: center; }
+
+        /* Quick-action card icon tints */
+        .lite-btn-card__icon { background: #f1f5f9; color: var(--lite-muted); }
+        .lite-btn-card__icon--info    { background: #eff6ff; color: #2563eb; }
+        .lite-btn-card__icon--success { background: #f0fdf4; color: var(--lite-success); }
+        .lite-btn-card__icon--warning { background: #fff7ed; color: var(--lite-warning); }
 
         /* Alerts */
         .lite-alert { border-radius: 8px; padding: 10px 14px; font-size: 0.83rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
