@@ -381,23 +381,67 @@
 @endphp
 
 {{-- ── Nav (dark, matches directory) ───────────────────────────────────── --}}
-<nav style="background:#0A1628;border-bottom:1px solid rgba(255,255,255,.08);height:60px;display:flex;align-items:center;padding:0 1.375rem;gap:1rem;position:sticky;top:0;z-index:100">
-  <a href="{{ route('public.care-map') }}" style="display:flex;align-items:center;gap:.625rem;text-decoration:none;flex-shrink:0">
-    <div style="width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,#1a6fb5,#0aab9a);display:flex;align-items:center;justify-content:center">
+<style>
+.prof-nav{background:#0A1628;border-bottom:1px solid rgba(255,255,255,.08);height:60px;display:flex;align-items:center;padding:0 1.375rem;gap:1rem;position:sticky;top:0;z-index:100}
+.prof-nav-logo{display:flex;align-items:center;gap:.625rem;text-decoration:none;flex-shrink:0}
+.prof-nav-mark{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,#1a6fb5,#0aab9a);display:flex;align-items:center;justify-content:center}
+.prof-nav-mark svg{color:#fff}
+.prof-nav-name{font-family:'Outfit',sans-serif;font-size:.9375rem;font-weight:700;color:#fff;line-height:1}
+.prof-nav-sub{font-size:.55rem;color:rgba(255,255,255,.4);font-weight:500;text-transform:uppercase;letter-spacing:.07em;display:block}
+.prof-nav-spacer{flex:1}
+.prof-nav-back{display:flex;align-items:center;gap:.375rem;padding:.35rem .8rem;border:1.5px solid rgba(255,255,255,.14);border-radius:50px;font-size:.77rem;font-weight:500;color:rgba(255,255,255,.65);text-decoration:none;transition:border-color .15s}
+.prof-nav-back:hover{border-color:rgba(255,255,255,.35);color:#fff}
+.prof-nav-back svg{width:13px;height:13px}
+.prof-nav-emergency{display:flex;align-items:center;gap:.375rem;padding:.375rem .875rem;background:rgba(220,38,38,.85);border-radius:50px;font-size:.77rem;font-weight:700;color:#fff;text-decoration:none;transition:background .15s}
+.prof-nav-emergency:hover{background:#DC2626}
+.prof-nav-emergency svg{width:12px;height:12px}
+/* sidebar action buttons */
+.sidebar-action-btn{width:100%;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:.5rem;background:transparent;cursor:pointer;font-size:.8rem;font-family:inherit;color:var(--text-secondary);display:flex;align-items:center;gap:.4rem;transition:all .15s}
+.sidebar-action-btn:hover.report-btn{border-color:#D97706;color:#D97706}
+.sidebar-action-btn:hover.claim-btn{border-color:var(--brand);color:var(--brand)}
+/* today hours color classes */
+.hours-open{color:#059669}.hours-closed-today{color:#DC2626}
+/* hero badges (inline style was data-driven type colors — keep a class approach) */
+.hero-badge-gov{display:inline-flex;align-items:center;gap:.25rem;padding:.22rem .65rem;border-radius:50px;font-size:.7rem;font-weight:700;background:rgba(253,224,71,.15);border:1px solid rgba(253,224,71,.3);color:#FDE047}
+.hero-badge-verified{display:inline-flex;align-items:center;gap:.25rem;padding:.22rem .65rem;border-radius:50px;font-size:.7rem;font-weight:700;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);color:#6EE7B7}
+.hero-badge-emergency{display:inline-flex;align-items:center;gap:.25rem;padding:.22rem .65rem;border-radius:50px;font-size:.7rem;font-weight:800;background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.35);color:#FCA5A5}
+.hero-badge-live{display:inline-flex;align-items:center;gap:.25rem;padding:.22rem .65rem;border-radius:50px;font-size:.7rem;font-weight:700;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.85)}
+.hero-badges-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem}
+.hero-icon-wrap{width:62px;height:62px;border-radius:15px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(8px)}
+.hero-info-wrap{display:flex;align-items:flex-start;gap:1.125rem;flex:1;min-width:0}
+.hero-actions-col{display:flex;flex-direction:column;gap:.5rem;flex-shrink:0;align-items:stretch;min-width:160px}
+.hero-inner-row{display:flex;align-items:flex-start;gap:1.25rem;flex-wrap:wrap}
+.about-body{font-size:.85rem;line-height:1.65;color:var(--text-secondary)}
+.sidebar-card-body-col{display:flex;flex-direction:column;gap:.5rem}
+.info-value-red{color:#DC2626;font-weight:600}
+.info-value-red a{color:#DC2626}
+.lab-row-wrap{flex:1}
+.lab-tat{font-size:.72rem;color:var(--text-muted);margin-top:.15rem}
+.avail-price{font-size:.75rem;font-weight:600;color:var(--text-primary);margin-bottom:.35rem}
+.freshness-tag{margin-left:.25rem;font-size:.68rem}
+.badge-block{display:flex;gap:.4rem;padding:.5rem .75rem;border-radius:.5rem;font-size:.8rem}
+.sidebar-card{margin-bottom:1rem}
+.verified-ago{font-size:.72rem;color:var(--text-muted);margin-top:.5rem}
+.card-body-hours{font-size:.9rem;font-weight:600;color:var(--text-primary)}
+.ins-plan-name{font-weight:400;color:var(--text-muted)}
+</style>
+<nav class="prof-nav">
+  <a href="{{ route('public.care-map') }}" class="prof-nav-logo">
+    <div class="prof-nav-mark">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
     </div>
     <div>
-      <div style="font-family:'Outfit',sans-serif;font-size:.9375rem;font-weight:700;color:#fff;line-height:1">OpesCare</div>
-      <div style="font-size:.55rem;color:rgba(255,255,255,.4);font-weight:500;text-transform:uppercase;letter-spacing:.07em">Care Map</div>
+      <span class="prof-nav-name">OpesCare</span>
+      <span class="prof-nav-sub">Care Map</span>
     </div>
   </a>
-  <div style="flex:1"></div>
-  <a href="{{ route('public.care-map') }}" style="display:flex;align-items:center;gap:.375rem;padding:.35rem .8rem;border:1.5px solid rgba(255,255,255,.14);border-radius:50px;font-size:.77rem;font-weight:500;color:rgba(255,255,255,.65);text-decoration:none">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
+  <div class="prof-nav-spacer"></div>
+  <a href="{{ route('public.care-map') }}" class="prof-nav-back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
     Back to map
   </a>
-  <a href="{{ route('public.care-map.emergency') }}" style="display:flex;align-items:center;gap:.375rem;padding:.375rem .875rem;background:rgba(220,38,38,.85);border-radius:50px;font-size:.77rem;font-weight:700;color:#fff;text-decoration:none">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  <a href="{{ route('public.care-map.emergency') }}" class="prof-nav-emergency">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     Emergency
   </a>
 </nav>
@@ -415,15 +459,15 @@
   $heroIcon = $iconPaths[$type] ?? '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/>';
 @endphp
 <div class="hero" style="background:linear-gradient(135deg,{{ $tc }} 0%,{{ $heroGradientEnd }} 100%)">
-  <div class="hero-inner" style="display:flex;align-items:flex-start;gap:1.25rem;flex-wrap:wrap">
+  <div class="hero-inner hero-inner-row">
 
     {{-- Icon + Info --}}
-    <div style="display:flex;align-items:flex-start;gap:1.125rem;flex:1;min-width:0">
-      <div style="width:62px;height:62px;border-radius:15px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(8px)">
+    <div class="hero-info-wrap">
+      <div class="hero-icon-wrap">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8">{!! $heroIcon !!}</svg>
       </div>
       <div style="flex:1;min-width:0">
-        <div class="hero-type-badge" style="margin-bottom:.625rem">
+        <div class="hero-type-badge">
           {{ $typeLabel }}
           @if($verified) &nbsp;·&nbsp;<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
           {{ $govVerified ? 'Government Verified' : 'Verified' }}
@@ -451,28 +495,28 @@
           @endif
         </div>
         {{-- Verification + status badges --}}
-        <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem">
+        <div class="hero-badges-row">
           @if($govVerified)
-            <span style="display:inline-flex;align-items:center;gap:.25rem;padding:.22rem .65rem;border-radius:50px;font-size:.7rem;font-weight:700;background:rgba(253,224,71,.15);border:1px solid rgba(253,224,71,.3);color:#FDE047">
+            <span class="hero-badge-gov">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Gov. Verified
             </span>
           @elseif($verified)
-            <span style="display:inline-flex;align-items:center;gap:.25rem;padding:.22rem .65rem;border-radius:50px;font-size:.7rem;font-weight:700;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);color:#6EE7B7">
+            <span class="hero-badge-verified">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Verified
             </span>
           @endif
           @if($facility->emergency_contact)
-            <span style="display:inline-flex;align-items:center;gap:.25rem;padding:.22rem .65rem;border-radius:50px;font-size:.7rem;font-weight:800;background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.35);color:#FCA5A5">24 / 7 Emergency</span>
+            <span class="hero-badge-emergency">24 / 7 Emergency</span>
           @endif
           @if(($facility->integration_status ?? '') === 'active')
-            <span style="display:inline-flex;align-items:center;gap:.25rem;padding:.22rem .65rem;border-radius:50px;font-size:.7rem;font-weight:700;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.85)">OpesCare Live</span>
+            <span class="hero-badge-live">OpesCare Live</span>
           @endif
         </div>
       </div>
     </div>
 
     {{-- Hero action buttons --}}
-    <div class="action-bar" style="flex-direction:column;gap:.5rem;flex-shrink:0;align-items:stretch;min-width:160px">
+    <div class="action-bar hero-actions-col">
       @if($facility->phone_primary)
         <a href="tel:{{ $facility->phone_primary }}" class="action-btn btn-call-hero">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
@@ -555,7 +599,7 @@
           <div class="section">
             <div class="section-title">About</div>
             <div class="card">
-              <div class="card-body" style="font-size:.85rem;line-height:1.65;color:var(--text-secondary)">
+              <div class="card-body about-body">
                 {{ $facility->description }}
               </div>
             </div>
@@ -598,9 +642,9 @@
               @endif
               @if($facility->emergency_contact)
                 <div class="info-row">
-                  <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#DC2626"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                   <span class="info-label">Emergency</span>
-                  <span class="info-value" style="color:#DC2626;font-weight:600"><a href="tel:{{ $facility->emergency_contact }}" style="color:#DC2626">{{ $facility->emergency_contact }}</a></span>
+                  <span class="info-value info-value-red"><a href="tel:{{ $facility->emergency_contact }}">{{ $facility->emergency_contact }}</a></span>
                 </div>
               @endif
             </div>
@@ -622,8 +666,8 @@
           <div class="section-title">Services Offered</div>
           @php $grouped = $facility->services->groupBy('service_category'); @endphp
           @foreach($grouped as $cat => $services)
-            <div style="margin-bottom:1.25rem">
-              <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:.625rem">{{ ucwords($cat ?? 'General') }}</div>
+            <div class="section">
+              <div class="section-title">{{ ucwords($cat ?? 'General') }}</div>
               <div class="service-grid">
                 @foreach($services as $svc)
                   <div class="service-item">
@@ -675,13 +719,13 @@
                     @if($item->form) · {{ $item->form }}@endif
                   </div>
                   @if($item->price)
-                    <div style="font-size:.75rem;font-weight:600;color:var(--text-primary);margin-bottom:.35rem">{{ $item->currency ?? 'XAF' }} {{ number_format($item->price, 0) }}</div>
+                    <div class="avail-price">{{ $item->currency ?? 'XAF' }} {{ number_format($item->price, 0) }}</div>
                   @endif
                   <div class="avail-status {{ $statusClass }}">
                     <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
                     {{ $statusLabel }}
                     @if($item->freshness_status)
-                      <span class="{{ $freshClass }}" style="margin-left:.25rem;font-size:.68rem">· {{ ucfirst($item->freshness_status) }}</span>
+                      <span class="{{ $freshClass }} freshness-tag">· {{ ucfirst($item->freshness_status) }}</span>
                     @endif
                   </div>
                 </div>
@@ -697,19 +741,19 @@
               @foreach($facility->labTests as $test)
                 @php $tsClass = ['reported_available'=>'avail-available','unavailable'=>'avail-unavailable'][$test->availability_status] ?? 'avail-unknown'; @endphp
                 <div class="service-item">
-                  <div style="flex:1">
+                  <div class="lab-row-wrap">
                     <div class="service-name">{{ $test->test_name }}</div>
                     @if($test->turnaround_time)
-                      <div style="font-size:.72rem;color:var(--text-muted);margin-top:.15rem">TAT: {{ $test->turnaround_time }}
+                      <div class="lab-tat">TAT: {{ $test->turnaround_time }}
                         @if($test->home_sample_collection_available) · Home collection available @endif
                       </div>
                     @endif
                   </div>
                   <div class="service-meta">
                     @if($test->price)
-                      <span style="font-size:.8rem;font-weight:600;color:var(--text-primary)">{{ $test->currency ?? 'XAF' }} {{ number_format($test->price, 0) }}</span>
+                      <span class="avail-price">{{ $test->currency ?? 'XAF' }} {{ number_format($test->price, 0) }}</span>
                     @endif
-                    <span class="avail-status {{ $tsClass }}" style="font-size:.72rem;font-weight:600">
+                    <span class="avail-status {{ $tsClass }}">
                       <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
                       {{ $test->availability_status === 'reported_available' ? 'Available' : ucfirst($test->availability_status ?? 'Unknown') }}
                     </span>
@@ -781,7 +825,7 @@
               <div class="ins-item">
                 <div class="ins-name">
                   {{ $ins->insurance_name }}
-                  @if($ins->plan_name) <span style="font-weight:400;color:var(--text-muted)">· {{ $ins->plan_name }}</span>@endif
+                  @if($ins->plan_name) <span class="ins-plan-name">· {{ $ins->plan_name }}</span>@endif
                 </div>
                 <div class="ins-badges">
                   @if($ins->cashless_available) <span class="badge badge-success">Cashless</span>@endif
@@ -801,27 +845,27 @@
     <div class="sidebar-sticky">
 
       {{-- Verification card --}}
-      <div class="card" style="margin-bottom:1rem">
+      <div class="card sidebar-card">
         <div class="card-header">Verification Status</div>
         <div class="card-body">
           @if($govVerified)
-            <div class="badge badge-gov" style="display:flex;gap:.4rem;padding:.5rem .75rem;border-radius:.5rem;font-size:.8rem">
+            <div class="badge badge-gov badge-block">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
               Government Verified
             </div>
           @elseif($verified)
-            <div class="badge badge-verified-full" style="display:flex;gap:.4rem;padding:.5rem .75rem;border-radius:.5rem;font-size:.8rem">
+            <div class="badge badge-verified-full badge-block">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
               License Verified
             </div>
           @else
-            <div class="badge badge-neutral" style="display:flex;gap:.4rem;padding:.5rem .75rem;border-radius:.5rem;font-size:.8rem">
+            <div class="badge badge-neutral badge-block">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               Self-Reported
             </div>
           @endif
           @if($facility->last_verified_at)
-            <div style="font-size:.72rem;color:var(--text-muted);margin-top:.5rem">
+            <div class="verified-ago">
               Last verified {{ \Carbon\Carbon::parse($facility->last_verified_at)->diffForHumans() }}
             </div>
           @endif
@@ -832,13 +876,13 @@
       @if($hasHours)
         @php $todayHours = $facility->hours->firstWhere('day_of_week', $todayNum); @endphp
         @if($todayHours)
-          <div class="card" style="margin-bottom:1rem">
+          <div class="card sidebar-card">
             <div class="card-header">Today's Hours</div>
-            <div class="card-body" style="font-size:.9rem;font-weight:600;color:var(--text-primary)">
+            <div class="card-body card-body-hours">
               @if($todayHours->is_24_hours)
-                <span style="color:#059669">Open 24 hours</span>
+                <span class="hours-open">Open 24 hours</span>
               @elseif($todayHours->is_closed)
-                <span style="color:#DC2626">Closed today</span>
+                <span class="hours-closed-today">Closed today</span>
               @else
                 {{ \Carbon\Carbon::parse($todayHours->opens_at)->format('g:i A') }} – {{ \Carbon\Carbon::parse($todayHours->closes_at)->format('g:i A') }}
               @endif
@@ -850,12 +894,12 @@
       {{-- Report / Claim --}}
       <div class="card">
         <div class="card-header">This Listing</div>
-        <div class="card-body" style="display:flex;flex-direction:column;gap:.5rem">
-          <button onclick="showReport()" style="width:100%;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:.5rem;background:transparent;cursor:pointer;font-size:.8rem;font-family:inherit;color:var(--text-secondary);display:flex;align-items:center;gap:.4rem;transition:all .15s" onmouseover="this.style.borderColor='#D97706';this.style.color='#D97706'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)'">
+        <div class="card-body sidebar-card-body-col">
+          <button onclick="showReport()" class="sidebar-action-btn report-btn">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             Report inaccurate information
           </button>
-          <button onclick="showClaim()" style="width:100%;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:.5rem;background:transparent;cursor:pointer;font-size:.8rem;font-family:inherit;color:var(--text-secondary);display:flex;align-items:center;gap:.4rem;transition:all .15s" onmouseover="this.style.borderColor='var(--brand)';this.style.color='var(--brand)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)'">
+          <button onclick="showClaim()" class="sidebar-action-btn claim-btn">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             Claim this facility
           </button>
@@ -1106,6 +1150,8 @@ window.addEventListener('load', () => {
 .auth-btn-primary:hover { background: #1A6AAF; }
 .auth-btn-secondary { background: #fff; color: #475569; border: 1.5px solid #E2E8F0; }
 .auth-btn-secondary:hover { border-color: #94A3B8; color: #0F172A; }
+.modal-hdr-icon--report { background:#FFFBEB; color:#D97706; }
+.modal-hdr-icon--claim  { background:#EFF6FF; color:#0F4C81; }
 </style>
 
 {{-- ── Report Modal ─────────────────────────────────────────────────────── --}}
@@ -1113,7 +1159,7 @@ window.addEventListener('load', () => {
      onclick="if(event.target===this)closeModal('modalReport')">
   <div class="modal-box">
     <div class="modal-hdr">
-      <div class="modal-hdr-icon" style="background:#FFFBEB;color:#D97706">
+      <div class="modal-hdr-icon modal-hdr-icon--report">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </div>
       <h2 class="modal-title" id="reportModalTitle">Report inaccurate information</h2>
@@ -1164,7 +1210,7 @@ window.addEventListener('load', () => {
      onclick="if(event.target===this)closeModal('modalClaim')">
   <div class="modal-box">
     <div class="modal-hdr">
-      <div class="modal-hdr-icon" style="background:#EFF6FF;color:#0F4C81">
+      <div class="modal-hdr-icon modal-hdr-icon--claim">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       </div>
       <h2 class="modal-title" id="claimModalTitle">Claim this listing</h2>

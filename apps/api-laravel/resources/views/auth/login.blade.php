@@ -4,9 +4,9 @@
 
 @section('content')
     <div class="auth-card">
-        <div class="auth-title-group">
-            <h1 class="auth-headline">{{ __('onboarding.login.welcome_back') }}</h1>
-            <p class="auth-subheadline">{{ __('onboarding.login.subheadline') }}</p>
+        <div class="auth-card__head">
+            <h1 class="auth-card__title">{{ __('onboarding.login.welcome_back') }}</h1>
+            <p class="auth-card__sub">{{ __('onboarding.login.subheadline') }}</p>
         </div>
 
         @if(session('success'))
@@ -18,32 +18,49 @@
 
         @if(session('error'))
             <div class="auth-alert auth-alert-danger">
-                <i data-lucide="triangle-alert"></i>
+                <i data-lucide="alert-circle"></i>
                 <div>{{ session('error') }}</div>
             </div>
         @endif
 
-        <!--LoginForm Reusable Component -->
         <form action="{{ route('login.submit') }}" method="POST" class="auth-form">
             @csrf
 
-            <!-- TextInput -->
             <div class="auth-form-group">
                 <label for="email" class="auth-label">{{ __('onboarding.login.email_or_phone') }}</label>
-                <input type="text" id="email" name="email" class="auth-input{{ $errors->has('email') ? ' auth-input-error' : '' }}" placeholder="name@facility.org or +123..." required autofocus value="{{ old('email') }}">
+                <div class="auth-input-icon-wrap">
+                    <i data-lucide="mail" class="auth-input-icon"></i>
+                    <input
+                        type="text"
+                        id="email"
+                        name="email"
+                        class="auth-input auth-input--icon{{ $errors->has('email') ? ' auth-input-error' : '' }}"
+                        placeholder="name@facility.org or +123..."
+                        required
+                        autofocus
+                        value="{{ old('email') }}"
+                    >
+                </div>
                 @error('email')<div class="auth-field-error">{{ $message }}</div>@enderror
             </div>
 
-            <!-- PasswordInput -->
             <div class="auth-form-group">
-                <div class="auth-label">
+                <div class="auth-label auth-label--row">
                     <span>{{ __('onboarding.common.password') }}</span>
-                    <a href="{{ route('password.request') }}" class="auth-label-link" style="color: var(--auth-primary); text-decoration: none; font-weight: 700;">
+                    <a href="{{ route('password.request') }}" class="auth-label-link">
                         {{ __('onboarding.login.forgot') }}
                     </a>
                 </div>
-                <div class="auth-pass-wrapper">
-                    <input type="password" id="password" name="password" class="auth-input{{ $errors->has('password') ? ' auth-input-error' : '' }}" required placeholder="••••••••">
+                <div class="auth-pass-wrapper auth-input-icon-wrap">
+                    <i data-lucide="lock" class="auth-input-icon"></i>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="auth-input auth-input--icon{{ $errors->has('password') ? ' auth-input-error' : '' }}"
+                        required
+                        placeholder="••••••••"
+                    >
                     <button type="button" class="auth-pass-toggle" data-toggle-password="password">
                         <i data-lucide="eye" id="password-toggle-icon"></i>
                     </button>
@@ -51,14 +68,12 @@
                 @error('password')<div class="auth-field-error">{{ $message }}</div>@enderror
             </div>
 
-            <!-- Checkbox -->
             <div class="auth-checkbox-group">
                 <input type="checkbox" id="remember" name="remember">
                 <label for="remember" class="auth-checkbox-label">{{ __('onboarding.login.remember') }}</label>
             </div>
 
-            <!-- Submit Button -->
-            <button type="submit" class="auth-btn auth-btn-primary" style="margin-top: 1rem;">
+            <button type="submit" class="auth-btn auth-btn-primary auth-btn--mt">
                 <i data-lucide="log-in"></i>
                 <span>{{ __('onboarding.login.submit_signin') }}</span>
             </button>
@@ -70,10 +85,9 @@
         </div>
     </div>
 
-    <!-- Onboarding Path Switcher Fallback -->
-    <div class="auth-footer-links" style="margin-top: 2rem;">
+    <div class="auth-footer-links auth-footer-links--mt">
         <p>{{ __('onboarding.login.no_account') }}
-            <a href="{{ route('register') }}" style="font-weight: 800;">
+            <a href="{{ route('register') }}" class="auth-footer-link">
                 {{ __('onboarding.login.create_account') }}
             </a>
         </p>
@@ -81,8 +95,7 @@
 
     {{-- Demo One-Click Login Panel — visible only when OPESCARE_DEMO_MODE=true --}}
     @if(config('demo.enabled'))
-    {{-- Hidden form — JS fills role + email before submit --}}
-    <form id="demoLoginForm" method="POST" action="{{ route('demo.login-as') }}" style="display:none;">
+    <form id="demoLoginForm" method="POST" action="{{ route('demo.login-as') }}" class="auth-hidden">
         @csrf
         <input type="hidden" id="demoRoleInput"  name="role"  value="">
         <input type="hidden" id="demoEmailInput" name="email" value="">
@@ -107,7 +120,6 @@
                 <span>Sandbox environment — demo data only. Resets periodically. Do not enter real patient data.</span>
             </div>
 
-            {{-- Portal Tab Strip --}}
             <div class="demo-tabs" role="tablist">
                 <button class="demo-tab-btn active" type="button" data-demo-tab="clinical">
                     <i data-lucide="stethoscope"></i> Clinical
@@ -129,7 +141,6 @@
                 </button>
             </div>
 
-            {{-- Clinical Portal --}}
             <div class="demo-tab-pane active" id="demo-tab-clinical" role="tabpanel">
                 <div class="demo-btn-grid">
                     <button type="button" class="demo-login-btn demo-btn-clinical" data-demo-role="doctor" data-demo-email="demo.doctor@opescare.test">
@@ -165,7 +176,6 @@
                 </div>
             </div>
 
-            {{-- Facility Portal --}}
             <div class="demo-tab-pane" id="demo-tab-facility" role="tabpanel">
                 <div class="demo-btn-grid">
                     <button type="button" class="demo-login-btn demo-btn-facility" data-demo-role="facility_admin" data-demo-email="demo.facility.admin@opescare.test">
@@ -181,12 +191,11 @@
                     <button type="button" class="demo-login-btn demo-btn-facility" data-demo-role="finance" data-demo-email="demo.finance@opescare.test">
                         <i data-lucide="bar-chart-2"></i>
                         <span>Finance Officer Kadiatou</span>
-                        <small>Finance & Billing</small>
+                        <small>Finance &amp; Billing</small>
                     </button>
                 </div>
             </div>
 
-            {{-- Insurance Portal --}}
             <div class="demo-tab-pane" id="demo-tab-insurance" role="tabpanel">
                 <div class="demo-btn-grid">
                     <button type="button" class="demo-login-btn demo-btn-insurance" data-demo-role="insurance_claims" data-demo-email="demo.insurance@opescare.test">
@@ -202,7 +211,6 @@
                 </div>
             </div>
 
-            {{-- Patient Portal --}}
             <div class="demo-tab-pane" id="demo-tab-patient" role="tabpanel">
                 <div class="demo-btn-grid">
                     <button type="button" class="demo-login-btn demo-btn-patient" data-demo-role="patient" data-demo-email="demo.patient@opescare.test">
@@ -218,7 +226,6 @@
                 </div>
             </div>
 
-            {{-- Platform Admin --}}
             <div class="demo-tab-pane" id="demo-tab-admin" role="tabpanel">
                 <div class="demo-btn-grid">
                     <button type="button" class="demo-login-btn demo-btn-admin" data-demo-role="platform_admin" data-demo-email="demo.admin@opescare.test">
@@ -229,16 +236,15 @@
                 </div>
             </div>
 
-            {{-- Developer / API --}}
             <div class="demo-tab-pane" id="demo-tab-developer" role="tabpanel">
                 <div class="demo-btn-grid">
-                    <button type="button" class="demo-login-btn" style="background:#0284c7;" data-demo-role="developer" data-demo-email="demo.developer@opescare.test">
+                    <button type="button" class="demo-login-btn demo-btn-developer" data-demo-role="developer" data-demo-email="demo.developer@opescare.test">
                         <i data-lucide="code-2"></i>
                         <span>API Developer</span>
                         <small>Developer Portal</small>
                     </button>
                 </div>
-                <div style="margin-top:0.875rem;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:0.75rem 1rem;font-size:0.8rem;color:#0c4a6e;line-height:1.6;">
+                <div class="demo-sandbox-creds">
                     <strong>Sandbox API Credentials</strong><br>
                     <code>client_id: demo_dev_sandbox</code><br>
                     <code>client_secret: demo_secret_sandbox_2026</code><br>

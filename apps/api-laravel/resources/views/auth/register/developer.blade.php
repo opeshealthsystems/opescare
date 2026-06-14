@@ -3,19 +3,27 @@
 @section('title', __('onboarding.developer.title'))
 
 @section('content')
-    <div class="auth-card" style="max-width: 650px; padding: 2.5rem;">
-        <div class="auth-title-group">
-            <h1 class="auth-headline">{{ __('onboarding.developer.title') }}</h1>
-            <p class="auth-subheadline">{{ __('onboarding.developer.subtitle') }}</p>
+    <div class="auth-card">
+
+        <a href="{{ route('register') }}" class="back-link" style="display:inline-flex;margin-bottom:1.5rem;">
+            <i data-lucide="arrow-left"></i>
+            {{ __('onboarding.common.back') }}
+        </a>
+
+        <div class="auth-step-head">
+            <div class="auth-step-icon">
+                <i data-lucide="code-2"></i>
+            </div>
+            <h1 class="auth-step-title">{{ __('onboarding.developer.title') }}</h1>
+            <p class="auth-step-sub">{{ __('onboarding.developer.subtitle') }}</p>
         </div>
 
         @if(session('success'))
             <div class="auth-alert auth-alert-success">
-                <i data-lucide="badge-check" style="width: 1.5rem; height: 1.5rem; flex-shrink: 0;"></i>
+                <i data-lucide="badge-check"></i>
                 <div>{{ session('success') }}</div>
             </div>
-            
-            <div style="text-align: center; margin-top: 2rem;">
+            <div style="text-align:center;margin-top:2rem;">
                 <a href="{{ route('public.landing') }}" class="auth-btn auth-btn-primary">
                     <i data-lucide="arrow-left"></i>
                     <span>{{ __('onboarding.common.back_to_home') }}</span>
@@ -24,79 +32,83 @@
         @else
             @if(session('error'))
                 <div class="auth-alert auth-alert-danger">
-                    <i data-lucide="triangle-alert" style="width: 1.5rem; height: 1.5rem; flex-shrink: 0;"></i>
+                    <i data-lucide="triangle-alert"></i>
                     <div>{{ session('error') }}</div>
                 </div>
             @endif
 
             @if($errors->any())
                 <div class="auth-alert auth-alert-danger">
-                    <i data-lucide="triangle-alert" style="width: 1.5rem; height: 1.5rem; flex-shrink: 0;"></i>
+                    <i data-lucide="triangle-alert"></i>
                     <ul style="margin:0;padding-left:1.25rem;">
                         @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
                     </ul>
                 </div>
             @endif
 
-            <!--DeveloperAccessRequestForm Component -->
             <form action="{{ route('register.developer.submit') }}" method="POST" class="auth-form">
                 @csrf
 
-                <!-- Section 1: Contact Details -->
-                <div style="border-bottom: 1px solid var(--auth-border); padding-bottom: 1.5rem; margin-bottom: 1rem;">
-                    <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--auth-primary); margin-bottom: 1.25rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                        {{ __('onboarding.org.contact_sec') }}
-                    </h3>
+                <!-- Section 1: Contact Information -->
+                <div class="form-section">
+                    <div class="form-section-title">{{ __('onboarding.org.contact_sec') }}</div>
 
                     <div class="auth-form-row">
                         <div class="auth-form-group">
                             <label for="name" class="auth-label">{{ __('onboarding.common.full_name') }} *</label>
-                            <input type="text" id="name" name="name" class="auth-input{{ $errors->has('name') ? ' auth-input-error' : '' }}" required>
+                            <input type="text" id="name" name="name"
+                                   class="auth-input{{ $errors->has('name') ? ' auth-input-error' : '' }}" required>
                             @error('name')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                         <div class="auth-form-group">
                             <label for="organization" class="auth-label">{{ __('onboarding.developer.org_lbl') }} *</label>
-                            <input type="text" id="organization" name="organization" class="auth-input{{ $errors->has('organization') ? ' auth-input-error' : '' }}" required>
+                            <input type="text" id="organization" name="organization"
+                                   class="auth-input{{ $errors->has('organization') ? ' auth-input-error' : '' }}" required>
                             @error('organization')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                     </div>
 
-                    <div class="auth-form-row" style="margin-top: 1rem;">
+                    <div class="auth-form-row">
                         <div class="auth-form-group">
                             <label for="role" class="auth-label">{{ __('onboarding.developer.role_lbl') }} *</label>
-                            <input type="text" id="role" name="role" class="auth-input{{ $errors->has('role') ? ' auth-input-error' : '' }}" required placeholder="Lead Interoperability Engineer, Product Owner...">
+                            <input type="text" id="role" name="role"
+                                   class="auth-input{{ $errors->has('role') ? ' auth-input-error' : '' }}"
+                                   required placeholder="Lead Interoperability Engineer, Product Owner...">
                             @error('role')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                         <div class="auth-form-group">
                             <label for="country" class="auth-label">{{ __('onboarding.patient.country') }} *</label>
-                            <input type="text" id="country" name="country" class="auth-input{{ $errors->has('country') ? ' auth-input-error' : '' }}" required value="Canada">
+                            <input type="text" id="country" name="country"
+                                   class="auth-input{{ $errors->has('country') ? ' auth-input-error' : '' }}"
+                                   required value="{{ old('country', 'Canada') }}">
                             @error('country')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                     </div>
 
-                    <div class="auth-form-row" style="margin-top: 1rem;">
+                    <div class="auth-form-row">
                         <div class="auth-form-group">
                             <label for="email" class="auth-label">{{ __('onboarding.common.email') }} *</label>
-                            <input type="email" id="email" name="email" class="auth-input{{ $errors->has('email') ? ' auth-input-error' : '' }}" required>
+                            <input type="email" id="email" name="email"
+                                   class="auth-input{{ $errors->has('email') ? ' auth-input-error' : '' }}" required>
                             @error('email')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                         <div class="auth-form-group">
                             <label for="phone" class="auth-label">{{ __('onboarding.common.phone') }} *</label>
-                            <input type="tel" id="phone" name="phone" class="auth-input{{ $errors->has('phone') ? ' auth-input-error' : '' }}" required>
+                            <input type="tel" id="phone" name="phone"
+                                   class="auth-input{{ $errors->has('phone') ? ' auth-input-error' : '' }}" required>
                             @error('phone')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>
                     </div>
                 </div>
 
                 <!-- Section 2: Technical Parameters -->
-                <div style="border-bottom: 1px solid var(--auth-border); padding-bottom: 1.5rem; margin-bottom: 1rem;">
-                    <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--auth-primary); margin-bottom: 1.25rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                        {{ __('onboarding.developer.sec_vendor') }}
-                    </h3>
+                <div class="form-section">
+                    <div class="form-section-title">{{ __('onboarding.developer.sec_vendor') }}</div>
 
                     <div class="auth-form-group">
                         <label for="system_type" class="auth-label">{{ __('onboarding.developer.system_type_lbl') }} *</label>
-                        <select id="system_type" name="system_type" class="auth-input{{ $errors->has('system_type') ? ' auth-input-error' : '' }}" style="padding-top: 0.65rem; padding-bottom: 0.65rem;" required>
+                        <select id="system_type" name="system_type"
+                                class="auth-input{{ $errors->has('system_type') ? ' auth-input-error' : '' }}" required>
                             <option value="" disabled selected>{{ __('onboarding.common.select_option') }}</option>
                             <option value="HIS">Hospital Information System (HIS)</option>
                             <option value="LIS">Laboratory Information System (LIS)</option>
@@ -109,9 +121,10 @@
                         @error('system_type')<div class="auth-field-error">{{ $message }}</div>@enderror
                     </div>
 
-                    <div class="auth-form-group" style="margin-top: 1rem;">
+                    <div class="auth-form-group">
                         <label for="data_flow" class="auth-label">{{ __('onboarding.developer.expected_flow_lbl') }} *</label>
-                        <select id="data_flow" name="data_flow" class="auth-input{{ $errors->has('data_flow') ? ' auth-input-error' : '' }}" style="padding-top: 0.65rem; padding-bottom: 0.65rem;" required>
+                        <select id="data_flow" name="data_flow"
+                                class="auth-input{{ $errors->has('data_flow') ? ' auth-input-error' : '' }}" required>
                             <option value="" disabled selected>{{ __('onboarding.common.select_option') }}</option>
                             <option value="PULL_SUMMARY">Pull patient CCDA/FHIR summaries</option>
                             <option value="PUSH_ENCOUNTERS">Push clinical encounters</option>
@@ -124,41 +137,36 @@
                         @error('data_flow')<div class="auth-field-error">{{ $message }}</div>@enderror
                     </div>
 
-                    <div class="auth-form-group" style="margin-top: 1rem;">
+                    <div class="auth-form-group">
                         <label for="integration_purpose" class="auth-label">{{ __('onboarding.developer.purpose_lbl') }} *</label>
-                        <textarea id="integration_purpose" name="integration_purpose" class="auth-input{{ $errors->has('integration_purpose') ? ' auth-input-error' : '' }}" style="min-height: 80px; resize: vertical;" required placeholder="Briefly describe the clinical use case or data synchronizations required..."></textarea>
+                        <textarea id="integration_purpose" name="integration_purpose"
+                                  class="auth-input{{ $errors->has('integration_purpose') ? ' auth-input-error' : '' }}"
+                                  style="min-height:80px;resize:vertical;" required
+                                  placeholder="Briefly describe the clinical use case or data synchronizations required..."></textarea>
                         @error('integration_purpose')<div class="auth-field-error">{{ $message }}</div>@enderror
                     </div>
 
-                    <div class="auth-form-row" style="margin-top: 1rem;">
+                    <div class="auth-form-row">
                         <div class="auth-form-group">
                             <label class="auth-label">{{ __('onboarding.developer.sandbox_lbl') }}</label>
-                            <div style="display: flex; gap: 1.5rem; margin-top: 0.25rem;">
-                                <label style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.85rem; cursor: pointer;">
-                                    <input type="radio" name="sandbox" value="yes" checked> Yes
-                                </label>
-                                <label style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.85rem; cursor: pointer;">
-                                    <input type="radio" name="sandbox" value="no"> No
-                                </label>
+                            <div class="radio-group">
+                                <label class="radio-label"><input type="radio" name="sandbox" value="yes" checked> Yes</label>
+                                <label class="radio-label"><input type="radio" name="sandbox" value="no"> No</label>
                             </div>
                         </div>
                         <div class="auth-form-group">
                             <label class="auth-label">{{ __('onboarding.developer.production_lbl') }}</label>
-                            <div style="display: flex; gap: 1.5rem; margin-top: 0.25rem;">
-                                <label style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.85rem; cursor: pointer;">
-                                    <input type="radio" name="production" value="yes"> Yes
-                                </label>
-                                <label style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.85rem; cursor: pointer;">
-                                    <input type="radio" name="production" value="no" checked> No
-                                </label>
+                            <div class="radio-group">
+                                <label class="radio-label"><input type="radio" name="production" value="yes"> Yes</label>
+                                <label class="radio-label"><input type="radio" name="production" value="no" checked> No</label>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- API Security Notice -->
-                <div style="margin-bottom: 1.5rem; background-color: var(--auth-purple); background-color: #F5F3FF; border: 1px solid rgba(109, 40, 217, 0.15); padding: 1rem 1.25rem; border-radius: 0.5rem; font-size: 0.8125rem; line-height: 1.45; color: #5B21B6; font-weight: 600; display: flex; gap: 0.5rem; align-items: flex-start;">
-                    <i data-lucide="shield-check" style="color: var(--auth-purple); width: 1.25rem; height: 1.25rem; flex-shrink: 0;"></i>
+                <div class="notice-api">
+                    <i data-lucide="shield-check"></i>
                     <p>{{ __('onboarding.developer.safety_notice') }}</p>
                 </div>
 
@@ -168,19 +176,11 @@
                 </div>
                 @error('accept_vendor_terms')<div class="auth-field-error">{{ $message }}</div>@enderror
 
-                <!-- Submit Button -->
-                <button type="submit" class="auth-btn auth-btn-primary" style="margin-top: 1.5rem;">
+                <button type="submit" class="auth-btn auth-btn-primary">
                     <i data-lucide="code-2"></i>
                     <span>{{ __('onboarding.developer.cta_btn') }}</span>
                 </button>
             </form>
         @endif
-    </div>
-
-    <div class="auth-footer-links" style="margin-top: 2rem;">
-        <a href="{{ route('register') }}" class="back-link">
-            <i data-lucide="arrow-left" style="width: 1rem; height: 1rem; vertical-align: middle;"></i> 
-            {{ __('onboarding.common.back') }}
-        </a>
     </div>
 @endsection

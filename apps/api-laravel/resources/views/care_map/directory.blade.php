@@ -324,6 +324,7 @@ html, body {
   color: #059669; font-size: 0.72rem;
   margin-left: 0.375rem;
 }
+.verified-check { width: 9px; height: 9px; }
 
 .sort-select {
   border: 1.5px solid var(--border);
@@ -575,6 +576,8 @@ html, body {
 .btn-close-map svg { width: 13px; height: 13px; }
 #mapOverlayContainer { flex: 1; position: relative; }
 #mapOverlay { width: 100%; height: 100%; }
+.map-mobile-fill { width: 100%; height: 100%; }
+.overlay-title-icon { width:14px; height:14px; vertical-align:middle; margin-right:5px; }
 
 /* ── Floating Map Toggle (mobile) ───────────────────────────────────── */
 .fab-map-toggle {
@@ -901,7 +904,7 @@ html, body {
         {{ Str::plural('facility', $totalCount) }} found
         @if($verifiedCount > 0)
           <span class="verified-count">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:9px;height:9px"><polyline points="20 6 9 17 4 12"/></svg>
+            <svg class="verified-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
             {{ $verifiedCount }} verified
           </span>
         @endif
@@ -1122,7 +1125,7 @@ html, body {
 <div class="map-overlay" id="mapOverlay" role="dialog" aria-label="Facility map" aria-hidden="true">
   <div class="map-overlay-header">
     <span class="map-overlay-title">
-      <svg style="width:14px;height:14px;vertical-align:middle;margin-right:5px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/></svg>
+      <svg class="overlay-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/></svg>
       Facility Map
     </span>
     <button class="btn-close-map" onclick="closeMobileMap()" aria-label="Close map">
@@ -1131,7 +1134,7 @@ html, body {
     </button>
   </div>
   <div id="mapOverlayContainer">
-    <div id="mapMobile" role="application" aria-label="Interactive map of health facilities" style="width:100%;height:100%;"></div>
+    <div id="mapMobile" role="application" aria-label="Interactive map of health facilities" class="map-mobile-fill"></div>
   </div>
 </div>
 

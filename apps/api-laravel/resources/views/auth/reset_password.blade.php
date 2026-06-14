@@ -3,23 +3,23 @@
 @section('title', __('onboarding.forgot.reset_title'))
 
 @section('content')
-    <div class="auth-card" style="max-width: 480px; padding: 2.5rem;">
-        <div class="auth-title-group">
-            <h1 class="auth-headline" style="font-size: 1.65rem;">{{ __('onboarding.forgot.reset_title') }}</h1>
-            <p class="auth-subheadline">Configure your new secure OpesCare credentials. Passwords must be at least 8 characters long and satisfy clinical security policies.</p>
+    <div class="auth-card">
+        <div class="auth-card__head">
+            <h1 class="auth-card__title">{{ __('onboarding.forgot.reset_title') }}</h1>
+            <p class="auth-card__sub">Configure your new secure OpesCare credentials. Passwords must be at least 8 characters long and satisfy clinical security policies.</p>
         </div>
 
         @if(session('error'))
             <div class="auth-alert auth-alert-danger">
-                <i data-lucide="triangle-alert"></i>
+                <i data-lucide="alert-circle"></i>
                 <div>{{ session('error') }}</div>
             </div>
         @endif
 
         @if($errors->any())
             <div class="auth-alert auth-alert-danger">
-                <i data-lucide="triangle-alert"></i>
-                <ul style="margin:0;padding-left:1.25rem;">
+                <i data-lucide="alert-circle"></i>
+                <ul class="auth-alert-list">
                     @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
                 </ul>
             </div>
@@ -35,64 +35,74 @@
         <form action="{{ route('password.update', $token) }}" method="POST" class="auth-form">
             @csrf
 
-            <!-- PasswordInput -->
             <div class="auth-form-group">
                 <label for="password" class="auth-label">{{ __('onboarding.forgot.new_pass') }} *</label>
-                <div class="auth-pass-wrapper">
-                    <input type="password" id="password" name="password" class="auth-input{{ $errors->has('password') ? ' auth-input-error' : '' }}" required minlength="8" placeholder="••••••••">
-                    <button type="button" class="auth-pass-toggle" onclick="togglePasswordVisibility('password')">
+                <div class="auth-pass-wrapper auth-input-icon-wrap">
+                    <i data-lucide="lock" class="auth-input-icon"></i>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="auth-input auth-input--icon{{ $errors->has('password') ? ' auth-input-error' : '' }}"
+                        required
+                        minlength="8"
+                        placeholder="••••••••"
+                    >
+                    <button type="button" class="auth-pass-toggle" data-toggle-password="password">
                         <i data-lucide="eye" id="password-toggle-icon"></i>
                     </button>
                 </div>
                 @error('password')<div class="auth-field-error">{{ $message }}</div>@enderror
             </div>
 
-            <!-- PasswordInput -->
-            <div class="auth-form-group" style="margin-top: 0.5rem;">
+            <div class="auth-form-group">
                 <label for="confirm_password" class="auth-label">{{ __('onboarding.forgot.confirm_new') }} *</label>
-                <div class="auth-pass-wrapper">
-                    <input type="password" id="confirm_password" name="confirm_password" class="auth-input{{ $errors->has('confirm_password') || $errors->has('password_confirmation') ? ' auth-input-error' : '' }}" required minlength="8" placeholder="••••••••">
-                    <button type="button" class="auth-pass-toggle" onclick="togglePasswordVisibility('confirm_password')">
-                        <i data-lucide="eye" id="confirm-password-toggle-icon"></i>
+                <div class="auth-pass-wrapper auth-input-icon-wrap">
+                    <i data-lucide="lock" class="auth-input-icon"></i>
+                    <input
+                        type="password"
+                        id="confirm_password"
+                        name="confirm_password"
+                        class="auth-input auth-input--icon{{ $errors->has('confirm_password') || $errors->has('password_confirmation') ? ' auth-input-error' : '' }}"
+                        required
+                        minlength="8"
+                        placeholder="••••••••"
+                    >
+                    <button type="button" class="auth-pass-toggle" data-toggle-password="confirm_password">
+                        <i data-lucide="eye" id="confirm_password-toggle-icon"></i>
                     </button>
                 </div>
                 @error('confirm_password')<div class="auth-field-error">{{ $message }}</div>@enderror
                 @error('password_confirmation')<div class="auth-field-error">{{ $message }}</div>@enderror
             </div>
 
-            <div style="background-color: var(--auth-bg); padding: 0.85rem; border-radius: 0.5rem; border: 1px solid var(--auth-border); font-size: 0.75rem; color: var(--auth-text-secondary); line-height: 1.4; font-weight: 500;">
-                <ul style="padding-left: 1.25rem;">
+            <div class="auth-privacy-note">
+                <ul class="auth-policy-list">
                     <li>Minimum length: 8 characters</li>
                     <li>Must include letters and numbers</li>
                     <li>Cannot reuse your previous password</li>
                 </ul>
             </div>
 
-            <!-- Submit Button -->
-            <button type="submit" class="auth-btn auth-btn-primary" style="margin-top: 1rem;">
-                <i data-lucide="key-round"></i>
+            <button type="submit" class="auth-btn auth-btn-primary auth-btn--mt">
+                <i data-lucide="check-circle"></i>
                 <span>{{ __('onboarding.forgot.reset_cta') }}</span>
             </button>
         </form>
+
+        <div class="auth-footer-links auth-footer-links--mt">
+            <a href="{{ route('login') }}" class="auth-back-link">
+                <i data-lucide="arrow-left"></i>
+                {{ __('onboarding.selector.signin') }}
+            </a>
+        </div>
     </div>
 @endsection
 
 @section('scripts')
     <script>
-        function togglePasswordVisibility(fieldId) {
-            const input = document.getElementById(fieldId);
-            const icon = document.getElementById(fieldId + '-toggle-icon');
-            const targetIconId = fieldId === 'password' ? 'password-toggle-icon' : 'confirm-password-toggle-icon';
-            const targetIcon = document.getElementById(targetIconId);
-
-            if (input.type === 'password') {
-                input.type = 'text';
-                targetIcon.setAttribute('data-lucide', 'eye-off');
-            } else {
-                input.type = 'password';
-                targetIcon.setAttribute('data-lucide', 'eye');
-            }
-            if (typeof lucide !== 'undefined') lucide.createIcons();
-        }
+        // Password toggle is handled by auth.js via data-toggle-password attributes.
+        // This inline script is kept only as a legacy fallback for the confirm field
+        // which previously used onclick= handlers directly on buttons.
     </script>
 @endsection

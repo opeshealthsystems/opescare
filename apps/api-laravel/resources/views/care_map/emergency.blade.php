@@ -187,6 +187,14 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
 .map-overlay-hdr span{font-size:.875rem;font-weight:700;color:var(--em-text);flex:1}
 #mapMobile{flex:1}
 
+.btn-close-map{display:flex;align-items:center;gap:.35rem;padding:.3rem .7rem;border:1.5px solid rgba(220,38,38,.2);border-radius:50px;background:transparent;font-size:.75rem;font-weight:600;color:var(--em-text);cursor:pointer;font-family:inherit;transition:border-color .15s}
+.btn-close-map:hover{border-color:var(--em)}
+.em-empty{text-align:center;padding:3rem 1.5rem}
+.em-empty-icon{margin:0 auto .875rem;display:block}
+.em-empty-title{font-size:.875rem;font-weight:600;color:var(--em-text);margin-bottom:.375rem}
+.em-empty-sub{font-size:.78rem;color:var(--muted)}
+.alert-link{color:var(--em);font-weight:700}
+
 /* ── Leaflet ─────────────────────────────────────────────────────── */
 .leaflet-popup-content-wrapper{border-radius:.875rem!important;background:#1A0808!important;border:1.5px solid rgba(220,38,38,.25)!important;box-shadow:0 8px 28px rgba(0,0,0,.5)!important}
 .leaflet-popup-content{margin:0!important;font-family:'Inter',sans-serif!important}
@@ -257,7 +265,7 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
   </div>
   <div class="alert-text">
     <strong>Life-threatening emergency?</strong>
-    Call <a href="tel:112" style="color:var(--em);font-weight:700">112</a> or go directly to the nearest A&amp;E — do not rely solely on this page.
+    Call <a href="tel:112" class="alert-link">112</a> or go directly to the nearest A&amp;E — do not rely solely on this page.
   </div>
   <div class="alert-count" id="facCount">{{ count($facilities) }} emergency {{ count($facilities) === 1 ? 'centre' : 'centres' }}</div>
 </div>
@@ -350,10 +358,10 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
           </div>
         </div>
       @empty
-        <div style="text-align:center;padding:3rem 1.5rem">
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(220,38,38,.3)" stroke-width="1.5" style="margin:0 auto .875rem;display:block"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <p style="font-size:.875rem;font-weight:600;color:var(--em-text);margin-bottom:.375rem">No emergency facilities found</p>
-          <p style="font-size:.78rem;color:var(--muted)">Enable location or broaden your search area to find 24/7 centres.</p>
+        <div class="em-empty">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(220,38,38,.3)" stroke-width="1.5" class="em-empty-icon"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <p class="em-empty-title">No emergency facilities found</p>
+          <p class="em-empty-sub">Enable location or broaden your search area to find 24/7 centres.</p>
         </div>
       @endforelse
     </div>
@@ -386,12 +394,12 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
   <div class="map-overlay-hdr">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--em)" stroke-width="2.5"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/></svg>
     <span>Emergency Map</span>
-    <button onclick="closeMobileMap()" style="display:flex;align-items:center;gap:.35rem;padding:.3rem .7rem;border:1.5px solid rgba(220,38,38,.2);border-radius:50px;background:transparent;font-size:.75rem;font-weight:600;color:var(--em-text);cursor:pointer;font-family:inherit">
+    <button onclick="closeMobileMap()" class="btn-close-map">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
       Close
     </button>
   </div>
-  <div id="mapMobile" style="flex:1"></div>
+  <div id="mapMobile"></div>
 </div>
 
 @php

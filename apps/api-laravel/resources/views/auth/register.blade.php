@@ -3,21 +3,20 @@
 @section('title', __('onboarding.selector.title'))
 
 @section('content')
-    <div class="auth-card" style="max-width: 800px; margin: 0 auto; padding: 2.5rem;">
-        <div class="auth-title-group" style="text-align: center; margin-bottom: 2.5rem;">
-            <h1 class="auth-headline">{{ __('onboarding.selector.title') }}</h1>
-            <p class="auth-subheadline" style="max-width: 600px; margin: 0 auto;">{{ __('onboarding.selector.subtitle') }}</p>
+    <div class="auth-card auth-card--wide">
+        <div class="auth-card__head auth-card__head--center">
+            <h1 class="auth-card__title">{{ __('onboarding.selector.title') }}</h1>
+            <p class="auth-card__sub">{{ __('onboarding.selector.subtitle') }}</p>
         </div>
 
-        <!-- Onboarding Cards Grid (SignupTypeCard Reusable Components) -->
         <div class="onboarding-grid">
-            
-            <!-- Patient Onboarding -->
+
+            <!-- Patient -->
             <a href="{{ route('register.patient') }}" class="onboarding-card">
                 <div>
                     <div class="onboarding-card-header">
                         <div class="onboarding-card-icon">
-                            <i data-lucide="user-round"></i>
+                            <i data-lucide="heart-pulse"></i>
                         </div>
                         <h3>{{ __('onboarding.selector.cards.patient_title') }}</h3>
                     </div>
@@ -29,7 +28,7 @@
                 </div>
             </a>
 
-            <!-- Guardian / Caregiver Onboarding -->
+            <!-- Guardian / Caregiver -->
             <a href="{{ route('register.guardian') }}" class="onboarding-card">
                 <div>
                     <div class="onboarding-card-header">
@@ -46,7 +45,7 @@
                 </div>
             </a>
 
-            <!-- Hospital / Clinic Onboarding -->
+            <!-- Hospital / Clinic -->
             <a href="{{ route('register.organization', ['type' => 'hospital']) }}" class="onboarding-card">
                 <div>
                     <div class="onboarding-card-header">
@@ -63,7 +62,7 @@
                 </div>
             </a>
 
-            <!-- Pharmacy Onboarding -->
+            <!-- Pharmacy -->
             <a href="{{ route('register.organization', ['type' => 'pharmacy']) }}" class="onboarding-card">
                 <div>
                     <div class="onboarding-card-header">
@@ -80,7 +79,7 @@
                 </div>
             </a>
 
-            <!-- Laboratory Onboarding -->
+            <!-- Laboratory -->
             <a href="{{ route('register.organization', ['type' => 'laboratory']) }}" class="onboarding-card">
                 <div>
                     <div class="onboarding-card-header">
@@ -97,7 +96,7 @@
                 </div>
             </a>
 
-            <!-- Insurer Onboarding -->
+            <!-- Insurer -->
             <a href="{{ route('register.organization', ['type' => 'insurance_company']) }}" class="onboarding-card">
                 <div>
                     <div class="onboarding-card-header">
@@ -131,7 +130,7 @@
                 </div>
             </a>
 
-            <!-- Public Health / Research Onboarding -->
+            <!-- Public Health / Research -->
             <a href="{{ route('register.organization', ['type' => 'public_health']) }}" class="onboarding-card">
                 <div>
                     <div class="onboarding-card-header">
@@ -147,12 +146,12 @@
                     <i data-lucide="arrow-right"></i>
                 </div>
             </a>
-            
+
         </div>
 
-        <div class="auth-footer-links" style="border-top: 1px solid var(--auth-border); padding-top: 1.5rem; margin-top: 0.5rem;">
-            <p>{{ __('onboarding.selector.already_have') }} 
-                <a href="{{ route('login') }}" style="font-weight: 800;">
+        <div class="auth-footer-links auth-footer-links--bordered">
+            <p>{{ __('onboarding.selector.already_have') }}
+                <a href="{{ route('login') }}" class="auth-footer-link">
                     {{ __('onboarding.selector.signin') }}
                 </a>
             </p>
