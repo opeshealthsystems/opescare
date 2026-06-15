@@ -31,7 +31,9 @@ return new class extends Migration
             $table->index(['care_type', 'record_date']);
         });
 
-        DB::statement("ALTER TABLE special_care_records ADD CONSTRAINT chk_sc_type CHECK (care_type IN ('icu','nicu','dialysis','chemotherapy'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE special_care_records ADD CONSTRAINT chk_sc_type CHECK (care_type IN ('icu','nicu','dialysis','chemotherapy'))");
+        }
     }
 
     public function down(): void

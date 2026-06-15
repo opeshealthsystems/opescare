@@ -28,8 +28,10 @@ return new class extends Migration
             $table->index(['record_type', 'record_date']);
         });
 
-        DB::statement("ALTER TABLE nursing_records ADD CONSTRAINT chk_nr_type CHECK (record_type IN ('mar','progress','handover','admission_assessment','wound','incident','fall_risk','pressure_ulcer'))");
-        DB::statement("ALTER TABLE nursing_records ADD CONSTRAINT chk_nr_shift CHECK (shift IS NULL OR shift IN ('morning','afternoon','night'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE nursing_records ADD CONSTRAINT chk_nr_type CHECK (record_type IN ('mar','progress','handover','admission_assessment','wound','incident','fall_risk','pressure_ulcer'))");
+            DB::statement("ALTER TABLE nursing_records ADD CONSTRAINT chk_nr_shift CHECK (shift IS NULL OR shift IN ('morning','afternoon','night'))");
+        }
     }
 
     public function down(): void

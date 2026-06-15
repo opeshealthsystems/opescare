@@ -37,8 +37,10 @@ return new class extends Migration
             $table->index('facility_id');
         });
 
-        DB::statement("ALTER TABLE psychiatric_assessments ADD CONSTRAINT chk_psy_risk_level CHECK (risk_level IN ('low','medium','high','very_high'))");
-        DB::statement("ALTER TABLE psychiatric_assessments ADD CONSTRAINT chk_psy_status CHECK (status IN ('draft','finalized','amended'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE psychiatric_assessments ADD CONSTRAINT chk_psy_risk_level CHECK (risk_level IN ('low','medium','high','very_high'))");
+            DB::statement("ALTER TABLE psychiatric_assessments ADD CONSTRAINT chk_psy_status CHECK (status IN ('draft','finalized','amended'))");
+        }
     }
 
     public function down(): void

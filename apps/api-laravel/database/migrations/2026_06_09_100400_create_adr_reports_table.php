@@ -37,8 +37,10 @@ return new class extends Migration
             $table->index('facility_id');
         });
 
-        DB::statement("ALTER TABLE adr_reports ADD CONSTRAINT chk_adr_severity CHECK (severity IN ('mild','moderate','severe','life_threatening','fatal'))");
-        DB::statement("ALTER TABLE adr_reports ADD CONSTRAINT chk_adr_outcome CHECK (outcome IS NULL OR outcome IN ('recovered','recovering','not_recovered','recovered_with_sequelae','fatal','unknown'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE adr_reports ADD CONSTRAINT chk_adr_severity CHECK (severity IN ('mild','moderate','severe','life_threatening','fatal'))");
+            DB::statement("ALTER TABLE adr_reports ADD CONSTRAINT chk_adr_outcome CHECK (outcome IS NULL OR outcome IN ('recovered','recovering','not_recovered','recovered_with_sequelae','fatal','unknown'))");
+        }
     }
 
     public function down(): void

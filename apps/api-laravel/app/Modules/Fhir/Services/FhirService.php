@@ -77,6 +77,12 @@ class FhirService
         return $this->diagnosticMapper->toFhir($order);
     }
 
+    public function medicationRequest(Prescription $prescription): array
+    {
+        $prescription->loadMissing('items');
+        return $this->medicationMapper->prescriptionToBundle($prescription);
+    }
+
     public function medicationRequestBundle(Prescription $prescription): array
     {
         $prescription->loadMissing('items');

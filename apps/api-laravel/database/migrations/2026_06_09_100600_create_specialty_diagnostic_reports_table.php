@@ -29,8 +29,10 @@ return new class extends Migration
             $table->index(['patient_id', 'facility_id']);
         });
 
-        DB::statement("ALTER TABLE specialty_diagnostic_reports ADD CONSTRAINT chk_sdr_type CHECK (report_type IN ('echo','ecg','endoscopy'))");
-        DB::statement("ALTER TABLE specialty_diagnostic_reports ADD CONSTRAINT chk_sdr_status CHECK (status IN ('draft','finalized','amended'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE specialty_diagnostic_reports ADD CONSTRAINT chk_sdr_type CHECK (report_type IN ('echo','ecg','endoscopy'))");
+            DB::statement("ALTER TABLE specialty_diagnostic_reports ADD CONSTRAINT chk_sdr_status CHECK (status IN ('draft','finalized','amended'))");
+        }
     }
 
     public function down(): void

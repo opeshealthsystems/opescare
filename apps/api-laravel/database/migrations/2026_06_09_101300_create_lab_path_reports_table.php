@@ -30,8 +30,10 @@ return new class extends Migration
             $table->index(['patient_id', 'facility_id']);
         });
 
-        DB::statement("ALTER TABLE lab_path_reports ADD CONSTRAINT chk_lpr_type CHECK (report_type IN ('lab','pathology','autopsy_pathology'))");
-        DB::statement("ALTER TABLE lab_path_reports ADD CONSTRAINT chk_lpr_status CHECK (status IN ('preliminary','final','amended','cancelled'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE lab_path_reports ADD CONSTRAINT chk_lpr_type CHECK (report_type IN ('lab','pathology','autopsy_pathology'))");
+            DB::statement("ALTER TABLE lab_path_reports ADD CONSTRAINT chk_lpr_status CHECK (status IN ('preliminary','final','amended','cancelled'))");
+        }
     }
 
     public function down(): void

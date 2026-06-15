@@ -43,7 +43,9 @@ return new class extends Migration
             $table->index('body_number');
         });
 
-        DB::statement("ALTER TABLE mortuary_records ADD CONSTRAINT chk_mortuary_status CHECK (status IN ('admitted','identified','released','transferred'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE mortuary_records ADD CONSTRAINT chk_mortuary_status CHECK (status IN ('admitted','identified','released','transferred'))");
+        }
 
         Schema::create('autopsy_reports', function (Blueprint $table) {
             $table->uuid('id')->primary();
@@ -69,8 +71,10 @@ return new class extends Migration
             $table->index('pathologist_id');
         });
 
-        DB::statement("ALTER TABLE autopsy_reports ADD CONSTRAINT chk_autopsy_type CHECK (type IN ('clinical','forensic'))");
-        DB::statement("ALTER TABLE autopsy_reports ADD CONSTRAINT chk_autopsy_status CHECK (status IN ('draft','signed','released'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE autopsy_reports ADD CONSTRAINT chk_autopsy_type CHECK (type IN ('clinical','forensic'))");
+            DB::statement("ALTER TABLE autopsy_reports ADD CONSTRAINT chk_autopsy_status CHECK (status IN ('draft','signed','released'))");
+        }
     }
 
     public function down(): void

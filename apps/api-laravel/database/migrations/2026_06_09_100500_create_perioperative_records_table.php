@@ -34,8 +34,10 @@ return new class extends Migration
             $table->index(['patient_id', 'facility_id']);
         });
 
-        DB::statement("ALTER TABLE perioperative_records ADD CONSTRAINT chk_peri_type CHECK (record_type IN ('anaesthesia','ssc','postop_recovery'))");
-        DB::statement("ALTER TABLE perioperative_records ADD CONSTRAINT chk_peri_status CHECK (status IN ('draft','signed','amended'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE perioperative_records ADD CONSTRAINT chk_peri_type CHECK (record_type IN ('anaesthesia','ssc','postop_recovery'))");
+            DB::statement("ALTER TABLE perioperative_records ADD CONSTRAINT chk_peri_status CHECK (status IN ('draft','signed','amended'))");
+        }
     }
 
     public function down(): void

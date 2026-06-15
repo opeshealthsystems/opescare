@@ -119,7 +119,7 @@ class MobileMoneyCallbackController extends Controller
             $invoice = $payment->invoice;
             if ($invoice) {
                 $paid = Payment::where('invoice_id', $invoice->id)
-                    ->where('status', 'completed')
+                    ->where('status', 'successful')
                     ->sum('amount');
 
                 if ($paid >= $invoice->total_amount) {

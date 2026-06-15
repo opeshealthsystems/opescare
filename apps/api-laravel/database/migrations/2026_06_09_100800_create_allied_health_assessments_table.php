@@ -32,8 +32,10 @@ return new class extends Migration
             $table->index(['patient_id', 'facility_id']);
         });
 
-        DB::statement("ALTER TABLE allied_health_assessments ADD CONSTRAINT chk_aha_type CHECK (assessment_type IN ('physiotherapy','occupational_therapy','speech_therapy','nutrition','social_work'))");
-        DB::statement("ALTER TABLE allied_health_assessments ADD CONSTRAINT chk_aha_status CHECK (status IN ('draft','finalized','amended'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE allied_health_assessments ADD CONSTRAINT chk_aha_type CHECK (assessment_type IN ('physiotherapy','occupational_therapy','speech_therapy','nutrition','social_work'))");
+            DB::statement("ALTER TABLE allied_health_assessments ADD CONSTRAINT chk_aha_status CHECK (status IN ('draft','finalized','amended'))");
+        }
     }
 
     public function down(): void

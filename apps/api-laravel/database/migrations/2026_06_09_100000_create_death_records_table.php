@@ -39,9 +39,11 @@ return new class extends Migration
             $table->index('autopsy_report_id');
         });
 
-        DB::statement("ALTER TABLE death_records ADD CONSTRAINT chk_death_place CHECK (place_of_death IN ('hospital','home','other','unknown'))");
-        DB::statement("ALTER TABLE death_records ADD CONSTRAINT chk_death_manner CHECK (manner_of_death IN ('natural','accident','homicide','suicide','undetermined','pending_investigation'))");
-        DB::statement("ALTER TABLE death_records ADD CONSTRAINT chk_death_status CHECK (status IN ('draft','certified','registered','cancelled'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE death_records ADD CONSTRAINT chk_death_place CHECK (place_of_death IN ('hospital','home','other','unknown'))");
+            DB::statement("ALTER TABLE death_records ADD CONSTRAINT chk_death_manner CHECK (manner_of_death IN ('natural','accident','homicide','suicide','undetermined','pending_investigation'))");
+            DB::statement("ALTER TABLE death_records ADD CONSTRAINT chk_death_status CHECK (status IN ('draft','certified','registered','cancelled'))");
+        }
     }
 
     public function down(): void

@@ -34,7 +34,9 @@ return new class extends Migration
             $table->index(['patient_id', 'facility_id']);
         });
 
-        DB::statement("ALTER TABLE pediatric_records ADD CONSTRAINT chk_ped_type CHECK (record_type IN ('newborn_assessment','child_health_card','growth_chart','stillbirth_certificate'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE pediatric_records ADD CONSTRAINT chk_ped_type CHECK (record_type IN ('newborn_assessment','child_health_card','growth_chart','stillbirth_certificate'))");
+        }
     }
 
     public function down(): void

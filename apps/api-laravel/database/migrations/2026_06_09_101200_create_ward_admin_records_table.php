@@ -29,7 +29,9 @@ return new class extends Migration
             $table->index(['record_type', 'record_date']);
         });
 
-        DB::statement("ALTER TABLE ward_admin_records ADD CONSTRAINT chk_war_type CHECK (record_type IN ('lama','transfer','investigation_request','patient_complaint','procedure_consent','pharmacy_dispensing','medication_reconciliation','blood_transfusion','blood_bank_request','glucose_log','arv_card','fitness_certificate','orthopaedic_chart','resuscitation','mental_health_involuntary'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE ward_admin_records ADD CONSTRAINT chk_war_type CHECK (record_type IN ('lama','transfer','investigation_request','patient_complaint','procedure_consent','pharmacy_dispensing','medication_reconciliation','blood_transfusion','blood_bank_request','glucose_log','arv_card','fitness_certificate','orthopaedic_chart','resuscitation','mental_health_involuntary'))");
+        }
     }
 
     public function down(): void

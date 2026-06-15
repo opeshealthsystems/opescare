@@ -72,8 +72,10 @@ class WardController extends Controller
             'notes'   => ['nullable', 'string'],
         ]);
 
+        $admission = Admission::findOrFail($admissionId);
+
         return response()->json(
-            $this->wards->assignBed($admissionId, $validated['bed_id'], $request->user()->id, $validated['notes'] ?? null)
+            $this->admissions->transferBed($admission, $validated['bed_id'], $validated['notes'] ?? 'Initial bed assignment', $request->user()->id)
         );
     }
 
@@ -84,8 +86,10 @@ class WardController extends Controller
             'reason'     => ['required', 'string'],
         ]);
 
+        $admission = Admission::findOrFail($admissionId);
+
         return response()->json(
-            $this->wards->transferBed($admissionId, $validated, $request->user()->id)
+            $this->wards->transfer($admission, $validated['new_bed_id'], $validated['reason'], $request->user()->id)
         );
     }
 
@@ -145,7 +149,13 @@ class WardController extends Controller
             'follow_up_date'    => ['nullable', 'date', 'after:today'],
         ]);
 
-        $result = $this->admissions->discharge($admissionId, $validated, $request->user()->id);
+        $admission = Admission::findOrFail($admissionId);
+        $result = $this->admissions->discharge(
+            $admission,
+            $validated['discharge_summary'],
+            $validated['discharge_type'],
+            $request->user()->id
+        );
 
         if ($facilityId) {
             try {

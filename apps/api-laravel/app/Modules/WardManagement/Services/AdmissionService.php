@@ -19,7 +19,7 @@ class AdmissionService
     /**
      * Admit a patient to a bed.
      */
-    public function admit(array $data): Admission
+    public function admit(array $data, string $actorId): Admission
     {
         // Verify bed is available
         $bed = Bed::findOrFail($data['bed_id']);
@@ -30,6 +30,7 @@ class AdmissionService
         $admission = Admission::create(array_merge($data, [
             'status'       => 'admitted',
             'admitted_at'  => $data['admitted_at'] ?? now(),
+            'admitted_by'  => $actorId,
         ]));
 
         // Mark bed as occupied

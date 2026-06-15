@@ -31,8 +31,10 @@ return new class extends Migration
             $table->index(['facility_id', 'review_type']);
         });
 
-        DB::statement("ALTER TABLE clinical_review_records ADD CONSTRAINT chk_crr_type CHECK (review_type IN ('maternal_death_review','perinatal_mortality_review','coroners_notification','verbal_autopsy','adverse_event','medicolegal','notifiable_disease','malaria_case'))");
-        DB::statement("ALTER TABLE clinical_review_records ADD CONSTRAINT chk_crr_status CHECK (status IN ('draft','submitted','finalised'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE clinical_review_records ADD CONSTRAINT chk_crr_type CHECK (review_type IN ('maternal_death_review','perinatal_mortality_review','coroners_notification','verbal_autopsy','adverse_event','medicolegal','notifiable_disease','malaria_case'))");
+            DB::statement("ALTER TABLE clinical_review_records ADD CONSTRAINT chk_crr_status CHECK (status IN ('draft','submitted','finalised'))");
+        }
     }
 
     public function down(): void
