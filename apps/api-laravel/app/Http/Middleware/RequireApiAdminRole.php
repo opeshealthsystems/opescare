@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use App\Models\IntegrationClient;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -77,8 +78,27 @@ class RequireApiAdminRole
 
     private function integrationClientOwner(Request $request): ?User
     {
-        $client = $request->attributes->get('integration_client');
+        // Path 1: VerifyIntegrationClient sets the full model as an attribute
+        $client  = $request->attributes->get('integration_client');
         $ownerId = $client?->created_by ?? $request->attributes->get('provider_id');
+
+        // Path 2: VerifyBearerToken sets integration_client_id (JWT client)
+        if (!$ownerId) {
+            $bearerClientId = $request->attributes->get('integration_client_id');
+            if (is_string($bearerClientId) && $bearerClientId !== '') {
+                $ownerId = IntegrationClient::where('client_id', $bearerClientId)
+                    ->value('created_by');
+            }
+        }
+
+        // Path 3: VerifySdkToken sets sdk_client_id
+        if (!$ownerId) {
+            $sdkClientId = $request->attributes->get('sdk_client_id');
+            if (is_string($sdkClientId) && $sdkClientId !== '') {
+                $ownerId = IntegrationClient::where('client_id', $sdkClientId)
+                    ->value('created_by');
+            }
+        }
 
         if (!is_string($ownerId) || $ownerId === '') {
             return null;

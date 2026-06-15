@@ -450,23 +450,43 @@ class CommunicationController extends Controller
         }
     }
 
-    public function closeThread(string $id): JsonResponse
+    public function closeThread(Request $request, string $id): JsonResponse
     {
-        $this->messagingService->closeThread(MessageThread::findOrFail($id)->uuid);
+        $userId = $this->actorUserId($request);
+        $thread = MessageThread::findOrFail($id);
+
+        if (!$this->permissionService->canViewThread($userId, $thread->uuid)) {
+            return response()->json(['error' => 'MESSAGE_ACCESS_DENIED'], 403);
+        }
+
+        $this->messagingService->closeThread($thread->uuid);
         return response()->json(['message' => 'Thread closed']);
     }
 
-    public function reopenThread(string $id): JsonResponse
+    public function reopenThread(Request $request, string $id): JsonResponse
     {
-        $this->messagingService->reopenThread(MessageThread::findOrFail($id)->uuid);
+        $userId = $this->actorUserId($request);
+        $thread = MessageThread::findOrFail($id);
+
+        if (!$this->permissionService->canViewThread($userId, $thread->uuid)) {
+            return response()->json(['error' => 'MESSAGE_ACCESS_DENIED'], 403);
+        }
+
+        $this->messagingService->reopenThread($thread->uuid);
         return response()->json(['message' => 'Thread reopened']);
     }
 
     public function editMessage(Request $request, string $id): JsonResponse
     {
         $validated = $request->validate(['body' => ['required', 'string']]);
+        $userId    = $this->actorUserId($request);
 
         $message = Message::findOrFail($id);
+
+        if ($message->sender_id !== $userId) {
+            return response()->json(['error' => 'MESSAGE_EDIT_FORBIDDEN'], 403);
+        }
+
         $message->body      = $this->messagingService->encryptBody($validated['body']);
         $message->edited_at = now();
         $message->save();
@@ -474,9 +494,15 @@ class CommunicationController extends Controller
         return response()->json($message);
     }
 
-    public function deleteMessageForMe(string $id): JsonResponse
+    public function deleteMessageForMe(Request $request, string $id): JsonResponse
     {
+        $userId  = $this->actorUserId($request);
         $message = Message::findOrFail($id);
+
+        if ($message->sender_id !== $userId) {
+            return response()->json(['error' => 'MESSAGE_DELETE_FORBIDDEN'], 403);
+        }
+
         $message->deleted_for_sender_at = now();
         $message->save();
         return response()->json(['message' => 'Message deleted from view']);
