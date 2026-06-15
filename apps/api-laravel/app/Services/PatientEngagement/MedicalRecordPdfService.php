@@ -17,7 +17,8 @@ class MedicalRecordPdfService
     public function generateSummary(string $patientId): string
     {
         $patient      = Patient::findOrFail($patientId);
-        $vitals       = VitalSign::where('patient_id', $patientId)->latest()->take(5)->get();
+        $vitals       = VitalSign::whereHas('triageRecord.visit', fn ($q) => $q->where('patient_id', $patientId))
+                            ->latest()->take(5)->get();
         $labResults   = LabResult::where('patient_id', $patientId)->latest()->take(10)->get();
         $prescriptions = Prescription::where('patient_id', $patientId)->latest()->take(10)->get();
 
