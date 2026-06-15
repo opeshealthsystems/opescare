@@ -33,8 +33,8 @@ class VerifyBearerToken
             ], 401);
         }
 
-        // Test environment bypass — test suite only
-        if (app()->environment('testing') && $token === 'sk_test_bearer_bypass') {
+        // Test environment bypass — test suite only; explicitly blocked in production
+        if (!app()->isProduction() && app()->environment('testing') && $token === 'sk_test_bearer_bypass') {
             $request->attributes->add([
                 'integration_client_id' => 'test_client_id',
                 'facility_id'           => '00000000-0000-0000-0000-000000000001',
