@@ -55,7 +55,7 @@
         <i data-lucide="shield-alert"></i><span>Security Ops</span>
     </a>
     <a href="{{ route('portals.admin.kpi.index') }}" class="sidebar-link {{ request()->routeIs('portals.admin.kpi*') ? 'active' : '' }}">
-        <i data-lucide="gauge"></i><span>KPI Dashboard</span>
+        <i data-lucide="gauge"></i><span>{{ __('public.admin_governance.nav_kpi_dashboard', [], app()->getLocale()) ?: 'KPI Dashboard' }}</span>
     </a>
 </div>
 @endsection

@@ -17,7 +17,7 @@
     <a href="{{ route('portals.admin.connect.clients') }}"
        class="sidebar-link {{ request()->routeIs('portals.admin.connect.clients') ? 'active' : '' }}">
         <i data-lucide="app-window"></i>
-        <span>API Clients</span>
+        <span>{{ __('public.admin_governance.nav_api_clients', [], app()->getLocale()) ?: 'API Clients' }}</span>
         @php $pending = \App\Models\IntegrationClient::where('status','pending')->count(); @endphp
         @if($pending > 0)
             <span class="sidebar-badge sidebar-badge--warning">{{ $pending }}</span>
@@ -27,7 +27,7 @@
     <a href="{{ route('portals.admin.connect.tokens') }}"
        class="sidebar-link {{ request()->routeIs('portals.admin.connect.tokens') ? 'active' : '' }}">
         <i data-lucide="key-round"></i>
-        <span>SDK Tokens</span>
+        <span>{{ __('public.admin_governance.nav_sdk_tokens', [], app()->getLocale()) ?: 'SDK Tokens' }}</span>
     </a>
 
     <a href="{{ route('portals.admin.connect.webhooks') }}"

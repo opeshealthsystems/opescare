@@ -1,10 +1,11 @@
 @extends('layouts.lite')
-@section('title', 'Billing')
+@section('title', __('public.lite_portal.action_billing', [], app()->getLocale()) ?: 'Billing')
+@php $l = app()->getLocale(); @endphp
 
 @section('content')
 
-<h1 class="lite-page-title">Quick billing</h1>
-<p class="lite-page-sub">Issue a basic receipt for services rendered</p>
+<h1 class="lite-page-title">{{ __('public.lite_portal.billing_heading', [], $l) ?: 'Quick billing' }}</h1>
+<p class="lite-page-sub">{{ __('public.lite_portal.billing_subtitle', [], $l) ?: 'Issue a basic receipt for services rendered' }}</p>
 
 @if($patient)
 <div class="lite-card lite-mb">
@@ -32,8 +33,8 @@
 
     <div class="lite-card">
         <div class="lite-card__head lite-card__head--row">
-            <span>Line items</span>
-            <button type="button" onclick="addLineItem()" class="lite-btn lite-btn--outline lite-btn--sm">+ Add item</button>
+            <span>{{ __('public.lite_portal.billing_line_items', [], $l) ?: 'Line items' }}</span>
+            <button type="button" onclick="addLineItem()" class="lite-btn lite-btn--outline lite-btn--sm">+ {{ __('public.lite_portal.billing_add_item', [], $l) ?: 'Add item' }}</button>
         </div>
         <div class="lite-card__body lite-card__body--flush">
             <table class="lite-table" id="lineItemsTable">

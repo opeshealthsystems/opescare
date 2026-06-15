@@ -28,25 +28,25 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Clinical</div>
+    <div class="sidebar-nav-label">{{ __('public.portal.nav_clinical', [], $l) ?: 'Clinical' }}</div>
     <a href="{{ route('portals.patient.allergies') }}" class="sidebar-link {{ request()->routeIs('portals.patient.allergies') ? 'active' : '' }}">
         <i data-lucide="zap"></i>
-        <span>Allergies</span>
+        <span>{{ __('public.portal.nav_allergies', [], $l) ?: 'Allergies' }}</span>
     </a>
     <a href="{{ route('portals.patient.clinical') }}" class="sidebar-link {{ request()->routeIs('portals.patient.clinical') ? 'active' : '' }}">
         <i data-lucide="stethoscope"></i>
-        <span>Conditions</span>
+        <span>{{ __('public.portal.nav_conditions', [], $l) ?: 'Conditions' }}</span>
     </a>
     <a href="{{ route('portals.patient.immunizations') }}" class="sidebar-link {{ request()->routeIs('portals.patient.immunizations') ? 'active' : '' }}">
         <i data-lucide="syringe"></i>
-        <span>Immunizations</span>
+        <span>{{ __('public.portal.nav_immunizations', [], $l) ?: 'Immunizations' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Insurance</div>
+    <div class="sidebar-nav-label">{{ __('public.portal.nav_insurance_section', [], $l) ?: 'Insurance' }}</div>
     <a href="{{ route('portals.patient.insurance') }}" class="sidebar-link {{ request()->routeIs('portals.patient.insurance*') ? 'active' : '' }}">
         <i data-lucide="shield-check"></i>
-        <span>Health Insurance</span>
+        <span>{{ __('public.portal.nav_health_insurance', [], $l) ?: 'Health Insurance' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">

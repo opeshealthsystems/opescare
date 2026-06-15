@@ -16,7 +16,7 @@
     <div class="page-actions">
         <a href="{{ route('portals.staff.queue-display') }}" target="_blank" class="btn btn-secondary btn-sm">
             <i data-lucide="monitor"></i>
-            Display Board
+            {{ __('public.staff_portal.btn_display_board', [], app()->getLocale()) ?: 'Display Board' }}
         </a>
     </div>
 </div>

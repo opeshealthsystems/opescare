@@ -88,15 +88,15 @@
     </a>
     <a href="{{ route('portals.patient.allergies') }}" class="quick-action-btn">
         <div class="quick-action-icon"><i data-lucide="zap"></i></div>
-        <span class="quick-action-label">Allergies</span>
+        <span class="quick-action-label">{{ __('public.portal.nav_allergies', [], app()->getLocale()) ?: 'Allergies' }}</span>
     </a>
     <a href="{{ route('portals.patient.clinical') }}" class="quick-action-btn">
         <div class="quick-action-icon"><i data-lucide="stethoscope"></i></div>
-        <span class="quick-action-label">Conditions</span>
+        <span class="quick-action-label">{{ __('public.portal.nav_conditions', [], app()->getLocale()) ?: 'Conditions' }}</span>
     </a>
     <a href="{{ route('portals.patient.immunizations') }}" class="quick-action-btn">
         <div class="quick-action-icon"><i data-lucide="syringe"></i></div>
-        <span class="quick-action-label">Immunizations</span>
+        <span class="quick-action-label">{{ __('public.portal.nav_immunizations', [], app()->getLocale()) ?: 'Immunizations' }}</span>
     </a>
     <a href="{{ route('public.care-map') }}" class="quick-action-btn">
         <div class="quick-action-icon"><i data-lucide="map-pin"></i></div>
@@ -104,23 +104,23 @@
     </a>
     <a href="{{ route('portals.patient.family') }}" class="quick-action-btn">
         <div class="quick-action-icon"><i data-lucide="users"></i></div>
-        <span class="quick-action-label">Family</span>
+        <span class="quick-action-label">{{ __('public.portal.nav_family', [], app()->getLocale()) ?: 'Family' }}</span>
     </a>
     <a href="{{ route('portals.patient.insurance') }}" class="quick-action-btn">
         <div class="quick-action-icon"><i data-lucide="shield"></i></div>
-        <span class="quick-action-label">Insurance</span>
+        <span class="quick-action-label">{{ __('public.portal.nav_insurance', [], app()->getLocale()) ?: 'Insurance' }}</span>
     </a>
 </div>
 
 @if(isset($upcomingAppointments) && $upcomingAppointments->isNotEmpty())
 <div class="panel mb-6">
   <div class="panel-header">
-    <h3 class="panel-title"><i data-lucide="calendar-clock"></i> Upcoming Appointments</h3>
-    <a href="{{ route('portals.patient.appointments') }}" class="btn btn-ghost btn-sm">View all</a>
+    <h3 class="panel-title"><i data-lucide="calendar-clock"></i> {{ __('public.portal.upcoming_appointments', [], app()->getLocale()) ?: 'Upcoming Appointments' }}</h3>
+    <a href="{{ route('portals.patient.appointments') }}" class="btn btn-ghost btn-sm">{{ __('public.portal.view_all', [], app()->getLocale()) ?: 'View all' }}</a>
   </div>
   <div class="table-wrapper">
     <table class="data-table">
-      <thead><tr><th>Date</th><th>Doctor</th><th>Facility</th><th>Type</th></tr></thead>
+      <thead><tr><th>{{ __('public.portal.col_date', [], app()->getLocale()) ?: 'Date' }}</th><th>{{ __('public.portal.col_doctor', [], app()->getLocale()) ?: 'Doctor' }}</th><th>{{ __('public.portal.col_facility', [], app()->getLocale()) ?: 'Facility' }}</th><th>{{ __('public.portal.col_type', [], app()->getLocale()) ?: 'Type' }}</th></tr></thead>
       <tbody>
       @foreach($upcomingAppointments->take(3) as $appt)
       <tr>
@@ -140,7 +140,7 @@
 <div class="panel mb-6">
     <div class="panel-header">
         <h2 class="panel-title">
-            <i data-lucide="shield-alert"></i> Clinical Safety Summary
+            <i data-lucide="shield-alert"></i> {{ __('public.portal.clinical_safety_summary', [], app()->getLocale()) ?: 'Clinical Safety Summary' }}
         </h2>
     </div>
     <div class="panel-body">
@@ -148,7 +148,7 @@
 
             {{-- Blood Group --}}
             <div class="stat-card stat-card--danger">
-                <div class="stat-card__label">Blood Group</div>
+                <div class="stat-card__label">{{ __('public.portal.blood_group', [], app()->getLocale()) ?: 'Blood Group' }}</div>
                 <div class="stat-card__value">{{ $patient->blood_group ?? '—' }}</div>
                 @if(!$patient->blood_group)
                     <a href="{{ route('portals.patient.profile') }}" class="stat-card__hint">Add in profile →</a>
@@ -157,9 +157,9 @@
 
             {{-- Critical Allergies --}}
             <div class="stat-card stat-card--danger">
-                <div class="stat-card__label">Critical Allergies</div>
+                <div class="stat-card__label">{{ __('public.portal.critical_allergies', [], app()->getLocale()) ?: 'Critical Allergies' }}</div>
                 @if(($criticalAllergies ?? collect())->isEmpty())
-                    <div class="stat-card__value text-success">None on record</div>
+                    <div class="stat-card__value text-success">{{ __('public.portal.none_on_record', [], app()->getLocale()) ?: 'None on record' }}</div>
                 @else
                     <div class="stat-card__value">
                         @foreach(($criticalAllergies ?? collect())->take(3) as $a)
@@ -174,14 +174,14 @@
 
             {{-- All Active Allergies count --}}
             <div class="stat-card {{ ($activeAllergies ?? collect())->isEmpty() ? '' : 'stat-card--warning' }}">
-                <div class="stat-card__label">Active Allergies</div>
+                <div class="stat-card__label">{{ __('public.portal.active_allergies', [], app()->getLocale()) ?: 'Active Allergies' }}</div>
                 <div class="stat-card__value">{{ ($activeAllergies ?? collect())->count() }}</div>
                 <a href="{{ route('portals.patient.allergies') }}" class="stat-card__hint">View all →</a>
             </div>
 
             {{-- Active Conditions --}}
             <div class="stat-card">
-                <div class="stat-card__label">Active Conditions</div>
+                <div class="stat-card__label">{{ __('public.portal.active_conditions', [], app()->getLocale()) ?: 'Active Conditions' }}</div>
                 <div class="stat-card__value">{{ ($activeConditions ?? collect())->count() }}</div>
                 @if(($activeConditions ?? collect())->isNotEmpty())
                     <a href="{{ route('portals.patient.clinical') }}" class="stat-card__hint">View all →</a>
@@ -194,8 +194,8 @@
         <div class="alert alert-warning mt-3">
             <i data-lucide="alert-triangle"></i>
             <div>
-                Ensure your care team has your up-to-date allergy and condition list before any procedure or prescription.
-                <a href="{{ route('portals.patient.allergies') }}">View full allergy list</a>.
+                {{ __('public.portal.allergy_safety_notice', [], app()->getLocale()) ?: 'Ensure your care team has your up-to-date allergy and condition list before any procedure or prescription.' }}
+                <a href="{{ route('portals.patient.allergies') }}">{{ __('public.portal.view_allergy_list', [], app()->getLocale()) ?: 'View full allergy list' }}</a>.
             </div>
         </div>
         @endif

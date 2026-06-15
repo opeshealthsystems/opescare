@@ -1,10 +1,11 @@
 @extends('layouts.lite')
-@section('title', 'Consultation')
+@section('title', __('public.lite_portal.action_consultation', [], app()->getLocale()) ?: 'Consultation')
+@php $l = app()->getLocale(); @endphp
 
 @section('content')
 
-<h1 class="lite-page-title">Consultation note</h1>
-<p class="lite-page-sub">Record basic consultation details</p>
+<h1 class="lite-page-title">{{ __('public.lite_portal.consultation_heading', [], $l) ?: 'Consultation note' }}</h1>
+<p class="lite-page-sub">{{ __('public.lite_portal.consultation_subtitle', [], $l) ?: 'Record basic consultation details' }}</p>
 
 {{-- Patient card --}}
 @if($patient)
@@ -28,7 +29,7 @@
 {{-- CDSS safety disclaimer --}}
 <div class="lite-alert lite-alert--warning lite-alert--sm">
     <i data-lucide="shield-alert"></i>
-    <span>Clinical decision-support tools are advisory only. They do not replace professional clinical judgment.</span>
+    <span>{{ __('public.lite_portal.cdss_disclaimer', [], $l) ?: 'Clinical decision-support tools are advisory only. They do not replace professional clinical judgment.' }}</span>
 </div>
 
 <form method="POST" action="{{ route('portals.staff.visits.store') }}" onsubmit="return confirm('Submit consultation note?')">

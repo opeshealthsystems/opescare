@@ -1,21 +1,22 @@
 @extends('layouts.portal')
-@section('title', 'Admissions')
-@section('breadcrumb_home', 'Staff Portal')
+@section('title', __('public.staff_wards.admissions_title', [], app()->getLocale()) ?: 'Admissions')
+@section('breadcrumb_home', __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Admissions')
+@section('breadcrumb_section', __('public.staff_wards.admissions_breadcrumb', [], app()->getLocale()) ?: 'Admissions')
+@php $l = app()->getLocale(); @endphp
 
 @section('content')
 <div class="page-head">
-    <h2>Admissions</h2>
+    <h2>{{ __('public.staff_wards.admissions_heading', [], $l) ?: 'Admissions' }}</h2>
     <div class="page-head__spacer"></div>
     <a href="{{ route('portals.staff.wards') }}" class="btn btn-ghost btn-sm">
-        <i data-lucide="layout-grid"></i> Bed Map
+        <i data-lucide="layout-grid"></i> {{ __('public.staff_wards.btn_admissions_bed_map', [], $l) ?: 'Bed Map' }}
     </a>
     <button type="button" class="btn btn-primary btn-sm" onclick="openAdmitModal()">
-        <i data-lucide="plus"></i> Admit Patient
+        <i data-lucide="plus"></i> {{ __('public.staff_wards.btn_new_admission', [], $l) ?: 'Admit Patient' }}
     </button>
 </div>
-<p class="page-subtitle mb-6">Manage patient admissions, discharges, and bed transfers.</p>
+<p class="page-subtitle mb-6">{{ __('public.staff_wards.admissions_subtitle', [], $l) ?: 'Manage patient admissions, discharges, and bed transfers.' }}</p>
 
 @if(session('success'))
     <div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
@@ -37,14 +38,21 @@
         @if($admissions->isEmpty())
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="bed"></i></div>
-                <h3>No admissions found</h3>
-                <p>Admit a patient to a bed to start tracking inpatient stays.</p>
+                <h3>{{ __('public.staff_wards.no_admissions', [], $l) ?: 'No admissions found.' }}</h3>
+                <p>{{ __('public.staff_wards.no_admissions_desc', [], $l) ?: 'Admit a patient to a bed to start tracking inpatient stays.' }}</p>
             </div>
         @else
         <div class="table-wrapper">
             <table class="data-table">
                 <thead><tr>
-                    <th>Patient</th><th>Bed</th><th>Ward</th><th>Status</th><th>Admitted</th><th>LOS</th><th>Reason</th><th>Actions</th>
+                    <th>{{ __('public.staff_wards.col_patient', [], $l) ?: 'Patient' }}</th>
+                    <th>{{ __('public.staff_wards.col_bed', [], $l) ?: 'Bed' }}</th>
+                    <th>{{ __('public.staff_wards.col_ward', [], $l) ?: 'Ward' }}</th>
+                    <th>{{ __('public.staff_wards.col_status', [], $l) ?: 'Status' }}</th>
+                    <th>{{ __('public.staff_wards.col_admitted', [], $l) ?: 'Admitted' }}</th>
+                    <th>{{ __('public.staff_wards.col_los', [], $l) ?: 'LOS' }}</th>
+                    <th>{{ __('public.staff_wards.col_reason', [], $l) ?: 'Reason' }}</th>
+                    <th>{{ __('public.staff_wards.col_actions', [], $l) ?: 'Actions' }}</th>
                 </tr></thead>
                 <tbody>
                     @foreach($admissions as $adm)
@@ -57,7 +65,7 @@
                         };
                     @endphp
                     <tr>
-                        <td data-label="Patient">
+                        <td data-label="{{ __('public.staff_wards.col_patient', [], $l) ?: 'Patient' }}">
                             <span class="td-strong">{{ $adm->patient?->health_id ?? substr($adm->patient_id,0,10).'…' }}</span>
                             @if($adm->patient)
                                 <div class="td-muted">
@@ -65,26 +73,26 @@
                                 </div>
                             @endif
                         </td>
-                        <td data-label="Bed">
+                        <td data-label="{{ __('public.staff_wards.col_bed', [], $l) ?: 'Bed' }}">
                             <span class="mono">{{ $adm->bed?->bed_number ?? '—' }}</span>
                         </td>
-                        <td data-label="Ward">{{ $adm->bed?->ward?->name ?? '—' }}</td>
-                        <td data-label="Status"><span class="badge {{ $stBadge }}">{{ ucfirst($adm->status) }}</span></td>
-                        <td data-label="Admitted" class="td-muted">
+                        <td data-label="{{ __('public.staff_wards.col_ward', [], $l) ?: 'Ward' }}">{{ $adm->bed?->ward?->name ?? '—' }}</td>
+                        <td data-label="{{ __('public.staff_wards.col_status', [], $l) ?: 'Status' }}"><span class="badge {{ $stBadge }}">{{ ucfirst($adm->status) }}</span></td>
+                        <td data-label="{{ __('public.staff_wards.col_admitted', [], $l) ?: 'Admitted' }}" class="td-muted">
                             {{ \Carbon\Carbon::parse($adm->admitted_at)->format('M d, Y H:i') }}
                         </td>
-                        <td data-label="LOS" class="td-muted">{{ $adm->lengthOfStay() }}d</td>
-                        <td data-label="Reason" class="td-muted">{{ Str::limit($adm->admission_reason ?? '—', 35) }}</td>
-                        <td data-label="Actions">
+                        <td data-label="{{ __('public.staff_wards.col_los', [], $l) ?: 'LOS' }}" class="td-muted">{{ $adm->lengthOfStay() }}d</td>
+                        <td data-label="{{ __('public.staff_wards.col_reason', [], $l) ?: 'Reason' }}" class="td-muted">{{ Str::limit($adm->admission_reason ?? '—', 35) }}</td>
+                        <td data-label="{{ __('public.staff_wards.col_actions', [], $l) ?: 'Actions' }}">
                             @if($adm->status === 'active')
                                 <div class="row-actions-inline">
                                 <button type="button" class="btn btn-ghost btn-xs"
                                     onclick="openDischargeModal('{{ $adm->id }}')">
-                                    <i data-lucide="log-out"></i> Discharge
+                                    <i data-lucide="log-out"></i> {{ __('public.staff_wards.btn_discharge', [], $l) ?: 'Discharge' }}
                                 </button>
                                 <button type="button" class="btn btn-ghost btn-xs"
                                     onclick="openTransferModal('{{ $adm->id }}')">
-                                    <i data-lucide="arrow-right-left"></i> Transfer
+                                    <i data-lucide="arrow-right-left"></i> {{ __('public.staff_wards.btn_transfer', [], $l) ?: 'Transfer' }}
                                 </button>
                                 </div>
                             @endif
@@ -104,16 +112,16 @@
 {{-- Admit Modal --}}
 <div id="admit-modal" class="modal-backdrop mt-6" hidden>
     <div class="modal modal--md" role="dialog" aria-modal="true">
-        <h3 class="modal__title"><i data-lucide="bed"></i> Admit Patient</h3>
+        <h3 class="modal__title"><i data-lucide="bed"></i> {{ __('public.staff_wards.modal_admit_title', [], $l) ?: 'Admit Patient' }}</h3>
         <form method="POST" action="{{ route('portals.staff.wards.admit') }}">
             @csrf
             <div class="modal__body">
                 <div class="form-group">
-                    <label class="form-label form-label-required">Patient ID / Health ID</label>
+                    <label class="form-label form-label-required">{{ __('public.staff_wards.field_patient_id', [], $l) ?: 'Patient ID / Health ID' }}</label>
                     <input type="text" name="patient_id" class="form-control" required placeholder="Patient UUID or Health ID">
                 </div>
                 <div class="form-group">
-                    <label class="form-label form-label-required">Select Bed</label>
+                    <label class="form-label form-label-required">{{ __('public.staff_wards.field_select_bed', [], $l) ?: 'Select Bed' }}</label>
                     <select name="bed_id" class="form-control" required>
                         <option value="">— Select available bed —</option>
                         @php
@@ -134,17 +142,17 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Admission Reason</label>
+                    <label class="form-label">{{ __('public.staff_wards.field_admission_reason', [], $l) ?: 'Admission Reason' }}</label>
                     <textarea name="admission_reason" class="form-control" rows="2" maxlength="500" placeholder="Reason for admission…"></textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Visit ID <span class="td-muted">(optional)</span></label>
+                    <label class="form-label">{{ __('public.staff_wards.field_visit_id', [], $l) ?: 'Visit ID' }} <span class="td-muted">(optional)</span></label>
                     <input type="text" name="visit_id" class="form-control" placeholder="Link to open visit UUID">
                 </div>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeAdmitModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary btn-sm">Admit Patient</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeAdmitModal()">{{ __('public.staff_wards.btn_cancel', [], $l) ?: 'Cancel' }}</button>
+                <button type="submit" class="btn btn-primary btn-sm">{{ __('public.staff_wards.btn_admit_patient', [], $l) ?: 'Admit Patient' }}</button>
             </div>
         </form>
     </div>
@@ -153,12 +161,12 @@
 {{-- Discharge Modal --}}
 <div id="discharge-modal" class="modal-backdrop mt-6" hidden>
     <div class="modal" role="dialog" aria-modal="true">
-        <h3 class="modal__title"><i data-lucide="log-out"></i> Discharge Patient</h3>
+        <h3 class="modal__title"><i data-lucide="log-out"></i> {{ __('public.staff_wards.modal_discharge_title', [], $l) ?: 'Discharge Patient' }}</h3>
         <form id="discharge-form" method="POST" action="">
             @csrf
             <div class="modal__body">
                 <div class="form-group">
-                    <label class="form-label form-label-required">Discharge Destination</label>
+                    <label class="form-label form-label-required">{{ __('public.staff_wards.field_discharge_dest', [], $l) ?: 'Discharge Destination' }}</label>
                     <select name="discharge_destination" class="form-control" required>
                         <option value="home">Home</option>
                         <option value="referral">Referred to Another Facility</option>
@@ -168,13 +176,13 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Discharge Notes</label>
+                    <label class="form-label">{{ __('public.staff_wards.field_discharge_notes', [], $l) ?: 'Discharge Notes' }}</label>
                     <textarea name="discharge_reason" class="form-control" rows="2" maxlength="500"></textarea>
                 </div>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeDischargeModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary btn-sm">Confirm Discharge</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeDischargeModal()">{{ __('public.staff_wards.btn_cancel', [], $l) ?: 'Cancel' }}</button>
+                <button type="submit" class="btn btn-primary btn-sm">{{ __('public.staff_wards.btn_confirm_discharge', [], $l) ?: 'Confirm Discharge' }}</button>
             </div>
         </form>
     </div>
@@ -183,12 +191,12 @@
 {{-- Transfer Modal --}}
 <div id="transfer-modal" class="modal-backdrop mt-6" hidden>
     <div class="modal" role="dialog" aria-modal="true">
-        <h3 class="modal__title"><i data-lucide="arrow-right-left"></i> Transfer to Another Bed</h3>
+        <h3 class="modal__title"><i data-lucide="arrow-right-left"></i> {{ __('public.staff_wards.modal_transfer_title', [], $l) ?: 'Transfer to Another Bed' }}</h3>
         <form id="transfer-form" method="POST" action="">
             @csrf
             <div class="modal__body">
                 <div class="form-group">
-                    <label class="form-label form-label-required">Target Bed</label>
+                    <label class="form-label form-label-required">{{ __('public.staff_wards.field_target_bed', [], $l) ?: 'Target Bed' }}</label>
                     <select name="to_bed_id" class="form-control" required>
                         <option value="">— Select available bed —</option>
                         @foreach($byWard ?? [] as $wardName => $beds)
@@ -201,13 +209,13 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Transfer Reason</label>
+                    <label class="form-label">{{ __('public.staff_wards.field_transfer_reason', [], $l) ?: 'Transfer Reason' }}</label>
                     <input type="text" name="reason" class="form-control" maxlength="300" placeholder="e.g. Upgraded to ICU">
                 </div>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeTransferModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary btn-sm">Confirm Transfer</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeTransferModal()">{{ __('public.staff_wards.btn_cancel', [], $l) ?: 'Cancel' }}</button>
+                <button type="submit" class="btn btn-primary btn-sm">{{ __('public.staff_wards.btn_confirm_transfer', [], $l) ?: 'Confirm Transfer' }}</button>
             </div>
         </form>
     </div>

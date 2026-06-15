@@ -44,7 +44,7 @@ class AdminPortalController extends Controller
             'open_tickets'         => \App\Models\SupportTicket::whereIn('status', ['open', 'in_progress'])->count(),
             'total_users'          => \App\Models\User::count(),
             'pending_onboarding'   => \App\Models\OrganizationSubscription::where('status', 'pending')->count(),
-            'monthly_revenue'      => \App\Models\Invoice::whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->where('status', 'paid')->sum('total_amount'),
+            'monthly_revenue'      => \App\Models\Invoice::whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->where('status', 'paid')->sum('subtotal_amount'),
         ];
 
         return view('portals.admin.index', compact('stats', 'recentLogs', 'platformStats'));

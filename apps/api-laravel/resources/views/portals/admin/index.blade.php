@@ -29,39 +29,39 @@
   <a href="{{ route('portals.admin.facilities.index') }}" class="stat-card">
     <div class="stat-card__icon"><i data-lucide="hospital"></i></div>
     <div class="stat-card__value">{{ $platformStats['facilities'] ?? '—' }}</div>
-    <div class="stat-card__label">Total Facilities</div>
+    <div class="stat-card__label">{{ __('public.admin_governance.stat_total_facilities', [], app()->getLocale()) ?: 'Total Facilities' }}</div>
   </a>
   <a href="{{ route('portals.admin.organizations.index') }}" class="stat-card">
     <div class="stat-card__icon"><i data-lucide="building-2"></i></div>
     <div class="stat-card__value">{{ $platformStats['organizations'] ?? '—' }}</div>
-    <div class="stat-card__label">Organizations</div>
+    <div class="stat-card__label">{{ __('public.admin_governance.stat_organizations', [], app()->getLocale()) ?: 'Organizations' }}</div>
   </a>
   <a href="{{ route('portals.admin.subscription') }}" class="stat-card">
     <div class="stat-card__icon"><i data-lucide="credit-card"></i></div>
     <div class="stat-card__value">{{ $platformStats['active_subscriptions'] ?? '—' }}</div>
-    <div class="stat-card__label">Active Subscriptions</div>
+    <div class="stat-card__label">{{ __('public.admin_governance.stat_active_subscriptions', [], app()->getLocale()) ?: 'Active Subscriptions' }}</div>
   </a>
   <a href="{{ route('portals.admin.support.index') }}" class="stat-card">
     <div class="stat-card__icon"><i data-lucide="life-buoy"></i></div>
     <div class="stat-card__value">{{ $platformStats['open_tickets'] ?? '—' }}</div>
-    <div class="stat-card__label">Open Support Tickets</div>
+    <div class="stat-card__label">{{ __('public.admin_governance.stat_open_tickets', [], app()->getLocale()) ?: 'Open Support Tickets' }}</div>
   </a>
 </div>
 <div class="stat-grid mb-6" style="--cols:3">
   <a href="{{ route('portals.admin.users.index') }}" class="stat-card">
     <div class="stat-card__icon"><i data-lucide="users"></i></div>
     <div class="stat-card__value">{{ $platformStats['total_users'] ?? '—' }}</div>
-    <div class="stat-card__label">Total Users</div>
+    <div class="stat-card__label">{{ __('public.admin_governance.stat_total_users', [], app()->getLocale()) ?: 'Total Users' }}</div>
   </a>
   <a href="{{ route('portals.admin.onboarding') }}" class="stat-card">
     <div class="stat-card__icon"><i data-lucide="rocket"></i></div>
     <div class="stat-card__value">{{ $platformStats['pending_onboarding'] ?? '—' }}</div>
-    <div class="stat-card__label">Pending Onboardings</div>
+    <div class="stat-card__label">{{ __('public.admin_governance.stat_pending_onboarding', [], app()->getLocale()) ?: 'Pending Onboardings' }}</div>
   </a>
   <a href="{{ route('portals.admin.financial.index') }}" class="stat-card">
     <div class="stat-card__icon"><i data-lucide="banknote"></i></div>
     <div class="stat-card__value">{{ number_format($platformStats['monthly_revenue'] ?? 0) }} XAF</div>
-    <div class="stat-card__label">This Month Revenue</div>
+    <div class="stat-card__label">{{ __('public.admin_governance.stat_monthly_revenue', [], app()->getLocale()) ?: 'This Month Revenue' }}</div>
   </a>
 </div>
 
@@ -105,28 +105,28 @@
 <!-- Clinical Register Quick Links (visible to hospital_admin / clinic_admin) -->
 <div class="panel mb-6">
     <div class="panel-header">
-        <h3 class="panel-title"><i data-lucide="stethoscope"></i> Clinical Register</h3>
+        <h3 class="panel-title"><i data-lucide="stethoscope"></i> {{ __('public.admin_governance.section_clinical_register', [], app()->getLocale()) ?: 'Clinical Register' }}</h3>
     </div>
     <div class="panel-body row-actions-inline">
         <a href="{{ route('portals.admin.clinical.prescriptions') }}" class="btn btn-secondary">
             <i data-lucide="clipboard-list"></i>
-            Prescription Register
+            {{ __('public.admin_governance.btn_prescription_register', [], app()->getLocale()) ?: 'Prescription Register' }}
         </a>
         <a href="{{ route('portals.admin.clinical.lab_orders') }}" class="btn btn-secondary">
             <i data-lucide="microscope"></i>
-            Lab Orders Register
+            {{ __('public.admin_governance.btn_lab_orders_register', [], app()->getLocale()) ?: 'Lab Orders Register' }}
         </a>
         <a href="{{ route('portals.staff.analytics') }}" class="btn btn-secondary">
             <i data-lucide="bar-chart-2"></i>
-            Analytics
+            {{ __('public.admin_governance.btn_analytics', [], app()->getLocale()) ?: 'Analytics' }}
         </a>
         <a href="{{ route('portals.staff.wards') }}" class="btn btn-secondary">
             <i data-lucide="bed"></i>
-            Wards & Admissions
+            {{ __('public.admin_governance.btn_wards', [], app()->getLocale()) ?: 'Wards & Admissions' }}
         </a>
         <a href="{{ route('portals.staff.billing') }}" class="btn btn-secondary">
             <i data-lucide="receipt"></i>
-            Billing
+            {{ __('public.admin_governance.btn_billing', [], app()->getLocale()) ?: 'Billing' }}
         </a>
     </div>
 </div>

@@ -1,21 +1,22 @@
 @extends('layouts.portal')
-@section('title', 'Ward & Bed Management')
-@section('breadcrumb_home', 'Staff Portal')
+@section('title', __('public.staff_wards.page_title', [], app()->getLocale()) ?: 'Ward & Bed Management')
+@section('breadcrumb_home', __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Wards')
+@section('breadcrumb_section', __('public.staff_wards.breadcrumb', [], app()->getLocale()) ?: 'Wards')
+@php $l = app()->getLocale(); @endphp
 
 @section('content')
 <div class="page-head">
-    <h2>Ward &amp; bed management</h2>
+    <h2>{{ __('public.staff_wards.page_heading', [], $l) ?: 'Ward & Bed Management' }}</h2>
     <div class="page-head__spacer"></div>
     <a href="{{ route('portals.staff.wards.admissions') }}" class="btn btn-ghost btn-sm">
-        <i data-lucide="bed"></i> Admissions
+        <i data-lucide="bed"></i> {{ __('public.staff_wards.btn_admissions', [], $l) ?: 'Admissions' }}
     </a>
     <button type="button" class="btn btn-primary btn-sm" onclick="openCreateWardModal()">
-        <i data-lucide="plus"></i> Add Ward
+        <i data-lucide="plus"></i> {{ __('public.staff_wards.btn_add_ward', [], $l) ?: 'Add Ward' }}
     </button>
 </div>
-<p class="page-subtitle mb-6">Live bed map, occupancy overview, and ward administration.</p>
+<p class="page-subtitle mb-6">{{ __('public.staff_wards.page_subtitle', [], $l) ?: 'Live bed map, occupancy overview, and ward administration.' }}</p>
 
 @if(session('success'))
     <div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
@@ -29,10 +30,10 @@
     $occRate = $summary['occupancy_rate'];
     $occMod  = $occRate >= 85 ? 'stat-card--danger' : ($occRate >= 70 ? 'stat-card--warning' : 'stat-card--success');
     $kpis = [
-        ['Total Beds',      $summary['total_beds'],      'bed',          ''],
-        ['Occupied',        $summary['total_occupied'],  'user-check',   'stat-card--danger'],
-        ['Available',       $summary['total_available'], 'check-circle', 'stat-card--success'],
-        ['Occupancy Rate',  $occRate.'%',                'percent',      $occMod],
+        [__('public.staff_wards.stat_total_beds', [], app()->getLocale()) ?: 'Total Beds',      $summary['total_beds'],      'bed',          ''],
+        [__('public.staff_wards.stat_occupied', [], app()->getLocale()) ?: 'Occupied',          $summary['total_occupied'],  'user-check',   'stat-card--danger'],
+        [__('public.staff_wards.stat_available', [], app()->getLocale()) ?: 'Available',        $summary['total_available'], 'check-circle', 'stat-card--success'],
+        [__('public.staff_wards.stat_occupancy_rate', [], app()->getLocale()) ?: 'Occupancy Rate', $occRate.'%',             'percent',      $occMod],
     ];
 @endphp
 <div class="stat-grid mb-6">
@@ -49,9 +50,9 @@
 @if($wards->isEmpty())
 <div class="empty-state">
     <div class="empty-state-icon"><i data-lucide="building-2"></i></div>
-    <h3>No active wards</h3>
-    <p>Create a ward to start managing bed allocations.</p>
-    <button type="button" class="btn btn-primary btn-sm mt-6" onclick="openCreateWardModal()">Add First Ward</button>
+    <h3>{{ __('public.staff_wards.no_wards_title', [], $l) ?: 'No active wards' }}</h3>
+    <p>{{ __('public.staff_wards.no_wards_desc', [], $l) ?: 'Create a ward to start managing bed allocations.' }}</p>
+    <button type="button" class="btn btn-primary btn-sm mt-6" onclick="openCreateWardModal()">{{ __('public.staff_wards.btn_add_first_ward', [], $l) ?: 'Add First Ward' }}</button>
 </div>
 @else
 @foreach($wards as $ward)
@@ -106,10 +107,10 @@
         </div>
         {{-- Legend --}}
         <div style="display:flex;gap:1rem;margin-top:.75rem;font-size:.72rem;color:var(--p-text-muted);">
-            <span><span style="display:inline-block;width:10px;height:10px;background:rgba(34,197,94,.3);border-radius:2px;margin-right:3px;"></span>Available ({{ $available }})</span>
-            <span><span style="display:inline-block;width:10px;height:10px;background:rgba(239,68,68,.3);border-radius:2px;margin-right:3px;"></span>Occupied ({{ $occupied }})</span>
-            <span><span style="display:inline-block;width:10px;height:10px;background:rgba(245,158,11,.3);border-radius:2px;margin-right:3px;"></span>Maintenance</span>
-            <span><span style="display:inline-block;width:10px;height:10px;background:rgba(59,130,246,.3);border-radius:2px;margin-right:3px;"></span>Reserved</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:rgba(34,197,94,.3);border-radius:2px;margin-right:3px;"></span>{{ __('public.staff_wards.legend_available', [], $l) ?: 'Available' }} ({{ $available }})</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:rgba(239,68,68,.3);border-radius:2px;margin-right:3px;"></span>{{ __('public.staff_wards.legend_occupied', [], $l) ?: 'Occupied' }} ({{ $occupied }})</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:rgba(245,158,11,.3);border-radius:2px;margin-right:3px;"></span>{{ __('public.staff_wards.legend_maintenance', [], $l) ?: 'Maintenance' }}</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:rgba(59,130,246,.3);border-radius:2px;margin-right:3px;"></span>{{ __('public.staff_wards.legend_reserved', [], $l) ?: 'Reserved' }}</span>
         </div>
     </div>
 </div>
@@ -119,17 +120,17 @@
 {{-- Create Ward Modal --}}
 <div id="create-ward-modal" class="modal-backdrop mt-6" hidden>
     <div class="modal modal--md" role="dialog" aria-modal="true">
-        <h3 class="modal__title"><i data-lucide="building-2"></i> Create Ward</h3>
+        <h3 class="modal__title"><i data-lucide="building-2"></i> {{ __('public.staff_wards.modal_create_title', [], $l) ?: 'Create Ward' }}</h3>
         <form method="POST" action="{{ route('portals.staff.wards.store') }}">
             @csrf
             <div class="modal__body">
                 <div class="form-group">
-                    <label class="form-label form-label-required">Ward Name</label>
+                    <label class="form-label form-label-required">{{ __('public.staff_wards.field_ward_name', [], $l) ?: 'Ward Name' }}</label>
                     <input type="text" name="name" class="form-control" required maxlength="100" placeholder="e.g. General Ward A">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label form-label-required">Ward Type</label>
+                        <label class="form-label form-label-required">{{ __('public.staff_wards.field_ward_type', [], $l) ?: 'Ward Type' }}</label>
                         <select name="ward_type" class="form-control" required>
                             @foreach(\App\Models\Ward::wardTypes() as $key => $label)
                                 <option value="{{ $key }}">{{ $label }}</option>
@@ -137,24 +138,24 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label form-label-required">Number of Beds</label>
+                        <label class="form-label form-label-required">{{ __('public.staff_wards.field_num_beds', [], $l) ?: 'Number of Beds' }}</label>
                         <input type="number" name="total_beds" class="form-control" required min="1" max="200" value="10">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Floor</label>
+                        <label class="form-label">{{ __('public.staff_wards.field_floor', [], $l) ?: 'Floor' }}</label>
                         <input type="text" name="floor" class="form-control" maxlength="20" placeholder="e.g. 2">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Building</label>
+                        <label class="form-label">{{ __('public.staff_wards.field_building', [], $l) ?: 'Building' }}</label>
                         <input type="text" name="building" class="form-control" maxlength="50" placeholder="e.g. Block A">
                     </div>
                 </div>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeCreateWardModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary btn-sm">Create Ward</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeCreateWardModal()">{{ __('public.staff_wards.btn_cancel', [], $l) ?: 'Cancel' }}</button>
+                <button type="submit" class="btn btn-primary btn-sm">{{ __('public.staff_wards.btn_create_ward', [], $l) ?: 'Create Ward' }}</button>
             </div>
         </form>
     </div>

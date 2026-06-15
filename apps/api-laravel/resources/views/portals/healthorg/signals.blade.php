@@ -1,29 +1,26 @@
 @extends('layouts.portal')
-
-@section('title', 'Outbreak Signals')
-
+@section('title', __('public.healthorg_portal.page_title', [], app()->getLocale()) ?: 'Outbreak Signals')
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">
     <i data-lucide="heart-handshake"></i>
-    Health Org
+    {{ __('public.healthorg_portal.role_badge', [], app()->getLocale()) ?: 'Health Org' }}
 </div>
 @endsection
-@section('sidebar_user_role', 'Health Org Admin')
-
+@section('sidebar_user_role', __('public.healthorg_portal.role_label', [], app()->getLocale()) ?: 'Health Org Admin')
 @section('sidebar_nav')
 @include('portals.healthorg._sidebar')
 @endsection
-
-@section('breadcrumb_home', 'Health Org Portal')
+@section('breadcrumb_home', __('public.healthorg_portal.breadcrumb_home', [], app()->getLocale()) ?: 'Health Org Portal')
 @section('breadcrumb_home_url', route('portals.healthorg.dashboard'))
-@section('breadcrumb_section', 'Outbreak Signals')
+@section('breadcrumb_section', __('public.healthorg_portal.breadcrumb_section_signals', [], app()->getLocale()) ?: 'Outbreak Signals')
+@php $l = app()->getLocale(); @endphp
 
 @section('content')
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Outbreak & Anomaly Signals</h1>
-        <p class="page-subtitle">Disease intelligence and automated anomaly detection signals.</p>
+        <h1 class="page-title">{{ __('public.healthorg_portal.page_heading_signals', [], $l) ?: 'Outbreak & Anomaly Signals' }}</h1>
+        <p class="page-subtitle">{{ __('public.healthorg_portal.page_subtitle_signals', [], $l) ?: 'Disease intelligence and automated anomaly detection signals.' }}</p>
     </div>
 </div>
 
@@ -42,27 +39,27 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Signal</th>
-                    <th>Severity</th>
-                    <th>Status</th>
-                    <th>Detected</th>
+                    <th>{{ __('public.healthorg_portal.col_signal', [], $l) ?: 'Signal' }}</th>
+                    <th>{{ __('public.healthorg_portal.col_severity', [], $l) ?: 'Severity' }}</th>
+                    <th>{{ __('public.healthorg_portal.col_status', [], $l) ?: 'Status' }}</th>
+                    <th>{{ __('public.healthorg_portal.col_detected', [], $l) ?: 'Detected' }}</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($signals as $signal)
                 <tr>
-                    <td data-label="Signal"><span class="td-strong">{{ $signal->title ?? $signal->id }}</span></td>
-                    <td data-label="Severity">
+                    <td data-label="{{ __('public.healthorg_portal.col_signal', [], $l) ?: 'Signal' }}"><span class="td-strong">{{ $signal->title ?? $signal->id }}</span></td>
+                    <td data-label="{{ __('public.healthorg_portal.col_severity', [], $l) ?: 'Severity' }}">
                         <span class="badge badge-{{ match($signal->severity ?? '') { 'critical' => 'danger', 'high' => 'warning', default => 'neutral' } }}">
                             {{ ucfirst($signal->severity ?? '—') }}
                         </span>
                     </td>
-                    <td data-label="Status">
+                    <td data-label="{{ __('public.healthorg_portal.col_status', [], $l) ?: 'Status' }}">
                         <span class="badge badge-{{ match($signal->status ?? '') { 'confirmed' => 'danger', 'under_review' => 'warning', 'resolved' => 'success', default => 'neutral' } }}">
                             {{ ucfirst(str_replace('_', ' ', $signal->status ?? '—')) }}
                         </span>
                     </td>
-                    <td data-label="Detected"><span class="td-muted">{{ isset($signal->created_at) ? \Carbon\Carbon::parse($signal->created_at)->format('d M Y H:i') : '—' }}</span></td>
+                    <td data-label="{{ __('public.healthorg_portal.col_detected', [], $l) ?: 'Detected' }}"><span class="td-muted">{{ isset($signal->created_at) ? \Carbon\Carbon::parse($signal->created_at)->format('d M Y H:i') : '—' }}</span></td>
                 </tr>
                 @endforeach
             </tbody>

@@ -1,12 +1,13 @@
 @extends('layouts.portal')
-@section('title', 'API Usage Analytics')
+@section('title', __('public.developer_portal.page_analytics', [], app()->getLocale()) ?: 'API Usage Analytics')
 @section('sidebar_nav') @include('portals.developer._sidebar') @endsection
+@php $l = app()->getLocale(); @endphp
 
 @section('content')
 
 <div class="page-head">
-    <h2>API usage analytics</h2>
-    <p class="portal-page-subtitle">Request volume, error rates, and response times across your apps — last 30 days.</p>
+    <h2>{{ __('public.developer_portal.nav_analytics', [], $l) ?: 'API Analytics' }}</h2>
+    <p class="portal-page-subtitle">{{ __('public.developer_portal.analytics_subtitle', [], $l) ?: 'Request volume, error rates, and response times across your apps — last 30 days.' }}</p>
     <div class="page-head__spacer"></div>
     <form method="GET" class="filter-bar filter-bar--flush">
         <select name="period" class="filter-select" aria-label="Period" onchange="this.form.submit()">
@@ -20,23 +21,23 @@
 {{-- Totals --}}
 <div class="stat-grid mb-6">
     <div class="stat-card stat-card--primary">
-        <div class="stat-card__label">Total requests</div>
+        <div class="stat-card__label">{{ __('public.developer_portal.stat_total_requests', [], $l) ?: 'Total requests' }}</div>
         <div class="stat-card__value">{{ number_format($totals['requests']) }}</div>
     </div>
     <div class="stat-card stat-card--danger">
-        <div class="stat-card__label">Total errors</div>
+        <div class="stat-card__label">{{ __('public.developer_portal.stat_total_errors', [], $l) ?: 'Total errors' }}</div>
         <div class="stat-card__value">{{ number_format($totals['errors']) }}</div>
     </div>
     <div class="stat-card stat-card--success">
-        <div class="stat-card__label">Error rate</div>
+        <div class="stat-card__label">{{ __('public.developer_portal.stat_error_rate', [], $l) ?: 'Error rate' }}</div>
         <div class="stat-card__value">{{ $totals['requests'] > 0 ? round(($totals['errors'] / $totals['requests']) * 100, 1) : 0 }}%</div>
     </div>
     <div class="stat-card stat-card--warning">
-        <div class="stat-card__label">Avg response</div>
+        <div class="stat-card__label">{{ __('public.developer_portal.stat_avg_response', [], $l) ?: 'Avg response' }}</div>
         <div class="stat-card__value">{{ round($totals['avg_ms']) }}ms</div>
     </div>
     <div class="stat-card stat-card--teal">
-        <div class="stat-card__label">Active apps</div>
+        <div class="stat-card__label">{{ __('public.developer_portal.stat_active_apps', [], $l) ?: 'Active apps' }}</div>
         <div class="stat-card__value">{{ $clients->count() }}</div>
     </div>
 </div>

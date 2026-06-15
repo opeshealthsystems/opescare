@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Consultation — Visit')
+@section('title', __('public.staff_portal.page_heading_consult', [], app()->getLocale()) ?: 'Consultation')
 
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
@@ -9,7 +9,7 @@
 
 @section('sidebar_nav')
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Overview</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
     <a href="{{ route('portals.staff') }}" class="sidebar-link">
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
@@ -20,7 +20,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Clinical</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
         <i data-lucide="calendar-check-2"></i>
         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
@@ -35,11 +35,11 @@
     </a>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
         <i data-lucide="brain-circuit"></i>
-        <span>Clinical Alerts</span>
+        <span>{{ __('public.staff_portal.nav_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">HR & Staff</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_hr', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
         <i data-lucide="users"></i>
         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
@@ -58,7 +58,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Inventory</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
         <i data-lucide="pill"></i>
         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
@@ -69,14 +69,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Supply Chain</div>
-    <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
-        <i data-lucide="package"></i>
-        <span>Supply Chain</span>
-    </a>
-</div>
-<div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Operations</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>
         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
@@ -90,21 +83,23 @@
 
 @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Consultation')
+@section('breadcrumb_section', __('public.staff_portal.breadcrumb_section_consult', [], app()->getLocale()) ?: 'Consultation')
+
+@php $l = app()->getLocale(); @endphp
 
 @section('content')
 
 <div class="page-head">
-    <h2>Clinical Consultation</h2>
+    <h2>{{ __('public.staff_portal.page_heading_consult', [], $l) ?: 'Clinical Consultation' }}</h2>
     <div class="page-head__spacer"></div>
     <a href="{{ route('portals.staff.visits') }}" class="btn btn-ghost btn-sm">
         <i data-lucide="arrow-left"></i>
-        Back to Visits
+        {{ __('public.staff_portal.btn_back_to_visits', [], $l) ?: 'Back to Visits' }}
     </a>
 </div>
 <p class="page-subtitle mb-4">
-    Patient: <strong class="mono">{{ $visit->patient?->health_id ?? $visit->patient_id }}</strong>
-    &nbsp;·&nbsp; Status: <span class="badge badge-primary">{{ ucwords(str_replace('_',' ',$visit->status)) }}</span>
+    {{ __('public.staff_portal.lbl_patient', [], $l) ?: 'Patient' }}: <strong class="mono">{{ $visit->patient?->health_id ?? $visit->patient_id }}</strong>
+    &nbsp;·&nbsp; {{ __('public.staff_portal.col_status', [], $l) ?: 'Status' }}: <span class="badge badge-primary">{{ ucwords(str_replace('_',' ',$visit->status)) }}</span>
 </p>
 
 @if(session('error'))
@@ -120,44 +115,44 @@
         <div class="panel-header">
             <h2 class="panel-title">
                 <i data-lucide="file-pen"></i>
-                Clinical Note
+                {{ __('public.staff_portal.panel_clinical_note', [], $l) ?: 'Clinical Note' }}
             </h2>
         </div>
         <div class="panel-body">
             <form method="POST" action="{{ route('portals.staff.visits.consult.store', $visit->id) }}">
                 @csrf
                 <div class="form-group mb-4">
-                    <label class="form-label form-label-required">History of Present Illness *</label>
+                    <label class="form-label form-label-required">{{ __('public.staff_portal.field_history_hpi', [], $l) ?: 'History of Present Illness' }} *</label>
                     <textarea name="history_of_present_illness" class="form-control" rows="5"
                         required minlength="10" maxlength="5000"
-                        placeholder="Describe the presenting complaint, onset, duration, character, associated symptoms…">{{ old('history_of_present_illness') }}</textarea>
+                        placeholder="{{ __('public.staff_portal.ph_history_hpi', [], $l) ?: 'Describe the presenting complaint, onset, duration, character, associated symptoms…' }}">{{ old('history_of_present_illness') }}</textarea>
                 </div>
                 <div class="form-group mb-4">
-                    <label class="form-label">Examination Findings</label>
+                    <label class="form-label">{{ __('public.staff_portal.field_examination', [], $l) ?: 'Examination Findings' }}</label>
                     <textarea name="examination_findings" class="form-control" rows="4"
                         maxlength="5000"
-                        placeholder="Physical examination findings, system review…">{{ old('examination_findings') }}</textarea>
+                        placeholder="{{ __('public.staff_portal.ph_examination', [], $l) ?: 'Physical examination findings, system review…' }}">{{ old('examination_findings') }}</textarea>
                 </div>
                 <div class="form-group mb-4">
-                    <label class="form-label">Treatment Plan / Assessment</label>
+                    <label class="form-label">{{ __('public.staff_portal.field_treatment_plan', [], $l) ?: 'Treatment Plan / Assessment' }}</label>
                     <textarea name="treatment_plan" class="form-control" rows="4"
                         maxlength="5000"
-                        placeholder="Diagnosis, management plan, prescriptions, referrals, follow-up instructions…">{{ old('treatment_plan') }}</textarea>
+                        placeholder="{{ __('public.staff_portal.ph_treatment_plan', [], $l) ?: 'Diagnosis, management plan, prescriptions, referrals, follow-up instructions…' }}">{{ old('treatment_plan') }}</textarea>
                 </div>
                 <div class="form-group mb-6">
-                    <label class="form-label">Note Status</label>
+                    <label class="form-label">{{ __('public.staff_portal.field_note_status', [], $l) ?: 'Note Status' }}</label>
                     <select name="status" class="form-control">
-                        <option value="draft">Save as Draft</option>
-                        <option value="signed">Sign & Finalize</option>
+                        <option value="draft">{{ __('public.staff_portal.opt_save_draft', [], $l) ?: 'Save as Draft' }}</option>
+                        <option value="signed">{{ __('public.staff_portal.opt_sign_finalize', [], $l) ?: 'Sign & Finalize' }}</option>
                     </select>
-                    <span class="form-hint">Signed notes cannot be edited — only amended.</span>
+                    <span class="form-hint">{{ __('public.staff_portal.hint_signed_notes', [], $l) ?: 'Signed notes cannot be edited — only amended.' }}</span>
                 </div>
                 <div class="row-actions">
                     <button type="submit" class="btn btn-primary">
                         <i data-lucide="file-pen"></i>
-                        Save Note
+                        {{ __('public.staff_portal.btn_save_note', [], $l) ?: 'Save Note' }}
                     </button>
-                    <a href="{{ route('portals.staff.visits') }}" class="btn btn-ghost">Cancel</a>
+                    <a href="{{ route('portals.staff.visits') }}" class="btn btn-ghost">{{ __('public.staff_portal.filter_clear', [], $l) ?: 'Cancel' }}</a>
                 </div>
             </form>
         </div>
@@ -171,22 +166,22 @@
             <div class="panel-header">
                 <h2 class="panel-title">
                     <i data-lucide="activity"></i>
-                    Triage Summary
+                    {{ __('public.staff_portal.panel_triage_summary', [], $l) ?: 'Triage Summary' }}
                 </h2>
             </div>
             <div class="panel-body panel-body--flush">
                 @php $triage = $visit->triageRecords->sortByDesc('created_at')->first(); @endphp
                 <table class="kv-table">
-                    <tr><td class="kv-strong">Complaint</td><td>{{ $triage->presenting_complaint ?? '--' }}</td></tr>
-                    <tr><td class="kv-strong">Acuity</td><td>{{ ucwords(str_replace('_',' ',$triage->acuity_score ?? '--')) }}</td></tr>
-                    <tr><td class="kv-strong">Pain</td><td>{{ $triage->pain_score !== null ? $triage->pain_score . '/10' : '--' }}</td></tr>
+                    <tr><td class="kv-strong">{{ __('public.staff_portal.lbl_complaint', [], $l) ?: 'Complaint' }}</td><td>{{ $triage->presenting_complaint ?? '--' }}</td></tr>
+                    <tr><td class="kv-strong">{{ __('public.staff_portal.col_acuity', [], $l) ?: 'Acuity' }}</td><td>{{ ucwords(str_replace('_',' ',$triage->acuity_score ?? '--')) }}</td></tr>
+                    <tr><td class="kv-strong">{{ __('public.staff_portal.lbl_pain', [], $l) ?: 'Pain' }}</td><td>{{ $triage->pain_score !== null ? $triage->pain_score . '/10' : '--' }}</td></tr>
                     @if($triage->vitalSigns->isNotEmpty())
                         @php $v = $triage->vitalSigns->first(); @endphp
                         <tr><td class="kv-strong">T</td><td>{{ $v->temperature ?? '--' }}°C</td></tr>
                         <tr><td class="kv-strong">BP</td><td>{{ $v->blood_pressure_systolic ?? '--' }}/{{ $v->blood_pressure_diastolic ?? '--' }} mmHg</td></tr>
-                        <tr><td class="kv-strong">Pulse</td><td>{{ $v->pulse ?? '--' }} bpm</td></tr>
+                        <tr><td class="kv-strong">{{ __('public.staff_portal.field_pulse', [], $l) ?: 'Pulse' }}</td><td>{{ $v->pulse ?? '--' }} bpm</td></tr>
                         <tr><td class="kv-strong">SpO₂</td><td>{{ $v->oxygen_saturation ?? '--' }}%</td></tr>
-                        @if($v->weight)<tr><td class="kv-strong">Weight</td><td>{{ $v->weight }} kg</td></tr>@endif
+                        @if($v->weight)<tr><td class="kv-strong">{{ __('public.staff_portal.lbl_weight', [], $l) ?: 'Weight' }}</td><td>{{ $v->weight }} kg</td></tr>@endif
                     @endif
                 </table>
             </div>
@@ -199,7 +194,7 @@
             <div class="panel-header">
                 <h2 class="panel-title">
                     <i data-lucide="notebook-text"></i>
-                    Previous Notes ({{ $visit->clinicalNotes->count() }})
+                    {{ __('public.staff_portal.panel_prev_notes', [], $l) ?: 'Previous Notes' }} ({{ $visit->clinicalNotes->count() }})
                 </h2>
             </div>
             <div class="panel-body panel-body--flush">
@@ -208,11 +203,11 @@
                         <tbody>
                         @foreach($visit->clinicalNotes->sortByDesc('created_at') as $note)
                         <tr>
-                            <td data-label="Date">{{ \Carbon\Carbon::parse($note->created_at)->format('M d, Y H:i') }}</td>
-                            <td data-label="Status">
+                            <td data-label="{{ __('public.staff_portal.col_date', [], $l) ?: 'Date' }}">{{ \Carbon\Carbon::parse($note->created_at)->format('M d, Y H:i') }}</td>
+                            <td data-label="{{ __('public.staff_portal.col_status', [], $l) ?: 'Status' }}">
                                 <span class="badge {{ $note->status === 'signed' ? 'badge-success' : 'badge-neutral' }}">{{ ucwords($note->status) }}</span>
                             </td>
-                            <td data-label="Summary" class="td-muted">{{ Str::limit($note->history_of_present_illness ?? '', 120) }}</td>
+                            <td data-label="{{ __('public.staff_portal.col_summary', [], $l) ?: 'Summary' }}" class="td-muted">{{ Str::limit($note->history_of_present_illness ?? '', 120) }}</td>
                         </tr>
                         @endforeach
                         </tbody>

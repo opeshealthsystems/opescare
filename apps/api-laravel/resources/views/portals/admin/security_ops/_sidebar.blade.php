@@ -13,7 +13,7 @@
         <i data-lucide="layout-dashboard"></i><span>Governance Portal</span>
     </a>
     <a href="{{ route('portals.admin.security') }}" class="sidebar-link {{ request()->routeIs('portals.admin.security') && !request()->routeIs('portals.admin.security.*') ? 'active' : '' }}">
-        <i data-lucide="shield-alert"></i><span>SOC Dashboard</span>
+        <i data-lucide="shield-alert"></i><span>{{ __('public.admin_governance.nav_soc_dashboard', [], app()->getLocale()) ?: 'SOC Dashboard' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">

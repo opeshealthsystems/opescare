@@ -111,7 +111,7 @@
         <i data-lucide="headphones"></i><span>Support Tickets</span>
     </a>
     <a href="{{ route('portals.admin.cdss.index') }}" class="sidebar-link {{ request()->routeIs('portals.admin.cdss*') ? 'active' : '' }}">
-        <i data-lucide="activity"></i><span>CDSS Rules</span>
+        <i data-lucide="activity"></i><span>{{ __('public.admin_governance.nav_cdss_rules', [], app()->getLocale()) ?: 'CDSS Rules' }}</span>
     </a>
     <a href="{{ route('portals.admin.reports.minsante-monthly') }}" class="sidebar-link {{ request()->routeIs('portals.admin.reports*') ? 'active' : '' }}">
         <i data-lucide="file-bar-chart"></i><span>Reports</span>
@@ -120,10 +120,10 @@
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">Analytics & KPIs</div>
     <a href="{{ route('portals.admin.kpi.index') }}" class="sidebar-link {{ request()->routeIs('portals.admin.kpi*') ? 'active' : '' }}">
-        <i data-lucide="bar-chart-3"></i><span>KPI Dashboard</span>
+        <i data-lucide="bar-chart-3"></i><span>{{ __('public.admin_governance.nav_kpi_dashboard', [], app()->getLocale()) ?: 'KPI Dashboard' }}</span>
     </a>
     <a href="{{ route('portals.admin.kpi.trend') }}" class="sidebar-link {{ request()->routeIs('portals.admin.kpi.trend') ? 'active' : '' }}">
-        <i data-lucide="trending-up"></i><span>KPI Trends</span>
+        <i data-lucide="trending-up"></i><span>{{ __('public.admin_governance.nav_kpi_trends', [], app()->getLocale()) ?: 'KPI Trends' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">

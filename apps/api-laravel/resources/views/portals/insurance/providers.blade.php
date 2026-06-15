@@ -8,29 +8,7 @@
 @section('sidebar_user_role', 'Insurance Admin')
 
 @section('sidebar_nav')
-<div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Insurance</div>
-    <a href="{{ route('portals.insurance.dashboard') }}" class="sidebar-link">
-        <i data-lucide="layout-dashboard"></i>
-        <span>Dashboard</span>
-    </a>
-    <a href="{{ route('portals.insurance.providers') }}" class="sidebar-link active">
-        <i data-lucide="building-2"></i>
-        <span>Providers & Plans</span>
-    </a>
-    <a href="{{ route('portals.insurance.policies') }}" class="sidebar-link">
-        <i data-lucide="shield-check"></i>
-        <span>Patient Policies</span>
-    </a>
-    <a href="{{ route('portals.insurance.preauths') }}" class="sidebar-link">
-        <i data-lucide="clipboard-list"></i>
-        <span>Preauthorization</span>
-    </a>
-    <a href="{{ route('portals.insurance.claims') }}" class="sidebar-link">
-        <i data-lucide="file-text"></i>
-        <span>Claims</span>
-    </a>
-</div>
+@include('portals.insurance._sidebar_nav')
 @endsection
 
 @section('breadcrumb_home', 'Insurance Portal')

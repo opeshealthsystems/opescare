@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Triage — Visit')
+@section('title', __('public.staff_portal.page_heading_triage', [], app()->getLocale()) ?: 'Triage')
 
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
@@ -9,7 +9,7 @@
 
 @section('sidebar_nav')
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Overview</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
     <a href="{{ route('portals.staff') }}" class="sidebar-link">
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
@@ -20,7 +20,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Clinical</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
         <i data-lucide="calendar-check-2"></i>
         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
@@ -35,11 +35,11 @@
     </a>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
         <i data-lucide="brain-circuit"></i>
-        <span>Clinical Alerts</span>
+        <span>{{ __('public.staff_portal.nav_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">HR & Staff</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_hr', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
         <i data-lucide="users"></i>
         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
@@ -58,7 +58,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Inventory</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
         <i data-lucide="pill"></i>
         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
@@ -69,14 +69,14 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Supply Chain</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_supply', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
         <i data-lucide="package"></i>
-        <span>Supply Chain</span>
+        <span>{{ __('public.staff_portal.nav_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Operations</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>
         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
@@ -106,7 +106,9 @@
 
 @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Triage')
+@section('breadcrumb_section', __('public.staff_portal.breadcrumb_section_triage', [], app()->getLocale()) ?: 'Triage')
+
+@php $l = app()->getLocale(); @endphp
 
 @section('content')
 
@@ -116,16 +118,15 @@
     $isCritical = $lastTriage && in_array($lastTriage->acuity_score, ['critical', 'resuscitation']);
     $isEmergency = $visit->status === 'emergency';
 
-    // Assess vitals on last triage
     $vitalAlerts = [];
     if ($lastTriage && $lastTriage->vitalSigns->isNotEmpty()) {
         $v = $lastTriage->vitalSigns->first();
         $vitalAlerts = TriageService::assessVitals([
-            'temperature'          => $v->temperature,
+            'temperature'             => $v->temperature,
             'blood_pressure_systolic' => $v->blood_pressure_systolic,
-            'pulse'                => $v->pulse,
-            'respiratory_rate'     => $v->respiratory_rate,
-            'oxygen_saturation'    => $v->oxygen_saturation,
+            'pulse'                   => $v->pulse,
+            'respiratory_rate'        => $v->respiratory_rate,
+            'oxygen_saturation'       => $v->oxygen_saturation,
         ]);
     }
 @endphp
@@ -133,22 +134,22 @@
 <div class="page-head">
     <h2>
         @if($isEmergency)<i data-lucide="siren"></i> @endif
-        Triage Assessment
+        {{ __('public.staff_portal.page_heading_triage', [], $l) ?: 'Triage Assessment' }}
     </h2>
     <div class="page-head__spacer"></div>
     @if(!$isEmergency)
         <button type="button" class="btn btn-danger btn-sm" onclick="openEscalateModal()">
-            <i data-lucide="siren"></i> Declare Emergency
+            <i data-lucide="siren"></i> {{ __('public.staff_portal.btn_declare_emergency', [], $l) ?: 'Declare Emergency' }}
         </button>
     @endif
     <a href="{{ route('portals.staff.visits') }}" class="btn btn-ghost btn-sm">
-        <i data-lucide="arrow-left"></i> Back
+        <i data-lucide="arrow-left"></i> {{ __('public.staff_portal.btn_back', [], $l) ?: 'Back' }}
     </a>
 </div>
 
 <p class="page-subtitle mb-4">
-    Patient: <strong class="mono">{{ $visit->patient?->health_id ?? $visit->patient_id }}</strong>
-    &nbsp;·&nbsp; Visit ID: <span class="mono">{{ substr($visit->id, 0, 8) }}…</span>
+    {{ __('public.staff_portal.lbl_patient', [], $l) ?: 'Patient' }}: <strong class="mono">{{ $visit->patient?->health_id ?? $visit->patient_id }}</strong>
+    &nbsp;·&nbsp; {{ __('public.staff_portal.lbl_visit_id', [], $l) ?: 'Visit ID' }}: <span class="mono">{{ substr($visit->id, 0, 8) }}…</span>
     &nbsp;·&nbsp;
     @php
         $statusBadge = match($visit->status) {
@@ -166,18 +167,18 @@
 <div class="alert alert-danger mb-4">
     <i data-lucide="siren"></i>
     <div>
-        <strong>EMERGENCY — Resuscitation Level</strong>
-        <div>This visit has been declared an emergency. Acuity: Resuscitation (Level 1).</div>
+        <strong>{{ __('public.staff_portal.alert_emergency_banner', [], $l) ?: 'EMERGENCY — Resuscitation Level' }}</strong>
+        <div>{{ __('public.staff_portal.alert_emergency_desc', [], $l) ?: 'This visit has been declared an emergency. Acuity: Resuscitation (Level 1).' }}</div>
     </div>
 </div>
 @elseif($isCritical)
 <div class="alert alert-danger mb-4">
     <i data-lucide="alert-triangle"></i>
     <div>
-        <strong>Critical acuity detected.</strong>
-        <span>Last triage: {{ ucwords(str_replace('_',' ',$lastTriage->acuity_score)) }}</span>
+        <strong>{{ __('public.staff_portal.alert_critical_acuity', [], $l) ?: 'Critical acuity detected.' }}</strong>
+        <span>{{ __('public.staff_portal.col_acuity', [], $l) ?: 'Acuity' }}: {{ ucwords(str_replace('_',' ',$lastTriage->acuity_score)) }}</span>
     </div>
-    <button type="button" class="btn btn-danger btn-sm" onclick="openEscalateModal()">Escalate to Emergency</button>
+    <button type="button" class="btn btn-danger btn-sm" onclick="openEscalateModal()">{{ __('public.staff_portal.btn_escalate_emergency', [], $l) ?: 'Escalate to Emergency' }}</button>
 </div>
 @endif
 
@@ -206,7 +207,7 @@
     <div class="panel-header">
         <h2 class="panel-title">
             <i data-lucide="clock"></i>
-            Previous Triage Records
+            {{ __('public.staff_portal.panel_prev_triage', [], $l) ?: 'Previous Triage Records' }}
         </h2>
     </div>
     <div class="panel-body panel-body--flush">
@@ -214,7 +215,11 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Time</th><th>Complaint</th><th>Acuity</th><th>Pain</th><th>Vitals</th>
+                        <th>{{ __('public.staff_portal.col_time', [], $l) ?: 'Time' }}</th>
+                        <th>{{ __('public.staff_portal.col_complaint', [], $l) ?: 'Complaint' }}</th>
+                        <th>{{ __('public.staff_portal.col_acuity', [], $l) ?: 'Acuity' }}</th>
+                        <th>{{ __('public.staff_portal.col_pain', [], $l) ?: 'Pain' }}</th>
+                        <th>{{ __('public.staff_portal.col_vitals', [], $l) ?: 'Vitals' }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -237,13 +242,14 @@
                         $hasCriticalVital = collect($triageAlerts)->where('status','critical')->count() > 0;
                     @endphp
                     <tr>
-                        <td data-label="Time">{{ \Carbon\Carbon::parse($triage->created_at)->format('M d, H:i') }}
-                            @if($hasCriticalVital)<span class="badge badge-critical">Critical</span>@endif
+                        <td data-label="{{ __('public.staff_portal.col_time', [], $l) ?: 'Time' }}">
+                            {{ \Carbon\Carbon::parse($triage->created_at)->format('M d, H:i') }}
+                            @if($hasCriticalVital)<span class="badge badge-critical">{{ __('public.staff_portal.alert_critical_acuity', [], $l) ?: 'Critical' }}</span>@endif
                         </td>
-                        <td data-label="Complaint">{{ Str::limit($triage->presenting_complaint ?? '--', 50) }}</td>
-                        <td data-label="Acuity"><span class="badge {{ $acuityBadge }}">{{ ucwords(str_replace('_',' ',$triage->acuity_score ?? '--')) }}</span></td>
-                        <td data-label="Pain">{{ $triage->pain_score !== null ? $triage->pain_score . '/10' : '--' }}</td>
-                        <td data-label="Vitals" class="mono">
+                        <td data-label="{{ __('public.staff_portal.col_complaint', [], $l) ?: 'Complaint' }}">{{ Str::limit($triage->presenting_complaint ?? '--', 50) }}</td>
+                        <td data-label="{{ __('public.staff_portal.col_acuity', [], $l) ?: 'Acuity' }}"><span class="badge {{ $acuityBadge }}">{{ ucwords(str_replace('_',' ',$triage->acuity_score ?? '--')) }}</span></td>
+                        <td data-label="{{ __('public.staff_portal.col_pain', [], $l) ?: 'Pain' }}">{{ $triage->pain_score !== null ? $triage->pain_score . '/10' : '--' }}</td>
+                        <td data-label="{{ __('public.staff_portal.col_vitals', [], $l) ?: 'Vitals' }}" class="mono">
                             @if($v)
                                 @php
                                     $spo2Crit = isset($v->oxygen_saturation) && $v->oxygen_saturation < 90;
@@ -271,7 +277,7 @@
     <div class="panel-header">
         <h2 class="panel-title">
             <i data-lucide="activity"></i>
-            Record Triage
+            {{ __('public.staff_portal.panel_record_triage', [], $l) ?: 'Record Triage' }}
         </h2>
     </div>
     <div class="panel-body">
@@ -279,80 +285,80 @@
             @csrf
 
             <div class="form-group mb-4">
-                <label class="form-label form-label-required">Presenting Complaint *</label>
+                <label class="form-label form-label-required">{{ __('public.staff_portal.field_presenting_complaint', [], $l) ?: 'Presenting Complaint' }} *</label>
                 <textarea name="presenting_complaint" class="form-control" rows="3" required
-                    maxlength="1000" placeholder="Chief complaint / reason for visit…">{{ old('presenting_complaint') }}</textarea>
+                    maxlength="1000" placeholder="{{ __('public.staff_portal.ph_presenting_complaint', [], $l) ?: 'Chief complaint / reason for visit…' }}">{{ old('presenting_complaint') }}</textarea>
             </div>
 
             <div class="field-grid mb-4">
                 <div class="form-group">
-                    <label class="form-label form-label-required">Acuity Score *</label>
+                    <label class="form-label form-label-required">{{ __('public.staff_portal.field_acuity_score', [], $l) ?: 'Acuity Score' }} *</label>
                     <select name="acuity_score" id="acuity_score" class="form-control" required>
-                        <option value="resuscitation">Resuscitation (Level 1)</option>
-                        <option value="critical">Critical (Level 2)</option>
-                        <option value="urgent">Urgent (Level 3)</option>
-                        <option value="semi_urgent" selected>Semi-Urgent (Level 4)</option>
-                        <option value="non_urgent">Non-Urgent (Level 5)</option>
+                        <option value="resuscitation">{{ __('public.staff_portal.opt_resuscitation', [], $l) ?: 'Resuscitation (Level 1)' }}</option>
+                        <option value="critical">{{ __('public.staff_portal.opt_critical_acuity', [], $l) ?: 'Critical (Level 2)' }}</option>
+                        <option value="urgent">{{ __('public.staff_portal.opt_urgent_acuity', [], $l) ?: 'Urgent (Level 3)' }}</option>
+                        <option value="semi_urgent" selected>{{ __('public.staff_portal.opt_semi_urgent', [], $l) ?: 'Semi-Urgent (Level 4)' }}</option>
+                        <option value="non_urgent">{{ __('public.staff_portal.opt_non_urgent', [], $l) ?: 'Non-Urgent (Level 5)' }}</option>
                     </select>
                     <div id="acuity-hint" class="form-hint" style="display:none;"></div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Pain Score (0–10)</label>
+                    <label class="form-label">{{ __('public.staff_portal.field_pain_score', [], $l) ?: 'Pain Score (0–10)' }}</label>
                     <input type="number" name="pain_score" class="form-control" min="0" max="10" value="{{ old('pain_score') }}" placeholder="0">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Pregnancy Status</label>
+                    <label class="form-label">{{ __('public.staff_portal.field_pregnancy_status', [], $l) ?: 'Pregnancy Status' }}</label>
                     <select name="pregnancy_status" class="form-control">
                         <option value="">N/A</option>
-                        <option value="not_applicable">Not Applicable</option>
-                        <option value="not_pregnant">Not Pregnant</option>
-                        <option value="pregnant">Pregnant</option>
-                        <option value="unknown">Unknown</option>
+                        <option value="not_applicable">{{ __('public.staff_portal.opt_not_applicable', [], $l) ?: 'Not Applicable' }}</option>
+                        <option value="not_pregnant">{{ __('public.staff_portal.opt_not_pregnant', [], $l) ?: 'Not Pregnant' }}</option>
+                        <option value="pregnant">{{ __('public.staff_portal.opt_pregnant', [], $l) ?: 'Pregnant' }}</option>
+                        <option value="unknown">{{ __('public.staff_portal.opt_unknown', [], $l) ?: 'Unknown' }}</option>
                     </select>
                 </div>
             </div>
 
             <h3 class="panel-title mt-6 mb-3">
                 <i data-lucide="heart-pulse"></i>
-                Vital Signs
+                {{ __('public.staff_portal.panel_vital_signs', [], $l) ?: 'Vital Signs' }}
                 <span id="vitals-alert-badge" style="display:none;"></span>
             </h3>
             <div class="field-grid mb-6">
                 <div class="form-group">
-                    <label class="form-label">Temperature (°C)</label>
+                    <label class="form-label">{{ __('public.staff_portal.field_temperature', [], $l) ?: 'Temperature (°C)' }}</label>
                     <input type="number" id="v_temp" name="temperature" class="form-control" step="0.1" min="20" max="45" placeholder="36.5">
                     <div class="vital-hint form-hint"></div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">BP Systolic</label>
+                    <label class="form-label">{{ __('public.staff_portal.field_bp_systolic', [], $l) ?: 'BP Systolic' }}</label>
                     <input type="number" id="v_sys" name="blood_pressure_systolic" class="form-control" min="40" max="300" placeholder="120">
                     <div class="vital-hint form-hint"></div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">BP Diastolic</label>
+                    <label class="form-label">{{ __('public.staff_portal.field_bp_diastolic', [], $l) ?: 'BP Diastolic' }}</label>
                     <input type="number" name="blood_pressure_diastolic" class="form-control" min="20" max="200" placeholder="80">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Pulse (bpm)</label>
+                    <label class="form-label">{{ __('public.staff_portal.field_pulse', [], $l) ?: 'Pulse (bpm)' }}</label>
                     <input type="number" id="v_pulse" name="pulse" class="form-control" min="20" max="300" placeholder="72">
                     <div class="vital-hint form-hint"></div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Resp. Rate (/min)</label>
+                    <label class="form-label">{{ __('public.staff_portal.field_resp_rate', [], $l) ?: 'Resp. Rate (/min)' }}</label>
                     <input type="number" id="v_rr" name="respiratory_rate" class="form-control" min="4" max="60" placeholder="16">
                     <div class="vital-hint form-hint"></div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">SpO₂ (%)</label>
+                    <label class="form-label">{{ __('public.staff_portal.field_spo2', [], $l) ?: 'SpO₂ (%)' }}</label>
                     <input type="number" id="v_spo2" name="oxygen_saturation" class="form-control" step="0.1" min="50" max="100" placeholder="98">
                     <div class="vital-hint form-hint"></div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Weight (kg)</label>
+                    <label class="form-label">{{ __('public.staff_portal.field_weight', [], $l) ?: 'Weight (kg)' }}</label>
                     <input type="number" name="weight" class="form-control" step="0.1" min="0.5" max="500" placeholder="70">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Height (cm)</label>
+                    <label class="form-label">{{ __('public.staff_portal.field_height', [], $l) ?: 'Height (cm)' }}</label>
                     <input type="number" name="height" class="form-control" step="0.1" min="20" max="250" placeholder="170">
                 </div>
             </div>
@@ -360,9 +366,9 @@
             <div class="row-actions">
                 <button type="submit" class="btn btn-primary">
                     <i data-lucide="activity"></i>
-                    Save Triage
+                    {{ __('public.staff_portal.btn_save_triage', [], $l) ?: 'Save Triage' }}
                 </button>
-                <a href="{{ route('portals.staff.visits') }}" class="btn btn-ghost">Cancel</a>
+                <a href="{{ route('portals.staff.visits') }}" class="btn btn-ghost">{{ __('public.staff_portal.filter_clear', [], $l) ?: 'Cancel' }}</a>
             </div>
         </form>
     </div>
@@ -371,23 +377,21 @@
 {{-- Emergency Escalation Modal --}}
 <div id="escalate-modal" class="modal-backdrop" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="escalate-modal-title">
-        <h3 class="modal__title" id="escalate-modal-title"><i data-lucide="siren"></i> Declare Emergency</h3>
+        <h3 class="modal__title" id="escalate-modal-title"><i data-lucide="siren"></i> {{ __('public.staff_portal.modal_emergency_title', [], $l) ?: 'Declare Emergency' }}</h3>
         <form method="POST" action="{{ route('portals.staff.visits.triage.escalate', $visit->id) }}">
             @csrf
             <div class="modal__body">
-                <p>
-                    This will set acuity to <strong>Resuscitation (Level 1)</strong> and mark the visit as an emergency. This action is logged and cannot be undone without re-assessment.
-                </p>
+                <p>{{ __('public.staff_portal.modal_emergency_body', [], $l) ?: 'This will set acuity to Resuscitation (Level 1) and mark the visit as an emergency. This action is logged and cannot be undone without re-assessment.' }}</p>
                 <div class="form-group">
-                    <label class="form-label">Reason for Emergency Escalation *</label>
+                    <label class="form-label">{{ __('public.staff_portal.field_emergency_reason', [], $l) ?: 'Reason for Emergency Escalation' }} *</label>
                     <textarea name="reason" class="form-control" rows="3" required maxlength="500"
-                        placeholder="e.g. Sudden cardiac arrest, severe respiratory distress…"></textarea>
+                        placeholder="{{ __('public.staff_portal.ph_emergency_reason', [], $l) ?: 'e.g. Sudden cardiac arrest, severe respiratory distress…' }}"></textarea>
                 </div>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeEscalateModal()">Cancel</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeEscalateModal()">{{ __('public.staff_portal.filter_clear', [], $l) ?: 'Cancel' }}</button>
                 <button type="submit" class="btn btn-danger btn-sm">
-                    <i data-lucide="siren"></i> Confirm Emergency
+                    <i data-lucide="siren"></i> {{ __('public.staff_portal.btn_confirm_emergency', [], $l) ?: 'Confirm Emergency' }}
                 </button>
             </div>
         </form>
@@ -423,7 +427,6 @@ function checkRange(id) {
     let status = 'ok';
     let note = '';
 
-    // Support both flat [min,max] and array-of-ranges
     const isCrit = Array.isArray(r.critical[0])
         ? r.critical.some(([a,b]) => val >= a && val < b)
         : (val < r.critical[0] || val >= r.critical[1]);

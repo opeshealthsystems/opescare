@@ -1,30 +1,36 @@
 @extends('layouts.portal')
-@section('title', 'Webhook Delivery Logs')
+@section('title', __('public.developer_portal.page_webhooks', [], app()->getLocale()) ?: 'Webhook Delivery Logs')
 @section('sidebar_nav') @include('portals.developer._sidebar') @endsection
+@php $l = app()->getLocale(); @endphp
 
 @section('content')
 
     <div class="breadcrumb">
-        <a href="{{ route('portals.developer.apps.show', $client->id) }}">{{ $client->name ?? 'App' }}</a>
+        <a href="{{ route('portals.developer.apps.show', $client->id) }}">{{ $client->name ?? __('public.developer_portal.lbl_unnamed_app', [], $l) ?: 'App' }}</a>
         <i data-lucide="chevron-right"></i>
-        <span>Webhook delivery logs</span>
+        <span>{{ __('public.developer_portal.lnk_webhooks', [], $l) ?: 'Webhook delivery logs' }}</span>
     </div>
 
     <div class="page-head">
-        <h2>Webhook delivery logs</h2>
+        <h2>{{ __('public.developer_portal.page_webhooks', [], $l) ?: 'Webhook Delivery Logs' }}</h2>
     </div>
 
     <div class="panel">
         @if($deliveries->isEmpty())
         <div class="empty-state">
             <i data-lucide="webhook" class="empty-state-icon"></i>
-            <p>No webhook deliveries recorded yet.</p>
+            <p>{{ __('public.developer_portal.no_webhook_deliveries', [], $l) ?: 'No webhook deliveries recorded yet.' }}</p>
         </div>
         @else
         <div class="table-wrapper">
             <table class="data-table">
                 <thead><tr>
-                    <th>Event</th><th>Type</th><th>Attempts</th><th>HTTP</th><th>Status</th><th>Delivered at</th>
+                    <th>{{ __('public.developer_portal.col_event', [], $l) ?: 'Event' }}</th>
+                    <th>{{ __('public.developer_portal.col_type', [], $l) ?: 'Type' }}</th>
+                    <th>{{ __('public.developer_portal.col_attempts', [], $l) ?: 'Attempts' }}</th>
+                    <th>{{ __('public.developer_portal.col_http', [], $l) ?: 'HTTP' }}</th>
+                    <th>{{ __('public.developer_portal.col_status', [], $l) ?: 'Status' }}</th>
+                    <th>{{ __('public.developer_portal.col_delivered_at', [], $l) ?: 'Delivered at' }}</th>
                 </tr></thead>
                 <tbody>
                 @foreach($deliveries as $log)
