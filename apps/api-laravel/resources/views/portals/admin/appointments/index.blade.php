@@ -18,17 +18,17 @@
 
 <div class="kpi-grid" style="margin-bottom:1.5rem;">
     <div class="kpi-card"><div class="kpi-icon blue"><i data-lucide="calendar"></i></div><div class="kpi-body"><div class="kpi-label">Today Total</div><div class="kpi-value">{{ $stats['total'] ?? 0 }}</div></div></div>
-    <div class="kpi-card"><div class="kpi-icon teal"><i data-lucide="check-circle"></i></div><div class="kpi-body"><div class="kpi-label">Confirmed</div><div class="kpi-value" style="color:var(--p-teal);">{{ $stats['confirmed'] ?? 0 }}</div></div></div>
-    <div class="kpi-card"><div class="kpi-icon" style="background:rgba(239,68,68,.1);"><i data-lucide="ban" style="color:var(--p-danger);"></i></div><div class="kpi-body"><div class="kpi-label">Cancelled</div><div class="kpi-value" style="color:var(--p-danger);">{{ $stats['cancelled'] ?? 0 }}</div></div></div>
-    <div class="kpi-card"><div class="kpi-icon" style="background:rgba(245,158,11,.1);"><i data-lucide="user-x" style="color:var(--p-warning);"></i></div><div class="kpi-body"><div class="kpi-label">No-show</div><div class="kpi-value" style="color:var(--p-warning);">{{ $stats['no_show'] ?? 0 }}</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon teal"><i data-lucide="check-circle"></i></div><div class="kpi-body"><div class="kpi-label">Confirmed</div><div class="kpi-value text-teal">{{ $stats['confirmed'] ?? 0 }}</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon danger"><i data-lucide="ban"></i></div><div class="kpi-body"><div class="kpi-label">Cancelled</div><div class="kpi-value text-danger">{{ $stats['cancelled'] ?? 0 }}</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon warning"><i data-lucide="user-x"></i></div><div class="kpi-body"><div class="kpi-label">No-show</div><div class="kpi-value text-warning">{{ $stats['no_show'] ?? 0 }}</div></div></div>
 </div>
 
 <form method="GET" action="{{ route('portals.admin.appointments.index') }}" class="panel" style="padding:1rem;margin-bottom:1rem;">
     <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end;">
-        <div style="flex:1;min-width:180px;"><label style="font-size:.8rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">Search (Health ID)</label>
+        <div style="flex:1;min-width:180px;"><label class="filter-label">Search (Health ID)</label>
             <input type="text" name="search" class="form-control form-control-sm" placeholder="Health ID…" value="{{ request('search') }}">
         </div>
-        <div><label style="font-size:.8rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">Status</label>
+        <div><label class="filter-label">Status</label>
             <select name="status" class="form-control form-control-sm">
                 <option value="">All</option>
                 @foreach(['scheduled','confirmed','cancelled','no_show','completed'] as $s)
@@ -36,7 +36,7 @@
                 @endforeach
             </select>
         </div>
-        <div><label style="font-size:.8rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">Facility</label>
+        <div><label class="filter-label">Facility</label>
             <select name="facility_id" class="form-control form-control-sm">
                 <option value="">All Facilities</option>
                 @foreach($facilities??[] as $facility)
@@ -44,10 +44,10 @@
                 @endforeach
             </select>
         </div>
-        <div><label style="font-size:.8rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">From</label>
+        <div><label class="filter-label">From</label>
             <input type="date" name="date_from" class="form-control form-control-sm" value="{{ request('date_from') }}">
         </div>
-        <div><label style="font-size:.8rem;color:var(--p-text-muted);display:block;margin-bottom:.2rem;">To</label>
+        <div><label class="filter-label">To</label>
             <input type="date" name="date_to" class="form-control form-control-sm" value="{{ request('date_to') }}">
         </div>
         <button type="submit" class="btn btn-primary btn-sm">Filter</button>

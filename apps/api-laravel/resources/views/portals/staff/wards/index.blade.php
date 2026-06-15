@@ -91,16 +91,14 @@
             <div title="{{ $bed->bed_number }} — {{ ucfirst($bed->status) }}{{ $patient ? ' — '.$patient->health_id : '' }}"
                  style="background:{{ $bedColor['bg'] }};border:1px solid {{ $bedColor['border'] }};border-radius:6px;
                         padding:.3rem .55rem;min-width:50px;text-align:center;cursor:default;">
-                <div style="font-size:.7rem;font-weight:600;color:{{ $bedColor['text'] }};">{{ $bed->bed_number }}</div>
+                <div class="bed-label" style="color:{{ $bedColor['text'] }};">{{ $bed->bed_number }}</div>
                 @if($patient)
-                    <div style="font-size:.62rem;color:var(--p-text-muted);margin-top:1px;white-space:nowrap;overflow:hidden;max-width:60px;text-overflow:ellipsis;">
-                        {{ $patient->health_id }}
-                    </div>
+                    <div class="bed-caption text-muted">{{ $patient->health_id }}</div>
                 @else
-                    <div style="font-size:.62rem;color:{{ $bedColor['text'] }};margin-top:1px;opacity:.7;">{{ ucfirst($bed->status) }}</div>
+                    <div class="bed-status" style="color:{{ $bedColor['text'] }};">{{ ucfirst($bed->status) }}</div>
                 @endif
                 @if($bed->has_oxygen)
-                    <div style="font-size:.55rem;color:var(--p-primary);">O₂</div>
+                    <div class="bed-o2">O₂</div>
                 @endif
             </div>
             @endforeach

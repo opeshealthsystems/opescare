@@ -31,8 +31,8 @@
 <div style="max-width:680px;margin:0 auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
         <div>
-            <h1 style="font-size:1.15rem;margin:0 0 .2rem;">Import Audit Log</h1>
-            <p style="color:var(--p-text-muted);font-size:.83rem;margin:0;">
+            <h1 class="panel-heading">Import Audit Log</h1>
+            <p class="text-sm text-muted" style="margin:0;">
                 {{ $job->original_filename }} · {{ $importTypes[$job->import_type]['label'] ?? $job->import_type }}
             </p>
         </div>

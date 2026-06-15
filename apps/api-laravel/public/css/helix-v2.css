@@ -609,8 +609,34 @@ pre,
 .items-center { align-items: center; }
 .justify-between { justify-content: space-between; }
 .text-sm   { font-size: 13px; }
+.text-xs   { font-size: 12px; }
+.text-xxs  { font-size: 10px; }
 .text-muted { color: var(--p-text-muted); }
+.text-teal    { color: var(--p-teal); }
+.text-danger  { color: var(--p-danger); }
+.text-warning { color: var(--p-warning); }
 .font-medium { font-weight: 500; }
 .font-semibold { font-weight: 600; }
 .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .min-w-0 { min-width: 0; }
+
+/* Filter form labels (replaces ad-hoc inline sizing on <label> inside filter bars) */
+.filter-label {
+  font-size: 12px;
+  color: var(--p-text-muted);
+  display: block;
+  margin-bottom: .2rem;
+}
+
+/* Panel sub-heading — smaller h2/h3 inside panel bodies */
+.panel-heading {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 .35rem;
+}
+
+/* Bed grid chip typography */
+.bed-label   { font-size: 12px; font-weight: 600; }
+.bed-caption { font-size: 10px; margin-top: 1px; white-space: nowrap; overflow: hidden; max-width: 60px; text-overflow: ellipsis; }
+.bed-status  { font-size: 10px; margin-top: 1px; opacity: .7; }
+.bed-o2      { font-size: 9px; color: var(--p-primary); }

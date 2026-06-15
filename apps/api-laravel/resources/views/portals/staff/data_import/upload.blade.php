@@ -37,8 +37,8 @@
 <div style="max-width:640px;margin:0 auto;">
     <div class="panel">
         <div class="panel-body" style="padding:2rem;">
-            <h2 style="font-size:1.15rem;margin:0 0 .35rem;">Upload Import File</h2>
-            <p style="color:var(--p-text-muted);font-size:.88rem;margin:0 0 1.5rem;">
+            <h2 class="panel-heading">Upload Import File</h2>
+            <p class="text-sm text-muted" style="margin:0 0 1.5rem;">
                 Choose the data type you are importing, then upload a CSV or Excel file (max 25 MB).
             </p>
 
