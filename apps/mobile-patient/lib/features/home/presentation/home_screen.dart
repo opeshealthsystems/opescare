@@ -49,8 +49,8 @@ class _HomeBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasPendingItems = summary.pendingConsentCount > 0 ||
-        summary.pendingSurveyCount > 0;
+    final hasPendingItems =
+        summary.pendingConsentCount > 0 || summary.pendingSurveyCount > 0;
 
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -60,22 +60,21 @@ class _HomeBody extends StatelessWidget {
         // ── Header ──────────────────────────────────────────────────────────
         Row(children: [
           Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(_greeting(),
                   style: AppTextStyles.bodySm
                       .copyWith(color: AppColors.textSecondary, fontSize: 12)),
               const SizedBox(height: 2),
-              Text('${summary.patientName} 👋',
-                  style: AppTextStyles.h3),
+              Text('${summary.patientName} 👋', style: AppTextStyles.h3),
             ]),
           ),
           // Notification bell with badge
           GestureDetector(
-            onTap: hasPendingItems
-                ? () => context.push(Routes.consent)
-                : null,
+            onTap: hasPendingItems ? () => context.push(Routes.consent) : null,
             child: Container(
-              width: 36, height: 36,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
                 color: AppColors.primary50,
                 borderRadius: BorderRadius.circular(10),
@@ -83,12 +82,15 @@ class _HomeBody extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  const Icon(LucideIcons.bell, size: 18, color: AppColors.primary500),
+                  const Icon(LucideIcons.bell,
+                      size: 18, color: AppColors.primary500),
                   if (hasPendingItems)
                     Positioned(
-                      top: 6, right: 6,
+                      top: 6,
+                      right: 6,
                       child: Container(
-                        width: 8, height: 8,
+                        width: 8,
+                        height: 8,
                         decoration: const BoxDecoration(
                           color: AppColors.danger,
                           shape: BoxShape.circle,
@@ -179,7 +181,8 @@ class _HomeBody extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Upcoming',
-                style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700)),
+                style:
+                    AppTextStyles.body.copyWith(fontWeight: FontWeight.w700)),
             GestureDetector(
               onTap: () => context.push(Routes.appointments),
               child: Text('See all',
@@ -215,13 +218,15 @@ class _HomeBody extends StatelessWidget {
                 iconBg: AppColors.warningLight,
                 icon: LucideIcons.flaskConical,
                 iconColor: AppColors.warning,
-                title: '${summary.unreadLabCount} Lab Result${summary.unreadLabCount > 1 ? 's' : ''} Ready',
+                title:
+                    '${summary.unreadLabCount} Lab Result${summary.unreadLabCount > 1 ? 's' : ''} Ready',
                 subtitle: 'Tap to review',
                 pill: _Pill.amber('Review'),
                 isLast: true,
                 onTap: () => context.push(Routes.labs),
               ),
-            if (summary.nextAppointmentDate == null && summary.unreadLabCount == 0)
+            if (summary.nextAppointmentDate == null &&
+                summary.unreadLabCount == 0)
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: Text('No upcoming items.',
@@ -250,20 +255,20 @@ class _HomeBody extends StatelessWidget {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                    Text(
-                      'Consent Request${summary.pendingConsentCount > 1 ? 's' : ''} Pending',
-                      style: AppTextStyles.body.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF1E40AF),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'A facility wants access to your health records.',
-                      style: AppTextStyles.bodySm.copyWith(
-                          color: AppColors.info),
-                    ),
-                  ]),
+                        Text(
+                          'Consent Request${summary.pendingConsentCount > 1 ? 's' : ''} Pending',
+                          style: AppTextStyles.body.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primaryTextStrong,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'A facility wants access to your health records.',
+                          style: AppTextStyles.bodySm
+                              .copyWith(color: AppColors.info),
+                        ),
+                      ]),
                 ),
                 Text('Review →',
                     style: AppTextStyles.bodySm.copyWith(
@@ -334,14 +339,16 @@ class _HealthIdBanner extends StatelessWidget {
         ),
         child: Row(children: [
           Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text('HEALTH ID',
                   style: AppTextStyles.monoXs.copyWith(
                     color: Colors.white60,
                     letterSpacing: 0.1,
                   )),
               const SizedBox(height: 4),
-              Text(healthId, style: AppTextStyles.healthId.copyWith(fontSize: 14)),
+              Text(healthId,
+                  style: AppTextStyles.healthId.copyWith(fontSize: 14)),
             ]),
           ),
           Container(
@@ -447,7 +454,8 @@ class _QuickActionBtn extends StatelessWidget {
           ),
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Container(
-              width: 38, height: 38,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 color: bgColor,
                 borderRadius: BorderRadius.circular(10),
@@ -481,9 +489,9 @@ class _QuickActionBtn extends StatelessWidget {
 class _Pill {
   const _Pill._(this.label, this.bg, this.fg);
   const _Pill.blue(String label)
-      : this._(label, AppColors.infoLight, const Color(0xFF1E40AF));
+      : this._(label, AppColors.infoLight, AppColors.primaryTextStrong);
   const _Pill.amber(String label)
-      : this._(label, AppColors.warningLight, const Color(0xFF92400E));
+      : this._(label, AppColors.warningLight, AppColors.warningTextStrong);
 
   final String label;
   final Color bg, fg;
@@ -518,7 +526,8 @@ class _ListRow extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
           child: Row(children: [
             Container(
-              width: 40, height: 40,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
                 color: iconBg,
                 borderRadius: BorderRadius.circular(10),
@@ -527,12 +536,15 @@ class _ListRow extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(title,
-                    style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600)),
-                const SizedBox(height: 2),
-                Text(subtitle, style: AppTextStyles.bodySm),
-              ]),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                        style: AppTextStyles.body
+                            .copyWith(fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 2),
+                    Text(subtitle, style: AppTextStyles.bodySm),
+                  ]),
             ),
             const SizedBox(width: 8),
             Container(

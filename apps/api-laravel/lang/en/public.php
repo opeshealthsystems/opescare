@@ -80,6 +80,7 @@ return [
         'invalid_health_id' => 'Invalid Health ID',
         'suspended_health_id' => 'Suspended Health ID',
         'duplicate_suspected' => 'Duplicate Suspected',
+        'health_id_qr_alt' => 'Health ID QR code',
     ],
     'partner_governance' => [
         'title' => 'Partner Governance',
@@ -235,10 +236,28 @@ return [
         'reason_required'        => 'Reason (required)',
         'reason_placeholder'     => 'Explain why this action is necessary…',
         'select_facility'        => 'Select Facility',
+        'nav_switch_facility'    => 'Switch Facility',
+        'switch_back'            => 'Switch Back',
 
         // Profile prompt panel
         'profile_prompt_desc'    => 'Manage your privacy preferences, contact details and emergency contacts in your profile.',
         'profile_prompt_btn'     => 'Go to Profile',
+        'viewing_as'             => 'Viewing as',
+        'unknown_patient'        => 'Unknown patient',
+        'view_all'               => 'View all',
+        'col_patient'            => 'Patient',
+        'col_doctor'             => 'Doctor',
+        'col_facility'           => 'Facility',
+        'active_allergies'       => 'Active allergies',
+        'active_conditions'      => 'Active conditions',
+        'critical_allergies'     => 'Critical allergies',
+        'allergy_safety_notice'  => 'Allergy safety notice',
+        'clinical_safety_summary'=> 'Clinical safety summary',
+        'blood_group'            => 'Blood group',
+        'none_on_record'         => 'None on record',
+        'upcoming_appointments'  => 'Upcoming appointments',
+        'view_allergy_list'      => 'View allergy list',
+        'temp_qr_alt'            => 'Temporary access QR code',
 
         // Patient sub-pages — allergies
         'allergies_title'        => 'My Allergies',
@@ -520,6 +539,7 @@ return [
         'col_balance'                => 'Balance',
         'col_actions'                => 'Actions',
         'col_datetime'               => 'Date & Time',
+        'col_date'                   => 'Date',
         'col_type'                   => 'Type',
         'col_provider'               => 'Provider',
         'col_priority'               => 'Priority',
@@ -869,6 +889,11 @@ return [
         'page_subtitle'              => 'Manage Health IDs, review duplicate cases, and monitor security events.',
         'btn_duplicate_review'       => 'Duplicate Review',
         'btn_partners'               => 'Partners',
+        'btn_analytics'              => 'Analytics',
+        'btn_billing'                => 'Billing',
+        'btn_lab_orders_register'    => 'Lab Orders Register',
+        'btn_prescription_register'  => 'Prescription Register',
+        'btn_wards'                  => 'Wards',
 
         // KPI labels
         'kpi_total_health_ids'       => 'Total Health IDs',

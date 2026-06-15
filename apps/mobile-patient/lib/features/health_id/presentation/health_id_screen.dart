@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -20,6 +21,7 @@ class HealthIdScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cardAsync = ref.watch(healthIdCardProvider);
+    final shareCard = cardAsync.valueOrNull;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -30,12 +32,21 @@ class HealthIdScreen extends ConsumerWidget {
             child: Row(children: [
               _AppBarIcon(
                 icon: LucideIcons.share2,
-                onTap: () {},
+                onTap: () {
+                  if (shareCard == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Health ID is still loading.')),
+                    );
+                    return;
+                  }
+                  _shareHealthId(shareCard);
+                },
               ),
               const SizedBox(width: 6),
               _AppBarIcon(
                 icon: LucideIcons.moreVertical,
-                onTap: () {},
+                onTap: () => _showHealthIdActions(context, shareCard),
               ),
             ]),
           ),
@@ -68,7 +79,8 @@ class _AppBarIcon extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 36, height: 36,
+        width: 36,
+        height: 36,
         decoration: BoxDecoration(
           color: AppColors.primary50,
           borderRadius: BorderRadius.circular(10),
@@ -82,6 +94,58 @@ class _AppBarIcon extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 // Body
 // ─────────────────────────────────────────────────────────────────────────────
+
+void _shareHealthId(HealthIdCard card) {
+  final lookup = card.qrPayload?.isNotEmpty == true
+      ? card.qrPayload!
+      : 'OpesCare Health ID: ${card.healthId}';
+
+  Share.share(
+    'OpesCare Health ID\n'
+    'Name: ${card.displayName}\n'
+    'Health ID: ${card.healthId}\n'
+    'Lookup: $lookup',
+    subject: 'OpesCare Health ID ${card.healthId}',
+  );
+}
+
+void _showHealthIdActions(BuildContext context, HealthIdCard? card) {
+  showModalBottomSheet(
+    context: context,
+    builder: (sheetContext) => SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          ListTile(
+            leading: const Icon(LucideIcons.copy),
+            title: const Text('Copy Health ID'),
+            enabled: card != null,
+            onTap: card == null
+                ? null
+                : () {
+                    Clipboard.setData(ClipboardData(text: card.healthId));
+                    Navigator.pop(sheetContext);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Health ID copied')),
+                    );
+                  },
+          ),
+          ListTile(
+            leading: const Icon(LucideIcons.share2),
+            title: const Text('Share Health ID'),
+            enabled: card != null,
+            onTap: card == null
+                ? null
+                : () {
+                    Navigator.pop(sheetContext);
+                    _shareHealthId(card);
+                  },
+          ),
+        ]),
+      ),
+    ),
+  );
+}
 
 class _HealthIdBody extends ConsumerWidget {
   const _HealthIdBody({required this.card});
@@ -104,21 +168,25 @@ class _HealthIdBody extends ConsumerWidget {
 
         // ── Quick Actions (4 items) ────────────────────────────────────────
         Row(children: [
-          _QuickBtn(LucideIcons.flaskConical, 'Lab Results',
-              AppColors.primary500, AppColors.primary50,
+          _QuickBtn(
+              LucideIcons.flaskConical,
+              'Lab Results',
+              AppColors.primary500,
+              AppColors.primary50,
               () => context.push(Routes.labs)),
           const SizedBox(width: 10),
-          _QuickBtn(LucideIcons.calendarCheck, 'Appointments',
-              AppColors.success, AppColors.successLight,
+          _QuickBtn(
+              LucideIcons.calendarCheck,
+              'Appointments',
+              AppColors.success,
+              AppColors.successLight,
               () => context.push(Routes.appointments)),
           const SizedBox(width: 10),
-          _QuickBtn(LucideIcons.pill, 'Prescriptions',
-              AppColors.warning, AppColors.warningLight,
-              () => context.push(Routes.prescriptions)),
+          _QuickBtn(LucideIcons.pill, 'Prescriptions', AppColors.warning,
+              AppColors.warningLight, () => context.push(Routes.prescriptions)),
           const SizedBox(width: 10),
-          _QuickBtn(LucideIcons.shieldCheck, 'Consent',
-              AppColors.danger, AppColors.dangerLight,
-              () => context.push(Routes.consent)),
+          _QuickBtn(LucideIcons.shieldCheck, 'Consent', AppColors.danger,
+              AppColors.dangerLight, () => context.push(Routes.consent)),
         ]),
         const SizedBox(height: 20),
 
@@ -127,7 +195,8 @@ class _HealthIdBody extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Recent Access Logs',
-                style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700)),
+                style:
+                    AppTextStyles.body.copyWith(fontWeight: FontWeight.w700)),
             GestureDetector(
               onTap: () => context.push(Routes.accessLogs),
               child: Text('See all',
@@ -153,8 +222,7 @@ class _HealthIdBody extends ConsumerWidget {
                   border: Border.all(color: AppColors.divider),
                 ),
                 child: Text('No recent access logs.',
-                    style: AppTextStyles.bodySm,
-                    textAlign: TextAlign.center),
+                    style: AppTextStyles.bodySm, textAlign: TextAlign.center),
               );
             }
             return Container(
@@ -174,7 +242,8 @@ class _HealthIdBody extends ConsumerWidget {
                           horizontal: 14, vertical: 13),
                       child: Row(children: [
                         Container(
-                          width: 40, height: 40,
+                          width: 40,
+                          height: 40,
                           decoration: BoxDecoration(
                             color: log.isEmergency
                                 ? AppColors.dangerLight
@@ -196,15 +265,15 @@ class _HealthIdBody extends ConsumerWidget {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                            Text(log.facilityName,
-                                style: AppTextStyles.body
-                                    .copyWith(fontWeight: FontWeight.w600)),
-                            const SizedBox(height: 2),
-                            Text(log.purpose,
-                                style: AppTextStyles.bodySm,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis),
-                          ]),
+                                Text(log.facilityName,
+                                    style: AppTextStyles.body
+                                        .copyWith(fontWeight: FontWeight.w600)),
+                                const SizedBox(height: 2),
+                                Text(log.purpose,
+                                    style: AppTextStyles.bodySm,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis),
+                              ]),
                         ),
                         const SizedBox(width: 8),
                         Container(
@@ -268,9 +337,11 @@ class _HealthIdCard extends StatelessWidget {
         children: [
           // Background decorative circles
           Positioned(
-            top: -50, right: -50,
+            top: -50,
+            right: -50,
             child: Container(
-              width: 180, height: 180,
+              width: 180,
+              height: 180,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white.withValues(alpha: 0.05),
@@ -278,9 +349,11 @@ class _HealthIdCard extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: -60, left: -30,
+            bottom: -60,
+            left: -30,
             child: Container(
-              width: 160, height: 160,
+              width: 160,
+              height: 160,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white.withValues(alpha: 0.04),
@@ -300,7 +373,8 @@ class _HealthIdCard extends StatelessWidget {
                   children: [
                     Row(children: [
                       Container(
-                        width: 30, height: 30,
+                        width: 30,
+                        height: 30,
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.18),
                           borderRadius: BorderRadius.circular(8),
@@ -320,24 +394,25 @@ class _HealthIdCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF10B981).withValues(alpha: 0.2),
+                          color: AppColors.successBadgeFill,
                           border: Border.all(
-                            color: const Color(0xFF10B981).withValues(alpha: 0.4),
+                            color: AppColors.successBadgeStroke,
                           ),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(mainAxisSize: MainAxisSize.min, children: [
                           Container(
-                            width: 6, height: 6,
+                            width: 6,
+                            height: 6,
                             decoration: const BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Color(0xFF34D399),
+                              color: AppColors.successDot,
                             ),
                           ),
                           const SizedBox(width: 5),
                           Text('VERIFIED',
                               style: AppTextStyles.monoXs.copyWith(
-                                color: const Color(0xFF6EE7B7),
+                                color: AppColors.successAccent,
                                 fontSize: 10,
                               )),
                         ]),
@@ -357,8 +432,8 @@ class _HealthIdCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('FULL NAME',
-                              style: AppTextStyles.monoXs.copyWith(
-                                  color: Colors.white54)),
+                              style: AppTextStyles.monoXs
+                                  .copyWith(color: Colors.white54)),
                           const SizedBox(height: 3),
                           Text(
                             card.displayName,
@@ -373,8 +448,8 @@ class _HealthIdCard extends StatelessWidget {
                           const SizedBox(height: 14),
 
                           Text('HEALTH ID',
-                              style: AppTextStyles.monoXs.copyWith(
-                                  color: Colors.white54)),
+                              style: AppTextStyles.monoXs
+                                  .copyWith(color: Colors.white54)),
                           const SizedBox(height: 3),
                           GestureDetector(
                             onTap: () {
@@ -405,8 +480,8 @@ class _HealthIdCard extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text('DATE OF BIRTH',
-                                      style: AppTextStyles.monoXs.copyWith(
-                                          color: Colors.white54)),
+                                      style: AppTextStyles.monoXs
+                                          .copyWith(color: Colors.white54)),
                                   const SizedBox(height: 3),
                                   Text(card.dateOfBirth,
                                       style: AppTextStyles.body.copyWith(
@@ -422,12 +497,13 @@ class _HealthIdCard extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text('BLOOD GROUP',
-                                      style: AppTextStyles.monoXs.copyWith(
-                                          color: Colors.white54)),
+                                      style: AppTextStyles.monoXs
+                                          .copyWith(color: Colors.white54)),
                                   const SizedBox(height: 3),
-                                  Text(card.bloodGroup.isNotEmpty
-                                      ? card.bloodGroup
-                                      : '—',
+                                  Text(
+                                      card.bloodGroup.isNotEmpty
+                                          ? card.bloodGroup
+                                          : '—',
                                       style: AppTextStyles.body.copyWith(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w700,
@@ -452,24 +528,24 @@ class _HealthIdCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       padding: const EdgeInsets.all(8),
-                      child: (card.qrPayload != null &&
-                              card.qrPayload!.isNotEmpty)
-                          ? QrImageView(
-                              data: card.qrPayload!,
-                              version: QrVersions.auto,
-                              size: 74,
-                              backgroundColor: Colors.white,
-                              eyeStyle: const QrEyeStyle(
-                                eyeShape: QrEyeShape.square,
-                                color: AppColors.primary700,
-                              ),
-                              dataModuleStyle: const QrDataModuleStyle(
-                                dataModuleShape: QrDataModuleShape.square,
-                                color: AppColors.primary500,
-                              ),
-                            )
-                          : const Icon(LucideIcons.qrCode,
-                              size: 40, color: AppColors.primary200),
+                      child:
+                          (card.qrPayload != null && card.qrPayload!.isNotEmpty)
+                              ? QrImageView(
+                                  data: card.qrPayload!,
+                                  version: QrVersions.auto,
+                                  size: 74,
+                                  backgroundColor: Colors.white,
+                                  eyeStyle: const QrEyeStyle(
+                                    eyeShape: QrEyeShape.square,
+                                    color: AppColors.primary700,
+                                  ),
+                                  dataModuleStyle: const QrDataModuleStyle(
+                                    dataModuleShape: QrDataModuleShape.square,
+                                    color: AppColors.primary500,
+                                  ),
+                                )
+                              : const Icon(LucideIcons.qrCode,
+                                  size: 40, color: AppColors.primary200),
                     ),
                   ],
                 ),
@@ -506,16 +582,19 @@ class _GenerateQrButton extends StatelessWidget {
         ),
         child: Row(children: [
           Container(
-            width: 44, height: 44,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(LucideIcons.qrCode, size: 22, color: Colors.white),
+            child:
+                const Icon(LucideIcons.qrCode, size: 22, color: Colors.white),
           ),
           const SizedBox(width: 14),
           Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text('Generate Temporary QR',
                   style: AppTextStyles.body.copyWith(
                     color: Colors.white,
@@ -577,7 +656,8 @@ class _TempQrSheetState extends State<_TempQrSheet> {
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         // Handle
         Container(
-          width: 40, height: 4,
+          width: 40,
+          height: 4,
           decoration: BoxDecoration(
             color: AppColors.divider,
             borderRadius: BorderRadius.circular(2),
@@ -596,7 +676,8 @@ class _TempQrSheetState extends State<_TempQrSheet> {
 
         // QR
         Container(
-          width: 220, height: 220,
+          width: 220,
+          height: 220,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
@@ -610,24 +691,24 @@ class _TempQrSheetState extends State<_TempQrSheet> {
             ],
           ),
           padding: const EdgeInsets.all(16),
-          child: widget.card.qrPayload != null &&
-                  widget.card.qrPayload!.isNotEmpty
-              ? QrImageView(
-                  data: widget.card.qrPayload!,
-                  version: QrVersions.auto,
-                  size: 188,
-                  backgroundColor: Colors.white,
-                  eyeStyle: const QrEyeStyle(
-                    eyeShape: QrEyeShape.square,
-                    color: AppColors.primary700,
-                  ),
-                  dataModuleStyle: const QrDataModuleStyle(
-                    dataModuleShape: QrDataModuleShape.square,
-                    color: AppColors.primary500,
-                  ),
-                )
-              : const Icon(LucideIcons.qrCode,
-                  size: 80, color: AppColors.primary200),
+          child:
+              widget.card.qrPayload != null && widget.card.qrPayload!.isNotEmpty
+                  ? QrImageView(
+                      data: widget.card.qrPayload!,
+                      version: QrVersions.auto,
+                      size: 188,
+                      backgroundColor: Colors.white,
+                      eyeStyle: const QrEyeStyle(
+                        eyeShape: QrEyeShape.square,
+                        color: AppColors.primary700,
+                      ),
+                      dataModuleStyle: const QrDataModuleStyle(
+                        dataModuleShape: QrDataModuleShape.square,
+                        color: AppColors.primary500,
+                      ),
+                    )
+                  : const Icon(LucideIcons.qrCode,
+                      size: 80, color: AppColors.primary200),
         ),
 
         const SizedBox(height: 16),
@@ -652,8 +733,8 @@ class _TempQrSheetState extends State<_TempQrSheet> {
         ),
         const SizedBox(height: 12),
         Text(widget.card.healthId,
-            style: AppTextStyles.monoSm.copyWith(
-                color: AppColors.textSecondary)),
+            style:
+                AppTextStyles.monoSm.copyWith(color: AppColors.textSecondary)),
         const SizedBox(height: 20),
         OutlinedButton.icon(
           onPressed: () => Navigator.pop(context),
@@ -661,8 +742,8 @@ class _TempQrSheetState extends State<_TempQrSheet> {
           label: const Text('Close'),
           style: OutlinedButton.styleFrom(
             minimumSize: const Size(double.infinity, 48),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
       ]),
@@ -695,7 +776,8 @@ class _QuickBtn extends StatelessWidget {
           ),
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Container(
-              width: 38, height: 38,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 color: bgColor,
                 borderRadius: BorderRadius.circular(10),
@@ -706,7 +788,9 @@ class _QuickBtn extends StatelessWidget {
             Text(
               label,
               style: AppTextStyles.caption.copyWith(
-                fontSize: 10, height: 1.2, fontWeight: FontWeight.w600,
+                fontSize: 10,
+                height: 1.2,
+                fontWeight: FontWeight.w600,
                 color: AppColors.textSecondary,
               ),
               textAlign: TextAlign.center,

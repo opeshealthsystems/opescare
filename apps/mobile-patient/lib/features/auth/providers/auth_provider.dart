@@ -32,10 +32,12 @@ class AuthState {
     Object? pendingPhone = _keep,
   }) =>
       AuthState(
-        status:       status       ?? this.status,
-        isLoading:    isLoading    ?? this.isLoading,
-        errorMessage: errorMessage == _keep ? this.errorMessage : errorMessage as String?,
-        pendingPhone: pendingPhone == _keep ? this.pendingPhone  : pendingPhone  as String?,
+        status: status ?? this.status,
+        isLoading: isLoading ?? this.isLoading,
+        errorMessage:
+            errorMessage == _keep ? this.errorMessage : errorMessage as String?,
+        pendingPhone:
+            pendingPhone == _keep ? this.pendingPhone : pendingPhone as String?,
       );
 }
 
@@ -74,8 +76,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
         status: AuthStatus.authenticated,
       );
       try {
-        FirebaseAnalytics.instance.logEvent(
-            name: 'login_success', parameters: {'method': 'email'});
+        FirebaseAnalytics.instance
+            .logEvent(name: 'login_success', parameters: {'method': 'email'});
       } catch (_) {} // no-op if Firebase not initialized (tests / CI)
       unawaited(_registerFcmToken().catchError((_) {})); // fire-and-forget
     } catch (e) {
@@ -120,6 +122,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> resendOtp() async {
+    final phone = state.pendingPhone;
+    if (phone == null) return;
+
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      await _repo.resendOtp(phoneNumber: phone);
+      state = state.copyWith(isLoading: false);
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: _friendlyError(e.toString()),
+      );
+    }
+  }
+
   // ── Logout ──────────────────────────────────────────────────────────────────
 
   Future<void> logout() async {
@@ -148,7 +166,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // ── Helpers ─────────────────────────────────────────────────────────────────
 
   String _friendlyError(String raw) {
-    if (raw.contains('401') || raw.contains('Invalid email') || raw.contains('Invalid credentials')) {
+    if (raw.contains('401') ||
+        raw.contains('Invalid email') ||
+        raw.contains('Invalid credentials')) {
       return 'Incorrect email or password. Please try again.';
     }
     if (raw.contains('404') || raw.contains('not found')) {

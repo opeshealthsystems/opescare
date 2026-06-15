@@ -18,7 +18,7 @@ class FamilyScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final membersAsync = ref.watch(familyMembersProvider);
     final invitesAsync = ref.watch(familyInvitationsProvider);
-    final cardAsync    = ref.watch(healthIdCardProvider);
+    final cardAsync = ref.watch(healthIdCardProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -30,7 +30,8 @@ class FamilyScreen extends ConsumerWidget {
             child: GestureDetector(
               onTap: () => _showAddSheet(context),
               child: Container(
-                width: 36, height: 36,
+                width: 36,
+                height: 36,
                 decoration: BoxDecoration(
                   color: AppColors.primary50,
                   borderRadius: BorderRadius.circular(10),
@@ -58,14 +59,18 @@ class FamilyScreen extends ConsumerWidget {
                 )),
             const SizedBox(height: 8),
             cardAsync.when(
-              loading: () => const LoadingSkeleton(height: 72, borderRadius: 14),
+              loading: () =>
+                  const LoadingSkeleton(height: 72, borderRadius: 14),
               error: (_, __) => const SizedBox.shrink(),
               data: (card) => Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [AppColors.cardGradientStart, AppColors.cardGradientEnd],
+                    colors: [
+                      AppColors.cardGradientStart,
+                      AppColors.cardGradientEnd
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -80,7 +85,8 @@ class FamilyScreen extends ConsumerWidget {
                 ),
                 child: Row(children: [
                   Container(
-                    width: 40, height: 40,
+                    width: 40,
+                    height: 40,
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
@@ -99,27 +105,27 @@ class FamilyScreen extends ConsumerWidget {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                      Text(card.displayName,
-                          style: AppTextStyles.body.copyWith(
-                              color: Colors.white, fontWeight: FontWeight.w700)),
-                      const SizedBox(height: 2),
-                      Text(card.healthId,
-                          style: AppTextStyles.monoXs.copyWith(
-                              color: Colors.white60, letterSpacing: 0.08)),
-                    ]),
+                          Text(card.displayName,
+                              style: AppTextStyles.body.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700)),
+                          const SizedBox(height: 2),
+                          Text(card.healthId,
+                              style: AppTextStyles.monoXs.copyWith(
+                                  color: Colors.white60, letterSpacing: 0.08)),
+                        ]),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 9, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
                     decoration: BoxDecoration(
-                      color: const Color(0x3310B981),
+                      color: AppColors.successBadgeSurface,
                       borderRadius: BorderRadius.circular(999),
-                      border: Border.all(
-                          color: const Color(0x5910B981)),
+                      border: Border.all(color: AppColors.successBadgeBorder),
                     ),
                     child: Text('You',
                         style: AppTextStyles.caption.copyWith(
-                          color: const Color(0xFF6EE7B7),
+                          color: AppColors.successAccent,
                           fontWeight: FontWeight.w700,
                         )),
                   ),
@@ -132,12 +138,13 @@ class FamilyScreen extends ConsumerWidget {
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Text('FAMILY MEMBERS',
                   style: AppTextStyles.label.copyWith(
-                    color: AppColors.textMuted, letterSpacing: 0.8)),
+                      color: AppColors.textMuted, letterSpacing: 0.8)),
               GestureDetector(
-                onTap: () {},
+                onTap: () => _showAddSheet(context),
                 child: Text('Manage',
                     style: AppTextStyles.bodySm.copyWith(
-                      color: AppColors.primary500, fontWeight: FontWeight.w600)),
+                        color: AppColors.primary500,
+                        fontWeight: FontWeight.w600)),
               ),
             ]),
             const SizedBox(height: 8),
@@ -163,7 +170,7 @@ class FamilyScreen extends ConsumerWidget {
                                 padding: const EdgeInsets.only(bottom: 8),
                                 child: _MemberCard(
                                   member: m,
-                                  onTap: () {},
+                                  onTap: () => _showMemberDetails(context, m),
                                 ),
                               ))
                           .toList(),
@@ -200,12 +207,12 @@ class FamilyScreen extends ConsumerWidget {
                   color: AppColors.primary50,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                      color: AppColors.primary200,
-                      style: BorderStyle.solid),
+                      color: AppColors.primary200, style: BorderStyle.solid),
                 ),
                 child: Row(children: [
                   Container(
-                    width: 36, height: 36,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
                       color: AppColors.primary100,
                       borderRadius: BorderRadius.circular(10),
@@ -218,16 +225,16 @@ class FamilyScreen extends ConsumerWidget {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                      Text('Add or Invite a Family Member',
-                          style: AppTextStyles.body.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.primary500,
-                          )),
-                      const SizedBox(height: 2),
-                      Text('Register a dependent or send an invite link',
-                          style: AppTextStyles.bodySm.copyWith(
-                              color: AppColors.primary400)),
-                    ]),
+                          Text('Add or Invite a Family Member',
+                              style: AppTextStyles.body.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.primary500,
+                              )),
+                          const SizedBox(height: 2),
+                          Text('Register a dependent or send an invite link',
+                              style: AppTextStyles.bodySm
+                                  .copyWith(color: AppColors.primary400)),
+                        ]),
                   ),
                   const Icon(LucideIcons.chevronRight,
                       size: 16, color: AppColors.primary400),
@@ -249,6 +256,15 @@ class FamilyScreen extends ConsumerWidget {
       builder: (_) => _AddSheet(),
     );
   }
+
+  void _showMemberDetails(BuildContext context, FamilyMember member) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _MemberDetailsSheet(member: member),
+    );
+  }
 }
 
 // ── Bottom sheet: choose add method ─────────────────────────────────────────
@@ -265,9 +281,10 @@ class _AddSheet extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         Container(
-          width: 40, height: 4,
+          width: 40,
+          height: 4,
           decoration: BoxDecoration(
-            color: AppColors.divider, borderRadius: BorderRadius.circular(2)),
+              color: AppColors.divider, borderRadius: BorderRadius.circular(2)),
         ),
         const SizedBox(height: 20),
         Text('Add a Family Member', style: AppTextStyles.h3),
@@ -283,8 +300,10 @@ class _AddSheet extends StatelessWidget {
           subtitle: 'Register a child or dependent with a new Health ID',
           onTap: () {
             Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(
-                builder: (_) => const AddFamilyMemberScreen()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const AddFamilyMemberScreen()));
           },
         ),
         const SizedBox(height: 10),
@@ -296,15 +315,18 @@ class _AddSheet extends StatelessWidget {
           subtitle: 'Send a link to someone with an existing OpesCare account',
           onTap: () {
             Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(
-                builder: (_) => const InviteFamilyMemberScreen()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const InviteFamilyMemberScreen()));
           },
         ),
         const SizedBox(height: 10),
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text('Cancel',
-              style: AppTextStyles.body.copyWith(color: AppColors.textSecondary)),
+              style:
+                  AppTextStyles.body.copyWith(color: AppColors.textSecondary)),
         ),
       ]),
     );
@@ -338,19 +360,25 @@ class _SheetOption extends StatelessWidget {
         ),
         child: Row(children: [
           Container(
-            width: 44, height: 44,
-            decoration: BoxDecoration(color: iconBg, borderRadius: BorderRadius.circular(12)),
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+                color: iconBg, borderRadius: BorderRadius.circular(12)),
             child: Icon(icon, size: 20, color: iconColor),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(title, style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700)),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(title,
+                  style:
+                      AppTextStyles.body.copyWith(fontWeight: FontWeight.w700)),
               const SizedBox(height: 2),
               Text(subtitle, style: AppTextStyles.bodySm),
             ]),
           ),
-          const Icon(LucideIcons.chevronRight, size: 16, color: AppColors.neutral400),
+          const Icon(LucideIcons.chevronRight,
+              size: 16, color: AppColors.neutral400),
         ]),
       ),
     );
@@ -359,18 +387,144 @@ class _SheetOption extends StatelessWidget {
 
 // ── Member Card ──────────────────────────────────────────────────────────────
 
+class _MemberDetailsSheet extends StatelessWidget {
+  const _MemberDetailsSheet({required this.member});
+  final FamilyMember member;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
+      child: SafeArea(
+        top: false,
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.divider,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Container(
+            width: 56,
+            height: 56,
+            decoration: const BoxDecoration(
+              color: AppColors.primary50,
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                member.initials,
+                style: AppTextStyles.h3.copyWith(
+                  color: AppColors.primaryTextStrong,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(member.name,
+              style: AppTextStyles.h3, textAlign: TextAlign.center),
+          if (member.healthId != null && member.healthId!.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              member.healthId!,
+              style: AppTextStyles.monoSm.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+          const SizedBox(height: 20),
+          _DetailRow('Relationship', _capitalize(member.relationship)),
+          _DetailRow('Status', _capitalize(member.status)),
+          if (member.dateOfBirth != null && member.dateOfBirth!.isNotEmpty)
+            _DetailRow('Date of birth', member.dateOfBirth!),
+          if (member.age != null) _DetailRow('Age', member.age.toString()),
+          if (member.activeRxCount > 0)
+            _DetailRow('Active prescriptions', member.activeRxCount.toString()),
+          if (member.upcomingAppointment != null &&
+              member.upcomingAppointment!.isNotEmpty)
+            _DetailRow('Next appointment', member.upcomingAppointment!),
+          if (member.hasAlert)
+            _DetailRow('Alert', member.alertMessage ?? 'Needs attention'),
+          const SizedBox(height: 18),
+          OutlinedButton(
+            onPressed: () => Navigator.pop(context),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Close'),
+          ),
+        ]),
+      ),
+    );
+  }
+
+  static String _capitalize(String s) =>
+      s.isEmpty ? s : '${s[0].toUpperCase()}${s.substring(1)}';
+}
+
+class _DetailRow extends StatelessWidget {
+  const _DetailRow(this.label, this.value);
+  final String label, value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Expanded(
+          child: Text(
+            label,
+            style: AppTextStyles.bodySm.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            value,
+            textAlign: TextAlign.right,
+            style: AppTextStyles.bodySm.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ]),
+    );
+  }
+}
+
 class _MemberCard extends StatelessWidget {
   const _MemberCard({required this.member, required this.onTap});
   final FamilyMember member;
   final VoidCallback onTap;
 
   static const _avatarColors = [
-    Color(0xFFFEF3C7), Color(0xFFEFF6FF), Color(0xFFF0FDF4),
-    Color(0xFFFEE2E2), Color(0xFFF5F3FF),
+    AppColors.warningLight,
+    AppColors.primary50,
+    AppColors.successLight,
+    AppColors.dangerLight,
+    AppColors.purple50,
   ];
   static const _textColors = [
-    Color(0xFF92400E), Color(0xFF1E40AF), Color(0xFF065F46),
-    Color(0xFF991B1B), Color(0xFF4C1D95),
+    AppColors.warningTextStrong,
+    AppColors.primaryTextStrong,
+    AppColors.successTextStrong,
+    AppColors.dangerTextStrong,
+    AppColors.purpleTextStrong,
   ];
 
   @override
@@ -387,20 +541,23 @@ class _MemberCard extends StatelessWidget {
         ),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Container(
-            width: 44, height: 44,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: _avatarColors[idx], shape: BoxShape.circle),
+                color: _avatarColors[idx], shape: BoxShape.circle),
             child: Center(
               child: Text(member.initials,
                   style: AppTextStyles.body.copyWith(
-                    color: _textColors[idx], fontWeight: FontWeight.w800)),
+                      color: _textColors[idx], fontWeight: FontWeight.w800)),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(member.name,
-                  style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700)),
+                  style:
+                      AppTextStyles.body.copyWith(fontWeight: FontWeight.w700)),
               const SizedBox(height: 2),
               Text(
                 [
@@ -414,19 +571,21 @@ class _MemberCard extends StatelessWidget {
               Wrap(spacing: 5, runSpacing: 4, children: [
                 if (member.activeRxCount > 0)
                   _Chip('${member.activeRxCount} Active Rx',
-                      AppColors.warningLight, const Color(0xFF92400E)),
+                      AppColors.warningLight, AppColors.warningTextStrong),
                 if (member.upcomingAppointment != null)
                   _Chip('Appt ${member.upcomingAppointment!}',
-                      AppColors.infoLight, const Color(0xFF1E40AF)),
+                      AppColors.infoLight, AppColors.primaryTextStrong),
                 if (member.hasAlert)
-                  _Chip(member.alertMessage ?? 'Alert',
-                      AppColors.dangerLight, const Color(0xFF991B1B)),
+                  _Chip(member.alertMessage ?? 'Alert', AppColors.dangerLight,
+                      AppColors.dangerTextStrong),
                 if (!member.hasAlert && member.activeRxCount == 0)
-                  _Chip('All good', AppColors.successLight, AppColors.successDark),
+                  _Chip('All good', AppColors.successLight,
+                      AppColors.successDark),
               ]),
             ]),
           ),
-          const Icon(LucideIcons.chevronRight, size: 16, color: AppColors.neutral400),
+          const Icon(LucideIcons.chevronRight,
+              size: 16, color: AppColors.neutral400),
         ]),
       ),
     );
@@ -444,11 +603,11 @@ class _Chip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: bg, borderRadius: BorderRadius.circular(999)),
+      decoration:
+          BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
       child: Text(label,
-          style: AppTextStyles.caption.copyWith(
-            fontSize: 9, fontWeight: FontWeight.w700, color: fg)),
+          style: AppTextStyles.caption
+              .copyWith(fontSize: 9, fontWeight: FontWeight.w700, color: fg)),
     );
   }
 }
@@ -469,17 +628,20 @@ class _PendingInviteCard extends StatelessWidget {
       ),
       child: Row(children: [
         Container(
-          width: 44, height: 44,
+          width: 44,
+          height: 44,
           decoration: BoxDecoration(
-            color: AppColors.warningLight, shape: BoxShape.circle),
-          child: const Icon(LucideIcons.user,
-              size: 18, color: AppColors.warning),
+              color: AppColors.warningLight, shape: BoxShape.circle),
+          child:
+              const Icon(LucideIcons.user, size: 18, color: AppColors.warning),
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(invitation.contact,
-                style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700)),
+                style:
+                    AppTextStyles.body.copyWith(fontWeight: FontWeight.w700)),
             const SizedBox(height: 2),
             Text('Invite pending · expires ${invitation.expiresAt}',
                 style: AppTextStyles.bodySm),
@@ -491,10 +653,14 @@ class _PendingInviteCard extends StatelessWidget {
             color: AppColors.warningLight,
             borderRadius: BorderRadius.circular(999),
           ),
-          child: Text('Pending',
-              style: AppTextStyles.caption.copyWith(
-                fontSize: 10, fontWeight: FontWeight.w700,
-                color: const Color(0xFF92400E))),
+          child: Text(
+            'Pending',
+            style: AppTextStyles.caption.copyWith(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: AppColors.warningTextStrong,
+            ),
+          ),
         ),
       ]),
     );

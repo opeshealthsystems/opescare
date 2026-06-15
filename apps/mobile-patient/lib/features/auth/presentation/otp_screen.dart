@@ -16,16 +16,20 @@ class OtpScreen extends ConsumerStatefulWidget {
 class _OtpScreenState extends ConsumerState<OtpScreen> {
   final List<TextEditingController> _controllers =
       List.generate(6, (_) => TextEditingController());
-  final List<FocusNode> _focusNodes =
-      List.generate(6, (_) => FocusNode());
+  final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
   bool _isSubmitting = false;
+  bool _isResending = false;
 
   String get _otp => _controllers.map((c) => c.text).join();
 
   @override
   void dispose() {
-    for (final c in _controllers) { c.dispose(); }
-    for (final f in _focusNodes) { f.dispose(); }
+    for (final c in _controllers) {
+      c.dispose();
+    }
+    for (final f in _focusNodes) {
+      f.dispose();
+    }
     super.dispose();
   }
 
@@ -45,6 +49,27 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       _focusNodes[index - 1].requestFocus();
     }
     if (_otp.length == 6) _submit();
+  }
+
+  Future<void> _resendOtp() async {
+    if (_isResending) return;
+    setState(() => _isResending = true);
+    for (final c in _controllers) {
+      c.clear();
+    }
+    _isSubmitting = false;
+
+    await ref.read(authProvider.notifier).resendOtp();
+    if (!mounted) return;
+
+    setState(() => _isResending = false);
+    final error = ref.read(authProvider).errorMessage;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(error ?? 'A new OTP has been sent.'),
+        backgroundColor: error == null ? AppColors.success : AppColors.danger,
+      ),
+    );
   }
 
   @override
@@ -109,7 +134,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 onPressed: authState.isLoading ? null : _submit,
                 child: authState.isLoading
                     ? const SizedBox(
-                        height: 20, width: 20,
+                        height: 20,
+                        width: 20,
                         child: CircularProgressIndicator(
                             color: Colors.white, strokeWidth: 2),
                       )
@@ -119,19 +145,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               Center(
                 child: TextButton.icon(
                   icon: const Icon(LucideIcons.refreshCw, size: 16),
-                  label: const Text('Resend OTP'),
-                  onPressed: () {
-                    if (phone.isNotEmpty) {
-                      // Clear stale OTP digits before resend
-                      for (final c in _controllers) {
-                        c.clear();
-                      }
-                      _isSubmitting = false;
-                      // Resend requires phone+PIN — prompt user back to login
-                      // For now we just navigate back to allow re-entry
-                      Navigator.of(context).pop();
-                    }
-                  },
+                  label: Text(_isResending ? 'Resending...' : 'Resend OTP'),
+                  onPressed:
+                      phone.isEmpty || authState.isLoading ? null : _resendOtp,
                 ),
               ),
             ],
@@ -156,7 +172,8 @@ class _OtpBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 46, height: 56,
+      width: 46,
+      height: 56,
       child: TextField(
         controller: controller,
         focusNode: focusNode,
@@ -169,7 +186,8 @@ class _OtpBox extends StatelessWidget {
           counterText: '',
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: AppColors.neutral200, width: 1.5),
+            borderSide:
+                const BorderSide(color: AppColors.neutral200, width: 1.5),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),

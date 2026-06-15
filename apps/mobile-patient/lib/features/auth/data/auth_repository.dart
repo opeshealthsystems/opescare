@@ -61,6 +61,13 @@ class AuthRepository {
     return token;
   }
 
+  Future<void> resendOtp({required String phoneNumber}) async {
+    await _client.post(
+      ApiEndpoints.resendOtp,
+      body: {'phone_number': phoneNumber},
+    );
+  }
+
   Future<void> logout() => _storage.clearAll();
 
   /// Register FCM device token with backend. Returns the server-side token record ID.

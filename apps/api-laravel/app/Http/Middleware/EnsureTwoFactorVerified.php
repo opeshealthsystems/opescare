@@ -15,10 +15,10 @@ class EnsureTwoFactorVerified
         if (
             $user
             && $user->requiresTwoFactor()
-            && $user->hasTwoFactorEnabled()
             && ! (bool) $request->session()->get('mfa.verified', false)
         ) {
             $request->session()->put('mfa.user_id', $user->id);
+            $request->session()->put('mfa.setup_required', ! $user->hasTwoFactorEnabled());
 
             return redirect()->route('mfa.challenge');
         }

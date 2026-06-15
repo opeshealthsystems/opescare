@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../core/api/api_endpoints.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../providers/auth_provider.dart';
@@ -13,12 +15,12 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final _phoneCtrl    = TextEditingController();
-  final _emailCtrl    = TextEditingController();
+  final _phoneCtrl = TextEditingController();
+  final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
-  final _formKey      = GlobalKey<FormState>();
-  bool _obscure       = true;
-  bool _usePhone      = true;
+  final _formKey = GlobalKey<FormState>();
+  bool _obscure = true;
+  bool _usePhone = true;
 
   @override
   void dispose() {
@@ -31,18 +33,40 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_usePhone) {
-      await ref.read(authProvider.notifier)
+      await ref
+          .read(authProvider.notifier)
           .loginWithPhone(_phoneCtrl.text.trim(), _passwordCtrl.text);
     } else {
-      await ref.read(authProvider.notifier)
+      await ref
+          .read(authProvider.notifier)
           .loginWithEmail(_emailCtrl.text.trim(), _passwordCtrl.text);
     }
+  }
+
+  Future<void> _openForgotPin() async {
+    final uri = Uri.parse(ApiEndpoints.forgotPassword);
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!mounted || launched) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Unable to open PIN recovery.')),
+    );
+  }
+
+  Future<void> _openRegister() async {
+    final uri = Uri.parse(ApiEndpoints.registerPatient);
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!mounted || launched) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Unable to open account registration.')),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
-    final loading   = authState.status == AuthStatus.unknown;
+    final loading = authState.status == AuthStatus.unknown;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -60,7 +84,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Center(
                   child: Column(children: [
                     Container(
-                      width: 52, height: 52,
+                      width: 52,
+                      height: 52,
                       decoration: BoxDecoration(
                         color: AppColors.primary50,
                         borderRadius: BorderRadius.circular(14),
@@ -77,8 +102,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           letterSpacing: -0.5,
                         )),
                     const SizedBox(height: 12),
-                    Text('Welcome back',
-                        style: AppTextStyles.h3),
+                    Text('Welcome back', style: AppTextStyles.h3),
                     const SizedBox(height: 4),
                     Text('Sign in with your phone number or email',
                         style: AppTextStyles.bodySm,
@@ -123,11 +147,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                        const Text('🇨🇲', style: TextStyle(fontSize: 16)),
-                        const SizedBox(width: 3),
-                        const Icon(LucideIcons.chevronDown,
-                            size: 12, color: AppColors.neutral400),
-                      ]),
+                            const Text('🇨🇲', style: TextStyle(fontSize: 16)),
+                            const SizedBox(width: 3),
+                            const Icon(LucideIcons.chevronDown,
+                                size: 12, color: AppColors.neutral400),
+                          ]),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -137,7 +161,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         style: AppTextStyles.body,
                         decoration: _dec('+237 6XX XXX XXX'),
                         validator: (v) => (v == null || v.trim().isEmpty)
-                            ? 'Phone required' : null,
+                            ? 'Phone required'
+                            : null,
                       ),
                     ),
                   ]),
@@ -152,7 +177,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     style: AppTextStyles.body,
                     decoration: _dec('you@example.com'),
                     validator: (v) => (v == null || !v.contains('@'))
-                        ? 'Valid email required' : null,
+                        ? 'Valid email required'
+                        : null,
                   ),
                 ],
                 const SizedBox(height: 14),
@@ -163,9 +189,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   children: [
                     Text('PIN',
                         style: AppTextStyles.label.copyWith(
-                            color: AppColors.textSecondary, letterSpacing: 0.6)),
+                            color: AppColors.textSecondary,
+                            letterSpacing: 0.6)),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: _openForgotPin,
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
                         minimumSize: Size.zero,
@@ -189,13 +216,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscure ? LucideIcons.eye : LucideIcons.eyeOff,
-                        size: 18, color: AppColors.neutral400,
+                        size: 18,
+                        color: AppColors.neutral400,
                       ),
                       onPressed: () => setState(() => _obscure = !_obscure),
                     ),
                   ),
-                  validator: (v) => (v == null || v.isEmpty)
-                      ? 'PIN required' : null,
+                  validator: (v) =>
+                      (v == null || v.isEmpty) ? 'PIN required' : null,
                 ),
                 const SizedBox(height: 20),
 
@@ -206,11 +234,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.dangerLight,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.danger.withValues(alpha: 0.3)),
+                      border: Border.all(
+                          color: AppColors.danger.withValues(alpha: 0.3)),
                     ),
                     child: Text(authState.errorMessage!,
-                        style: AppTextStyles.bodySm.copyWith(
-                            color: AppColors.dangerDark)),
+                        style: AppTextStyles.bodySm
+                            .copyWith(color: AppColors.dangerDark)),
                   ),
                   const SizedBox(height: 14),
                 ],
@@ -219,7 +248,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Container(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [AppColors.cardGradientStart, AppColors.cardGradientEnd],
+                      colors: [
+                        AppColors.cardGradientStart,
+                        AppColors.cardGradientEnd
+                      ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -235,10 +267,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         alignment: Alignment.center,
                         child: loading
                             ? const SizedBox(
-                                width: 20, height: 20,
+                                width: 20,
+                                height: 20,
                                 child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white))
+                                    strokeWidth: 2, color: Colors.white))
                             : Text('Sign In',
                                 style: AppTextStyles.button.copyWith(
                                     color: Colors.white, fontSize: 15)),
@@ -250,10 +282,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 // ── Register link ─────────────────────────────────────────
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Text('New to OpesCare? ',
-                      style: AppTextStyles.bodySm),
+                  Text('New to OpesCare? ', style: AppTextStyles.bodySm),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: _openRegister,
                     child: Text('Create account →',
                         style: AppTextStyles.bodySm.copyWith(
                           color: AppColors.primary500,
@@ -276,13 +307,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       style: AppTextStyles.caption,
                       children: [
                         const TextSpan(text: 'By continuing you agree to our '),
-                        TextSpan(text: 'Terms',
-                            style: AppTextStyles.caption.copyWith(
-                                color: AppColors.primary500)),
+                        TextSpan(
+                            text: 'Terms',
+                            style: AppTextStyles.caption
+                                .copyWith(color: AppColors.primary500)),
                         const TextSpan(text: ' & '),
-                        TextSpan(text: 'Privacy Policy',
-                            style: AppTextStyles.caption.copyWith(
-                                color: AppColors.primary500)),
+                        TextSpan(
+                            text: 'Privacy Policy',
+                            style: AppTextStyles.caption
+                                .copyWith(color: AppColors.primary500)),
                       ],
                     ),
                   ),
@@ -298,8 +331,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   InputDecoration _dec(String hint) => InputDecoration(
         hintText: hint,
-        hintStyle: AppTextStyles.body.copyWith(
-            color: AppColors.textMuted, fontSize: 13),
+        hintStyle: AppTextStyles.body
+            .copyWith(color: AppColors.textMuted, fontSize: 13),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
@@ -334,18 +367,19 @@ class _Toggle extends StatelessWidget {
             color: active ? AppColors.surface : Colors.transparent,
             borderRadius: BorderRadius.circular(9),
             boxShadow: active
-                ? [BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.06),
-                    blurRadius: 4, offset: const Offset(0, 1))]
+                ? [
+                    BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 4,
+                        offset: const Offset(0, 1))
+                  ]
                 : null,
           ),
           child: Text(label,
               textAlign: TextAlign.center,
               style: AppTextStyles.bodySm.copyWith(
                 fontWeight: FontWeight.w700,
-                color: active
-                    ? AppColors.textPrimary
-                    : AppColors.textSecondary,
+                color: active ? AppColors.textPrimary : AppColors.textSecondary,
               )),
         ),
       ),

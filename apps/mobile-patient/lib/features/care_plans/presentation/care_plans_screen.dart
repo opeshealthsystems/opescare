@@ -46,7 +46,8 @@ class _CarePlansScreenState extends ConsumerState<CarePlansScreen>
           Padding(
             padding: const EdgeInsets.only(right: 12),
             child: Container(
-              width: 36, height: 36,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
                 color: AppColors.primary50,
                 borderRadius: BorderRadius.circular(10),
@@ -60,7 +61,7 @@ class _CarePlansScreenState extends ConsumerState<CarePlansScreen>
           preferredSize: const Size.fromHeight(42),
           child: plansAsync.maybeWhen(
             data: (plans) {
-              final active    = plans.where((p) => p.isActive).length;
+              final active = plans.where((p) => p.isActive).length;
               final completed = plans.where((p) => !p.isActive).length;
               return _TabBar(
                 controller: _tabs,
@@ -86,7 +87,7 @@ class _CarePlansScreenState extends ConsumerState<CarePlansScreen>
           onRetry: () => ref.invalidate(carePlansListProvider),
         ),
         data: (plans) {
-          final active    = plans.where((p) => p.isActive).toList();
+          final active = plans.where((p) => p.isActive).toList();
           final completed = plans.where((p) => !p.isActive).toList();
 
           if (plans.isEmpty) {
@@ -102,8 +103,7 @@ class _CarePlansScreenState extends ConsumerState<CarePlansScreen>
                           .copyWith(fontWeight: FontWeight.w600)),
                   const SizedBox(height: 6),
                   Text('Your care team will assign a plan when needed.',
-                      style: AppTextStyles.bodySm,
-                      textAlign: TextAlign.center),
+                      style: AppTextStyles.bodySm, textAlign: TextAlign.center),
                 ]),
               ),
             );
@@ -169,7 +169,8 @@ class _TabBar extends StatelessWidget {
             ),
             child: Text('$badge',
                 style: const TextStyle(
-                    fontSize: 9, fontWeight: FontWeight.w700,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
                     color: Colors.white)),
           ),
         ],
@@ -229,7 +230,7 @@ class _PlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final achieved = plan.goals.where((g) => g.status == 'achieved').length;
-    final total    = plan.goals.length;
+    final total = plan.goals.length;
     final progress = total > 0 ? achieved / total : 0.0;
     final isActive = plan.isActive;
 
@@ -252,19 +253,19 @@ class _PlanCard extends StatelessWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                  Text(plan.title,
-                      style: AppTextStyles.body
-                          .copyWith(fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 3),
-                  Text(
-                    [
-                      if (plan.providerName != null) plan.providerName!,
-                      if (plan.startedAt != null)
-                        'Started ${_fmtDate(plan.startedAt)}',
-                    ].join(' · '),
-                    style: AppTextStyles.bodySm,
-                  ),
-                ]),
+                      Text(plan.title,
+                          style: AppTextStyles.body
+                              .copyWith(fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 3),
+                      Text(
+                        [
+                          if (plan.providerName != null) plan.providerName!,
+                          if (plan.startedAt != null)
+                            'Started ${_fmtDate(plan.startedAt)}',
+                        ].join(' · '),
+                        style: AppTextStyles.bodySm,
+                      ),
+                    ]),
               ),
               const SizedBox(width: 8),
               _StatusPill(isActive: isActive),
@@ -348,7 +349,8 @@ class _StatusPill extends StatelessWidget {
       child: Text(
         isActive ? 'Active' : 'Completed',
         style: AppTextStyles.caption.copyWith(
-          fontSize: 10, fontWeight: FontWeight.w700,
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
           color: isActive ? AppColors.successDark : AppColors.textSecondary,
         ),
       ),
@@ -361,16 +363,16 @@ class _GoalPill extends StatelessWidget {
   final String label, type;
 
   static const _colors = {
-    'medication': (Color(0xFFEFF6FF), Color(0xFF1E40AF)),
-    'exercise':   (Color(0xFFF0FDF4), Color(0xFF065F46)),
-    'diet':       (Color(0xFFFEF3C7), Color(0xFF92400E)),
-    'monitoring': (Color(0xFFF5F3FF), Color(0xFF4C1D95)),
+    'medication': (AppColors.primary50, AppColors.primaryTextStrong),
+    'exercise': (AppColors.successLight, AppColors.successTextStrong),
+    'diet': (AppColors.warningLight, AppColors.warningTextStrong),
+    'monitoring': (AppColors.purple50, AppColors.purpleTextStrong),
   };
 
   @override
   Widget build(BuildContext context) {
-    final palette = _colors[type] ??
-        (AppColors.primary50, const Color(0xFF1E40AF));
+    final palette =
+        _colors[type] ?? (AppColors.primary50, AppColors.primaryTextStrong);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(
@@ -380,7 +382,8 @@ class _GoalPill extends StatelessWidget {
       child: Text(
         label.length > 22 ? '${label.substring(0, 22)}…' : label,
         style: AppTextStyles.caption.copyWith(
-          fontSize: 10, fontWeight: FontWeight.w600,
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
           color: palette.$2,
         ),
       ),

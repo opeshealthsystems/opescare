@@ -183,11 +183,12 @@ class PublicPageController extends Controller
             return redirect()->route('account.pending');
         }
 
-        if ($user->requiresTwoFactor() && $user->hasTwoFactorEnabled()) {
+        if ($user->requiresTwoFactor()) {
             Auth::logout();
             $request->session()->regenerate();
             $request->session()->put('mfa.user_id', $user->id);
             $request->session()->put('mfa.remember', $remember);
+            $request->session()->put('mfa.setup_required', ! $user->hasTwoFactorEnabled());
 
             return redirect()->route('mfa.challenge');
         }
@@ -207,7 +208,9 @@ class PublicPageController extends Controller
             return redirect()->route('login');
         }
 
-        return view('auth.mfa_challenge');
+        return view('auth.mfa_challenge', [
+            'setupRequired' => (bool) $request->session()->get('mfa.setup_required', false),
+        ]);
     }
 
     public function submitMfaChallenge(Request $request, TwoFactorService $twoFactor)
@@ -218,10 +221,14 @@ class PublicPageController extends Controller
 
         $user = User::find($request->session()->get('mfa.user_id'));
 
-        if (! $user || ! $user->hasTwoFactorEnabled()) {
-            $request->session()->forget(['mfa.user_id', 'mfa.remember']);
+        if (! $user) {
+            $request->session()->forget(['mfa.user_id', 'mfa.remember', 'mfa.setup_required']);
 
             return redirect()->route('login')->with('error', 'Your secure session expired. Please sign in again.');
+        }
+
+        if (! $user->hasTwoFactorEnabled()) {
+            return back()->with('error', 'Multi-factor authentication setup is required for this role. Contact an administrator to complete enrollment before signing in.');
         }
 
         if (! $twoFactor->verify($user->two_factor_secret, $validated['code'])) {
@@ -231,7 +238,7 @@ class PublicPageController extends Controller
         Auth::login($user, (bool) $request->session()->get('mfa.remember', false));
         $request->session()->regenerate();
         $request->session()->put('mfa.verified', true);
-        $request->session()->forget(['mfa.user_id', 'mfa.remember']);
+        $request->session()->forget(['mfa.user_id', 'mfa.remember', 'mfa.setup_required']);
 
         $landingUrl = app(DashboardProfileService::class)->landingUrlForUser($user);
 
@@ -471,6 +478,13 @@ class PublicPageController extends Controller
             : route('portals.patient');
 
         return redirect($url)->with('success', 'Authentication complete. Welcome to OpesCare.');
+    }
+
+    public function resendOtp(Request $request)
+    {
+        return redirect()
+            ->route('otp.verify')
+            ->with('success', 'A new verification code has been requested. Please check your registered contact method.');
     }
 
     public function showPendingApproval()

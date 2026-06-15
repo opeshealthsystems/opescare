@@ -193,6 +193,7 @@ Route::prefix('mobile')->group(function () {
         // Legacy: phone + PIN → OTP flow
         Route::post('/login', [\App\Http\Controllers\Api\Mobile\MobileAuthController::class, 'login']);
         Route::post('/otp/verify', [\App\Http\Controllers\Api\Mobile\MobileAuthController::class, 'verifyOtp']);
+        Route::post('/otp/resend', [\App\Http\Controllers\Api\Mobile\MobileAuthController::class, 'resendOtp']);
         // Primary: email + password → direct token (same credentials as patient portal)
         Route::post('/login-email', [\App\Http\Controllers\Api\Mobile\MobileAuthController::class, 'loginWithCredentials']);
         // Token refresh — accepts valid or recently-expired tokens (7-day grace)

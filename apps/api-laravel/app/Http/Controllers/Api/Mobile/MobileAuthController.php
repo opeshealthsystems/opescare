@@ -48,28 +48,36 @@ class MobileAuthController extends Controller
             return response()->json(['message' => 'Invalid credentials.'], 401);
         }
 
-        // Generate a 6-digit OTP, store its hash, expire in 10 minutes
-        $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-
-        PatientOtpCode::create([
-            'phone_number' => $patient->phone_number,
-            'code_hash'    => Hash::make($otp),
-            'expires_at'   => Carbon::now()->addMinutes(10),
-        ]);
-
-        try {
-            $this->sms->send(
-                $patient->phone_number,
-                "Your OpesCare verification code is: {$otp}. Valid for 10 minutes."
-            );
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('OpesCare SMS delivery failed', [
-                'phone' => $patient->phone_number,
-                'error' => $e->getMessage(),
-            ]);
-        }
+        $this->sendOtp($patient);
 
         return response()->json(['message' => 'OTP sent to your registered phone number.'], 200);
+    }
+
+    /**
+     * Resend an OTP during the phone + PIN login flow.
+     *
+     * POST /mobile/auth/otp/resend
+     * Body: { phone_number }
+     */
+    public function resendOtp(Request $request): JsonResponse
+    {
+        $request->validate([
+            'phone_number' => 'required|string',
+        ]);
+
+        $patient = Patient::findByPhone($request->phone_number);
+
+        if (! $patient || is_null($patient->pin_hash)) {
+            return response()->json(['message' => 'Patient not found.'], 404);
+        }
+
+        PatientOtpCode::where('phone_number', $patient->phone_number)
+            ->whereNull('used_at')
+            ->update(['used_at' => Carbon::now()]);
+
+        $this->sendOtp($patient);
+
+        return response()->json(['message' => 'OTP resent to your registered phone number.'], 200);
     }
 
     /**
@@ -218,5 +226,28 @@ class MobileAuthController extends Controller
             'expires_in'   => 2592000,
             'patient_id'   => $token->patient_id,
         ], 200);
+    }
+
+    private function sendOtp(Patient $patient): void
+    {
+        $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        PatientOtpCode::create([
+            'phone_number' => $patient->phone_number,
+            'code_hash'    => Hash::make($otp),
+            'expires_at'   => Carbon::now()->addMinutes(10),
+        ]);
+
+        try {
+            $this->sms->send(
+                $patient->phone_number,
+                "Your OpesCare verification code is: {$otp}. Valid for 10 minutes."
+            );
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('OpesCare SMS delivery failed', [
+                'phone' => $patient->phone_number,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }

@@ -30,7 +30,13 @@ body{margin:0;min-height:100vh;background:var(--p-bg,#f0f4f8);font-family:var(--
         <i data-lucide="shield-check"></i>
     </div>
     <h1 class="auth-card__title">Two-factor authentication</h1>
-    <p class="auth-card__sub">Enter the code from your authenticator app</p>
+    <p class="auth-card__sub">
+        @if($setupRequired ?? false)
+            Multi-factor authentication is required for your role. Contact an administrator to complete enrollment before signing in.
+        @else
+            Enter the code from your authenticator app
+        @endif
+    </p>
 
     @if(session('error'))
         <div class="alert-error">
@@ -39,6 +45,7 @@ body{margin:0;min-height:100vh;background:var(--p-bg,#f0f4f8);font-family:var(--
         </div>
     @endif
 
+    @if(! ($setupRequired ?? false))
     <form action="{{ route('mfa.challenge.submit') }}" method="POST">
         @csrf
 
@@ -65,6 +72,7 @@ body{margin:0;min-height:100vh;background:var(--p-bg,#f0f4f8);font-family:var(--
             <span>Verify</span>
         </button>
     </form>
+    @endif
 
     <div class="auth-link">
         Lost access to your authenticator?

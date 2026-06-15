@@ -13,11 +13,10 @@ class AddFamilyMemberScreen extends ConsumerStatefulWidget {
       _AddFamilyMemberScreenState();
 }
 
-class _AddFamilyMemberScreenState
-    extends ConsumerState<AddFamilyMemberScreen> {
+class _AddFamilyMemberScreenState extends ConsumerState<AddFamilyMemberScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
-  final _dobCtrl  = TextEditingController();
+  final _dobCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
 
   String _relationship = 'Child';
@@ -26,10 +25,24 @@ class _AddFamilyMemberScreenState
   bool _linkExisting = false;
   bool _saving = false;
 
-  static const _relationships = ['Spouse', 'Child', 'Parent', 'Sibling', 'Other'];
+  static const _relationships = [
+    'Spouse',
+    'Child',
+    'Parent',
+    'Sibling',
+    'Other'
+  ];
   static const _sexes = ['Male', 'Female'];
-  static const _bloodGroups = ['A Rh+', 'A Rh-', 'B Rh+', 'B Rh-',
-    'AB Rh+', 'AB Rh-', 'O Rh+', 'O Rh-'];
+  static const _bloodGroups = [
+    'A Rh+',
+    'A Rh-',
+    'B Rh+',
+    'B Rh-',
+    'AB Rh+',
+    'AB Rh-',
+    'O Rh+',
+    'O Rh-'
+  ];
 
   @override
   void dispose() {
@@ -44,12 +57,12 @@ class _AddFamilyMemberScreenState
     setState(() => _saving = true);
     try {
       await ref.read(familyRepositoryProvider).addMember({
-        'full_name':    _nameCtrl.text.trim(),
+        'full_name': _nameCtrl.text.trim(),
         'date_of_birth': _dobCtrl.text.trim(),
         'relationship': _relationship.toLowerCase(),
-        'sex':          _sex.toLowerCase(),
-        'blood_group':  _bloodGroup,
-        'phone':        _phoneCtrl.text.trim(),
+        'sex': _sex.toLowerCase(),
+        'blood_group': _bloodGroup,
+        'phone': _phoneCtrl.text.trim(),
       });
       ref.invalidate(familyMembersProvider);
       if (mounted) {
@@ -98,32 +111,39 @@ class _AddFamilyMemberScreenState
 
             if (!_linkExisting) ...[
               // ── Full Name ──────────────────────────────────────────────
-              _Field(label: 'Full Name', child: TextFormField(
-                controller: _nameCtrl,
-                decoration: _dec('e.g. Sophie Mbarga'),
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? 'Name is required' : null,
-              )),
+              _Field(
+                  label: 'Full Name',
+                  child: TextFormField(
+                    controller: _nameCtrl,
+                    decoration: _dec('e.g. Sophie Mbarga'),
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Name is required'
+                        : null,
+                  )),
               const SizedBox(height: 14),
 
               // ── DOB + Sex ──────────────────────────────────────────────
               Row(children: [
                 Expanded(
-                  child: _Field(label: 'Date of Birth', child: TextFormField(
-                    controller: _dobCtrl,
-                    keyboardType: TextInputType.datetime,
-                    decoration: _dec('YYYY-MM-DD'),
-                    validator: (v) => (v == null || v.trim().isEmpty)
-                        ? 'Required' : null,
-                  )),
+                  child: _Field(
+                      label: 'Date of Birth',
+                      child: TextFormField(
+                        controller: _dobCtrl,
+                        keyboardType: TextInputType.datetime,
+                        decoration: _dec('YYYY-MM-DD'),
+                        validator: (v) =>
+                            (v == null || v.trim().isEmpty) ? 'Required' : null,
+                      )),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: _Field(label: 'Sex', child: _Dropdown(
-                    value: _sex,
-                    items: _sexes,
-                    onChanged: (v) => setState(() => _sex = v!),
-                  )),
+                  child: _Field(
+                      label: 'Sex',
+                      child: _Dropdown(
+                        value: _sex,
+                        items: _sexes,
+                        onChanged: (v) => setState(() => _sex = v!),
+                      )),
                 ),
               ]),
               const SizedBox(height: 14),
@@ -131,29 +151,35 @@ class _AddFamilyMemberScreenState
               // ── Relationship + Blood Group ─────────────────────────────
               Row(children: [
                 Expanded(
-                  child: _Field(label: 'Relationship', child: _Dropdown(
-                    value: _relationship,
-                    items: _relationships,
-                    onChanged: (v) => setState(() => _relationship = v!),
-                  )),
+                  child: _Field(
+                      label: 'Relationship',
+                      child: _Dropdown(
+                        value: _relationship,
+                        items: _relationships,
+                        onChanged: (v) => setState(() => _relationship = v!),
+                      )),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: _Field(label: 'Blood Group', child: _Dropdown(
-                    value: _bloodGroup,
-                    items: _bloodGroups,
-                    onChanged: (v) => setState(() => _bloodGroup = v!),
-                  )),
+                  child: _Field(
+                      label: 'Blood Group',
+                      child: _Dropdown(
+                        value: _bloodGroup,
+                        items: _bloodGroups,
+                        onChanged: (v) => setState(() => _bloodGroup = v!),
+                      )),
                 ),
               ]),
               const SizedBox(height: 14),
 
               // ── Emergency Phone ────────────────────────────────────────
-              _Field(label: 'Emergency Contact Phone', child: TextFormField(
-                controller: _phoneCtrl,
-                keyboardType: TextInputType.phone,
-                decoration: _dec('+237 6XX XXX XXX'),
-              )),
+              _Field(
+                  label: 'Emergency Contact Phone',
+                  child: TextFormField(
+                    controller: _phoneCtrl,
+                    keyboardType: TextInputType.phone,
+                    decoration: _dec('+237 6XX XXX XXX'),
+                  )),
               const SizedBox(height: 16),
 
               // ── Info notice ────────────────────────────────────────────
@@ -164,32 +190,38 @@ class _AddFamilyMemberScreenState
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: AppColors.primary200),
                 ),
-                child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Icon(LucideIcons.info, size: 14,
-                      color: AppColors.primary500),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'A Health ID will be generated for this member. You can share access with their providers.',
-                      style: AppTextStyles.bodySm.copyWith(
-                          color: const Color(0xFF1E40AF)),
-                    ),
-                  ),
-                ]),
+                child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(LucideIcons.info,
+                          size: 14, color: AppColors.primary500),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'A Health ID will be generated for this member. You can share access with their providers.',
+                          style: AppTextStyles.bodySm
+                              .copyWith(color: AppColors.primaryTextStrong),
+                        ),
+                      ),
+                    ]),
               ),
             ] else ...[
               // ── Link existing account ──────────────────────────────────
-              _Field(label: 'Their Phone or Health ID', child: TextFormField(
-                decoration: _dec('OPC·XXXX·XXXX·CM or +237 6XX XXX XXX'),
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? 'Required' : null,
-              )),
+              _Field(
+                  label: 'Their Phone or Health ID',
+                  child: TextFormField(
+                    decoration: _dec('OPC·XXXX·XXXX·CM or +237 6XX XXX XXX'),
+                    validator: (v) =>
+                        (v == null || v.trim().isEmpty) ? 'Required' : null,
+                  )),
               const SizedBox(height: 14),
-              _Field(label: 'Your Relationship to Them', child: _Dropdown(
-                value: _relationship,
-                items: _relationships,
-                onChanged: (v) => setState(() => _relationship = v!),
-              )),
+              _Field(
+                  label: 'Your Relationship to Them',
+                  child: _Dropdown(
+                    value: _relationship,
+                    items: _relationships,
+                    onChanged: (v) => setState(() => _relationship = v!),
+                  )),
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -198,17 +230,20 @@ class _AddFamilyMemberScreenState
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: AppColors.primary200),
                 ),
-                child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Icon(LucideIcons.info, size: 14, color: AppColors.primary500),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'They will receive a notification to accept the family link. Their data is only shared with your consent.',
-                      style: AppTextStyles.bodySm.copyWith(
-                          color: const Color(0xFF1E40AF)),
-                    ),
-                  ),
-                ]),
+                child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(LucideIcons.info,
+                          size: 14, color: AppColors.primary500),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'They will receive a notification to accept the family link. Their data is only shared with your consent.',
+                          style: AppTextStyles.bodySm
+                              .copyWith(color: AppColors.primaryTextStrong),
+                        ),
+                      ),
+                    ]),
               ),
             ],
 
@@ -219,13 +254,13 @@ class _AddFamilyMemberScreenState
               onPressed: _saving ? null : _submit,
               icon: _saving
                   ? const SizedBox(
-                      width: 16, height: 16,
+                      width: 16,
+                      height: 16,
                       child: CircularProgressIndicator(
                           strokeWidth: 2, color: Colors.white))
                   : const Icon(LucideIcons.userPlus, size: 16),
-              label: Text(_linkExisting
-                  ? 'Send Link Request'
-                  : 'Add to My Family'),
+              label: Text(
+                  _linkExisting ? 'Send Link Request' : 'Add to My Family'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary500,
                 foregroundColor: Colors.white,
@@ -258,8 +293,7 @@ class _AddFamilyMemberScreenState
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide:
-              const BorderSide(color: AppColors.primary500, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.primary500, width: 1.5),
         ),
         filled: true,
         fillColor: AppColors.surface,
@@ -284,9 +318,12 @@ class _Tab extends StatelessWidget {
             color: active ? AppColors.surface : Colors.transparent,
             borderRadius: BorderRadius.circular(9),
             boxShadow: active
-                ? [BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.06),
-                    blurRadius: 4, offset: const Offset(0, 1))]
+                ? [
+                    BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 4,
+                        offset: const Offset(0, 1))
+                  ]
                 : null,
           ),
           child: Text(label,
@@ -309,8 +346,8 @@ class _Field extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(label,
-          style: AppTextStyles.label.copyWith(
-            color: AppColors.textSecondary, letterSpacing: 0.6)),
+          style: AppTextStyles.label
+              .copyWith(color: AppColors.textSecondary, letterSpacing: 0.6)),
       const SizedBox(height: 5),
       child,
     ]);
@@ -345,16 +382,14 @@ class _Dropdown extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide:
-              const BorderSide(color: AppColors.primary500, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.primary500, width: 1.5),
         ),
         filled: true,
         fillColor: AppColors.surface,
       ),
       style: AppTextStyles.body.copyWith(fontSize: 13),
-      items: items
-          .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-          .toList(),
+      items:
+          items.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
     );
   }
 }

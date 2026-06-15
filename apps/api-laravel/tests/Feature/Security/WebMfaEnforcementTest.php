@@ -54,8 +54,10 @@ class WebMfaEnforcementTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
-    public function test_required_role_without_enrollment_can_still_login_during_phased_enforcement(): void
+    public function test_required_role_without_enrollment_is_blocked_for_mfa_setup(): void
     {
+        config()->set('mfa.required_roles', ['admin']);
+
         $role = Role::create(['name' => 'admin', 'description' => 'Admin']);
         $user = User::factory()->create([
             'email' => 'admin-no-mfa@example.test',
@@ -70,8 +72,10 @@ class WebMfaEnforcementTest extends TestCase
             'password' => 'password',
         ]);
 
-        $response->assertRedirect('/portals/patient');
-        $this->assertAuthenticatedAs($user);
+        $response->assertRedirect(route('mfa.challenge'));
+        $response->assertSessionHas('mfa.user_id', $user->id);
+        $response->assertSessionHas('mfa.setup_required', true);
+        $this->assertGuest();
     }
 
     private function mfaUser(string $roleName, ?string $secret = null): User

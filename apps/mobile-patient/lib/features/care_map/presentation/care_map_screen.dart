@@ -24,7 +24,8 @@ class CareMapScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(right: 12),
             child: Container(
-              width: 36, height: 36,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
                 color: AppColors.primary50,
                 borderRadius: BorderRadius.circular(10),
@@ -48,8 +49,8 @@ class CareMapScreen extends ConsumerWidget {
                 height: 52,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   children: _filters.map((f) {
                     final active = f.key == filter;
                     return Padding(
@@ -132,8 +133,7 @@ class CareMapScreen extends ConsumerWidget {
                               style: AppTextStyles.body
                                   .copyWith(fontWeight: FontWeight.w600)),
                           const SizedBox(height: 4),
-                          Text(
-                              'Try a different filter or check your location.',
+                          Text('Try a different filter or check your location.',
                               style: AppTextStyles.bodySm,
                               textAlign: TextAlign.center),
                         ],
@@ -157,11 +157,11 @@ class CareMapScreen extends ConsumerWidget {
   }
 
   static const _filters = [
-    _Filter('all',       'All'),
-    _Filter('hospital',  'Hospitals'),
-    _Filter('clinic',    'Clinics'),
-    _Filter('pharmacy',  'Pharmacies'),
-    _Filter('lab',       'Labs'),
+    _Filter('all', 'All'),
+    _Filter('hospital', 'Hospitals'),
+    _Filter('clinic', 'Clinics'),
+    _Filter('pharmacy', 'Pharmacies'),
+    _Filter('lab', 'Labs'),
     _Filter('emergency', 'Emergency'),
   ];
 }
@@ -178,7 +178,7 @@ class _MapPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 148,
-      color: const Color(0xFFEFF6FF),
+      color: AppColors.primary50,
       child: Stack(children: [
         // Grid
         CustomPaint(size: Size.infinite, painter: _GridPainter()),
@@ -189,7 +189,8 @@ class _MapPlaceholder extends StatelessWidget {
           left: MediaQuery.of(context).size.width * 0.38,
           top: 60,
           child: Container(
-            width: 16, height: 16,
+            width: 16,
+            height: 16,
             decoration: BoxDecoration(
               color: AppColors.primary500,
               shape: BoxShape.circle,
@@ -197,7 +198,8 @@ class _MapPlaceholder extends StatelessWidget {
               boxShadow: [
                 BoxShadow(
                   color: AppColors.primary500.withValues(alpha: 0.35),
-                  blurRadius: 10, spreadRadius: 3,
+                  blurRadius: 10,
+                  spreadRadius: 3,
                 ),
               ],
             ),
@@ -209,28 +211,33 @@ class _MapPlaceholder extends StatelessWidget {
         _pin(left: 0.70, top: 0.18, color: AppColors.warning),
         // Label
         Positioned(
-          bottom: 6, right: 12,
+          bottom: 6,
+          right: 12,
           child: Text('Yaoundé, CM',
-              style: AppTextStyles.caption.copyWith(
-                fontSize: 9, color: AppColors.textMuted)),
+              style: AppTextStyles.caption
+                  .copyWith(fontSize: 9, color: AppColors.textMuted)),
         ),
       ]),
     );
   }
 
-  Widget _pin({required double left, required double top, required Color color}) {
+  Widget _pin(
+      {required double left, required double top, required Color color}) {
     return Positioned(
       left: left * 340,
       top: top * 148,
       child: Container(
-        width: 20, height: 20,
+        width: 20,
+        height: 20,
         decoration: BoxDecoration(
-          color: color, shape: BoxShape.circle,
+          color: color,
+          shape: BoxShape.circle,
           border: Border.all(color: Colors.white, width: 2),
           boxShadow: [
             BoxShadow(
-              color: color.withValues(alpha: 0.4),
-              blurRadius: 6, offset: const Offset(0, 2)),
+                color: color.withValues(alpha: 0.4),
+                blurRadius: 6,
+                offset: const Offset(0, 2)),
           ],
         ),
       ),
@@ -242,7 +249,7 @@ class _GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFF93C5FD).withValues(alpha: 0.4)
+      ..color = AppColors.primaryGridLine
       ..strokeWidth = 0.5;
     for (double x = 0; x < size.width; x += 28) {
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
@@ -251,6 +258,7 @@ class _GridPainter extends CustomPainter {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
   }
+
   @override
   bool shouldRepaint(_) => false;
 }
@@ -259,10 +267,10 @@ class _RoadPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final main = Paint()
-      ..color = const Color(0xFFBFDBFE)
+      ..color = AppColors.primary200
       ..strokeWidth = 10;
     final side = Paint()
-      ..color = const Color(0xFFDBEAFE)
+      ..color = AppColors.primary100
       ..strokeWidth = 5;
     canvas.drawLine(Offset(0, size.height * 0.52),
         Offset(size.width, size.height * 0.52), main);
@@ -273,6 +281,7 @@ class _RoadPainter extends CustomPainter {
     canvas.drawLine(Offset(size.width * 0.72, 0),
         Offset(size.width * 0.72, size.height), side);
   }
+
   @override
   bool shouldRepaint(_) => false;
 }
@@ -284,32 +293,32 @@ class _FacilityRow extends StatelessWidget {
   final CareMapFacility facility;
 
   static const _typeIcons = {
-    'hospital':  LucideIcons.building2,
-    'clinic':    LucideIcons.home,
-    'pharmacy':  LucideIcons.flaskConical,
-    'lab':       LucideIcons.microscope,
+    'hospital': LucideIcons.building2,
+    'clinic': LucideIcons.home,
+    'pharmacy': LucideIcons.flaskConical,
+    'lab': LucideIcons.microscope,
     'emergency': LucideIcons.alertTriangle,
   };
   static const _typeColors = {
-    'hospital':  AppColors.primary500,
-    'clinic':    AppColors.success,
-    'pharmacy':  AppColors.warning,
-    'lab':       AppColors.info,
+    'hospital': AppColors.primary500,
+    'clinic': AppColors.success,
+    'pharmacy': AppColors.warning,
+    'lab': AppColors.info,
     'emergency': AppColors.danger,
   };
   static const _typeBgs = {
-    'hospital':  AppColors.primary50,
-    'clinic':    AppColors.successLight,
-    'pharmacy':  AppColors.warningLight,
-    'lab':       AppColors.infoLight,
+    'hospital': AppColors.primary50,
+    'clinic': AppColors.successLight,
+    'pharmacy': AppColors.warningLight,
+    'lab': AppColors.infoLight,
     'emergency': AppColors.dangerLight,
   };
 
   @override
   Widget build(BuildContext context) {
-    final icon  = _typeIcons[facility.type]  ?? LucideIcons.mapPin;
+    final icon = _typeIcons[facility.type] ?? LucideIcons.mapPin;
     final color = _typeColors[facility.type] ?? AppColors.neutral500;
-    final bg    = _typeBgs[facility.type]    ?? AppColors.neutral100;
+    final bg = _typeBgs[facility.type] ?? AppColors.neutral100;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
@@ -318,16 +327,19 @@ class _FacilityRow extends StatelessWidget {
       ),
       child: Row(children: [
         Container(
-          width: 42, height: 42,
-          decoration: BoxDecoration(
-            color: bg, borderRadius: BorderRadius.circular(10)),
+          width: 42,
+          height: 42,
+          decoration:
+              BoxDecoration(color: bg, borderRadius: BorderRadius.circular(10)),
           child: Icon(icon, size: 18, color: color),
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(facility.name,
-                style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600)),
+                style:
+                    AppTextStyles.body.copyWith(fontWeight: FontWeight.w600)),
             const SizedBox(height: 2),
             Text(
               [
@@ -342,7 +354,8 @@ class _FacilityRow extends StatelessWidget {
             const SizedBox(height: 4),
             Row(children: [
               if (facility.isConnected)
-                _badge('Connected', AppColors.successLight, AppColors.successDark),
+                _badge(
+                    'Connected', AppColors.successLight, AppColors.successDark),
               if (facility.isConnected) const SizedBox(width: 6),
               if (facility.rating != null)
                 Text('★ ${facility.rating!.toStringAsFixed(1)}',
@@ -356,9 +369,8 @@ class _FacilityRow extends StatelessWidget {
                   style: AppTextStyles.caption.copyWith(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
-                    color: facility.isOpen!
-                        ? AppColors.success
-                        : AppColors.danger,
+                    color:
+                        facility.isOpen! ? AppColors.success : AppColors.danger,
                   ),
                 ),
               ],
@@ -368,8 +380,8 @@ class _FacilityRow extends StatelessWidget {
         if (facility.distanceKm != null) ...[
           const SizedBox(width: 8),
           Text(facility.distanceLabel,
-              style: AppTextStyles.monoSm.copyWith(
-                color: AppColors.primary500, fontSize: 11)),
+              style: AppTextStyles.monoSm
+                  .copyWith(color: AppColors.primary500, fontSize: 11)),
         ],
       ]),
     );
@@ -377,10 +389,10 @@ class _FacilityRow extends StatelessWidget {
 
   Widget _badge(String label, Color bg, Color fg) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-        decoration: BoxDecoration(
-          color: bg, borderRadius: BorderRadius.circular(999)),
+        decoration:
+            BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
         child: Text(label,
-            style: AppTextStyles.caption.copyWith(
-              fontSize: 9, fontWeight: FontWeight.w700, color: fg)),
+            style: AppTextStyles.caption
+                .copyWith(fontSize: 9, fontWeight: FontWeight.w700, color: fg)),
       );
 }
