@@ -756,6 +756,12 @@
     </div>
 </section>
 
+{{-- Theme toggle --}}
+<button class="l2-theme-toggle" id="l2ThemeToggle" aria-label="Toggle light/dark mode">
+    <i data-lucide="sun"  class="l2-icon-sun"></i>
+    <i data-lucide="moon" class="l2-icon-moon"></i>
+</button>
+
 </div>{{-- /.l2 --}}
 @endsection
 
@@ -805,6 +811,27 @@ function l2SwitchRole(role) {
     var sel = document.getElementById('l2RolesSelect');
     if (sel) sel.value = role;
 }
+</script>
+
+{{-- Theme toggle --}}
+<script>
+(function(){
+    var l2  = document.querySelector('.l2');
+    var btn = document.getElementById('l2ThemeToggle');
+    if (!l2 || !btn) return;
+    var saved = localStorage.getItem('l2-theme');
+    var preferLight = saved ? saved === 'light' : window.matchMedia('(prefers-color-scheme: light)').matches;
+    function apply(light) {
+        l2.classList.toggle('l2-light', light);
+        localStorage.setItem('l2-theme', light ? 'light' : 'dark');
+        if (window.lucide) lucide.createIcons();
+    }
+    apply(preferLight);
+    btn.addEventListener('click', function(){ apply(!l2.classList.contains('l2-light')); });
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e){
+        if (!localStorage.getItem('l2-theme')) apply(e.matches);
+    });
+})();
 </script>
 
 {{-- Partner form --}}
