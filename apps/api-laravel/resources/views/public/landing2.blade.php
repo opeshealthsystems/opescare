@@ -10,6 +10,15 @@
 @section('content')
 <div class="l2">
 
+{{-- Animated mesh background (sits behind all sections) --}}
+<div class="l2-mesh" aria-hidden="true">
+    <div class="l2-orb l2-orb-1"></div>
+    <div class="l2-orb l2-orb-2"></div>
+    <div class="l2-orb l2-orb-3"></div>
+    <div class="l2-orb l2-orb-4"></div>
+    <div class="l2-orb l2-orb-5"></div>
+</div>
+
 {{-- ═══════════════════════════════════════
      1. HERO SLIDER  (reuses .hs-* CSS)
      ═══════════════════════════════════════ --}}
