@@ -576,11 +576,133 @@
 .l2-cta p  { font-size:.9375rem; color:rgba(255,255,255,.65); line-height:1.65; max-width:560px; margin: 0 auto 2rem; }
 .l2-cta-btns { display:flex; flex-direction:column; gap:.65rem; max-width:320px; margin:0 auto; }
 
-/* ══════════════════════════════════════
-   HERO SLIDER overrides (l2 context)
-   ══════════════════════════════════════ */
-.l2 .hs-slide h1 { font-size: 1.5rem; }
-.l2 .hs-sub      { font-size: .9375rem; }
+/* ══════════════════════════════════════════════════════════════════
+   HERO SLIDER — mobile-first overrides
+   landing.css ships desktop-first (55%/45% two-column as base).
+   We revert to single-column mobile here and scale up with min-width.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Slide container ── */
+.l2 .hs-section { background: transparent; position: relative; z-index: 1; }
+.l2 .hs-track   { overflow: hidden; }
+
+/* ── Inner: single column on mobile (override landing.css 2-col default) ── */
+.l2 .hs-inner {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0 1.2rem;
+    max-width: 1140px;
+    margin: 0 auto;
+}
+
+/* ── Slide sizing ── */
+.l2 .hs-slide { padding: 1.75rem 0 1rem; }
+
+/* ── Copy ── */
+.l2 .hs-slide h1 { font-size: 1.4rem; letter-spacing: -.02em; }
+.l2 .hs-sub      { font-size: .9rem; margin-bottom: .6rem; }
+.l2 .hs-desc     { font-size: .85rem; margin-bottom: 1.25rem; }
+.l2 .hs-badge    { margin-bottom: .9rem; font-size: .7rem; }
+
+/* ── Buttons: stacked single column on mobile ── */
+.l2 .hs-btn-grid { grid-template-columns: 1fr; gap: .6rem; margin-bottom: 1.25rem; }
+
+/* Define .hs-btn base + variants (landing.css uses hs-btn-primary/secondary without base) */
+.l2 .hs-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: .45rem; padding: .72rem 1rem; border-radius: .55rem;
+    font-size: .9rem; font-weight: 600; text-decoration: none;
+    cursor: pointer; border: none; min-height: 44px;
+    transition: opacity .15s, background .15s, transform .15s;
+    width: 100%;
+}
+.l2 .hs-btn i { width: 1rem; height: 1rem; flex-shrink: 0; }
+
+.l2 .hs-btn.hs-btn-primary { background: #fff; color: #0C447C; }
+.l2 .hs-s2 .hs-btn.hs-btn-primary { color: #0F6E56; }
+.l2 .hs-s3 .hs-btn.hs-btn-primary { color: #993C1D; }
+.l2 .hs-s4 .hs-btn.hs-btn-primary { color: #3C3489; }
+.l2 .hs-btn.hs-btn-primary:hover { opacity: .9; transform: translateY(-1px); }
+
+.l2 .hs-btn.hs-btn-outline {
+    background: rgba(255,255,255,.1); color: #fff;
+    border: 1.5px solid rgba(255,255,255,.38);
+    backdrop-filter: blur(8px);
+}
+.l2 .hs-btn.hs-btn-outline:hover { background: rgba(255,255,255,.18); }
+
+/* ── Trust row: stack on mobile ── */
+.l2 .hs-trust-row { grid-template-columns: 1fr; gap: .45rem; }
+.l2 .hs-trust-item { font-size: .8rem; }
+
+/* ── Visuals: hide on mobile ── */
+.l2 .hs-visual { display: none; }
+
+/* ── Controls bar (class names used in landing2 blade) ── */
+.l2 .hs-controls {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .75rem 1.2rem;
+    background: rgba(255,255,255,.04);
+    border-top: 1px solid rgba(255,255,255,.07);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+.l2 .hs-arrow {
+    display: flex; align-items: center; justify-content: center;
+    width: 2.1rem; height: 2.1rem; border-radius: 50%;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.18);
+    cursor: pointer; color: #e2e8f0;
+    transition: background .15s, border-color .15s;
+    flex-shrink: 0;
+}
+.l2 .hs-arrow:hover:not(:disabled) { background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.35); }
+.l2 .hs-arrow:disabled { opacity: .28; cursor: default; }
+.l2 .hs-arrow i { width: 1.1rem; height: 1.1rem; }
+.l2 .hs-label { font-size: .7rem; color: rgba(255,255,255,.5); font-weight: 500; letter-spacing: .02em; }
+
+/* ── Dots inherit but override colour ── */
+.l2 .hs-dot { background: rgba(255,255,255,.3); }
+.l2 .hs-dot-active { background: #fff; opacity: 1; }
+
+/* ── Cards inside slides — glass treatment ── */
+.l2 .hs-card-id,
+.l2 .hs-card,
+.l2 .hs-card-timeline {
+    background: rgba(255,255,255,.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: .9rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.2);
+}
+
+/* ── Tablet ≥ 560px: 2-col buttons, larger text ── */
+@media (min-width: 560px) {
+    .l2 .hs-inner { padding: 0 1.75rem; }
+    .l2 .hs-slide { padding: 2.5rem 0 1.5rem; }
+    .l2 .hs-slide h1 { font-size: 1.75rem; }
+    .l2 .hs-btn-grid { grid-template-columns: 1fr 1fr; gap: .75rem; }
+    .l2 .hs-btn { width: auto; }
+    .l2 .hs-trust-row { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── Tablet ≥ 768px: show visuals panel ── */
+@media (min-width: 768px) {
+    .l2 .hs-inner { grid-template-columns: 55% 45%; gap: 2.5rem; }
+    .l2 .hs-slide h1 { font-size: 2.1rem; }
+    .l2 .hs-visual { display: flex; flex-direction: column; gap: .65rem; }
+}
+
+/* ── Desktop ≥ 1024px: full hero ── */
+@media (min-width: 1024px) {
+    .l2 .hs-inner { gap: 3rem; padding: 0 2rem; }
+    .l2 .hs-slide { padding: 4rem 0 2.5rem; }
+    .l2 .hs-slide h1 { font-size: 2.6rem; }
+    .l2 .hs-sub { font-size: 1.0625rem; }
+    .l2 .hs-controls { padding: 1rem 2rem; }
+    .l2 .hs-label { font-size: .8125rem; }
+}
 
 /* ══════════════════════════════════════
    TABLET  ≥ 640px
