@@ -8,7 +8,7 @@
 @endsection
 
 @section('content')
-<a href="#l2-main-content" class="l2-skip-link">Skip to main content</a>
+<a href="#l2-main-content" class="l2-skip-link">{{ __('landing.l2_skip_link', [], app()->getLocale()) }}</a>
 <div class="l2">
 
 {{-- Mesh background — 3 brand-blue orbs only --}}
@@ -22,12 +22,12 @@
      1. HERO SLIDER v2  (l2h- classes, mobile-first)
      ═══════════════════════════════════════ --}}
 <span id="l2hAnnounce" class="sr-only" aria-live="polite" aria-atomic="true"></span>
-<section class="l2h" role="region" aria-roledescription="carousel" aria-label="OpesCare highlights">
+<section class="l2h" role="region" aria-roledescription="carousel" aria-label="{{ __('landing.l2_carousel_aria', [], app()->getLocale()) }}">
     <div class="l2h-wrap">
         <div class="l2h-slides" id="l2hSlides">
 
             {{-- Slide 1: Health ID --}}
-            <div class="l2h-slide" role="group" aria-roledescription="slide" aria-label="1 of 5: Health ID">
+            <div class="l2h-slide" role="group" aria-roledescription="slide" aria-label="{{ __('landing.l2_slide1_aria', [], app()->getLocale()) }}">
                 <div class="l2h-container">
                     <div class="l2h-copy">
                         <span class="l2h-badge">
@@ -64,7 +64,7 @@
                                     <i data-lucide="credit-card"></i>
                                     {{ __('landing.hero_card.label_health_id', [], app()->getLocale()) }}
                                 </div>
-                                <span class="l2h-card-badge">Verified</span>
+                                <span class="l2h-card-badge">{{ __('landing.l2_verified', [], app()->getLocale()) }}</span>
                             </div>
                             <div class="l2h-card-id">{{ __('landing.hero_card.demo_id', [], app()->getLocale()) }}</div>
                             <div class="l2h-card-sub">{{ __('landing.hero_card.secure_label', [], app()->getLocale()) }}</div>
@@ -82,23 +82,23 @@
             </div>
 
             {{-- Slide 2: Consent & Access --}}
-            <div class="l2h-slide" role="group" aria-roledescription="slide" aria-label="2 of 5: Consent & Access" aria-hidden="true">
+            <div class="l2h-slide" role="group" aria-roledescription="slide" aria-label="{{ __('landing.l2_slide2_aria', [], app()->getLocale()) }}" aria-hidden="true">
                 <div class="l2h-container">
                     <div class="l2h-copy">
                         <span class="l2h-badge">
                             <i data-lucide="lock"></i>
-                            Consent &amp; Access
+                            {{ __('landing.l2_consent_badge', [], app()->getLocale()) }}
                         </span>
-                        <h1>Patients decide who sees their records. Every time.</h1>
-                        <p>OpesCare gives patients granular control over their sensitive health data — approving, denying, or revoking access from one secure consent center.</p>
+                        <h1>{{ __('landing.l2_consent_h1', [], app()->getLocale()) }}</h1>
+                        <p>{{ __('landing.l2_consent_p', [], app()->getLocale()) }}</p>
                         <div class="l2h-btns">
                             <a href="{{ route('public.contact') }}" class="l2h-btn l2h-btn-primary">
                                 <i data-lucide="handshake"></i>
-                                Request Demo
+                                {{ __('landing.l2_request_demo', [], app()->getLocale()) }}
                             </a>
                             <a href="{{ route('public.how-it-works') }}" class="l2h-btn l2h-btn-ghost">
                                 <i data-lucide="shield"></i>
-                                How Consent Works
+                                {{ __('landing.l2_consent_cta_ghost', [], app()->getLocale()) }}
                             </a>
                         </div>
                     </div>
@@ -107,26 +107,26 @@
                             <div class="l2h-card-top">
                                 <div class="l2h-card-label">
                                     <i data-lucide="shield-check"></i>
-                                    Consent Request
+                                    {{ __('landing.l2_consent_card_label', [], app()->getLocale()) }}
                                 </div>
-                                <span class="l2h-card-badge l2h-badge-warn">Pending</span>
+                                <span class="l2h-card-badge l2h-badge-warn">{{ __('landing.l2_pending', [], app()->getLocale()) }}</span>
                             </div>
                             <div class="l2h-card-alert">
                                 <i data-lucide="alert-triangle"></i>
-                                City General Hospital · Clinical Notes
+                                {{ __('landing.l2_consent_card_alert', [], app()->getLocale()) }}
                             </div>
                             <div class="l2h-card-item l2h-scope-row">
-                                <span>Demographics</span><span class="l2h-toggle on"></span>
+                                <span>{{ __('landing.l2_scope_demographics', [], app()->getLocale()) }}</span><span class="l2h-toggle on"></span>
                             </div>
                             <div class="l2h-card-item l2h-scope-row">
-                                <span>Prescriptions</span><span class="l2h-toggle on"></span>
+                                <span>{{ __('landing.l2_scope_prescriptions', [], app()->getLocale()) }}</span><span class="l2h-toggle on"></span>
                             </div>
                             <div class="l2h-card-item l2h-scope-row">
-                                <span>Lab Results</span><span class="l2h-toggle off"></span>
+                                <span>{{ __('landing.l2_scope_lab', [], app()->getLocale()) }}</span><span class="l2h-toggle off"></span>
                             </div>
                             <div class="l2h-card-actions">
-                                <button class="l2h-card-deny">Deny</button>
-                                <button class="l2h-card-approve">Approve</button>
+                                <button class="l2h-card-deny">{{ __('landing.l2_card_deny', [], app()->getLocale()) }}</button>
+                                <button class="l2h-card-approve">{{ __('landing.l2_card_approve', [], app()->getLocale()) }}</button>
                             </div>
                         </div>
                     </div>
@@ -134,23 +134,23 @@
             </div>
 
             {{-- Slide 3: Emergency Access --}}
-            <div class="l2h-slide" role="group" aria-roledescription="slide" aria-label="3 of 5: Emergency Access" aria-hidden="true">
+            <div class="l2h-slide" role="group" aria-roledescription="slide" aria-label="{{ __('landing.l2_slide3_aria', [], app()->getLocale()) }}" aria-hidden="true">
                 <div class="l2h-container">
                     <div class="l2h-copy">
                         <span class="l2h-badge">
                             <i data-lucide="siren"></i>
-                            Emergency Access
+                            {{ __('landing.l2_em_badge', [], app()->getLocale()) }}
                         </span>
-                        <h1>Critical information when seconds matter — fully audited.</h1>
-                        <p>When a patient cannot give consent, approved providers access a limited emergency profile. Every access is reason-based, logged, and reviewed after the emergency.</p>
+                        <h1>{{ __('landing.l2_em_h1', [], app()->getLocale()) }}</h1>
+                        <p>{{ __('landing.l2_em_p', [], app()->getLocale()) }}</p>
                         <div class="l2h-btns">
                             <a href="{{ route('public.contact') }}" class="l2h-btn l2h-btn-primary">
                                 <i data-lucide="handshake"></i>
-                                Request Demo
+                                {{ __('landing.l2_request_demo', [], app()->getLocale()) }}
                             </a>
                             <a href="{{ route('public.how-it-works') }}" class="l2h-btn l2h-btn-ghost">
                                 <i data-lucide="file-text"></i>
-                                Learn More
+                                {{ __('landing.l2_em_cta_ghost', [], app()->getLocale()) }}
                             </a>
                         </div>
                     </div>
@@ -158,23 +158,23 @@
                         <div class="l2h-card l2h-card-emr">
                             <div class="l2h-emr-header">
                                 <i data-lucide="alert-octagon"></i>
-                                Emergency Override Active
+                                {{ __('landing.l2_em_override', [], app()->getLocale()) }}
                             </div>
                             <div class="l2h-card-item l2h-em-row">
-                                <span>Blood Group</span>
-                                <span class="l2h-em-val danger">O Positive (O+)</span>
+                                <span>{{ __('landing.l2_em_blood_group', [], app()->getLocale()) }}</span>
+                                <span class="l2h-em-val danger">{{ __('landing.l2_em_blood_val', [], app()->getLocale()) }}</span>
                             </div>
                             <div class="l2h-card-item l2h-em-row">
-                                <span>Critical Allergies</span>
-                                <span class="l2h-em-val warn">Penicillin, Peanuts</span>
+                                <span>{{ __('landing.l2_em_allergies', [], app()->getLocale()) }}</span>
+                                <span class="l2h-em-val warn">{{ __('landing.l2_em_allergies_val', [], app()->getLocale()) }}</span>
                             </div>
                             <div class="l2h-card-item l2h-em-row">
-                                <span>Conditions</span>
-                                <span class="l2h-em-val">Chronic Asthma</span>
+                                <span>{{ __('landing.l2_em_conditions', [], app()->getLocale()) }}</span>
+                                <span class="l2h-em-val">{{ __('landing.l2_em_conditions_val', [], app()->getLocale()) }}</span>
                             </div>
                             <div class="l2h-card-item" style="margin-top:.35rem;font-size:.7rem;color:rgba(255,255,255,.4);">
                                 <i data-lucide="shield-alert"></i>
-                                <span>Access logged · Compliance hub notified</span>
+                                <span>{{ __('landing.l2_em_audit_notice', [], app()->getLocale()) }}</span>
                             </div>
                         </div>
                     </div>
@@ -182,67 +182,67 @@
             </div>
 
             {{-- Slide 4: Connected Care Network --}}
-            <div class="l2h-slide" role="group" aria-roledescription="slide" aria-label="4 of 5: Connected Care" aria-hidden="true">
+            <div class="l2h-slide" role="group" aria-roledescription="slide" aria-label="{{ __('landing.l2_slide4_aria', [], app()->getLocale()) }}" aria-hidden="true">
                 <div class="l2h-container">
                     <div class="l2h-copy">
                         <span class="l2h-badge">
                             <i data-lucide="network"></i>
-                            Connected Care Network
+                            {{ __('landing.l2_net_badge', [], app()->getLocale()) }}
                         </span>
-                        <h1>Connect your hospital, clinic, lab, or pharmacy today.</h1>
-                        <p>OpesCare works with the systems healthcare facilities already use — through APIs, SDKs, widgets, bridge agents, or OpesCare Lite for facilities starting from zero.</p>
+                        <h1>{{ __('landing.l2_net_h1', [], app()->getLocale()) }}</h1>
+                        <p>{{ __('landing.l2_net_p', [], app()->getLocale()) }}</p>
                         <div class="l2h-btns">
                             <a href="{{ route('public.contact') }}" class="l2h-btn l2h-btn-primary">
                                 <i data-lucide="handshake"></i>
-                                Request Partnership Demo
+                                {{ __('landing.hero.cta_primary', [], app()->getLocale()) }}
                             </a>
                             <a href="{{ route('public.interoperability') }}" class="l2h-btn l2h-btn-ghost">
                                 <i data-lucide="plug"></i>
-                                Interoperability
+                                {{ __('landing.l2_net_cta_ghost', [], app()->getLocale()) }}
                             </a>
                         </div>
                     </div>
                     <div class="l2h-visual" aria-hidden="true">
                         <div class="l2h-net-grid">
-                            <div class="l2h-net-node"><i data-lucide="hospital"></i><span>Hospital</span></div>
-                            <div class="l2h-net-node"><i data-lucide="flask-conical"></i><span>Lab</span></div>
-                            <div class="l2h-net-node l2h-net-center"><i data-lucide="shield"></i><span>Health ID</span></div>
-                            <div class="l2h-net-node"><i data-lucide="pill"></i><span>Pharmacy</span></div>
-                            <div class="l2h-net-node"><i data-lucide="building-2"></i><span>Insurer</span></div>
-                            <div class="l2h-net-node"><i data-lucide="user"></i><span>Patient</span></div>
+                            <div class="l2h-net-node"><i data-lucide="hospital"></i><span>{{ __('landing.l2_net_node_hospital', [], app()->getLocale()) }}</span></div>
+                            <div class="l2h-net-node"><i data-lucide="flask-conical"></i><span>{{ __('landing.l2_net_node_lab', [], app()->getLocale()) }}</span></div>
+                            <div class="l2h-net-node l2h-net-center"><i data-lucide="shield"></i><span>{{ __('landing.l2_net_node_health_id', [], app()->getLocale()) }}</span></div>
+                            <div class="l2h-net-node"><i data-lucide="pill"></i><span>{{ __('landing.l2_net_node_pharmacy', [], app()->getLocale()) }}</span></div>
+                            <div class="l2h-net-node"><i data-lucide="building-2"></i><span>{{ __('landing.l2_net_node_insurer', [], app()->getLocale()) }}</span></div>
+                            <div class="l2h-net-node"><i data-lucide="user"></i><span>{{ __('landing.l2_net_node_patient', [], app()->getLocale()) }}</span></div>
                         </div>
                     </div>
                 </div>
             </div>
 
             {{-- Slide 5: Connected Journey --}}
-            <div class="l2h-slide" role="group" aria-roledescription="slide" aria-label="5 of 5: Connected Journey" aria-hidden="true">
+            <div class="l2h-slide" role="group" aria-roledescription="slide" aria-label="{{ __('landing.l2_slide5_aria', [], app()->getLocale()) }}" aria-hidden="true">
                 <div class="l2h-container">
                     <div class="l2h-copy">
                         <span class="l2h-badge">
                             <i data-lucide="route"></i>
-                            Connected Journey
+                            {{ __('landing.l2_journey_badge', [], app()->getLocale()) }}
                         </span>
-                        <h1>OpesCare connects the patient's medical journey through one secure Health ID.</h1>
-                        <p>Every hospital visit, lab result, prescription, and consultation — linked to a single longitudinal record. The patient stays at the centre, in full control, wherever care happens.</p>
+                        <h1>{{ __('landing.l2_journey_h1', [], app()->getLocale()) }}</h1>
+                        <p>{{ __('landing.l2_journey_p', [], app()->getLocale()) }}</p>
                         <div class="l2h-btns">
                             <a href="{{ route('public.contact') }}" class="l2h-btn l2h-btn-primary">
                                 <i data-lucide="handshake"></i>
-                                Request Demo
+                                {{ __('landing.l2_request_demo', [], app()->getLocale()) }}
                             </a>
                             <a href="{{ route('public.how-it-works') }}" class="l2h-btn l2h-btn-ghost">
                                 <i data-lucide="arrow-right"></i>
-                                See How It Works
+                                {{ __('landing.l2_journey_cta_ghost', [], app()->getLocale()) }}
                             </a>
                         </div>
                         <div class="l2h-trust">
                             <div class="l2h-trust-item">
                                 <i data-lucide="check-circle"></i>
-                                One ID across all facilities
+                                {{ __('landing.l2_journey_trust1', [], app()->getLocale()) }}
                             </div>
                             <div class="l2h-trust-item">
                                 <i data-lucide="check-circle"></i>
-                                Patient-controlled access
+                                {{ __('landing.l2_journey_trust2', [], app()->getLocale()) }}
                             </div>
                         </div>
                     </div>
@@ -251,7 +251,7 @@
                             <div class="l2h-hub-pulse"></div>
                             <div class="l2h-hub-center">
                                 <i data-lucide="shield-check"></i>
-                                <span>Health ID</span>
+                                <span>{{ __('landing.l2_hub_health_id', [], app()->getLocale()) }}</span>
                             </div>
                             {{-- Connecting lines --}}
                             <div class="l2h-hub-line hl1"></div>
@@ -261,12 +261,12 @@
                             <div class="l2h-hub-line hl5"></div>
                             <div class="l2h-hub-line hl6"></div>
                             {{-- Surrounding facility nodes --}}
-                            <div class="l2h-hub-node hn1"><i data-lucide="hospital"></i>Hospital</div>
-                            <div class="l2h-hub-node hn2"><i data-lucide="flask-conical"></i>Lab</div>
-                            <div class="l2h-hub-node hn3"><i data-lucide="pill"></i>Pharmacy</div>
-                            <div class="l2h-hub-node hn4"><i data-lucide="building-2"></i>Insurer</div>
-                            <div class="l2h-hub-node hn5"><i data-lucide="stethoscope"></i>Clinic</div>
-                            <div class="l2h-hub-node hn6"><i data-lucide="user-round"></i>Patient</div>
+                            <div class="l2h-hub-node hn1"><i data-lucide="hospital"></i>{{ __('landing.l2_net_node_hospital', [], app()->getLocale()) }}</div>
+                            <div class="l2h-hub-node hn2"><i data-lucide="flask-conical"></i>{{ __('landing.l2_net_node_lab', [], app()->getLocale()) }}</div>
+                            <div class="l2h-hub-node hn3"><i data-lucide="pill"></i>{{ __('landing.l2_net_node_pharmacy', [], app()->getLocale()) }}</div>
+                            <div class="l2h-hub-node hn4"><i data-lucide="building-2"></i>{{ __('landing.l2_net_node_insurer', [], app()->getLocale()) }}</div>
+                            <div class="l2h-hub-node hn5"><i data-lucide="stethoscope"></i>{{ __('landing.l2_net_node_clinic', [], app()->getLocale()) }}</div>
+                            <div class="l2h-hub-node hn6"><i data-lucide="user-round"></i>{{ __('landing.l2_net_node_patient', [], app()->getLocale()) }}</div>
                         </div>
                     </div>
                 </div>
@@ -277,18 +277,18 @@
 
     {{-- Nav bar --}}
     <div class="l2h-nav">
-        <button class="l2h-arrow" id="l2hPrev" onclick="l2hPrev()" disabled aria-label="Previous slide" aria-controls="l2hSlides">
+        <button class="l2h-arrow" id="l2hPrev" onclick="l2hPrev()" disabled aria-label="{{ __('landing.aria_prev_slide', [], app()->getLocale()) }}" aria-controls="l2hSlides">
             <i data-lucide="chevron-left"></i>
         </button>
         <div class="l2h-dots">
-            <button class="l2h-dot l2h-dot-active" onclick="l2hGo(0)" aria-label="Go to slide 1: Health ID" aria-current="true"></button>
-            <button class="l2h-dot" onclick="l2hGo(1)" aria-label="Go to slide 2: Consent &amp; Access"></button>
-            <button class="l2h-dot" onclick="l2hGo(2)" aria-label="Go to slide 3: Emergency Access"></button>
-            <button class="l2h-dot" onclick="l2hGo(3)" aria-label="Go to slide 4: Connected Care"></button>
-            <button class="l2h-dot" onclick="l2hGo(4)" aria-label="Go to slide 5: Connected Journey"></button>
+            <button class="l2h-dot l2h-dot-active" onclick="l2hGo(0)" aria-label="{{ __('landing.l2_dot1_aria', [], app()->getLocale()) }}" aria-current="true"></button>
+            <button class="l2h-dot" onclick="l2hGo(1)" aria-label="{{ __('landing.l2_dot2_aria', [], app()->getLocale()) }}"></button>
+            <button class="l2h-dot" onclick="l2hGo(2)" aria-label="{{ __('landing.l2_dot3_aria', [], app()->getLocale()) }}"></button>
+            <button class="l2h-dot" onclick="l2hGo(3)" aria-label="{{ __('landing.l2_dot4_aria', [], app()->getLocale()) }}"></button>
+            <button class="l2h-dot" onclick="l2hGo(4)" aria-label="{{ __('landing.l2_dot5_aria', [], app()->getLocale()) }}"></button>
         </div>
-        <span class="l2h-slide-label" id="l2hLabel">Health ID</span>
-        <button class="l2h-arrow" id="l2hNext" onclick="l2hNext()" aria-label="Next slide" aria-controls="l2hSlides">
+        <span class="l2h-slide-label" id="l2hLabel">{{ __('landing.l2_slide_label_default', [], app()->getLocale()) }}</span>
+        <button class="l2h-arrow" id="l2hNext" onclick="l2hNext()" aria-label="{{ __('landing.aria_next_slide', [], app()->getLocale()) }}" aria-controls="l2hSlides">
             <i data-lucide="chevron-right"></i>
         </button>
     </div>
@@ -337,7 +337,7 @@
      ═══════════════════════════════════════ --}}
 <section class="l2-section l2-section--muted">
     <div class="l2-container">
-        <span class="l2-section-label">The Challenge</span>
+        <span class="l2-section-label">{{ __('landing.l2_section_challenge', [], app()->getLocale()) }}</span>
         <h2 class="l2-section-title">{{ __('landing.problem.title', [], app()->getLocale()) }}</h2>
         <p class="l2-section-sub">{{ __('landing.problem.subtitle', [], app()->getLocale()) }}</p>
         <div class="l2-problem-grid">
@@ -373,7 +373,7 @@
     <div class="l2-container">
         <div class="l2-solution-inner">
             <div>
-                <span class="l2-section-label">The Solution</span>
+                <span class="l2-section-label">{{ __('landing.l2_section_solution', [], app()->getLocale()) }}</span>
                 <h2 class="l2-section-title">{{ __('landing.solution.title', [], app()->getLocale()) }}</h2>
                 <p class="l2-section-sub">{{ __('landing.solution.desc', [], app()->getLocale()) }}</p>
                 <ul class="l2-solution-list">
@@ -390,7 +390,7 @@
             <div class="l2-hub" aria-hidden="true">
                 <div class="l2-hub-center">
                     <i data-lucide="shield" style="width:1.35rem;height:1.35rem;color:#fff;"></i>
-                    <span>Health ID</span>
+                    <span>{{ __('landing.l2_hub_health_id', [], app()->getLocale()) }}</span>
                 </div>
                 <div class="l2-hub-pulse"></div>
                 <div class="l2-hub-line ll1"></div>
@@ -399,12 +399,12 @@
                 <div class="l2-hub-line ll4"></div>
                 <div class="l2-hub-line ll5"></div>
                 <div class="l2-hub-line ll6"></div>
-                <div class="l2-hub-node n1"><i data-lucide="hospital"></i>Hospital</div>
-                <div class="l2-hub-node n2"><i data-lucide="flask-conical"></i>Lab</div>
-                <div class="l2-hub-node n3"><i data-lucide="pill"></i>Pharmacy</div>
-                <div class="l2-hub-node n4"><i data-lucide="building-2"></i>Insurer</div>
-                <div class="l2-hub-node n5"><i data-lucide="heart-pulse"></i>Clinic</div>
-                <div class="l2-hub-node n6"><i data-lucide="user"></i>Patient</div>
+                <div class="l2-hub-node n1"><i data-lucide="hospital"></i>{{ __('landing.l2_net_node_hospital', [], app()->getLocale()) }}</div>
+                <div class="l2-hub-node n2"><i data-lucide="flask-conical"></i>{{ __('landing.l2_net_node_lab', [], app()->getLocale()) }}</div>
+                <div class="l2-hub-node n3"><i data-lucide="pill"></i>{{ __('landing.l2_net_node_pharmacy', [], app()->getLocale()) }}</div>
+                <div class="l2-hub-node n4"><i data-lucide="building-2"></i>{{ __('landing.l2_net_node_insurer', [], app()->getLocale()) }}</div>
+                <div class="l2-hub-node n5"><i data-lucide="heart-pulse"></i>{{ __('landing.l2_net_node_clinic', [], app()->getLocale()) }}</div>
+                <div class="l2-hub-node n6"><i data-lucide="user"></i>{{ __('landing.l2_net_node_patient', [], app()->getLocale()) }}</div>
             </div>
         </div>
     </div>
@@ -415,7 +415,7 @@
      ═══════════════════════════════════════ --}}
 <section class="l2-section l2-section--muted">
     <div class="l2-container">
-        <span class="l2-section-label">Process</span>
+        <span class="l2-section-label">{{ __('landing.l2_section_process', [], app()->getLocale()) }}</span>
         <h2 class="l2-section-title">{{ __('landing.how_it_works.title', [], app()->getLocale()) }}</h2>
         <p class="l2-section-sub">{{ __('landing.how_it_works.subtitle', [], app()->getLocale()) }}</p>
         <div class="l2-steps">
@@ -442,7 +442,7 @@
             </div>
         </div>
         <a href="{{ route('public.how-it-works') }}" class="l2-steps-link">
-            Full walkthrough <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+            {{ __('landing.l2_how_walkthrough', [], app()->getLocale()) }} <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
         </a>
     </div>
 </section>
@@ -454,7 +454,7 @@
     <div class="l2-container">
         <div class="l2-consent-inner">
             <div>
-                <span class="l2-section-label">Consent</span>
+                <span class="l2-section-label">{{ __('landing.l2_section_consent', [], app()->getLocale()) }}</span>
                 <h2 class="l2-section-title">{{ __('landing.consent.title', [], app()->getLocale()) }}</h2>
                 <p class="l2-section-sub">{{ __('landing.consent.desc', [], app()->getLocale()) }}</p>
                 <ul class="l2-solution-list">
@@ -497,7 +497,7 @@
                         </div>
                     </div>
                 </div>
-                <p class="l2-consent-note">Interactive simulation — not connected to real patient data.</p>
+                <p class="l2-consent-note">{{ __('landing.l2_consent_sim_note', [], app()->getLocale()) }}</p>
             </div>
         </div>
     </div>
@@ -510,7 +510,7 @@
     <div class="l2-container">
         <div class="l2-em-inner">
             <div>
-                <span class="l2-section-label" style="color:#fca5a5;">Emergency</span>
+                <span class="l2-section-label" style="color:#fca5a5;">{{ __('landing.l2_section_emergency', [], app()->getLocale()) }}</span>
                 <h2 class="l2-section-title l2-text-white">{{ __('landing.emergency.title', [], app()->getLocale()) }}</h2>
                 <p class="l2-section-sub l2-text-white-70">{{ __('landing.emergency.desc', [], app()->getLocale()) }}</p>
                 <div class="l2-em-points">
@@ -561,12 +561,12 @@
      ═══════════════════════════════════════ --}}
 <section class="l2-section l2-section--muted">
     <div class="l2-container">
-        <span class="l2-section-label">Who It Serves</span>
+        <span class="l2-section-label">{{ __('landing.l2_section_who', [], app()->getLocale()) }}</span>
         <h2 class="l2-section-title">{{ __('landing.roles.title', [], app()->getLocale()) }}</h2>
         <p class="l2-section-sub">{{ __('landing.roles.subtitle', [], app()->getLocale()) }}</p>
 
         {{-- Mobile: native select --}}
-        <label for="l2RolesSelect" class="sr-only">Select your role</label>
+        <label for="l2RolesSelect" class="sr-only">{{ __('landing.l2_roles_select_label', [], app()->getLocale()) }}</label>
         <select class="l2-roles-select" id="l2RolesSelect" onchange="l2SwitchRole(this.value)">
             <option value="patient">{{ __('landing.roles.patients_title', [], app()->getLocale()) }}</option>
             <option value="hospital">{{ __('landing.roles.hospitals_title', [], app()->getLocale()) }}</option>
@@ -592,13 +592,13 @@
             <h3>{{ __('landing.roles.patients_title', [], app()->getLocale()) }}</h3>
             <p>{{ __('landing.roles.patients_desc', [], app()->getLocale()) }}</p>
             <ul class="l2-roles-benefits">
-                <li><i data-lucide="check-circle"></i> One Health ID across all facilities</li>
-                <li><i data-lucide="check-circle"></i> Control who accesses your records</li>
-                <li><i data-lucide="check-circle"></i> View access logs and revoke permissions</li>
-                <li><i data-lucide="check-circle"></i> Emergency profile always accessible to approved providers</li>
+                <li><i data-lucide="check-circle"></i> {{ __('landing.l2_patient_benefit1', [], app()->getLocale()) }}</li>
+                <li><i data-lucide="check-circle"></i> {{ __('landing.l2_patient_benefit2', [], app()->getLocale()) }}</li>
+                <li><i data-lucide="check-circle"></i> {{ __('landing.l2_patient_benefit3', [], app()->getLocale()) }}</li>
+                <li><i data-lucide="check-circle"></i> {{ __('landing.l2_patient_benefit4', [], app()->getLocale()) }}</li>
             </ul>
             <a href="{{ route('public.contact') }}" class="l2-roles-cta">
-                Get your Health ID <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+                {{ __('landing.l2_patient_cta', [], app()->getLocale()) }} <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
             </a>
         </div>
 
@@ -607,13 +607,13 @@
             <h3>{{ __('landing.roles.hospitals_title', [], app()->getLocale()) }}</h3>
             <p>{{ __('landing.roles.hospitals_desc', [], app()->getLocale()) }}</p>
             <ul class="l2-roles-benefits">
-                <li><i data-lucide="check-circle"></i> Register patients and assign Health IDs</li>
-                <li><i data-lucide="check-circle"></i> Connect labs, pharmacy, billing in one platform</li>
-                <li><i data-lucide="check-circle"></i> Pull approved patient records from other facilities</li>
-                <li><i data-lucide="check-circle"></i> Full audit trail on every record access</li>
+                <li><i data-lucide="check-circle"></i> {{ __('landing.l2_hospital_benefit1', [], app()->getLocale()) }}</li>
+                <li><i data-lucide="check-circle"></i> {{ __('landing.l2_hospital_benefit2', [], app()->getLocale()) }}</li>
+                <li><i data-lucide="check-circle"></i> {{ __('landing.l2_hospital_benefit3', [], app()->getLocale()) }}</li>
+                <li><i data-lucide="check-circle"></i> {{ __('landing.l2_hospital_benefit4', [], app()->getLocale()) }}</li>
             </ul>
             <a href="{{ route('public.contact') }}" class="l2-roles-cta">
-                Request Partnership Demo <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+                {{ __('landing.l2_hospital_cta', [], app()->getLocale()) }} <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
             </a>
         </div>
 
@@ -622,18 +622,18 @@
             <h3>{{ __('landing.roles.developers_title', [], app()->getLocale()) }}</h3>
             <p>{{ __('landing.roles.developers_desc', [], app()->getLocale()) }}</p>
             <ul class="l2-roles-benefits">
-                <li><i data-lucide="check-circle"></i> REST API, SDK, widget, webhooks, bridge agent</li>
-                <li><i data-lucide="check-circle"></i> FHIR-aligned interoperability layer</li>
-                <li><i data-lucide="check-circle"></i> Sandbox environment for testing</li>
-                <li><i data-lucide="check-circle"></i> Full developer documentation</li>
+                <li><i data-lucide="check-circle"></i> {{ __('landing.l2_dev_benefit1', [], app()->getLocale()) }}</li>
+                <li><i data-lucide="check-circle"></i> {{ __('landing.l2_dev_benefit2', [], app()->getLocale()) }}</li>
+                <li><i data-lucide="check-circle"></i> {{ __('landing.l2_dev_benefit3', [], app()->getLocale()) }}</li>
+                <li><i data-lucide="check-circle"></i> {{ __('landing.l2_dev_benefit4', [], app()->getLocale()) }}</li>
             </ul>
             <a href="{{ route('public.interoperability') }}" class="l2-roles-cta">
-                View Connect Suite <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+                {{ __('landing.l2_dev_cta', [], app()->getLocale()) }} <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
             </a>
         </div>
 
         <p class="l2-solutions-link">
-            See all organization types →
+            {{ __('landing.l2_all_org_types', [], app()->getLocale()) }}
             <a href="{{ route('public.solutions.patients') }}">{{ __('landing.nav.solutions', [], app()->getLocale()) }}</a>
         </p>
     </div>
@@ -646,13 +646,13 @@
     <div class="l2-container">
         <div class="l2-partner-inner">
             <div>
-                <span class="l2-section-label">Get Started</span>
+                <span class="l2-section-label">{{ __('landing.l2_section_get_started', [], app()->getLocale()) }}</span>
                 <h2 class="l2-section-title">{{ __('landing.partner_cta.title', [], app()->getLocale()) }}</h2>
                 <p class="l2-section-sub">{{ __('landing.partner_cta.desc', [], app()->getLocale()) }}</p>
                 <ul class="l2-solution-list">
-                    <li><i data-lucide="check-circle"></i> No commitment required for the demo</li>
-                    <li><i data-lucide="check-circle"></i> Our team speaks English and French</li>
-                    <li><i data-lucide="check-circle"></i> Integration support included</li>
+                    <li><i data-lucide="check-circle"></i> {{ __('landing.l2_partner_benefit1', [], app()->getLocale()) }}</li>
+                    <li><i data-lucide="check-circle"></i> {{ __('landing.l2_partner_benefit2', [], app()->getLocale()) }}</li>
+                    <li><i data-lucide="check-circle"></i> {{ __('landing.l2_partner_benefit3', [], app()->getLocale()) }}</li>
                 </ul>
             </div>
             <div class="l2-form-card">
@@ -676,7 +676,7 @@
                         <div class="l2-form-group">
                             <label for="l2Type">{{ __('landing.partner_cta.form.type', [], app()->getLocale()) }}</label>
                             <select id="l2Type" name="org_type">
-                                <option value="">— Select —</option>
+                                <option value="">{{ __('landing.l2_form_select_placeholder', [], app()->getLocale()) }}</option>
                                 <option value="hospital">{{ __('landing.partner_cta.form.options.hospital', [], app()->getLocale()) }}</option>
                                 <option value="clinic">{{ __('landing.partner_cta.form.options.clinic', [], app()->getLocale()) }}</option>
                                 <option value="pharmacy">{{ __('landing.partner_cta.form.options.pharmacy', [], app()->getLocale()) }}</option>
@@ -707,7 +707,7 @@
      ═══════════════════════════════════════ --}}
 <section class="l2-section l2-section--muted">
     <div class="l2-container" style="max-width:780px;">
-        <span class="l2-section-label">FAQ</span>
+        <span class="l2-section-label">{{ __('landing.l2_section_faq', [], app()->getLocale()) }}</span>
         <h2 class="l2-section-title">{{ __('landing.faq.title', [], app()->getLocale()) }}</h2>
         <p class="l2-section-sub">{{ __('landing.faq.subtitle', [], app()->getLocale()) }}</p>
         <div class="l2-faq">
@@ -734,7 +734,7 @@
             </details>
         </div>
         <a href="{{ route('public.faq') }}" class="l2-faq-link">
-            All frequently asked questions <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+            {{ __('landing.l2_faq_all_link', [], app()->getLocale()) }} <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
         </a>
     </div>
 </section>
@@ -762,7 +762,7 @@
 </div>{{-- /.l2 --}}
 
 {{-- Theme toggle — outside .l2 so position:fixed is not trapped --}}
-<button class="l2-theme-toggle" id="l2ThemeToggle" aria-label="Toggle light/dark mode">
+<button class="l2-theme-toggle" id="l2ThemeToggle" aria-label="{{ __('landing.l2_theme_toggle_aria', [], app()->getLocale()) }}">
     <i data-lucide="sun"  class="l2-icon-sun"></i>
     <i data-lucide="moon" class="l2-icon-moon"></i>
 </button>
@@ -773,7 +773,13 @@
 <script>
 (function(){
     var cur = 0, total = 5;
-    var labels = ['Health ID','Consent & Access','Emergency Access','Connected Care','Connected Journey'];
+    var labels = {!! json_encode([
+        __('landing.l2_slide_label_default', [], app()->getLocale()),
+        __('landing.l2_consent_badge', [], app()->getLocale()),
+        __('landing.l2_em_badge', [], app()->getLocale()),
+        __('landing.l2_net_badge', [], app()->getLocale()),
+        __('landing.l2_journey_badge', [], app()->getLocale()),
+    ]) !!};
     function upd(){
         var el = document.getElementById('l2hSlides');
         if (el) el.style.transform = 'translateX(-' + (cur * 100) + '%)';
@@ -860,13 +866,13 @@ function l2SwitchRole(role) {
         var org   = form.querySelector('[name="organization"]').value.trim();
         var email = form.querySelector('[name="email"]').value.trim();
         if (!name || !org || !email) {
-            msgs.innerHTML = '<div class="l2-form-alert-err"><i data-lucide="alert-circle"></i> Please fill in all required fields.</div>';
+            msgs.innerHTML = '<div class="l2-form-alert-err"><i data-lucide="alert-circle"></i> {{ __("landing.l2_js_required_fields_err", [], app()->getLocale()) }}</div>';
             if (window.lucide) lucide.createIcons();
             return;
         }
         var btn = form.querySelector('[type="submit"]');
         btn.disabled = true;
-        btn.textContent = 'Sending…';
+        btn.textContent = '{{ __("landing.l2_js_sending", [], app()->getLocale()) }}';
         fetch('{{ route("public.contact.submit") }}', {
             method: 'POST',
             headers: {'Content-Type':'application/json','X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content},
@@ -885,7 +891,7 @@ function l2SwitchRole(role) {
             if (window.lucide) lucide.createIcons();
         })
         .catch(function(){
-            msgs.innerHTML = '<div class="l2-form-alert-err"><i data-lucide="alert-circle"></i> Something went wrong. Please try again.</div>';
+            msgs.innerHTML = '<div class="l2-form-alert-err"><i data-lucide="alert-circle"></i> {{ __("landing.l2_js_error", [], app()->getLocale()) }}</div>';
             if (window.lucide) lucide.createIcons();
         })
         .finally(function(){
