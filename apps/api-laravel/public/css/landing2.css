@@ -1065,7 +1065,7 @@ body:has(.l2) .footer h4[style] {
     transition: opacity .15s;
 }
 .l2-theme-toggle:hover::before { opacity: 1; }
-.l2-light .l2-theme-toggle::before { color: #334155; }
+body.l2-page-light .l2-theme-toggle::before { color: #334155; }
 
 /* ══════════════════════════════════════
    REDUCED MOTION (accessibility)
@@ -1220,10 +1220,10 @@ body:has(.l2) .footer h4[style] {
 .l2-light .l2h-hub-node i   { color: #0F4C81; }
 .l2-light .l2h-hub-line     { background: linear-gradient(90deg, rgba(15,76,129,.3) 0%, rgba(15,76,129,.03) 100%); }
 
-/* Toggle button — light mode state */
-.l2-light .l2-theme-toggle  { color: #0F4C81; background: rgba(255,255,255,.88); border-color: rgba(15,76,129,.22); }
-.l2-light .l2-icon-moon { display: none; }
-.l2-light .l2-icon-sun  { display: block; }
+/* Toggle button — light mode state (button lives outside .l2) */
+body.l2-page-light .l2-theme-toggle  { color: #0F4C81; background: rgba(255,255,255,.88); border-color: rgba(15,76,129,.22); }
+body.l2-page-light .l2-icon-moon { display: none; }
+body.l2-page-light .l2-icon-sun  { display: block; }
 
 /* Footer — light mode overrides */
 body:has(.l2.l2-light) .footer                          { background: #e8eff7 !important; border-top-color: rgba(15,76,129,.15) !important; }

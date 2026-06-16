@@ -756,13 +756,13 @@
     </div>
 </section>
 
-{{-- Theme toggle --}}
+</div>{{-- /.l2 --}}
+
+{{-- Theme toggle — outside .l2 so position:fixed is not trapped --}}
 <button class="l2-theme-toggle" id="l2ThemeToggle" aria-label="Toggle light/dark mode">
     <i data-lucide="sun"  class="l2-icon-sun"></i>
     <i data-lucide="moon" class="l2-icon-moon"></i>
 </button>
-
-</div>{{-- /.l2 --}}
 @endsection
 
 @section('footer_scripts')
@@ -823,6 +823,7 @@ function l2SwitchRole(role) {
     var preferLight = saved ? saved === 'light' : window.matchMedia('(prefers-color-scheme: light)').matches;
     function apply(light) {
         l2.classList.toggle('l2-light', light);
+        document.body.classList.toggle('l2-page-light', light);
         localStorage.setItem('l2-theme', light ? 'light' : 'dark');
         if (window.lucide) lucide.createIcons();
     }
