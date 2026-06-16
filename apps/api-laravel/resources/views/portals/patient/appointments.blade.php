@@ -96,7 +96,7 @@
                     <td class="row-actions">
                         @if(in_array($appt->status, ['scheduled', 'confirmed']))
                         <button type="button" class="btn btn-danger btn-sm" onclick="opOpenModal('cancel-appt-{{ $appt->id }}')">
-                            <i data-lucide="x-circle"></i> Cancel
+                            <i data-lucide="x-circle"></i> {{ __('public.portal.btn_cancel_appointment', [], app()->getLocale()) ?: 'Cancel' }}
                         </button>
                         @endif
                     </td>
@@ -116,15 +116,15 @@
     @if(in_array($appt->status, ['scheduled', 'confirmed']))
     <div id="cancel-appt-{{ $appt->id }}" class="modal-backdrop mt-6" hidden>
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cancel-appt-{{ $appt->id }}-title">
-            <h3 class="modal__title" id="cancel-appt-{{ $appt->id }}-title"><i data-lucide="x-circle"></i> Cancel appointment</h3>
+            <h3 class="modal__title" id="cancel-appt-{{ $appt->id }}-title"><i data-lucide="x-circle"></i> {{ __('public.portal.modal_cancel_appt_title', [], app()->getLocale()) ?: 'Cancel appointment' }}</h3>
             <form method="POST" action="{{ route('portals.patient.appointments.cancel', $appt->id) }}">
                 @csrf
                 <div class="modal__body">
-                    <p>Cancel this appointment? This action cannot be undone.</p>
+                    <p>{{ __('public.portal.modal_cancel_appt_body', [], app()->getLocale()) ?: 'Cancel this appointment? This action cannot be undone.' }}</p>
                 </div>
                 <div class="modal__footer">
-                    <button type="button" class="btn btn-ghost" onclick="opCloseModal('cancel-appt-{{ $appt->id }}')">Keep appointment</button>
-                    <button type="submit" class="btn btn-danger">Cancel appointment</button>
+                    <button type="button" class="btn btn-ghost" onclick="opCloseModal('cancel-appt-{{ $appt->id }}')">{{ __('public.portal.btn_keep_appointment', [], app()->getLocale()) ?: 'Keep appointment' }}</button>
+                    <button type="submit" class="btn btn-danger">{{ __('public.portal.btn_cancel_appointment', [], app()->getLocale()) ?: 'Cancel appointment' }}</button>
                 </div>
             </form>
         </div>

@@ -151,7 +151,7 @@
                 <div class="stat-card__label">{{ __('public.portal.blood_group', [], app()->getLocale()) ?: 'Blood Group' }}</div>
                 <div class="stat-card__value">{{ $patient->blood_group ?? '—' }}</div>
                 @if(!$patient->blood_group)
-                    <a href="{{ route('portals.patient.profile') }}" class="stat-card__hint">Add in profile →</a>
+                    <a href="{{ route('portals.patient.profile') }}" class="stat-card__hint">{{ __('public.portal.lnk_add_in_profile', [], app()->getLocale()) ?: 'Add in profile →' }}</a>
                 @endif
             </div>
 
@@ -167,7 +167,7 @@
                         @endforeach
                     </div>
                     @if(($criticalAllergies ?? collect())->count() > 3)
-                        <a href="{{ route('portals.patient.allergies') }}" class="stat-card__hint">+{{ ($criticalAllergies ?? collect())->count() - 3 }} more →</a>
+                        <a href="{{ route('portals.patient.allergies') }}" class="stat-card__hint">+{{ ($criticalAllergies ?? collect())->count() - 3 }} {{ __('public.portal.lnk_more_suffix', [], app()->getLocale()) ?: 'more →' }}</a>
                     @endif
                 @endif
             </div>
@@ -176,7 +176,7 @@
             <div class="stat-card {{ ($activeAllergies ?? collect())->isEmpty() ? '' : 'stat-card--warning' }}">
                 <div class="stat-card__label">{{ __('public.portal.active_allergies', [], app()->getLocale()) ?: 'Active Allergies' }}</div>
                 <div class="stat-card__value">{{ ($activeAllergies ?? collect())->count() }}</div>
-                <a href="{{ route('portals.patient.allergies') }}" class="stat-card__hint">View all →</a>
+                <a href="{{ route('portals.patient.allergies') }}" class="stat-card__hint">{{ __('public.portal.lnk_view_all', [], app()->getLocale()) ?: 'View all →' }}</a>
             </div>
 
             {{-- Active Conditions --}}
@@ -184,7 +184,7 @@
                 <div class="stat-card__label">{{ __('public.portal.active_conditions', [], app()->getLocale()) ?: 'Active Conditions' }}</div>
                 <div class="stat-card__value">{{ ($activeConditions ?? collect())->count() }}</div>
                 @if(($activeConditions ?? collect())->isNotEmpty())
-                    <a href="{{ route('portals.patient.clinical') }}" class="stat-card__hint">View all →</a>
+                    <a href="{{ route('portals.patient.clinical') }}" class="stat-card__hint">{{ __('public.portal.lnk_view_all', [], app()->getLocale()) ?: 'View all →' }}</a>
                 @endif
             </div>
 
@@ -296,6 +296,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     var lblGenerating   = @json(__('public.portal.generating', [], app()->getLocale()) ?: 'Generating…');
     var lblRegenerateQr = @json(__('public.portal.regenerate_qr', [], app()->getLocale()) ?: 'Regenerate QR');
+    var lblQrExpired    = @json(__('public.portal.lbl_qr_expired', [], app()->getLocale()) ?: 'Expired');
     var countdownInterval = null;
 
     var btnGen = document.getElementById('generate-temp-qr');
@@ -339,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (seconds <= 0) {
                 clearInterval(countdownInterval);
                 countdownInterval = null;
-                if (el) el.textContent = 'Expired';
+                if (el) el.textContent = lblQrExpired;
                 return;
             }
             seconds--;

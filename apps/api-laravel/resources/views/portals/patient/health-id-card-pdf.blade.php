@@ -232,7 +232,7 @@
         <div class="brand-row">
             <span class="brand-name">OpesCare</span>
             &nbsp;
-            <span class="brand-sub">Digital Health ID &bull; Cameroon</span>
+            <span class="brand-sub">{{ __('public.portal.id_card_digital_health') }} &bull; Cameroon</span>
         </div>
     </div>
 
@@ -248,24 +248,24 @@
         <div class="meta-row">
             @if($patient->date_of_birth)
             <span class="meta-item">
-                <span class="meta-label">Date of Birth</span>
+                <span class="meta-label">{{ __('public.portal.id_card_dob') }}</span>
                 <span class="meta-value">{{ $patient->date_of_birth->format('d M Y') }}</span>
             </span>
             @endif
             @if($patient->sex)
             <span class="meta-item">
-                <span class="meta-label">Sex</span>
+                <span class="meta-label">{{ __('public.portal.id_card_sex') }}</span>
                 <span class="meta-value">{{ ucfirst($patient->sex) }}</span>
             </span>
             @endif
             <span class="meta-item">
-                <span class="meta-label">Issued</span>
+                <span class="meta-label">{{ __('public.portal.id_card_issued') }}</span>
                 <span class="meta-value">{{ $issuedAt }}</span>
             </span>
         </div>
 
         <div class="health-id-block">
-            <span class="health-id-label-sm">Health ID Number</span>
+            <span class="health-id-label-sm">{{ __('public.portal.id_card_health_id_num') }}</span>
             <span class="health-id-value">{{ $patient->health_id }}</span>
         </div>
     </div>
@@ -277,17 +277,16 @@
                 {{ strtoupper($patient->verification_status ?? 'Active') }}
             </span>
             <span class="country-text">
-                Country: {{ $patient->country_code ?? 'CM' }} &bull; MINSANTE Registered
+                {{ __('public.portal.id_card_country') }}: {{ $patient->country_code ?? 'CM' }} &bull; {{ __('public.portal.id_card_minsante') }}
             </span>
             <span class="disclaimer-text">
-                Scan QR to verify. Valid per Cameroon Law No. 2010/012 &amp; WHO Digital Health Standards.
-                Report loss: opeshealthsystems.com
+                {{ __('public.portal.id_card_disclaimer') }}
             </span>
         </div>
         <div class="footer-right">
             @if($qrDataUri)
-                <img src="{{ $qrDataUri }}" class="qr-img" alt="Health ID QR">
-                <span class="qr-label">Scan to verify</span>
+                <img src="{{ $qrDataUri }}" class="qr-img" alt="{{ __('public.portal.id_card_health_id_num') }}">
+                <span class="qr-label">{{ __('public.portal.id_card_scan_verify') }}</span>
             @endif
         </div>
     </div>

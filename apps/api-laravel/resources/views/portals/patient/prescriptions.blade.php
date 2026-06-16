@@ -47,7 +47,7 @@
         <div>
             <h2 class="panel-title">
                 <i data-lucide="pill"></i>
-                Prescription — {{ $rx->prescribed_at?->format('d M Y') ?? 'Unknown date' }}
+                {{ __('public.portal.rx_heading_prefix', [], $l) ?: 'Prescription —' }} {{ $rx->prescribed_at?->format('d M Y') ?? (__('public.portal.rx_unknown_date', [], $l) ?: 'Unknown date') }}
             </h2>
             @if($rx->facility)
             <p class="text-sm text-muted mt-1">{{ $rx->facility->name }}</p>
