@@ -10,107 +10,121 @@
 @section('content')
 <div class="l2">
 
-{{-- Animated mesh background (sits behind all sections) --}}
+{{-- Mesh background — 3 brand-blue orbs only --}}
 <div class="l2-mesh" aria-hidden="true">
     <div class="l2-orb l2-orb-1"></div>
     <div class="l2-orb l2-orb-2"></div>
     <div class="l2-orb l2-orb-3"></div>
-    <div class="l2-orb l2-orb-4"></div>
-    <div class="l2-orb l2-orb-5"></div>
 </div>
 
 {{-- ═══════════════════════════════════════
-     1. HERO SLIDER  (reuses .hs-* CSS)
+     1. HERO SLIDER v2  (l2h- classes, mobile-first)
      ═══════════════════════════════════════ --}}
-<section class="hs-section">
-    <div class="hs-track">
-        <div id="hs-slides" class="hs-slides">
+<section class="l2h">
+    <div class="l2h-wrap">
+        <div class="l2h-slides" id="l2hSlides">
 
             {{-- Slide 1: Health ID --}}
-            <div class="hs-slide hs-s1">
-                <div class="hs-inner">
-                    <div class="hs-copy">
-                        <span class="hs-badge">
-                            <i data-lucide="shield-check" style="width:13px;height:13px;"></i>
+            <div class="l2h-slide">
+                <div class="l2h-container">
+                    <div class="l2h-copy">
+                        <span class="l2h-badge">
+                            <i data-lucide="shield-check"></i>
                             {{ __('landing.hero.badge', [], app()->getLocale()) }}
                         </span>
                         <h1>{{ __('landing.hero.title', [], app()->getLocale()) }}</h1>
-                        <p class="hs-sub">{{ __('landing.hero.subtitle', [], app()->getLocale()) }}</p>
-                        <div class="hs-btn-grid">
-                            <a href="{{ route('public.contact') }}" class="hs-btn hs-btn-primary">
-                                <i data-lucide="handshake" style="width:16px;height:16px;"></i>
+                        <p>{{ __('landing.hero.subtitle', [], app()->getLocale()) }}</p>
+                        <div class="l2h-btns">
+                            <a href="{{ route('public.contact') }}" class="l2h-btn l2h-btn-primary">
+                                <i data-lucide="handshake"></i>
                                 {{ __('landing.hero.cta_primary', [], app()->getLocale()) }}
                             </a>
-                            <a href="{{ route('public.how-it-works') }}" class="hs-btn hs-btn-outline">
-                                <i data-lucide="play-circle" style="width:16px;height:16px;"></i>
+                            <a href="{{ route('public.how-it-works') }}" class="l2h-btn l2h-btn-ghost">
+                                <i data-lucide="play-circle"></i>
                                 {{ __('landing.hero.cta_secondary', [], app()->getLocale()) }}
                             </a>
                         </div>
-                        <div class="hs-trust-row">
-                            <span><i data-lucide="check-circle" style="width:13px;height:13px;color:#22c55e;"></i> {{ __('landing.hero.trust1', [], app()->getLocale()) }}</span>
-                            <span><i data-lucide="check-circle" style="width:13px;height:13px;color:#22c55e;"></i> {{ __('landing.hero.trust2', [], app()->getLocale()) }}</span>
+                        <div class="l2h-trust">
+                            <div class="l2h-trust-item">
+                                <i data-lucide="check-circle"></i>
+                                {{ __('landing.hero.trust1', [], app()->getLocale()) }}
+                            </div>
+                            <div class="l2h-trust-item">
+                                <i data-lucide="check-circle"></i>
+                                {{ __('landing.hero.trust2', [], app()->getLocale()) }}
+                            </div>
                         </div>
                     </div>
-                    <div class="hs-visual">
-                        <div class="hs-card hs-card-id">
-                            <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;">
-                                <i data-lucide="credit-card" style="width:1rem;height:1rem;color:#60a5fa;"></i>
-                                <span style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.08em;text-transform:uppercase;">{{ __('landing.hero_card.label_health_id', [], app()->getLocale()) }}</span>
+                    <div class="l2h-visual" aria-hidden="true">
+                        <div class="l2h-card">
+                            <div class="l2h-card-top">
+                                <div class="l2h-card-label">
+                                    <i data-lucide="credit-card"></i>
+                                    {{ __('landing.hero_card.label_health_id', [], app()->getLocale()) }}
+                                </div>
+                                <span class="l2h-card-badge">Verified</span>
                             </div>
-                            <div style="font-size:.85rem;font-weight:700;color:#fff;letter-spacing:.06em;font-family:monospace;">{{ __('landing.hero_card.demo_id', [], app()->getLocale()) }}</div>
-                            <div style="font-size:.65rem;color:rgba(255,255,255,.45);margin-top:.3rem;">{{ __('landing.hero_card.secure_label', [], app()->getLocale()) }}</div>
-                            <div style="margin-top:.75rem;background:rgba(255,255,255,.08);border-radius:.4rem;padding:.45rem .65rem;font-size:.7rem;color:rgba(255,255,255,.75);">
-                                <i data-lucide="check-circle" style="width:.75rem;height:.75rem;color:#22c55e;vertical-align:-1px;"></i>
-                                {{ __('landing.hero_card.label_verified', [], app()->getLocale()) }} · {{ __('landing.hero_card.consent_approved', [], app()->getLocale()) }}
+                            <div class="l2h-card-id">{{ __('landing.hero_card.demo_id', [], app()->getLocale()) }}</div>
+                            <div class="l2h-card-sub">{{ __('landing.hero_card.secure_label', [], app()->getLocale()) }}</div>
+                            <div class="l2h-card-item">
+                                <i data-lucide="check-circle"></i>
+                                <span>{{ __('landing.hero_card.label_verified', [], app()->getLocale()) }} · {{ __('landing.hero_card.consent_approved', [], app()->getLocale()) }}</span>
                             </div>
-                        </div>
-                        <div class="hs-card hs-card-timeline">
-                            <div style="font-size:.65rem;color:rgba(255,255,255,.45);margin-bottom:.35rem;">{{ __('landing.hero_card.timeline_ago', [], app()->getLocale()) }}</div>
-                            <div style="font-size:.8rem;font-weight:600;color:#fff;">{{ __('landing.hero_card.timeline_title', [], app()->getLocale()) }}</div>
-                            <div style="font-size:.7rem;color:rgba(255,255,255,.55);margin-top:.2rem;">{{ __('landing.hero_card.timeline_desc', [], app()->getLocale()) }}</div>
+                            <div class="l2h-card-item">
+                                <i data-lucide="clock"></i>
+                                <span>{{ __('landing.hero_card.timeline_title', [], app()->getLocale()) }} · {{ __('landing.hero_card.timeline_ago', [], app()->getLocale()) }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             {{-- Slide 2: Consent & Access --}}
-            <div class="hs-slide hs-s2">
-                <div class="hs-inner">
-                    <div class="hs-copy">
-                        <span class="hs-badge">
-                            <i data-lucide="lock" style="width:13px;height:13px;"></i>
+            <div class="l2h-slide">
+                <div class="l2h-container">
+                    <div class="l2h-copy">
+                        <span class="l2h-badge">
+                            <i data-lucide="lock"></i>
                             Consent &amp; Access
                         </span>
                         <h1>Patients decide who sees their records. Every time.</h1>
-                        <p class="hs-sub">OpesCare gives patients granular control over their sensitive health data — approving, denying, or revoking access from one secure consent center.</p>
-                        <div class="hs-btn-grid">
-                            <a href="{{ route('public.contact') }}" class="hs-btn hs-btn-primary">
-                                <i data-lucide="handshake" style="width:16px;height:16px;"></i>
+                        <p>OpesCare gives patients granular control over their sensitive health data — approving, denying, or revoking access from one secure consent center.</p>
+                        <div class="l2h-btns">
+                            <a href="{{ route('public.contact') }}" class="l2h-btn l2h-btn-primary">
+                                <i data-lucide="handshake"></i>
                                 Request Demo
                             </a>
-                            <a href="{{ route('public.how-it-works') }}" class="hs-btn hs-btn-outline">
-                                <i data-lucide="shield" style="width:16px;height:16px;"></i>
+                            <a href="{{ route('public.how-it-works') }}" class="l2h-btn l2h-btn-ghost">
+                                <i data-lucide="shield"></i>
                                 How Consent Works
                             </a>
                         </div>
                     </div>
-                    <div class="hs-visual" style="display:flex;align-items:center;justify-content:center;">
-                        <div class="hs-card" style="width:100%;max-width:260px;">
-                            <div style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:.6rem;">Consent Request</div>
-                            <div style="background:rgba(253,224,71,.12);border:1px solid rgba(253,224,71,.3);border-radius:.4rem;padding:.5rem .7rem;font-size:.72rem;color:rgba(255,255,255,.8);margin-bottom:.75rem;">
-                                <i data-lucide="alert-triangle" style="width:.75rem;height:.75rem;color:#fde047;vertical-align:-1px;margin-right:4px;"></i>
+                    <div class="l2h-visual" aria-hidden="true">
+                        <div class="l2h-card">
+                            <div class="l2h-card-top">
+                                <div class="l2h-card-label">
+                                    <i data-lucide="shield-check"></i>
+                                    Consent Request
+                                </div>
+                                <span class="l2h-card-badge l2h-badge-warn">Pending</span>
+                            </div>
+                            <div class="l2h-card-alert">
+                                <i data-lucide="alert-triangle"></i>
                                 City General Hospital · Clinical Notes
                             </div>
-                            <div style="font-size:.7rem;color:rgba(255,255,255,.55);margin-bottom:.5rem;">Access scope:</div>
-                            @foreach(['Demographics','Prescriptions','Lab Results'] as $scope)
-                            <div style="display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:.72rem;color:rgba(255,255,255,.75);">
-                                <span>{{ $scope }}</span>
-                                <span style="width:1.5rem;height:.9rem;border-radius:99px;background:{{ $loop->last ? 'rgba(255,255,255,.2)' : '#0F4C81' }};display:inline-block;"></span>
+                            <div class="l2h-card-item l2h-scope-row">
+                                <span>Demographics</span><span class="l2h-toggle on"></span>
                             </div>
-                            @endforeach
-                            <div style="display:flex;gap:.5rem;margin-top:.85rem;">
-                                <button style="flex:1;padding:.4rem;border-radius:.35rem;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);border:none;font-size:.72rem;font-weight:600;min-height:36px;">Deny</button>
-                                <button style="flex:1;padding:.4rem;border-radius:.35rem;background:#0F4C81;color:#fff;border:none;font-size:.72rem;font-weight:600;min-height:36px;">Approve</button>
+                            <div class="l2h-card-item l2h-scope-row">
+                                <span>Prescriptions</span><span class="l2h-toggle on"></span>
+                            </div>
+                            <div class="l2h-card-item l2h-scope-row">
+                                <span>Lab Results</span><span class="l2h-toggle off"></span>
+                            </div>
+                            <div class="l2h-card-actions">
+                                <button class="l2h-card-deny">Deny</button>
+                                <button class="l2h-card-approve">Approve</button>
                             </div>
                         </div>
                     </div>
@@ -118,41 +132,47 @@
             </div>
 
             {{-- Slide 3: Emergency Access --}}
-            <div class="hs-slide hs-s3">
-                <div class="hs-inner">
-                    <div class="hs-copy">
-                        <span class="hs-badge">
-                            <i data-lucide="siren" style="width:13px;height:13px;"></i>
+            <div class="l2h-slide">
+                <div class="l2h-container">
+                    <div class="l2h-copy">
+                        <span class="l2h-badge">
+                            <i data-lucide="siren"></i>
                             Emergency Access
                         </span>
                         <h1>Critical information when seconds matter — fully audited.</h1>
-                        <p class="hs-sub">When a patient cannot give consent, approved providers access a limited emergency profile. Every access is reason-based, logged, and reviewed after the emergency.</p>
-                        <div class="hs-btn-grid">
-                            <a href="{{ route('public.contact') }}" class="hs-btn hs-btn-primary">
-                                <i data-lucide="handshake" style="width:16px;height:16px;"></i>
+                        <p>When a patient cannot give consent, approved providers access a limited emergency profile. Every access is reason-based, logged, and reviewed after the emergency.</p>
+                        <div class="l2h-btns">
+                            <a href="{{ route('public.contact') }}" class="l2h-btn l2h-btn-primary">
+                                <i data-lucide="handshake"></i>
                                 Request Demo
                             </a>
-                            <a href="{{ route('public.how-it-works') }}" class="hs-btn hs-btn-outline">
-                                <i data-lucide="file-text" style="width:16px;height:16px;"></i>
+                            <a href="{{ route('public.how-it-works') }}" class="l2h-btn l2h-btn-ghost">
+                                <i data-lucide="file-text"></i>
                                 Learn More
                             </a>
                         </div>
                     </div>
-                    <div class="hs-visual" style="display:flex;align-items:center;justify-content:center;">
-                        <div class="hs-card" style="width:100%;max-width:260px;border:1px solid rgba(239,68,68,.35);">
-                            <div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.75rem;">
-                                <i data-lucide="alert-octagon" style="width:.9rem;height:.9rem;color:#ef4444;"></i>
-                                <span style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#ef4444;">Emergency Override Active</span>
+                    <div class="l2h-visual" aria-hidden="true">
+                        <div class="l2h-card l2h-card-emr">
+                            <div class="l2h-emr-header">
+                                <i data-lucide="alert-octagon"></i>
+                                Emergency Override Active
                             </div>
-                            @foreach([['Blood Group','O Positive (O+)','danger'],['Critical Allergies','Penicillin, Peanuts','warn'],['Conditions','Chronic Asthma','normal']] as [$lbl,$val,$cls])
-                            <div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:.72rem;">
-                                <span style="color:rgba(255,255,255,.45);">{{ $lbl }}</span>
-                                <span style="color:{{ $cls==='danger'?'#fca5a5':($cls==='warn'?'#fcd34d':'#fff') }};font-weight:600;">{{ $val }}</span>
+                            <div class="l2h-card-item l2h-em-row">
+                                <span>Blood Group</span>
+                                <span class="l2h-em-val danger">O Positive (O+)</span>
                             </div>
-                            @endforeach
-                            <div style="margin-top:.75rem;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:.35rem;padding:.5rem .65rem;font-size:.68rem;color:rgba(255,255,255,.55);">
-                                <i data-lucide="shield-alert" style="width:.75rem;height:.75rem;color:#ef4444;vertical-align:-1px;margin-right:3px;"></i>
-                                Access logged · Compliance hub notified
+                            <div class="l2h-card-item l2h-em-row">
+                                <span>Critical Allergies</span>
+                                <span class="l2h-em-val warn">Penicillin, Peanuts</span>
+                            </div>
+                            <div class="l2h-card-item l2h-em-row">
+                                <span>Conditions</span>
+                                <span class="l2h-em-val">Chronic Asthma</span>
+                            </div>
+                            <div class="l2h-card-item" style="margin-top:.35rem;font-size:.7rem;color:rgba(255,255,255,.4);">
+                                <i data-lucide="shield-alert"></i>
+                                <span>Access logged · Compliance hub notified</span>
                             </div>
                         </div>
                     </div>
@@ -160,57 +180,56 @@
             </div>
 
             {{-- Slide 4: Connected Care Network --}}
-            <div class="hs-slide hs-s4">
-                <div class="hs-inner">
-                    <div class="hs-copy">
-                        <span class="hs-badge">
-                            <i data-lucide="network" style="width:13px;height:13px;"></i>
+            <div class="l2h-slide">
+                <div class="l2h-container">
+                    <div class="l2h-copy">
+                        <span class="l2h-badge">
+                            <i data-lucide="network"></i>
                             Connected Care Network
                         </span>
                         <h1>Connect your hospital, clinic, lab, or pharmacy today.</h1>
-                        <p class="hs-sub">OpesCare works with the systems healthcare facilities already use — through APIs, SDKs, widgets, bridge agents, or OpesCare Lite for facilities starting from zero.</p>
-                        <div class="hs-btn-grid">
-                            <a href="{{ route('public.contact') }}" class="hs-btn hs-btn-primary">
-                                <i data-lucide="handshake" style="width:16px;height:16px;"></i>
+                        <p>OpesCare works with the systems healthcare facilities already use — through APIs, SDKs, widgets, bridge agents, or OpesCare Lite for facilities starting from zero.</p>
+                        <div class="l2h-btns">
+                            <a href="{{ route('public.contact') }}" class="l2h-btn l2h-btn-primary">
+                                <i data-lucide="handshake"></i>
                                 Request Partnership Demo
                             </a>
-                            <a href="{{ route('public.interoperability') }}" class="hs-btn hs-btn-outline">
-                                <i data-lucide="plug" style="width:16px;height:16px;"></i>
+                            <a href="{{ route('public.interoperability') }}" class="l2h-btn l2h-btn-ghost">
+                                <i data-lucide="plug"></i>
                                 Interoperability
                             </a>
                         </div>
                     </div>
-                    <div class="hs-visual" style="display:flex;align-items:center;justify-content:center;">
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;width:100%;max-width:240px;">
-                            @foreach([['hospital','Hospital','Connect API'],['flask-conical','Lab','SDK'],['pill','Pharmacy','Widget'],['building-2','Insurer','Bridge Agent']] as [$icon,$label,$method])
-                            <div class="hs-card" style="padding:.75rem;text-align:center;">
-                                <i data-lucide="{{ $icon }}" style="width:1.1rem;height:1.1rem;color:#60a5fa;margin-bottom:.35rem;"></i>
-                                <div style="font-size:.72rem;font-weight:600;color:#fff;">{{ $label }}</div>
-                                <div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-top:.15rem;">{{ $method }}</div>
-                            </div>
-                            @endforeach
+                    <div class="l2h-visual" aria-hidden="true">
+                        <div class="l2h-net-grid">
+                            <div class="l2h-net-node"><i data-lucide="hospital"></i><span>Hospital</span></div>
+                            <div class="l2h-net-node"><i data-lucide="flask-conical"></i><span>Lab</span></div>
+                            <div class="l2h-net-node l2h-net-center"><i data-lucide="shield"></i><span>Health ID</span></div>
+                            <div class="l2h-net-node"><i data-lucide="pill"></i><span>Pharmacy</span></div>
+                            <div class="l2h-net-node"><i data-lucide="building-2"></i><span>Insurer</span></div>
+                            <div class="l2h-net-node"><i data-lucide="user"></i><span>Patient</span></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-        </div>{{-- /.hs-slides --}}
-    </div>{{-- /.hs-track --}}
+        </div>{{-- /.l2h-slides --}}
+    </div>{{-- /.l2h-wrap --}}
 
-    {{-- Controls --}}
-    <div class="hs-controls">
-        <button class="hs-arrow" id="hs-prev" onclick="hsPrev()" disabled aria-label="Previous">
-            <i data-lucide="chevron-left" style="width:18px;height:18px;"></i>
+    {{-- Nav bar --}}
+    <div class="l2h-nav">
+        <button class="l2h-arrow" id="l2hPrev" onclick="l2hPrev()" disabled aria-label="Previous">
+            <i data-lucide="chevron-left"></i>
         </button>
-        <div class="hs-dots">
-            <button class="hs-dot hs-dot-active" onclick="hsGo(0)" aria-label="Slide 1"></button>
-            <button class="hs-dot" onclick="hsGo(1)" aria-label="Slide 2"></button>
-            <button class="hs-dot" onclick="hsGo(2)" aria-label="Slide 3"></button>
-            <button class="hs-dot" onclick="hsGo(3)" aria-label="Slide 4"></button>
+        <div class="l2h-dots">
+            <button class="l2h-dot l2h-dot-active" onclick="l2hGo(0)" aria-label="Slide 1"></button>
+            <button class="l2h-dot" onclick="l2hGo(1)" aria-label="Slide 2"></button>
+            <button class="l2h-dot" onclick="l2hGo(2)" aria-label="Slide 3"></button>
+            <button class="l2h-dot" onclick="l2hGo(3)" aria-label="Slide 4"></button>
         </div>
-        <span id="hs-label" class="hs-label">Health ID</span>
-        <button class="hs-arrow" id="hs-next" onclick="hsNext()" aria-label="Next">
-            <i data-lucide="chevron-right" style="width:18px;height:18px;"></i>
+        <span class="l2h-slide-label" id="l2hLabel">Health ID</span>
+        <button class="l2h-arrow" id="l2hNext" onclick="l2hNext()" aria-label="Next">
+            <i data-lucide="chevron-right"></i>
         </button>
     </div>
 </section>
@@ -683,28 +702,35 @@
 @endsection
 
 @section('footer_scripts')
-{{-- Hero slider (shared with landing.blade.php) --}}
+{{-- Hero slider v2 --}}
 <script>
 (function(){
-    var cur = 0; var total = 4;
-    var labels = ['Health ID','Consent & Access','Emergency Access','Connected Care Network'];
-    function hsUpdate(){
-        document.getElementById('hs-slides').style.transform = 'translateX(-' + (cur * 100) + '%)';
-        document.querySelectorAll('.hs-dot').forEach(function(d,i){ d.classList.toggle('hs-dot-active', i === cur); });
-        document.getElementById('hs-label').textContent = labels[cur];
-        document.getElementById('hs-prev').disabled = cur === 0;
-        document.getElementById('hs-next').disabled = cur === total - 1;
+    var cur = 0, total = 4;
+    var labels = ['Health ID','Consent & Access','Emergency Access','Connected Care'];
+    function upd(){
+        var el = document.getElementById('l2hSlides');
+        if (el) el.style.transform = 'translateX(-' + (cur * 100) + '%)';
+        document.querySelectorAll('.l2h-dot').forEach(function(d,i){
+            d.classList.toggle('l2h-dot-active', i === cur);
+        });
+        var lbl = document.getElementById('l2hLabel');
+        if (lbl) lbl.textContent = labels[cur];
+        var prev = document.getElementById('l2hPrev');
+        var next = document.getElementById('l2hNext');
+        if (prev) prev.disabled = cur === 0;
+        if (next) next.disabled = cur === total - 1;
     }
-    window.hsPrev = function(){ if(cur > 0){ cur--; hsUpdate(); } };
-    window.hsNext = function(){ if(cur < total-1){ cur++; hsUpdate(); } };
-    window.hsGo   = function(i){ cur = i; hsUpdate(); };
-    var startX = 0;
-    var el = document.getElementById('hs-slides');
-    el.addEventListener('touchstart', function(e){ startX = e.touches[0].clientX; }, {passive:true});
-    el.addEventListener('touchend',   function(e){
-        var diff = startX - e.changedTouches[0].clientX;
-        if(Math.abs(diff) > 50){ diff > 0 ? hsNext() : hsPrev(); }
-    });
+    window.l2hPrev = function(){ if(cur > 0){ cur--; upd(); } };
+    window.l2hNext = function(){ if(cur < total - 1){ cur++; upd(); } };
+    window.l2hGo   = function(i){ cur = i; upd(); };
+    var sx = 0, el = document.getElementById('l2hSlides');
+    if (el) {
+        el.addEventListener('touchstart', function(e){ sx = e.touches[0].clientX; }, {passive:true});
+        el.addEventListener('touchend',   function(e){
+            var d = sx - e.changedTouches[0].clientX;
+            if (Math.abs(d) > 45) { d > 0 ? l2hNext() : l2hPrev(); }
+        });
+    }
 })();
 </script>
 
