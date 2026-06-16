@@ -1052,6 +1052,20 @@ body:has(.l2) .footer h4[style] {
 .l2-theme-toggle i     { width: 1.05rem; height: 1.05rem; pointer-events: none; }
 .l2-icon-sun  { display: none; }
 .l2-icon-moon { display: block; }
+/* Tooltip */
+.l2-theme-toggle::before {
+    content: 'Toggle theme';
+    position: absolute; right: calc(100% + .6rem); top: 50%;
+    transform: translateY(-50%);
+    background: var(--glass-bg-strong); backdrop-filter: var(--glass-blur-sm);
+    border: 1px solid var(--glass-border-hi);
+    color: rgba(255,255,255,.8); font-size: .75rem; white-space: nowrap;
+    padding: .3rem .65rem; border-radius: 6px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .15s;
+}
+.l2-theme-toggle:hover::before { opacity: 1; }
+.l2-light .l2-theme-toggle::before { color: #334155; }
 
 /* ══════════════════════════════════════
    REDUCED MOTION (accessibility)
