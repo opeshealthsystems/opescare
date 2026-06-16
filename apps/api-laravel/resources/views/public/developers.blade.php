@@ -1,7 +1,7 @@
 ﻿@extends('layouts.public')
 
-@section('title', 'OpesCare Developers | Connect API, SDK, Widget & Integration Tools')
-@section('meta_description', 'Developer resources for the OpesCare platform: REST API, PHP/JS/Python SDK, embeddable widget, Bridge Agent, OpesCare Lite, and webhooks.')
+@section('title', __('public.dev_page.page_title'))
+@section('meta_description', __('public.dev_page.meta_description'))
 
 @section('head_scripts')
 <style>
@@ -15,14 +15,14 @@
     {{-- Hero --}}
     <header class="content-header">
         <div class="container">
-            <div class="badge" style="background:rgba(20,184,166,.15);color:#0F766E;margin-bottom:1rem;">Developer Portal</div>
-            <h1>Tools built for healthcare interoperability.</h1>
+            <div class="badge" style="background:rgba(20,184,166,.15);color:#0F766E;margin-bottom:1rem;">{{ __('public.dev_page.badge') }}</div>
+            <h1>{{ __('public.dev_page.hero_title') }}</h1>
             <p class="text-muted" style="max-width:760px;margin:0 auto;font-size:1.2rem;">
-                Connect your hospital, clinic, lab, or pharmacy to the OpesCare network using the integration method that fits your existing infrastructure.
+                {{ __('public.dev_page.hero_subtitle') }}
             </p>
             <div style="margin-top:2.5rem;display:flex;justify-content:center;flex-wrap:wrap;gap:1rem;">
-                <a href="{{ route('register.developer') }}" class="btn btn-primary">Request API Access</a>
-                <a href="{{ route('public.status') }}" class="btn btn-secondary">API Status</a>
+                <a href="{{ route('register.developer') }}" class="btn btn-primary">{{ __('public.dev_page.btn_request_access') }}</a>
+                <a href="{{ route('public.status') }}" class="btn btn-secondary">{{ __('public.dev_page.btn_api_status') }}</a>
             </div>
         </div>
     </header>
@@ -47,15 +47,15 @@
                     <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(15,76,129,.08);color:#0F4C81;border-radius:.5rem;padding:.4rem .875rem;font-size:.8125rem;font-weight:700;margin-bottom:1rem;">
                         <i data-lucide="braces" style="width:.9rem;height:.9rem;"></i> OpesCare Connect API
                     </div>
-                    <h2>RESTful API — direct system-to-system integration</h2>
+                    <h2>{{ __('public.dev_page.api_title') }}</h2>
                     <p class="text-muted" style="margin-bottom:1.5rem;">
-                        The Connect API gives authorized health systems full programmatic access to the OpesCare platform — patient identity, consent, clinical timelines, medication availability, and more. All endpoints are JSON-based and authenticated via OAuth 2.0 client credentials.
+                        {{ __('public.dev_page.api_desc') }}
                     </p>
                     <ul style="list-style:none;padding:0;margin:0;display:grid;gap:.75rem;">
-                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> OAuth 2.0 client credentials flow</li>
-                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> Versioned endpoints — current stable: v1</li>
-                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> Sandbox environment for safe pre-production testing</li>
-                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> Full audit trail — every API call is logged</li>
+                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.dev_page.api_feat1') }}</li>
+                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.dev_page.api_feat2') }}</li>
+                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.dev_page.api_feat3') }}</li>
+                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.dev_page.api_feat4') }}</li>
                     </ul>
                 </div>
                 <div class="hero-visual">
@@ -88,10 +88,10 @@
     <section id="sdk" class="section" style="background:#F8FAFC;">
         <div class="container">
             <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(15,76,129,.08);color:#0F4C81;border-radius:.5rem;padding:.4rem .875rem;font-size:.8125rem;font-weight:700;margin-bottom:1rem;">
-                <i data-lucide="code-2" style="width:.9rem;height:.9rem;"></i> OpesCare Connect SDK
+                <i data-lucide="code-2" style="width:.9rem;height:.9rem;"></i> {{ __('public.dev_page.sdk_badge') }}
             </div>
-            <h2>Pre-built libraries in PHP, JavaScript, Python and more</h2>
-            <p class="text-muted" style="max-width:680px;margin-bottom:3rem;">The SDK wraps the Connect API into idiomatic clients so your development team can integrate in days rather than weeks.</p>
+            <h2>{{ __('public.dev_page.sdk_title') }}</h2>
+            <p class="text-muted" style="max-width:680px;margin-bottom:3rem;">{{ __('public.dev_page.sdk_subtitle') }}</p>
 
             <div class="card-grid">
                 @foreach([
@@ -122,17 +122,17 @@
             <div class="hero-grid">
                 <div class="hero-content">
                     <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(15,76,129,.08);color:#0F4C81;border-radius:.5rem;padding:.4rem .875rem;font-size:.8125rem;font-weight:700;margin-bottom:1rem;">
-                        <i data-lucide="panel-top" style="width:.9rem;height:.9rem;"></i> OpesCare Connect Widget
+                        <i data-lucide="panel-top" style="width:.9rem;height:.9rem;"></i> {{ __('public.dev_page.widget_badge') }}
                     </div>
-                    <h2>Embed patient search and consent in your web application</h2>
+                    <h2>{{ __('public.dev_page.widget_title') }}</h2>
                     <p class="text-muted" style="margin-bottom:1.5rem;">
-                        The Connect Widget is a secure, sandboxed web component you can embed inside your existing hospital information system or web portal. It handles patient lookup, consent request, and record pull without requiring a custom API integration.
+                        {{ __('public.dev_page.widget_desc') }}
                     </p>
                     <ul style="list-style:none;padding:0;margin:0;display:grid;gap:.75rem;">
-                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> Single script tag embed — no build pipeline required</li>
-                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> Scoped iFrame — zero access to your parent app state</li>
-                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> Customizable theme and label strings</li>
-                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> postMessage API for result callbacks into your app</li>
+                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.dev_page.widget_feat1') }}</li>
+                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.dev_page.widget_feat2') }}</li>
+                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.dev_page.widget_feat3') }}</li>
+                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.dev_page.widget_feat4') }}</li>
                     </ul>
                 </div>
                 <div class="hero-visual">
@@ -142,10 +142,10 @@
                             <span style="font-weight:700;font-size:.875rem;color:#fff;">OpesCare Connect Widget</span>
                         </div>
                         <div style="padding:1.5rem;background:#F8FAFC;">
-                            <label style="font-size:.8125rem;font-weight:600;color:#374151;display:block;margin-bottom:.4rem;">Search Patient Health ID</label>
+                            <label style="font-size:.8125rem;font-weight:600;color:#374151;display:block;margin-bottom:.4rem;">{{ __('public.dev_page.widget_search_label') }}</label>
                             <div style="display:flex;gap:.5rem;margin-bottom:1.25rem;">
                                 <input type="text" value="CM-HID-7KQ9-MP42-X8D1" readonly style="flex:1;height:2.5rem;padding:0 .875rem;border:1px solid #cbd5e1;border-radius:.5rem;font-size:.8125rem;font-family:monospace;background:#fff;">
-                                <button style="height:2.5rem;padding:0 1rem;background:#0F4C81;color:#fff;border:none;border-radius:.5rem;font-size:.875rem;font-weight:600;cursor:pointer;">Search</button>
+                                <button style="height:2.5rem;padding:0 1rem;background:#0F4C81;color:#fff;border:none;border-radius:.5rem;font-size:.875rem;font-weight:600;cursor:pointer;">{{ __('public.dev_page.widget_btn_search') }}</button>
                             </div>
                             <div style="background:#fff;border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;">
                                 <div style="display:flex;align-items:center;gap:.75rem;">
@@ -155,7 +155,7 @@
                                         <div style="font-size:.75rem;color:#14B8A6;font-weight:600;">● Verified</div>
                                     </div>
                                 </div>
-                                <button style="margin-top:1rem;width:100%;height:2.25rem;background:#14B8A6;color:#fff;border:none;border-radius:.5rem;font-size:.8125rem;font-weight:600;cursor:pointer;">Request Consent</button>
+                                <button style="margin-top:1rem;width:100%;height:2.25rem;background:#14B8A6;color:#fff;border:none;border-radius:.5rem;font-size:.8125rem;font-weight:600;cursor:pointer;">{{ __('public.dev_page.widget_btn_consent') }}</button>
                             </div>
                         </div>
                     </div>
@@ -168,32 +168,32 @@
     <section id="bridge" class="section" style="background:#F8FAFC;">
         <div class="container">
             <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(15,76,129,.08);color:#0F4C81;border-radius:.5rem;padding:.4rem .875rem;font-size:.8125rem;font-weight:700;margin-bottom:1rem;">
-                <i data-lucide="cpu" style="width:.9rem;height:.9rem;"></i> OpesCare Bridge Agent
+                <i data-lucide="cpu" style="width:.9rem;height:.9rem;"></i> {{ __('public.dev_page.bridge_badge') }}
             </div>
-            <h2>Connecting legacy systems, local databases, and offline environments</h2>
+            <h2>{{ __('public.dev_page.bridge_title') }}</h2>
             <p class="text-muted" style="max-width:680px;margin-bottom:3rem;">
-                Not every facility has a modern API-ready system. The Bridge Agent is a lightweight local service that can connect to on-premise databases, file-export systems, or semi-offline environments, and sync records securely with OpesCare on a scheduled or event-driven basis.
+                {{ __('public.dev_page.bridge_desc') }}
             </p>
             <div class="card-grid">
                 <div class="card">
                     <div class="card-icon"><i data-lucide="database"></i></div>
-                    <h3>Local Database Connector</h3>
-                    <p>Reads from MySQL, PostgreSQL, MSSQL, or SQLite databases on your local network and maps records to the OpesCare data model.</p>
+                    <h3>{{ __('public.dev_page.bridge_db_title') }}</h3>
+                    <p>{{ __('public.dev_page.bridge_db_desc') }}</p>
                 </div>
                 <div class="card">
                     <div class="card-icon"><i data-lucide="file-spreadsheet"></i></div>
-                    <h3>File Export Parser</h3>
-                    <p>Ingests CSV, HL7, or structured PDF exports from legacy EMR systems and translates them into FHIR-compatible records.</p>
+                    <h3>{{ __('public.dev_page.bridge_file_title') }}</h3>
+                    <p>{{ __('public.dev_page.bridge_file_desc') }}</p>
                 </div>
                 <div class="card">
                     <div class="card-icon"><i data-lucide="wifi-off"></i></div>
-                    <h3>Offline Sync Queue</h3>
-                    <p>Records are queued locally when the facility is offline, then synced automatically when the connection is restored.</p>
+                    <h3>{{ __('public.dev_page.bridge_offline_title') }}</h3>
+                    <p>{{ __('public.dev_page.bridge_offline_desc') }}</p>
                 </div>
                 <div class="card">
                     <div class="card-icon"><i data-lucide="lock"></i></div>
-                    <h3>Encrypted Local Storage</h3>
-                    <p>All queued data is encrypted at rest on the local machine using AES-256. Credentials are stored in secure OS keychains.</p>
+                    <h3>{{ __('public.dev_page.bridge_enc_title') }}</h3>
+                    <p>{{ __('public.dev_page.bridge_enc_desc') }}</p>
                 </div>
             </div>
         </div>
@@ -205,25 +205,25 @@
             <div class="hero-grid">
                 <div class="hero-content">
                     <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(15,76,129,.08);color:#0F4C81;border-radius:.5rem;padding:.4rem .875rem;font-size:.8125rem;font-weight:700;margin-bottom:1rem;">
-                        <i data-lucide="layout-dashboard" style="width:.9rem;height:.9rem;"></i> OpesCare Lite
+                        <i data-lucide="layout-dashboard" style="width:.9rem;height:.9rem;"></i> {{ __('public.dev_page.lite_badge') }}
                     </div>
-                    <h2>A full browser portal for facilities without their own digital system</h2>
+                    <h2>{{ __('public.dev_page.lite_title') }}</h2>
                     <p class="text-muted" style="margin-bottom:1.5rem;">
-                        OpesCare Lite is a secure, hosted web portal that lets smaller clinics, pharmacies, and health posts access the OpesCare network without building any integration. Staff log in from any modern browser and work directly with patient records through a guided interface.
+                        {{ __('public.dev_page.lite_desc') }}
                     </p>
                     <ul style="list-style:none;padding:0;margin:0;display:grid;gap:.75rem;">
-                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> Zero installation — fully browser-based</li>
-                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> Role-based access — doctors, nurses, pharmacists, admins</li>
-                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> Works on tablets and low-bandwidth connections</li>
-                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> Same security and audit standards as API integrations</li>
+                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.dev_page.lite_feat1') }}</li>
+                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.dev_page.lite_feat2') }}</li>
+                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.dev_page.lite_feat3') }}</li>
+                        <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.dev_page.lite_feat4') }}</li>
                     </ul>
                     <div style="margin-top:2rem;">
-                        <a href="{{ route('register.organization') }}" class="btn btn-primary">Apply for OpesCare Lite Access</a>
+                        <a href="{{ route('register.organization') }}" class="btn btn-primary">{{ __('public.dev_page.lite_apply_btn') }}</a>
                     </div>
                 </div>
                 <div class="hero-visual">
                     <div style="background:#0F2744;border-radius:1.25rem;padding:2rem;color:#fff;">
-                        <div style="font-size:.75rem;color:#94a3b8;margin-bottom:1rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">OpesCare Lite — Clinic View</div>
+                        <div style="font-size:.75rem;color:#94a3b8;margin-bottom:1rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">{{ __('public.dev_page.lite_clinic_label') }}</div>
                         <div style="display:grid;gap:.75rem;">
                             @foreach(['Patient Search','Consent Requests','Clinical Timeline','Prescriptions','Lab Results'] as $item)
                             <div style="display:flex;align-items:center;gap:.75rem;background:rgba(255,255,255,.07);border-radius:.75rem;padding:.875rem 1rem;">
@@ -242,14 +242,14 @@
     <section id="webhooks" class="section" style="background:#F8FAFC;">
         <div class="container">
             <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(15,76,129,.08);color:#0F4C81;border-radius:.5rem;padding:.4rem .875rem;font-size:.8125rem;font-weight:700;margin-bottom:1rem;">
-                <i data-lucide="radio-tower" style="width:.9rem;height:.9rem;"></i> Webhooks &amp; Sync Dashboard
+                <i data-lucide="radio-tower" style="width:.9rem;height:.9rem;"></i> {{ __('public.dev_page.webhooks_badge') }}
             </div>
-            <h2>Stay in sync with real-time platform events</h2>
-            <p class="text-muted" style="max-width:680px;margin-bottom:3rem;">Subscribe your endpoint to OpesCare events and keep your local system updated without polling the API.</p>
+            <h2>{{ __('public.dev_page.webhooks_title') }}</h2>
+            <p class="text-muted" style="max-width:680px;margin-bottom:3rem;">{{ __('public.dev_page.webhooks_subtitle') }}</p>
 
             <div class="webhooks-grid">
                 <div>
-                    <h3 style="font-size:1.0625rem;margin-bottom:1.25rem;">Available event topics</h3>
+                    <h3 style="font-size:1.0625rem;margin-bottom:1.25rem;">{{ __('public.dev_page.webhooks_topics') }}</h3>
                     <div style="display:grid;gap:.75rem;">
                         @foreach([
                             ['visit.recorded','A new clinical visit has been pushed to the timeline.'],
@@ -268,7 +268,7 @@
                     </div>
                 </div>
                 <div>
-                    <h3 style="font-size:1.0625rem;margin-bottom:1.25rem;">Example webhook payload</h3>
+                    <h3 style="font-size:1.0625rem;margin-bottom:1.25rem;">{{ __('public.dev_page.webhooks_example') }}</h3>
                     <div style="background:#1e293b;border-radius:1rem;padding:1.5rem;font-family:'Courier New',Courier,monospace;font-size:.75rem;color:#f8fafc;">
                         <div style="color:#94a3b8;">POST https://your-endpoint.com/opescare-hook</div>
                         <div style="color:#94a3b8;margin-bottom:1rem;">X-OpesCare-Signature: sha256=...</div>
@@ -284,8 +284,8 @@
                         <div style="color:#fbbf24;">}</div>
                     </div>
                     <div style="margin-top:1.5rem;padding:1.25rem;background:#fff;border:1px solid #e2e8f0;border-radius:.75rem;">
-                        <p style="font-size:.875rem;font-weight:600;margin:0 0 .5rem;">Signature verification</p>
-                        <p style="font-size:.8125rem;color:#64748b;margin:0;">Every webhook delivery includes an HMAC-SHA256 signature over the raw request body using your endpoint secret. Always verify before processing.</p>
+                        <p style="font-size:.875rem;font-weight:600;margin:0 0 .5rem;">{{ __('public.dev_page.webhooks_sig_title') }}</p>
+                        <p style="font-size:.8125rem;color:#64748b;margin:0;">{{ __('public.dev_page.webhooks_sig_desc') }}</p>
                     </div>
                 </div>
             </div>
@@ -295,11 +295,11 @@
     {{-- CTA --}}
     <section class="section" style="background:#0F2744;color:#fff;text-align:center;">
         <div class="container" style="max-width:640px;">
-            <h2 style="color:#fff;margin-bottom:1rem;">Ready to connect your system?</h2>
-            <p style="color:rgba(255,255,255,.75);margin-bottom:2rem;">Submit a developer or integration request and our interoperability team will review your use case and access scopes.</p>
+            <h2 style="color:#fff;margin-bottom:1rem;">{{ __('public.dev_page.cta_title') }}</h2>
+            <p style="color:rgba(255,255,255,.75);margin-bottom:2rem;">{{ __('public.dev_page.cta_body') }}</p>
             <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:1rem;">
-                <a href="{{ route('register.developer') }}" class="btn btn-primary">Request API Access</a>
-                <a href="{{ route('public.interoperability') }}" class="btn" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);">Integration Overview</a>
+                <a href="{{ route('register.developer') }}" class="btn btn-primary">{{ __('public.dev_page.cta_request_access') }}</a>
+                <a href="{{ route('public.interoperability') }}" class="btn" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);">{{ __('public.dev_page.cta_interop') }}</a>
             </div>
         </div>
     </section>

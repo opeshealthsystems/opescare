@@ -1,11 +1,11 @@
 @extends('layouts.public')
 
-@section('title', 'OpesCare for Patients | Your Health ID and Medical History')
+@section('title', __('public.sol_patients.page_title'))
 
 @section('content')
     <header class="content-header">
         <div class="container">
-            <div class="badge" style="background-color: var(--color-primary-light); color: var(--color-primary); margin-bottom: 1rem;">For Individuals</div>
+            <div class="badge" style="background-color: var(--color-primary-light); color: var(--color-primary); margin-bottom: 1rem;">{{ __('public.sol_patients.badge') }}</div>
             <h1>{{ __('public.solutions.patients.hero_title') }}</h1>
             <p class="text-muted" style="max-width: 800px; margin: 0 auto; font-size: 1.25rem;">
                 {{ __('public.solutions.patients.hero_subtitle') }}
@@ -18,8 +18,8 @@
             <div class="hero-grid">
                 <div class="hero-content">
                     <div class="card-icon" style="background-color: var(--color-primary-light); color: var(--color-primary);"><i data-lucide="id-card"></i></div>
-                    <h2>Your Health ID</h2>
-                    <p class="text-muted">Your OpesCare Health ID helps healthcare providers identify your record safely and reduce duplicate records.</p>
+                    <h2>{{ __('public.sol_patients.health_id_title') }}</h2>
+                    <p class="text-muted">{{ __('public.sol_patients.health_id_desc') }}</p>
                     
                     <div class="mt-8 p-6 bg-white border border-border rounded-2xl shadow-sm" style="margin-top: 2rem; padding: 1.5rem; background: white; border: 1px solid var(--color-border); border-radius: 1rem;">
                         <div class="flex items-center gap-4" style="display: flex; align-items: center; gap: 1rem;">
@@ -55,24 +55,24 @@
             <div class="card-grid">
                 <div class="card">
                     <div class="card-icon"><i data-lucide="siren"></i></div>
-                    <h3>Emergency support</h3>
-                    <p>In an emergency, approved providers may access a limited emergency profile when normal consent is not possible. This access is recorded and reviewed.</p>
+                    <h3>{{ __('public.sol_patients.emergency_title') }}</h3>
+                    <p>{{ __('public.sol_patients.emergency_desc') }}</p>
                 </div>
                 <div class="card">
                     <div class="card-icon"><i data-lucide="map-pin-check"></i></div>
-                    <h3>Find medication</h3>
-                    <p>Where available, you can search for verified pharmacies that recently confirmed medicine stock.</p>
+                    <h3>{{ __('public.sol_patients.meds_title') }}</h3>
+                    <p>{{ __('public.sol_patients.meds_desc') }}</p>
                 </div>
                 <div class="card">
                     <div class="card-icon"><i data-lucide="droplets"></i></div>
-                    <h3>Find blood help</h3>
-                    <p>If blood is urgently needed, OpesCare can help guide patients and providers toward verified hospitals and blood banks.</p>
+                    <h3>{{ __('public.sol_patients.blood_title') }}</h3>
+                    <p>{{ __('public.sol_patients.blood_desc') }}</p>
                 </div>
             </div>
             
             <div style="margin-top: 4rem; padding: 1.25rem 2rem; background-color: var(--color-primary-light); border-radius: 1rem; display:flex; align-items:center; gap:1rem;">
                 <i data-lucide="info" style="width:1.25rem;height:1.25rem;color:#0F4C81;flex-shrink:0;"></i>
-                <p class="text-muted" style="font-size: 0.875rem;margin:0;"><strong>Safety Note:</strong> OpesCare does not replace doctors or medical advice. Always follow guidance from qualified healthcare professionals.</p>
+                <p class="text-muted" style="font-size: 0.875rem;margin:0;"><strong>{{ __('public.sol_patients.safety_note') }}</strong> {{ __('public.sol_patients.safety_body') }}</p>
             </div>
         </div>
     </section>
@@ -80,11 +80,11 @@
     <section class="section" style="background:#0F2744;color:#fff;text-align:center;">
         <div class="container" style="max-width:640px;">
             <i data-lucide="id-card" style="width:3rem;height:3rem;color:#14B8A6;margin-bottom:1.5rem;"></i>
-            <h2 style="color:#fff;margin-bottom:1rem;">Get your OpesCare Health ID today</h2>
-            <p style="color:rgba(255,255,255,.75);margin-bottom:2rem;">Registration takes a few minutes. Your Health ID connects your medical history across every facility in the OpesCare network.</p>
+            <h2 style="color:#fff;margin-bottom:1rem;">{{ __('public.sol_patients.cta_title') }}</h2>
+            <p style="color:rgba(255,255,255,.75);margin-bottom:2rem;">{{ __('public.sol_patients.cta_body') }}</p>
             <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:1rem;">
-                <a href="{{ route('register.patient') }}" class="btn btn-primary">Register as a Patient</a>
-                <a href="{{ route('public.consent') }}" class="btn" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);">Learn About Consent</a>
+                <a href="{{ route('register.patient') }}" class="btn btn-primary">{{ __('public.sol_patients.btn_register') }}</a>
+                <a href="{{ route('public.consent') }}" class="btn" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);">{{ __('public.sol_patients.btn_consent') }}</a>
             </div>
         </div>
     </section>

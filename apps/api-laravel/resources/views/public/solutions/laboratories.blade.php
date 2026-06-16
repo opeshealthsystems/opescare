@@ -1,14 +1,14 @@
 @extends('layouts.public')
 
-@section('title', 'OpesCare for Laboratories | Verified Results Integration')
+@section('title', __('public.sol_labs.page_title'))
 
 @section('content')
     <header class="content-header">
         <div class="container">
-            <div class="badge" style="background-color: var(--color-primary-light); color: var(--color-primary); margin-bottom: 1rem;">For Laboratories</div>
-            <h1>Verified lab results connected to the patient’s medical history.</h1>
+            <div class="badge" style="background-color: var(--color-primary-light); color: var(--color-primary); margin-bottom: 1rem;">{{ __(‘public.sol_labs.badge’) }}</div>
+            <h1>{{ __(‘public.sol_labs.hero_title’) }}</h1>
             <p class="text-muted" style="max-width: 800px; margin: 0 auto; font-size: 1.25rem;">
-                OpesCare helps laboratories receive orders, track samples, validate results, release reports, and connect verified results to the right patient timeline.
+                {{ __(‘public.sol_labs.hero_subtitle’) }}
             </p>
         </div>
     </header>
@@ -18,41 +18,41 @@
             <div class="card-grid">
                 <div class="card">
                     <div class="card-icon"><i data-lucide="flask-conical"></i></div>
-                    <h3>Lab Orders</h3>
-                    <p>Receive digital lab orders directly from hospitals and clinics, reducing manual data entry errors and sample confusion.</p>
+                    <h3>{{ __('public.sol_labs.card_orders_title') }}</h3>
+                    <p>{{ __('public.sol_labs.card_orders_desc') }}</p>
                 </div>
                 <div class="card">
                     <div class="card-icon"><i data-lucide="barcode"></i></div>
-                    <h3>Sample Tracking</h3>
-                    <p>Track samples from collection to validation with unique institutional IDs and timestamps.</p>
+                    <h3>{{ __('public.sol_labs.card_tracking_title') }}</h3>
+                    <p>{{ __('public.sol_labs.card_tracking_desc') }}</p>
                 </div>
                 <div class="card">
                     <div class="card-icon"><i data-lucide="badge-check"></i></div>
-                    <h3>Result Validation</h3>
-                    <p>Maintain high clinical standards with built-in validation workflows for senior lab technicians and pathologists.</p>
+                    <h3>{{ __('public.sol_labs.card_valid_title') }}</h3>
+                    <p>{{ __('public.sol_labs.card_valid_desc') }}</p>
                 </div>
                 <div class="card">
                     <div class="card-icon"><i data-lucide="history"></i></div>
-                    <h3>Timeline Integration</h3>
-                    <p>Automatically push verified results to the patient's global medical timeline for authorized providers to see.</p>
+                    <h3>{{ __('public.sol_labs.card_timeline_title') }}</h3>
+                    <p>{{ __('public.sol_labs.card_timeline_desc') }}</p>
                 </div>
             </div>
             
             <div class="feature-list mt-12" style="margin-top: 3rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
-                <div class="feature-item"><i data-lucide="triangle-alert"></i> Critical Result Alerts</div>
-                <div class="feature-item"><i data-lucide="file-pen-line"></i> Result Amendment Logs</div>
-                <div class="feature-item"><i data-lucide="cable"></i> External Lab Integration</div>
+                <div class="feature-item"><i data-lucide="triangle-alert"></i> {{ __('public.sol_labs.feat_critical') }}</div>
+                <div class="feature-item"><i data-lucide="file-pen-line"></i> {{ __('public.sol_labs.feat_amendments') }}</div>
+                <div class="feature-item"><i data-lucide="cable"></i> {{ __('public.sol_labs.feat_external') }}</div>
             </div>
         </div>
     </section>
 
     <section class="section" style="background:#0F2744;color:#fff;text-align:center;">
         <div class="container" style="max-width:640px;">
-            <h2 style="color:#fff;margin-bottom:1rem;">Connect your laboratory to the OpesCare network</h2>
-            <p style="color:rgba(255,255,255,.75);margin-bottom:2rem;">Register to start receiving digital lab orders, tracking samples, and automatically pushing validated results to patient timelines.</p>
+            <h2 style="color:#fff;margin-bottom:1rem;">{{ __('public.sol_labs.cta_title') }}</h2>
+            <p style="color:rgba(255,255,255,.75);margin-bottom:2rem;">{{ __('public.sol_labs.cta_body') }}</p>
             <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:1rem;">
-                <a href="{{ route('register.organization') }}" class="btn btn-primary">Register Your Laboratory</a>
-                <a href="{{ route('public.developers') }}" class="btn" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);">Integration Options</a>
+                <a href="{{ route('register.organization') }}" class="btn btn-primary">{{ __('public.sol_labs.btn_register') }}</a>
+                <a href="{{ route('public.developers') }}" class="btn" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);">{{ __('public.sol_labs.btn_integration') }}</a>
             </div>
         </div>
     </section>
