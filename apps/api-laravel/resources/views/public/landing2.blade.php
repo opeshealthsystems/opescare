@@ -820,7 +820,7 @@ function l2SwitchRole(role) {
     var btn = document.getElementById('l2ThemeToggle');
     if (!l2 || !btn) return;
     var saved = localStorage.getItem('l2-theme');
-    var preferLight = saved ? saved === 'light' : window.matchMedia('(prefers-color-scheme: light)').matches;
+    var preferLight = saved === 'light';
     function apply(light) {
         l2.classList.toggle('l2-light', light);
         document.body.classList.toggle('l2-page-light', light);
@@ -829,9 +829,6 @@ function l2SwitchRole(role) {
     }
     apply(preferLight);
     btn.addEventListener('click', function(){ apply(!l2.classList.contains('l2-light')); });
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e){
-        if (!localStorage.getItem('l2-theme')) apply(e.matches);
-    });
 })();
 </script>
 
