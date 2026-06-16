@@ -1,0 +1,40 @@
+# OpesCare mono-repo root — artifact exclusions
+# App-level ignores (vendor, node_modules, build) are in apps/api-laravel/.gitignore
+
+# IDE and OS
+.idea/
+.vscode/
+*.DS_Store
+Thumbs.db
+desktop.ini
+
+# Claude Code session files
+.claude/launch.json
+.claude/worktrees/
+
+# Python (bridge-agent, sdk/python)
+bridge-agent/venv/
+bridge-agent/__pycache__/
+bridge-agent/*.egg-info/
+sdk/python/__pycache__/
+sdk/python/*.egg-info/
+sdk/python/dist/
+sdk/python/build/
+**/__pycache__/
+**/*.pyc
+
+# Node (sdk/typescript, widget)
+sdk/typescript/node_modules/
+sdk/typescript/dist/
+widget/node_modules/
+widget/dist/
+
+# Flutter (mobile apps)
+apps/mobile-patient/build/
+apps/mobile-patient/.dart_tool/
+apps/mobile-patient/.flutter-plugins
+apps/mobile-patient/.flutter-plugins-dependencies
+
+# Secrets and local config
+.env.local
+bridge-agent/config.json
