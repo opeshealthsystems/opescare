@@ -1,19 +1,19 @@
 @extends('layouts.portal')
-@section('title', 'Medical Attachments')
+@section('title', __('public.stf_files_title'))
 @section('breadcrumb_home', 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Files & Attachments')
+@section('breadcrumb_section', __('public.stf_files_title'))
 
 @section('content')
 <div class="page-head">
-    <h2>Medical attachments</h2>
+    <h2>{{ __('public.stf_files_title') }}</h2>
     <div class="page-head__spacer"></div>
     <a href="{{ route('portals.staff.files.create', ['resource_type' => $resourceType, 'resource_id' => $resourceId]) }}"
        class="btn btn-primary btn-sm">
-        <i data-lucide="upload"></i> Upload File
+        <i data-lucide="upload"></i> {{ __('public.stf_files_upload_btn') }}
     </a>
 </div>
-<p class="page-subtitle mb-6">Files and documents attached to clinical resources.</p>
+<p class="page-subtitle mb-6">{{ __('public.stf_files_subtitle') }}</p>
 
 @if(session('success'))
     <div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
@@ -31,9 +31,9 @@
     </select>
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="resource_id" value="{{ $resourceId }}" placeholder="Paste resource UUID…">
+        <input type="text" name="resource_id" value="{{ $resourceId }}" placeholder="{{ __('public.stf_files_placeholder_uuid') }}">
     </label>
-    <button type="submit" class="btn btn-secondary btn-sm"><i data-lucide="filter"></i> Filter</button>
+    <button type="submit" class="btn btn-secondary btn-sm"><i data-lucide="filter"></i> {{ __('public.stf_files_filter_btn') }}</button>
 </form>
 
 @if($resourceId && $attachments->isNotEmpty())
@@ -42,7 +42,7 @@
     <div class="panel-header">
         <h3 class="panel-title">
             <i data-lucide="paperclip"></i>
-            Attachments for {{ ucwords(str_replace('_',' ',$resourceType)) }}
+            {{ __('public.stf_files_attachments_for') }} {{ ucwords(str_replace('_',' ',$resourceType)) }}
         </h3>
         <span class="badge badge-neutral">{{ $attachments->count() }}</span>
     </div>
@@ -50,12 +50,12 @@
         <div class="table-wrapper">
             <table class="data-table">
                 <thead><tr>
-                    <th>File</th><th>Category</th><th>Description</th><th>Size</th><th>Uploaded By</th><th>Date</th><th>Actions</th>
+                    <th>{{ __('public.stf_files_col_file') }}</th><th>{{ __('public.stf_files_col_category') }}</th><th>{{ __('public.stf_files_col_description') }}</th><th>{{ __('public.stf_files_col_size') }}</th><th>{{ __('public.stf_files_col_uploaded_by') }}</th><th>{{ __('public.stf_files_col_date') }}</th><th>{{ __('public.stf_files_col_actions') }}</th>
                 </tr></thead>
                 <tbody>
                     @foreach($attachments as $att)
                     <tr>
-                        <td data-label="File">
+                        <td data-label="{{ __('public.stf_files_col_file') }}">
                             @php
                                 $mime = $att->fileAsset->mime_type ?? '';
                                 $icon = str_contains($mime,'pdf') ? 'file-text' : (str_contains($mime,'image') ? 'image' : 'file');
@@ -65,22 +65,22 @@
                                 <span class="td-strong">{{ $att->fileAsset->original_name ?? '—' }}</span>
                             </span>
                         </td>
-                        <td data-label="Category">
+                        <td data-label="{{ __('public.stf_files_col_category') }}">
                             @if($att->category)
                                 <span class="badge badge-neutral">{{ $categories[$att->category] ?? $att->category }}</span>
                             @else
                                 <span class="td-muted">—</span>
                             @endif
                         </td>
-                        <td data-label="Description" class="td-muted">{{ $att->description ?? '—' }}</td>
-                        <td data-label="Size" class="td-muted">{{ $att->fileAsset?->humanSize() ?? '—' }}</td>
-                        <td data-label="Uploaded By" class="td-muted">{{ $att->fileAsset->uploaded_by ?? '—' }}</td>
-                        <td data-label="Date" class="td-muted">{{ \Carbon\Carbon::parse($att->created_at)->format('M d, Y') }}</td>
-                        <td data-label="Actions">
+                        <td data-label="{{ __('public.stf_files_col_description') }}" class="td-muted">{{ $att->description ?? '—' }}</td>
+                        <td data-label="{{ __('public.stf_files_col_size') }}" class="td-muted">{{ $att->fileAsset?->humanSize() ?? '—' }}</td>
+                        <td data-label="{{ __('public.stf_files_col_uploaded_by') }}" class="td-muted">{{ $att->fileAsset->uploaded_by ?? '—' }}</td>
+                        <td data-label="{{ __('public.stf_files_col_date') }}" class="td-muted">{{ \Carbon\Carbon::parse($att->created_at)->format('M d, Y') }}</td>
+                        <td data-label="{{ __('public.stf_files_col_actions') }}">
                             <div class="row-actions-inline">
                             <a href="{{ route('portals.staff.files.download', $att->file_asset_id) }}"
                                class="btn btn-ghost btn-xs">
-                                <i data-lucide="download"></i> Download
+                                <i data-lucide="download"></i> {{ __('public.stf_files_download') }}
                             </a>
                             <form method="POST" action="{{ route('portals.staff.files.destroy', $att->id) }}" class="inline-form"
                                   onsubmit="return confirm('Remove this attachment?');">
@@ -102,7 +102,7 @@
 <div class="panel mb-6">
     <div class="panel-body">
         <div class="empty-state">
-            <p>No attachments found for this {{ str_replace('_',' ',$resourceType) }}.</p>
+            <p>{{ __('public.stf_files_no_attachments') }} {{ str_replace('_',' ',$resourceType) }}.</p>
         </div>
     </div>
 </div>
@@ -113,7 +113,7 @@
     <div class="panel-header">
         <h3 class="panel-title">
             <i data-lucide="folder-open"></i>
-            All Facility Files
+            {{ __('public.stf_files_all_facility') }}
         </h3>
         <span class="badge badge-neutral">{{ $assets->total() }} total</span>
     </div>
@@ -121,32 +121,32 @@
         @if($assets->isEmpty())
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="folder-open"></i></div>
-                <p>No files uploaded yet.</p>
+                <p>{{ __('public.stf_files_no_files') }}</p>
             </div>
         @else
         <div class="table-wrapper">
             <table class="data-table">
                 <thead><tr>
-                    <th>Filename</th><th>Type</th><th>Size</th><th>Checksum (SHA-256)</th><th>Uploaded By</th><th>Date</th><th>Actions</th>
+                    <th>{{ __('public.stf_files_col_filename') }}</th><th>{{ __('public.stf_files_col_type') }}</th><th>{{ __('public.stf_files_col_size') }}</th><th>{{ __('public.stf_files_col_checksum') }}</th><th>{{ __('public.stf_files_col_uploaded_by') }}</th><th>{{ __('public.stf_files_col_date') }}</th><th>{{ __('public.stf_files_col_actions') }}</th>
                 </tr></thead>
                 <tbody>
                     @foreach($assets as $asset)
                     <tr>
-                        <td data-label="Filename" class="td-strong">{{ $asset->original_name }}</td>
-                        <td data-label="Type"><span class="mono">{{ $asset->mime_type ?? '—' }}</span></td>
-                        <td data-label="Size" class="td-muted">{{ $asset->humanSize() }}</td>
-                        <td data-label="Checksum (SHA-256)" class="td-muted">
+                        <td data-label="{{ __('public.stf_files_col_filename') }}" class="td-strong">{{ $asset->original_name }}</td>
+                        <td data-label="{{ __('public.stf_files_col_type') }}"><span class="mono">{{ $asset->mime_type ?? '—' }}</span></td>
+                        <td data-label="{{ __('public.stf_files_col_size') }}" class="td-muted">{{ $asset->humanSize() }}</td>
+                        <td data-label="{{ __('public.stf_files_col_checksum') }}" class="td-muted">
                             @if($asset->checksum)
                                 <span class="mono" title="{{ $asset->checksum }}">{{ substr($asset->checksum,0,12) }}…</span>
                             @else —
                             @endif
                         </td>
-                        <td data-label="Uploaded By" class="td-muted">{{ $asset->uploaded_by ?? '—' }}</td>
-                        <td data-label="Date" class="td-muted">{{ \Carbon\Carbon::parse($asset->created_at)->format('M d, Y') }}</td>
-                        <td data-label="Actions">
+                        <td data-label="{{ __('public.stf_files_col_uploaded_by') }}" class="td-muted">{{ $asset->uploaded_by ?? '—' }}</td>
+                        <td data-label="{{ __('public.stf_files_col_date') }}" class="td-muted">{{ \Carbon\Carbon::parse($asset->created_at)->format('M d, Y') }}</td>
+                        <td data-label="{{ __('public.stf_files_col_actions') }}">
                             <a href="{{ route('portals.staff.files.download', $asset->id) }}"
                                class="btn btn-ghost btn-xs">
-                                <i data-lucide="download"></i> Download
+                                <i data-lucide="download"></i> {{ __('public.stf_files_download') }}
                             </a>
                         </td>
                     </tr>

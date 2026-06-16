@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Shift Management')
+@section('title', __('public.staff_portal.hr_shifts_title', [], app()->getLocale()) ?: 'Shift Definitions')
 
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
@@ -9,7 +9,7 @@
 
 @section('sidebar_nav')
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Overview</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.sidebar_lbl_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
     <a href="{{ route('portals.staff') }}" class="sidebar-link">
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
@@ -35,11 +35,11 @@
     </a>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
         <i data-lucide="brain-circuit"></i>
-        <span>Clinical Alerts</span>
+        <span>{{ __('public.staff_portal.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">HR & Staff</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.sidebar_lbl_hr', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
         <i data-lucide="users"></i>
         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
@@ -58,7 +58,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Inventory</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.sidebar_lbl_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
         <i data-lucide="pill"></i>
         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
@@ -69,14 +69,14 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Supply Chain</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.sidebar_lbl_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
         <i data-lucide="package"></i>
-        <span>Supply Chain</span>
+        <span>{{ __('public.staff_portal.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Operations</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.sidebar_lbl_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>
         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
@@ -106,18 +106,18 @@
 
 @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Shifts')
+@section('breadcrumb_section', __('public.staff_portal.hr_shifts_breadcrumb', [], app()->getLocale()) ?: 'Shifts')
 
 @section('content')
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Shift Definitions</h1>
-        <p class="page-subtitle">Define the shift templates used across duty rosters.</p>
+        <h1 class="page-title">{{ __('public.staff_portal.hr_shifts_title', [], app()->getLocale()) ?: 'Shift Definitions' }}</h1>
+        <p class="page-subtitle">{{ __('public.staff_portal.hr_shifts_subtitle', [], app()->getLocale()) ?: 'Define the shift templates used across duty rosters.' }}</p>
     </div>
     <button type="button" class="btn btn-primary btn-sm" onclick="openShiftModal()">
         <i data-lucide="plus-circle"></i>
-        New Shift
+        {{ __('public.staff_portal.hr_shifts_btn_new', [], app()->getLocale()) ?: 'New Shift' }}
     </button>
 </div>
 
@@ -137,10 +137,10 @@
         @if($shifts->isEmpty())
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="clock"></i></div>
-                <h3>No Shifts Defined</h3>
-                <p>Create shift templates like Morning, Afternoon, Night, or On-Call.</p>
+                <h3>{{ __('public.staff_portal.hr_shifts_empty_title', [], app()->getLocale()) ?: 'No Shifts Defined' }}</h3>
+                <p>{{ __('public.staff_portal.hr_shifts_empty_desc', [], app()->getLocale()) ?: 'Create shift templates like Morning, Afternoon, Night, or On-Call.' }}</p>
                 <button type="button" class="btn btn-primary btn-sm mt-6" onclick="openShiftModal()">
-                    New Shift
+                    {{ __('public.staff_portal.hr_shifts_btn_new', [], app()->getLocale()) ?: 'New Shift' }}
                 </button>
             </div>
         @else
@@ -148,42 +148,42 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Department</th>
-                            <th>Start</th>
-                            <th>End</th>
-                            <th>Duration</th>
-                            <th>Crosses Midnight</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>{{ __('public.staff_portal.hr_shifts_col_name', [], app()->getLocale()) ?: 'Name' }}</th>
+                            <th>{{ __('public.staff_portal.hr_shifts_col_dept', [], app()->getLocale()) ?: 'Department' }}</th>
+                            <th>{{ __('public.staff_portal.hr_shifts_col_start', [], app()->getLocale()) ?: 'Start' }}</th>
+                            <th>{{ __('public.staff_portal.hr_shifts_col_end', [], app()->getLocale()) ?: 'End' }}</th>
+                            <th>{{ __('public.staff_portal.hr_shifts_col_duration', [], app()->getLocale()) ?: 'Duration' }}</th>
+                            <th>{{ __('public.staff_portal.hr_shifts_col_midnight', [], app()->getLocale()) ?: 'Crosses Midnight' }}</th>
+                            <th>{{ __('public.staff_portal.hr_shifts_col_status', [], app()->getLocale()) ?: 'Status' }}</th>
+                            <th>{{ __('public.staff_portal.hr_shifts_col_actions', [], app()->getLocale()) ?: 'Actions' }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($shifts as $shift)
                         <tr>
-                            <td data-label="Name"><strong class="td-strong">{{ $shift->name }}</strong></td>
-                            <td data-label="Department">{{ $shift->department ?? '—' }}</td>
-                            <td data-label="Start">{{ $shift->start_time }}</td>
-                            <td data-label="End">{{ $shift->end_time }}</td>
-                            <td data-label="Duration">{{ $shift->duration_hours ? $shift->duration_hours . 'h' : '—' }}</td>
-                            <td data-label="Crosses Midnight">
+                            <td data-label="{{ __('public.staff_portal.hr_shifts_col_name', [], app()->getLocale()) ?: 'Name' }}"><strong class="td-strong">{{ $shift->name }}</strong></td>
+                            <td data-label="{{ __('public.staff_portal.hr_shifts_col_dept', [], app()->getLocale()) ?: 'Department' }}">{{ $shift->department ?? '—' }}</td>
+                            <td data-label="{{ __('public.staff_portal.hr_shifts_col_start', [], app()->getLocale()) ?: 'Start' }}">{{ $shift->start_time }}</td>
+                            <td data-label="{{ __('public.staff_portal.hr_shifts_col_end', [], app()->getLocale()) ?: 'End' }}">{{ $shift->end_time }}</td>
+                            <td data-label="{{ __('public.staff_portal.hr_shifts_col_duration', [], app()->getLocale()) ?: 'Duration' }}">{{ $shift->duration_hours ? $shift->duration_hours . 'h' : '—' }}</td>
+                            <td data-label="{{ __('public.staff_portal.hr_shifts_col_midnight', [], app()->getLocale()) ?: 'Crosses Midnight' }}">
                                 @if($shift->crosses_midnight)
-                                    <span class="badge badge-warning">Yes</span>
+                                    <span class="badge badge-warning">{{ __('public.staff_portal.hr_shifts_yes', [], app()->getLocale()) ?: 'Yes' }}</span>
                                 @else
-                                    <span class="badge badge-neutral">No</span>
+                                    <span class="badge badge-neutral">{{ __('public.staff_portal.hr_shifts_no', [], app()->getLocale()) ?: 'No' }}</span>
                                 @endif
                             </td>
-                            <td data-label="Status">
+                            <td data-label="{{ __('public.staff_portal.hr_shifts_col_status', [], app()->getLocale()) ?: 'Status' }}">
                                 <span class="badge {{ $shift->status === 'active' ? 'badge-success' : 'badge-neutral' }}">
                                     {{ ucfirst($shift->status) }}
                                 </span>
                             </td>
-                            <td data-label="Actions">
+                            <td data-label="{{ __('public.staff_portal.hr_shifts_col_actions', [], app()->getLocale()) ?: 'Actions' }}">
                                 <form method="POST" action="{{ route('portals.staff.hr.shifts.toggle', $shift->id) }}" class="inline-form">
                                     @csrf
                                     <button type="submit" class="btn btn-ghost btn-xs">
                                         <i data-lucide="{{ $shift->status === 'active' ? 'pause-circle' : 'play-circle' }}"></i>
-                                        {{ $shift->status === 'active' ? 'Deactivate' : 'Activate' }}
+                                        {{ $shift->status === 'active' ? __('public.staff_portal.hr_shifts_deactivate', [], app()->getLocale()) ?: 'Deactivate' : __('public.staff_portal.hr_shifts_activate', [], app()->getLocale()) ?: 'Activate' }}
                                     </button>
                                 </form>
                             </td>
@@ -200,46 +200,46 @@
 <div id="shift-modal" class="modal-fixed">
     <div class="modal-fixed__panel modal-fixed__panel--md">
         <div class="modal-fixed__head">
-            <h3 class="modal-fixed__title">New Shift</h3>
+            <h3 class="modal-fixed__title">{{ __('public.staff_portal.hr_shifts_modal_title', [], app()->getLocale()) ?: 'New Shift' }}</h3>
         </div>
         <form method="POST" action="{{ route('portals.staff.hr.shifts.store') }}">
             @csrf
             <div class="form-group mb-4">
-                <label class="form-label">Shift Name *</label>
-                <input type="text" name="name" class="form-control" required maxlength="100" placeholder="e.g. Morning, Night, On-Call">
+                <label class="form-label">{{ __('public.staff_portal.hr_shifts_lbl_name', [], app()->getLocale()) ?: 'Shift Name *' }}</label>
+                <input type="text" name="name" class="form-control" required maxlength="100" placeholder="{{ __('public.staff_portal.hr_shifts_ph_name', [], app()->getLocale()) ?: 'e.g. Morning, Night, On-Call' }}">
             </div>
             <div class="form-group mb-4">
-                <label class="form-label">Department</label>
-                <input type="text" name="department" class="form-control" maxlength="100" placeholder="Leave blank for all departments">
+                <label class="form-label">{{ __('public.staff_portal.hr_shifts_lbl_dept', [], app()->getLocale()) ?: 'Department' }}</label>
+                <input type="text" name="department" class="form-control" maxlength="100" placeholder="{{ __('public.staff_portal.hr_shifts_ph_dept', [], app()->getLocale()) ?: 'Leave blank for all departments' }}">
             </div>
             <div class="form-row mb-4">
                 <div class="form-group">
-                    <label class="form-label">Start Time *</label>
+                    <label class="form-label">{{ __('public.staff_portal.hr_shifts_lbl_start', [], app()->getLocale()) ?: 'Start Time *' }}</label>
                     <input type="time" name="start_time" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">End Time *</label>
+                    <label class="form-label">{{ __('public.staff_portal.hr_shifts_lbl_end', [], app()->getLocale()) ?: 'End Time *' }}</label>
                     <input type="time" name="end_time" class="form-control" required>
                 </div>
             </div>
             <div class="form-row mb-4">
                 <div class="form-group">
-                    <label class="form-label">Duration (hours)</label>
+                    <label class="form-label">{{ __('public.staff_portal.hr_shifts_lbl_duration', [], app()->getLocale()) ?: 'Duration (hours)' }}</label>
                     <input type="number" name="duration_hours" class="form-control" min="1" max="24" placeholder="8">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Crosses Midnight?</label>
+                    <label class="form-label">{{ __('public.staff_portal.hr_shifts_lbl_midnight', [], app()->getLocale()) ?: 'Crosses Midnight?' }}</label>
                     <select name="crosses_midnight" class="form-control">
-                        <option value="0">No</option>
-                        <option value="1">Yes</option>
+                        <option value="0">{{ __('public.staff_portal.hr_shifts_no', [], app()->getLocale()) ?: 'No' }}</option>
+                        <option value="1">{{ __('public.staff_portal.hr_shifts_yes', [], app()->getLocale()) ?: 'Yes' }}</option>
                     </select>
                 </div>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeShiftModal()">Cancel</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeShiftModal()">{{ __('public.staff_portal.hr_shifts_btn_cancel', [], app()->getLocale()) ?: 'Cancel' }}</button>
                 <button type="submit" class="btn btn-primary btn-sm">
                     <i data-lucide="clock"></i>
-                    Create Shift
+                    {{ __('public.staff_portal.hr_shifts_btn_create', [], app()->getLocale()) ?: 'Create Shift' }}
                 </button>
             </div>
         </form>

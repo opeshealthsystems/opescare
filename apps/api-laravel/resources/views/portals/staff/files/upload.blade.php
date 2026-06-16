@@ -1,18 +1,18 @@
 @extends('layouts.portal')
-@section('title', 'Upload File')
+@section('title', __('public.stf_files_upload_title'))
 @section('breadcrumb_home', 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Upload File')
+@section('breadcrumb_section', __('public.stf_files_upload_title'))
 
 @section('content')
 <div class="page-head">
-    <h2>Upload medical file</h2>
+    <h2>{{ __('public.stf_files_upload_title') }}</h2>
     <div class="page-head__spacer"></div>
     <a href="{{ route('portals.staff.files.index') }}" class="btn btn-ghost btn-sm">
-        <i data-lucide="arrow-left"></i> Back
+        <i data-lucide="arrow-left"></i> {{ __('public.stf_files_back') }}
     </a>
 </div>
-<p class="page-subtitle mb-6">Attach a document or image to a clinical resource.</p>
+<p class="page-subtitle mb-6">{{ __('public.stf_files_upload_subtitle') }}</p>
 
 @if(session('error'))
     <div class="alert alert-danger mb-6"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
@@ -26,7 +26,7 @@
             {{-- Resource context --}}
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label form-label-required">Resource Type</label>
+                    <label class="form-label form-label-required">{{ __('public.stf_files_lbl_resource_type') }}</label>
                     <select name="resource_type" class="form-control" required>
                         @foreach(['patient','visit','triage_record','clinical_note','invoice','support_ticket'] as $rt)
                             <option value="{{ $rt }}" {{ $resourceType === $rt ? 'selected' : '' }}>{{ ucwords(str_replace('_',' ',$rt)) }}</option>
@@ -34,18 +34,18 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label form-label-required">Resource ID</label>
+                    <label class="form-label form-label-required">{{ __('public.stf_files_lbl_resource_id') }}</label>
                     <input type="text" name="resource_id" value="{{ old('resource_id', $resourceId) }}"
-                        class="form-control" required placeholder="Paste UUID of the resource">
+                        class="form-control" required placeholder="{{ __('public.stf_files_ph_resource_id') }}">
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="form-label form-label-required">File</label>
+                <label class="form-label form-label-required">{{ __('public.stf_files_lbl_file') }}</label>
                 <div id="drop-zone" class="empty-state" style="border:2px dashed var(--p-border);border-radius:var(--p-radius);cursor:pointer;"
                      onclick="document.getElementById('file-input').click()">
                     <div class="empty-state-icon"><i data-lucide="upload-cloud"></i></div>
-                    <div class="td-strong">Click to browse or drag file here</div>
+                    <div class="td-strong">{{ __('public.stf_files_click_browse') }}</div>
                     <div id="file-name" class="td-muted">
                         Max {{ $maxSizeMb }} MB · PDF, Images, Word, Excel, CSV
                     </div>
@@ -58,26 +58,26 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">Category</label>
+                    <label class="form-label">{{ __('public.stf_files_lbl_category') }}</label>
                     <select name="category" class="form-control">
-                        <option value="">— Select category —</option>
+                        <option value="">{{ __('public.stf_files_select_category') }}</option>
                         @foreach($categories as $val => $label)
                             <option value="{{ $val }}" {{ old('category') === $val ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Description</label>
+                    <label class="form-label">{{ __('public.stf_files_lbl_description') }}</label>
                     <input type="text" name="description" value="{{ old('description') }}" class="form-control"
-                        maxlength="300" placeholder="Optional short note">
+                        maxlength="300" placeholder="{{ __('public.stf_files_ph_description') }}">
                 </div>
             </div>
 
             <div class="row-actions-inline mt-6">
                 <button type="submit" class="btn btn-primary">
-                    <i data-lucide="upload"></i> Upload &amp; Attach
+                    <i data-lucide="upload"></i> {{ __('public.stf_files_upload_attach') }}
                 </button>
-                <a href="{{ route('portals.staff.files.index') }}" class="btn btn-ghost">Cancel</a>
+                <a href="{{ route('portals.staff.files.index') }}" class="btn btn-ghost">{{ __('public.stf_files_cancel') }}</a>
             </div>
         </form>
     </div>

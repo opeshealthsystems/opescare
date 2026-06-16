@@ -9,7 +9,7 @@
 
 @section('sidebar_nav')
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Overview</div>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.sidebar_lbl_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
     <a href="{{ route('portals.staff') }}" class="sidebar-link">
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
@@ -35,7 +35,7 @@
     </a>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
         <i data-lucide="brain-circuit"></i>
-        <span>Clinical Alerts</span>
+        <span>{{ __('public.staff_portal.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
@@ -111,14 +111,14 @@
 @section('content')
 
 <div class="page-head">
-    <h2>Blood bank inventory</h2>
+    <h2>{{ __('public.stf_inv_blood_title') }}</h2>
     <div class="page-head__spacer"></div>
     <button type="button" class="btn btn-primary btn-sm" onclick="openUpsertModal()">
         <i data-lucide="plus-circle"></i>
-        Update Stock
+        {{ __('public.stf_inv_blood_update_stock_btn') }}
     </button>
 </div>
-<p class="page-subtitle mb-6">Track blood group availability and component status.</p>
+<p class="page-subtitle mb-6">{{ __('public.stf_inv_blood_subtitle') }}</p>
 
 @if(session('success'))
     <div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
@@ -131,44 +131,44 @@
 <div class="stat-grid mb-6">
     <div class="stat-card stat-card--primary">
         <div class="stat-card__value">{{ $summary['total_units'] }}</div>
-        <div class="stat-card__label">Total Units</div>
+        <div class="stat-card__label">{{ __('public.stf_inv_blood_stat_total') }}</div>
     </div>
     <div class="stat-card stat-card--success">
         <div class="stat-card__value">{{ $summary['groups_covered'] }}</div>
-        <div class="stat-card__label">Groups in Stock</div>
+        <div class="stat-card__label">{{ __('public.stf_inv_blood_stat_groups') }}</div>
     </div>
     <div class="stat-card stat-card--danger">
         <div class="stat-card__value">{{ $summary['expired'] }}</div>
-        <div class="stat-card__label">Expired</div>
+        <div class="stat-card__label">{{ __('public.stf_inv_blood_stat_expired') }}</div>
     </div>
     <div class="stat-card stat-card--danger">
         <div class="stat-card__value">{{ $summary['unsafe'] }}</div>
-        <div class="stat-card__label">Unsafe</div>
+        <div class="stat-card__label">{{ __('public.stf_inv_blood_stat_unsafe') }}</div>
     </div>
     <div class="stat-card stat-card--warning">
         <div class="stat-card__value">{{ $summary['quarantined'] }}</div>
-        <div class="stat-card__label">Quarantined</div>
+        <div class="stat-card__label">{{ __('public.stf_inv_blood_stat_quarantined') }}</div>
     </div>
 </div>
 
 {{-- Filters --}}
 <form method="GET" action="{{ route('portals.staff.inventory.blood') }}" class="filter-bar">
     <select name="blood_group" class="filter-select">
-        <option value="">All Groups</option>
+        <option value="">{{ __('public.stf_inv_blood_all_groups') }}</option>
         @foreach(['O+','O-','A+','A-','B+','B-','AB+','AB-'] as $g)
             <option value="{{ $g }}" {{ request('blood_group') === $g ? 'selected' : '' }}>{{ $g }}</option>
         @endforeach
     </select>
     <select name="component" class="filter-select">
-        <option value="">All Components</option>
+        <option value="">{{ __('public.stf_inv_blood_all_components') }}</option>
         @foreach(['whole_blood','packed_red_cells','fresh_frozen_plasma','platelets'] as $c)
             <option value="{{ $c }}" {{ request('component') === $c ? 'selected' : '' }}>{{ ucwords(str_replace('_',' ',$c)) }}</option>
         @endforeach
     </select>
     <button type="submit" class="btn btn-primary btn-sm">
-        <i data-lucide="filter"></i> Filter
+        <i data-lucide="filter"></i> {{ __('public.stf_inv_blood_filter_btn') }}
     </button>
-    <a href="{{ route('portals.staff.inventory.blood') }}" class="btn btn-ghost btn-sm">Clear</a>
+    <a href="{{ route('portals.staff.inventory.blood') }}" class="btn btn-ghost btn-sm">{{ __('public.stf_inv_blood_clear_btn') }}</a>
 </form>
 
 <div class="panel">
@@ -176,21 +176,21 @@
         @if($items->isEmpty())
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="droplets"></i></div>
-                <h3>No Blood Inventory</h3>
-                <p>Add blood stock records by blood group and component.</p>
-                <button type="button" class="btn btn-primary btn-sm mt-6" onclick="openUpsertModal()">Update Stock</button>
+                <h3>{{ __('public.stf_inv_blood_empty_title') }}</h3>
+                <p>{{ __('public.stf_inv_blood_empty_desc') }}</p>
+                <button type="button" class="btn btn-primary btn-sm mt-6" onclick="openUpsertModal()">{{ __('public.stf_inv_blood_update_stock_btn') }}</button>
             </div>
         @else
             <div class="table-wrapper">
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Blood Group</th>
-                            <th>Component</th>
-                            <th>Units Available</th>
-                            <th>Flags</th>
-                            <th>Last Updated</th>
-                            <th>Actions</th>
+                            <th>{{ __('public.stf_inv_blood_col_group') }}</th>
+                            <th>{{ __('public.stf_inv_blood_col_component') }}</th>
+                            <th>{{ __('public.stf_inv_blood_col_units') }}</th>
+                            <th>{{ __('public.stf_inv_blood_col_flags') }}</th>
+                            <th>{{ __('public.stf_inv_blood_col_updated') }}</th>
+                            <th>{{ __('public.stf_inv_blood_col_actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -199,42 +199,42 @@
                             $qtyBadge = $item->available_units <= 0 ? 'badge-danger' : ($item->available_units <= 5 ? 'badge-warning' : 'badge-success');
                         @endphp
                         <tr>
-                            <td data-label="Blood Group">
+                            <td data-label="{{ __('public.stf_inv_blood_col_group') }}">
                                 <span class="td-strong">{{ $item->blood_group }}</span>
                             </td>
-                            <td data-label="Component">
+                            <td data-label="{{ __('public.stf_inv_blood_col_component') }}">
                                 <span class="badge badge-neutral">{{ ucwords(str_replace('_',' ',$item->component)) }}</span>
                             </td>
-                            <td data-label="Units Available">
-                                <span class="badge {{ $qtyBadge }}">{{ $item->available_units }}</span> units
+                            <td data-label="{{ __('public.stf_inv_blood_col_units') }}">
+                                <span class="badge {{ $qtyBadge }}">{{ $item->available_units }}</span> {{ __('public.stf_inv_blood_units_label') }}
                             </td>
-                            <td data-label="Flags">
-                                @if($item->is_expired)    <span class="badge badge-danger badge-sm">Expired</span> @endif
-                                @if($item->is_unsafe)     <span class="badge badge-danger badge-sm">Unsafe</span> @endif
-                                @if($item->is_quarantined)<span class="badge badge-warning badge-sm">Quarantine</span> @endif
+                            <td data-label="{{ __('public.stf_inv_blood_col_flags') }}">
+                                @if($item->is_expired)    <span class="badge badge-danger badge-sm">{{ __('public.stf_inv_blood_flag_expired') }}</span> @endif
+                                @if($item->is_unsafe)     <span class="badge badge-danger badge-sm">{{ __('public.stf_inv_blood_flag_unsafe') }}</span> @endif
+                                @if($item->is_quarantined)<span class="badge badge-warning badge-sm">{{ __('public.stf_inv_blood_flag_quarantine') }}</span> @endif
                                 @if(!$item->is_expired && !$item->is_unsafe && !$item->is_quarantined)
                                     <span class="td-muted">—</span>
                                 @endif
                             </td>
-                            <td data-label="Last Updated" class="td-muted">
+                            <td data-label="{{ __('public.stf_inv_blood_col_updated') }}" class="td-muted">
                                 {{ \Carbon\Carbon::parse($item->last_stock_update)->format('M d, H:i') }}
                             </td>
-                            <td data-label="Actions">
+                            <td data-label="{{ __('public.stf_inv_blood_col_actions') }}">
                                 <div class="row-actions-inline">
                                     <button type="button" class="btn btn-primary btn-xs"
                                         onclick="openAdjustModal('{{ $item->id }}', '{{ $item->blood_group }}', '{{ addslashes($item->component) }}', 'add')">
                                         <i data-lucide="plus"></i>
-                                        Add
+                                        {{ __('public.stf_inv_blood_btn_add') }}
                                     </button>
                                     <button type="button" class="btn btn-ghost btn-xs"
                                         onclick="openAdjustModal('{{ $item->id }}', '{{ $item->blood_group }}', '{{ addslashes($item->component) }}', 'subtract')">
                                         <i data-lucide="minus"></i>
-                                        Use
+                                        {{ __('public.stf_inv_blood_btn_use') }}
                                     </button>
                                     <button type="button" class="btn btn-ghost btn-xs"
                                         onclick="openBloodFlagModal('{{ $item->id }}', '{{ $item->blood_group }} {{ addslashes($item->component) }}', {{ $item->is_expired ? 1 : 0 }}, {{ $item->is_unsafe ? 1 : 0 }}, {{ $item->is_quarantined ? 1 : 0 }})">
                                         <i data-lucide="flag"></i>
-                                        Flags
+                                        {{ __('public.stf_inv_blood_btn_flags') }}
                                     </button>
                                 </div>
                             </td>
@@ -250,14 +250,14 @@
 {{-- Upsert (Add/Update) Modal --}}
 <div id="upsert-modal" class="modal-backdrop mt-6" hidden>
     <div class="modal" role="dialog" aria-modal="true">
-        <h3 class="modal__title"><i data-lucide="droplets"></i> Set Blood Stock</h3>
+        <h3 class="modal__title"><i data-lucide="droplets"></i> {{ __('public.stf_inv_blood_modal_set_title') }}</h3>
         <form method="POST" action="{{ route('portals.staff.inventory.blood.upsert') }}">
             @csrf
             <div class="modal__body">
-                <p>Existing entry for this group+component will be updated.</p>
+                <p>{{ __('public.stf_inv_blood_modal_set_note') }}</p>
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Blood Group *</label>
+                        <label class="form-label">{{ __('public.stf_inv_blood_lbl_group') }}</label>
                         <select name="blood_group" class="form-control" required>
                             @foreach(['O+','O-','A+','A-','B+','B-','AB+','AB-'] as $g)
                                 <option value="{{ $g }}">{{ $g }}</option>
@@ -265,7 +265,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Component *</label>
+                        <label class="form-label">{{ __('public.stf_inv_blood_lbl_component') }}</label>
                         <select name="component" class="form-control" required>
                             @foreach(['whole_blood','packed_red_cells','fresh_frozen_plasma','platelets'] as $c)
                                 <option value="{{ $c }}">{{ ucwords(str_replace('_',' ',$c)) }}</option>
@@ -274,15 +274,15 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Available Units *</label>
+                    <label class="form-label">{{ __('public.stf_inv_blood_lbl_units') }}</label>
                     <input type="number" name="available_units" class="form-control" required min="0" value="0">
                 </div>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeUpsertModal()">Cancel</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeUpsertModal()">{{ __('public.stf_inv_blood_cancel') }}</button>
                 <button type="submit" class="btn btn-primary btn-sm">
                     <i data-lucide="save"></i>
-                    Save
+                    {{ __('public.stf_inv_blood_btn_save') }}
                 </button>
             </div>
         </form>
@@ -292,20 +292,20 @@
 {{-- Adjust Modal --}}
 <div id="adjust-modal" class="modal-backdrop mt-6" hidden>
     <div class="modal" role="dialog" aria-modal="true">
-        <h3 id="adjust-title" class="modal__title"><i data-lucide="plus-minus"></i> Adjust Units</h3>
+        <h3 id="adjust-title" class="modal__title"><i data-lucide="plus-minus"></i> {{ __('public.stf_inv_blood_adjust_title') }}</h3>
         <form id="adjust-form" method="POST" action="">
             @csrf
             <input type="hidden" id="adjust-direction" name="direction" value="add">
             <div class="modal__body">
                 <p id="adjust-label"></p>
                 <div class="form-group">
-                    <label class="form-label">Units *</label>
+                    <label class="form-label">{{ __('public.stf_inv_blood_lbl_adj_units') }}</label>
                     <input type="number" name="units" class="form-control" required min="1" value="1">
                 </div>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeAdjustModal()">Cancel</button>
-                <button type="submit" id="adjust-btn" class="btn btn-primary btn-sm">Confirm</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeAdjustModal()">{{ __('public.stf_inv_blood_cancel') }}</button>
+                <button type="submit" id="adjust-btn" class="btn btn-primary btn-sm">{{ __('public.stf_inv_blood_btn_confirm') }}</button>
             </div>
         </form>
     </div>
@@ -314,24 +314,24 @@
 {{-- Blood Flag Modal --}}
 <div id="blood-flag-modal" class="modal-backdrop mt-6" hidden>
     <div class="modal" role="dialog" aria-modal="true">
-        <h3 class="modal__title"><i data-lucide="flag"></i> Update Flags</h3>
+        <h3 class="modal__title"><i data-lucide="flag"></i> {{ __('public.stf_inv_blood_flags_title') }}</h3>
         <form id="blood-flag-form" method="POST" action="">
             @csrf
             <div class="modal__body">
                 <p id="blood-flag-label"></p>
                 <label class="form-check">
-                    <input type="checkbox" id="bf-expired" name="is_expired" value="1"> Expired
+                    <input type="checkbox" id="bf-expired" name="is_expired" value="1"> {{ __('public.stf_inv_blood_lbl_expired') }}
                 </label>
                 <label class="form-check">
-                    <input type="checkbox" id="bf-unsafe" name="is_unsafe" value="1"> Unsafe
+                    <input type="checkbox" id="bf-unsafe" name="is_unsafe" value="1"> {{ __('public.stf_inv_blood_lbl_unsafe') }}
                 </label>
                 <label class="form-check">
-                    <input type="checkbox" id="bf-quarantined" name="is_quarantined" value="1"> Quarantined
+                    <input type="checkbox" id="bf-quarantined" name="is_quarantined" value="1"> {{ __('public.stf_inv_blood_lbl_quarantined') }}
                 </label>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeBloodFlagModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary btn-sm">Save Flags</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeBloodFlagModal()">{{ __('public.stf_inv_blood_cancel') }}</button>
+                <button type="submit" class="btn btn-primary btn-sm">{{ __('public.stf_inv_blood_btn_save_flags') }}</button>
             </div>
         </form>
     </div>

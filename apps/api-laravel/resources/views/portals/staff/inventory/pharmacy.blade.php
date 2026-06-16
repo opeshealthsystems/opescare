@@ -111,14 +111,14 @@
 @section('content')
 
 <div class="page-head">
-    <h2>Pharmacy inventory</h2>
+    <h2>{{ __('public.stf_inv_pharm_title') }}</h2>
     <div class="page-head__spacer"></div>
     <button type="button" class="btn btn-primary btn-sm" onclick="openAddModal()">
         <i data-lucide="plus-circle"></i>
-        Add Item
+        {{ __('public.stf_inv_pharm_add_btn') }}
     </button>
 </div>
-<p class="page-subtitle mb-6">Manage medicine stock levels, flag recalls, and track availability.</p>
+<p class="page-subtitle mb-6">{{ __('public.stf_inv_pharm_subtitle') }}</p>
 
 @if(session('success'))
     <div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
@@ -131,41 +131,41 @@
 <div class="stat-grid mb-6">
     <div class="stat-card stat-card--primary">
         <div class="stat-card__value">{{ $summary['total'] }}</div>
-        <div class="stat-card__label">Total Items</div>
+        <div class="stat-card__label">{{ __('public.stf_inv_pharm_stat_total') }}</div>
     </div>
     <div class="stat-card stat-card--success">
         <div class="stat-card__value">{{ $summary['in_stock'] }}</div>
-        <div class="stat-card__label">In Stock</div>
+        <div class="stat-card__label">{{ __('public.stf_inv_pharm_stat_in_stock') }}</div>
     </div>
     <div class="stat-card stat-card--warning">
         <div class="stat-card__value">{{ $summary['low_stock'] }}</div>
-        <div class="stat-card__label">Low Stock</div>
+        <div class="stat-card__label">{{ __('public.stf_inv_pharm_stat_low_stock') }}</div>
     </div>
     <div class="stat-card stat-card--danger">
         <div class="stat-card__value">{{ $summary['out_of_stock'] }}</div>
-        <div class="stat-card__label">Out of Stock</div>
+        <div class="stat-card__label">{{ __('public.stf_inv_pharm_stat_out') }}</div>
     </div>
     <div class="stat-card stat-card--danger">
         <div class="stat-card__value">{{ $summary['expired'] }}</div>
-        <div class="stat-card__label">Expired</div>
+        <div class="stat-card__label">{{ __('public.stf_inv_pharm_stat_expired') }}</div>
     </div>
     <div class="stat-card stat-card--warning">
         <div class="stat-card__value">{{ $summary['recalled'] }}</div>
-        <div class="stat-card__label">Recalled</div>
+        <div class="stat-card__label">{{ __('public.stf_inv_pharm_stat_recalled') }}</div>
     </div>
 </div>
 
 {{-- Filters --}}
 <form method="GET" action="{{ route('portals.staff.inventory.pharmacy') }}" class="filter-bar">
     <select name="stock_status" class="filter-select">
-        <option value="">All Statuses</option>
+        <option value="">{{ __('public.stf_inv_pharm_all_statuses') }}</option>
         @foreach(['in_stock','low_stock','out_of_stock'] as $s)
             <option value="{{ $s }}" {{ request('stock_status') === $s ? 'selected' : '' }}>{{ ucwords(str_replace('_',' ',$s)) }}</option>
         @endforeach
     </select>
     @if($forms->isNotEmpty())
     <select name="form" class="filter-select">
-        <option value="">All Forms</option>
+        <option value="">{{ __('public.stf_inv_pharm_all_forms') }}</option>
         @foreach($forms as $f)
             <option value="{{ $f }}" {{ request('form') === $f ? 'selected' : '' }}>{{ $f }}</option>
         @endforeach
@@ -173,17 +173,17 @@
     @endif
     <select name="is_expired" class="filter-select">
         <option value="">All</option>
-        <option value="1" {{ request('is_expired') === '1' ? 'selected' : '' }}>Expired Only</option>
-        <option value="0" {{ request('is_expired') === '0' ? 'selected' : '' }}>Not Expired</option>
+        <option value="1" {{ request('is_expired') === '1' ? 'selected' : '' }}>{{ __('public.stf_inv_pharm_expired_only') }}</option>
+        <option value="0" {{ request('is_expired') === '0' ? 'selected' : '' }}>{{ __('public.stf_inv_pharm_not_expired') }}</option>
     </select>
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="search" placeholder="Search medicine…" value="{{ request('search') }}">
+        <input type="text" name="search" placeholder="{{ __('public.stf_inv_pharm_ph_search') }}" value="{{ request('search') }}">
     </label>
     <button type="submit" class="btn btn-primary btn-sm">
-        <i data-lucide="filter"></i> Filter
+        <i data-lucide="filter"></i> {{ __('public.stf_inv_pharm_filter_btn') }}
     </button>
-    <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="btn btn-ghost btn-sm">Clear</a>
+    <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="btn btn-ghost btn-sm">{{ __('public.stf_inv_pharm_clear_btn') }}</a>
 </form>
 
 <div class="panel">
@@ -191,22 +191,22 @@
         @if($items->isEmpty())
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="pill"></i></div>
-                <h3>No Inventory Items</h3>
-                <p>Add your first medicine item to begin tracking stock.</p>
-                <button type="button" class="btn btn-primary btn-sm mt-6" onclick="openAddModal()">Add Item</button>
+                <h3>{{ __('public.stf_inv_pharm_empty_title') }}</h3>
+                <p>{{ __('public.stf_inv_pharm_empty_desc') }}</p>
+                <button type="button" class="btn btn-primary btn-sm mt-6" onclick="openAddModal()">{{ __('public.stf_inv_pharm_add_btn') }}</button>
             </div>
         @else
             <div class="table-wrapper">
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Medicine</th>
-                            <th>Form / Strength</th>
-                            <th>Qty</th>
-                            <th>Status</th>
-                            <th>Flags</th>
-                            <th>Last Updated</th>
-                            <th>Actions</th>
+                            <th>{{ __('public.stf_inv_pharm_col_medicine') }}</th>
+                            <th>{{ __('public.stf_inv_pharm_col_form') }}</th>
+                            <th>{{ __('public.stf_inv_pharm_col_qty') }}</th>
+                            <th>{{ __('public.stf_inv_pharm_col_status') }}</th>
+                            <th>{{ __('public.stf_inv_pharm_col_flags') }}</th>
+                            <th>{{ __('public.stf_inv_pharm_col_updated') }}</th>
+                            <th>{{ __('public.stf_inv_pharm_col_actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -220,42 +220,42 @@
                             };
                         @endphp
                         <tr>
-                            <td data-label="Medicine">
+                            <td data-label="{{ __('public.stf_inv_pharm_col_medicine') }}">
                                 <span class="td-strong">{{ $item->medicine_name }}</span>
                                 <div class="td-muted">{{ $item->generic_name }}</div>
                             </td>
-                            <td data-label="Form / Strength">{{ $item->form }} · {{ $item->strength }}</td>
-                            <td data-label="Qty"><span class="td-strong">{{ number_format($item->available_quantity) }}</span></td>
-                            <td data-label="Status">
+                            <td data-label="{{ __('public.stf_inv_pharm_col_form') }}">{{ $item->form }} · {{ $item->strength }}</td>
+                            <td data-label="{{ __('public.stf_inv_pharm_col_qty') }}"><span class="td-strong">{{ number_format($item->available_quantity) }}</span></td>
+                            <td data-label="{{ __('public.stf_inv_pharm_col_status') }}">
                                 <span class="badge {{ $sBadge }}">{{ ucwords(str_replace('_',' ',$item->stock_status)) }}</span>
                             </td>
-                            <td data-label="Flags">
-                                @if($item->is_expired)   <span class="badge badge-danger badge-sm">Expired</span> @endif
-                                @if($item->is_recalled)  <span class="badge badge-warning badge-sm">Recalled</span> @endif
-                                @if($item->is_quarantined) <span class="badge badge-warning badge-sm">Quarantine</span> @endif
+                            <td data-label="{{ __('public.stf_inv_pharm_col_flags') }}">
+                                @if($item->is_expired)   <span class="badge badge-danger badge-sm">{{ __('public.stf_inv_pharm_flag_expired') }}</span> @endif
+                                @if($item->is_recalled)  <span class="badge badge-warning badge-sm">{{ __('public.stf_inv_pharm_flag_recalled') }}</span> @endif
+                                @if($item->is_quarantined) <span class="badge badge-warning badge-sm">{{ __('public.stf_inv_pharm_flag_quarantine') }}</span> @endif
                                 @if(!$item->is_expired && !$item->is_recalled && !$item->is_quarantined)
                                     <span class="td-muted">—</span>
                                 @endif
                             </td>
-                            <td data-label="Last Updated" class="td-muted">
+                            <td data-label="{{ __('public.stf_inv_pharm_col_updated') }}" class="td-muted">
                                 {{ \Carbon\Carbon::parse($item->last_stock_update)->format('M d, H:i') }}
                             </td>
-                            <td data-label="Actions">
+                            <td data-label="{{ __('public.stf_inv_pharm_col_actions') }}">
                                 <div class="row-actions-inline">
                                     <button type="button" class="btn btn-primary btn-xs"
                                         onclick="openRestockModal('{{ $item->id }}', '{{ addslashes($item->medicine_name) }}')">
                                         <i data-lucide="plus"></i>
-                                        Restock
+                                        {{ __('public.stf_inv_pharm_btn_restock') }}
                                     </button>
                                     <button type="button" class="btn btn-ghost btn-xs"
                                         onclick="openDispenseModal('{{ $item->id }}', '{{ addslashes($item->medicine_name) }}')">
                                         <i data-lucide="minus"></i>
-                                        Dispense
+                                        {{ __('public.stf_inv_pharm_btn_dispense') }}
                                     </button>
                                     <button type="button" class="btn btn-ghost btn-xs"
                                         onclick="openFlagModal('{{ $item->id }}', '{{ addslashes($item->medicine_name) }}', {{ $item->is_expired ? 1 : 0 }}, {{ $item->is_recalled ? 1 : 0 }}, {{ $item->is_quarantined ? 1 : 0 }})">
                                         <i data-lucide="flag"></i>
-                                        Flags
+                                        {{ __('public.stf_inv_pharm_btn_flags') }}
                                     </button>
                                     <form method="POST" action="{{ route('portals.staff.inventory.pharmacy.delete', $item->id) }}" class="inline-form">
                                         @csrf
@@ -279,40 +279,40 @@
 {{-- Add Item Modal --}}
 <div id="add-modal" class="modal-backdrop mt-6" hidden>
     <div class="modal" role="dialog" aria-modal="true">
-        <h3 class="modal__title"><i data-lucide="plus-circle"></i> Add Inventory Item</h3>
+        <h3 class="modal__title"><i data-lucide="plus-circle"></i> {{ __('public.stf_inv_pharm_modal_add_title') }}</h3>
         <form method="POST" action="{{ route('portals.staff.inventory.pharmacy.store') }}">
             @csrf
             <div class="modal__body">
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Medicine Name *</label>
+                        <label class="form-label">{{ __('public.stf_inv_pharm_lbl_med_name') }}</label>
                         <input type="text" name="medicine_name" class="form-control" required maxlength="200">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Generic Name *</label>
+                        <label class="form-label">{{ __('public.stf_inv_pharm_lbl_generic_name') }}</label>
                         <input type="text" name="generic_name" class="form-control" required maxlength="200">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Form *</label>
+                        <label class="form-label">{{ __('public.stf_inv_pharm_lbl_form') }}</label>
                         <input type="text" name="form" class="form-control" required maxlength="80" placeholder="e.g. Tablet, Syrup, Injection">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Strength *</label>
+                        <label class="form-label">{{ __('public.stf_inv_pharm_lbl_strength') }}</label>
                         <input type="text" name="strength" class="form-control" required maxlength="80" placeholder="e.g. 500mg, 250mg/5ml">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Available Quantity *</label>
+                    <label class="form-label">{{ __('public.stf_inv_pharm_lbl_qty') }}</label>
                     <input type="number" name="available_quantity" class="form-control" required min="0" value="0">
                 </div>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeAddModal()">Cancel</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeAddModal()">{{ __('public.stf_inv_pharm_cancel') }}</button>
                 <button type="submit" class="btn btn-primary btn-sm">
                     <i data-lucide="plus-circle"></i>
-                    Add Item
+                    {{ __('public.stf_inv_pharm_btn_add_item') }}
                 </button>
             </div>
         </form>
@@ -322,21 +322,21 @@
 {{-- Restock Modal --}}
 <div id="restock-modal" class="modal-backdrop mt-6" hidden>
     <div class="modal" role="dialog" aria-modal="true">
-        <h3 class="modal__title"><i data-lucide="plus"></i> Restock</h3>
+        <h3 class="modal__title"><i data-lucide="plus"></i> {{ __('public.stf_inv_pharm_restock_title') }}</h3>
         <form id="restock-form" method="POST" action="">
             @csrf
             <div class="modal__body">
                 <p id="restock-name"></p>
                 <div class="form-group">
-                    <label class="form-label">Quantity to Add *</label>
+                    <label class="form-label">{{ __('public.stf_inv_pharm_lbl_qty_add') }}</label>
                     <input type="number" name="quantity" class="form-control" required min="1" value="1">
                 </div>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeRestockModal()">Cancel</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeRestockModal()">{{ __('public.stf_inv_pharm_cancel') }}</button>
                 <button type="submit" class="btn btn-primary btn-sm">
                     <i data-lucide="plus"></i>
-                    Restock
+                    {{ __('public.stf_inv_pharm_btn_restock') }}
                 </button>
             </div>
         </form>
@@ -346,21 +346,21 @@
 {{-- Dispense Modal --}}
 <div id="dispense-modal" class="modal-backdrop mt-6" hidden>
     <div class="modal" role="dialog" aria-modal="true">
-        <h3 class="modal__title"><i data-lucide="minus"></i> Dispense</h3>
+        <h3 class="modal__title"><i data-lucide="minus"></i> {{ __('public.stf_inv_pharm_dispense_title') }}</h3>
         <form id="dispense-form" method="POST" action="">
             @csrf
             <div class="modal__body">
                 <p id="dispense-name"></p>
                 <div class="form-group">
-                    <label class="form-label">Quantity to Dispense *</label>
+                    <label class="form-label">{{ __('public.stf_inv_pharm_lbl_qty_dispense') }}</label>
                     <input type="number" name="quantity" class="form-control" required min="1" value="1">
                 </div>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeDispenseModal()">Cancel</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeDispenseModal()">{{ __('public.stf_inv_pharm_cancel') }}</button>
                 <button type="submit" class="btn btn-warning btn-sm">
                     <i data-lucide="minus"></i>
-                    Dispense
+                    {{ __('public.stf_inv_pharm_btn_dispense_confirm') }}
                 </button>
             </div>
         </form>
@@ -370,24 +370,24 @@
 {{-- Flag Modal --}}
 <div id="flag-modal" class="modal-backdrop mt-6" hidden>
     <div class="modal" role="dialog" aria-modal="true">
-        <h3 class="modal__title"><i data-lucide="flag"></i> Update Flags</h3>
+        <h3 class="modal__title"><i data-lucide="flag"></i> {{ __('public.stf_inv_pharm_flags_title') }}</h3>
         <form id="flag-form" method="POST" action="">
             @csrf
             <div class="modal__body">
                 <p id="flag-name"></p>
                 <label class="form-check">
-                    <input type="checkbox" id="flag-expired" name="is_expired" value="1"> Expired
+                    <input type="checkbox" id="flag-expired" name="is_expired" value="1"> {{ __('public.stf_inv_pharm_lbl_expired') }}
                 </label>
                 <label class="form-check">
-                    <input type="checkbox" id="flag-recalled" name="is_recalled" value="1"> Recalled
+                    <input type="checkbox" id="flag-recalled" name="is_recalled" value="1"> {{ __('public.stf_inv_pharm_lbl_recalled') }}
                 </label>
                 <label class="form-check">
-                    <input type="checkbox" id="flag-quarantined" name="is_quarantined" value="1"> Quarantined
+                    <input type="checkbox" id="flag-quarantined" name="is_quarantined" value="1"> {{ __('public.stf_inv_pharm_lbl_quarantined') }}
                 </label>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeFlagModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary btn-sm">Save Flags</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeFlagModal()">{{ __('public.stf_inv_pharm_cancel') }}</button>
+                <button type="submit" class="btn btn-primary btn-sm">{{ __('public.stf_inv_pharm_btn_save_flags') }}</button>
             </div>
         </form>
     </div>

@@ -106,18 +106,18 @@
 
 @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Duty Roster')
+@section('breadcrumb_section', __('public.stf_hr_roster_title'))
 
 @section('content')
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Duty Roster</h1>
-        <p class="page-subtitle">Create and publish staff duty schedules by department and period.</p>
+        <h1 class="page-title">{{ __('public.stf_hr_roster_title') }}</h1>
+        <p class="page-subtitle">{{ __('public.stf_hr_roster_subtitle') }}</p>
     </div>
     <button type="button" class="btn btn-primary btn-sm" onclick="openRosterModal()">
         <i data-lucide="plus-circle"></i>
-        New Roster
+        {{ __('public.stf_hr_roster_new_btn') }}
     </button>
 </div>
 
@@ -135,23 +135,23 @@
 {{-- Filters --}}
 <form method="GET" action="{{ route('portals.staff.hr.roster') }}" class="filter-bar">
     <select name="status" class="form-control">
-        <option value="">All Statuses</option>
+        <option value="">{{ __('public.stf_hr_roster_all_statuses') }}</option>
         @foreach(['draft','published','archived'] as $s)
             <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
         @endforeach
     </select>
     @if($departments->isNotEmpty())
     <select name="department" class="form-control">
-        <option value="">All Departments</option>
+        <option value="">{{ __('public.stf_hr_roster_all_departments') }}</option>
         @foreach($departments as $d)
             <option value="{{ $d }}" {{ request('department') === $d ? 'selected' : '' }}>{{ $d }}</option>
         @endforeach
     </select>
     @endif
     <button type="submit" class="btn btn-primary btn-sm">
-        <i data-lucide="filter"></i> Filter
+        <i data-lucide="filter"></i> {{ __('public.stf_hr_roster_filter_btn') }}
     </button>
-    <a href="{{ route('portals.staff.hr.roster') }}" class="btn btn-ghost btn-sm">Clear</a>
+    <a href="{{ route('portals.staff.hr.roster') }}" class="btn btn-ghost btn-sm">{{ __('public.stf_hr_roster_clear_btn') }}</a>
 </form>
 
 <div class="panel">
@@ -159,21 +159,21 @@
         @if($rosters->isEmpty())
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="calendar-range"></i></div>
-                <h3>No Rosters Yet</h3>
-                <p>Create a duty roster to schedule staff shifts for a period.</p>
-                <button type="button" class="btn btn-primary btn-sm mt-6" onclick="openRosterModal()">New Roster</button>
+                <h3>{{ __('public.stf_hr_roster_empty_title') }}</h3>
+                <p>{{ __('public.stf_hr_roster_empty_desc') }}</p>
+                <button type="button" class="btn btn-primary btn-sm mt-6" onclick="openRosterModal()">{{ __('public.stf_hr_roster_new_btn') }}</button>
             </div>
         @else
             <div class="table-wrapper">
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Department</th>
-                            <th>Period</th>
-                            <th>Assignments</th>
-                            <th>Status</th>
-                            <th>Published</th>
-                            <th>Actions</th>
+                            <th>{{ __('public.stf_hr_roster_col_department') }}</th>
+                            <th>{{ __('public.stf_hr_roster_col_period') }}</th>
+                            <th>{{ __('public.stf_hr_roster_col_assignments') }}</th>
+                            <th>{{ __('public.stf_hr_roster_col_status') }}</th>
+                            <th>{{ __('public.stf_hr_roster_col_published') }}</th>
+                            <th>{{ __('public.stf_hr_roster_col_actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -187,31 +187,31 @@
                             };
                         @endphp
                         <tr>
-                            <td data-label="Department"><strong class="td-strong">{{ $roster->department }}</strong></td>
-                            <td data-label="Period">
+                            <td data-label="{{ __('public.stf_hr_roster_col_department') }}"><strong class="td-strong">{{ $roster->department }}</strong></td>
+                            <td data-label="{{ __('public.stf_hr_roster_col_period') }}">
                                 {{ \Carbon\Carbon::parse($roster->period_start)->format('M d') }} –
                                 {{ \Carbon\Carbon::parse($roster->period_end)->format('M d, Y') }}
                             </td>
-                            <td data-label="Assignments">{{ $roster->assignments_count }}</td>
-                            <td data-label="Status">
+                            <td data-label="{{ __('public.stf_hr_roster_col_assignments') }}">{{ $roster->assignments_count }}</td>
+                            <td data-label="{{ __('public.stf_hr_roster_col_status') }}">
                                 <span class="badge {{ $rBadge }}">{{ ucfirst($roster->status) }}</span>
                             </td>
-                            <td data-label="Published">
+                            <td data-label="{{ __('public.stf_hr_roster_col_published') }}">
                                 {{ $roster->published_at ? \Carbon\Carbon::parse($roster->published_at)->format('M d, Y') : '—' }}
                             </td>
-                            <td data-label="Actions">
+                            <td data-label="{{ __('public.stf_hr_roster_col_actions') }}">
                                 <div class="row-actions-inline">
                                     @if($roster->status === 'draft')
                                         <button type="button" class="btn btn-ghost btn-xs"
                                             onclick="openAssignModal('{{ $roster->id }}', '{{ addslashes($roster->department) }}')">
                                             <i data-lucide="user-plus"></i>
-                                            Assign
+                                            {{ __('public.stf_hr_roster_btn_assign') }}
                                         </button>
                                         <form method="POST" action="{{ route('portals.staff.hr.roster.publish', $roster->id) }}" class="inline-form">
                                             @csrf
                                             <button type="submit" class="btn btn-primary btn-xs">
                                                 <i data-lucide="send"></i>
-                                                Publish
+                                                {{ __('public.stf_hr_roster_btn_publish') }}
                                             </button>
                                         </form>
                                     @endif
@@ -219,7 +219,7 @@
                                         <button type="button" class="btn btn-ghost btn-xs"
                                             onclick="openArchiveModal('{{ route('portals.staff.hr.roster.archive', $roster->id) }}')">
                                             <i data-lucide="archive"></i>
-                                            Archive
+                                            {{ __('public.stf_hr_roster_btn_archive') }}
                                         </button>
                                     @endif
                                 </div>
@@ -237,33 +237,33 @@
 <div id="roster-modal" class="modal-fixed">
     <div class="modal-fixed__panel modal-fixed__panel--md">
         <div class="modal-fixed__head">
-            <h3 class="modal-fixed__title">New Duty Roster</h3>
+            <h3 class="modal-fixed__title">{{ __('public.stf_hr_roster_modal_title') }}</h3>
         </div>
         <form method="POST" action="{{ route('portals.staff.hr.roster.store') }}">
             @csrf
             <div class="form-group mb-4">
-                <label class="form-label">Department *</label>
-                <input type="text" name="department" class="form-control" required maxlength="100" placeholder="e.g. Emergency, ICU, Lab">
+                <label class="form-label">{{ __('public.stf_hr_roster_lbl_department') }}</label>
+                <input type="text" name="department" class="form-control" required maxlength="100" placeholder="{{ __('public.stf_hr_roster_ph_department') }}">
             </div>
             <div class="form-row mb-4">
                 <div class="form-group">
-                    <label class="form-label">Period Start *</label>
+                    <label class="form-label">{{ __('public.stf_hr_roster_lbl_period_start') }}</label>
                     <input type="date" name="period_start" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Period End *</label>
+                    <label class="form-label">{{ __('public.stf_hr_roster_lbl_period_end') }}</label>
                     <input type="date" name="period_end" class="form-control" required>
                 </div>
             </div>
             <div class="form-group mb-4">
-                <label class="form-label">Notes</label>
+                <label class="form-label">{{ __('public.stf_hr_roster_lbl_notes') }}</label>
                 <textarea name="notes" class="form-control" rows="2" maxlength="500"></textarea>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeRosterModal()">Cancel</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeRosterModal()">{{ __('public.stf_hr_roster_cancel') }}</button>
                 <button type="submit" class="btn btn-primary btn-sm">
                     <i data-lucide="calendar-range"></i>
-                    Create Roster
+                    {{ __('public.stf_hr_roster_btn_create') }}
                 </button>
             </div>
         </form>
@@ -274,13 +274,13 @@
 <div id="assign-modal" class="modal-fixed">
     <div class="modal-fixed__panel modal-fixed__panel--md">
         <div class="modal-fixed__head">
-            <h3 class="modal-fixed__title">Assign Staff to Roster</h3>
+            <h3 class="modal-fixed__title">{{ __('public.stf_hr_roster_assign_title') }}</h3>
         </div>
         <p id="assign-dept-label" class="td-muted mb-4"></p>
         <form id="assign-form" method="POST" action="">
             @csrf
             <div class="form-group mb-4">
-                <label class="form-label">Staff Member *</label>
+                <label class="form-label">{{ __('public.stf_hr_roster_lbl_staff') }}</label>
                 <select name="staff_profile_id" class="form-control" required>
                     <option value="">— Select —</option>
                     @foreach($staff as $member)
@@ -289,7 +289,7 @@
                 </select>
             </div>
             <div class="form-group mb-4">
-                <label class="form-label">Shift *</label>
+                <label class="form-label">{{ __('public.stf_hr_roster_lbl_shift') }}</label>
                 <select name="staff_shift_id" class="form-control" required>
                     <option value="">— Select —</option>
                     @foreach($shifts as $shift)
@@ -298,18 +298,18 @@
                 </select>
             </div>
             <div class="form-group mb-4">
-                <label class="form-label">Work Date *</label>
+                <label class="form-label">{{ __('public.stf_hr_roster_lbl_work_date') }}</label>
                 <input type="date" name="work_date" class="form-control" required>
             </div>
             <div class="form-group mb-4">
-                <label class="form-label">Notes</label>
+                <label class="form-label">{{ __('public.stf_hr_roster_lbl_notes') }}</label>
                 <textarea name="notes" class="form-control" rows="2" maxlength="300"></textarea>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeAssignModal()">Cancel</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeAssignModal()">{{ __('public.stf_hr_roster_cancel') }}</button>
                 <button type="submit" class="btn btn-primary btn-sm">
                     <i data-lucide="user-plus"></i>
-                    Assign
+                    {{ __('public.stf_hr_roster_btn_assign_confirm') }}
                 </button>
             </div>
         </form>
@@ -320,16 +320,16 @@
 <div id="archive-modal" class="modal-fixed">
     <div class="modal-fixed__panel modal-fixed__panel--sm">
         <div class="modal-fixed__head">
-            <h3 class="modal-fixed__title"><i data-lucide="archive"></i> Archive roster</h3>
+            <h3 class="modal-fixed__title"><i data-lucide="archive"></i> {{ __('public.stf_hr_roster_archive_title') }}</h3>
         </div>
-        <div class="modal__body">Archive this roster? It will no longer be editable.</div>
+        <div class="modal__body">{{ __('public.stf_hr_roster_archive_body') }}</div>
         <form id="archive-form" method="POST" action="">
             @csrf
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeArchiveModal()">Cancel</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeArchiveModal()">{{ __('public.stf_hr_roster_cancel') }}</button>
                 <button type="submit" class="btn btn-warning btn-sm">
                     <i data-lucide="archive"></i>
-                    Archive
+                    {{ __('public.stf_hr_roster_btn_archive_confirm') }}
                 </button>
             </div>
         </form>

@@ -106,18 +106,18 @@
 
 @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Staff Directory')
+@section('breadcrumb_section', __('public.stf_hr_dir_title'))
 
 @section('content')
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Staff Directory</h1>
-        <p class="page-subtitle">Manage staff profiles, licenses, and employment records.</p>
+        <h1 class="page-title">{{ __('public.stf_hr_dir_title') }}</h1>
+        <p class="page-subtitle">{{ __('public.stf_hr_dir_subtitle') }}</p>
     </div>
     <button type="button" class="btn btn-primary btn-sm" onclick="openAddStaffModal()">
         <i data-lucide="user-plus"></i>
-        Add Staff Member
+        {{ __('public.stf_hr_dir_add_btn') }}
     </button>
 </div>
 
@@ -135,30 +135,30 @@
 {{-- Filters --}}
 <form method="GET" action="{{ route('portals.staff.hr.directory') }}" class="filter-bar">
     <select name="status" class="form-control">
-        <option value="">All Statuses</option>
+        <option value="">{{ __('public.stf_hr_dir_all_statuses') }}</option>
         @foreach(['active','inactive','on_leave','suspended','terminated'] as $s)
             <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ ucwords(str_replace('_',' ',$s)) }}</option>
         @endforeach
     </select>
     <select name="staff_category" class="form-control">
-        <option value="">All Categories</option>
+        <option value="">{{ __('public.stf_hr_dir_all_categories') }}</option>
         @foreach(['clinical','administrative','support','management'] as $c)
             <option value="{{ $c }}" {{ request('staff_category') === $c ? 'selected' : '' }}>{{ ucfirst($c) }}</option>
         @endforeach
     </select>
     @if($departments->isNotEmpty())
     <select name="department" class="form-control">
-        <option value="">All Departments</option>
+        <option value="">{{ __('public.stf_hr_dir_all_departments') }}</option>
         @foreach($departments as $d)
             <option value="{{ $d }}" {{ request('department') === $d ? 'selected' : '' }}>{{ $d }}</option>
         @endforeach
     </select>
     @endif
-    <input type="text" name="search" class="form-control" placeholder="Search name / ID…" value="{{ request('search') }}">
+    <input type="text" name="search" class="form-control" placeholder="{{ __('public.stf_hr_dir_search_ph') }}" value="{{ request('search') }}">
     <button type="submit" class="btn btn-primary btn-sm">
-        <i data-lucide="filter"></i> Filter
+        <i data-lucide="filter"></i> {{ __('public.stf_hr_dir_filter_btn') }}
     </button>
-    <a href="{{ route('portals.staff.hr.directory') }}" class="btn btn-ghost btn-sm">Clear</a>
+    <a href="{{ route('portals.staff.hr.directory') }}" class="btn btn-ghost btn-sm">{{ __('public.stf_hr_dir_clear_btn') }}</a>
 </form>
 
 <div class="panel">
@@ -166,10 +166,10 @@
         @if($staff->isEmpty())
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="users"></i></div>
-                <h3>No Staff Members Found</h3>
-                <p>Add your first staff member to get started.</p>
+                <h3>{{ __('public.stf_hr_dir_empty_title') }}</h3>
+                <p>{{ __('public.stf_hr_dir_empty_desc') }}</p>
                 <button type="button" class="btn btn-primary btn-sm mt-6" onclick="openAddStaffModal()">
-                    Add Staff Member
+                    {{ __('public.stf_hr_dir_add_btn') }}
                 </button>
             </div>
         @else
@@ -177,14 +177,14 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Employee #</th>
-                            <th>Category</th>
-                            <th>Department</th>
-                            <th>Type</th>
-                            <th>Status</th>
-                            <th>Licenses</th>
-                            <th>Actions</th>
+                            <th>{{ __('public.stf_hr_dir_col_name') }}</th>
+                            <th>{{ __('public.stf_hr_dir_col_employee') }}</th>
+                            <th>{{ __('public.stf_hr_dir_col_category') }}</th>
+                            <th>{{ __('public.stf_hr_dir_col_department') }}</th>
+                            <th>{{ __('public.stf_hr_dir_col_type') }}</th>
+                            <th>{{ __('public.stf_hr_dir_col_status') }}</th>
+                            <th>{{ __('public.stf_hr_dir_col_licenses') }}</th>
+                            <th>{{ __('public.stf_hr_dir_col_actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -199,26 +199,26 @@
                             };
                         @endphp
                         <tr>
-                            <td data-label="Name">
+                            <td data-label="{{ __('public.stf_hr_dir_col_name') }}">
                                 <strong class="td-strong">{{ $member->full_name }}</strong>
                                 @if($member->job_title)
                                     <br><span class="td-muted">{{ $member->job_title }}</span>
                                 @endif
                             </td>
-                            <td data-label="Employee #">
+                            <td data-label="{{ __('public.stf_hr_dir_col_employee') }}">
                                 <span class="mono">{{ $member->employee_number ?? '—' }}</span>
                             </td>
-                            <td data-label="Category">
+                            <td data-label="{{ __('public.stf_hr_dir_col_category') }}">
                                 <span class="badge badge-neutral">{{ ucfirst($member->staff_category) }}</span>
                             </td>
-                            <td data-label="Department">{{ $member->department ?? '—' }}</td>
-                            <td data-label="Type">
+                            <td data-label="{{ __('public.stf_hr_dir_col_department') }}">{{ $member->department ?? '—' }}</td>
+                            <td data-label="{{ __('public.stf_hr_dir_col_type') }}">
                                 <span class="badge badge-neutral">{{ ucwords(str_replace('_',' ',$member->employment_type)) }}</span>
                             </td>
-                            <td data-label="Status">
+                            <td data-label="{{ __('public.stf_hr_dir_col_status') }}">
                                 <span class="badge {{ $statusBadge }}">{{ ucwords(str_replace('_',' ',$member->status)) }}</span>
                             </td>
-                            <td data-label="Licenses">
+                            <td data-label="{{ __('public.stf_hr_dir_col_licenses') }}">
                                 @if($member->licenses->isNotEmpty())
                                     @foreach($member->licenses as $lic)
                                         <span class="badge badge-sm {{ $lic->status === 'active' ? 'badge-success' : 'badge-danger' }}">
@@ -229,18 +229,18 @@
                                     <span class="td-muted">—</span>
                                 @endif
                             </td>
-                            <td data-label="Actions">
+                            <td data-label="{{ __('public.stf_hr_dir_col_actions') }}">
                                 <div class="row-actions-inline">
                                     <button type="button" class="btn btn-ghost btn-xs"
                                         onclick="openLicenseModal('{{ $member->id }}', '{{ addslashes($member->full_name) }}')">
                                         <i data-lucide="badge-check"></i>
-                                        License
+                                        {{ __('public.stf_hr_dir_btn_license') }}
                                     </button>
                                     @if($member->status !== 'terminated')
                                     <button type="button" class="btn btn-ghost btn-xs"
                                         onclick="openStatusModal('{{ $member->id }}', '{{ $member->status }}', '{{ addslashes($member->full_name) }}')">
                                         <i data-lucide="refresh-cw"></i>
-                                        Status
+                                        {{ __('public.stf_hr_dir_btn_status') }}
                                     </button>
                                     @endif
                                 </div>
@@ -258,43 +258,43 @@
 <div id="add-staff-modal" class="modal-fixed">
     <div class="modal-fixed__panel">
         <div class="modal-fixed__head">
-            <h3 class="modal-fixed__title">Add Staff Member</h3>
+            <h3 class="modal-fixed__title">{{ __('public.stf_hr_dir_modal_add_title') }}</h3>
         </div>
         <form method="POST" action="{{ route('portals.staff.hr.directory.store') }}">
             @csrf
             <div class="form-row mb-4">
                 <div class="form-group">
-                    <label class="form-label">First Name *</label>
+                    <label class="form-label">{{ __('public.stf_hr_dir_lbl_first_name') }}</label>
                     <input type="text" name="first_name" class="form-control" required maxlength="100">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Last Name *</label>
+                    <label class="form-label">{{ __('public.stf_hr_dir_lbl_last_name') }}</label>
                     <input type="text" name="last_name" class="form-control" required maxlength="100">
                 </div>
             </div>
             <div class="form-row mb-4">
                 <div class="form-group">
-                    <label class="form-label">Email</label>
+                    <label class="form-label">{{ __('public.stf_hr_dir_lbl_email') }}</label>
                     <input type="email" name="email" class="form-control" maxlength="200">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Phone</label>
+                    <label class="form-label">{{ __('public.stf_hr_dir_lbl_phone') }}</label>
                     <input type="text" name="phone" class="form-control" maxlength="30">
                 </div>
             </div>
             <div class="form-row mb-4">
                 <div class="form-group">
-                    <label class="form-label">Job Title</label>
+                    <label class="form-label">{{ __('public.stf_hr_dir_lbl_job_title') }}</label>
                     <input type="text" name="job_title" class="form-control" maxlength="150">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Department</label>
-                    <input type="text" name="department" class="form-control" maxlength="100" placeholder="e.g. Emergency, Lab">
+                    <label class="form-label">{{ __('public.stf_hr_dir_lbl_department') }}</label>
+                    <input type="text" name="department" class="form-control" maxlength="100" placeholder="{{ __('public.stf_hr_dir_ph_department') }}">
                 </div>
             </div>
             <div class="form-row mb-4">
                 <div class="form-group">
-                    <label class="form-label">Staff Category *</label>
+                    <label class="form-label">{{ __('public.stf_hr_dir_lbl_staff_category') }}</label>
                     <select name="staff_category" class="form-control" required>
                         <option value="clinical">Clinical</option>
                         <option value="administrative">Administrative</option>
@@ -303,7 +303,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Employment Type *</label>
+                    <label class="form-label">{{ __('public.stf_hr_dir_lbl_employment_type') }}</label>
                     <select name="employment_type" class="form-control" required>
                         <option value="full_time">Full Time</option>
                         <option value="part_time">Part Time</option>
@@ -314,19 +314,19 @@
             </div>
             <div class="form-row mb-4">
                 <div class="form-group">
-                    <label class="form-label">Hire Date</label>
+                    <label class="form-label">{{ __('public.stf_hr_dir_lbl_hire_date') }}</label>
                     <input type="date" name="hire_date" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Employee Number</label>
-                    <input type="text" name="employee_number" class="form-control" placeholder="Auto-generated if blank">
+                    <label class="form-label">{{ __('public.stf_hr_dir_lbl_employee_number') }}</label>
+                    <input type="text" name="employee_number" class="form-control" placeholder="{{ __('public.stf_hr_dir_ph_employee_number') }}">
                 </div>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeAddStaffModal()">Cancel</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeAddStaffModal()">{{ __('public.stf_hr_dir_cancel') }}</button>
                 <button type="submit" class="btn btn-primary btn-sm">
                     <i data-lucide="user-plus"></i>
-                    Add Staff
+                    {{ __('public.stf_hr_dir_btn_add_staff') }}
                 </button>
             </div>
         </form>
@@ -337,38 +337,38 @@
 <div id="license-modal" class="modal-fixed">
     <div class="modal-fixed__panel modal-fixed__panel--md">
         <div class="modal-fixed__head">
-            <h3 class="modal-fixed__title">Add License</h3>
+            <h3 class="modal-fixed__title">{{ __('public.stf_hr_dir_modal_license_title') }}</h3>
         </div>
         <p id="license-staff-name" class="td-muted mb-4"></p>
         <form id="license-form" method="POST" action="">
             @csrf
             <div class="form-group mb-4">
-                <label class="form-label">Profession *</label>
+                <label class="form-label">{{ __('public.stf_hr_dir_lbl_profession') }}</label>
                 <input type="text" name="profession" class="form-control" required placeholder="e.g. Doctor, Nurse, Pharmacist">
             </div>
             <div class="form-group mb-4">
-                <label class="form-label">License Number *</label>
+                <label class="form-label">{{ __('public.stf_hr_dir_lbl_license_number') }}</label>
                 <input type="text" name="license_number" class="form-control" required maxlength="100">
             </div>
             <div class="form-group mb-4">
-                <label class="form-label">Issuing Body *</label>
+                <label class="form-label">{{ __('public.stf_hr_dir_lbl_issuing_body') }}</label>
                 <input type="text" name="issuing_body" class="form-control" required maxlength="200" placeholder="e.g. Medical Council of Cameroon">
             </div>
             <div class="form-row mb-4">
                 <div class="form-group">
-                    <label class="form-label">Issue Date</label>
+                    <label class="form-label">{{ __('public.stf_hr_dir_lbl_issue_date') }}</label>
                     <input type="date" name="issue_date" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Expiry Date</label>
+                    <label class="form-label">{{ __('public.stf_hr_dir_lbl_expiry_date') }}</label>
                     <input type="date" name="expiry_date" class="form-control">
                 </div>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeLicenseModal()">Cancel</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeLicenseModal()">{{ __('public.stf_hr_dir_cancel') }}</button>
                 <button type="submit" class="btn btn-primary btn-sm">
                     <i data-lucide="badge-check"></i>
-                    Add License
+                    {{ __('public.stf_hr_dir_btn_add_license') }}
                 </button>
             </div>
         </form>
@@ -379,18 +379,18 @@
 <div id="status-modal" class="modal-fixed">
     <div class="modal-fixed__panel modal-fixed__panel--sm">
         <div class="modal-fixed__head">
-            <h3 class="modal-fixed__title">Update Staff Status</h3>
+            <h3 class="modal-fixed__title">{{ __('public.stf_hr_dir_modal_status_title') }}</h3>
         </div>
         <p id="status-staff-name" class="td-muted mb-4"></p>
         <form id="status-form" method="POST" action="">
             @csrf
             <div class="form-group mb-4">
-                <label class="form-label">New Status *</label>
+                <label class="form-label">{{ __('public.stf_hr_dir_lbl_new_status') }}</label>
                 <select id="status-select" name="status" class="form-control" required></select>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeStatusModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeStatusModal()">{{ __('public.stf_hr_dir_cancel') }}</button>
+                <button type="submit" class="btn btn-primary btn-sm">{{ __('public.stf_hr_dir_btn_update') }}</button>
             </div>
         </form>
     </div>
