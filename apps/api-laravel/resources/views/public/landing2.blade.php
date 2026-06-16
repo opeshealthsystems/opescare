@@ -32,7 +32,7 @@
                                 <i data-lucide="handshake" style="width:16px;height:16px;"></i>
                                 {{ __('landing.hero.cta_primary', [], app()->getLocale()) }}
                             </a>
-                            <a href="{{ route('public.how_it_works') }}" class="hs-btn hs-btn-outline">
+                            <a href="{{ route('public.how-it-works') }}" class="hs-btn hs-btn-outline">
                                 <i data-lucide="play-circle" style="width:16px;height:16px;"></i>
                                 {{ __('landing.hero.cta_secondary', [], app()->getLocale()) }}
                             </a>
@@ -79,7 +79,7 @@
                                 <i data-lucide="handshake" style="width:16px;height:16px;"></i>
                                 Request Demo
                             </a>
-                            <a href="{{ route('public.how_it_works') }}" class="hs-btn hs-btn-outline">
+                            <a href="{{ route('public.how-it-works') }}" class="hs-btn hs-btn-outline">
                                 <i data-lucide="shield" style="width:16px;height:16px;"></i>
                                 How Consent Works
                             </a>
@@ -123,7 +123,7 @@
                                 <i data-lucide="handshake" style="width:16px;height:16px;"></i>
                                 Request Demo
                             </a>
-                            <a href="{{ route('public.how_it_works') }}" class="hs-btn hs-btn-outline">
+                            <a href="{{ route('public.how-it-works') }}" class="hs-btn hs-btn-outline">
                                 <i data-lucide="file-text" style="width:16px;height:16px;"></i>
                                 Learn More
                             </a>
@@ -353,7 +353,7 @@
                 </div>
             </div>
         </div>
-        <a href="{{ route('public.how_it_works') }}" class="l2-steps-link">
+        <a href="{{ route('public.how-it-works') }}" class="l2-steps-link">
             Full walkthrough <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
         </a>
     </div>
