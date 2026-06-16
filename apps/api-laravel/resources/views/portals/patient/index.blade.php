@@ -89,15 +89,15 @@
     </a>
     <a href="{{ route('portals.patient.allergies') }}" class="quick-action-btn">
         <div class="quick-action-icon"><i data-lucide="zap"></i></div>
-        <span class="quick-action-label">Allergies</span>
+        <span class="quick-action-label">{{ __('public.portal.nav_allergies', [], app()->getLocale()) ?: 'Allergies' }}</span>
     </a>
     <a href="{{ route('portals.patient.clinical') }}" class="quick-action-btn">
         <div class="quick-action-icon"><i data-lucide="stethoscope"></i></div>
-        <span class="quick-action-label">Conditions</span>
+        <span class="quick-action-label">{{ __('public.portal.nav_conditions', [], app()->getLocale()) ?: 'Conditions' }}</span>
     </a>
     <a href="{{ route('portals.patient.immunizations') }}" class="quick-action-btn">
         <div class="quick-action-icon"><i data-lucide="syringe"></i></div>
-        <span class="quick-action-label">Immunizations</span>
+        <span class="quick-action-label">{{ __('public.portal.nav_immunizations', [], app()->getLocale()) ?: 'Immunizations' }}</span>
     </a>
     <a href="{{ route('public.care-map') }}" class="quick-action-btn">
         <div class="quick-action-icon"><i data-lucide="map-pin"></i></div>
@@ -109,7 +109,7 @@
 <div class="panel mb-6" style="margin-bottom:var(--p-space-6);border-left:4px solid #DC2626;">
     <div class="panel-header">
         <h2 class="panel-title" style="color:#DC2626;">
-            <i data-lucide="shield-alert"></i> Clinical Safety Summary
+            <i data-lucide="shield-alert"></i> {{ __('public.portal.clinical_safety_summary', [], app()->getLocale()) ?: 'Clinical Safety Summary' }}
         </h2>
     </div>
     <div class="panel-body">
@@ -117,47 +117,47 @@
 
             {{-- Blood Group --}}
             <div style="display:flex;flex-direction:column;gap:4px;">
-                <span style="font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.05em;">Blood Group</span>
+                <span style="font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.05em;">{{ __('public.portal.blood_group', [], app()->getLocale()) ?: 'Blood Group' }}</span>
                 <span style="font-size:1.25rem;font-weight:800;color:var(--p-text);">
                     {{ $patient->blood_group ?? '—' }}
                 </span>
                 @if(!$patient->blood_group)
-                    <a href="{{ route('portals.patient.profile') }}" style="font-size:0.75rem;color:var(--p-primary);">Add in profile →</a>
+                    <a href="{{ route('portals.patient.profile') }}" style="font-size:0.75rem;color:var(--p-primary);">{{ __('public.portal.lnk_add_in_profile', [], app()->getLocale()) ?: 'Add in profile →' }}</a>
                 @endif
             </div>
 
             {{-- Critical Allergies --}}
             <div style="display:flex;flex-direction:column;gap:4px;">
-                <span style="font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.05em;">Critical Allergies</span>
+                <span style="font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.05em;">{{ __('public.portal.critical_allergies', [], app()->getLocale()) ?: 'Critical Allergies' }}</span>
                 @if($criticalAllergies->isEmpty())
-                    <span style="font-size:0.875rem;color:#16A34A;font-weight:600;">None on record</span>
+                    <span style="font-size:0.875rem;color:#16A34A;font-weight:600;">{{ __('public.portal.none_on_record', [], app()->getLocale()) ?: 'None on record' }}</span>
                 @else
                     @foreach($criticalAllergies->take(3) as $a)
                         <span style="font-size:0.8125rem;font-weight:700;color:#DC2626;">⚠ {{ $a->substance }}</span>
                     @endforeach
                     @if($criticalAllergies->count() > 3)
-                        <a href="{{ route('portals.patient.allergies') }}" style="font-size:0.75rem;color:var(--p-primary);">+{{ $criticalAllergies->count() - 3 }} more →</a>
+                        <a href="{{ route('portals.patient.allergies') }}" style="font-size:0.75rem;color:var(--p-primary);">+{{ $criticalAllergies->count() - 3 }} {{ __('public.portal.lnk_more_suffix', [], app()->getLocale()) ?: 'more →' }}</a>
                     @endif
                 @endif
             </div>
 
             {{-- All Active Allergies count --}}
             <div style="display:flex;flex-direction:column;gap:4px;">
-                <span style="font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.05em;">Active Allergies</span>
+                <span style="font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.05em;">{{ __('public.portal.active_allergies', [], app()->getLocale()) ?: 'Active Allergies' }}</span>
                 <span style="font-size:1.25rem;font-weight:800;color:{{ $activeAllergies->isEmpty() ? 'var(--p-text-muted)' : '#F59E0B' }};">
                     {{ $activeAllergies->count() }}
                 </span>
-                <a href="{{ route('portals.patient.allergies') }}" style="font-size:0.75rem;color:var(--p-primary);">View all →</a>
+                <a href="{{ route('portals.patient.allergies') }}" style="font-size:0.75rem;color:var(--p-primary);">{{ __('public.portal.lnk_view_all', [], app()->getLocale()) ?: 'View all →' }}</a>
             </div>
 
             {{-- Active Conditions --}}
             <div style="display:flex;flex-direction:column;gap:4px;">
-                <span style="font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.05em;">Active Conditions</span>
+                <span style="font-size:0.75rem;font-weight:700;color:var(--p-text-muted);text-transform:uppercase;letter-spacing:.05em;">{{ __('public.portal.active_conditions', [], app()->getLocale()) ?: 'Active Conditions' }}</span>
                 <span style="font-size:1.25rem;font-weight:800;color:var(--p-text);">
                     {{ $activeConditions->count() }}
                 </span>
                 @if($activeConditions->isNotEmpty())
-                    <a href="{{ route('portals.patient.clinical') }}" style="font-size:0.75rem;color:var(--p-primary);">View all →</a>
+                    <a href="{{ route('portals.patient.clinical') }}" style="font-size:0.75rem;color:var(--p-primary);">{{ __('public.portal.lnk_view_all', [], app()->getLocale()) ?: 'View all →' }}</a>
                 @endif
             </div>
 
@@ -167,8 +167,8 @@
         <div class="alert alert-warning" style="margin-top:var(--p-space-4);">
             <i data-lucide="alert-triangle"></i>
             <div style="font-size:0.8125rem;">
-                Ensure your care team has your up-to-date allergy and condition list before any procedure or prescription.
-                <a href="{{ route('portals.patient.allergies') }}" style="font-weight:700;">View full allergy list</a>.
+                {{ __('public.portal.allergy_safety_notice', [], app()->getLocale()) ?: 'Ensure your care team has your up-to-date allergy and condition list before any procedure or prescription.' }}
+                <a href="{{ route('portals.patient.allergies') }}" style="font-weight:700;">{{ __('public.portal.view_allergy_list', [], app()->getLocale()) ?: 'View full allergy list' }}</a>.
             </div>
         </div>
         @endif
@@ -269,6 +269,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     var lblGenerating   = @json(__('public.portal.generating', [], app()->getLocale()) ?: 'Generating…');
     var lblRegenerateQr = @json(__('public.portal.regenerate_qr', [], app()->getLocale()) ?: 'Regenerate QR');
+    var lblQrExpired    = @json(__('public.portal.lbl_qr_expired', [], app()->getLocale()) ?: 'Expired');
     var countdownInterval = null;
 
     var btnGen = document.getElementById('generate-temp-qr');
@@ -312,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (seconds <= 0) {
                 clearInterval(countdownInterval);
                 countdownInterval = null;
-                if (el) el.textContent = 'Expired';
+                if (el) el.textContent = lblQrExpired;
                 return;
             }
             seconds--;

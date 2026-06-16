@@ -1,20 +1,22 @@
 @extends('layouts.portal')
 
-@section('title', 'Prescriptions — OpesCare Patient Portal')
+@section('title', __('public.portal.prescriptions_title', [], app()->getLocale()) ?: 'Prescriptions')
 @section('breadcrumb_home', __('public.portal.my_portal', [], app()->getLocale()) ?: 'My Portal')
 @section('breadcrumb_home_url', route('portals.patient'))
-@section('breadcrumb_section', 'Prescriptions')
+@section('breadcrumb_section', __('public.portal.prescriptions_breadcrumb', [], app()->getLocale()) ?: 'Prescriptions')
 
 @section('patient_banner')
     @include('partials.guardian-context-banner')
 @endsection
 
+@php $l = app()->getLocale(); @endphp
+
 @section('content')
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">My Prescriptions</h1>
-        <p class="page-subtitle">All medications prescribed to you across your care history.</p>
+        <h1 class="page-title">{{ __('public.portal.prescriptions_title', [], $l) ?: 'My Prescriptions' }}</h1>
+        <p class="page-subtitle">{{ __('public.portal.prescriptions_subtitle', [], $l) ?: 'All medications prescribed to you across your care history.' }}</p>
     </div>
 </div>
 
@@ -22,16 +24,16 @@
 <div class="panel">
     <div class="empty-state">
         <div class="empty-state-icon" style="color:var(--p-warning);"><i data-lucide="alert-circle"></i></div>
-        <h3>No Patient Profile Found</h3>
-        <p>Your patient profile could not be loaded. Please contact support.</p>
+        <h3>{{ __('public.portal.no_profile_found_title', [], $l) ?: 'No Patient Profile Found' }}</h3>
+        <p>{{ __('public.portal.no_profile_found_desc', [], $l) ?: 'Your patient profile could not be loaded. Please contact support.' }}</p>
     </div>
 </div>
 @elseif($prescriptions->isEmpty())
 <div class="panel">
     <div class="empty-state">
         <div class="empty-state-icon"><i data-lucide="pill"></i></div>
-        <h3>No Prescriptions</h3>
-        <p>You have no recorded prescriptions at this time.</p>
+        <h3>{{ __('public.portal.no_prescriptions_title', [], $l) ?: 'No Prescriptions' }}</h3>
+        <p>{{ __('public.portal.no_prescriptions_desc', [], $l) ?: 'You have no recorded prescriptions at this time.' }}</p>
     </div>
 </div>
 @else
@@ -41,7 +43,7 @@
         <div>
             <h2 class="panel-title" style="font-size:0.9375rem;">
                 <i data-lucide="pill"></i>
-                Prescription — {{ $rx->prescribed_at?->format('d M Y') ?? 'Unknown date' }}
+                {{ __('public.portal.rx_heading_prefix', [], $l) ?: 'Prescription —' }} {{ $rx->prescribed_at?->format('d M Y') ?? __('public.portal.rx_unknown_date', [], $l) ?: 'Unknown date' }}
             </h2>
             @if($rx->facility)
             <p style="font-size:0.8125rem;color:var(--p-text-muted);margin-top:2px;">{{ $rx->facility->name }}</p>
@@ -64,11 +66,11 @@
         <table style="width:100%;border-collapse:collapse;">
             <thead>
                 <tr style="background:var(--p-surface-2);font-size:0.8125rem;color:var(--p-text-muted);">
-                    <th style="padding:var(--p-space-2) var(--p-space-4);text-align:left;">Medication</th>
-                    <th style="padding:var(--p-space-2) var(--p-space-4);text-align:left;">Dose</th>
-                    <th style="padding:var(--p-space-2) var(--p-space-4);text-align:left;">Frequency</th>
-                    <th style="padding:var(--p-space-2) var(--p-space-4);text-align:left;">Duration</th>
-                    <th style="padding:var(--p-space-2) var(--p-space-4);text-align:left;">Status</th>
+                    <th style="padding:var(--p-space-2) var(--p-space-4);text-align:left;">{{ __('public.portal.col_medication', [], $l) ?: 'Medication' }}</th>
+                    <th style="padding:var(--p-space-2) var(--p-space-4);text-align:left;">{{ __('public.portal.col_dose', [], $l) ?: 'Dose' }}</th>
+                    <th style="padding:var(--p-space-2) var(--p-space-4);text-align:left;">{{ __('public.portal.col_frequency', [], $l) ?: 'Frequency' }}</th>
+                    <th style="padding:var(--p-space-2) var(--p-space-4);text-align:left;">{{ __('public.portal.col_duration', [], $l) ?: 'Duration' }}</th>
+                    <th style="padding:var(--p-space-2) var(--p-space-4);text-align:left;">{{ __('public.portal.col_status', [], $l) ?: 'Status' }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -77,7 +79,7 @@
                     <td style="padding:var(--p-space-2) var(--p-space-4);font-weight:600;">{{ $item->drug_name }}</td>
                     <td style="padding:var(--p-space-2) var(--p-space-4);">{{ $item->dose }} ({{ $item->route }})</td>
                     <td style="padding:var(--p-space-2) var(--p-space-4);">{{ $item->frequency }}</td>
-                    <td style="padding:var(--p-space-2) var(--p-space-4);">{{ $item->duration_days ? $item->duration_days . ' days' : '—' }}</td>
+                    <td style="padding:var(--p-space-2) var(--p-space-4);">{{ $item->duration_days ? $item->duration_days . ' ' . (__('public.portal.lbl_days', [], $l) ?: 'days') : '—' }}</td>
                     <td style="padding:var(--p-space-2) var(--p-space-4);">
                         <span style="font-size:0.75rem;color:{{ $item->isDispensed() ? '#059669' : 'var(--p-text-muted)' }};">
                             {{ ucfirst($item->status) }}
