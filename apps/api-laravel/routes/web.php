@@ -32,6 +32,7 @@ Route::prefix('docs')->name('docs.')->group(function () {
 
 // Root / Landing
 Route::get('/', [PublicPageController::class, 'index'])->name('public.landing');
+Route::get('/home2', [PublicPageController::class, 'home2'])->name('public.home2');
 
 // Core Institutional Pages
 Route::get('/about', [PublicPageController::class, 'about'])->name('public.about');

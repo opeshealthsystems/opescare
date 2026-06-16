@@ -23,6 +23,11 @@ class PublicPageController extends Controller
         return view('public.landing');
     }
 
+    public function home2()
+    {
+        return view('public.landing2');
+    }
+
     public function about()
     {
         return view('public.about');
