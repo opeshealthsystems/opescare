@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="refresh" content="30">
-    <title>Patient Queue — OpesCare</title>
+    <title>{{ __('public.stf_queue_title') }}</title>
     <meta name="theme-color" content="#0F2744">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -256,7 +256,7 @@
             <img src="{{ asset('favicon.svg') }}" alt="OpesCare">
             <div>
                 <div class="topbar-brand-name">OpesCare</div>
-                <div class="topbar-facility">Patient Queue</div>
+                <div class="topbar-facility">{{ __('public.stf_queue_header') }}</div>
             </div>
         </div>
         <div class="topbar-clockwrap">
@@ -275,7 +275,7 @@
     {{-- Now serving / calling --}}
     @if($calling)
     <div class="now-serving">
-        <div class="now-serving-label pulse">● Now Calling</div>
+        <div class="now-serving-label pulse">{{ __('public.stf_queue_now_calling') }}</div>
         <div class="now-serving-number">{{ $calling['queue_number'] }}</div>
         <div class="now-serving-room">
             {{ $calling['masked_patient_name'] ?? '—' }}
@@ -284,7 +284,7 @@
     </div>
     @elseif($serving->isNotEmpty())
     <div class="now-serving">
-        <div class="now-serving-label">● Currently Being Served</div>
+        <div class="now-serving-label">{{ __('public.stf_queue_being_served') }}</div>
         <div class="now-serving-number">{{ $serving->first()['queue_number'] }}</div>
         <div class="now-serving-room">{{ $serving->first()['masked_patient_name'] ?? '—' }}</div>
     </div>
@@ -293,7 +293,7 @@
     {{-- Queue grid --}}
     @if($allQueued->isNotEmpty())
     <div class="queue-section">
-        <div class="queue-section-title">Waiting — {{ $waiting->count() }} patient(s)</div>
+        <div class="queue-section-title">{{ __('public.stf_queue_waiting') }} — {{ $waiting->count() }} patient(s)</div>
         <div class="queue-grid">
             @foreach($allQueued as $ticket)
             @php
@@ -321,7 +321,7 @@
                     {{ ucfirst($ticket['status'] ?? 'waiting') }}
                 </div>
                 @if(!empty($ticket['wait_minutes']))
-                <div class="ticket-wait">~{{ $ticket['wait_minutes'] }} min wait</div>
+                <div class="ticket-wait">~{{ $ticket['wait_minutes'] }} {{ __('public.stf_queue_min_wait') }}</div>
                 @endif
             </div>
             @endforeach
@@ -330,15 +330,15 @@
     @else
     <div class="empty-state">
         <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <h2>No patients in queue</h2>
-        <p>The waiting room is currently empty. This screen refreshes automatically every 30 seconds.</p>
+        <h2>{{ __('public.stf_queue_no_patients') }}</h2>
+        <p>{{ __('public.stf_queue_empty_msg') }}</p>
     </div>
     @endif
 
     {{-- Footer ticker --}}
     <div class="ticker">
         <div class="ticker-dot"></div>
-        <span>This display refreshes every 30 seconds &nbsp;·&nbsp; OpesCare Patient Queue Management &nbsp;·&nbsp; {{ now()->format('l, d F Y') }}</span>
+        <span>{{ __('public.stf_queue_refresh_msg') }} &nbsp;·&nbsp; {{ __('public.stf_queue_mgmt') }} &nbsp;·&nbsp; {{ now()->format('l, d F Y') }}</span>
     </div>
 
     <script>

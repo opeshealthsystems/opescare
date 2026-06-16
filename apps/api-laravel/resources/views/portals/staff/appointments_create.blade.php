@@ -9,7 +9,7 @@
 
 @section('sidebar_nav')
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Overview</div>
+    <div class="sidebar-nav-label">{{ __('public.stf_nav_overview') }}</div>
     <a href="{{ route('portals.staff') }}" class="sidebar-link">
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
@@ -20,7 +20,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Clinical</div>
+    <div class="sidebar-nav-label">{{ __('public.stf_nav_clinical') }}</div>
     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link active">
         <i data-lucide="calendar-check-2"></i>
         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
@@ -35,11 +35,11 @@
     </a>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
         <i data-lucide="brain-circuit"></i>
-        <span>Clinical Alerts</span>
+        <span>{{ __('public.stf_nav_clinical_alerts') }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">HR & Staff</div>
+    <div class="sidebar-nav-label">{{ __('public.stf_nav_hr_staff') }}</div>
     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
         <i data-lucide="users"></i>
         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
@@ -58,7 +58,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Inventory</div>
+    <div class="sidebar-nav-label">{{ __('public.stf_nav_inventory') }}</div>
     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
         <i data-lucide="pill"></i>
         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
@@ -69,14 +69,14 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Supply Chain</div>
+    <div class="sidebar-nav-label">{{ __('public.stf_nav_supply_chain') }}</div>
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
         <i data-lucide="package"></i>
-        <span>Supply Chain</span>
+        <span>{{ __('public.stf_nav_supply_chain') }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Operations</div>
+    <div class="sidebar-nav-label">{{ __('public.stf_nav_operations') }}</div>
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>
         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
@@ -121,7 +121,7 @@
     </div>
     <a href="{{ route('portals.staff.appointments') }}" class="btn btn-ghost btn-sm">
         <i data-lucide="arrow-left"></i>
-        Back
+        {{ __('public.stf_back') }}
     </a>
 </div>
 
@@ -137,10 +137,10 @@
             @csrf
 
             <div class="form-group mb-4">
-                <label class="form-label">Patient ID *</label>
+                <label class="form-label">{{ __('public.stf_appt_patient_id') }}</label>
                 @if(count($patients) > 0)
                     <select name="patient_id" class="form-control" required>
-                        <option value="">— Select Patient —</option>
+                        <option value="">{{ __('public.stf_select_patient') }}</option>
                         @foreach($patients as $p)
                             <option value="{{ $p->id }}" {{ old('patient_id') == $p->id ? 'selected' : '' }}>
                                 {{ $p->health_id ?? $p->id }} ({{ $p->first_name ?? '' }} {{ $p->last_name ?? '' }})
@@ -149,16 +149,16 @@
                     </select>
                 @else
                     <input type="text" name="patient_id" class="form-control" required
-                        placeholder="Enter Patient ID" value="{{ old('patient_id') }}">
+                        placeholder="{{ __('public.stf_appt_enter_patient_id') }}" value="{{ old('patient_id') }}">
                 @endif
                 @error('patient_id')<p class="form-error">{{ $message }}</p>@enderror
             </div>
 
             <div class="form-group mb-4">
-                <label class="form-label">Facility *</label>
+                <label class="form-label">{{ __('public.stf_appt_facility') }}</label>
                 @if(count($facilities) > 0)
                     <select name="facility_id" class="form-control" required>
-                        <option value="">— Select Facility —</option>
+                        <option value="">{{ __('public.stf_select_facility') }}</option>
                         @foreach($facilities as $f)
                             <option value="{{ $f->id }}" {{ old('facility_id') == $f->id ? 'selected' : '' }}>
                                 {{ $f->name ?? $f->id }}
@@ -167,14 +167,14 @@
                     </select>
                 @else
                     <input type="text" name="facility_id" class="form-control" required
-                        placeholder="Facility ID" value="{{ old('facility_id') }}">
+                        placeholder="{{ __('public.stf_appt_facility_id') }}" value="{{ old('facility_id') }}">
                 @endif
                 @error('facility_id')<p class="form-error">{{ $message }}</p>@enderror
             </div>
 
             <div class="form-row mb-4">
                 <div class="form-group">
-                    <label class="form-label">Appointment Type *</label>
+                    <label class="form-label">{{ __('public.stf_appt_type') }}</label>
                     <select name="appointment_type" class="form-control" required>
                         <option value="general" {{ old('appointment_type') === 'general' ? 'selected' : '' }}>
                             {{ __('public.staff_portal.type_general', [], app()->getLocale()) ?: 'General' }}
@@ -198,7 +198,7 @@
                     @error('appointment_type')<p class="form-error">{{ $message }}</p>@enderror
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Date & Time *</label>
+                    <label class="form-label">{{ __('public.stf_appt_datetime') }}</label>
                     <input type="datetime-local" name="scheduled_at" class="form-control" required
                         value="{{ old('scheduled_at', now()->addDay()->format('Y-m-d\TH:i')) }}">
                     @error('scheduled_at')<p class="form-error">{{ $message }}</p>@enderror
@@ -206,9 +206,9 @@
             </div>
 
             <div class="form-group mb-6">
-                <label class="form-label">Reason / Notes</label>
+                <label class="form-label">{{ __('public.stf_appt_reason') }}</label>
                 <textarea name="reason" class="form-control" rows="3" maxlength="500"
-                    placeholder="Reason for appointment…">{{ old('reason') }}</textarea>
+                    placeholder="{{ __('public.stf_appt_reason_placeholder') }}">{{ old('reason') }}</textarea>
             </div>
 
             <div class="row-actions-inline">
@@ -216,7 +216,7 @@
                     <i data-lucide="calendar-plus"></i>
                     {{ __('public.staff_portal.btn_book_appointment', [], app()->getLocale()) ?: 'Book Appointment' }}
                 </button>
-                <a href="{{ route('portals.staff.appointments') }}" class="btn btn-ghost">Cancel</a>
+                <a href="{{ route('portals.staff.appointments') }}" class="btn btn-ghost">{{ __('public.stf_cancel') }}</a>
             </div>
         </form>
     </div>
