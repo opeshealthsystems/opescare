@@ -875,6 +875,72 @@
 
 
 /* ══════════════════════════════════════
+   FOOTER — dark override for home2
+   Scoped to pages that contain .l2 only.
+   Does not touch any other page's footer.
+   ══════════════════════════════════════ */
+body:has(.l2) .footer {
+    background: #040a14;
+    border-top: 1px solid rgba(15,76,129,.35);
+    color: rgba(255,255,255,.85);
+    position: relative;
+}
+body:has(.l2) .footer::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(15,76,129,.6) 30%, rgba(77,148,214,.5) 50%, rgba(15,76,129,.6) 70%, transparent);
+    pointer-events: none;
+}
+
+/* Logo text */
+body:has(.l2) .footer .logo span { color: #f8fafc; }
+
+/* Description */
+body:has(.l2) .footer .footer-logo p,
+body:has(.l2) .footer .text-muted { color: rgba(255,255,255,.45) !important; }
+
+/* System status badge */
+body:has(.l2) .footer .footer-logo a[href*="status"] {
+    color: rgba(255,255,255,.45) !important;
+}
+
+/* Column headings */
+body:has(.l2) .footer h4 {
+    color: #4d94d6 !important;
+}
+
+/* Nav links */
+body:has(.l2) .footer ul li a,
+body:has(.l2) .footer .footer-link {
+    color: rgba(255,255,255,.45);
+    transition: color .18s;
+}
+body:has(.l2) .footer ul li a:hover,
+body:has(.l2) .footer .footer-link:hover {
+    color: #7fb3de;
+}
+
+/* Bottom bar divider */
+body:has(.l2) .footer [style*="border-top:1px solid var(--color-border)"],
+body:has(.l2) .footer [style*="border-top: 1px solid var(--color-border)"] {
+    border-top-color: rgba(255,255,255,.07) !important;
+}
+
+/* Bottom bar text & links (excludes h4 via :not) */
+body:has(.l2) .footer :not(h4)[style*="color:var(--color-text-secondary)"],
+body:has(.l2) .footer :not(h4)[style*="color: var(--color-text-secondary)"] {
+    color: rgba(255,255,255,.32) !important;
+}
+body:has(.l2) .footer a:not(h4)[style*="color:var(--color-text-secondary)"]:hover {
+    color: rgba(255,255,255,.65) !important;
+}
+/* h4 always wins — must come last */
+body:has(.l2) .footer h4,
+body:has(.l2) .footer h4[style] {
+    color: #4d94d6 !important;
+}
+
+/* ══════════════════════════════════════
    TABLET  ≥ 640px
    ══════════════════════════════════════ */
 @media (min-width: 640px) {
