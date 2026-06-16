@@ -213,6 +213,63 @@
                 </div>
             </div>
 
+            {{-- Slide 5: Connected Journey --}}
+            <div class="l2h-slide">
+                <div class="l2h-container">
+                    <div class="l2h-copy">
+                        <span class="l2h-badge">
+                            <i data-lucide="route"></i>
+                            Connected Journey
+                        </span>
+                        <h1>OpesCare connects the patient's medical journey through one secure Health ID.</h1>
+                        <p>Every hospital visit, lab result, prescription, and consultation — linked to a single longitudinal record. The patient stays at the centre, in full control, wherever care happens.</p>
+                        <div class="l2h-btns">
+                            <a href="{{ route('public.contact') }}" class="l2h-btn l2h-btn-primary">
+                                <i data-lucide="handshake"></i>
+                                Request Demo
+                            </a>
+                            <a href="{{ route('public.how-it-works') }}" class="l2h-btn l2h-btn-ghost">
+                                <i data-lucide="arrow-right"></i>
+                                See How It Works
+                            </a>
+                        </div>
+                        <div class="l2h-trust">
+                            <div class="l2h-trust-item">
+                                <i data-lucide="check-circle"></i>
+                                One ID across all facilities
+                            </div>
+                            <div class="l2h-trust-item">
+                                <i data-lucide="check-circle"></i>
+                                Patient-controlled access
+                            </div>
+                        </div>
+                    </div>
+                    <div class="l2h-visual" aria-hidden="true">
+                        <div class="l2h-hub">
+                            <div class="l2h-hub-pulse"></div>
+                            <div class="l2h-hub-center">
+                                <i data-lucide="shield-check"></i>
+                                <span>Health ID</span>
+                            </div>
+                            {{-- Connecting lines --}}
+                            <div class="l2h-hub-line hl1"></div>
+                            <div class="l2h-hub-line hl2"></div>
+                            <div class="l2h-hub-line hl3"></div>
+                            <div class="l2h-hub-line hl4"></div>
+                            <div class="l2h-hub-line hl5"></div>
+                            <div class="l2h-hub-line hl6"></div>
+                            {{-- Surrounding facility nodes --}}
+                            <div class="l2h-hub-node hn1"><i data-lucide="hospital"></i>Hospital</div>
+                            <div class="l2h-hub-node hn2"><i data-lucide="flask-conical"></i>Lab</div>
+                            <div class="l2h-hub-node hn3"><i data-lucide="pill"></i>Pharmacy</div>
+                            <div class="l2h-hub-node hn4"><i data-lucide="building-2"></i>Insurer</div>
+                            <div class="l2h-hub-node hn5"><i data-lucide="stethoscope"></i>Clinic</div>
+                            <div class="l2h-hub-node hn6"><i data-lucide="user-round"></i>Patient</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>{{-- /.l2h-slides --}}
     </div>{{-- /.l2h-wrap --}}
 
@@ -226,6 +283,7 @@
             <button class="l2h-dot" onclick="l2hGo(1)" aria-label="Slide 2"></button>
             <button class="l2h-dot" onclick="l2hGo(2)" aria-label="Slide 3"></button>
             <button class="l2h-dot" onclick="l2hGo(3)" aria-label="Slide 4"></button>
+            <button class="l2h-dot" onclick="l2hGo(4)" aria-label="Slide 5"></button>
         </div>
         <span class="l2h-slide-label" id="l2hLabel">Health ID</span>
         <button class="l2h-arrow" id="l2hNext" onclick="l2hNext()" aria-label="Next">
@@ -705,8 +763,8 @@
 {{-- Hero slider v2 --}}
 <script>
 (function(){
-    var cur = 0, total = 4;
-    var labels = ['Health ID','Consent & Access','Emergency Access','Connected Care'];
+    var cur = 0, total = 5;
+    var labels = ['Health ID','Consent & Access','Emergency Access','Connected Care','Connected Journey'];
     function upd(){
         var el = document.getElementById('l2hSlides');
         if (el) el.style.transform = 'translateX(-' + (cur * 100) + '%)';

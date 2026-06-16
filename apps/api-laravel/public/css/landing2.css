@@ -344,6 +344,69 @@
 .l2h-dot.l2h-dot-active { background: #fff; transform: scale(1.4); }
 .l2h-slide-label { font-size: .68rem; color: rgba(255,255,255,.42); font-weight: 500; }
 
+/* ── Hero hub illustration ── */
+.l2h-hub {
+    position: relative; width: 100%; max-width: 300px;
+    margin: 0 auto; aspect-ratio: 1;
+}
+.l2h-hub-center {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 5rem; height: 5rem; border-radius: 50%;
+    background: linear-gradient(135deg, #1565b8 0%, #0F4C81 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 2;
+    box-shadow: 0 0 0 1px rgba(15,76,129,.55), 0 0 40px rgba(15,76,129,.4),
+                inset 0 1px 0 rgba(255,255,255,.28);
+}
+.l2h-hub-center i { width: 1.35rem; height: 1.35rem; color: #fff; }
+.l2h-hub-center span {
+    font-size: .44rem; color: rgba(255,255,255,.8);
+    font-weight: 700; letter-spacing: .07em; margin-top: 3px; text-transform: uppercase;
+}
+.l2h-hub-pulse {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 5rem; height: 5rem; border-radius: 50%;
+    border: 1.5px solid rgba(15,76,129,.5);
+    animation: l2hPulse 2.6s ease-in-out infinite;
+}
+@keyframes l2hPulse {
+    0%,100% { opacity: .6; transform: translate(-50%,-50%) scale(1); }
+    50%      { opacity: .1; transform: translate(-50%,-50%) scale(1.35); }
+}
+.l2h-hub-node {
+    position: absolute; width: 3rem; height: 3rem; border-radius: 50%;
+    background: rgba(255,255,255,.1);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,.2);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2px; font-size: .42rem; font-weight: 700; color: rgba(255,255,255,.8);
+    box-shadow: 0 4px 16px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.16);
+    letter-spacing: .02em;
+}
+.l2h-hub-node i { width: .85rem; height: .85rem; color: var(--l2-blue-soft); }
+/* 6 nodes at 60° intervals */
+.l2h-hub-node.hn1 { top: 2%;    left: 50%; transform: translate(-50%, 0); }
+.l2h-hub-node.hn2 { top: 16%;   right: 2%; }
+.l2h-hub-node.hn3 { bottom: 16%; right: 2%; }
+.l2h-hub-node.hn4 { bottom: 2%; left: 50%; transform: translate(-50%, 0); }
+.l2h-hub-node.hn5 { bottom: 16%; left: 2%; }
+.l2h-hub-node.hn6 { top: 16%;   left: 2%; }
+.l2h-hub-line {
+    position: absolute; top: 50%; left: 50%;
+    width: 40%; height: 1px;
+    background: linear-gradient(90deg, rgba(77,148,214,.45) 0%, rgba(77,148,214,.03) 100%);
+    transform-origin: left center;
+}
+.l2h-hub-line.hl1 { transform: rotate(-90deg); }
+.l2h-hub-line.hl2 { transform: rotate(-30deg); }
+.l2h-hub-line.hl3 { transform: rotate(30deg); }
+.l2h-hub-line.hl4 { transform: rotate(90deg); }
+.l2h-hub-line.hl5 { transform: rotate(150deg); }
+.l2h-hub-line.hl6 { transform: rotate(210deg); }
+
 /* ── Hero breakpoints ── */
 @media (min-width: 480px) {
     .l2h-slide h1 { font-size: 1.95rem; }
