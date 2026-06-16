@@ -3,23 +3,23 @@
 @section('title', 'Import — Preview & Validate')
 
 @section('sidebar_role_badge')
-<div class="sidebar-role-badge">Clinical Staff</div>
+<div class="sidebar-role-badge">{{ __('public.staff_portal.cdss_sidebar_role') }}</div>
 @endsection
-@section('sidebar_user_role', 'Clinical Staff')
+@section('sidebar_user_role', __('public.staff_portal.cdss_sidebar_role'))
 
 @section('sidebar_nav')
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Overview</div>
-    <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_overview') }}</div>
+    <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i><span>{{ __('public.portal.nav_dashboard') }}</span></a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Operations</div>
-    <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active"><i data-lucide="upload-cloud"></i><span>Data Import</span></a>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_operations') }}</div>
+    <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active"><i data-lucide="upload-cloud"></i><span>{{ __('public.portal.nav_data_import') }}</span></a>
 </div>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
-        <i data-lucide="brain-circuit"></i> Clinical Alerts</a>
+        <i data-lucide="brain-circuit"></i> {{ __('public.staff_portal.nav_clinical_alerts') }}</a>
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
-        <i data-lucide="package"></i> Supply Chain</a>
+        <i data-lucide="package"></i> {{ __('public.portal.nav_supply') }}</a>
 @endsection
 
 @section('breadcrumb_home', 'Staff Portal')
@@ -40,7 +40,7 @@
     {{-- Summary panel --}}
     <div class="panel mb-6">
         <div class="panel-header">
-            <h3 class="panel-title">Validation Summary</h3>
+            <h3 class="panel-title">{{ __('public.stf_import_validation_summary') }}</h3>
             <span class="badge {{ $job->status === 'validated' ? 'badge-success' : 'badge-danger' }}">
                 {{ ucwords(str_replace('_', ' ', $job->status)) }}
             </span>
@@ -51,9 +51,9 @@
             </p>
             @php
                 $cards = [
-                    ['Total Rows', $job->total_rows,   '',                                                  'rows-height'],
-                    ['Valid',      $job->valid_rows,   'stat-card--success',                                'check-circle'],
-                    ['Invalid',    $job->invalid_rows, $job->invalid_rows > 0 ? 'stat-card--danger' : '',   'alert-triangle'],
+                    [__('public.stf_import_total_rows'), $job->total_rows,   '',                                                  'rows-height'],
+                    [__('public.stf_import_valid'),      $job->valid_rows,   'stat-card--success',                                'check-circle'],
+                    [__('public.stf_import_invalid'),    $job->invalid_rows, $job->invalid_rows > 0 ? 'stat-card--danger' : '',   'alert-triangle'],
                 ];
             @endphp
             <div class="stat-grid">
@@ -72,27 +72,27 @@
     @if($job->rowErrors->count() > 0)
     <div class="panel mb-6">
         <div class="panel-header">
-            <h3 class="panel-title">Validation Errors <span class="badge badge-danger">{{ $job->rowErrors->count() }}</span></h3>
-            <span class="td-muted">Showing up to 200 errors</span>
+            <h3 class="panel-title">{{ __('public.stf_import_val_errors_title') }} <span class="badge badge-danger">{{ $job->rowErrors->count() }}</span></h3>
+            <span class="td-muted">{{ __('public.stf_import_showing_errors') }}</span>
         </div>
         <div class="panel-body panel-body--flush">
             <div class="table-wrapper">
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Row #</th>
-                            <th>Field</th>
-                            <th>Error</th>
-                            <th>Message</th>
+                            <th>{{ __('public.stf_import_col_row_no') }}</th>
+                            <th>{{ __('public.stf_import_col_field') }}</th>
+                            <th>{{ __('public.stf_import_col_error') }}</th>
+                            <th>{{ __('public.stf_import_col_message') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($job->rowErrors as $err)
                         <tr>
-                            <td data-label="Row #">{{ $err->row_number }}</td>
-                            <td data-label="Field"><span class="badge badge-neutral">{{ $err->field ?? '—' }}</span></td>
-                            <td data-label="Error"><span class="mono">{{ $err->error_code }}</span></td>
-                            <td data-label="Message">{{ $err->message }}</td>
+                            <td data-label="{{ __('public.stf_import_col_row_no') }}">{{ $err->row_number }}</td>
+                            <td data-label="{{ __('public.stf_import_col_field') }}"><span class="badge badge-neutral">{{ $err->field ?? '—' }}</span></td>
+                            <td data-label="{{ __('public.stf_import_col_error') }}"><span class="mono">{{ $err->error_code }}</span></td>
+                            <td data-label="{{ __('public.stf_import_col_message') }}">{{ $err->message }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -109,24 +109,24 @@
                 <div class="alert alert-success mb-6">
                     <i data-lucide="shield-check"></i>
                     <div>
-                        <strong>Ready to import</strong>
+                        <strong>{{ __('public.stf_import_ready_title') }}</strong>
                         <p>
-                            {{ number_format($job->valid_rows) }} valid row(s) will be created.
+                            {{ number_format($job->valid_rows) }} {{ __('public.stf_import_ready_desc') }}
                             @if($job->invalid_rows > 0)
-                                {{ number_format($job->invalid_rows) }} invalid rows will be skipped.
+                                {{ number_format($job->invalid_rows) }} {{ __('public.stf_import_invalid_skipped') }}
                             @endif
-                            This action cannot be undone without a rollback.
+                            {{ __('public.stf_import_no_undo') }}
                         </p>
                     </div>
                 </div>
                 <div class="row-actions-inline">
-                    <a href="{{ route('portals.staff.data_import.mapping', $job->id) }}" class="btn btn-ghost btn-sm">Edit Mapping</a>
+                    <a href="{{ route('portals.staff.data_import.mapping', $job->id) }}" class="btn btn-ghost btn-sm">{{ __('public.stf_import_edit_mapping') }}</a>
                     <form method="POST" action="{{ route('portals.staff.data_import.approve', $job->id) }}" class="inline-form">
                         @csrf
                         <button type="submit" class="btn btn-primary btn-sm"
                             onclick="return confirm('Approve and execute this import? This will create {{ $job->valid_rows }} record(s).')">
                             <i data-lucide="check-circle"></i>
-                            Approve &amp; Import {{ number_format($job->valid_rows) }} Records
+                            {{ __('public.stf_import_approve_btn') }} {{ number_format($job->valid_rows) }} {{ __('public.stf_import_records_suffix') }}
                         </button>
                     </form>
                 </div>
@@ -135,18 +135,18 @@
                 <div class="alert alert-danger mb-6">
                     <i data-lucide="alert-triangle"></i>
                     <div>
-                        <strong>All rows failed validation</strong>
-                        <p>Fix the errors in your file and re-upload, or go back to edit the column mapping.</p>
+                        <strong>{{ __('public.stf_import_all_failed_title') }}</strong>
+                        <p>{{ __('public.stf_import_all_failed_desc') }}</p>
                     </div>
                 </div>
                 <div class="row-actions-inline">
-                    <a href="{{ route('portals.staff.data_import.mapping', $job->id) }}" class="btn btn-ghost btn-sm">Edit Mapping</a>
-                    <a href="{{ route('portals.staff.data_import.create') }}" class="btn btn-primary btn-sm">Re-upload File</a>
+                    <a href="{{ route('portals.staff.data_import.mapping', $job->id) }}" class="btn btn-ghost btn-sm">{{ __('public.stf_import_edit_mapping') }}</a>
+                    <a href="{{ route('portals.staff.data_import.create') }}" class="btn btn-primary btn-sm">{{ __('public.stf_import_reupload') }}</a>
                 </div>
 
             @else
                 <div class="row-actions-inline">
-                    <a href="{{ route('portals.staff.data_import.index') }}" class="btn btn-ghost btn-sm">Back to History</a>
+                    <a href="{{ route('portals.staff.data_import.index') }}" class="btn btn-ghost btn-sm">{{ __('public.stf_import_back_history') }}</a>
                 </div>
             @endif
         </div>

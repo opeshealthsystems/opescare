@@ -12,7 +12,7 @@
     {{-- Safety disclaimer strip --}}
     <div class="alert alert-warning mb-3">
         <i data-lucide="shield-alert"></i>
-        <div>Clinical Decision Support — Alerts are advisory only. Clinical judgment takes precedence.</div>
+        <div>{{ __('public.staff_portal.cdss_panel_alert_advisory') }}</div>
     </div>
 
     @foreach($alerts as $alert)
@@ -23,9 +23,9 @@
             default    => 'alert-info',
         };
         $alertLabel = match($alert->severity) {
-            'critical' => 'Critical Alert',
-            'warning'  => 'Warning',
-            default    => 'Info',
+            'critical' => __('public.staff_portal.cdss_alert_critical'),
+            'warning'  => __('public.staff_portal.cdss_alert_warning'),
+            default    => __('public.staff_portal.cdss_alert_info'),
         };
         $alertIcon = match($alert->severity) {
             'critical' => 'alert-octagon',
@@ -50,14 +50,14 @@
             <div class="row-actions mt-1">
                 <form method="POST" action="{{ route('portals.staff.cdss.acknowledge', $alert->id) }}" class="inline-form">
                     @csrf
-                    <button type="submit" class="btn btn-secondary btn-xs" title="Acknowledge — I have reviewed this alert">
-                        <i data-lucide="check"></i> ACK
+                    <button type="submit" class="btn btn-secondary btn-xs" title="{{ __('public.staff_portal.cdss_btn_ack') }}">
+                        <i data-lucide="check"></i> {{ __('public.staff_portal.cdss_btn_ack') }}
                     </button>
                 </form>
                 <button type="button" class="btn btn-warning btn-xs"
                         onclick="openCdssOverride('{{ $alert->id }}')"
-                        title="Override with documented reason">
-                    <i data-lucide="shield-off"></i> Override
+                        title="{{ __('public.staff_portal.cdss_btn_override') }}">
+                    <i data-lucide="shield-off"></i> {{ __('public.staff_portal.cdss_btn_override') }}
                 </button>
             </div>
         </div>
@@ -70,7 +70,7 @@
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cdssOverrideModal-title">
         <h3 class="modal__title" id="cdssOverrideModal-title">
             <i data-lucide="shield-off"></i>
-            Override Clinical Alert
+            {{ __('public.staff_portal.cdss_override_modal_title') }}
         </h3>
         <form id="cdssOverrideForm" method="POST" action="">
             @csrf
@@ -78,33 +78,32 @@
                 <div class="alert alert-warning mb-4">
                     <i data-lucide="alert-triangle"></i>
                     <div>
-                        <strong>Clinical Reminder:</strong>
-                        Overriding this alert creates an audited record. Proceed only when clinically justified.
-                        Clinical alerts are decision-support tools only — not diagnostic.
+                        <strong>{{ __('public.staff_portal.cdss_override_reminder') }}</strong>
+                        {{ __('public.staff_portal.cdss_override_note') }}
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label form-label-required">Override Category *</label>
+                    <label class="form-label form-label-required">{{ __('public.staff_portal.cdss_override_cat_label') }}</label>
                     <select name="override_category" class="form-control" required>
-                        <option value="">Select…</option>
-                        <option value="clinical_necessity">Clinical Necessity</option>
-                        <option value="allergy_not_confirmed">Allergy Not Confirmed</option>
-                        <option value="risk_benefit">Risk-Benefit Favours Treatment</option>
-                        <option value="patient_preference">Patient Preference (Informed Consent)</option>
-                        <option value="other">Other</option>
+                        <option value="">{{ __('public.staff_portal.cdss_override_cat_ph2') }}</option>
+                        <option value="clinical_necessity">{{ __('public.staff_portal.cdss_cat_clinical_necessity') }}</option>
+                        <option value="allergy_not_confirmed">{{ __('public.staff_portal.cdss_cat_allergy_unconf') }}</option>
+                        <option value="risk_benefit">{{ __('public.staff_portal.cdss_cat_risk_benefit2') }}</option>
+                        <option value="patient_preference">{{ __('public.staff_portal.cdss_cat_patient_pref') }}</option>
+                        <option value="other">{{ __('public.staff_portal.cdss_cat_other') }}</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label form-label-required">Clinical Justification *</label>
+                    <label class="form-label form-label-required">{{ __('public.staff_portal.cdss_justification_label') }}</label>
                     <textarea name="override_reason" class="form-control" rows="3" required minlength="10" maxlength="500"
-                              placeholder="Document clinical reasoning…"></textarea>
+                              placeholder="{{ __('public.staff_portal.cdss_justification_ph2') }}"></textarea>
                 </div>
             </div>
             <div class="modal__footer">
                 <button type="button" class="btn btn-ghost"
-                        onclick="document.getElementById('cdssOverrideModal').setAttribute('hidden','')">Cancel</button>
+                        onclick="document.getElementById('cdssOverrideModal').setAttribute('hidden','')">{{ __('public.portal.cancel') }}</button>
                 <button type="submit" class="btn btn-danger">
-                    <i data-lucide="shield-off"></i> Override &amp; Record
+                    <i data-lucide="shield-off"></i> {{ __('public.staff_portal.cdss_btn_override_record2') }}
                 </button>
             </div>
         </form>

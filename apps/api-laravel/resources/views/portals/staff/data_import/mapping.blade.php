@@ -3,23 +3,23 @@
 @section('title', 'Import — Map Columns')
 
 @section('sidebar_role_badge')
-<div class="sidebar-role-badge">Clinical Staff</div>
+<div class="sidebar-role-badge">{{ __('public.staff_portal.cdss_sidebar_role') }}</div>
 @endsection
-@section('sidebar_user_role', 'Clinical Staff')
+@section('sidebar_user_role', __('public.staff_portal.cdss_sidebar_role'))
 
 @section('sidebar_nav')
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Overview</div>
-    <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_overview') }}</div>
+    <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i><span>{{ __('public.portal.nav_dashboard') }}</span></a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Operations</div>
-    <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active"><i data-lucide="upload-cloud"></i><span>Data Import</span></a>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_operations') }}</div>
+    <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active"><i data-lucide="upload-cloud"></i><span>{{ __('public.portal.nav_data_import') }}</span></a>
 </div>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
-        <i data-lucide="brain-circuit"></i> Clinical Alerts</a>
+        <i data-lucide="brain-circuit"></i> {{ __('public.staff_portal.nav_clinical_alerts') }}</a>
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
-        <i data-lucide="package"></i> Supply Chain</a>
+        <i data-lucide="package"></i> {{ __('public.portal.nav_supply') }}</a>
 @endsection
 
 @section('breadcrumb_home', 'Staff Portal')
@@ -32,14 +32,14 @@
 
     <div class="panel">
         <div class="panel-header">
-            <h3 class="panel-title">Map Columns</h3>
+            <h3 class="panel-title">{{ __('public.stf_import_map_title') }}</h3>
         </div>
         <div class="panel-body">
             <p class="td-muted">
-                File: <strong>{{ $job->original_filename }}</strong> · Type: <strong>{{ $importTypes[$job->import_type]['label'] ?? $job->import_type }}</strong>
+                {{ __('public.stf_import_file_detail') }}: <strong>{{ $job->original_filename }}</strong> · {{ __('public.stf_import_type_detail') }}: <strong>{{ $importTypes[$job->import_type]['label'] ?? $job->import_type }}</strong>
             </p>
             <p class="td-muted mb-6">
-                Match each OpesCare field to the column in your file. Required fields must be mapped.
+                {{ __('public.stf_import_match_desc') }}
             </p>
 
             @if(session('error'))
@@ -51,7 +51,7 @@
             <div class="alert alert-info mb-6">
                 <i data-lucide="bookmark"></i>
                 <div>
-                    <label class="form-label">Load a saved mapping template:</label>
+                    <label class="form-label">{{ __('public.stf_import_load_saved') }}</label>
                     <div class="row-actions-inline">
                         <select id="saved-mapping-picker" class="form-control">
                             <option value="">— select —</option>
@@ -59,7 +59,7 @@
                                 <option value="{{ htmlspecialchars(json_encode($sm['mapping']), ENT_QUOTES) }}">{{ $sm['name'] }}</option>
                             @endforeach
                         </select>
-                        <button type="button" class="btn btn-ghost btn-sm" onclick="applySavedMapping()">Apply</button>
+                        <button type="button" class="btn btn-ghost btn-sm" onclick="applySavedMapping()">{{ __('public.stf_import_apply') }}</button>
                     </div>
                 </div>
             </div>
@@ -72,9 +72,9 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>OpesCare Field</th>
-                                <th>Required?</th>
-                                <th>Map to Column in File</th>
+                                <th>{{ __('public.stf_import_col_opescare_field') }}</th>
+                                <th>{{ __('public.stf_import_col_required_hdr') }}</th>
+                                <th>{{ __('public.stf_import_col_map_to') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -85,21 +85,21 @@
                                 $preSelected = $reversedSuggested[$sf['key']] ?? '';
                             @endphp
                             <tr data-field="{{ $sf['key'] }}">
-                                <td data-label="OpesCare Field">
+                                <td data-label="{{ __('public.stf_import_col_opescare_field') }}">
                                     <span class="{{ $sf['required'] ? 'td-strong' : '' }}">{{ $sf['key'] }}</span>
                                 </td>
-                                <td data-label="Required?">
+                                <td data-label="{{ __('public.stf_import_col_required_hdr') }}">
                                     @if($sf['required'])
-                                        <span class="badge badge-danger">Required</span>
+                                        <span class="badge badge-danger">{{ __('public.stf_import_required_badge') }}</span>
                                     @else
-                                        <span class="badge badge-neutral">Optional</span>
+                                        <span class="badge badge-neutral">{{ __('public.stf_import_optional_badge') }}</span>
                                     @endif
                                 </td>
-                                <td data-label="Map to Column in File">
+                                <td data-label="{{ __('public.stf_import_col_map_to') }}">
                                     <select name="mapping[{{ $preSelected ?: $sf['key'] }}]"
                                             class="form-control mapping-select"
                                             data-system-field="{{ $sf['key'] }}">
-                                        <option value="">— skip —</option>
+                                        <option value="">{{ __('public.stf_import_skip') }}</option>
                                         @foreach(($job->detected_headers ?? []) as $col)
                                             <option value="{{ $sf['key'] }}" data-col="{{ $col }}"
                                                 {{ ($preSelected === $col || (!$preSelected && $col === $sf['key'])) ? 'selected' : '' }}>
@@ -118,16 +118,16 @@
                 <div class="alert alert-info mt-6">
                     <i data-lucide="bookmark"></i>
                     <div class="row-actions-inline">
-                        <span>Save this mapping for reuse?</span>
-                        <input type="text" name="save_as" class="form-control" placeholder="Name, e.g. Our patient CSV format">
+                        <span>{{ __('public.stf_import_save_reuse') }}</span>
+                        <input type="text" name="save_as" class="form-control" placeholder="{{ __('public.stf_import_save_name_ph') }}">
                     </div>
                 </div>
 
                 <div class="row-actions-inline mt-6">
-                    <a href="{{ route('portals.staff.data_import.index') }}" class="btn btn-ghost btn-sm">Cancel</a>
+                    <a href="{{ route('portals.staff.data_import.index') }}" class="btn btn-ghost btn-sm">{{ __('public.stf_import_cancel_link') }}</a>
                     <button type="submit" class="btn btn-primary btn-sm">
                         <i data-lucide="check-circle"></i>
-                        Save Mapping &amp; Validate
+                        {{ __('public.stf_import_save_validate') }}
                     </button>
                 </div>
             </form>

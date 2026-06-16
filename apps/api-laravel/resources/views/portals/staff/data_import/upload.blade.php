@@ -3,26 +3,26 @@
 @section('title', 'New Import — Upload File')
 
 @section('sidebar_role_badge')
-<div class="sidebar-role-badge">Clinical Staff</div>
+<div class="sidebar-role-badge">{{ __('public.staff_portal.cdss_sidebar_role') }}</div>
 @endsection
-@section('sidebar_user_role', 'Clinical Staff')
+@section('sidebar_user_role', __('public.staff_portal.cdss_sidebar_role'))
 
 @section('sidebar_nav')
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Overview</div>
-    <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a>
-    <a href="{{ route('portals.staff.analytics') }}" class="sidebar-link"><i data-lucide="bar-chart-2"></i><span>Analytics</span></a>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_overview') }}</div>
+    <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i><span>{{ __('public.portal.nav_dashboard') }}</span></a>
+    <a href="{{ route('portals.staff.analytics') }}" class="sidebar-link"><i data-lucide="bar-chart-2"></i><span>{{ __('public.portal.nav_analytics') }}</span></a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Operations</div>
-    <a href="{{ route('portals.staff.billing') }}" class="sidebar-link"><i data-lucide="receipt"></i><span>Billing</span></a>
-    <a href="{{ route('portals.staff.support') }}" class="sidebar-link"><i data-lucide="headset"></i><span>Support</span></a>
-    <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active"><i data-lucide="upload-cloud"></i><span>Data Import</span></a>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_operations') }}</div>
+    <a href="{{ route('portals.staff.billing') }}" class="sidebar-link"><i data-lucide="receipt"></i><span>{{ __('public.portal.nav_billing') }}</span></a>
+    <a href="{{ route('portals.staff.support') }}" class="sidebar-link"><i data-lucide="headset"></i><span>{{ __('public.portal.nav_support') }}</span></a>
+    <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active"><i data-lucide="upload-cloud"></i><span>{{ __('public.portal.nav_data_import') }}</span></a>
 </div>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
-        <i data-lucide="brain-circuit"></i> Clinical Alerts</a>
+        <i data-lucide="brain-circuit"></i> {{ __('public.staff_portal.nav_clinical_alerts') }}</a>
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
-        <i data-lucide="package"></i> Supply Chain</a>
+        <i data-lucide="package"></i> {{ __('public.portal.nav_supply') }}</a>
 @endsection
 
 @section('breadcrumb_home', 'Staff Portal')
@@ -37,9 +37,9 @@
 <div style="max-width:640px;margin:0 auto;">
     <div class="panel">
         <div class="panel-body" style="padding:2rem;">
-            <h2 class="panel-heading">Upload Import File</h2>
+            <h2 class="panel-heading">{{ __('public.stf_import_upload_title') }}</h2>
             <p class="text-sm text-muted" style="margin:0 0 1.5rem;">
-                Choose the data type you are importing, then upload a CSV or Excel file (max 25 MB).
+                {{ __('public.stf_import_upload_desc') }}
             </p>
 
             @if(session('error'))
@@ -52,9 +52,9 @@
                 @csrf
 
                 <div class="form-group" style="margin-bottom:1rem;">
-                    <label class="form-label">Import Type *</label>
+                    <label class="form-label">{{ __('public.stf_import_import_type') }}</label>
                     <select name="import_type" class="form-control" required onchange="updateFieldHint(this.value)">
-                        <option value="">— select type —</option>
+                        <option value="">{{ __('public.stf_import_select_type') }}</option>
                         @foreach($importTypes as $key => $def)
                             <option value="{{ $key }}" {{ old('import_type') === $key ? 'selected' : '' }}>{{ $def['label'] }}</option>
                         @endforeach
@@ -69,18 +69,18 @@
                 </div>
 
                 <div class="form-group" style="margin-bottom:1.25rem;">
-                    <label class="form-label">File (CSV, XLSX, XLS — max 25 MB) *</label>
+                    <label class="form-label">{{ __('public.stf_import_file_label') }}</label>
                     <input type="file" name="file" class="form-control" required accept=".csv,.xlsx,.xls">
                     <div style="font-size:.75rem;color:var(--p-text-muted);margin-top:.3rem;">
-                        Your file should have a header row as the first row. Column names do not need to match exactly — you will be able to map them on the next step.
+                        {{ __('public.stf_import_header_hint') }}
                     </div>
                 </div>
 
                 <div style="display:flex;gap:.5rem;justify-content:flex-end;">
-                    <a href="{{ route('portals.staff.data_import.index') }}" class="btn btn-ghost btn-sm">Cancel</a>
+                    <a href="{{ route('portals.staff.data_import.index') }}" class="btn btn-ghost btn-sm">{{ __('public.stf_import_cancel_link') }}</a>
                     <button type="submit" class="btn btn-primary btn-sm">
                         <i data-lucide="upload" style="width:13px;height:13px;"></i>
-                        Upload &amp; Continue
+                        {{ __('public.stf_import_upload_btn') }}
                     </button>
                 </div>
             </form>

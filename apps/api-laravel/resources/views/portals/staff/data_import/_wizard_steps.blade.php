@@ -1,9 +1,9 @@
 @php
 $steps = [
-    1 => 'Upload',
-    2 => 'Map Columns',
-    3 => 'Preview & Validate',
-    4 => 'Approve & Import',
+    1 => __('public.stf_import_wizard_upload'),
+    2 => __('public.stf_import_wizard_map'),
+    3 => __('public.stf_import_wizard_preview'),
+    4 => __('public.stf_import_wizard_approve'),
 ];
 @endphp
 <div class="stepper">

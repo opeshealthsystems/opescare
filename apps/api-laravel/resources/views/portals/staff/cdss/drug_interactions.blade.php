@@ -8,19 +8,19 @@
 <div class="alert alert-warning mb-6">
     <i data-lucide="shield-alert"></i>
     <div>
-        <strong>Clinical Decision Support:</strong>
-        Clinical alerts are decision-support tools only. They do not replace professional clinical judgment.
+        <strong>{{ __('public.staff_portal.cdss_disclaimer_title') }}</strong>
+        {{ __('public.staff_portal.cdss_disclaimer_body') }}
     </div>
 </div>
 
 <div class="page-head">
-    <h2><i data-lucide="git-merge"></i> Drug Interaction Rules</h2>
+    <h2><i data-lucide="git-merge"></i> {{ __('public.staff_portal.cdss_ddi_title') }}</h2>
     <div class="page-head__spacer"></div>
     <a href="{{ route('portals.staff.cdss') }}" class="btn btn-secondary btn-sm">
-        <i data-lucide="arrow-left"></i> Alerts
+        <i data-lucide="arrow-left"></i> {{ __('public.staff_portal.cdss_ddi_btn_back') }}
     </a>
 </div>
-<p class="page-subtitle mb-4">Bidirectional drug-drug interaction database</p>
+<p class="page-subtitle mb-4">{{ __('public.staff_portal.cdss_ddi_subtitle') }}</p>
 
 <div class="panel">
     <div class="panel-body panel-body--flush">
@@ -28,26 +28,26 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Drug A</th>
-                        <th>Drug B</th>
-                        <th>Severity</th>
-                        <th>Interaction</th>
-                        <th>Management</th>
-                        <th>Status</th>
+                        <th>{{ __('public.staff_portal.cdss_ddi_col_drug_a') }}</th>
+                        <th>{{ __('public.staff_portal.cdss_ddi_col_drug_b') }}</th>
+                        <th>{{ __('public.staff_portal.cdss_ddi_col_severity') }}</th>
+                        <th>{{ __('public.staff_portal.cdss_ddi_col_interaction') }}</th>
+                        <th>{{ __('public.staff_portal.cdss_ddi_col_management') }}</th>
+                        <th>{{ __('public.staff_portal.cdss_ddi_col_status') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($interactions as $rule)
                         <tr>
-                            <td data-label="Drug A">
+                            <td data-label="{{ __('public.staff_portal.cdss_ddi_col_drug_a') }}">
                                 <div class="td-strong">{{ $rule->drug_a_name }}</div>
                                 <code class="mono td-muted">{{ $rule->drug_a_code }}</code>
                             </td>
-                            <td data-label="Drug B">
+                            <td data-label="{{ __('public.staff_portal.cdss_ddi_col_drug_b') }}">
                                 <div class="td-strong">{{ $rule->drug_b_name }}</div>
                                 <code class="mono td-muted">{{ $rule->drug_b_code }}</code>
                             </td>
-                            <td data-label="Severity">
+                            <td data-label="{{ __('public.staff_portal.cdss_ddi_col_severity') }}">
                                 <span class="badge badge-{{ match($rule->severity) {
                                     'contraindicated' => 'danger',
                                     'major'           => 'danger',
@@ -55,18 +55,18 @@
                                     default           => 'info',
                                 } }}">{{ ucfirst($rule->severity) }}</span>
                             </td>
-                            <td data-label="Interaction">
+                            <td data-label="{{ __('public.staff_portal.cdss_ddi_col_interaction') }}">
                                 {{ Str::limit($rule->interaction_description, 100) }}
                                 @if($rule->clinical_effect)
                                     <div class="td-muted">{{ Str::limit($rule->clinical_effect, 60) }}</div>
                                 @endif
                             </td>
-                            <td data-label="Management" class="td-muted">
+                            <td data-label="{{ __('public.staff_portal.cdss_ddi_col_management') }}" class="td-muted">
                                 {{ $rule->management ? Str::limit($rule->management, 80) : '—' }}
                             </td>
-                            <td data-label="Status">
+                            <td data-label="{{ __('public.staff_portal.cdss_ddi_col_status') }}">
                                 <span class="badge badge-{{ $rule->is_active ? 'success' : 'neutral' }}">
-                                    {{ $rule->is_active ? 'Active' : 'Inactive' }}
+                                    {{ $rule->is_active ? __('public.staff_portal.cdss_ddi_status_active') : __('public.staff_portal.cdss_ddi_status_inactive') }}
                                 </span>
                             </td>
                         </tr>
@@ -75,7 +75,7 @@
                             <td colspan="6">
                                 <div class="empty-state">
                                     <div class="empty-state-icon"><i data-lucide="git-merge"></i></div>
-                                    <p>No drug interaction rules loaded. Seed interactions to enable DDI alerts.</p>
+                                    <p>{{ __('public.staff_portal.cdss_ddi_empty') }}</p>
                                 </div>
                             </td>
                         </tr>

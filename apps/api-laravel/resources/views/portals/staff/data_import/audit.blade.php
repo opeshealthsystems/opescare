@@ -3,23 +3,23 @@
 @section('title', 'Import Audit Log')
 
 @section('sidebar_role_badge')
-<div class="sidebar-role-badge">Clinical Staff</div>
+<div class="sidebar-role-badge">{{ __('public.staff_portal.cdss_sidebar_role') }}</div>
 @endsection
-@section('sidebar_user_role', 'Clinical Staff')
+@section('sidebar_user_role', __('public.staff_portal.cdss_sidebar_role'))
 
 @section('sidebar_nav')
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Overview</div>
-    <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_overview') }}</div>
+    <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i><span>{{ __('public.portal.nav_dashboard') }}</span></a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Operations</div>
-    <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active"><i data-lucide="upload-cloud"></i><span>Data Import</span></a>
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_operations') }}</div>
+    <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active"><i data-lucide="upload-cloud"></i><span>{{ __('public.portal.nav_data_import') }}</span></a>
 </div>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
-        <i data-lucide="brain-circuit"></i> Clinical Alerts</a>
+        <i data-lucide="brain-circuit"></i> {{ __('public.staff_portal.nav_clinical_alerts') }}</a>
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
-        <i data-lucide="package"></i> Supply Chain</a>
+        <i data-lucide="package"></i> {{ __('public.portal.nav_supply') }}</a>
 @endsection
 
 @section('breadcrumb_home', 'Staff Portal')
@@ -31,12 +31,12 @@
 <div style="max-width:680px;margin:0 auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
         <div>
-            <h1 class="panel-heading">Import Audit Log</h1>
+            <h1 class="panel-heading">{{ __('public.stf_import_audit_log') }}</h1>
             <p class="text-sm text-muted" style="margin:0;">
                 {{ $job->original_filename }} · {{ $importTypes[$job->import_type]['label'] ?? $job->import_type }}
             </p>
         </div>
-        <a href="{{ route('portals.staff.data_import.index') }}" class="btn btn-ghost btn-sm">← Back</a>
+        <a href="{{ route('portals.staff.data_import.index') }}" class="btn btn-ghost btn-sm">{{ __('public.stf_import_back') }}</a>
     </div>
 
     <div class="panel">
@@ -44,8 +44,8 @@
             @if($job->auditEvents->count() === 0)
                 <div class="empty-state">
                     <div class="empty-state-icon"><i data-lucide="scroll-text"></i></div>
-                    <h3>No audit events</h3>
-                    <p>No events have been recorded for this import job.</p>
+                    <h3>{{ __('public.stf_import_no_audit_title') }}</h3>
+                    <p>{{ __('public.stf_import_no_audit_desc') }}</p>
                 </div>
             @else
                 <div style="padding:.75rem 1.25rem;">
