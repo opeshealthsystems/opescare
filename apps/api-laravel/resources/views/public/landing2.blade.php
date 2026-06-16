@@ -8,6 +8,7 @@
 @endsection
 
 @section('content')
+<a href="#l2-main-content" class="l2-skip-link">Skip to main content</a>
 <div class="l2">
 
 {{-- Mesh background — 3 brand-blue orbs only --}}
@@ -20,12 +21,13 @@
 {{-- ═══════════════════════════════════════
      1. HERO SLIDER v2  (l2h- classes, mobile-first)
      ═══════════════════════════════════════ --}}
-<section class="l2h">
+<span id="l2hAnnounce" class="sr-only" aria-live="polite" aria-atomic="true"></span>
+<section class="l2h" role="region" aria-roledescription="carousel" aria-label="OpesCare highlights">
     <div class="l2h-wrap">
         <div class="l2h-slides" id="l2hSlides">
 
             {{-- Slide 1: Health ID --}}
-            <div class="l2h-slide">
+            <div class="l2h-slide" role="group" aria-roledescription="slide" aria-label="1 of 5: Health ID">
                 <div class="l2h-container">
                     <div class="l2h-copy">
                         <span class="l2h-badge">
@@ -80,7 +82,7 @@
             </div>
 
             {{-- Slide 2: Consent & Access --}}
-            <div class="l2h-slide">
+            <div class="l2h-slide" role="group" aria-roledescription="slide" aria-label="2 of 5: Consent & Access" aria-hidden="true">
                 <div class="l2h-container">
                     <div class="l2h-copy">
                         <span class="l2h-badge">
@@ -132,7 +134,7 @@
             </div>
 
             {{-- Slide 3: Emergency Access --}}
-            <div class="l2h-slide">
+            <div class="l2h-slide" role="group" aria-roledescription="slide" aria-label="3 of 5: Emergency Access" aria-hidden="true">
                 <div class="l2h-container">
                     <div class="l2h-copy">
                         <span class="l2h-badge">
@@ -180,7 +182,7 @@
             </div>
 
             {{-- Slide 4: Connected Care Network --}}
-            <div class="l2h-slide">
+            <div class="l2h-slide" role="group" aria-roledescription="slide" aria-label="4 of 5: Connected Care" aria-hidden="true">
                 <div class="l2h-container">
                     <div class="l2h-copy">
                         <span class="l2h-badge">
@@ -214,7 +216,7 @@
             </div>
 
             {{-- Slide 5: Connected Journey --}}
-            <div class="l2h-slide">
+            <div class="l2h-slide" role="group" aria-roledescription="slide" aria-label="5 of 5: Connected Journey" aria-hidden="true">
                 <div class="l2h-container">
                     <div class="l2h-copy">
                         <span class="l2h-badge">
@@ -275,18 +277,18 @@
 
     {{-- Nav bar --}}
     <div class="l2h-nav">
-        <button class="l2h-arrow" id="l2hPrev" onclick="l2hPrev()" disabled aria-label="Previous">
+        <button class="l2h-arrow" id="l2hPrev" onclick="l2hPrev()" disabled aria-label="Previous slide" aria-controls="l2hSlides">
             <i data-lucide="chevron-left"></i>
         </button>
         <div class="l2h-dots">
-            <button class="l2h-dot l2h-dot-active" onclick="l2hGo(0)" aria-label="Slide 1"></button>
-            <button class="l2h-dot" onclick="l2hGo(1)" aria-label="Slide 2"></button>
-            <button class="l2h-dot" onclick="l2hGo(2)" aria-label="Slide 3"></button>
-            <button class="l2h-dot" onclick="l2hGo(3)" aria-label="Slide 4"></button>
-            <button class="l2h-dot" onclick="l2hGo(4)" aria-label="Slide 5"></button>
+            <button class="l2h-dot l2h-dot-active" onclick="l2hGo(0)" aria-label="Go to slide 1: Health ID" aria-current="true"></button>
+            <button class="l2h-dot" onclick="l2hGo(1)" aria-label="Go to slide 2: Consent &amp; Access"></button>
+            <button class="l2h-dot" onclick="l2hGo(2)" aria-label="Go to slide 3: Emergency Access"></button>
+            <button class="l2h-dot" onclick="l2hGo(3)" aria-label="Go to slide 4: Connected Care"></button>
+            <button class="l2h-dot" onclick="l2hGo(4)" aria-label="Go to slide 5: Connected Journey"></button>
         </div>
         <span class="l2h-slide-label" id="l2hLabel">Health ID</span>
-        <button class="l2h-arrow" id="l2hNext" onclick="l2hNext()" aria-label="Next">
+        <button class="l2h-arrow" id="l2hNext" onclick="l2hNext()" aria-label="Next slide" aria-controls="l2hSlides">
             <i data-lucide="chevron-right"></i>
         </button>
     </div>
@@ -295,7 +297,7 @@
 {{-- ═══════════════════════════════════════
      2. TRUST STRIP
      ═══════════════════════════════════════ --}}
-<div class="l2-trust">
+<div class="l2-trust" id="l2-main-content" tabindex="-1">
     <div class="l2-container">
         <div class="l2-trust-grid">
             <div class="l2-trust-item">
@@ -564,6 +566,7 @@
         <p class="l2-section-sub">{{ __('landing.roles.subtitle', [], app()->getLocale()) }}</p>
 
         {{-- Mobile: native select --}}
+        <label for="l2RolesSelect" class="sr-only">Select your role</label>
         <select class="l2-roles-select" id="l2RolesSelect" onchange="l2SwitchRole(this.value)">
             <option value="patient">{{ __('landing.roles.patients_title', [], app()->getLocale()) }}</option>
             <option value="hospital">{{ __('landing.roles.hospitals_title', [], app()->getLocale()) }}</option>
@@ -774,11 +777,24 @@
     function upd(){
         var el = document.getElementById('l2hSlides');
         if (el) el.style.transform = 'translateX(-' + (cur * 100) + '%)';
+        // Dots — active class + aria-current
         document.querySelectorAll('.l2h-dot').forEach(function(d,i){
             d.classList.toggle('l2h-dot-active', i === cur);
+            if (i === cur) d.setAttribute('aria-current','true');
+            else d.removeAttribute('aria-current');
         });
+        // Slides — aria-hidden on inactive
+        document.querySelectorAll('.l2h-slide').forEach(function(s,i){
+            if (i === cur) s.removeAttribute('aria-hidden');
+            else s.setAttribute('aria-hidden','true');
+        });
+        // Slide label
         var lbl = document.getElementById('l2hLabel');
         if (lbl) lbl.textContent = labels[cur];
+        // Screen reader announcement
+        var announce = document.getElementById('l2hAnnounce');
+        if (announce) announce.textContent = 'Slide ' + (cur+1) + ' of ' + total + ': ' + labels[cur];
+        // Arrow disabled state
         var prev = document.getElementById('l2hPrev');
         var next = document.getElementById('l2hNext');
         if (prev) prev.disabled = cur === 0;

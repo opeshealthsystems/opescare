@@ -1030,6 +1030,54 @@ body:has(.l2) .footer h4[style] {
 }
 
 /* ══════════════════════════════════════
+   SCREEN READER UTILITY
+   ══════════════════════════════════════ */
+.sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0;
+    margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
+    white-space: nowrap; border-width: 0;
+}
+
+/* ══════════════════════════════════════
+   SKIP TO CONTENT
+   ══════════════════════════════════════ */
+.l2-skip-link {
+    position: absolute; top: -100%; left: 1rem; z-index: 9999;
+    background: #0F4C81; color: #fff;
+    padding: .55rem 1.1rem; border-radius: 0 0 8px 8px;
+    font-size: .875rem; font-weight: 600; text-decoration: none;
+    transition: top .15s;
+}
+.l2-skip-link:focus { top: 0; }
+
+/* ══════════════════════════════════════
+   FOCUS VISIBLE — all interactive elements
+   ══════════════════════════════════════ */
+.l2 :focus-visible,
+.l2-theme-toggle:focus-visible {
+    outline: 2px solid #4d94d6;
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+.l2h-dot:focus-visible { outline-offset: 5px; border-radius: 50%; }
+.l2-faq-item summary:focus-visible { outline-offset: 4px; }
+
+/* ══════════════════════════════════════
+   HIGH CONTRAST MODE (Windows / forced-colors)
+   ══════════════════════════════════════ */
+@media (forced-colors: active) {
+    .l2-btn, .l2h-btn-primary, .l2h-btn-ghost,
+    .l2h-arrow, .l2h-dot, .l2-role-tab,
+    .l2-theme-toggle { forced-color-adjust: none; }
+    .l2-orb, .l2-mesh { display: none; }
+    .l2-glass, .l2-problem-card, .l2-step, .l2-trust-item,
+    .l2-faq-item, .l2-form-card, .l2-roles-panel,
+    .l2h-card, .l2h-net-node, .l2h-hub-node {
+        border: 1px solid ButtonText;
+    }
+}
+
+/* ══════════════════════════════════════
    HERO PARAGRAPH — line length cap
    ══════════════════════════════════════ */
 .l2h-slide p { max-width: 52ch; }
