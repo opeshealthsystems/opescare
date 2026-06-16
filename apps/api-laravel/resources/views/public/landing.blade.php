@@ -1,7 +1,7 @@
 @extends('layouts.public')
 
-@section('title', 'OpesCare | Secure Digital Health ID and Connected Medical Records')
-@section('meta_description', 'OpesCare is a secure digital Health ID and healthcare interoperability platform that helps patients carry approved medical history across hospitals, clinics, labs, pharmacies, and insurers.')
+@section('title', __('landing.page_title_home'))
+@section('meta_description', __('landing.page_desc_home'))
 
 @section('content')
     <!-- Hero Section — 4-slide carousel -->
@@ -61,37 +61,37 @@
                 <div class="hs-slide hs-s2">
                     <div class="container hs-inner">
                         <div class="hs-content">
-                            <div class="hs-badge"><i data-lucide="lock-keyhole"></i> Consent &amp; Access</div>
-                            <h1>You decide who sees your health information.</h1>
-                            <p class="hs-sub">Every access request from a hospital, clinic, lab, or insurer requires your explicit approval — you see exactly who is asking and what they want.</p>
-                            <p class="hs-desc">Granular scopes let you share only what is necessary. Revoke access at any time, from anywhere, with a full audit trail of every action.</p>
+                            <div class="hs-badge"><i data-lucide="lock-keyhole"></i> {{ __('landing.consent_badge') }}</div>
+                            <h1>{{ __('landing.consent_h1') }}</h1>
+                            <p class="hs-sub">{{ __('landing.consent_sub') }}</p>
+                            <p class="hs-desc">{{ __('landing.consent_desc_slide') }}</p>
                             <div class="hs-btn-grid">
-                                <a href="#partner-form" class="hs-btn-primary"><i data-lucide="building-2"></i> Request Partnership Demo</a>
-                                <a href="#how-it-works" class="hs-btn-secondary"><i data-lucide="play-circle"></i> See How It Works</a>
+                                <a href="#partner-form" class="hs-btn-primary"><i data-lucide="building-2"></i> {{ __('landing.slide_cta_primary') }}</a>
+                                <a href="#how-it-works" class="hs-btn-secondary"><i data-lucide="play-circle"></i> {{ __('landing.slide_cta_secondary') }}</a>
                             </div>
                             <div class="hs-trust-row">
-                                <div class="hs-trust-item"><i data-lucide="sliders-horizontal"></i> <span>Granular scope control</span></div>
-                                <div class="hs-trust-item"><i data-lucide="history"></i> <span>Full access audit log</span></div>
-                                <div class="hs-trust-item"><i data-lucide="ban"></i> <span>Revoke any time</span></div>
-                                <div class="hs-trust-item"><i data-lucide="bell"></i> <span>Real-time notifications</span></div>
+                                <div class="hs-trust-item"><i data-lucide="sliders-horizontal"></i> <span>{{ __('landing.consent_trust1') }}</span></div>
+                                <div class="hs-trust-item"><i data-lucide="history"></i> <span>{{ __('landing.consent_trust2') }}</span></div>
+                                <div class="hs-trust-item"><i data-lucide="ban"></i> <span>{{ __('landing.consent_trust3') }}</span></div>
+                                <div class="hs-trust-item"><i data-lucide="bell"></i> <span>{{ __('landing.consent_trust4') }}</span></div>
                             </div>
                         </div>
                         <div class="hs-visual">
                             <div class="hs-consent-card">
-                                <div class="hs-consent-header"><i data-lucide="building"></i> City General Hospital requesting access</div>
-                                <div class="hs-crow"><span>Demographic details</span><span class="hs-cal">Allowed</span></div>
-                                <div class="hs-crow"><span>Prescription records</span><span class="hs-cal">Allowed</span></div>
-                                <div class="hs-crow"><span>Lab results</span><span class="hs-cal">Allowed</span></div>
-                                <div class="hs-crow"><span>Surgical history</span><span class="hs-cdn">Denied</span></div>
-                                <div class="hs-crow hs-crow-last"><span>Mental health notes</span><span class="hs-cdn">Denied</span></div>
+                                <div class="hs-consent-header"><i data-lucide="building"></i> {{ __('landing.consent_card_header') }}</div>
+                                <div class="hs-crow"><span>{{ __('landing.consent_row_demo') }}</span><span class="hs-cal">{{ __('landing.consent_status_allowed') }}</span></div>
+                                <div class="hs-crow"><span>{{ __('landing.consent_row_rx') }}</span><span class="hs-cal">{{ __('landing.consent_status_allowed') }}</span></div>
+                                <div class="hs-crow"><span>{{ __('landing.consent_row_lab') }}</span><span class="hs-cal">{{ __('landing.consent_status_allowed') }}</span></div>
+                                <div class="hs-crow"><span>{{ __('landing.consent_row_surgery') }}</span><span class="hs-cdn">{{ __('landing.consent_status_denied') }}</span></div>
+                                <div class="hs-crow hs-crow-last"><span>{{ __('landing.consent_row_mental') }}</span><span class="hs-cdn">{{ __('landing.consent_status_denied') }}</span></div>
                             </div>
                             <div class="hs-fc">
                                 <i data-lucide="clock" class="hs-fc-icon-warn"></i>
-                                <div><strong>Access expires in 24 h</strong><span>Auto-revoked after consultation</span></div>
+                                <div><strong>{{ __('landing.consent_fc1_title') }}</strong><span>{{ __('landing.consent_fc1_desc') }}</span></div>
                             </div>
                             <div class="hs-fc">
                                 <i data-lucide="check-circle" class="hs-fc-icon-success"></i>
-                                <div><strong>Patient notified</strong><span>SMS + app push sent</span></div>
+                                <div><strong>{{ __('landing.consent_fc2_title') }}</strong><span>{{ __('landing.consent_fc2_desc') }}</span></div>
                             </div>
                         </div>
                     </div>
@@ -101,36 +101,36 @@
                 <div class="hs-slide hs-s3">
                     <div class="container hs-inner">
                         <div class="hs-content">
-                            <div class="hs-badge"><i data-lucide="siren"></i> Emergency Access</div>
-                            <h1>Critical information available when seconds matter.</h1>
-                            <p class="hs-sub">Authorised emergency providers can access life-saving data — allergies, blood type, active medications — under a strict audited override when a patient cannot consent.</p>
-                            <p class="hs-desc">Every override is logged with provider identity, timestamp, and clinical justification. The patient is notified as soon as they are able.</p>
+                            <div class="hs-badge"><i data-lucide="siren"></i> {{ __('landing.em_badge') }}</div>
+                            <h1>{{ __('landing.em_h1') }}</h1>
+                            <p class="hs-sub">{{ __('landing.em_sub') }}</p>
+                            <p class="hs-desc">{{ __('landing.em_desc_slide') }}</p>
                             <div class="hs-btn-grid">
-                                <a href="#partner-form" class="hs-btn-primary"><i data-lucide="building-2"></i> Request Partnership Demo</a>
-                                <a href="#how-it-works" class="hs-btn-secondary"><i data-lucide="play-circle"></i> See How It Works</a>
+                                <a href="#partner-form" class="hs-btn-primary"><i data-lucide="building-2"></i> {{ __('landing.slide_cta_primary') }}</a>
+                                <a href="#how-it-works" class="hs-btn-secondary"><i data-lucide="play-circle"></i> {{ __('landing.slide_cta_secondary') }}</a>
                             </div>
                             <div class="hs-trust-row">
-                                <div class="hs-trust-item"><i data-lucide="heart-pulse"></i> <span>Life-saving data access</span></div>
-                                <div class="hs-trust-item"><i data-lucide="file-badge"></i> <span>Full audit trail</span></div>
-                                <div class="hs-trust-item"><i data-lucide="user-check"></i> <span>Provider identity verified</span></div>
-                                <div class="hs-trust-item"><i data-lucide="mail"></i> <span>Patient notified after</span></div>
+                                <div class="hs-trust-item"><i data-lucide="heart-pulse"></i> <span>{{ __('landing.em_trust1') }}</span></div>
+                                <div class="hs-trust-item"><i data-lucide="file-badge"></i> <span>{{ __('landing.em_trust2') }}</span></div>
+                                <div class="hs-trust-item"><i data-lucide="user-check"></i> <span>{{ __('landing.em_trust3') }}</span></div>
+                                <div class="hs-trust-item"><i data-lucide="mail"></i> <span>{{ __('landing.em_trust4') }}</span></div>
                             </div>
                         </div>
                         <div class="hs-visual">
                             <div class="hs-emr-card">
-                                <div class="hs-emr-head"><i data-lucide="siren"></i><span>Emergency override — audited</span></div>
-                                <div class="hs-erow"><div class="hs-edot hs-edot-danger"></div><div class="hs-econtent"><strong>Blood type</strong><span>O negative</span></div><span class="hs-etime">verified</span></div>
-                                <div class="hs-erow"><div class="hs-edot hs-edot-warn"></div><div class="hs-econtent"><strong>Known allergy</strong><span>Penicillin — severe</span></div><span class="hs-etime">flagged</span></div>
-                                <div class="hs-erow"><div class="hs-edot hs-edot-info"></div><div class="hs-econtent"><strong>Active medication</strong><span>Metformin 500 mg · daily</span></div><span class="hs-etime">current</span></div>
-                                <div class="hs-erow hs-erow-last"><div class="hs-edot hs-edot-success"></div><div class="hs-econtent"><strong>Recent visit</strong><span>Cardiology · 3 weeks ago</span></div><span class="hs-etime">City Lab</span></div>
+                                <div class="hs-emr-head"><i data-lucide="siren"></i><span>{{ __('landing.em_card_header') }}</span></div>
+                                <div class="hs-erow"><div class="hs-edot hs-edot-danger"></div><div class="hs-econtent"><strong>{{ __('landing.em_row1_label') }}</strong><span>{{ __('landing.em_row1_val') }}</span></div><span class="hs-etime">{{ __('landing.em_row1_status') }}</span></div>
+                                <div class="hs-erow"><div class="hs-edot hs-edot-warn"></div><div class="hs-econtent"><strong>{{ __('landing.em_row2_label') }}</strong><span>{{ __('landing.em_row2_val') }}</span></div><span class="hs-etime">{{ __('landing.em_row2_status') }}</span></div>
+                                <div class="hs-erow"><div class="hs-edot hs-edot-info"></div><div class="hs-econtent"><strong>{{ __('landing.em_row3_label') }}</strong><span>{{ __('landing.em_row3_val') }}</span></div><span class="hs-etime">{{ __('landing.em_row3_status') }}</span></div>
+                                <div class="hs-erow hs-erow-last"><div class="hs-edot hs-edot-success"></div><div class="hs-econtent"><strong>{{ __('landing.em_row4_label') }}</strong><span>{{ __('landing.em_row4_val') }}</span></div><span class="hs-etime">{{ __('landing.em_row4_status') }}</span></div>
                             </div>
                             <div class="hs-fc">
                                 <i data-lucide="history" class="hs-fc-icon-muted"></i>
-                                <div><strong>Audit logged</strong><span>Dr. A. Nkeng · 02:14 AM · Emergency Dept.</span></div>
+                                <div><strong>{{ __('landing.em_fc1_title') }}</strong><span>{{ __('landing.em_fc1_desc') }}</span></div>
                             </div>
                             <div class="hs-fc">
                                 <i data-lucide="mail" class="hs-fc-icon-muted"></i>
-                                <div><strong>Patient notified</strong><span>Message sent on recovery</span></div>
+                                <div><strong>{{ __('landing.em_fc2_title') }}</strong><span>{{ __('landing.em_fc2_desc') }}</span></div>
                             </div>
                         </div>
                     </div>
@@ -140,33 +140,33 @@
                 <div class="hs-slide hs-s4">
                     <div class="container hs-inner">
                         <div class="hs-content">
-                            <div class="hs-badge"><i data-lucide="network"></i> Connected Care Network</div>
-                            <h1>Every facility, one patient record. Zero duplication.</h1>
-                            <p class="hs-sub">OpesCare integrates with hospitals, clinics, labs, pharmacies, insurers, and public health authorities through the Connect Suite API — no rip-and-replace required.</p>
-                            <p class="hs-desc">FHIR R4-compliant exchange means your existing HIS or LIS plugs in without rebuilding workflows. The bridge agent handles sync, mapping, and reconciliation automatically.</p>
+                            <div class="hs-badge"><i data-lucide="network"></i> {{ __('landing.network_badge') }}</div>
+                            <h1>{{ __('landing.network_h1') }}</h1>
+                            <p class="hs-sub">{{ __('landing.network_sub') }}</p>
+                            <p class="hs-desc">{{ __('landing.network_desc_slide') }}</p>
                             <div class="hs-btn-grid">
-                                <a href="#partner-form" class="hs-btn-primary"><i data-lucide="building-2"></i> Request Partnership Demo</a>
-                                <a href="#how-it-works" class="hs-btn-secondary"><i data-lucide="play-circle"></i> See How It Works</a>
+                                <a href="#partner-form" class="hs-btn-primary"><i data-lucide="building-2"></i> {{ __('landing.slide_cta_primary') }}</a>
+                                <a href="#how-it-works" class="hs-btn-secondary"><i data-lucide="play-circle"></i> {{ __('landing.slide_cta_secondary') }}</a>
                             </div>
                             <div class="hs-trust-row">
-                                <div class="hs-trust-item"><i data-lucide="cable"></i> <span>FHIR R4 compliant</span></div>
-                                <div class="hs-trust-item"><i data-lucide="plug"></i> <span>Works with existing HIS/LIS</span></div>
-                                <div class="hs-trust-item"><i data-lucide="refresh-cw"></i> <span>Auto-sync bridge agent</span></div>
-                                <div class="hs-trust-item"><i data-lucide="webhook"></i> <span>Webhooks &amp; SDK</span></div>
+                                <div class="hs-trust-item"><i data-lucide="cable"></i> <span>{{ __('landing.network_trust1') }}</span></div>
+                                <div class="hs-trust-item"><i data-lucide="plug"></i> <span>{{ __('landing.network_trust2') }}</span></div>
+                                <div class="hs-trust-item"><i data-lucide="refresh-cw"></i> <span>{{ __('landing.network_trust3') }}</span></div>
+                                <div class="hs-trust-item"><i data-lucide="webhook"></i> <span>{{ __('landing.network_trust4') }}</span></div>
                             </div>
                         </div>
                         <div class="hs-visual">
                             <div class="hs-net-center">
-                                <strong>OpesCare Platform</strong>
-                                <span>FHIR R4 · Connect Suite</span>
+                                <strong>{{ __('landing.network_center_title') }}</strong>
+                                <span>{{ __('landing.network_center_sub') }}</span>
                             </div>
                             <div class="hs-net-nodes">
-                                <div class="hs-nn"><i data-lucide="building-2"></i><span>Hospitals</span></div>
-                                <div class="hs-nn"><i data-lucide="microscope"></i><span>Laboratories</span></div>
-                                <div class="hs-nn"><i data-lucide="pill"></i><span>Pharmacies</span></div>
-                                <div class="hs-nn"><i data-lucide="heart-handshake"></i><span>Insurers</span></div>
-                                <div class="hs-nn"><i data-lucide="stethoscope"></i><span>Clinics</span></div>
-                                <div class="hs-nn"><i data-lucide="landmark"></i><span>Public Health</span></div>
+                                <div class="hs-nn"><i data-lucide="building-2"></i><span>{{ __('landing.network_node_hospitals') }}</span></div>
+                                <div class="hs-nn"><i data-lucide="microscope"></i><span>{{ __('landing.network_node_labs') }}</span></div>
+                                <div class="hs-nn"><i data-lucide="pill"></i><span>{{ __('landing.network_node_pharmacies') }}</span></div>
+                                <div class="hs-nn"><i data-lucide="heart-handshake"></i><span>{{ __('landing.network_node_insurers') }}</span></div>
+                                <div class="hs-nn"><i data-lucide="stethoscope"></i><span>{{ __('landing.network_node_clinics') }}</span></div>
+                                <div class="hs-nn"><i data-lucide="landmark"></i><span>{{ __('landing.network_node_public') }}</span></div>
                             </div>
                             <div class="hs-fc" style="margin-top:.5rem;">
                                 <i data-lucide="check-circle" class="hs-fc-icon-success"></i>
@@ -180,19 +180,19 @@
 
             {{-- Carousel nav --}}
             <div class="hs-nav">
-                <button class="hs-nav-btn" id="hs-prev" onclick="hsPrev()" aria-label="Previous slide" disabled>
+                <button class="hs-nav-btn" id="hs-prev" onclick="hsPrev()" aria-label="{{ __('landing.aria_prev_slide') }}" disabled>
                     <i data-lucide="arrow-left"></i>
                 </button>
                 <div class="hs-dots-wrap">
                     <div class="hs-dots">
-                        <button class="hs-dot hs-dot-1 hs-dot-active" onclick="hsGo(0)" aria-label="Slide 1: Health ID"></button>
-                        <button class="hs-dot hs-dot-2" onclick="hsGo(1)" aria-label="Slide 2: Consent"></button>
-                        <button class="hs-dot hs-dot-3" onclick="hsGo(2)" aria-label="Slide 3: Emergency"></button>
-                        <button class="hs-dot hs-dot-4" onclick="hsGo(3)" aria-label="Slide 4: Network"></button>
+                        <button class="hs-dot hs-dot-1 hs-dot-active" onclick="hsGo(0)" aria-label="{{ __('landing.aria_dot_1') }}"></button>
+                        <button class="hs-dot hs-dot-2" onclick="hsGo(1)" aria-label="{{ __('landing.aria_dot_2') }}"></button>
+                        <button class="hs-dot hs-dot-3" onclick="hsGo(2)" aria-label="{{ __('landing.aria_dot_3') }}"></button>
+                        <button class="hs-dot hs-dot-4" onclick="hsGo(3)" aria-label="{{ __('landing.aria_dot_4') }}"></button>
                     </div>
-                    <div class="hs-slide-label" id="hs-label">Health ID</div>
+                    <div class="hs-slide-label" id="hs-label">{{ __('landing.slide_label_default') }}</div>
                 </div>
-                <button class="hs-nav-btn" id="hs-next" onclick="hsNext()" aria-label="Next slide">
+                <button class="hs-nav-btn" id="hs-next" onclick="hsNext()" aria-label="{{ __('landing.aria_next_slide') }}">
                     <i data-lucide="arrow-right"></i>
                 </button>
             </div>
@@ -204,7 +204,7 @@
     (function(){
         var cur = 0;
         var total = 4;
-        var labels = ['Health ID','Consent & Access','Emergency Access','Connected Care Network'];
+        var labels = @json(__('landing.slide_labels'));
         function hsUpdate(){
             document.getElementById('hs-slides').style.transform = 'translateX(-' + (cur * 100) + '%)';
             document.querySelectorAll('.hs-dot').forEach(function(d,i){ d.classList.toggle('hs-dot-active', i === cur); });
@@ -911,7 +911,7 @@
                             <div class="form-group">
                                 <label for="form-type">{{ __('landing.partner_cta.form.type') }} *</label>
                                 <select id="form-type" name="organization_type" required class="form-control{{ $errors->has('organization_type') ? ' form-control-error' : '' }}">
-                                    <option value="">-- Select Type --</option>
+                                    <option value="">{{ __('landing.form_select_placeholder') }}</option>
                                     @foreach(__('landing.partner_cta.form.options') as $value => $label)
                                         <option value="{{ $value }}" {{ old('organization_type') == $value ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
