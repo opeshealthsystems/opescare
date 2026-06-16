@@ -1,0 +1,51 @@
+# OpesCare — Code Owners
+#
+# Format: <pattern> <owner> [<owner>...]
+# GitHub/GitLab uses this to auto-assign reviewers on PRs.
+# Patterns are matched top-to-bottom; last match wins.
+#
+# Owners:
+#   @makkowens24       — platform lead (API, portals, FHIR, SDK, infrastructure)
+#   @jiencestonmorningstar — contributor (mobile, clinical workflows)
+#
+# Bots (informational only — bots are not added as PR reviewers):
+#   google-labs-jules[bot] — Codex / production-hardening automation
+
+# ── Default: platform lead reviews everything not explicitly matched ──
+*                                    @makkowens24
+
+# ── Laravel API ──
+/apps/api-laravel/app/              @makkowens24
+/apps/api-laravel/database/         @makkowens24
+/apps/api-laravel/routes/           @makkowens24
+/apps/api-laravel/tests/            @makkowens24
+/apps/api-laravel/lang/             @makkowens24
+/apps/api-laravel/resources/        @makkowens24
+
+# ── Mobile patient app ──
+/apps/mobile-patient/               @makkowens24 @jiencestonmorningstar
+
+# ── Connect Suite SDK ──
+/sdk/                               @makkowens24
+
+# ── Bridge Agent ──
+/bridge-agent/                      @makkowens24
+
+# ── Embeddable widget ──
+/widget/                            @makkowens24
+
+# ── Platform docs ──
+/docs/                              @makkowens24
+/docs/security/                     @makkowens24
+/docs/deployment/                   @makkowens24
+/docs/runbooks/                     @makkowens24
+/docs/integration/                  @makkowens24 @jiencestonmorningstar
+/docs/mobile/                       @jiencestonmorningstar @makkowens24
+
+# ── API contracts / OpenAPI ──
+/contracts/                         @makkowens24
+
+# ── Platform spine (version, changelog, setup) ──
+/VERSION                            @makkowens24
+/CHANGELOG.md                       @makkowens24
+/LARAGON_SETUP.md                   @makkowens24
