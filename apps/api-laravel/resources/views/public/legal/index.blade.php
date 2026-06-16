@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Legal Centre — OpesCare</title>
+    <title>{{ __('public.legal_page.page_title') }}</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/portal.css') }}">
@@ -29,14 +29,13 @@
 </head>
 <body>
 <div class="legal-header">
-    <h1>OpesCare Legal Centre</h1>
-    <p>Our policies, terms, and commitment to your privacy</p>
+    <h1>{{ __('public.legal_page.hero_title') }}</h1>
+    <p>{{ __('public.legal_page.hero_subtitle') }}</p>
 </div>
 
 <div class="legal-container">
     <p style="font-size:0.88rem;color:#64748b;margin-bottom:24px;">
-        The following legal documents govern the use of OpesCare services. By using our platform,
-        you agree to the applicable terms. Always review the current version of each document.
+        {{ __('public.legal_page.intro') }}
     </p>
 
     @forelse($documents as $doc)
@@ -46,12 +45,12 @@
                 <div class="legal-card__title">{{ $doc->title }}</div>
                 <div class="legal-card__meta">
                     @if($ver)
-                        Version {{ $ver->version }}
+                        {{ __('public.legal_page.version_label') }} {{ $ver->version }}
                         @if($ver->effective_at)
-                            · Effective {{ $ver->effective_at->format('d F Y') }}
+                            · {{ __('public.legal_page.effective_label') }} {{ $ver->effective_at->format('d F Y') }}
                         @endif
                     @else
-                        No current version
+                        {{ __('public.legal_page.no_version') }}
                     @endif
                 </div>
             </div>
@@ -59,20 +58,20 @@
         </a>
     @empty
         <div style="text-align:center;padding:40px;color:#94a3b8;">
-            No legal documents published yet.
+            {{ __('public.legal_page.no_docs') }}
         </div>
     @endforelse
 
     <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:16px 20px;margin-top:24px;font-size:0.85rem;color:#1e3a8a;">
-        <strong>Questions?</strong>  Contact our privacy team at
+        <strong>{{ __('public.legal_page.questions') }}</strong> {{ __('public.legal_page.contact_privacy') }}
         <a href="mailto:privacy@opescare.com" style="color:#1d4ed8;">privacy@opescare.com</a>
-        or visit our <a href="/support" style="color:#1d4ed8;">Help Centre</a>.
+        {{ __('public.legal_page.or_visit') }} <a href="/support" style="color:#1d4ed8;">{{ __('public.legal_page.help_centre') }}</a>.
     </div>
 </div>
 
 <div class="legal-footer">
-    © {{ date('Y') }} OpesCare. All rights reserved.
-    <a href="/" style="color:#94a3b8;margin-left:12px;">← Back to Portal</a>
+    {{ __('public.legal_page.copyright', ['year' => date('Y')]) }}
+    <a href="/" style="color:#94a3b8;margin-left:12px;">{{ __('public.legal_page.back_portal') }}</a>
 </div>
 </body>
 </html>
