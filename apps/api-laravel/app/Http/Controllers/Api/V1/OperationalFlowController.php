@@ -54,14 +54,14 @@ class OperationalFlowController extends Controller
         if (!empty($validated['facility_id']) && $facilityId && $validated['facility_id'] !== $facilityId) {
             return response()->json([
                 'error'   => 'forbidden',
-                'message' => 'facility_id in body does not match your authenticated facility.',
+                'message' => __('api.facility_id_mismatch_auth'),
             ], 403);
         }
 
         // Authoritative facility_id always from middleware
         $effectiveFacilityId = $facilityId ?? $validated['facility_id'];
         if (!$effectiveFacilityId) {
-            return response()->json(['message' => 'facility_id could not be resolved from authentication context.'], 422);
+            return response()->json(['message' => __('api.facility_unresolved_auth')], 422);
         }
 
         $visit = $service->createVisit([
@@ -72,7 +72,7 @@ class OperationalFlowController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Visit created.',
+            'message' => __('api.visit_created'),
             'data'    => $this->serializeVisit($visit, $service),
         ], 201);
     }
@@ -87,7 +87,7 @@ class OperationalFlowController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if ($facilityId && $visit->facility_id !== $facilityId) {
-            return response()->json(['message' => 'Visit not found in your facility scope.'], 404);
+            return response()->json(['message' => __('api.visit_not_found_scope')], 404);
         }
         return response()->json(['data' => $this->serializeVisit($visit, $service)]);
     }
@@ -101,7 +101,7 @@ class OperationalFlowController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if ($facilityId && $visit->facility_id !== $facilityId) {
-            return response()->json(['message' => 'Visit not found in your facility scope.'], 404);
+            return response()->json(['message' => __('api.visit_not_found_scope')], 404);
         }
 
         $validated = $request->validate([
@@ -116,7 +116,7 @@ class OperationalFlowController extends Controller
         }
 
         return response()->json([
-            'message' => 'Visit status updated.',
+            'message' => __('api.visit_status_updated'),
             'data'    => $this->serializeVisit($visit, $service),
         ]);
     }
@@ -131,7 +131,7 @@ class OperationalFlowController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if ($facilityId && $visit->facility_id !== $facilityId) {
-            return response()->json(['message' => 'Visit not found in your facility scope.'], 404);
+            return response()->json(['message' => __('api.visit_not_found_scope')], 404);
         }
 
         $validated = $request->validate([
@@ -163,7 +163,7 @@ class OperationalFlowController extends Controller
         }
 
         return response()->json([
-            'message' => 'Visit completed.',
+            'message' => __('api.visit_completed'),
             'data'    => $this->serializeVisit($visit, $service),
         ]);
     }
@@ -177,7 +177,7 @@ class OperationalFlowController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if ($facilityId && $visit->facility_id !== $facilityId) {
-            return response()->json(['message' => 'Visit not found in your facility scope.'], 404);
+            return response()->json(['message' => __('api.visit_not_found_scope')], 404);
         }
 
         $validated = $request->validate([
@@ -191,7 +191,7 @@ class OperationalFlowController extends Controller
         }
 
         return response()->json([
-            'message' => 'Visit cancelled.',
+            'message' => __('api.visit_cancelled'),
             'data'    => $this->serializeVisit($visit, $service),
         ]);
     }
@@ -231,13 +231,13 @@ class OperationalFlowController extends Controller
         if (!empty($validated['facility_id']) && $facilityId && $validated['facility_id'] !== $facilityId) {
             return response()->json([
                 'error'   => 'forbidden',
-                'message' => 'facility_id in body does not match your authenticated facility.',
+                'message' => __('api.facility_id_mismatch_auth'),
             ], 403);
         }
 
         $effectiveFacilityId = $facilityId ?? $validated['facility_id'];
         if (!$effectiveFacilityId) {
-            return response()->json(['message' => 'facility_id could not be resolved from authentication context.'], 422);
+            return response()->json(['message' => __('api.facility_unresolved_auth')], 422);
         }
 
         try {
@@ -260,7 +260,7 @@ class OperationalFlowController extends Controller
 
         return response()->json([
             'advisory_notice' => 'Drug interaction alerts are advisory only and do not replace clinical judgment.',
-            'message'         => 'Medication reconciliation created.',
+            'message'         => __('api.medication_reconciliation_created'),
             'data'            => $reconciliation,
         ], 201);
     }
@@ -278,11 +278,11 @@ class OperationalFlowController extends Controller
         try {
             $alert = $service->acknowledge($alertId, $validated['user_id']);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json(['message' => 'Alert not found.'], 404);
+            return response()->json(['message' => __('api.alert_not_found')], 404);
         }
 
         return response()->json([
-            'message' => 'Drug interaction alert acknowledged.',
+            'message' => __('api.drug_interaction_acknowledged'),
             'data'    => $alert,
         ]);
     }

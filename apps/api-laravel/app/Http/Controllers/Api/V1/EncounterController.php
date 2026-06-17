@@ -104,7 +104,7 @@ class EncounterController extends Controller
         }
 
         return response()->json([
-            'message'           => 'Clinical note amended. Original note preserved with status "amended".',
+            'message'           => __('api.clinical_note_amended'),
             'data'              => $this->serializeNote($amended),
             'original_note_id'  => $note->id,
         ], 201);
@@ -129,7 +129,7 @@ class EncounterController extends Controller
 
         $allergy = $this->service->recordAllergy($validated, $validated['actor_id'] ?? null);
 
-        return response()->json(['message' => 'Allergy recorded.', 'data' => $allergy], 201);
+        return response()->json(['message' => __('api.allergy_recorded'), 'data' => $allergy], 201);
     }
 
     // ── Diagnoses ─────────────────────────────────────────────────────────
@@ -161,7 +161,7 @@ class EncounterController extends Controller
 
         $diagnosis = $this->service->recordDiagnosis($validated, $validated['actor_id'] ?? null);
 
-        return response()->json(['message' => 'Diagnosis recorded.', 'data' => $diagnosis], 201);
+        return response()->json(['message' => __('api.diagnosis_recorded'), 'data' => $diagnosis], 201);
     }
 
     // ── Private helpers ───────────────────────────────────────────────────

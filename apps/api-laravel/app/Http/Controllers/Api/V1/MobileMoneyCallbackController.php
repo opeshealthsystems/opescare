@@ -31,7 +31,7 @@ class MobileMoneyCallbackController extends Controller
     public function mtnCallback(Request $request): \Illuminate\Http\JsonResponse
     {
         if (!$this->verifyCallbackSignature($request, config('services.mtn_momo.callback_secret'))) {
-            return response()->json(['error' => 'Invalid callback signature.'], 401);
+            return response()->json(['error' => __('api.invalid_callback_signature')], 401);
         }
 
         $referenceId = $request->input('referenceId') ?? $request->input('externalId');
@@ -40,7 +40,7 @@ class MobileMoneyCallbackController extends Controller
         Log::info('MTN MoMo callback received', ['ref' => $referenceId, 'status' => $status]);
 
         if (!$referenceId) {
-            return response()->json(['error' => 'Missing referenceId'], 422);
+            return response()->json(['error' => __('api.missing_reference_id')], 422);
         }
 
         $this->finalizePayment($referenceId, $status === 'SUCCESSFUL', 'mtn_momo');
@@ -53,7 +53,7 @@ class MobileMoneyCallbackController extends Controller
     public function orangeCallback(Request $request): \Illuminate\Http\JsonResponse
     {
         if (!$this->verifyCallbackSignature($request, config('services.orange_money.callback_secret'))) {
-            return response()->json(['error' => 'Invalid callback signature.'], 401);
+            return response()->json(['error' => __('api.invalid_callback_signature')], 401);
         }
 
         $txnId  = $request->input('txnid') ?? $request->input('pay_token');
@@ -62,7 +62,7 @@ class MobileMoneyCallbackController extends Controller
         Log::info('Orange Money callback received', ['txn' => $txnId, 'status' => $status]);
 
         if (!$txnId) {
-            return response()->json(['error' => 'Missing txnid'], 422);
+            return response()->json(['error' => __('api.missing_txnid')], 422);
         }
 
         $this->finalizePayment($txnId, $status === 'SUCCESS', 'orange_money');

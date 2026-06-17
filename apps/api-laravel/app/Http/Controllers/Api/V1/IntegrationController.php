@@ -22,7 +22,7 @@ class IntegrationController extends Controller
         $idempotencyKey = $request->header('Idempotency-Key');
 
         if (!$idempotencyKey) {
-            return response()->json(['error' => 'Idempotency-Key header is required.'], 400);
+            return response()->json(['error' => __('api.idempotency_key_required')], 400);
         }
 
         try {
@@ -37,7 +37,7 @@ class IntegrationController extends Controller
 
             $responseBody = [
                 'status' => 'accepted',
-                'message' => 'Encounter pushed to patient timeline successfully.'
+                'message' => __('api.encounter_pushed')
             ];
             $this->syncService->completeIdempotencyRecord($idempotencyRecord, $responseBody, 200);
 

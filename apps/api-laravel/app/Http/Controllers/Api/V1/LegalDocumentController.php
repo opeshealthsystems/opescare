@@ -85,7 +85,7 @@ class LegalDocumentController extends Controller
             $validated['user_agent'] ?? $request->userAgent()
         );
 
-        return response()->json(['message' => 'Acceptance recorded.', 'data' => $acceptance], 201);
+        return response()->json(['message' => __('api.acceptance_recorded'), 'data' => $acceptance], 201);
     }
 
     /**
@@ -112,7 +112,7 @@ class LegalDocumentController extends Controller
             $validated['expires_at'] ?? null
         );
 
-        return response()->json(['message' => 'Partner acceptance recorded.', 'data' => $acceptance], 201);
+        return response()->json(['message' => __('api.partner_acceptance_recorded'), 'data' => $acceptance], 201);
     }
 
     // ── Admin ─────────────────────────────────────────────────────────────
@@ -138,7 +138,7 @@ class LegalDocumentController extends Controller
             $validated['lang'] ?? 'en'
         );
 
-        return response()->json(['message' => 'Document ensured.', 'data' => $doc], 201);
+        return response()->json(['message' => __('api.document_ensured'), 'data' => $doc], 201);
     }
 
     /**
@@ -167,7 +167,7 @@ class LegalDocumentController extends Controller
         );
 
         return response()->json([
-            'message' => "Version {$validated['version']} published for '{$document->slug}'.",
+            'message' => __('api.version_published', ['version' => $validated['version'], 'slug' => $document->slug]),
             'data'    => $version,
         ], 201);
     }

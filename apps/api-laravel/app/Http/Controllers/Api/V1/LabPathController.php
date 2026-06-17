@@ -22,7 +22,7 @@ class LabPathController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'Facility could not be resolved.', 'error_code' => 'FACILITY_UNRESOLVABLE'], 403);
+            return response()->json(['message' => __('api.facility_unresolved'), 'error_code' => 'FACILITY_UNRESOLVABLE'], 403);
         }
 
         $validated = $request->validate([
@@ -72,7 +72,7 @@ class LabPathController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId || $report->facility_id !== $facilityId) {
-            return response()->json(['message' => 'Forbidden.'], 403);
+            return response()->json(['message' => __('api.forbidden')], 403);
         }
         return response()->json(['data' => $report]);
     }
@@ -81,7 +81,7 @@ class LabPathController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'Facility could not be resolved.', 'error_code' => 'FACILITY_UNRESOLVABLE'], 403);
+            return response()->json(['message' => __('api.facility_unresolved'), 'error_code' => 'FACILITY_UNRESOLVABLE'], 403);
         }
 
         $query = LabPathReport::where('facility_id', $facilityId)
@@ -101,7 +101,7 @@ class LabPathController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId || $report->facility_id !== $facilityId) {
-            return response()->json(['message' => 'Forbidden.'], 403);
+            return response()->json(['message' => __('api.forbidden')], 403);
         }
 
         $report->update(['status' => 'final']);

@@ -59,7 +59,7 @@ class LiteApiController extends Controller
         if (LiteDevice::where('device_fingerprint', $data['device_fingerprint'])->exists()) {
             $device = LiteDevice::where('device_fingerprint', $data['device_fingerprint'])->first();
             return response()->json([
-                'message' => 'Device already registered.',
+                'message' => __('api.device_already_registered'),
                 'device'  => [
                     'id'     => $device->id,
                     'status' => $device->status,
@@ -80,7 +80,7 @@ class LiteApiController extends Controller
         );
 
         return response()->json([
-            'message' => 'Device registered. Awaiting activation.',
+            'message' => __('api.device_registered_pending'),
             'device'  => [
                 'id'            => $device->id,
                 'status'        => $device->status,
@@ -100,7 +100,7 @@ class LiteApiController extends Controller
     {
         $device = $this->resolveDevice($request);
         if (!$device) {
-            return response()->json(['message' => 'Device not found, not active, or invalid signature.'], 403);
+            return response()->json(['message' => __('api.device_invalid')], 403);
         }
 
         $device->touchSeen();
@@ -119,7 +119,7 @@ class LiteApiController extends Controller
     {
         $device = $this->resolveDevice($request);
         if (!$device) {
-            return response()->json(['message' => 'Device not found, not active, or invalid signature.'], 403);
+            return response()->json(['message' => __('api.device_invalid')], 403);
         }
 
         $data = $request->validate([
@@ -133,7 +133,7 @@ class LiteApiController extends Controller
         $result = $this->liteService->pushOfflineEvents($device, $data['events']);
 
         return response()->json([
-            'message' => 'Sync push completed.',
+            'message' => __('api.sync_push_completed'),
             'result'  => $result,
         ]);
     }
@@ -147,7 +147,7 @@ class LiteApiController extends Controller
     {
         $device = $this->resolveDevice($request);
         if (!$device) {
-            return response()->json(['message' => 'Device not found, not active, or invalid signature.'], 403);
+            return response()->json(['message' => __('api.device_invalid')], 403);
         }
 
         $since = $request->query('since'); // ISO8601 timestamp
@@ -166,7 +166,7 @@ class LiteApiController extends Controller
     {
         $device = $this->resolveDevice($request);
         if (!$device) {
-            return response()->json(['message' => 'Device not found, not active, or invalid signature.'], 403);
+            return response()->json(['message' => __('api.device_invalid')], 403);
         }
 
         $data = $request->validate([
@@ -179,7 +179,7 @@ class LiteApiController extends Controller
         $result = $this->liteService->pushOfflineEvents($device, [$data]);
 
         return response()->json([
-            'message' => 'Offline event submitted.',
+            'message' => __('api.offline_event_submitted'),
             'result'  => $result,
         ], 201);
     }
@@ -199,16 +199,16 @@ class LiteApiController extends Controller
     {
         $device = $this->resolveDevice($request);
         if (! $device) {
-            return response()->json(['message' => 'Device not found, not active, or invalid signature.'], 403);
+            return response()->json(['message' => __('api.device_invalid')], 403);
         }
 
         // A device may only resolve conflicts that belong to it
         if ($conflict->lite_device_id !== $device->id) {
-            return response()->json(['message' => 'Conflict does not belong to this device.'], 403);
+            return response()->json(['message' => __('api.conflict_wrong_device')], 403);
         }
 
         if (! $conflict->isOpen()) {
-            return response()->json(['message' => 'Conflict is already resolved or dismissed.'], 409);
+            return response()->json(['message' => __('api.conflict_already_resolved')], 409);
         }
 
         $data = $request->validate([
@@ -224,7 +224,7 @@ class LiteApiController extends Controller
         );
 
         return response()->json([
-            'message'  => 'Conflict resolved.',
+            'message'  => __('api.conflict_resolved'),
             'conflict' => [
                 'id'              => $resolved->id,
                 'status'          => $resolved->status,
@@ -251,7 +251,7 @@ class LiteApiController extends Controller
     {
         $device = $this->resolveDevice($request);
         if (! $device) {
-            return response()->json(['message' => 'Device not found, not active, or invalid signature.'], 403);
+            return response()->json(['message' => __('api.device_invalid')], 403);
         }
 
         $formulary = \App\Models\DrugFormulary::where('facility_id', $device->facility_id)

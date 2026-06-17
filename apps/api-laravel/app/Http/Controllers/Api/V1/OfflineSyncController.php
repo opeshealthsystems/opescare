@@ -53,7 +53,7 @@ class OfflineSyncController extends Controller
                 'scope'            => $scope,
                 'caching_allowed'  => false,
                 'max_records'      => 0,
-                'message'          => "No caching policy defined for scope '{$scope}'.",
+                'message'          => __('api.no_caching_policy_scope', ['scope' => $scope]),
             ]);
         }
 
@@ -74,7 +74,7 @@ class OfflineSyncController extends Controller
         // Enforce: facility_id from middleware must match requested facilityId
         $middlewareFacilityId = $request->attributes->get('facility_id');
         if ($middlewareFacilityId && $middlewareFacilityId !== $facilityId) {
-            return response()->json(['message' => 'Forbidden: facility_id mismatch.'], 403);
+            return response()->json(['message' => __('api.forbidden_facility_mismatch')], 403);
         }
 
         $scopes = $this->policies->getAllowedScopesForFacility($facilityId);
@@ -142,11 +142,11 @@ class OfflineSyncController extends Controller
                 'safety_notice' => 'Clinical conflicts must use manual_merge strategy with a merged_payload.',
             ], 422);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {
-            return response()->json(['message' => 'Conflict not found.'], 404);
+            return response()->json(['message' => __('api.conflict_not_found')], 404);
         }
 
         return response()->json([
-            'message' => 'Conflict resolved.',
+            'message' => __('api.conflict_resolved'),
             'data'    => $resolved,
         ]);
     }

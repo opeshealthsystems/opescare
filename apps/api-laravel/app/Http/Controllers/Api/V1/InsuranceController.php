@@ -47,7 +47,7 @@ class InsuranceController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'Facility could not be resolved.', 'code' => 'FACILITY_UNRESOLVABLE'], 403);
+            return response()->json(['message' => __('api.facility_unresolved'), 'code' => 'FACILITY_UNRESOLVABLE'], 403);
         }
 
         $validated = $request->validate([
@@ -158,7 +158,7 @@ class InsuranceController extends Controller
             ?? $request->user()?->id;
 
         if (!$actorId) {
-            return response()->json(['message' => 'Actor identity could not be resolved.', 'code' => 'ACTOR_UNRESOLVABLE'], 403);
+            return response()->json(['message' => __('api.actor_unresolved_identity'), 'code' => 'ACTOR_UNRESOLVABLE'], 403);
         }
 
         try {
@@ -166,7 +166,7 @@ class InsuranceController extends Controller
         } catch (\Exception $e) {
             if ($e->getMessage() === 'CLAIM_NOT_PAYABLE') {
                 return response()->json([
-                    'message' => 'This claim is not in a payable state.',
+                    'message' => __('api.claim_not_payable'),
                 ], 422);
             }
             throw $e;

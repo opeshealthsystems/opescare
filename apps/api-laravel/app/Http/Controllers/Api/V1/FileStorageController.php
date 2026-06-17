@@ -44,7 +44,7 @@ class FileStorageController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'facility_id could not be resolved.'], 422);
+            return response()->json(['message' => __('api.facility_unresolved_id')], 422);
         }
 
         $request->validate([
@@ -65,7 +65,7 @@ class FileStorageController extends Controller
         }
 
         return response()->json([
-            'message' => 'File uploaded.',
+            'message' => __('api.file_uploaded'),
             'data'    => $this->serializeAsset($asset),
         ], 201);
     }
@@ -78,7 +78,7 @@ class FileStorageController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'facility_id could not be resolved.'], 422);
+            return response()->json(['message' => __('api.facility_unresolved_id')], 422);
         }
 
         $validated = $request->validate([
@@ -105,7 +105,7 @@ class FileStorageController extends Controller
         }
 
         return response()->json([
-            'message' => 'File uploaded and attached.',
+            'message' => __('api.file_uploaded_attached'),
             'data'    => $attachment->load('fileAsset'),
         ], 201);
     }
@@ -134,7 +134,7 @@ class FileStorageController extends Controller
         );
 
         return response()->json([
-            'message' => 'File attached.',
+            'message' => __('api.file_attached'),
             'data'    => $attachment,
         ], 201);
     }
@@ -173,7 +173,7 @@ class FileStorageController extends Controller
     public function delete(FileAsset $asset): JsonResponse
     {
         $this->service->delete($asset);
-        return response()->json(['message' => 'File deleted.']);
+        return response()->json(['message' => __('api.file_deleted')]);
     }
 
     // ── Private helpers ───────────────────────────────────────────────────
