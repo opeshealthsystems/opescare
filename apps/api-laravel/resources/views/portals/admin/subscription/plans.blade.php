@@ -142,6 +142,19 @@
                         <input type="text" name="name" class="form-control" required placeholder="{{ __('public.adm_sub_plans_ph_name') }}">
                     </div>
                     <div class="form-group">
+                        <label class="form-label form-label-required">{{ __('public.adm_sub_plans_lbl_audience') }}</label>
+                        <select name="audience" class="form-control" required>
+                            <option value="facility">{{ __('public.adm_sub_plans_aud_facility') }}</option>
+                            <option value="patient">{{ __('public.adm_sub_plans_aud_patient') }}</option>
+                            <option value="household">{{ __('public.adm_sub_plans_aud_household') }}</option>
+                            <option value="insurer">{{ __('public.adm_sub_plans_aud_insurer') }}</option>
+                            <option value="lab">{{ __('public.adm_sub_plans_aud_lab') }}</option>
+                            <option value="pharmacy">{{ __('public.adm_sub_plans_aud_pharmacy') }}</option>
+                            <option value="healthorg">{{ __('public.adm_sub_plans_aud_healthorg') }}</option>
+                            <option value="developer">{{ __('public.adm_sub_plans_aud_developer') }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label class="form-label form-label-required">{{ __('public.adm_sub_plans_lbl_cycle') }}</label>
                         <select name="billing_cycle" class="form-control" required>
                             <option value="monthly">{{ __('public.adm_sub_plans_opt_monthly') }}</option>
@@ -151,6 +164,10 @@
                     <div class="form-group">
                         <label class="form-label form-label-required">{{ __('public.adm_sub_plans_lbl_price') }}</label>
                         <input type="number" name="price" class="form-control" required min="0" step="1" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">{{ __('public.adm_sub_plans_lbl_annual_price') }}</label>
+                        <input type="number" name="annual_price" class="form-control" min="0" step="1" placeholder="{{ __('public.adm_sub_plans_ph_annual_price') }}">
                     </div>
                     <div class="form-group">
                         <label class="form-label">{{ __('public.adm_sub_plans_lbl_trial_days') }}</label>

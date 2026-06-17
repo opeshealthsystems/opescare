@@ -21,8 +21,12 @@ class SubscriptionService
             $plan = SubscriptionPlan::create([
                 'name'                    => $data['name'],
                 'slug'                    => Str::slug($data['name']),
+                'audience'                => $data['audience'] ?? 'facility',
                 'billing_cycle'           => $data['billing_cycle'],
                 'price_kobo'              => (int) ($data['price'] * 100),
+                'annual_price_kobo'       => isset($data['annual_price']) && $data['annual_price'] !== null && $data['annual_price'] !== ''
+                                                ? (int) ($data['annual_price'] * 100)
+                                                : null,
                 'currency'                => $data['currency'] ?? 'XAF',
                 'description'             => $data['description'] ?? null,
                 'features'                => $data['features'] ?? null,

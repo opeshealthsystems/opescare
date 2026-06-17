@@ -6624,4 +6624,17 @@ return [
     'pat_sub_invoice_date'     => 'Date',
     'pat_sub_invoice_amount'   => 'Amount',
     'pat_sub_invoice_status'   => 'Status',
+
+    // Admin plan catalog — audience & annual price
+    'adm_sub_plans_lbl_audience'     => 'Audience',
+    'adm_sub_plans_aud_facility'     => 'Health facility',
+    'adm_sub_plans_aud_patient'      => 'Patient',
+    'adm_sub_plans_aud_household'    => 'Family / household',
+    'adm_sub_plans_aud_insurer'      => 'Insurer',
+    'adm_sub_plans_aud_lab'          => 'Laboratory',
+    'adm_sub_plans_aud_pharmacy'     => 'Pharmacy',
+    'adm_sub_plans_aud_healthorg'    => 'Health organization',
+    'adm_sub_plans_aud_developer'    => 'Developer / API',
+    'adm_sub_plans_lbl_annual_price' => 'Annual price (optional)',
+    'adm_sub_plans_ph_annual_price'  => 'Leave blank for monthly-only',
 ];

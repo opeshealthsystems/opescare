@@ -41,8 +41,10 @@ class SubscriptionAdminController extends Controller
     {
         $request->validate([
             'name'                   => 'required|string|max:100',
+            'audience'               => 'nullable|in:patient,household,facility,insurer,lab,pharmacy,healthorg,developer',
             'billing_cycle'          => 'required|in:monthly,annual',
             'price'                  => 'required|numeric|min:0',
+            'annual_price'           => 'nullable|numeric|min:0',
             'currency'               => 'nullable|string|size:3',
             'description'            => 'nullable|string|max:500',
             'max_facilities'         => 'nullable|integer|min:1',
