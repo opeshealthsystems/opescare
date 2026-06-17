@@ -34,7 +34,7 @@ class AnalyticsController extends Controller
         if ($clientFacilityId && $clientFacilityId !== $facilityId) {
             return response()->json([
                 'error'   => 'forbidden',
-                'message' => 'You do not have access to analytics for this facility.',
+                'message' => __('api.analytics_access_denied'),
             ], 403);
         }
 
@@ -106,7 +106,7 @@ class AnalyticsController extends Controller
         if ($authorizedFacilityId && $requestedFacilityId && $requestedFacilityId !== $authorizedFacilityId) {
             return [null, null, null, response()->json([
                 'error'   => 'forbidden',
-                'message' => 'You do not have access to analytics for this facility.',
+                'message' => __('api.analytics_access_denied'),
             ], 403)];
         }
 
@@ -114,7 +114,7 @@ class AnalyticsController extends Controller
         if (!$facilityId) {
             return [null, null, null, response()->json([
                 'error'   => 'validation_error',
-                'message' => 'facility_id is required.',
+                'message' => __('api.facility_id_required'),
             ], 422)];
         }
 
@@ -169,7 +169,7 @@ class AnalyticsController extends Controller
     {
         $clientFacilityId = $request->attributes->get('facility_id');
         if ($clientFacilityId && $clientFacilityId !== $facilityId) {
-            return response()->json(['error' => 'forbidden', 'message' => 'Access denied for this facility.'], 403);
+            return response()->json(['error' => 'forbidden', 'message' => __('api.access_denied_facility')], 403);
         }
 
         $snapshots = $this->product->latestDailySnapshots(
@@ -199,7 +199,7 @@ class AnalyticsController extends Controller
 
         $clientFacilityId = $request->attributes->get('facility_id');
         if ($clientFacilityId && $clientFacilityId !== $facilityId) {
-            return response()->json(['error' => 'forbidden', 'message' => 'Access denied for this facility.'], 403);
+            return response()->json(['error' => 'forbidden', 'message' => __('api.access_denied_facility')], 403);
         }
 
         $trend = $this->product->metricTrend(

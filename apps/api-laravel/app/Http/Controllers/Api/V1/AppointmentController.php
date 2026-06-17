@@ -18,7 +18,7 @@ class AppointmentController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+            return response()->json(['error' => 'forbidden', 'message' => __('api.facility_unresolved_auth')], 403);
         }
 
         $query = Appointment::query()->orderBy('scheduled_at');
@@ -42,7 +42,7 @@ class AppointmentController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+            return response()->json(['error' => 'forbidden', 'message' => __('api.facility_unresolved_auth')], 403);
         }
 
         $validated = $request->validate([
@@ -139,12 +139,12 @@ class AppointmentController extends Controller
         ]);
 
         if (!empty($validated['facility_id']) && $facilityId && $validated['facility_id'] !== $facilityId) {
-            return response()->json(['error' => 'forbidden', 'message' => 'facility_id mismatch.'], 403);
+            return response()->json(['error' => 'forbidden', 'message' => __('api.facility_id_mismatch')], 403);
         }
 
         $effectiveFacilityId = $facilityId ?? $validated['facility_id'];
         if (!$effectiveFacilityId) {
-            return response()->json(['message' => 'facility_id could not be resolved.'], 422);
+            return response()->json(['message' => __('api.facility_unresolved_id')], 422);
         }
 
         $entry = $service->addToWaitlist(
@@ -155,7 +155,7 @@ class AppointmentController extends Controller
             $validated['reason'] ?? null
         );
 
-        return response()->json(['message' => 'Added to waitlist.', 'data' => $entry], 201);
+        return response()->json(['message' => __('api.added_to_waitlist'), 'data' => $entry], 201);
     }
 
     /**
@@ -175,17 +175,17 @@ class AppointmentController extends Controller
         ]);
 
         if (!empty($validated['facility_id']) && $facilityId && $validated['facility_id'] !== $facilityId) {
-            return response()->json(['error' => 'forbidden', 'message' => 'facility_id mismatch.'], 403);
+            return response()->json(['error' => 'forbidden', 'message' => __('api.facility_id_mismatch')], 403);
         }
 
         $effectiveFacilityId = $facilityId ?? $validated['facility_id'];
         if (!$effectiveFacilityId) {
-            return response()->json(['message' => 'facility_id could not be resolved.'], 422);
+            return response()->json(['message' => __('api.facility_unresolved_id')], 422);
         }
 
         $service->triggerBackfill($validated['provider_id'], $effectiveFacilityId, $validated['date']);
 
-        return response()->json(['message' => 'Waitlist backfill job dispatched.', 'date' => $validated['date']]);
+        return response()->json(['message' => __('api.waitlist_dispatched'), 'date' => $validated['date']]);
     }
 
     // ── Patient Self-Booking ──────────────────────────────────────────────
@@ -209,12 +209,12 @@ class AppointmentController extends Controller
         ]);
 
         if (!empty($validated['facility_id']) && $facilityId && $validated['facility_id'] !== $facilityId) {
-            return response()->json(['error' => 'forbidden', 'message' => 'facility_id mismatch.'], 403);
+            return response()->json(['error' => 'forbidden', 'message' => __('api.facility_id_mismatch')], 403);
         }
 
         $effectiveFacilityId = $facilityId ?? $validated['facility_id'];
         if (!$effectiveFacilityId) {
-            return response()->json(['message' => 'facility_id could not be resolved.'], 422);
+            return response()->json(['message' => __('api.facility_unresolved_id')], 422);
         }
 
         try {
@@ -234,7 +234,7 @@ class AppointmentController extends Controller
             return response()->json(['message' => $message], 422);
         }
 
-        return response()->json(['message' => 'Appointment booked.', 'data' => $this->serialize($appointment)], 201);
+        return response()->json(['message' => __('api.appointment_booked'), 'data' => $this->serialize($appointment)], 201);
     }
 
     private function serialize(Appointment $appointment): array

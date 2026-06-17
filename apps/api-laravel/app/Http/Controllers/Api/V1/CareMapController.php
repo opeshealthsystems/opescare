@@ -80,7 +80,7 @@ class CareMapController extends Controller
             return response()->json([
                 'status' => 'error',
                 'code' => 'FACILITY_SUSPENDED',
-                'message' => 'This facility listing is not currently active.'
+                'message' => __('api.facility_listing_inactive')
             ], 403);
         }
 
@@ -193,7 +193,7 @@ class CareMapController extends Controller
         if (!$user) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unauthenticated.'
+                'message' => __('api.unauthenticated')
             ], 401);
         }
 
@@ -231,7 +231,7 @@ class CareMapController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $report,
-            'message' => 'Report submitted successfully. We will review the listing information.'
+            'message' => __('api.caremap_report_submitted')
         ]);
     }
 
@@ -244,7 +244,7 @@ class CareMapController extends Controller
         if (!$user) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unauthenticated.'
+                'message' => __('api.unauthenticated')
             ], 401);
         }
 
@@ -253,13 +253,13 @@ class CareMapController extends Controller
             return response()->json([
                 'status' => 'success',
                 'data' => $claim,
-                'message' => 'Claim submitted successfully. Proof of authority document is required.'
+                'message' => __('api.caremap_claim_submitted')
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'code' => $e->getMessage(),
-                'message' => 'You already have a pending claim for this facility.'
+                'message' => __('api.caremap_claim_pending')
             ], 400);
         }
     }
@@ -273,7 +273,7 @@ class CareMapController extends Controller
         $admin = Auth::user();
 
         if (!$adminClientId && !$admin) {
-            return response()->json(['status' => 'error', 'message' => 'Admin access required.', 'code' => 'ADMIN_ACCESS_REQUIRED'], 403);
+            return response()->json(['status' => 'error', 'message' => __('api.admin_access_required'), 'code' => 'ADMIN_ACCESS_REQUIRED'], 403);
         }
 
         $actorId = $adminClientId ?? $admin->id;
@@ -283,7 +283,7 @@ class CareMapController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $facility,
-            'message' => 'Facility listing verified successfully.'
+            'message' => __('api.facility_listing_verified')
         ]);
     }
 
@@ -296,7 +296,7 @@ class CareMapController extends Controller
         $admin = Auth::user();
 
         if (!$adminClientId && !$admin) {
-            return response()->json(['status' => 'error', 'message' => 'Admin access required.', 'code' => 'ADMIN_ACCESS_REQUIRED'], 403);
+            return response()->json(['status' => 'error', 'message' => __('api.admin_access_required'), 'code' => 'ADMIN_ACCESS_REQUIRED'], 403);
         }
 
         $actorId = $adminClientId ?? $admin->id;
@@ -306,7 +306,7 @@ class CareMapController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $facility,
-            'message' => 'Facility listing suspended successfully.'
+            'message' => __('api.facility_listing_suspended')
         ]);
     }
 
@@ -320,7 +320,7 @@ class CareMapController extends Controller
 
         // Safe mock partner credentials check
         if ($facility->partner_id && $facility->partner_id !== $user->id) {
-            return response()->json(['status' => 'error', 'message' => 'Unauthorized facility owner.'], 403);
+            return response()->json(['status' => 'error', 'message' => __('api.unauthorized_facility_owner')], 403);
         }
 
         // Just mock a sync update
@@ -328,7 +328,7 @@ class CareMapController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Pharmacy stock sync accomplished successfully.'
+            'message' => __('api.pharmacy_stock_synced')
         ]);
     }
 

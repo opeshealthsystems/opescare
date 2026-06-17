@@ -28,7 +28,7 @@ class AdvanceDirectiveController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'Facility could not be resolved.', 'error_code' => 'FACILITY_UNRESOLVABLE'], 403);
+            return response()->json(['message' => __('api.facility_unresolved'), 'error_code' => 'FACILITY_UNRESOLVABLE'], 403);
         }
 
         $validated = $request->validate([
@@ -83,10 +83,10 @@ class AdvanceDirectiveController extends Controller
     {
         $actorId = $request->attributes->get('integration_client_id') ?? ($request->user()?->id ?? null);
         if (!$actorId) {
-            return response()->json(['message' => 'Actor could not be resolved.', 'error_code' => 'ACTOR_UNRESOLVABLE'], 403);
+            return response()->json(['message' => __('api.actor_unresolved'), 'error_code' => 'ACTOR_UNRESOLVABLE'], 403);
         }
 
         $directive = $this->service->revoke($id, $actorId);
-        return response()->json(['data' => $directive, 'message' => 'Directive revoked.']);
+        return response()->json(['data' => $directive, 'message' => __('api.directive_revoked')]);
     }
 }

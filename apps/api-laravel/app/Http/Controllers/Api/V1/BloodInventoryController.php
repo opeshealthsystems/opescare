@@ -39,7 +39,7 @@ class BloodInventoryController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'facility_id could not be resolved.'], 422);
+            return response()->json(['message' => __('api.facility_unresolved_id')], 422);
         }
 
         $request->validate([
@@ -59,7 +59,7 @@ class BloodInventoryController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'facility_id could not be resolved.'], 422);
+            return response()->json(['message' => __('api.facility_unresolved_id')], 422);
         }
 
         return response()->json([
@@ -82,7 +82,7 @@ class BloodInventoryController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'facility_id could not be resolved.'], 422);
+            return response()->json(['message' => __('api.facility_unresolved_id')], 422);
         }
 
         $validated = $request->validate([
@@ -94,7 +94,7 @@ class BloodInventoryController extends Controller
 
         $item = $this->service->upsertUnit($facilityId, $validated);
 
-        return response()->json(['message' => 'Blood inventory updated.', 'data' => $item], 201);
+        return response()->json(['message' => __('api.blood_inventory_updated'), 'data' => $item], 201);
     }
 
     /**
@@ -112,11 +112,11 @@ class BloodInventoryController extends Controller
         try {
             $item = $this->service->adjustUnits($itemId, $validated['delta'], $validated['direction']);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json(['message' => 'Inventory item not found.'], 404);
+            return response()->json(['message' => __('api.inventory_item_not_found')], 404);
         }
 
         return response()->json([
-            'message'         => "Units {$validated['direction']}ed.",
+            'message'         => __('api.units_direction', ['direction' => $validated['direction'] . 'ed']),
             'available_units' => $item->available_units,
             'data'            => $item,
         ]);
@@ -137,15 +137,15 @@ class BloodInventoryController extends Controller
         ]);
 
         if (empty($validated)) {
-            return response()->json(['message' => 'At least one flag (is_expired, is_quarantined, is_unsafe) is required.'], 422);
+            return response()->json(['message' => __('api.safety_flag_required')], 422);
         }
 
         try {
             $item = $this->service->setFlags($itemId, $validated);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json(['message' => 'Inventory item not found.'], 404);
+            return response()->json(['message' => __('api.inventory_item_not_found')], 404);
         }
 
-        return response()->json(['message' => 'Safety flags updated.', 'data' => $item]);
+        return response()->json(['message' => __('api.safety_flags_updated'), 'data' => $item]);
     }
 }

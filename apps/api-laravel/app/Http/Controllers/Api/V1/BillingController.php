@@ -42,7 +42,7 @@ class BillingController extends Controller
             if (!$consentGrant || $consentGrant->patient_id !== $patientId) {
                 return response()->json([
                     'error'   => 'forbidden',
-                    'message' => 'You do not have a consent grant to access billing records for this patient.',
+                    'message' => __('api.no_consent_billing'),
                 ], 403);
             }
         }
@@ -56,7 +56,7 @@ class BillingController extends Controller
 
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+            return response()->json(['error' => 'forbidden', 'message' => __('api.facility_unresolved_auth')], 403);
         }
         $query->where('facility_id', $facilityId);
 
@@ -67,7 +67,7 @@ class BillingController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+            return response()->json(['error' => 'forbidden', 'message' => __('api.facility_unresolved_auth')], 403);
         }
 
         $validated = $request->validate([
@@ -143,7 +143,7 @@ class BillingController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+            return response()->json(['error' => 'forbidden', 'message' => __('api.facility_unresolved_auth')], 403);
         }
 
         $validated = $request->validate([
@@ -162,7 +162,7 @@ class BillingController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+            return response()->json(['error' => 'forbidden', 'message' => __('api.facility_unresolved_auth')], 403);
         }
 
         $validated = $request->validate([
@@ -197,7 +197,7 @@ class BillingController extends Controller
 
         // Prevent reconciliation of already-closed session
         if ($session->status === 'closed') {
-            return response()->json(['message' => 'This cashier session is already closed and reconciled.'], 422);
+            return response()->json(['message' => __('api.cashier_session_closed')], 422);
         }
 
         $reconciliation = $service->reconcile(

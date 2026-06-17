@@ -45,7 +45,7 @@ class ConsentManagementController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'facility_id could not be resolved.'], 422);
+            return response()->json(['message' => __('api.facility_unresolved_id')], 422);
         }
 
         $validated = $request->validate([
@@ -76,7 +76,7 @@ class ConsentManagementController extends Controller
         } catch (\Throwable) {}
 
         return response()->json([
-            'message' => 'Consent request created — awaiting patient approval.',
+            'message' => __('api.consent_request_created_pending'),
             'data'    => $consentRequest,
         ], 201);
     }
@@ -105,7 +105,7 @@ class ConsentManagementController extends Controller
         }
 
         return response()->json([
-            'message' => 'Consent granted.',
+            'message' => __('api.consent_granted'),
             'data'    => $grant,
         ], 201);
     }
@@ -134,7 +134,7 @@ class ConsentManagementController extends Controller
         }
 
         return response()->json([
-            'message' => 'Consent revoked.',
+            'message' => __('api.consent_revoked'),
             'data'    => $revocation,
         ]);
     }

@@ -77,7 +77,7 @@ class ClinicalDecisionSupportController extends Controller
         if ($middlewareFacilityId && $middlewareFacilityId !== $validated['facility_id']) {
             return response()->json([
                 'error'   => 'forbidden',
-                'message' => 'facility_id does not match your authenticated facility.',
+                'message' => __('api.facility_id_mismatch_cds'),
             ], 403);
         }
 
@@ -148,7 +148,7 @@ class ClinicalDecisionSupportController extends Controller
         $alert = $this->cdss->acknowledgeAlert($alertId, $validated['staff_id']);
 
         return response()->json([
-            'message' => 'Alert acknowledged.',
+            'message' => __('api.alert_acknowledged'),
             'alert'   => $this->serializeAlert($alert),
         ]);
     }
@@ -174,7 +174,7 @@ class ClinicalDecisionSupportController extends Controller
         );
 
         return response()->json([
-            'message'   => 'Alert overridden with documented reason.',
+            'message'   => __('api.alert_overridden'),
             'override'  => [
                 'id'                => $override->id,
                 'alert_id'          => $override->alert_id,
@@ -198,7 +198,7 @@ class ClinicalDecisionSupportController extends Controller
 
         $this->cdss->dismissAlert($alertId, $validated['staff_id']);
 
-        return response()->json(['message' => 'Alert dismissed.']);
+        return response()->json(['message' => __('api.alert_dismissed')]);
     }
 
     /**
@@ -246,7 +246,7 @@ class ClinicalDecisionSupportController extends Controller
                 $validated['clinical_justification'] ?? null
             );
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {
-            return response()->json(['message' => 'Alert not found.'], 404);
+            return response()->json(['message' => __('api.alert_not_found')], 404);
         } catch (\InvalidArgumentException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
@@ -286,10 +286,10 @@ class ClinicalDecisionSupportController extends Controller
         try {
             $override = $this->overrides->markQaReviewed($overrideId, $validated['reviewed_by']);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {
-            return response()->json(['message' => 'Override not found.'], 404);
+            return response()->json(['message' => __('api.override_not_found')], 404);
         }
 
-        return response()->json(['message' => 'Override marked as QA reviewed.', 'data' => $override]);
+        return response()->json(['message' => __('api.override_qa_reviewed'), 'data' => $override]);
     }
 
     // ── Private helpers ───────────────────────────────────────────────────

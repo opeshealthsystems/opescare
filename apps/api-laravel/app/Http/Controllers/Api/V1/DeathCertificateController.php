@@ -19,7 +19,7 @@ class DeathCertificateController extends Controller
         $facilityId = $request->attributes->get('facility_id');
 
         if (! $facilityId) {
-            return response()->json(['message' => 'Facility context required.'], 403);
+            return response()->json(['message' => __('api.facility_context_required')], 403);
         }
 
         $validated = $request->validate([
@@ -112,7 +112,7 @@ class DeathCertificateController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId || $record->facility_id !== $facilityId) {
-            return response()->json(['message' => 'Forbidden.'], 403);
+            return response()->json(['message' => __('api.forbidden')], 403);
         }
         return response()->json([
             'data' => $record->load(['patient', 'certifyingDoctor', 'facility']),
@@ -124,7 +124,7 @@ class DeathCertificateController extends Controller
         $facilityId = $request->attributes->get('facility_id');
 
         if (! $facilityId) {
-            return response()->json(['message' => 'Facility context required.'], 403);
+            return response()->json(['message' => __('api.facility_context_required')], 403);
         }
 
         $records = DeathRecord::where('facility_id', $facilityId)
