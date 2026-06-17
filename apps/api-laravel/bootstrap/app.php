@@ -58,6 +58,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'api.admin'        => \App\Http\Middleware\RequireApiAdminRole::class,
             'verify.integration.client' => \App\Http\Middleware\VerifyIntegrationClient::class,
             'module'                    => \App\Http\Middleware\EnforceModuleEntitlement::class,
+            'patient.feature'           => \App\Http\Middleware\EnsurePatientFeature::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

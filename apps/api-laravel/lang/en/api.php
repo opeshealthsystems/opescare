@@ -386,4 +386,5 @@ return [
     'patient_not_found_contact'      => 'No OpesCare patient found with that contact. They may need to register first.',
     'active_policy_exists'           => 'You already have an active policy for this plan.',
     'enrollment_submitted'           => 'Enrollment submitted successfully. Your policy is pending activation.',
+    'feature_requires_upgrade'       => 'This feature requires a Premium subscription.',
 ];

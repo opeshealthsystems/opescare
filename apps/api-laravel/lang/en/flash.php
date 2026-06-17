@@ -340,4 +340,5 @@ return [
     'patient_discharged'                  => 'Patient discharged.',
     'bed_transfer_completed'              => 'Bed transfer completed.',
     'subscription_checkout_pending'       => 'Mobile Money checkout for premium plans is coming soon.',
+    'feature_requires_upgrade'            => 'Upgrade to Premium to use this feature.',
 ];

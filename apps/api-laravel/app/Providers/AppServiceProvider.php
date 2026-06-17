@@ -31,6 +31,16 @@ class AppServiceProvider extends ServiceProvider
             'patient' => \App\Models\Patient::class,
         ]);
 
+        // @feature('teleconsult') … @endfeature — gate UI by patient subscription
+        // feature (honours family-sharing coverage). False when not authenticated
+        // as a patient.
+        \Illuminate\Support\Facades\Blade::if('feature', function (string $key) {
+            $patient = auth()->user()?->patient;
+            return $patient
+                ? app(\App\Modules\Subscription\Services\PatientSubscriptionService::class)->hasFeature($patient, $key)
+                : false;
+        });
+
         // Clinical module routes (Group 3 + wired modules) — loaded here to
         // avoid touching the sealed routes/api.php file.
         Route::middleware('api')
