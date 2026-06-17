@@ -102,6 +102,9 @@
 
             <form action="{{ route('register.patient.submit') }}" method="POST" class="auth-form">
                 @csrf
+                @if(request('ref'))
+                    <input type="hidden" name="ref" value="{{ request('ref') }}">
+                @endif
 
                 <!-- Section 1: Personal Information -->
                 <div class="form-section">

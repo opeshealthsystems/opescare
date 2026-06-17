@@ -336,6 +336,25 @@ class PublicPageController extends Controller
             return $patient;
         });
 
+        // "Refer & Earn" capture — MUST NEVER break signup. Wrapped so any failure
+        // (bad code, missing plan, DB error) is logged and swallowed; the new
+        // patient still completes registration successfully.
+        $refCode = trim((string) $request->input('ref', ''));
+        if ($refCode !== '') {
+            try {
+                $rewards = app(\App\Modules\Subscription\Services\ReferralRewardService::class);
+                $invite  = $rewards->recordSignup($patient, $refCode);
+                if ($invite !== null) {
+                    $rewards->grantRewards($invite);
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('referral_signup_capture_failed', [
+                    'patient_id' => $patient->id,
+                    'error'      => $e->getMessage(),
+                ]);
+            }
+        }
+
         // Welcome email
         if ($patient->email) {
             Mail::to($patient->email)->queue(new OpesCareNotificationMail(
