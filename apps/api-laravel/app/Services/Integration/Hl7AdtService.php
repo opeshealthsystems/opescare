@@ -226,9 +226,22 @@ class Hl7AdtService
         $caFile    = config('hl7.tls_cafile');
         $verifyPeer = (bool) config('hl7.tls_verify_peer', true);
 
-        // [FIX M-1] Log a warning (don't abort) if TLS is disabled — operator must
-        // explicitly opt out; this makes the non-TLS path visible in logs.
+        // PHI must never leave in plaintext. In production this fails CLOSED —
+        // the message is refused rather than transmitted unencrypted. In
+        // non-production we warn but allow, so staging/dev without a TLS-capable
+        // HL7 endpoint can still be exercised. (Supersedes the prior warn-only
+        // [FIX M-1] behaviour, which still sent PHI in the clear.)
         if (! $useTls) {
+            if (app()->isProduction()) {
+                Log::error('Hl7AdtService: REFUSING to send — TLS is disabled in production. '
+                    . 'PHI must not be transmitted in plaintext. Set HL7_TLS=true to enable '
+                    . 'transport encryption. ISO 27799 §8.2 / ISO 27001 A.13.2.3.', [
+                    'host' => $host,
+                    'port' => $port,
+                ]);
+                return false;
+            }
+
             Log::warning('Hl7AdtService: TLS is DISABLED — PHI will be sent in plaintext. '
                 . 'Set HL7_TLS=true to enable transport encryption. '
                 . 'ISO 27799 §8.2 / ISO 27001 A.13.2.3 require encryption of PHI in transit.', [
