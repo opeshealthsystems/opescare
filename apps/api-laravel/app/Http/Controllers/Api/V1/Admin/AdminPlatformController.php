@@ -90,7 +90,7 @@ class AdminPlatformController extends Controller
         $flag = $this->flags->enable($key, $validated['actor_id'], $facilityId);
 
         return response()->json([
-            'message' => "Feature flag '{$key}' enabled.",
+            'message' => __('api.feature_flag_enabled', ['key' => $key]),
             'data'    => $flag,
         ]);
     }
@@ -112,7 +112,7 @@ class AdminPlatformController extends Controller
         $flag = $this->flags->disable($key, $validated['actor_id'], $facilityId);
 
         return response()->json([
-            'message' => "Feature flag '{$key}' disabled.",
+            'message' => __('api.feature_flag_disabled', ['key' => $key]),
             'data'    => $flag,
         ]);
     }
@@ -129,7 +129,7 @@ class AdminPlatformController extends Controller
 
         if (!$snapshot) {
             return response()->json([
-                'message' => 'No health snapshot captured yet. POST to /capture to trigger one.',
+                'message' => __('api.no_health_snapshot'),
                 'data'    => null,
             ], 404);
         }
@@ -158,7 +158,7 @@ class AdminPlatformController extends Controller
         };
 
         return response()->json([
-            'message' => "System health: {$snapshot->status}",
+            'message' => __('api.system_health_status', ['status' => $snapshot->status]),
             'data'    => $snapshot,
         ], $httpStatus);
     }

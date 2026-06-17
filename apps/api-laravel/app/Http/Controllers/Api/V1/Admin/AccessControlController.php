@@ -56,7 +56,7 @@ class AccessControlController extends Controller
         $role = Role::create($validated);
 
         return response()->json([
-            'message' => 'Role created.',
+            'message' => __('api.role_created'),
             'data'    => $this->serializeRole($role),
         ], 201);
     }
@@ -86,7 +86,7 @@ class AccessControlController extends Controller
         $role->update($validated);
 
         return response()->json([
-            'message' => 'Role updated.',
+            'message' => __('api.role_updated'),
             'data'    => $this->serializeRole($role->fresh()),
         ]);
     }
@@ -109,7 +109,7 @@ class AccessControlController extends Controller
         $role->load('permissions');
 
         return response()->json([
-            'message' => 'Permissions assigned.',
+            'message' => __('api.permissions_assigned'),
             'data'    => [
                 'role_id'     => $role->id,
                 'permissions' => $role->permissions->pluck('name', 'id'),
@@ -126,14 +126,14 @@ class AccessControlController extends Controller
         // (meaning it was ALWAYS denied — not just not assigned)
         if (RolePermissionMatrix::isBlocked($role->name, $permission->name)) {
             return response()->json([
-                'message' => 'This permission is governance-blocked for this role and cannot be modified via API. Requires formal review.',
+                'message' => __('api.permission_governance_blocked'),
             ], 403);
         }
 
         $role->permissions()->detach($permission->id);
 
         return response()->json([
-            'message' => 'Permission revoked from role.',
+            'message' => __('api.permission_revoked_role'),
             'data'    => [
                 'role_id'       => $role->id,
                 'permission_id' => $permission->id,
@@ -174,7 +174,7 @@ class AccessControlController extends Controller
         $permission = Permission::create($validated);
 
         return response()->json([
-            'message' => 'Permission created.',
+            'message' => __('api.permission_created'),
             'data'    => [
                 'id'          => $permission->id,
                 'name'        => $permission->name,

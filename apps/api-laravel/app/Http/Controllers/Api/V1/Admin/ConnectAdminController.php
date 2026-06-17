@@ -90,7 +90,7 @@ class ConnectAdminController extends Controller
         $client = $this->service->createClient($validated, $validated['actor_id']);
 
         return response()->json([
-            'message' => 'Integration client created in pending state.',
+            'message' => __('api.integration_client_created'),
             'data'    => $this->serializeClient($client),
         ], 201);
     }
@@ -116,7 +116,7 @@ class ConnectAdminController extends Controller
         $updated = $this->service->approveClient($client, $validated['actor_id']);
 
         return response()->json([
-            'message' => 'Client approved.',
+            'message' => __('api.client_approved'),
             'data'    => $this->serializeClient($updated),
         ]);
     }
@@ -134,7 +134,7 @@ class ConnectAdminController extends Controller
         $updated = $this->service->suspendClient($client, $validated['actor_id']);
 
         return response()->json([
-            'message' => 'Client suspended.',
+            'message' => __('api.client_suspended'),
             'data'    => $this->serializeClient($updated),
         ]);
     }
@@ -153,7 +153,7 @@ class ConnectAdminController extends Controller
         $updated = $this->service->revokeClient($client, $validated['actor_id']);
 
         return response()->json([
-            'message' => 'Client revoked. All tokens deactivated and webhooks paused.',
+            'message' => __('api.client_revoked'),
             'data'    => $this->serializeClient($updated),
         ]);
     }
@@ -179,7 +179,7 @@ class ConnectAdminController extends Controller
         $result = $this->service->issueToken($client, $validated, $validated['actor_id']);
 
         return response()->json([
-            'message'   => 'Token issued. The raw_token is shown ONCE — store it immediately.',
+            'message'   => __('api.token_issued_once'),
             'raw_token' => $result['raw_token'], // Only time the raw token is exposed
             'token'     => $this->serializeToken($result['token']),
         ], 201);
@@ -197,7 +197,7 @@ class ConnectAdminController extends Controller
 
         $this->service->revokeToken($token, $validated['actor_id']);
 
-        return response()->json(['message' => 'Token revoked.']);
+        return response()->json(['message' => __('api.token_revoked')]);
     }
 
     // ── Stats ─────────────────────────────────────────────────────────────

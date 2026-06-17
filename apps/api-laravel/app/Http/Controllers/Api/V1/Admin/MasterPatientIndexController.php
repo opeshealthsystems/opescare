@@ -63,7 +63,7 @@ class MasterPatientIndexController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'Forbidden.'], 403);
+            return response()->json(['message' => __('api.forbidden')], 403);
         }
 
         $validated = $request->validate([
@@ -76,7 +76,7 @@ class MasterPatientIndexController extends Controller
         );
 
         return response()->json([
-            'message'        => 'Duplicate detection complete.',
+            'message'        => __('api.duplicate_detection_complete'),
             'new_candidates' => $newCandidates,
         ]);
     }
@@ -131,7 +131,7 @@ class MasterPatientIndexController extends Controller
         }
 
         return response()->json([
-            'message' => 'Candidate confirmed as duplicate. Proceed to merge via /connect/admin/merge-cases.',
+            'message' => __('api.candidate_confirmed_duplicate'),
             'data'    => $this->serializeCandidate($candidate),
         ]);
     }
@@ -153,7 +153,7 @@ class MasterPatientIndexController extends Controller
         }
 
         return response()->json([
-            'message' => 'Candidate rejected — records marked as distinct patients.',
+            'message' => __('api.candidate_rejected_distinct'),
             'data'    => $this->serializeCandidate($candidate),
         ]);
     }
@@ -166,7 +166,7 @@ class MasterPatientIndexController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'Forbidden.'], 403);
+            return response()->json(['message' => __('api.forbidden')], 403);
         }
 
         $validated = $request->validate([
@@ -187,7 +187,7 @@ class MasterPatientIndexController extends Controller
         }
 
         return response()->json([
-            'message' => 'Identifier linked successfully.',
+            'message' => __('api.identifier_linked'),
             'data'    => [
                 'id'              => $identifier->id,
                 'patient_id'      => $identifier->patient_id,

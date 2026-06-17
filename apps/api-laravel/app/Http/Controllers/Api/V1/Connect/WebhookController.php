@@ -90,7 +90,7 @@ class WebhookController extends Controller
             return response()->json([
                 'status'     => 'not_found',
                 'error_code' => OpesCareErrorCode::RESOURCE_NOT_FOUND->value,
-                'message'    => 'Webhook event not found.',
+                'message'    => __('api.webhook_event_not_found'),
             ], 404);
         }
 

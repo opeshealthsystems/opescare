@@ -110,7 +110,7 @@ class FacilityGoLiveReadinessController extends Controller
         );
 
         return response()->json([
-            'message' => 'Readiness score computed.',
+            'message' => __('api.readiness_score_computed'),
             'data'    => $this->serializeScore($score),
         ], 201);
     }
@@ -127,7 +127,7 @@ class FacilityGoLiveReadinessController extends Controller
 
         if (! $score) {
             return response()->json([
-                'message' => 'No readiness score computed yet. POST to this endpoint to trigger calculation.',
+                'message' => __('api.no_readiness_score'),
                 'data'    => null,
             ], 404);
         }

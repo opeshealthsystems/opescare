@@ -52,7 +52,7 @@ class ConsentController extends Controller
             return response()->json([
                 'status'     => 'invalid',
                 'error_code' => 'HEALTH_ID_NOT_FOUND',
-                'message'    => 'This Health ID could not be verified.',
+                'message'    => __('api.health_id_unverified'),
             ], 404);
         }
 
@@ -72,7 +72,7 @@ class ConsentController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => 'HEALTH_ID_SUSPENDED',
-                'message'    => 'Consent cannot be requested for this Health ID due to its current status.',
+                'message'    => __('api.consent_blocked_status'),
             ], 403);
         }
 
@@ -105,7 +105,7 @@ class ConsentController extends Controller
             'status'         => 'success',
             'consent_id'     => $consentRequest->id,
             'consent_status' => 'pending',
-            'message'        => 'Consent request sent to patient for approval.',
+            'message'        => __('api.consent_request_sent_patient'),
         ], 200);
     }
 

@@ -35,7 +35,7 @@ class EmergencyAccessController extends Controller
             return response()->json([
                 'status'     => 'invalid',
                 'error_code' => 'HEALTH_ID_NOT_FOUND',
-                'message'    => 'This Health ID could not be verified.',
+                'message'    => __('api.health_id_unverified'),
             ], 404);
         }
 
@@ -84,7 +84,7 @@ class EmergencyAccessController extends Controller
         // 5. Build and return profile
         return response()->json([
             'status'  => 'success',
-            'message' => 'Emergency profile retrieved. This action has been audited.',
+            'message' => __('api.emergency_profile_retrieved'),
             'profile' => [
                 'identity' => [
                     'health_id'     => $patient->health_id,

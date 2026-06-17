@@ -76,7 +76,7 @@ class HealthIdResolutionController extends Controller
             return response()->json([
                 'status'     => 'error',
                 'error_code' => 'MISSING_LOOKUP_CRITERIA',
-                'message'    => 'Provide either health_id OR (first_name, last_name, date_of_birth).',
+                'message'    => __('api.provide_healthid_or_demographics'),
             ], 422);
         }
 
@@ -157,7 +157,7 @@ class HealthIdResolutionController extends Controller
             return response()->json([
                 'status'     => 'not_found',
                 'error_code' => 'HEALTH_ID_NOT_FOUND',
-                'message'    => 'No patient with that Health ID exists in OpesCare. Provide demographics to register.',
+                'message'    => __('api.no_patient_provide_demographics'),
             ], 404);
         }
 
@@ -166,9 +166,7 @@ class HealthIdResolutionController extends Controller
             return response()->json([
                 'status'     => 'consent_required',
                 'error_code' => 'CONSENT_REQUIRED',
-                'message'    => 'No existing Health ID found. To register a new patient identity, resend this request '
-                    . 'with consent_acknowledged=true, confirming that the patient has provided informed consent '
-                    . 'for their identity to be registered in OpesCare (Cameroon Law No. 2010/012, Art. 14).',
+                'message'    => __('api.no_health_id_consent_required'),
                 'next_action' => 'obtain_patient_consent_then_retry',
             ], 422);
         }
@@ -210,7 +208,7 @@ class HealthIdResolutionController extends Controller
             return response()->json([
                 'status'     => 'error',
                 'error_code' => 'CREATION_FAILED',
-                'message'    => 'Unable to generate a unique Health ID at this time. The namespace may require expansion. Please contact system administration.',
+                'message'    => __('api.health_id_generation_failed'),
             ], 500);
         } catch (\Throwable $e) {
             Log::error('health_id_auto_create_failed', [
@@ -222,7 +220,7 @@ class HealthIdResolutionController extends Controller
             return response()->json([
                 'status'     => 'error',
                 'error_code' => 'CREATION_FAILED',
-                'message'    => 'Failed to register a new Health ID. Please retry or contact support.',
+                'message'    => __('api.health_id_registration_failed'),
             ], 500);
         }
 
@@ -247,7 +245,7 @@ class HealthIdResolutionController extends Controller
             'status'      => 'created',
             'health_id'   => $patient->health_id,
             'patient'     => $this->summary($patient),
-            'message'     => 'New OpesCare Health ID registered for this patient.',
+            'message'     => __('api.health_id_registered'),
             'next_action' => 'push_records',
         ], 201);
     }
@@ -261,7 +259,7 @@ class HealthIdResolutionController extends Controller
             return response()->json([
                 'status'     => 'invalid',
                 'error_code' => 'HEALTH_ID_INVALID_FORMAT',
-                'message'    => 'The Health ID format or checksum is invalid.',
+                'message'    => __('api.health_id_format_invalid'),
             ], 422);
         }
 
@@ -286,7 +284,7 @@ class HealthIdResolutionController extends Controller
             return response()->json([
                 'status'     => 'not_found',
                 'error_code' => 'HEALTH_ID_NOT_FOUND',
-                'message'    => 'Health ID is well-formed but not registered in OpesCare.',
+                'message'    => __('api.health_id_not_in_opescare'),
             ], 404);
         }
 

@@ -48,7 +48,7 @@ class PartnerGovernanceController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Partner application approved.',
+            'message' => __('api.partner_application_approved'),
             'partner' => $partner
         ]);
     }
@@ -72,7 +72,7 @@ class PartnerGovernanceController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Partner has been suspended.',
+            'message' => __('api.partner_suspended'),
             'partner' => $partner
         ]);
     }
@@ -89,7 +89,7 @@ class PartnerGovernanceController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Document verified.',
+            'message' => __('api.document_verified'),
             'document' => $document
         ]);
     }
@@ -106,7 +106,7 @@ class PartnerGovernanceController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Agreement marked as signed.',
+            'message' => __('api.agreement_signed'),
             'agreement' => $agreement
         ]);
     }
@@ -123,7 +123,7 @@ class PartnerGovernanceController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Integration certified.',
+            'message' => __('api.integration_certified'),
             'integration' => $integration
         ]);
     }
@@ -141,7 +141,7 @@ class PartnerGovernanceController extends Controller
             $integration = $service->enableProduction($integration, $request->user()?->id ?? 'system');
             return response()->json([
                 'status' => 'success',
-                'message' => 'Production API access enabled.',
+                'message' => __('api.production_api_enabled'),
                 'integration' => $integration
             ]);
         } catch (\Exception $e) {

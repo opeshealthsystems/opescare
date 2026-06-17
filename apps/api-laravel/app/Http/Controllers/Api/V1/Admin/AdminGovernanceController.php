@@ -56,7 +56,7 @@ class AdminGovernanceController extends Controller
 
         $reviewerId = $request->attributes->get('provider_id') ?? $request->attributes->get('integration_client_id');
         if (!$reviewerId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $status = $request->input('review_status');
@@ -77,7 +77,7 @@ class AdminGovernanceController extends Controller
     {
         $reviewerId = $request->attributes->get('provider_id') ?? $request->attributes->get('integration_client_id');
         if (!$reviewerId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $corr = $this->correctionService->approveRequest($id, $reviewerId);
@@ -89,7 +89,7 @@ class AdminGovernanceController extends Controller
     {
         $reviewerId = $request->attributes->get('provider_id') ?? $request->attributes->get('integration_client_id');
         if (!$reviewerId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $corr = $this->correctionService->rejectRequest($id, $reviewerId);
@@ -107,7 +107,7 @@ class AdminGovernanceController extends Controller
     {
         $approverId = $request->attributes->get('provider_id') ?? $request->attributes->get('integration_client_id');
         if (!$approverId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $exp = $this->exportService->approveExport($id, $approverId);
@@ -119,7 +119,7 @@ class AdminGovernanceController extends Controller
     {
         $actorId = $request->attributes->get('provider_id') ?? $request->attributes->get('integration_client_id');
         if (!$actorId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $exp = DataExportRequest::findOrFail($id);
@@ -161,7 +161,7 @@ class AdminGovernanceController extends Controller
     {
         $actorId = $request->attributes->get('provider_id') ?? $request->attributes->get('integration_client_id');
         if (!$actorId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $inc = SecurityIncident::findOrFail($id);
@@ -177,7 +177,7 @@ class AdminGovernanceController extends Controller
     {
         $actorId = $request->attributes->get('provider_id') ?? $request->attributes->get('integration_client_id');
         if (!$actorId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $inc = SecurityIncident::findOrFail($id);

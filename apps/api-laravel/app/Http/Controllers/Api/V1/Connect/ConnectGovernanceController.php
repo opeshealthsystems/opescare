@@ -43,7 +43,7 @@ class ConnectGovernanceController extends Controller
             return response()->json([
                 'status'     => 'error',
                 'error_code' => 'FACILITY_UNRESOLVABLE',
-                'message'    => 'Bearer token does not carry a facility scope. Request rejected.',
+                'message'    => __('api.bearer_no_facility_scope'),
             ], 403);
         }
 
@@ -69,7 +69,7 @@ class ConnectGovernanceController extends Controller
         return response()->json([
             'status'             => 'requested',
             'consent_request_id' => $consentReq->id,
-            'message'            => 'Consent request transmitted to patient.',
+            'message'            => __('api.consent_request_transmitted'),
         ], 202);
     }
 
@@ -81,7 +81,7 @@ class ConnectGovernanceController extends Controller
             return response()->json([
                 'status'     => 'error',
                 'error_code' => 'FACILITY_UNRESOLVABLE',
-                'message'    => 'Bearer token does not carry a facility scope. Request rejected.',
+                'message'    => __('api.bearer_no_facility_scope'),
             ], 403);
         }
 
@@ -116,7 +116,7 @@ class ConnectGovernanceController extends Controller
             return response()->json([
                 'status'     => 'error',
                 'error_code' => 'FACILITY_UNRESOLVABLE',
-                'message'    => 'Bearer token does not carry a facility scope. Request rejected.',
+                'message'    => __('api.bearer_no_facility_scope'),
             ], 403);
         }
 
@@ -139,7 +139,7 @@ class ConnectGovernanceController extends Controller
             return response()->json([
                 'status'     => 'error',
                 'error_code' => 'ACTOR_UNRESOLVABLE',
-                'message'    => 'Emergency access requires an identifiable provider user (actor_id).',
+                'message'    => __('api.emergency_requires_actor'),
             ], 422);
         }
 
@@ -153,7 +153,7 @@ class ConnectGovernanceController extends Controller
         return response()->json([
             'status'                    => 'emergency_authorized',
             'emergency_access_event_id' => $event->id,
-            'message'                   => 'Emergency override activated and audited.',
+            'message'                   => __('api.emergency_override_activated'),
         ], 201);
     }
 
@@ -172,7 +172,7 @@ class ConnectGovernanceController extends Controller
             return response()->json([
                 'status'     => 'error',
                 'error_code' => 'FACILITY_UNRESOLVABLE',
-                'message'    => 'Bearer token does not carry a facility scope. Request rejected.',
+                'message'    => __('api.bearer_no_facility_scope'),
             ], 403);
         }
 
@@ -187,7 +187,7 @@ class ConnectGovernanceController extends Controller
             return response()->json([
                 'status'     => 'error',
                 'error_code' => 'PATIENT_NOT_FOUND',
-                'message'    => 'Patient not found.',
+                'message'    => __('api.patient_not_found'),
             ], 404);
         }
 

@@ -37,7 +37,7 @@ class InventoryController extends Controller
             return response()->json([
                 'status'     => 'error',
                 'error_code' => 'FACILITY_UNRESOLVABLE',
-                'message'    => 'Bearer token does not carry a facility scope. Request rejected.',
+                'message'    => __('api.bearer_no_facility_scope'),
             ], 403);
         }
 
@@ -71,7 +71,7 @@ class InventoryController extends Controller
             return response()->json([
                 'status'         => 'rejected',
                 'error_code'     => OpesCareErrorCode::UNSAFE_STOCK_STATUS->value,
-                'message'        => 'Expired stock synchronisation blocked. Remove the listed items and retry.',
+                'message'        => __('api.expired_stock_sync_blocked'),
                 'expired_items'  => $expiredItems,
                 'correlation_id' => $correlationId,
             ], 422);
@@ -107,7 +107,7 @@ class InventoryController extends Controller
             return response()->json([
                 'status'     => 'error',
                 'error_code' => 'FACILITY_UNRESOLVABLE',
-                'message'    => 'Bearer token does not carry a facility scope. Request rejected.',
+                'message'    => __('api.bearer_no_facility_scope'),
             ], 403);
         }
 
@@ -138,7 +138,7 @@ class InventoryController extends Controller
             return response()->json([
                 'status'         => 'rejected',
                 'error_code'     => OpesCareErrorCode::UNSAFE_BLOOD_STATUS->value,
-                'message'        => 'Unscreened or unsafe blood component sync is forbidden. Remove the listed items and retry.',
+                'message'        => __('api.unsafe_blood_sync_forbidden'),
                 'unsafe_items'   => $unsafeItems,
                 'correlation_id' => $correlationId,
             ], 422);

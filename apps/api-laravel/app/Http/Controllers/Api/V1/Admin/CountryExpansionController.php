@@ -41,7 +41,7 @@ class CountryExpansionController extends Controller
         $approval = $this->service->initiateLaunch($country);
 
         return response()->json([
-            'message'  => "Launch process initiated for {$country->name}.",
+            'message'  => __('api.launch_process_initiated', ['country' => $country->name]),
             'data'     => $approval,
         ], 201);
     }
@@ -61,7 +61,7 @@ class CountryExpansionController extends Controller
                 'is_approved'   => false,
                 'approval'      => null,
                 'missing_items' => [],
-                'message'       => 'No launch approval initiated yet.',
+                'message'       => __('api.no_launch_approval'),
             ]);
         }
 
@@ -97,7 +97,7 @@ class CountryExpansionController extends Controller
         $missing = $this->service->getMissingChecklist($approval->fresh());
 
         return response()->json([
-            'message'          => 'Checklist updated.',
+            'message'          => __('api.checklist_updated'),
             'missing_items'    => $missing,
             'ready_to_approve' => empty($missing),
         ]);
@@ -133,7 +133,7 @@ class CountryExpansionController extends Controller
         }
 
         return response()->json([
-            'message' => "Launch approved for {$country->name}. Facilities can now be onboarded.",
+            'message' => __('api.launch_approved', ['country' => $country->name]),
             'data'    => $approval->fresh(),
         ]);
     }

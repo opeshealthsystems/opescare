@@ -29,7 +29,7 @@ class ReconciliationController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => OpesCareErrorCode::AUTHENTICATION_FAILED->value,
-                'message'    => 'facility_id could not be resolved from bearer token.',
+                'message'    => __('api.facility_unresolved_bearer'),
             ], 403);
         }
 
@@ -67,7 +67,7 @@ class ReconciliationController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => OpesCareErrorCode::AUTHENTICATION_FAILED->value,
-                'message'    => 'facility_id could not be resolved from bearer token.',
+                'message'    => __('api.facility_unresolved_bearer'),
             ], 403);
         }
 
@@ -88,7 +88,7 @@ class ReconciliationController extends Controller
             return response()->json([
                 'status'     => 'not_found',
                 'error_code' => OpesCareErrorCode::RESOURCE_NOT_FOUND->value,
-                'message'    => 'Reconciliation case not found or does not belong to your facility.',
+                'message'    => __('api.reconciliation_case_not_found'),
             ], 404);
         }
 
@@ -119,7 +119,7 @@ class ReconciliationController extends Controller
             'case_id'            => $caseId,
             'resolved_at'        => now()->toIso8601String(),
             'attached_health_id' => $confirmedHealthId,
-            'message'            => 'Reconciliation case marked resolved. Sync timeline events queued.',
+            'message'            => __('api.reconciliation_resolved'),
         ], 200);
     }
 }

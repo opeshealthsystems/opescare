@@ -35,7 +35,7 @@ class RecordController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => OpesCareErrorCode::PATIENT_NOT_FOUND->value,
-                'message'    => 'No patient was found with this health ID.',
+                'message'    => __('api.no_patient_found_health_id'),
             ], 404);
         }
 
@@ -138,7 +138,7 @@ class RecordController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => OpesCareErrorCode::PURPOSE_REQUIRED->value,
-                'message'    => 'Emergency pulls require X-Purpose-Of-Use: emergency and X-Emergency-Reason headers.',
+                'message'    => __('api.emergency_headers_required'),
             ], 400);
         }
 
@@ -180,7 +180,7 @@ class RecordController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => OpesCareErrorCode::PATIENT_NOT_FOUND->value,
-                'message'    => 'No patient was found with this health ID.',
+                'message'    => __('api.no_patient_found_health_id'),
             ], 404);
         }
 
@@ -273,7 +273,7 @@ class RecordController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => OpesCareErrorCode::AUTHENTICATION_FAILED->value,
-                'message'    => 'facility_id could not be resolved from bearer token. Encounter rejected.',
+                'message'    => __('api.encounter_rejected_facility'),
             ], 403);
         }
 
@@ -281,7 +281,7 @@ class RecordController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => OpesCareErrorCode::VALIDATION_FAILED->value,
-                'message'    => 'Missing health_id or external_encounter_id fields.',
+                'message'    => __('api.missing_healthid_encounter'),
             ], 400);
         }
 
@@ -298,7 +298,7 @@ class RecordController extends Controller
                 'status'                  => 'pending_reconciliation',
                 'error_code'              => OpesCareErrorCode::RECONCILIATION_REQUIRED->value,
                 'reconciliation_case_id'  => $case->id,
-                'message'                 => 'Patient match score is below safe threshold. Encounter queued for matching reconciliation.',
+                'message'                 => __('api.patient_match_below_threshold'),
             ], 202);
         }
 
@@ -316,7 +316,7 @@ class RecordController extends Controller
                 'status'                  => 'pending_reconciliation',
                 'error_code'              => OpesCareErrorCode::RECONCILIATION_REQUIRED->value,
                 'reconciliation_case_id'  => $case->id,
-                'message'                 => 'Patient health ID not found. Reconciliation required.',
+                'message'                 => __('api.patient_healthid_not_found_recon'),
             ], 202);
         }
 
@@ -407,7 +407,7 @@ class RecordController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => OpesCareErrorCode::VALIDATION_FAILED->value,
-                'message'    => 'Missing health_id or external_lab_order_id.',
+                'message'    => __('api.missing_healthid_lab_order'),
             ], 400);
         }
 
@@ -459,7 +459,7 @@ class RecordController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => OpesCareErrorCode::VALIDATION_FAILED->value,
-                'message'    => 'Missing health_id or medication parameters.',
+                'message'    => __('api.missing_healthid_medication'),
             ], 400);
         }
 

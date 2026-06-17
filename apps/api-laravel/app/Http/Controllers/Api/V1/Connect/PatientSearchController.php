@@ -45,7 +45,7 @@ class PatientSearchController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => OpesCareErrorCode::VALIDATION_FAILED->value,
-                'message'    => 'Missing required search parameters: search_type, purpose.',
+                'message'    => __('api.search_params_missing'),
             ], 400);
         }
 
@@ -54,7 +54,7 @@ class PatientSearchController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => OpesCareErrorCode::VALIDATION_FAILED->value,
-                'message'    => 'Missing required parameter: query.',
+                'message'    => __('api.search_query_missing'),
             ], 400);
         }
 
@@ -72,7 +72,7 @@ class PatientSearchController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => OpesCareErrorCode::VALIDATION_FAILED->value,
-                'message'    => 'Unsupported search_type. Accepted: health_id, cnamgs_id, national_id, phone, demographic.',
+                'message'    => __('api.search_type_unsupported'),
             ], 400);
         }
 
@@ -114,7 +114,7 @@ class PatientSearchController extends Controller
         return response()->json([
             'status'         => 'rejected',
             'error_code'     => OpesCareErrorCode::PATIENT_NOT_FOUND->value,
-            'message'        => 'No patient matching these parameters was found on OpesCare.',
+            'message'        => __('api.no_patient_matching'),
             // [M-3 FIX] bin2hex(random_bytes) is cryptographically random; uniqid() was predictable
             'correlation_id' => $request->header('X-Correlation-Id') ?? ('req_' . bin2hex(random_bytes(8))),
         ], 404);

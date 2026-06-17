@@ -67,7 +67,7 @@ class MedicalIdVerificationController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => MedicalIdErrorCode::INVALID_HEALTH_ID_FORMAT->value,
-                'message'    => 'This Health ID could not be verified. Check the ID and try again.',
+                'message'    => __('api.health_id_unverified_retry'),
             ], 400);
         }
 
@@ -86,7 +86,7 @@ class MedicalIdVerificationController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => MedicalIdErrorCode::HEALTH_ID_NOT_FOUND->value,
-                'message'    => 'This Health ID could not be verified. Check the ID and try again.',
+                'message'    => __('api.health_id_unverified_retry'),
             ], 404);
         }
 
@@ -108,7 +108,7 @@ class MedicalIdVerificationController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => $this->statusErrorCode($patient)->value,
-                'message'    => 'Access restricted due to identity status: ' . $statusValue,
+                'message'    => __('api.access_restricted_status', ['status' => $statusValue]),
             ], 403);
         }
 
@@ -175,7 +175,7 @@ class MedicalIdVerificationController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => $this->statusErrorCode($patient)->value,
-                'message'    => 'Access restricted due to identity status: ' . $statusValue,
+                'message'    => __('api.access_restricted_status', ['status' => $statusValue]),
             ], 403);
         }
 

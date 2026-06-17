@@ -87,14 +87,14 @@ class DuplicateMergeController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => "Merge case successfully {$resolution}d."
+                'message' => __('api.merge_case_resolved', ['resolution' => $resolution . 'd'])
             ]);
             
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'status' => 'error',
-                'message' => 'An error occurred during resolution: ' . $e->getMessage()
+                'message' => __('api.resolution_error', ['error' => $e->getMessage()])
             ], 500);
         }
     }

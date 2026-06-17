@@ -61,7 +61,7 @@ class PlatformAdminController extends Controller
             $request->ip()
         );
 
-        return response()->json(['message' => "Setting '{$key}' updated.", 'data' => $setting]);
+        return response()->json(['message' => __('api.setting_updated', ['key' => $key]), 'data' => $setting]);
     }
 
     /**
@@ -72,7 +72,7 @@ class PlatformAdminController extends Controller
     {
         $validated = $request->validate(['actor_id' => ['required', 'uuid']]);
         $this->service->seedDefaultSettings($validated['actor_id']);
-        return response()->json(['message' => 'Default settings seeded.']);
+        return response()->json(['message' => __('api.default_settings_seeded')]);
     }
 
     // ── Module Toggles ────────────────────────────────────────────────────
@@ -95,7 +95,7 @@ class PlatformAdminController extends Controller
         ]);
 
         if (!$validated['enabled'] && empty($validated['reason'])) {
-            return response()->json(['message' => 'A reason is required when disabling a module.'], 422);
+            return response()->json(['message' => __('api.reason_required_disable_module')], 422);
         }
 
         try {
@@ -107,11 +107,11 @@ class PlatformAdminController extends Controller
                 $request->ip()
             );
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {
-            return response()->json(['message' => "Module '{$key}' not found."], 404);
+            return response()->json(['message' => __('api.module_not_found', ['key' => $key])], 404);
         }
 
         $state = $toggle->enabled ? 'enabled' : 'disabled';
-        return response()->json(['message' => "Module '{$key}' {$state}.", 'data' => $toggle]);
+        return response()->json(['message' => __('api.module_state', ['key' => $key, 'state' => $state]), 'data' => $toggle]);
     }
 
     /**
@@ -122,7 +122,7 @@ class PlatformAdminController extends Controller
     {
         $validated = $request->validate(['actor_id' => ['required', 'uuid']]);
         $this->service->seedDefaultModules($validated['actor_id']);
-        return response()->json(['message' => 'Default modules seeded.']);
+        return response()->json(['message' => __('api.default_modules_seeded')]);
     }
 
     // ── Maintenance Windows ───────────────────────────────────────────────
@@ -154,7 +154,7 @@ class PlatformAdminController extends Controller
             $request->ip()
         );
 
-        return response()->json(['message' => 'Maintenance window created.', 'data' => $window], 201);
+        return response()->json(['message' => __('api.maintenance_window_created'), 'data' => $window], 201);
     }
 
     /**
@@ -177,11 +177,11 @@ class PlatformAdminController extends Controller
                 $request->ip()
             );
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {
-            return response()->json(['message' => 'Maintenance window not found.'], 404);
+            return response()->json(['message' => __('api.maintenance_window_not_found')], 404);
         }
 
         $state = $window->is_active ? 'activated' : 'deactivated';
-        return response()->json(['message' => "Maintenance window {$state}.", 'data' => $window]);
+        return response()->json(['message' => __('api.maintenance_window_state', ['state' => $state]), 'data' => $window]);
     }
 
     // ── System Health & Admin Log ─────────────────────────────────────────

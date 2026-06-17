@@ -40,7 +40,7 @@ class AuthController extends Controller
             return response()->json([
                 'status'     => 'rejected',
                 'error_code' => OpesCareErrorCode::AUTHENTICATION_FAILED->value,
-                'message'    => 'grant_type must be client_credentials and client_id/client_secret are required.',
+                'message'    => __('api.client_credentials_required'),
             ], 400);
         }
 
@@ -127,7 +127,7 @@ class AuthController extends Controller
         return response()->json([
             'status'     => 'rejected',
             'error_code' => OpesCareErrorCode::AUTHENTICATION_FAILED->value,
-            'message'    => 'Invalid or inactive integration credentials.',
+            'message'    => __('api.invalid_integration_credentials'),
         ], 401);
     }
 }
