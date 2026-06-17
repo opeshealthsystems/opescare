@@ -42,7 +42,7 @@ class MobileConsentController extends Controller
             ->first();
 
         if (!$consentRequest) {
-            return response()->json(['error' => 'Consent request not found or already processed.'], 404);
+            return response()->json(['error' => __('api.consent_not_found')], 404);
         }
 
         $grant = ConsentGrant::create([
@@ -60,7 +60,7 @@ class MobileConsentController extends Controller
         return response()->json([
             'status'           => 'granted',
             'consent_grant_id' => $grant->id,
-            'message'          => 'Consent grant successfully created for requesting facility.',
+            'message'          => __('api.consent_grant_created'),
         ], 200);
     }
 
@@ -74,14 +74,14 @@ class MobileConsentController extends Controller
             ->first();
 
         if (!$consentRequest) {
-            return response()->json(['error' => 'Consent request not found or already processed.'], 404);
+            return response()->json(['error' => __('api.consent_not_found')], 404);
         }
 
         $consentRequest->update(['status' => 'denied']);
 
         return response()->json([
             'status'  => 'denied',
-            'message' => 'Consent challenge denied. External API access rejected.',
+            'message' => __('api.consent_challenge_denied'),
         ], 200);
     }
 
@@ -95,14 +95,14 @@ class MobileConsentController extends Controller
             ->first();
 
         if (!$grant) {
-            return response()->json(['error' => 'Active consent grant not found.'], 404);
+            return response()->json(['error' => __('api.consent_grant_not_found')], 404);
         }
 
         $grant->update(['status' => 'revoked']);
 
         return response()->json([
             'status'  => 'revoked',
-            'message' => 'Consent grant revoked. Existing tokens invalidated.',
+            'message' => __('api.consent_revoked'),
         ], 200);
     }
 }

@@ -160,7 +160,7 @@ class MobileAppointmentController extends Controller
         if ($appointment->patient_id !== $patientId) {
             return response()->json([
                 'error_code' => 'FORBIDDEN',
-                'message'    => 'You may only cancel your own appointments.',
+                'message'    => __('api.appointment_cancel_own_only'),
             ], 403);
         }
 

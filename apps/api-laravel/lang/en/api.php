@@ -19,6 +19,9 @@ return [
     'logout_success'                => 'Logged out successfully.',
     // Patient / Record
     'no_patient_record'             => 'No patient record linked to this account.',
+    'no_patient_record_contact'     => 'No patient record found for this account. Please contact your healthcare provider.',
+    'pdf_generated'                 => 'PDF generated successfully.',
+    'file_downloaded'              => 'File downloaded successfully.',
     'record_not_found'              => 'Record not found.',
     'record_created'                => 'Record created successfully.',
     'record_updated'                => 'Record updated successfully.',
@@ -29,6 +32,14 @@ return [
     'consent_revoked'               => 'Consent grant revoked. Existing tokens invalidated.',
     'consent_approved'              => 'Consent approved.',
     'consent_denied'                => 'Consent denied.',
+    'consent_grant_created'         => 'Consent grant successfully created for requesting facility.',
+    'consent_challenge_denied'      => 'Consent challenge denied. External API access rejected.',
+    'consent_request_approved'      => 'Consent request approved successfully.',
+    'consent_request_denied'        => 'Consent request denied.',
+    'consent_grant_revoked'         => 'Consent grant revoked.',
+    'identity_unresolvable_patient' => 'Patient identity could not be resolved from session.',
+    'identity_unresolvable_user'    => 'User identity could not be resolved from session.',
+    'identity_unresolvable_both'    => 'User/patient identity could not be resolved from session.',
     // Family
     'no_user_linked'                => 'No user account linked to this patient.',
     'cannot_link_self'              => 'You cannot link yourself as a dependent.',
@@ -40,6 +51,7 @@ return [
     'appointment_updated'           => 'Appointment updated.',
     'appointment_cancelled'         => 'Appointment cancelled.',
     'appointment_already_cancelled' => 'Appointment is already cancelled.',
+    'appointment_cancel_own_only'   => 'You may only cancel your own appointments.',
     'waitlist_dispatched'           => 'Waitlist backfill job dispatched.',
     'slot_not_available'            => 'The selected slot is no longer available.',
     // Blood / Inventory

@@ -23,7 +23,7 @@ class MobileQrController extends Controller
         $patient   = Patient::find($patientId);
 
         if (!$patient) {
-            return response()->json(['message' => 'Patient not found.'], 404);
+            return response()->json(['message' => __('api.patient_not_found')], 404);
         }
 
         // Create a short-lived token scoped for QR access

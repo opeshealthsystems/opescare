@@ -19,7 +19,7 @@ class MobileCarePlanController extends Controller
         $patientId = $request->attributes->get('patient_id');
 
         if (! $patientId) {
-            return response()->json(['message' => 'No patient record linked to account.'], 404);
+            return response()->json(['message' => __('api.no_patient_record')], 404);
         }
 
         $plans = $this->service->getActivePlansForPatient($patientId);

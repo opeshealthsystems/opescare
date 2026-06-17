@@ -30,7 +30,7 @@ class MobilePatientController extends Controller
         $patient   = Patient::find($patientId);
 
         if (!$patient) {
-            return response()->json(['message' => 'Patient not found.'], 404);
+            return response()->json(['message' => __('api.patient_not_found')], 404);
         }
 
         $allergiesCount   = AllergyRecord::where('patient_id', $patient->id)->where('status', 'active')->count();
@@ -63,7 +63,7 @@ class MobilePatientController extends Controller
         $patient   = Patient::find($patientId);
 
         if (!$patient) {
-            return response()->json(['message' => 'Patient not found.'], 404);
+            return response()->json(['message' => __('api.patient_not_found')], 404);
         }
 
         $qrPayload = base64_encode(json_encode([
@@ -165,7 +165,7 @@ class MobilePatientController extends Controller
     {
         $patientId = $this->resolvePatientId($request);
         if (! $patientId) {
-            return response()->json(['message' => 'Patient not found.'], 404);
+            return response()->json(['message' => __('api.patient_not_found')], 404);
         }
 
         $allergies = AllergyRecord::where('patient_id', $patientId)
@@ -193,7 +193,7 @@ class MobilePatientController extends Controller
     {
         $patientId = $this->resolvePatientId($request);
         if (! $patientId) {
-            return response()->json(['message' => 'Patient not found.'], 404);
+            return response()->json(['message' => __('api.patient_not_found')], 404);
         }
 
         $conditions = Diagnosis::where('patient_id', $patientId)
@@ -220,7 +220,7 @@ class MobilePatientController extends Controller
     {
         $patientId = $this->resolvePatientId($request);
         if (! $patientId) {
-            return response()->json(['message' => 'Patient not found.'], 404);
+            return response()->json(['message' => __('api.patient_not_found')], 404);
         }
 
         $immunizations = ImmunizationRecord::where('patient_id', $patientId)
@@ -249,7 +249,7 @@ class MobilePatientController extends Controller
         $patient   = Patient::find($patientId);
 
         if (!$patient) {
-            return response()->json(['message' => 'Patient not found.'], 404);
+            return response()->json(['message' => __('api.patient_not_found')], 404);
         }
 
         $validated = $request->validate([

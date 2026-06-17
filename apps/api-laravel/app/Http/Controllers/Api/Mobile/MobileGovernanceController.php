@@ -39,7 +39,7 @@ class MobileGovernanceController extends Controller
     {
         $patientId = $request->attributes->get('patient_id');
         if (!$patientId) {
-            return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => 'Patient identity could not be resolved from session.'], 401);
+            return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => __('api.identity_unresolvable_patient')], 401);
         }
 
         $requests = ConsentRequest::where('patient_id', $patientId)
@@ -54,7 +54,7 @@ class MobileGovernanceController extends Controller
         // [C-1 FIX] user_id from middleware — never from request body fallback
         $userId = $request->attributes->get('user_id') ?? $request->attributes->get('patient_user_id');
         if (!$userId) {
-            return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => 'User identity could not be resolved from session.'], 401);
+            return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => __('api.identity_unresolvable_user')], 401);
         }
 
         $grant = $this->consentService->approveConsent($id, $userId);
@@ -62,7 +62,7 @@ class MobileGovernanceController extends Controller
         return response()->json([
             'status'           => 'granted',
             'consent_grant_id' => $grant->id,
-            'message'          => 'Consent request approved successfully.',
+            'message'          => __('api.consent_request_approved'),
         ], 200);
     }
 
@@ -73,7 +73,7 @@ class MobileGovernanceController extends Controller
         return response()->json([
             'status'             => 'denied',
             'consent_request_id' => $consentRequest->id,
-            'message'            => 'Consent request denied.',
+            'message'            => __('api.consent_request_denied'),
         ], 200);
     }
 
@@ -82,7 +82,7 @@ class MobileGovernanceController extends Controller
         // [C-1 FIX] user_id from middleware — never from request body fallback
         $userId = $request->attributes->get('user_id') ?? $request->attributes->get('patient_user_id');
         if (!$userId) {
-            return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => 'User identity could not be resolved from session.'], 401);
+            return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => __('api.identity_unresolvable_user')], 401);
         }
 
         $grant = $this->consentService->revokeConsent($id, $userId);
@@ -90,7 +90,7 @@ class MobileGovernanceController extends Controller
         return response()->json([
             'status'           => 'revoked',
             'consent_grant_id' => $grant->id,
-            'message'          => 'Consent grant revoked.',
+            'message'          => __('api.consent_grant_revoked'),
         ], 200);
     }
 
@@ -100,7 +100,7 @@ class MobileGovernanceController extends Controller
     {
         $patientId = $request->attributes->get('patient_id');
         if (!$patientId) {
-            return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => 'Patient identity could not be resolved from session.'], 401);
+            return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => __('api.identity_unresolvable_patient')], 401);
         }
 
         $logs = AccessLog::where('patient_id', $patientId)
@@ -118,7 +118,7 @@ class MobileGovernanceController extends Controller
         $patientId = $request->attributes->get('patient_id');
 
         if (!$userId || !$patientId) {
-            return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => 'User/patient identity could not be resolved from session.'], 401);
+            return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => __('api.identity_unresolvable_both')], 401);
         }
 
         $validated = $request->validate([
@@ -148,7 +148,7 @@ class MobileGovernanceController extends Controller
         $patientId = $request->attributes->get('patient_id');
 
         if (!$userId || !$patientId) {
-            return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => 'User/patient identity could not be resolved from session.'], 401);
+            return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => __('api.identity_unresolvable_both')], 401);
         }
 
         $validated = $request->validate([
@@ -170,7 +170,7 @@ class MobileGovernanceController extends Controller
     {
         $patientId = $request->attributes->get('patient_id');
         if (!$patientId) {
-            return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => 'Patient identity could not be resolved from session.'], 401);
+            return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => __('api.identity_unresolvable_patient')], 401);
         }
 
         $requests = DataExportRequest::where('patient_id', $patientId)
@@ -185,7 +185,7 @@ class MobileGovernanceController extends Controller
         // [C-1 FIX] user_id from middleware — never from query string fallback
         $userId = $request->attributes->get('user_id') ?? $request->attributes->get('patient_user_id');
         if (!$userId) {
-            return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => 'User identity could not be resolved from session.'], 401);
+            return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => __('api.identity_unresolvable_user')], 401);
         }
 
         try {
@@ -194,7 +194,7 @@ class MobileGovernanceController extends Controller
             return response()->json([
                 'status'    => 'downloaded',
                 'file_path' => $exp->file_path,
-                'message'   => 'File downloaded successfully.',
+                'message'   => __('api.file_downloaded'),
             ], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 403);

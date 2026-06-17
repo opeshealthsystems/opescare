@@ -35,22 +35,22 @@ class MobileAuthController extends Controller
         $patient = Patient::findByPhone($request->phone_number);
 
         if (!$patient) {
-            return response()->json(['message' => 'Patient not found.'], 404);
+            return response()->json(['message' => __('api.patient_not_found')], 404);
         }
 
         if (is_null($patient->pin_hash)) {
             // Bootstrap: require date_of_birth to verify identity before setting PIN
             if (!$request->has('date_of_birth') || $request->date_of_birth !== $patient->date_of_birth?->format('Y-m-d')) {
-                return response()->json(['message' => 'Identity verification required. Please provide your date of birth.'], 422);
+                return response()->json(['message' => __('api.identity_verification_required')], 422);
             }
             $patient->update(['pin_hash' => Hash::make($request->pin)]);
         } elseif (!Hash::check($request->pin, $patient->pin_hash)) {
-            return response()->json(['message' => 'Invalid credentials.'], 401);
+            return response()->json(['message' => __('api.invalid_credentials')], 401);
         }
 
         $this->sendOtp($patient);
 
-        return response()->json(['message' => 'OTP sent to your registered phone number.'], 200);
+        return response()->json(['message' => __('api.otp_sent')], 200);
     }
 
     /**
@@ -68,7 +68,7 @@ class MobileAuthController extends Controller
         $patient = Patient::findByPhone($request->phone_number);
 
         if (! $patient || is_null($patient->pin_hash)) {
-            return response()->json(['message' => 'Patient not found.'], 404);
+            return response()->json(['message' => __('api.patient_not_found')], 404);
         }
 
         PatientOtpCode::where('phone_number', $patient->phone_number)
@@ -77,7 +77,7 @@ class MobileAuthController extends Controller
 
         $this->sendOtp($patient);
 
-        return response()->json(['message' => 'OTP resent to your registered phone number.'], 200);
+        return response()->json(['message' => __('api.otp_resent')], 200);
     }
 
     /**
@@ -95,7 +95,7 @@ class MobileAuthController extends Controller
         $patient = Patient::findByPhone($request->phone_number);
 
         if (!$patient) {
-            return response()->json(['message' => 'Patient not found.'], 404);
+            return response()->json(['message' => __('api.patient_not_found')], 404);
         }
 
         // Find the most recent unused, unexpired OTP for this phone
@@ -106,7 +106,7 @@ class MobileAuthController extends Controller
             ->first();
 
         if (!$otpRecord || !Hash::check($request->otp, $otpRecord->code_hash)) {
-            return response()->json(['message' => 'Invalid or expired OTP.'], 401);
+            return response()->json(['message' => __('api.otp_invalid')], 401);
         }
 
         // Mark OTP as used
@@ -147,7 +147,7 @@ class MobileAuthController extends Controller
 
         // Step 1: Verify credentials against the users table (same as web portal)
         if (! Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            return response()->json(['message' => 'Invalid email or password.'], 401);
+            return response()->json(['message' => __('api.invalid_email_or_password')], 401);
         }
 
         $user = Auth::user();
@@ -158,7 +158,7 @@ class MobileAuthController extends Controller
 
         if (! $patient) {
             return response()->json([
-                'message' => 'No patient record found for this account. Please contact your healthcare provider.',
+                'message' => __('api.no_patient_record_contact'),
             ], 404);
         }
 
@@ -193,7 +193,7 @@ class MobileAuthController extends Controller
         $bearer = $request->bearerToken() ?? $request->input('token');
 
         if (!$bearer) {
-            return response()->json(['message' => 'No token provided.'], 401);
+            return response()->json(['message' => __('api.no_token_provided')], 401);
         }
 
         $prefix = substr($bearer, 0, 12);
@@ -204,7 +204,7 @@ class MobileAuthController extends Controller
             ->first();
 
         if (!$token || !Hash::check($bearer, $token->token_hash)) {
-            return response()->json(['message' => 'Token invalid or too old to refresh.'], 401);
+            return response()->json(['message' => __('api.token_too_old')], 401);
         }
 
         // Revoke old token

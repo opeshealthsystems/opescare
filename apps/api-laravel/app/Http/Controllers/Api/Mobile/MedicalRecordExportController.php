@@ -22,7 +22,7 @@ class MedicalRecordExportController extends Controller
         $patientId = $request->attributes->get('patient_id');
 
         if (! $patientId) {
-            return response()->json(['message' => 'No patient record linked to account.'], 404);
+            return response()->json(['message' => __('api.no_patient_record')], 404);
         }
 
         $validated = $request->validate([
@@ -36,7 +36,7 @@ class MedicalRecordExportController extends Controller
         $path = $this->exportService->generatePdf($patientId, $validated);
 
         return response()->json([
-            'message'   => 'PDF generated successfully.',
+            'message'   => __('api.pdf_generated'),
             'file_path' => $path,
             'filename'  => basename($path),
         ]);
@@ -51,7 +51,7 @@ class MedicalRecordExportController extends Controller
         $patientId = $request->attributes->get('patient_id');
 
         if (! $patientId) {
-            return response()->json(['message' => 'No patient record linked to account.'], 404);
+            return response()->json(['message' => __('api.no_patient_record')], 404);
         }
 
         $bundle = $this->exportService->generateFhirBundle($patientId);
