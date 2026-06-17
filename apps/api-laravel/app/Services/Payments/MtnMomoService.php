@@ -3,6 +3,8 @@
 namespace App\Services\Payments;
 
 use App\Contracts\PaymentProvider;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -25,6 +27,9 @@ class MtnMomoService implements PaymentProvider
     private string $environment;
     private string $currency;
     private ?string $callbackUrl;
+    private int $connectTimeout;
+    private int $timeout;
+    private int $retries;
 
     public function __construct()
     {
@@ -37,11 +42,29 @@ class MtnMomoService implements PaymentProvider
         $this->environment     = (string) (config('services.mtn_momo.environment') ?? 'sandbox');
         $this->currency        = (string) (config('services.mtn_momo.currency') ?? 'XAF');
         $this->callbackUrl     = config('services.mtn_momo.callback_url');
+        $this->connectTimeout  = (int) (config('services.mtn_momo.connect_timeout') ?? 5);
+        $this->timeout         = (int) (config('services.mtn_momo.timeout') ?? 30);
+        $this->retries         = max(1, (int) (config('services.mtn_momo.retries') ?? 3));
     }
 
     public function getName(): string
     {
         return 'mtn_momo';
+    }
+
+    /**
+     * Configured HTTP client: hard connect/read timeouts so a hung telco
+     * endpoint can never block the request thread, plus retries that fire
+     * ONLY on connection-level failures (request never reached MoMo) — never
+     * on an HTTP response, so an accepted requesttopay is never re-sent.
+     */
+    private function http(): PendingRequest
+    {
+        return Http::connectTimeout($this->connectTimeout)
+            ->timeout($this->timeout)
+            ->retry($this->retries, 250, function ($exception) {
+                return $exception instanceof ConnectionException;
+            }, throw: true);
     }
 
     /**
@@ -75,7 +98,7 @@ class MtnMomoService implements PaymentProvider
         ];
 
         try {
-            $response = Http::withHeaders([
+            $response = $this->http()->withHeaders([
                 'Authorization'       => "Bearer {$accessToken}",
                 'X-Reference-Id'      => $referenceId,
                 'X-Target-Environment'=> $this->environment,
@@ -121,7 +144,7 @@ class MtnMomoService implements PaymentProvider
         }
 
         try {
-            $response = Http::withHeaders([
+            $response = $this->http()->withHeaders([
                 'Authorization'             => "Bearer {$accessToken}",
                 'X-Target-Environment'      => $this->environment,
                 'Ocp-Apim-Subscription-Key' => $this->subscriptionKey,
@@ -151,7 +174,7 @@ class MtnMomoService implements PaymentProvider
     private function getAccessToken(): ?string
     {
         try {
-            $response = Http::withBasicAuth($this->userId, $this->apiKey)
+            $response = $this->http()->withBasicAuth($this->userId, $this->apiKey)
                 ->withHeaders(['Ocp-Apim-Subscription-Key' => $this->subscriptionKey])
                 ->post("{$this->baseUrl}/collection/token/");
 

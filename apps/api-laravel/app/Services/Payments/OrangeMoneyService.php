@@ -3,6 +3,8 @@
 namespace App\Services\Payments;
 
 use App\Contracts\PaymentProvider;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -26,6 +28,9 @@ class OrangeMoneyService implements PaymentProvider
     private string $returnUrl;
     private string $cancelUrl;
     private string $notifUrl;
+    private int $connectTimeout;
+    private int $timeout;
+    private int $retries;
 
     public function __construct()
     {
@@ -37,11 +42,28 @@ class OrangeMoneyService implements PaymentProvider
         $this->returnUrl    = config('services.orange_money.return_url', '');
         $this->cancelUrl    = config('services.orange_money.cancel_url', '');
         $this->notifUrl     = config('services.orange_money.notif_url', '');
+        $this->connectTimeout = (int) (config('services.orange_money.connect_timeout') ?? 5);
+        $this->timeout        = (int) (config('services.orange_money.timeout') ?? 30);
+        $this->retries        = max(1, (int) (config('services.orange_money.retries') ?? 3));
     }
 
     public function getName(): string
     {
         return 'orange_money';
+    }
+
+    /**
+     * Configured HTTP client: hard connect/read timeouts plus retries that
+     * fire ONLY on connection-level failures (request never reached Orange) —
+     * never on an HTTP response, so an accepted webpayment is never re-sent.
+     */
+    private function http(): PendingRequest
+    {
+        return Http::connectTimeout($this->connectTimeout)
+            ->timeout($this->timeout)
+            ->retry($this->retries, 250, function ($exception) {
+                return $exception instanceof ConnectionException;
+            }, throw: true);
     }
 
     public function requestPayment(

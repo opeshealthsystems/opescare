@@ -58,6 +58,11 @@ return [
         'currency'         => env('MTN_MOMO_CURRENCY', 'XAF'),
         'callback_url'     => env('MTN_MOMO_CALLBACK_URL'),
         'callback_secret'  => env('MTN_MOMO_CALLBACK_SECRET'),
+        // Outbound HTTP resilience (seconds / attempts). A hung telco endpoint
+        // must never block a request thread indefinitely.
+        'connect_timeout'  => env('MTN_MOMO_CONNECT_TIMEOUT', 5),
+        'timeout'          => env('MTN_MOMO_TIMEOUT', 30),
+        'retries'          => env('MTN_MOMO_RETRIES', 3),
     ],
 
     'orange_money' => [
@@ -70,6 +75,10 @@ return [
         'cancel_url'    => env('ORANGE_MONEY_CANCEL_URL'),
         'notif_url'     => env('ORANGE_MONEY_NOTIF_URL'),
         'callback_secret' => env('ORANGE_MONEY_CALLBACK_SECRET'),
+        // Outbound HTTP resilience (seconds / attempts).
+        'connect_timeout' => env('ORANGE_MONEY_CONNECT_TIMEOUT', 5),
+        'timeout'         => env('ORANGE_MONEY_TIMEOUT', 30),
+        'retries'         => env('ORANGE_MONEY_RETRIES', 3),
     ],
 
     'whatsapp' => [
