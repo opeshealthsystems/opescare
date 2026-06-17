@@ -28,11 +28,7 @@
 <div class="alert alert-info">
     <i data-lucide="info"></i>
     <div>
-        Public health reports are generated and submitted via the <strong>Public Health API</strong>
-        (<code class="mono">POST /api/v1/public-health/reports/generate-drafts</code>).
-        Once reports exist they will appear here. Use the
-        <a href="{{ route('portals.developer.dashboard') }}">Developer Portal</a>
-        to get API access credentials.
+        {!! __('public.healthorg_portal.reports_empty_info', [], $l) ?: 'Public health reports are generated and submitted via the <strong>Public Health API</strong> (<code class="mono">POST /api/v1/public-health/reports/generate-drafts</code>). Once reports exist they will appear here. Use the Developer Portal to get API access credentials.' !!}
     </div>
 </div>
 @else
