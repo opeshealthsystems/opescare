@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 
 @section('title', 'Analytics Dashboard')
 
@@ -9,7 +9,7 @@
 
 @section('sidebar_nav')
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Overview</div>
+    <div class="sidebar-nav-label">{{ __('public.stf_analytics_sidebar_overview') }}</div>
     <a href="{{ route('portals.staff') }}" class="sidebar-link">
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
@@ -20,7 +20,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Clinical</div>
+    <div class="sidebar-nav-label">{{ __('public.stf_analytics_sidebar_clinical') }}</div>
     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
         <i data-lucide="calendar-check-2"></i>
         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
@@ -35,11 +35,11 @@
     </a>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
         <i data-lucide="brain-circuit"></i>
-        <span>Clinical Alerts</span>
+        <span>{{ __('public.stf_analytics_nav_clinical_alerts') }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">HR & Staff</div>
+    <div class="sidebar-nav-label">{{ __('public.stf_analytics_sidebar_hr') }}</div>
     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
         <i data-lucide="users"></i>
         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
@@ -54,7 +54,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Inventory</div>
+    <div class="sidebar-nav-label">{{ __('public.stf_analytics_sidebar_inventory') }}</div>
     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
         <i data-lucide="pill"></i>
         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
@@ -65,14 +65,14 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Supply Chain</div>
+    <div class="sidebar-nav-label">{{ __('public.stf_analytics_sidebar_supply') }}</div>
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
         <i data-lucide="package"></i>
-        <span>Supply Chain</span>
+        <span>{{ __('public.stf_analytics_nav_supply_chain') }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Operations</div>
+    <div class="sidebar-nav-label">{{ __('public.stf_analytics_sidebar_ops') }}</div>
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>
         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
@@ -102,7 +102,7 @@
 
 @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Analytics')
+@section('breadcrumb_section', __('public.stf_analytics_breadcrumb'))
 
 @section('content')
 
@@ -122,11 +122,11 @@
 @include('portals.staff.analytics._tabs')
 
 <div class="page-head">
-    <h2>Analytics dashboard</h2>
+    <h2>{{ __('public.stf_analytics_title') }}</h2>
     <div class="page-head__spacer"></div>
     {{-- Period Selector --}}
     <form method="GET" action="{{ route('portals.staff.analytics') }}" class="filter-bar filter-bar--flush">
-        @foreach(['7d' => '7 Days', '30d' => '30 Days', '90d' => '90 Days', '1y' => '1 Year'] as $val => $label)
+        @foreach(['7d' => __('public.stf_analytics_period_7d'), '30d' => __('public.stf_analytics_period_30d'), '90d' => __('public.stf_analytics_period_90d'), '1y' => __('public.stf_analytics_period_1y')] as $val => $label)
             <button type="submit" name="period" value="{{ $val }}"
                 class="btn btn-sm {{ $period === $val ? 'btn-primary' : 'btn-ghost' }}">
                 {{ $label }}
@@ -143,27 +143,27 @@
 
     {{-- Visits --}}
     <div class="stat-card stat-card--primary">
-        <div class="stat-card__head"><i data-lucide="stethoscope"></i> <span class="stat-card__label">Visits</span></div>
+        <div class="stat-card__head"><i data-lucide="stethoscope"></i> <span class="stat-card__label">{{ __('public.stf_analytics_kpi_visits') }}</span></div>
         <div class="stat-card__value">{{ number_format($visits['total']) }}</div>
         <div class="stat-card__hint">{{ $visits['completed'] }} done · {{ $visits['active'] }} active</div>
     </div>
 
     {{-- Appointments --}}
     <div class="stat-card stat-card--primary">
-        <div class="stat-card__head"><i data-lucide="calendar-check-2"></i> <span class="stat-card__label">Appointments</span></div>
+        <div class="stat-card__head"><i data-lucide="calendar-check-2"></i> <span class="stat-card__label">{{ __('public.stf_analytics_kpi_appts') }}</span></div>
         <div class="stat-card__value">{{ number_format($appointments['total']) }}</div>
         <div class="stat-card__hint">
             @if($appointments['show_rate'] !== null)
-                {{ $appointments['show_rate'] }}% show rate
+                {{ __('public.stf_analytics_kpi_appts_show_rate', ['rate' => $appointments['show_rate']]) }}
             @else
-                No data
+                {{ __('public.stf_analytics_kpi_no_data') }}
             @endif
         </div>
     </div>
 
     {{-- Revenue --}}
     <div class="stat-card stat-card--success">
-        <div class="stat-card__head"><i data-lucide="trending-up"></i> <span class="stat-card__label">Collected</span></div>
+        <div class="stat-card__head"><i data-lucide="trending-up"></i> <span class="stat-card__label">{{ __('public.stf_analytics_kpi_collected') }}</span></div>
         <div class="stat-card__value">{{ number_format($revenue['total_collected'], 0) }}</div>
         <div class="stat-card__hint">
             of {{ number_format($revenue['total_invoiced'], 0) }} invoiced
@@ -175,21 +175,21 @@
 
     {{-- Outstanding --}}
     <div class="stat-card {{ $revenue['total_outstanding'] > 0 ? 'stat-card--warning' : 'stat-card--success' }}">
-        <div class="stat-card__head"><i data-lucide="clock"></i> <span class="stat-card__label">Outstanding</span></div>
+        <div class="stat-card__head"><i data-lucide="clock"></i> <span class="stat-card__label">{{ __('public.stf_analytics_kpi_outstanding') }}</span></div>
         <div class="stat-card__value">{{ number_format($revenue['total_outstanding'], 0) }}</div>
         <div class="stat-card__hint">{{ $revenue['overdue_count'] }} overdue invoices</div>
     </div>
 
     {{-- New Patients --}}
     <div class="stat-card stat-card--primary">
-        <div class="stat-card__head"><i data-lucide="user-plus"></i> <span class="stat-card__label">New Patients</span></div>
+        <div class="stat-card__head"><i data-lucide="user-plus"></i> <span class="stat-card__label">{{ __('public.stf_analytics_kpi_new_patients') }}</span></div>
         <div class="stat-card__value">{{ number_format($patients['new_in_period']) }}</div>
         <div class="stat-card__hint">{{ number_format($patients['total_registered']) }} total registered</div>
     </div>
 
     {{-- Staff on Leave --}}
     <div class="stat-card {{ $staff['on_leave'] > 0 ? 'stat-card--warning' : '' }}">
-        <div class="stat-card__head"><i data-lucide="plane-takeoff"></i> <span class="stat-card__label">Staff</span></div>
+        <div class="stat-card__head"><i data-lucide="plane-takeoff"></i> <span class="stat-card__label">{{ __('public.stf_analytics_kpi_staff') }}</span></div>
         <div class="stat-card__value">{{ number_format($staff['active']) }}</div>
         <div class="stat-card__hint">
             active of {{ $staff['total'] }}
@@ -209,14 +209,14 @@
         <div class="panel-header">
             <h3 class="panel-title">
                 <i data-lucide="activity"></i>
-                Visit Trend
+                {{ __('public.stf_analytics_panel_visit_trend') }}
             </h3>
         </div>
         <div class="panel-body">
             @if(empty($visitTrend))
                 <div class="empty-state">
                     <div class="empty-state-icon"><i data-lucide="bar-chart-2"></i></div>
-                    <p>No visit data for this period.</p>
+                    <p>{{ __('public.stf_analytics_empty_visit_data') }}</p>
                 </div>
             @else
                 <div style="height:160px;position:relative;">
@@ -231,19 +231,19 @@
         <div class="panel-header">
             <h3 class="panel-title">
                 <i data-lucide="calendar-check-2"></i>
-                Appointments
+                {{ __('public.stf_analytics_panel_appointments') }}
             </h3>
         </div>
         <div class="panel-body">
             @if($appointments['total'] === 0)
-                <p class="td-muted">No appointments.</p>
+                <p class="td-muted">{{ __('public.stf_analytics_no_appointments') }}</p>
             @else
                 <div class="breakdown">
                 @foreach([
-                    ['label'=>'Completed', 'key'=>'completed', 'fill'=>''],
-                    ['label'=>'Confirmed', 'key'=>'confirmed', 'fill'=>''],
-                    ['label'=>'Cancelled', 'key'=>'cancelled', 'fill'=>'breakdown__fill--danger'],
-                    ['label'=>'No Show',   'key'=>'no_show',   'fill'=>'breakdown__fill--warning'],
+                    ['label'=> __('public.stf_analytics_appt_completed'), 'key'=>'completed', 'fill'=>''],
+                    ['label'=> __('public.stf_analytics_appt_confirmed'), 'key'=>'confirmed', 'fill'=>''],
+                    ['label'=> __('public.stf_analytics_appt_cancelled'), 'key'=>'cancelled', 'fill'=>'breakdown__fill--danger'],
+                    ['label'=> __('public.stf_analytics_appt_no_show'),   'key'=>'no_show',   'fill'=>'breakdown__fill--warning'],
                 ] as $row)
                 @php $val = $appointments[$row['key']]; $pct = $appointments['total'] > 0 ? round($val / $appointments['total'] * 100) : 0; @endphp
                 <div class="breakdown__row">
@@ -267,14 +267,14 @@
         <div class="panel-header">
             <h3 class="panel-title">
                 <i data-lucide="trending-up"></i>
-                Revenue Trend
+                {{ __('public.stf_analytics_panel_rev_trend') }}
             </h3>
         </div>
         <div class="panel-body">
             @if(empty($revTrend))
                 <div class="empty-state">
                     <div class="empty-state-icon"><i data-lucide="trending-up"></i></div>
-                    <p>No revenue data for this period.</p>
+                    <p>{{ __('public.stf_analytics_empty_rev_data') }}</p>
                 </div>
             @else
                 <div style="height:160px;position:relative;">
@@ -289,12 +289,12 @@
         <div class="panel-header">
             <h3 class="panel-title">
                 <i data-lucide="stethoscope"></i>
-                Visit Types
+                {{ __('public.stf_analytics_panel_visit_types') }}
             </h3>
         </div>
         <div class="panel-body">
             @if(empty($visits['by_type']))
-                <p class="td-muted">No visits.</p>
+                <p class="td-muted">{{ __('public.stf_analytics_no_visits') }}</p>
             @else
                 @php $maxType = max(array_values($visits['by_type'])); @endphp
                 <div class="breakdown">
@@ -321,12 +321,12 @@
         <div class="panel-header">
             <h3 class="panel-title">
                 <i data-lucide="users"></i>
-                Staff Distribution
+                {{ __('public.stf_analytics_panel_staff_dist') }}
             </h3>
         </div>
         <div class="panel-body">
             @if(empty($staff['by_category']))
-                <p class="td-muted">No staff records.</p>
+                <p class="td-muted">{{ __('public.stf_analytics_no_staff') }}</p>
             @else
                 @php $totalByCategory = array_sum($staff['by_category']); @endphp
                 <div class="breakdown">
@@ -343,8 +343,11 @@
                 <div class="alert alert-warning mt-6">
                     <i data-lucide="clock"></i>
                     <div>
-                        {{ $staff['pending_leaves'] }} pending leave request{{ $staff['pending_leaves'] !== 1 ? 's' : '' }}
-                        <a href="{{ route('portals.staff.hr.leave') }}">Review →</a>
+                        {{ $staff['pending_leaves'] !== 1
+                            ? $staff['pending_leaves'] . ' ' . __('public.stf_analytics_pending_leaves_plural', ['count' => ''])
+                            : $staff['pending_leaves'] . ' ' . __('public.stf_analytics_pending_leaves', ['count' => ''])
+                        }}
+                        <a href="{{ route('portals.staff.hr.leave') }}">{{ __('public.stf_analytics_leave_review') }}</a>
                     </div>
                 </div>
                 @endif
@@ -357,23 +360,23 @@
         <div class="panel-header">
             <h3 class="panel-title">
                 <i data-lucide="package"></i>
-                Inventory Alerts
+                {{ __('public.stf_analytics_panel_inv_alerts') }}
             </h3>
         </div>
         <div class="panel-body">
             @php
                 $alerts = [];
-                if ($inventory['pharma_out'] > 0)     $alerts[] = ['type'=>'danger',  'msg'=> $inventory['pharma_out']    . ' medicine(s) out of stock', 'url'=> route('portals.staff.inventory.pharmacy')];
-                if ($inventory['pharma_low'] > 0)     $alerts[] = ['type'=>'warning', 'msg'=> $inventory['pharma_low']    . ' medicine(s) low stock', 'url'=> route('portals.staff.inventory.pharmacy')];
-                if ($inventory['pharma_expired'] > 0) $alerts[] = ['type'=>'danger',  'msg'=> $inventory['pharma_expired']. ' expired medicine(s)', 'url'=> route('portals.staff.inventory.pharmacy')];
-                if ($inventory['blood_total_units'] === 0) $alerts[] = ['type'=>'danger', 'msg'=>'Blood bank is empty', 'url'=> route('portals.staff.inventory.blood')];
-                elseif ($inventory['blood_groups'] < 4)    $alerts[] = ['type'=>'warning','msg'=> $inventory['blood_groups'] . ' blood group(s) in stock', 'url'=> route('portals.staff.inventory.blood')];
+                if ($inventory['pharma_out'] > 0)     $alerts[] = ['type'=>'danger',  'msg'=> $inventory['pharma_out']    . ' ' . __('public.stf_analytics_inv_out_of_stock', ['count' => '']), 'url'=> route('portals.staff.inventory.pharmacy')];
+                if ($inventory['pharma_low'] > 0)     $alerts[] = ['type'=>'warning', 'msg'=> $inventory['pharma_low']    . ' ' . __('public.stf_analytics_inv_low_stock', ['count' => '']), 'url'=> route('portals.staff.inventory.pharmacy')];
+                if ($inventory['pharma_expired'] > 0) $alerts[] = ['type'=>'danger',  'msg'=> $inventory['pharma_expired']. ' ' . __('public.stf_analytics_inv_expired', ['count' => '']), 'url'=> route('portals.staff.inventory.pharmacy')];
+                if ($inventory['blood_total_units'] === 0) $alerts[] = ['type'=>'danger', 'msg'=> __('public.stf_analytics_inv_blood_empty'), 'url'=> route('portals.staff.inventory.blood')];
+                elseif ($inventory['blood_groups'] < 4)    $alerts[] = ['type'=>'warning','msg'=> $inventory['blood_groups'] . ' ' . __('public.stf_analytics_inv_blood_groups', ['count' => '']), 'url'=> route('portals.staff.inventory.blood')];
             @endphp
 
             @if(empty($alerts))
                 <div class="empty-state">
                     <div class="empty-state-icon"><i data-lucide="check-circle"></i></div>
-                    <p>All inventory levels look good.</p>
+                    <p>{{ __('public.stf_analytics_inv_all_good') }}</p>
                 </div>
             @else
                 @foreach($alerts as $alert)
@@ -381,7 +384,7 @@
                     <i data-lucide="{{ $alert['type']==='danger' ? 'alert-circle' : 'alert-triangle' }}"></i>
                     <div class="flex-between">
                         <span>{{ $alert['msg'] }}</span>
-                        <a href="{{ $alert['url'] }}">Fix →</a>
+                        <a href="{{ $alert['url'] }}">{{ __('public.stf_analytics_inv_fix') }}</a>
                     </div>
                 </div>
                 @endforeach
@@ -389,10 +392,10 @@
 
             <div class="row-actions-inline mt-6">
                 <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="btn btn-ghost btn-xs">
-                    <i data-lucide="pill"></i> Pharmacy
+                    <i data-lucide="pill"></i> {{ __('public.stf_analytics_btn_pharmacy') }}
                 </a>
                 <a href="{{ route('portals.staff.inventory.blood') }}" class="btn btn-ghost btn-xs">
-                    <i data-lucide="droplets"></i> Blood Bank
+                    <i data-lucide="droplets"></i> {{ __('public.stf_analytics_btn_blood_bank') }}
                 </a>
             </div>
         </div>
@@ -406,16 +409,16 @@
     <div class="panel-header">
         <h3 class="panel-title">
             <i data-lucide="shield-check"></i>
-            Revenue Breakdown
+            {{ __('public.stf_analytics_panel_rev_breakdown') }}
         </h3>
     </div>
     <div class="panel-body">
         <div class="stat-grid">
         @foreach([
-            ['label'=>'Total Invoiced',    'value'=> $revenue['total_invoiced'],    'mod'=>'stat-card--primary'],
-            ['label'=>'Collected',         'value'=> $revenue['total_collected'],   'mod'=>'stat-card--success'],
-            ['label'=>'Insurance Covered', 'value'=> $revenue['insurance_covered'], 'mod'=>'stat-card--teal'],
-            ['label'=>'Outstanding',       'value'=> $revenue['total_outstanding'], 'mod'=>'stat-card--warning'],
+            ['label'=> __('public.stf_analytics_rev_total_invoiced'), 'value'=> $revenue['total_invoiced'],    'mod'=>'stat-card--primary'],
+            ['label'=> __('public.stf_analytics_rev_collected'),      'value'=> $revenue['total_collected'],   'mod'=>'stat-card--success'],
+            ['label'=> __('public.stf_analytics_rev_insurance'),      'value'=> $revenue['insurance_covered'], 'mod'=>'stat-card--teal'],
+            ['label'=> __('public.stf_analytics_rev_outstanding'),    'value'=> $revenue['total_outstanding'], 'mod'=>'stat-card--warning'],
         ] as $item)
         <div class="stat-card {{ $item['mod'] }}">
             <div class="stat-card__value">{{ number_format($item['value'], 2) }}</div>
@@ -444,7 +447,7 @@
             data: {
                 labels: visitLabels,
                 datasets: [{
-                    label: 'Visits',
+                    label: '{{ __('public.stf_analytics_chart_visits') }}',
                     data: visitData,
                     backgroundColor: 'rgba(15,76,129,.6)',
                     borderColor: 'rgba(15,76,129,1)',
@@ -477,7 +480,7 @@
                 labels: revLabels,
                 datasets: [
                     {
-                        label: 'Collected',
+                        label: '{{ __('public.stf_analytics_chart_collected') }}',
                         data: revCollected,
                         borderColor: 'rgba(16,185,129,1)',
                         backgroundColor: 'rgba(16,185,129,.1)',
@@ -486,7 +489,7 @@
                         pointRadius: 2,
                     },
                     {
-                        label: 'Invoiced',
+                        label: '{{ __('public.stf_analytics_chart_invoiced') }}',
                         data: revInvoiced,
                         borderColor: 'rgba(15,76,129,.6)',
                         backgroundColor: 'transparent',

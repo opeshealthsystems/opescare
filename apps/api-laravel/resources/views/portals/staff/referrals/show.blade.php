@@ -1,10 +1,10 @@
 @extends('layouts.portal')
 
-@section('title', 'Referral Detail — OpesCare Staff Portal')
+@section('title', __('public.stf_ref_show_title'))
 
 @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Referral Detail')
+@section('breadcrumb_section', __('public.stf_ref_show_breadcrumb_section'))
 
 @section('content')
 
@@ -27,20 +27,20 @@
 @endphp
 
 <div class="breadcrumb">
-    <a href="{{ route('portals.staff.referrals') }}">Referrals</a>
+    <a href="{{ route('portals.staff.referrals') }}">{{ __('public.stf_ref_show_breadcrumb_referrals') }}</a>
     <i data-lucide="chevron-right"></i>
-    <span>Detail</span>
+    <span>{{ __('public.stf_ref_show_breadcrumb_detail') }}</span>
 </div>
 
 <div class="page-head">
-    <h2>Referral Detail</h2>
+    <h2>{{ __('public.stf_ref_show_page_heading') }}</h2>
     <span class="badge {{ $stCls }}">{{ ucfirst($referral->status ?? 'draft') }}</span>
     <div class="page-head__spacer"></div>
     <a href="{{ route('portals.staff.referrals') }}" class="btn btn-ghost btn-sm">
-        <i data-lucide="arrow-left"></i> Back to Referrals
+        <i data-lucide="arrow-left"></i> {{ __('public.stf_ref_show_btn_back') }}
     </a>
 </div>
-<p class="page-subtitle mb-4">Referral ID: <span class="mono">{{ $referral->id }}</span></p>
+<p class="page-subtitle mb-4">{{ __('public.stf_ref_show_id_label') }} <span class="mono">{{ $referral->id }}</span></p>
 
 <div class="grid-main-side">
 
@@ -49,35 +49,35 @@
         <!-- Core Details -->
         <div class="panel mb-6">
             <div class="panel-header">
-                <h2 class="panel-title"><i data-lucide="file-text"></i> Referral Information</h2>
+                <h2 class="panel-title"><i data-lucide="file-text"></i> {{ __('public.stf_ref_show_panel_info_title') }}</h2>
             </div>
             <div class="panel-body panel-body--flush">
                 <table class="kv-table">
                     <tr>
-                        <td class="kv-strong">Patient ID</td>
+                        <td class="kv-strong">{{ __('public.stf_ref_show_kv_patient') }}</td>
                         <td class="mono">{{ $referral->patient_id }}</td>
                     </tr>
                     <tr>
-                        <td class="kv-strong">Priority</td>
+                        <td class="kv-strong">{{ __('public.stf_ref_show_kv_priority') }}</td>
                         <td><span class="badge {{ $prCls }}">{{ ucfirst($referral->priority ?? 'routine') }}</span></td>
                     </tr>
                     <tr>
-                        <td class="kv-strong">Referring Facility</td>
+                        <td class="kv-strong">{{ __('public.stf_ref_show_kv_ref_facility') }}</td>
                         <td>{{ $referral->referring_facility_id ?? '—' }}</td>
                     </tr>
                     <tr>
-                        <td class="kv-strong">Receiving Facility</td>
+                        <td class="kv-strong">{{ __('public.stf_ref_show_kv_recv_facility') }}</td>
                         <td>{{ $referral->receiving_facility_id ?? '—' }}</td>
                     </tr>
                     <tr>
-                        <td class="kv-strong">Specialty</td>
+                        <td class="kv-strong">{{ __('public.stf_ref_show_kv_specialty') }}</td>
                         <td>{{ $referral->specialty ?? '—' }}</td>
                     </tr>
                     <tr>
-                        <td class="kv-strong">Expires At</td>
+                        <td class="kv-strong">{{ __('public.stf_ref_show_kv_expires') }}</td>
                         <td>
                             {{ $referral->expires_at ? \Carbon\Carbon::parse($referral->expires_at)->format('d M Y H:i') : '—' }}
-                            @if($isExpired)<span class="badge badge-danger">Expired</span>@endif
+                            @if($isExpired)<span class="badge badge-danger">{{ __('public.stf_ref_show_badge_expired') }}</span>@endif
                         </td>
                     </tr>
                 </table>
@@ -85,13 +85,13 @@
                 <div class="panel-body">
                     @if(!empty($referral->reason))
                     <div class="form-group">
-                        <div class="form-label">Reason for Referral</div>
+                        <div class="form-label">{{ __('public.stf_ref_show_lbl_reason') }}</div>
                         <p>{{ $referral->reason }}</p>
                     </div>
                     @endif
                     @if(!empty($referral->clinical_summary))
                     <div class="form-group">
-                        <div class="form-label">Clinical Summary</div>
+                        <div class="form-label">{{ __('public.stf_ref_show_lbl_clinical') }}</div>
                         <p class="td-muted">{{ $referral->clinical_summary }}</p>
                     </div>
                     @endif
@@ -104,7 +104,7 @@
         @if(in_array($referral->status ?? 'draft', ['draft','sent','accepted']))
         <div class="panel">
             <div class="panel-header">
-                <h2 class="panel-title"><i data-lucide="zap"></i> Actions</h2>
+                <h2 class="panel-title"><i data-lucide="zap"></i> {{ __('public.stf_ref_show_actions_title') }}</h2>
             </div>
             <div class="panel-body">
                 <div class="row-actions">
@@ -112,7 +112,7 @@
                     <form method="POST" action="{{ route('portals.staff.referrals.send', $referral->id) }}" class="inline-form">
                         @csrf
                         <button type="submit" class="btn btn-primary">
-                            <i data-lucide="send"></i> Send Referral
+                            <i data-lucide="send"></i> {{ __('public.stf_ref_show_btn_send') }}
                         </button>
                     </form>
                     @endif
@@ -121,13 +121,13 @@
                     <form method="POST" action="{{ route('portals.staff.referrals.accept', $referral->id) }}" class="inline-form">
                         @csrf
                         <button type="submit" class="btn btn-teal">
-                            <i data-lucide="check-circle-2"></i> Accept
+                            <i data-lucide="check-circle-2"></i> {{ __('public.stf_ref_show_btn_accept') }}
                         </button>
                     </form>
                     <form method="POST" action="{{ route('portals.staff.referrals.reject', $referral->id) }}" class="inline-form">
                         @csrf
                         <button type="submit" class="btn btn-secondary">
-                            <i data-lucide="x-circle"></i> Reject
+                            <i data-lucide="x-circle"></i> {{ __('public.stf_ref_show_btn_reject') }}
                         </button>
                     </form>
                     @endif
@@ -136,14 +136,14 @@
                     <form method="POST" action="{{ route('portals.staff.referrals.complete', $referral->id) }}" class="inline-form">
                         @csrf
                         <button type="submit" class="btn btn-primary">
-                            <i data-lucide="check-circle-2"></i> Mark Completed
+                            <i data-lucide="check-circle-2"></i> {{ __('public.stf_ref_show_btn_complete') }}
                         </button>
                     </form>
                     @endif
 
                     @if(in_array($referral->status ?? 'draft', ['draft','sent']))
                     <button type="button" class="btn btn-danger" onclick="opOpenModal('cancel-modal')">
-                        <i data-lucide="x"></i> Cancel
+                        <i data-lucide="x"></i> {{ __('public.stf_ref_show_btn_cancel') }}
                     </button>
                     @endif
                 </div>
@@ -157,7 +157,7 @@
     <div>
         <div class="panel mb-6">
             <div class="panel-header">
-                <h2 class="panel-title"><i data-lucide="clock"></i> Timeline</h2>
+                <h2 class="panel-title"><i data-lucide="clock"></i> {{ __('public.stf_ref_show_timeline_title') }}</h2>
             </div>
             <div class="panel-body">
                 <div class="timeline">
@@ -165,8 +165,8 @@
                         <div class="timeline-dot"><i data-lucide="plus-circle"></i></div>
                         <div class="timeline-body">
                             <div class="timeline-time">{{ $referral->created_at?->format('d M Y H:i') ?? '—' }}</div>
-                            <div class="timeline-title">Referral Created</div>
-                            <div class="timeline-desc">Status: Draft</div>
+                            <div class="timeline-title">{{ __('public.stf_ref_show_timeline_created') }}</div>
+                            <div class="timeline-desc">{{ __('public.stf_ref_show_timeline_status_draft') }}</div>
                         </div>
                     </div>
                     @if(($referral->status ?? 'draft') !== 'draft')
@@ -174,7 +174,7 @@
                         <div class="timeline-dot teal"><i data-lucide="send"></i></div>
                         <div class="timeline-body">
                             <div class="timeline-time">{{ $referral->updated_at?->format('d M Y H:i') ?? '—' }}</div>
-                            <div class="timeline-title">Status Updated</div>
+                            <div class="timeline-title">{{ __('public.stf_ref_show_timeline_updated') }}</div>
                             <div class="timeline-desc">{{ ucfirst($referral->status ?? 'draft') }}</div>
                         </div>
                     </div>
@@ -187,7 +187,7 @@
             <div class="panel-body">
                 <div class="alert alert-warning" role="note">
                     <i data-lucide="shield-alert"></i>
-                    <div>All referral actions are fully audited and logged for clinical governance.</div>
+                    <div>{{ __('public.stf_ref_show_audit_note') }}</div>
                 </div>
             </div>
         </div>
@@ -199,15 +199,15 @@
 @if(in_array($referral->status ?? 'draft', ['draft','sent']))
 <div id="cancel-modal" class="modal-backdrop" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cancel-modal-title">
-        <h3 class="modal__title" id="cancel-modal-title"><i data-lucide="x-circle"></i> Cancel referral</h3>
+        <h3 class="modal__title" id="cancel-modal-title"><i data-lucide="x-circle"></i> {{ __('public.stf_ref_show_modal_cancel_title') }}</h3>
         <form method="POST" action="{{ route('portals.staff.referrals.cancel', $referral->id) }}">
             @csrf
             <div class="modal__body">
-                <p>Cancel this referral? This action is logged for the audit trail.</p>
+                <p>{{ __('public.stf_ref_show_modal_cancel_body') }}</p>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost" onclick="opCloseModal('cancel-modal')">Keep referral</button>
-                <button type="submit" class="btn btn-danger">Cancel referral</button>
+                <button type="button" class="btn btn-ghost" onclick="opCloseModal('cancel-modal')">{{ __('public.stf_ref_show_modal_keep') }}</button>
+                <button type="submit" class="btn btn-danger">{{ __('public.stf_ref_show_modal_confirm_cancel') }}</button>
             </div>
         </form>
     </div>
