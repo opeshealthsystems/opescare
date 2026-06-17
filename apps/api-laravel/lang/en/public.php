@@ -6623,6 +6623,17 @@ return [
     'pat_sub_months_free'      => ':n months free',
     'pat_sub_why_title'        => 'Get more from your health',
     'pat_sub_why_body'         => 'Premium unlocks teleconsultations, your full medical history, a secure document vault, priority booking and family sharing for up to 5 loved ones.',
+
+    // Patient onboarding / activation checklist (dashboard)
+    'pat_onb_title'     => 'Get started',
+    'pat_onb_subtitle'  => 'Complete your setup to get the most from OpesCare.',
+    'pat_onb_progress'  => ':done of :total complete',
+    'pat_onb_done'      => 'Done',
+    'pat_onb_health_id' => 'Health ID created',
+    'pat_onb_verify'    => 'Verify your identity at a facility',
+    'pat_onb_family'    => 'Add a family member',
+    'pat_onb_refer'     => 'Refer a friend & earn Premium',
+    'pat_onb_premium'   => 'Upgrade to Premium',
     'pat_sub_choose_cadence'   => 'Billing cycle',
     'pat_sub_monthly_opt'      => 'Monthly',
     'pat_sub_annual_opt'       => 'Annual',

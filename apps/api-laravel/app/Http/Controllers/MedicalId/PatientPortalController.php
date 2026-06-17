@@ -137,9 +137,31 @@ class PatientPortalController extends Controller
                 ->get(['id', 'display_name', 'code', 'status'])
             : collect();
 
+        // Activation / onboarding checklist — drives setup completion.
+        $onboarding = [];
+        if ($patient) {
+            $user       = Auth::user();
+            $famCount   = $user
+                ? \App\Models\FamilyLink::where('guardian_user_id', $user->id)
+                    ->whereIn('status', ['active', 'pending_invite'])->count()
+                : 0;
+            $referCount = \App\Models\ReferralInvite::where('referrer_patient_id', $patient->id)->count();
+            $plan       = app(\App\Modules\Subscription\Services\PatientSubscriptionService::class)->currentPlan($patient);
+            $isPremium  = $plan && ! $plan->isFree();
+            $status     = is_object($patient->identity_status) ? $patient->identity_status->value : $patient->identity_status;
+
+            $onboarding = [
+                ['key' => 'health_id', 'done' => true,              'icon' => 'id-card',     'url' => null],
+                ['key' => 'verify',    'done' => $status === 'verified', 'icon' => 'badge-check', 'url' => route('portals.patient.profile')],
+                ['key' => 'family',    'done' => $famCount > 0,      'icon' => 'users',       'url' => route('portals.patient.family')],
+                ['key' => 'refer',     'done' => $referCount > 0,    'icon' => 'gift',        'url' => route('portals.patient.refer')],
+                ['key' => 'premium',   'done' => $isPremium,         'icon' => 'sparkles',    'url' => route('portals.patient.subscription')],
+            ];
+        }
+
         return view('portals.patient.index', compact(
             'patient', 'qrToken', 'staticQrDataUri',
-            'criticalAllergies', 'activeAllergies', 'activeConditions'
+            'criticalAllergies', 'activeAllergies', 'activeConditions', 'onboarding'
         ));
     }
 

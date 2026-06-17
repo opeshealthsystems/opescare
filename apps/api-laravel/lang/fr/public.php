@@ -6609,6 +6609,17 @@ return [
     'pat_sub_months_free'      => ':n mois offerts',
     'pat_sub_why_title'        => 'Profitez davantage de votre santé',
     'pat_sub_why_body'         => 'Premium débloque les téléconsultations, votre historique médical complet, un coffre-fort de documents sécurisé, la réservation prioritaire et le partage familial jusqu’à 5 proches.',
+
+    // Patient onboarding / activation checklist (dashboard)
+    'pat_onb_title'     => 'Commencer',
+    'pat_onb_subtitle'  => 'Complétez votre configuration pour profiter pleinement d’OpesCare.',
+    'pat_onb_progress'  => ':done sur :total terminées',
+    'pat_onb_done'      => 'Fait',
+    'pat_onb_health_id' => 'Identifiant santé créé',
+    'pat_onb_verify'    => 'Vérifiez votre identité dans un établissement',
+    'pat_onb_family'    => 'Ajouter un membre de la famille',
+    'pat_onb_refer'     => 'Parrainez un ami et gagnez Premium',
+    'pat_onb_premium'   => 'Passer à Premium',
     'pat_sub_choose_cadence'   => 'Cycle de facturation',
     'pat_sub_monthly_opt'      => 'Mensuel',
     'pat_sub_annual_opt'       => 'Annuel',

@@ -56,6 +56,39 @@
     </div>
 </div>
 
+@isset($onboarding)
+    @php $obDone = collect($onboarding)->where('done', true)->count(); $obTotal = count($onboarding); @endphp
+    @if($obTotal && $obDone < $obTotal)
+    <div class="panel mb-8">
+        <div class="panel-header">
+            <h3 class="panel-title"><i data-lucide="rocket"></i> {{ __('public.pat_onb_title') }}</h3>
+            <span class="badge badge-info">{{ __('public.pat_onb_progress', ['done' => $obDone, 'total' => $obTotal]) }}</span>
+        </div>
+        <div class="panel-body">
+            <p class="page-subtitle" style="margin:0 0 1rem;">{{ __('public.pat_onb_subtitle') }}</p>
+            <div style="height:6px;background:var(--color-border);border-radius:3px;overflow:hidden;margin-bottom:1.25rem;">
+                <div style="height:100%;width:{{ round($obDone / $obTotal * 100) }}%;background:#0F4C81;border-radius:3px;"></div>
+            </div>
+            <ul style="list-style:none;padding:0;margin:0;display:grid;gap:.65rem;">
+                @foreach($onboarding as $step)
+                    <li style="display:flex;align-items:center;gap:.75rem;">
+                        <span style="flex-shrink:0;width:1.65rem;height:1.65rem;border-radius:50%;display:flex;align-items:center;justify-content:center;background:{{ $step['done'] ? '#0F4C81' : 'rgba(15,76,129,.08)' }};color:{{ $step['done'] ? '#fff' : '#0F4C81' }};">
+                            <i data-lucide="{{ $step['done'] ? 'check' : $step['icon'] }}" style="width:.9rem;height:.9rem;"></i>
+                        </span>
+                        <span style="flex:1;{{ $step['done'] ? 'text-decoration:line-through;color:var(--color-text-secondary);' : '' }}">{{ __('public.pat_onb_' . $step['key']) }}</span>
+                        @if($step['done'])
+                            <span class="badge badge-success">{{ __('public.pat_onb_done') }}</span>
+                        @elseif($step['url'])
+                            <a href="{{ $step['url'] }}" class="btn btn-secondary btn-sm" aria-label="{{ __('public.pat_onb_' . $step['key']) }}"><i data-lucide="arrow-right" style="width:1rem;height:1rem;"></i></a>
+                        @endif
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+    @endif
+@endisset
+
 <!-- Quick Actions -->
 <div class="quick-actions mb-8">
     <a href="{{ route('portals.patient.appointments') }}" class="quick-action-btn">
