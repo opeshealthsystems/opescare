@@ -15,13 +15,13 @@
             <div class="lite-td-strong">{{ $patient->first_name }} {{ $patient->last_name }}</div>
             <div class="lite-mono--accent">{{ $patient->health_id }}</div>
         </div>
-        <a href="{{ route('portals.lite.lookup') }}" class="lite-muted-link lite-ml-auto">Change</a>
+        <a href="{{ route('portals.lite.lookup') }}" class="lite-muted-link lite-ml-auto">{{ __('public.lite_portal.lnk_change', [], $l) ?: 'Change' }}</a>
     </div>
 </div>
 @else
 <div class="lite-alert lite-alert--info">
     <i data-lucide="info"></i>
-    <span>No patient selected. <a href="{{ route('portals.lite.lookup') }}" class="lite-alert__link">Select patient →</a></span>
+    <span>{{ __('public.lite_portal.billing_no_patient', [], $l) ?: 'No patient selected.' }} <a href="{{ route('portals.lite.lookup') }}" class="lite-alert__link">{{ __('public.lite_portal.lnk_select_patient', [], $l) ?: 'Select patient →' }}</a></span>
 </div>
 @endif
 
@@ -38,10 +38,15 @@
         </div>
         <div class="lite-card__body lite-card__body--flush">
             <table class="lite-table" id="lineItemsTable">
-                <thead><tr><th>Description</th><th>Qty</th><th>Amount (FCFA)</th><th></th></tr></thead>
+                <thead><tr>
+                    <th>{{ __('public.lite_portal.billing_col_desc', [], $l) ?: 'Description' }}</th>
+                    <th>{{ __('public.lite_portal.billing_col_qty', [], $l) ?: 'Qty' }}</th>
+                    <th>{{ __('public.lite_portal.billing_col_amount', [], $l) ?: 'Amount (FCFA)' }}</th>
+                    <th></th>
+                </tr></thead>
                 <tbody id="lineItems">
                     <tr id="row-0">
-                        <td><input type="text" name="items[0][description]" class="lite-input lite-input--cell" placeholder="Service…"></td>
+                        <td><input type="text" name="items[0][description]" class="lite-input lite-input--cell" placeholder="{{ __('public.lite_portal.billing_ph_service', [], $l) ?: 'Service…' }}"></td>
                         <td class="lite-col-narrow"><input type="number" name="items[0][qty]" class="lite-input lite-input--cell" value="1" min="1" onchange="calcTotal()"></td>
                         <td class="lite-col-amt"><input type="number" name="items[0][amount]" class="lite-input lite-input--cell" placeholder="0" step="1" onchange="calcTotal()"></td>
                         <td class="lite-col-x">—</td>
@@ -54,31 +59,31 @@
     <div class="lite-card">
         <div class="lite-card__body">
             <div class="lite-row lite-row--between lite-mb">
-                <span class="lite-td-strong">Total</span>
+                <span class="lite-td-strong">{{ __('public.lite_portal.billing_lbl_total', [], $l) ?: 'Total' }}</span>
                 <span class="lite-total">FCFA <span id="totalAmt">0</span></span>
             </div>
             <div class="lite-form-group">
-                <label class="lite-label">Payment mode</label>
+                <label class="lite-label">{{ __('public.lite_portal.billing_lbl_payment_mode', [], $l) ?: 'Payment mode' }}</label>
                 <select name="payment_mode" class="lite-input">
-                    <option value="cash">Cash</option>
-                    <option value="pos">POS / Card</option>
-                    <option value="transfer">Bank transfer</option>
-                    <option value="wallet">Wallet</option>
-                    <option value="nhis">NHIS</option>
+                    <option value="cash">{{ __('public.lite_portal.billing_opt_cash', [], $l) ?: 'Cash' }}</option>
+                    <option value="pos">{{ __('public.lite_portal.billing_opt_pos', [], $l) ?: 'POS / Card' }}</option>
+                    <option value="transfer">{{ __('public.lite_portal.billing_opt_transfer', [], $l) ?: 'Bank transfer' }}</option>
+                    <option value="wallet">{{ __('public.lite_portal.billing_opt_wallet', [], $l) ?: 'Wallet' }}</option>
+                    <option value="nhis">{{ __('public.lite_portal.billing_opt_nhis', [], $l) ?: 'NHIS' }}</option>
                 </select>
             </div>
             <div class="lite-form-group">
-                <label class="lite-label">Note (optional)</label>
-                <input type="text" name="note" class="lite-input" placeholder="e.g. consultation fee…">
+                <label class="lite-label">{{ __('public.lite_portal.billing_lbl_note', [], $l) ?: 'Note (optional)' }}</label>
+                <input type="text" name="note" class="lite-input" placeholder="{{ __('public.lite_portal.billing_ph_note', [], $l) ?: 'e.g. consultation fee…' }}">
             </div>
         </div>
     </div>
 
     <button type="submit" class="lite-btn lite-btn--success lite-btn--full lite-mt">
-        <i data-lucide="receipt"></i> Issue receipt
+        <i data-lucide="receipt"></i> {{ __('public.lite_portal.billing_btn_issue', [], $l) ?: 'Issue receipt' }}
     </button>
     <div class="lite-empty lite-mt">
-        <a href="{{ route('portals.lite.dashboard') }}" class="lite-muted-link">← Cancel</a>
+        <a href="{{ route('portals.lite.dashboard') }}" class="lite-muted-link">{{ __('public.lite_portal.billing_btn_cancel', [], $l) ?: '← Cancel' }}</a>
     </div>
 </form>
 
@@ -87,6 +92,7 @@
 @section('scripts')
 <script>
 let rowCount = 1;
+const phService = @json(__('public.lite_portal.billing_ph_service') ?: 'Service…');
 
 function addLineItem() {
     const tbody = document.getElementById('lineItems');
@@ -94,7 +100,7 @@ function addLineItem() {
     const tr = document.createElement('tr');
     tr.id = 'row-' + i;
     tr.innerHTML = `
-        <td><input type="text" name="items[${i}][description]" class="lite-input lite-input--cell" placeholder="Service…"></td>
+        <td><input type="text" name="items[${i}][description]" class="lite-input lite-input--cell" placeholder="${phService}"></td>
         <td class="lite-col-narrow"><input type="number" name="items[${i}][qty]" class="lite-input lite-input--cell" value="1" min="1" onchange="calcTotal()"></td>
         <td class="lite-col-amt"><input type="number" name="items[${i}][amount]" class="lite-input lite-input--cell" placeholder="0" step="1" onchange="calcTotal()"></td>
         <td class="lite-col-x">

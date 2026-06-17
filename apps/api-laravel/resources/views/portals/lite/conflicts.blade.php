@@ -1,22 +1,30 @@
 @extends('layouts.lite')
-@section('title', 'Sync Conflicts')
+@section('title', __('public.lite_portal.conflicts_title', [], app()->getLocale()) ?: 'Sync Conflicts')
+@php $l = app()->getLocale(); @endphp
 
 @section('content')
 
-<h1 class="lite-page-title">Sync conflicts</h1>
-<p class="lite-page-sub">Offline events that could not be automatically applied</p>
+<h1 class="lite-page-title">{{ __('public.lite_portal.conflicts_title', [], $l) ?: 'Sync conflicts' }}</h1>
+<p class="lite-page-sub">{{ __('public.lite_portal.conflicts_subtitle', [], $l) ?: 'Offline events that could not be automatically applied' }}</p>
 
 @if($conflicts->isEmpty())
     <div class="lite-empty lite-empty--success">
         <i data-lucide="check-circle"></i>
-        <p>No open conflicts — all syncs applied cleanly.</p>
+        <p>{{ __('public.lite_portal.conflicts_empty', [], $l) ?: 'No open conflicts — all syncs applied cleanly.' }}</p>
     </div>
 @else
     <div class="lite-card">
         <div class="lite-card__body lite-card__body--scroll">
             <table class="lite-table">
                 <thead>
-                    <tr><th>Event type</th><th>Conflict</th><th>Device</th><th>Status</th><th>Captured</th><th></th></tr>
+                    <tr>
+                        <th>{{ __('public.lite_portal.conflicts_col_event_type', [], $l) ?: 'Event type' }}</th>
+                        <th>{{ __('public.lite_portal.conflicts_col_conflict', [], $l) ?: 'Conflict' }}</th>
+                        <th>{{ __('public.lite_portal.conflicts_col_device', [], $l) ?: 'Device' }}</th>
+                        <th>{{ __('public.lite_portal.conflicts_col_status', [], $l) ?: 'Status' }}</th>
+                        <th>{{ __('public.lite_portal.conflicts_col_captured', [], $l) ?: 'Captured' }}</th>
+                        <th></th>
+                    </tr>
                 </thead>
                 <tbody>
                     @foreach($conflicts as $c)
@@ -33,12 +41,12 @@
                                     @csrf
                                     <input type="hidden" name="resolution" value="resolved">
                                     <input type="hidden" name="note" value="Resolved via Lite portal.">
-                                    <button type="submit" class="lite-btn lite-btn--success lite-btn--xs">Resolve</button>
+                                    <button type="submit" class="lite-btn lite-btn--success lite-btn--xs">{{ __('public.lite_portal.conflicts_btn_resolve', [], $l) ?: 'Resolve' }}</button>
                                 </form>
-                                <form method="POST" action="{{ route('portals.lite.conflicts.resolve', $c) }}" onsubmit="return confirm('Dismiss this conflict?')">
+                                <form method="POST" action="{{ route('portals.lite.conflicts.resolve', $c) }}" onsubmit="return confirm('{{ __('public.lite_portal.conflicts_confirm_dismiss', [], $l) ?: 'Dismiss this conflict?' }}')">
                                     @csrf
                                     <input type="hidden" name="resolution" value="dismiss">
-                                    <button type="submit" class="lite-btn lite-btn--outline lite-btn--xs">Dismiss</button>
+                                    <button type="submit" class="lite-btn lite-btn--outline lite-btn--xs">{{ __('public.lite_portal.conflicts_btn_dismiss', [], $l) ?: 'Dismiss' }}</button>
                                 </form>
                             </div>
                             @endif

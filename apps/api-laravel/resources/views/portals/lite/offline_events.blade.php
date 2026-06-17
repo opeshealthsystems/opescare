@@ -1,5 +1,6 @@
 @extends('layouts.lite')
-@section('title', 'Offline Events')
+@section('title', __('public.lite_portal.offline_title_prefix', [], app()->getLocale()) . ' ' . ($device->device_name ?? ''))
+@php $l = app()->getLocale(); @endphp
 
 @section('content')
 
@@ -8,7 +9,7 @@
         <i data-lucide="arrow-left"></i>
     </a>
     <div>
-        <h1 class="lite-page-title">Offline events — {{ $device->device_name }}</h1>
+        <h1 class="lite-page-title">{{ __('public.lite_portal.offline_title_prefix', [], $l) ?: 'Offline events —' }} {{ $device->device_name }}</h1>
         <p class="lite-page-sub">
             <span class="lite-badge lite-badge--{{ $device->statusColor() }}">{{ ucfirst($device->status) }}</span>
             <span class="lite-sub-id">{{ substr($device->id, 0, 8) }}…</span>
@@ -18,14 +19,20 @@
 
 @if($events->isEmpty())
     <div class="lite-empty">
-        <p>No offline events recorded for this device.</p>
+        <p>{{ __('public.lite_portal.offline_no_events', [], $l) ?: 'No offline events recorded for this device.' }}</p>
     </div>
 @else
     <div class="lite-card">
         <div class="lite-card__body lite-card__body--scroll">
             <table class="lite-table">
                 <thead>
-                    <tr><th>Event type</th><th>Status</th><th>Captured</th><th>Received</th><th>Applied</th></tr>
+                    <tr>
+                        <th>{{ __('public.lite_portal.offline_col_event_type', [], $l) ?: 'Event type' }}</th>
+                        <th>{{ __('public.lite_portal.offline_col_status', [], $l) ?: 'Status' }}</th>
+                        <th>{{ __('public.lite_portal.offline_col_captured', [], $l) ?: 'Captured' }}</th>
+                        <th>{{ __('public.lite_portal.offline_col_received', [], $l) ?: 'Received' }}</th>
+                        <th>{{ __('public.lite_portal.offline_col_applied', [], $l) ?: 'Applied' }}</th>
+                    </tr>
                 </thead>
                 <tbody>
                     @foreach($events as $ev)
