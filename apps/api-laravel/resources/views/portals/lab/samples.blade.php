@@ -43,7 +43,7 @@
                 <tr>
                     <td data-label="{{ __('public.lab_portal.col_test', [], $l) ?: 'Test' }}">
                         <span class="td-strong">{{ $order->test_name }}</span>
-                        <div class="td-muted">Ordered {{ $order->ordered_at?->diffForHumans() ?? '' }}</div>
+                        <div class="td-muted">{{ __('public.lab_portal.lbl_ordered', [], $l) ?: 'Ordered' }} {{ $order->ordered_at?->diffForHumans() ?? '' }}</div>
                     </td>
                     <td data-label="{{ __('public.lab_portal.col_patient', [], $l) ?: 'Patient' }}">
                         {{ $order->patient?->full_name ?? '—' }}
@@ -80,7 +80,7 @@
                 <tr>
                     <td data-label="{{ __('public.lab_portal.col_test', [], $l) ?: 'Test' }}">
                         <span class="td-strong">{{ $order->test_name }}</span>
-                        <div class="td-muted">Collected {{ $order->collected_at?->diffForHumans() ?? '' }}</div>
+                        <div class="td-muted">{{ __('public.lab_portal.lbl_collected', [], $l) ?: 'Collected' }} {{ $order->collected_at?->diffForHumans() ?? '' }}</div>
                     </td>
                     <td data-label="{{ __('public.lab_portal.col_patient', [], $l) ?: 'Patient' }}">
                         {{ $order->patient?->full_name ?? '—' }}
