@@ -2,9 +2,11 @@
 
 namespace App\Modules\Subscription\Services;
 
+use App\Models\FamilyLink;
 use App\Models\OrganizationSubscription;
 use App\Models\Patient;
 use App\Models\SubscriptionPlan;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -103,12 +105,85 @@ class PatientSubscriptionService
 
     /**
      * Does the patient's current plan include a feature key? Free-plan features
-     * count too, so callers get a single source of truth for gating.
+     * count too. A dependent also inherits features from a guardian's Premium
+     * family plan (within the family_sharing seat limit), so callers get a single
+     * source of truth for gating.
      */
     public function hasFeature(Patient $patient, string $featureKey): bool
     {
         $plan = $this->currentPlan($patient);
-        return $plan !== null && $plan->hasFeature($featureKey);
+        if ($plan !== null && $plan->hasFeature($featureKey)) {
+            return true;
+        }
+
+        $covering = $this->coveringSubscription($patient);
+        return $covering !== null && $covering->plan->hasFeature($featureKey);
+    }
+
+    // ── Family sharing ─────────────────────────────────────────────────────────
+
+    /**
+     * The guardian's Premium subscription that covers this dependent, if any.
+     * Coverage goes to the earliest-linked dependents up to the family_sharing
+     * seat limit on the guardian's plan.
+     */
+    public function coveringSubscription(Patient $dependent): ?OrganizationSubscription
+    {
+        $links = FamilyLink::where('dependent_patient_id', $dependent->id)
+            ->where('status', 'active')
+            ->get();
+
+        foreach ($links as $link) {
+            $guardianPatient = User::find($link->guardian_user_id)?->patient;
+            if (!$guardianPatient) {
+                continue;
+            }
+
+            $sub = $this->activeSubscription($guardianPatient);
+            if (!$sub || !$sub->plan || !$sub->plan->hasFeature('family_sharing')) {
+                continue;
+            }
+
+            $limit   = $this->featureLimit($guardianPatient, 'family_sharing');
+            $covered = $this->coveredDependentIds($guardianPatient, $limit);
+            if (in_array($dependent->id, $covered, true)) {
+                return $sub;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * IDs of the guardian's dependents currently covered by their family plan,
+     * capped at the seat limit (null = uncapped). Earliest links win the seats.
+     *
+     * @return array<int, string>
+     */
+    public function coveredDependentIds(Patient $guardianPatient, ?int $limit): array
+    {
+        $guardianUserId = User::where('patient_id', $guardianPatient->id)->value('id');
+        if (!$guardianUserId) {
+            return [];
+        }
+
+        $ids = FamilyLink::where('guardian_user_id', $guardianUserId)
+            ->where('status', 'active')
+            ->orderBy('created_at')
+            ->pluck('dependent_patient_id');
+
+        return ($limit !== null ? $ids->take($limit) : $ids)->values()->all();
+    }
+
+    /** Family seat usage for a guardian: [used, total] (total null = uncapped / no plan). */
+    public function familySeats(Patient $guardianPatient): array
+    {
+        $sub = $this->activeSubscription($guardianPatient);
+        if (!$sub || !$sub->plan || !$sub->plan->hasFeature('family_sharing')) {
+            return ['used' => 0, 'total' => 0];
+        }
+        $limit = $this->featureLimit($guardianPatient, 'family_sharing');
+        return ['used' => count($this->coveredDependentIds($guardianPatient, $limit)), 'total' => $limit];
     }
 
     /** Numeric limit for a metered feature (e.g. family_sharing => 5), or null. */
