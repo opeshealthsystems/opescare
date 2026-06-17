@@ -99,7 +99,7 @@ class WardController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'Facility could not be resolved.', 'error_code' => 'FACILITY_UNRESOLVABLE'], 403);
+            return response()->json(['message' => __('api.facility_unresolved'), 'error_code' => 'FACILITY_UNRESOLVABLE'], 403);
         }
 
         return response()->json(

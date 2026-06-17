@@ -29,7 +29,7 @@ class StaffController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+            return response()->json(['error' => 'forbidden', 'message' => __('api.facility_unresolved_auth')], 403);
         }
 
         return response()->json(
@@ -72,7 +72,7 @@ class StaffController extends Controller
         if ($authorizedFacilityId && $requestedFacilityId && $requestedFacilityId !== $authorizedFacilityId) {
             return response()->json([
                 'error'   => 'ACCESS_DENIED',
-                'message' => 'You are not authorised to view the roster for this facility.',
+                'message' => __('api.roster_access_denied'),
             ], 403);
         }
 
@@ -82,7 +82,7 @@ class StaffController extends Controller
         if (!$facilityId) {
             return response()->json([
                 'error'   => 'validation_error',
-                'message' => 'facility_id is required.',
+                'message' => __('api.facility_id_required'),
             ], 422);
         }
 
@@ -121,7 +121,7 @@ class StaffController extends Controller
     public function removeShift(Request $request, string $shiftId): JsonResponse
     {
         $this->roster->removeAssignment($shiftId);
-        return response()->json(['message' => 'Shift assignment removed.']);
+        return response()->json(['message' => __('api.shift_assignment_removed')]);
     }
 
     // ── Leave Requests ─────────────────────────────────────────────────────
@@ -139,7 +139,7 @@ class StaffController extends Controller
         if (!$profile) {
             return response()->json([
                 'error'   => 'not_found',
-                'message' => 'No staff profile is linked to the authenticated user.',
+                'message' => __('api.no_staff_profile_linked'),
             ], 404);
         }
 

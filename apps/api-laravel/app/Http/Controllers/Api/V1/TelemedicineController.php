@@ -75,7 +75,7 @@ class TelemedicineController extends Controller
 
         if (! $this->consent->canProceed($consultation)) {
             return response()->json([
-                'message'    => 'Telemedicine consent must be recorded before joining the waiting room.',
+                'message'    => __('api.telemedicine_consent_required'),
                 'error_code' => 'TELEMEDICINE_CONSENT_REQUIRED',
             ], 422);
         }

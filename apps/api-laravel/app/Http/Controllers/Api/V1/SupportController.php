@@ -17,7 +17,7 @@ class SupportController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'Forbidden.'], 403);
+            return response()->json(['message' => __('api.forbidden')], 403);
         }
 
         $tickets = SupportTicket::query()
@@ -156,7 +156,7 @@ class SupportController extends Controller
 
         $updated = $kb->publish($article->id, $validated['published_by']);
 
-        return response()->json(['message' => 'Article published.', 'data' => $updated]);
+        return response()->json(['message' => __('api.article_published'), 'data' => $updated]);
     }
 
     /**
@@ -166,7 +166,7 @@ class SupportController extends Controller
     {
         $updated = $kb->unpublish($article->id);
 
-        return response()->json(['message' => 'Article unpublished.', 'data' => $updated]);
+        return response()->json(['message' => __('api.article_unpublished'), 'data' => $updated]);
     }
 
     public function publishArticle(Request $request, SupportService $service): JsonResponse

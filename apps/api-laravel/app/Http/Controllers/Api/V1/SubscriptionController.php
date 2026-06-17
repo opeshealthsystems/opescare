@@ -84,7 +84,7 @@ class SubscriptionController extends Controller
 
         $subscription = $this->subscriptions->getForOrganization($validated['organization_id']);
         if (!$subscription) {
-            return response()->json(['message' => 'No subscription found for this organization.'], 404);
+            return response()->json(['message' => __('api.subscription_not_found_org')], 404);
         }
 
         return response()->json(
@@ -101,7 +101,7 @@ class SubscriptionController extends Controller
 
         $subscription = $this->subscriptions->getForOrganization($validated['organization_id']);
         if (!$subscription) {
-            return response()->json(['message' => 'No subscription found for this organization.'], 404);
+            return response()->json(['message' => __('api.subscription_not_found_org')], 404);
         }
 
         return response()->json(
@@ -119,7 +119,7 @@ class SubscriptionController extends Controller
     {
         $subscription = $this->subscriptions->getForOrganization($request->user()->organization_id);
         if (!$subscription) {
-            return response()->json(['message' => 'No subscription found for this organization.'], 404);
+            return response()->json(['message' => __('api.subscription_not_found_org')], 404);
         }
 
         return response()->json([
@@ -133,7 +133,7 @@ class SubscriptionController extends Controller
     {
         $subscription = $this->subscriptions->getForOrganization($request->user()->organization_id);
         if (!$subscription) {
-            return response()->json(['message' => 'No subscription found for this organization.'], 404);
+            return response()->json(['message' => __('api.subscription_not_found_org')], 404);
         }
 
         $usage        = $this->subscriptions->getUsageSummary($subscription->id);

@@ -57,7 +57,7 @@ class SearchController extends Controller
         // Gate: permission check for requested resource type
         if ($resourceType && !$this->permissions->canSearch($role, $resourceType)) {
             return response()->json([
-                'message' => "Role '{$role}' is not permitted to search resource type '{$resourceType}'.",
+                'message' => __('api.role_not_permitted_search', ['role' => $role, 'resource_type' => $resourceType]),
             ], 403);
         }
 
@@ -128,7 +128,7 @@ class SearchController extends Controller
         );
 
         return response()->json([
-            'message' => "Resource {$validated['resource_type']}/{$validated['resource_id']} indexed.",
+            'message' => __('api.resource_indexed', ['resource' => $validated['resource_type'] . '/' . $validated['resource_id']]),
         ]);
     }
 
@@ -140,7 +140,7 @@ class SearchController extends Controller
         $this->indexer->deindex($resourceType, $resourceId);
 
         return response()->json([
-            'message' => "Resource {$resourceType}/{$resourceId} removed from index.",
+            'message' => __('api.resource_removed_index', ['resource' => $resourceType . '/' . $resourceId]),
         ]);
     }
 

@@ -109,7 +109,7 @@ class ResearchAccessController extends Controller
         }
 
         return response()->json([
-            'message' => 'Research access request submitted.',
+            'message' => __('api.research_request_submitted'),
             'data'    => $researchRequest,
         ], 201);
     }
@@ -143,7 +143,7 @@ class ResearchAccessController extends Controller
         }
 
         return response()->json([
-            'message' => 'DAC review recorded.',
+            'message' => __('api.dac_review_recorded'),
             'data'    => $review,
         ], 201);
     }
@@ -172,7 +172,7 @@ class ResearchAccessController extends Controller
         }
 
         return response()->json([
-            'message' => 'Research request approved.',
+            'message' => __('api.research_request_approved'),
             'data'    => $researchRequest->fresh(),
         ]);
     }
@@ -194,7 +194,7 @@ class ResearchAccessController extends Controller
         }
 
         return response()->json([
-            'message' => 'Research request rejected.',
+            'message' => __('api.research_request_rejected'),
             'data'    => $researchRequest->fresh(),
         ]);
     }
@@ -214,7 +214,7 @@ class ResearchAccessController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data agreement signed.',
+            'message' => __('api.data_agreement_signed'),
             'data'    => $agreement->fresh(),
         ]);
     }
@@ -249,7 +249,7 @@ class ResearchAccessController extends Controller
         }
 
         return response()->json([
-            'message' => 'Access logged.',
+            'message' => __('api.access_logged'),
             'data'    => $log,
         ], 201);
     }

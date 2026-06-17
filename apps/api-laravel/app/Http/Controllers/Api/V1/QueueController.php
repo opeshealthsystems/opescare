@@ -15,7 +15,7 @@ class QueueController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+            return response()->json(['error' => 'forbidden', 'message' => __('api.facility_unresolved_auth')], 403);
         }
 
         $query = QueueTicket::query()->orderBy('priority_level')->orderBy('checked_in_at');
@@ -36,7 +36,7 @@ class QueueController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+            return response()->json(['error' => 'forbidden', 'message' => __('api.facility_unresolved_auth')], 403);
         }
 
         $validated = $request->validate([
@@ -60,7 +60,7 @@ class QueueController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+            return response()->json(['error' => 'forbidden', 'message' => __('api.facility_unresolved_auth')], 403);
         }
 
         $validated = $request->validate([
@@ -124,7 +124,7 @@ class QueueController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['error' => 'forbidden', 'message' => 'facility_id could not be resolved from authentication context.'], 403);
+            return response()->json(['error' => 'forbidden', 'message' => __('api.facility_unresolved_auth')], 403);
         }
 
         $validated = $request->validate([
@@ -154,7 +154,7 @@ class QueueController extends Controller
             ?? $request->query('facility_id');
 
         if (!$facilityId) {
-            return response()->json(['message' => 'facility_id is required.'], 422);
+            return response()->json(['message' => __('api.facility_id_required')], 422);
         }
 
         return response()->json($service->getPublicDisplayData($facilityId));

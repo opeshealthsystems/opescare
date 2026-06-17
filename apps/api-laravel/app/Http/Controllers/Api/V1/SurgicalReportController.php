@@ -16,7 +16,7 @@ class SurgicalReportController extends Controller
         $facilityId = $request->attributes->get('facility_id');
 
         if (! $facilityId) {
-            return response()->json(['message' => 'Facility context required.'], 403);
+            return response()->json(['message' => __('api.facility_context_required')], 403);
         }
 
         $validated = $request->validate([
