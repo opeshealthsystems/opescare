@@ -72,7 +72,7 @@ class MobileInsuranceMarketplaceController extends Controller
 
         if ($existing) {
             return response()->json([
-                'message' => 'You already have an active policy for this plan.',
+                'message' => __('api.active_policy_exists'),
                 'policy_id' => $existing->id,
             ], 409);
         }
@@ -95,7 +95,7 @@ class MobileInsuranceMarketplaceController extends Controller
         ]);
 
         return response()->json([
-            'message'       => 'Enrollment submitted successfully. Your policy is pending activation.',
+            'message'       => __('api.enrollment_submitted'),
             'policy_id'     => $policy->id,
             'policy_number' => $policy->policy_number,
             'status'        => $policy->status,

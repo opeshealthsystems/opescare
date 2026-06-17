@@ -379,4 +379,11 @@ return [
     'role_not_permitted_search'      => "Role ':role' is not permitted to search resource type ':resource_type'.",
     'resource_indexed'               => 'Resource :resource indexed.',
     'resource_removed_index'         => 'Resource :resource removed from index.',
+    'family_member_added'            => 'Family member added successfully.',
+    'family_link_exists'             => 'A family link already exists for this patient.',
+    'invitation_sent'                => 'Invitation sent. They will be notified to accept.',
+    'invitation_cancelled'           => 'Invitation cancelled.',
+    'patient_not_found_contact'      => 'No OpesCare patient found with that contact. They may need to register first.',
+    'active_policy_exists'           => 'You already have an active policy for this plan.',
+    'enrollment_submitted'           => 'Enrollment submitted successfully. Your policy is pending activation.',
 ];

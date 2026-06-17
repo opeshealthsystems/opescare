@@ -54,7 +54,7 @@ class MobileFamilyController extends Controller
     {
         $user = $this->guardianUser($request);
         if (!$user) {
-            return response()->json(['message' => 'No user account linked to this patient.'], 403);
+            return response()->json(['message' => __('api.no_user_linked')], 403);
         }
 
         $data = $request->validate([
@@ -97,7 +97,7 @@ class MobileFamilyController extends Controller
         $link->load('dependentPatient');
 
         return response()->json([
-            'message' => 'Family member added successfully.',
+            'message' => __('api.family_member_added'),
             'data'    => $this->formatLink($link),
         ], 201);
     }
@@ -140,7 +140,7 @@ class MobileFamilyController extends Controller
     {
         $user = $this->guardianUser($request);
         if (!$user) {
-            return response()->json(['message' => 'No user account linked to this patient.'], 403);
+            return response()->json(['message' => __('api.no_user_linked')], 403);
         }
 
         $data = $request->validate([
@@ -161,12 +161,12 @@ class MobileFamilyController extends Controller
 
         if (!$patient) {
             return response()->json([
-                'message' => 'No OpesCare patient found with that contact. They may need to register first.',
+                'message' => __('api.patient_not_found_contact'),
             ], 404);
         }
 
         if ($patient->id === $user->patient_id) {
-            return response()->json(['message' => 'You cannot link yourself as a dependent.'], 422);
+            return response()->json(['message' => __('api.cannot_link_self')], 422);
         }
 
         $existing = FamilyLink::where('guardian_user_id', $user->id)
@@ -175,7 +175,7 @@ class MobileFamilyController extends Controller
             ->exists();
 
         if ($existing) {
-            return response()->json(['message' => 'A family link already exists for this patient.'], 409);
+            return response()->json(['message' => __('api.family_link_exists')], 409);
         }
 
         $rawToken = Str::random(64);
@@ -196,7 +196,7 @@ class MobileFamilyController extends Controller
         }
 
         return response()->json([
-            'message' => 'Invitation sent. They will be notified to accept.',
+            'message' => __('api.invitation_sent'),
             'data'    => [
                 'id'           => $link->id,
                 'contact'      => $search,
@@ -215,7 +215,7 @@ class MobileFamilyController extends Controller
     {
         $user = $this->guardianUser($request);
         if (!$user) {
-            return response()->json(['message' => 'Unauthorized.'], 403);
+            return response()->json(['message' => __('api.unauthorized')], 403);
         }
 
         $link = FamilyLink::where('guardian_user_id', $user->id)
@@ -225,10 +225,10 @@ class MobileFamilyController extends Controller
 
         $link->update(['status' => 'cancelled']);
 
-        return response()->json(['message' => 'Invitation cancelled.']);
+        return response()->json(['message' => __('api.invitation_cancelled')]);
     }
 
-    // ── Helpers ────────────────────────────────────────────────────────────
+    // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     private function formatLink(FamilyLink $link): array
     {
