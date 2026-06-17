@@ -72,7 +72,7 @@
             @if($ward->floor)<span class="td-muted">Floor {{ $ward->floor }}</span>@endif
         </span>
         <span class="section-head">
-            <span class="td-muted">{{ $occupied }}/{{ $total }} occupied</span>
+            <span class="td-muted">{{ $occupied }}/{{ $total }} {{ __('public.stf_wards_idx_occupied_label') }}</span>
             <span class="badge {{ $occBadge }}">{{ $occ }}%</span>
         </span>
     </div>

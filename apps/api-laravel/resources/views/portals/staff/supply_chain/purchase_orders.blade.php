@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Purchase Orders — Supply Chain')
+@section('title', __('public.stf_supply_po_title') . ' — Supply Chain')
 @section('sidebar') @include('portals.staff.supply_chain._sidebar') @endsection
 
 @section('content')
@@ -7,11 +7,11 @@
 
     <div class="portal-page-header">
         <div>
-            <h1 class="portal-page-title">Purchase Orders</h1>
-            <p class="portal-page-subtitle">Manage procurement orders to suppliers</p>
+            <h1 class="portal-page-title">{{ __('public.stf_supply_po_title') }}</h1>
+            <p class="portal-page-subtitle">{{ __('public.stf_supply_po_subtitle') }}</p>
         </div>
         <button class="btn btn--primary" onclick="openModal('createModal')">
-            <i data-lucide="plus"></i> New PO
+            <i data-lucide="plus"></i> {{ __('public.stf_supply_po_btn_new') }}
         </button>
     </div>
 
@@ -21,19 +21,19 @@
     {{-- Filters --}}
     <form method="GET" class="filter-bar">
         <select name="status" class="filter-select">
-            <option value="">All statuses</option>
+            <option value="">{{ __('public.stf_supply_po_filter_all_statuses') }}</option>
             @foreach(['draft','submitted','approved','sent','partial','received','cancelled'] as $s)
                 <option value="{{ $s }}" {{ request('status') == $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
             @endforeach
         </select>
         <select name="supplier" class="filter-select">
-            <option value="">All Suppliers</option>
+            <option value="">{{ __('public.stf_supply_po_filter_all_suppliers') }}</option>
             @foreach($suppliers as $sup)
                 <option value="{{ $sup->id }}" {{ request('supplier') == $sup->id ? 'selected' : '' }}>{{ $sup->name }}</option>
             @endforeach
         </select>
-        <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> Filter</button>
-        <a href="{{ route('portals.staff.supply.purchase_orders') }}" class="btn btn-ghost btn-sm">Reset</a>
+        <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> {{ __('public.stf_supply_po_btn_filter') }}</button>
+        <a href="{{ route('portals.staff.supply.purchase_orders') }}" class="btn btn-ghost btn-sm">{{ __('public.stf_supply_po_btn_reset') }}</a>
     </form>
 
     <div class="portal-card">
@@ -42,31 +42,31 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>PO Number</th>
-                        <th>Supplier</th>
-                        <th>Lines</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Order Date</th>
-                        <th>Expected</th>
-                        <th>Actions</th>
+                        <th>{{ __('public.stf_supply_po_col_po_number') }}</th>
+                        <th>{{ __('public.stf_supply_po_col_supplier') }}</th>
+                        <th>{{ __('public.stf_supply_po_col_lines') }}</th>
+                        <th>{{ __('public.stf_supply_po_col_total') }}</th>
+                        <th>{{ __('public.stf_supply_po_col_status') }}</th>
+                        <th>{{ __('public.stf_supply_po_col_order_date') }}</th>
+                        <th>{{ __('public.stf_supply_po_col_expected') }}</th>
+                        <th>{{ __('public.stf_supply_po_col_actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($purchaseOrders as $po)
                         <tr>
-                            <td data-label="PO Number">
+                            <td data-label="{{ __('public.stf_supply_po_col_po_number') }}">
                                 <div class="td-strong">{{ $po->po_number }}</div>
                                 @if($po->notes)
                                     <div class="td-muted">{{ Str::limit($po->notes, 40) }}</div>
                                 @endif
                             </td>
-                            <td data-label="Supplier">{{ $po->supplier->name ?? '—' }}</td>
-                            <td data-label="Lines">{{ $po->items->count() }} item(s)</td>
-                            <td data-label="Total" class="td-strong">
+                            <td data-label="{{ __('public.stf_supply_po_col_supplier') }}">{{ $po->supplier->name ?? '—' }}</td>
+                            <td data-label="{{ __('public.stf_supply_po_col_lines') }}">{{ __('public.stf_supply_po_lines_count', ['count' => $po->items->count()]) }}</td>
+                            <td data-label="{{ __('public.stf_supply_po_col_total') }}" class="td-strong">
                                 {{ number_format($po->total_amount, 2) }}
                             </td>
-                            <td data-label="Status">
+                            <td data-label="{{ __('public.stf_supply_po_col_status') }}">
                                 @php
                                     $statusColor = match($po->status) {
                                         'draft'     => 'default',
@@ -81,16 +81,16 @@
                                 @endphp
                                 <span class="badge badge--{{ $statusColor }}">{{ $po->status }}</span>
                             </td>
-                            <td data-label="Order Date" class="td-muted">{{ $po->order_date?->format('d M Y') ?? '—' }}</td>
-                            <td data-label="Expected" class="td-muted">{{ $po->expected_delivery_date?->format('d M Y') ?? '—' }}</td>
-                            <td data-label="Actions">
+                            <td data-label="{{ __('public.stf_supply_po_col_order_date') }}" class="td-muted">{{ $po->order_date?->format('d M Y') ?? '—' }}</td>
+                            <td data-label="{{ __('public.stf_supply_po_col_expected') }}" class="td-muted">{{ $po->expected_delivery_date?->format('d M Y') ?? '—' }}</td>
+                            <td data-label="{{ __('public.stf_supply_po_col_actions') }}">
                                 @if(in_array($po->status, ['draft','submitted']))
                                     <form method="POST" action="{{ route('portals.staff.supply.purchase_orders.approve', $po->id) }}" class="inline-form">
                                         @csrf
                                         <button type="submit" class="btn btn--sm btn--success"
-                                                onclick="return confirm('Approve PO {{ $po->po_number }}?')">
+                                                onclick="return confirm('{{ __('public.stf_supply_po_confirm_approve', ['number' => $po->po_number]) }}')">
                                             <i data-lucide="check"></i>
-                                            Approve
+                                            {{ __('public.stf_supply_po_btn_approve') }}
                                         </button>
                                     </form>
                                 @endif
@@ -100,7 +100,7 @@
                         <tr><td colspan="8">
                             <div class="empty-state">
                                 <div class="empty-state-icon"><i data-lucide="file-text"></i></div>
-                                <p>No purchase orders yet.</p>
+                                <p>{{ __('public.stf_supply_po_empty') }}</p>
                             </div>
                         </td></tr>
                     @endforelse
@@ -116,59 +116,59 @@
 {{-- Create Purchase Order Modal --}}
 <div id="createModal" class="modal-backdrop mt-6" hidden onclick="if(event.target===this)closeModal('createModal')">
     <div class="modal modal--lg" role="dialog" aria-modal="true">
-        <h3 class="modal__title"><i data-lucide="file-plus"></i> New Purchase Order</h3>
+        <h3 class="modal__title"><i data-lucide="file-plus"></i> {{ __('public.stf_supply_po_modal_title') }}</h3>
         <form method="POST" action="{{ route('portals.staff.supply.purchase_orders.store') }}">
             @csrf
             <div class="modal__body">
                 <div class="form-row mb-6">
                     <div class="form-group">
-                        <label class="form-label form-label-required">Supplier</label>
+                        <label class="form-label form-label-required">{{ __('public.stf_supply_po_label_supplier') }}</label>
                         <select name="supplier_id" class="form-control" required>
-                            <option value="">— Select —</option>
+                            <option value="">{{ __('public.stf_supply_po_select_supplier') }}</option>
                             @foreach($suppliers as $sup)
                                 <option value="{{ $sup->id }}">{{ $sup->name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Expected Delivery</label>
+                        <label class="form-label">{{ __('public.stf_supply_po_label_expected') }}</label>
                         <input type="date" name="expected_delivery_date" class="form-control">
                     </div>
                 </div>
                 <div class="form-group mb-6">
-                    <label class="form-label">Notes</label>
-                    <textarea name="notes" class="form-control" rows="2" placeholder="Optional notes or instructions"></textarea>
+                    <label class="form-label">{{ __('public.stf_supply_po_label_notes') }}</label>
+                    <textarea name="notes" class="form-control" rows="2" placeholder="{{ __('public.stf_supply_po_ph_notes') }}"></textarea>
                 </div>
 
                 {{-- Line Items --}}
                 <div class="flex-between mb-6">
-                    <strong>Order Lines</strong>
+                    <strong>{{ __('public.stf_supply_po_order_lines') }}</strong>
                     <button type="button" class="btn btn--sm btn--outline" onclick="addPOLine()">
-                        <i data-lucide="plus"></i> Add Line
+                        <i data-lucide="plus"></i> {{ __('public.stf_supply_po_btn_add_line') }}
                     </button>
                 </div>
                 <div id="po-lines">
                     <div class="po-line" style="display:grid;grid-template-columns:3fr 1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:center;">
                         <select name="items[0][inventory_item_id]" class="form-control" required>
-                            <option value="">— Item —</option>
+                            <option value="">{{ __('public.stf_supply_po_select_item') }}</option>
                             @foreach($items as $item)
                                 <option value="{{ $item->id }}">{{ $item->name }} ({{ $item->unit }})</option>
                             @endforeach
                         </select>
-                        <input type="number" name="items[0][quantity_ordered]" class="form-control" placeholder="Qty" min="1" required onchange="recalcTotal()">
-                        <input type="number" name="items[0][unit_price]" class="form-control" placeholder="Unit Price" min="0" step="0.0001" onchange="recalcTotal()">
-                        <button type="button" class="btn btn--sm btn--danger" onclick="removePOLine(this)" disabled title="At least one line required">
+                        <input type="number" name="items[0][quantity_ordered]" class="form-control" placeholder="{{ __('public.stf_supply_po_ph_qty') }}" min="1" required onchange="recalcTotal()">
+                        <input type="number" name="items[0][unit_price]" class="form-control" placeholder="{{ __('public.stf_supply_po_ph_unit_price') }}" min="0" step="0.0001" onchange="recalcTotal()">
+                        <button type="button" class="btn btn--sm btn--danger" onclick="removePOLine(this)" disabled title="{{ __('public.stf_supply_po_title_at_least_one') }}">
                             <i data-lucide="x"></i>
                         </button>
                     </div>
                 </div>
                 <p class="td-muted mt-6">
-                    Estimated Total: <strong id="po-total" class="td-strong">0.00</strong>
+                    {{ __('public.stf_supply_po_estimated_total') }} <strong id="po-total" class="td-strong">0.00</strong>
                 </p>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn--outline" onclick="closeModal('createModal')">Cancel</button>
-                <button type="submit" class="btn btn--primary">Create PO (Draft)</button>
+                <button type="button" class="btn btn--outline" onclick="closeModal('createModal')">{{ __('public.stf_supply_po_btn_cancel') }}</button>
+                <button type="submit" class="btn btn--primary">{{ __('public.stf_supply_po_btn_create') }}</button>
             </div>
         </form>
     </div>
@@ -189,11 +189,11 @@ function addPOLine(){
     div.style.cssText = 'display:grid;grid-template-columns:3fr 1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:center;';
     div.innerHTML = `
         <select name="items[${idx}][inventory_item_id]" class="form-control" required>
-            <option value="">— Item —</option>
+            <option value="">{{ __('public.stf_supply_po_select_item') }}</option>
             ${itemOptions}
         </select>
-        <input type="number" name="items[${idx}][quantity_ordered]" class="form-control" placeholder="Qty" min="1" required onchange="recalcTotal()">
-        <input type="number" name="items[${idx}][unit_price]" class="form-control" placeholder="Unit Price" min="0" step="0.0001" onchange="recalcTotal()">
+        <input type="number" name="items[${idx}][quantity_ordered]" class="form-control" placeholder="{{ __('public.stf_supply_po_ph_qty') }}" min="1" required onchange="recalcTotal()">
+        <input type="number" name="items[${idx}][unit_price]" class="form-control" placeholder="{{ __('public.stf_supply_po_ph_unit_price') }}" min="0" step="0.0001" onchange="recalcTotal()">
         <button type="button" class="btn btn--sm btn--danger" onclick="removePOLine(this)">
             <i data-lucide="x"></i>
         </button>

@@ -27,7 +27,7 @@
 
 {{-- Status filter --}}
 <div class="tabs mb-6">
-    @foreach([''=>'All', 'active'=>'Active', 'discharged'=>'Discharged', 'transferred'=>'Transferred'] as $val => $label)
+    @foreach(['' => __('public.stf_wards_adm_tab_all'), 'active' => __('public.stf_wards_adm_tab_active'), 'discharged' => __('public.stf_wards_adm_tab_discharged'), 'transferred' => __('public.stf_wards_adm_tab_transferred')] as $val => $label)
         <a href="{{ route('portals.staff.wards.admissions', $val ? ['status'=>$val] : []) }}"
            class="tab {{ request('status', '') === $val ? 'active' : '' }}">{{ $label }}</a>
     @endforeach
@@ -118,12 +118,12 @@
             <div class="modal__body">
                 <div class="form-group">
                     <label class="form-label form-label-required">{{ __('public.staff_wards.field_patient_id', [], $l) ?: 'Patient ID / Health ID' }}</label>
-                    <input type="text" name="patient_id" class="form-control" required placeholder="Patient UUID or Health ID">
+                    <input type="text" name="patient_id" class="form-control" required placeholder="{{ __('public.stf_wards_adm_ph_patient_id') }}">
                 </div>
                 <div class="form-group">
                     <label class="form-label form-label-required">{{ __('public.staff_wards.field_select_bed', [], $l) ?: 'Select Bed' }}</label>
                     <select name="bed_id" class="form-control" required>
-                        <option value="">— Select available bed —</option>
+                        <option value="">{{ __('public.stf_wards_adm_select_bed_ph') }}</option>
                         @php
                             $availBeds = \App\Models\Bed::with('ward')
                                 ->where('status','available')
@@ -143,11 +143,11 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">{{ __('public.staff_wards.field_admission_reason', [], $l) ?: 'Admission Reason' }}</label>
-                    <textarea name="admission_reason" class="form-control" rows="2" maxlength="500" placeholder="Reason for admission…"></textarea>
+                    <textarea name="admission_reason" class="form-control" rows="2" maxlength="500" placeholder="{{ __('public.stf_wards_adm_ph_reason') }}"></textarea>
                 </div>
                 <div class="form-group">
                     <label class="form-label">{{ __('public.staff_wards.field_visit_id', [], $l) ?: 'Visit ID' }} <span class="td-muted">(optional)</span></label>
-                    <input type="text" name="visit_id" class="form-control" placeholder="Link to open visit UUID">
+                    <input type="text" name="visit_id" class="form-control" placeholder="{{ __('public.stf_wards_adm_ph_visit_id') }}">
                 </div>
             </div>
             <div class="modal__footer">
@@ -168,11 +168,11 @@
                 <div class="form-group">
                     <label class="form-label form-label-required">{{ __('public.staff_wards.field_discharge_dest', [], $l) ?: 'Discharge Destination' }}</label>
                     <select name="discharge_destination" class="form-control" required>
-                        <option value="home">Home</option>
-                        <option value="referral">Referred to Another Facility</option>
-                        <option value="transferred">Transferred (Internal)</option>
-                        <option value="ama">Against Medical Advice</option>
-                        <option value="deceased">Deceased</option>
+                        <option value="home">{{ __('public.stf_wards_adm_opt_home') }}</option>
+                        <option value="referral">{{ __('public.stf_wards_adm_opt_referral') }}</option>
+                        <option value="transferred">{{ __('public.stf_wards_adm_opt_transferred') }}</option>
+                        <option value="ama">{{ __('public.stf_wards_adm_opt_ama') }}</option>
+                        <option value="deceased">{{ __('public.stf_wards_adm_opt_deceased') }}</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -198,7 +198,7 @@
                 <div class="form-group">
                     <label class="form-label form-label-required">{{ __('public.staff_wards.field_target_bed', [], $l) ?: 'Target Bed' }}</label>
                     <select name="to_bed_id" class="form-control" required>
-                        <option value="">— Select available bed —</option>
+                        <option value="">{{ __('public.stf_wards_adm_select_bed_ph') }}</option>
                         @foreach($byWard ?? [] as $wardName => $beds)
                             <optgroup label="{{ $wardName }}">
                                 @foreach($beds as $bed)
@@ -210,7 +210,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">{{ __('public.staff_wards.field_transfer_reason', [], $l) ?: 'Transfer Reason' }}</label>
-                    <input type="text" name="reason" class="form-control" maxlength="300" placeholder="e.g. Upgraded to ICU">
+                    <input type="text" name="reason" class="form-control" maxlength="300" placeholder="{{ __('public.stf_wards_adm_ph_transfer_reason') }}">
                 </div>
             </div>
             <div class="modal__footer">
