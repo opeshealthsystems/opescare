@@ -958,4 +958,62 @@ class PatientPortalController extends Controller
             ->route('portals.patient.insurance')
             ->with('success', __('flash.enrollment_submitted'));
     }
+
+    // ── Subscription self-service ─────────────────────────────────────────────
+
+    /** Current plan, status, renewal date, invoices, and available patient plans. */
+    public function subscription(Request $request)
+    {
+        $patient = $this->resolvePatient();
+        abort_if($patient === null, 403);
+
+        $svc         = app(\App\Modules\Subscription\Services\PatientSubscriptionService::class);
+        $active      = $svc->activeSubscription($patient);
+        $currentPlan = $svc->currentPlan($patient);
+        $plans       = \App\Models\SubscriptionPlan::forAudience('patient')
+            ->active()->public()->with('planFeatures')->orderBy('sort_order')->get();
+        $invoices    = $active
+            ? \App\Models\SubscriptionInvoice::where('subscription_id', $active->id)
+                ->orderByDesc('invoice_date')->limit(12)->get()
+            : collect();
+
+        return view('portals.patient.subscription', compact('patient', 'active', 'currentPlan', 'plans', 'invoices'));
+    }
+
+    /** Choose/upgrade a plan. Free activates immediately; paid routes to checkout. */
+    public function subscribe(Request $request)
+    {
+        $patient = $this->resolvePatient();
+        abort_if($patient === null, 403);
+        $this->assertWriteAllowed();
+
+        $validated = $request->validate([
+            'plan_id'  => 'required|uuid',
+            'interval' => 'required|in:monthly,annual',
+        ]);
+
+        $plan = \App\Models\SubscriptionPlan::forAudience('patient')->active()->findOrFail($validated['plan_id']);
+        $svc  = app(\App\Modules\Subscription\Services\PatientSubscriptionService::class);
+
+        if ($plan->isFree()) {
+            $svc->startSubscription($patient, $plan, $validated['interval'], [], (string) $patient->id);
+            return redirect()->route('portals.patient.subscription')->with('success', __('flash.subscription_updated'));
+        }
+
+        // Paid plans require Mobile Money checkout (wired in the checkout slice).
+        return redirect()->route('portals.patient.subscription')->with('info', __('flash.subscription_checkout_pending'));
+    }
+
+    /** Cancel — turns off auto-renew; access continues until the period ends. */
+    public function cancelSubscription(Request $request)
+    {
+        $patient = $this->resolvePatient();
+        abort_if($patient === null, 403);
+        $this->assertWriteAllowed();
+
+        $svc = app(\App\Modules\Subscription\Services\PatientSubscriptionService::class);
+        $svc->cancel($patient, (string) $request->input('reason', ''), (string) $patient->id);
+
+        return redirect()->route('portals.patient.subscription')->with('success', __('flash.subscription_cancelled'));
+    }
 }

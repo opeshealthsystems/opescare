@@ -192,6 +192,10 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
         Route::post('/portals/patient/consent/{id}/revoke', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'revokeConsent'])->name('portals.patient.consent.revoke');
         Route::get('/portals/patient/documents', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'documents'])->name('portals.patient.documents');
         Route::get('/portals/patient/documents/{id}/download', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'documentDownload'])->name('portals.patient.documents.download');
+        // Subscription self-service (view plan, upgrade, cancel)
+        Route::get('/portals/patient/subscription', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'subscription'])->name('portals.patient.subscription');
+        Route::post('/portals/patient/subscription/subscribe', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'subscribe'])->name('portals.patient.subscription.subscribe');
+        Route::post('/portals/patient/subscription/cancel', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'cancelSubscription'])->name('portals.patient.subscription.cancel');
         // Health ID card PDF download
         Route::get('/portals/patient/health-id-card/download', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'downloadHealthIdCard'])->name('portals.patient.health-id-card.download');
         // QR token management

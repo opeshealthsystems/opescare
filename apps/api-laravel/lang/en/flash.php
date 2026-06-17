@@ -339,4 +339,5 @@ return [
     'patient_admitted'                    => 'Patient admitted successfully.',
     'patient_discharged'                  => 'Patient discharged.',
     'bed_transfer_completed'              => 'Bed transfer completed.',
+    'subscription_checkout_pending'       => 'Mobile Money checkout for premium plans is coming soon.',
 ];

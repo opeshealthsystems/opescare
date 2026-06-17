@@ -339,4 +339,5 @@ return [
     'patient_admitted'                    => 'Patient admis avec succès.',
     'patient_discharged'                  => 'Patient sorti.',
     'bed_transfer_completed'              => 'Transfert de lit terminé.',
+    'subscription_checkout_pending'       => 'Le paiement Mobile Money pour les forfaits premium sera bientôt disponible.',
 ];
