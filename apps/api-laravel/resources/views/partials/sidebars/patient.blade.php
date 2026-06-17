@@ -50,6 +50,13 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.portal.nav_billing', [], $l) ?: 'Billing' }}</div>
+    <a href="{{ route('portals.patient.subscription') }}" class="sidebar-link {{ request()->routeIs('portals.patient.subscription') ? 'active' : '' }}">
+        <i data-lucide="credit-card"></i>
+        <span>{{ __('public.portal.nav_subscription', [], $l) ?: 'Subscription' }}</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_privacy', [], $l) ?: 'Privacy & Access' }}</div>
     <a href="{{ route('portals.patient.consent') }}" class="sidebar-link">
         <i data-lucide="shield-check"></i>

@@ -121,6 +121,7 @@ return [
         'nav_visits'             => 'Visites',
         'nav_referrals'          => 'Références',
         'nav_billing'            => 'Facturation',
+        'nav_subscription'       => 'Abonnement',
         'nav_support'            => 'Assistance',
         'nav_insurance'          => 'Assurance',
         'nav_analytics'          => 'Analytique',
