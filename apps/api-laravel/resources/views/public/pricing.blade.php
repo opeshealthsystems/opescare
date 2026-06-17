@@ -79,11 +79,11 @@
 
         @php
             $orgs = [
-                ['icon' => 'hospital',      'title' => __('pricing.org_facilities_title'),  'desc' => __('pricing.org_facilities_desc')],
-                ['icon' => 'shield',        'title' => __('pricing.org_insurers_title'),    'desc' => __('pricing.org_insurers_desc')],
-                ['icon' => 'flask-conical', 'title' => __('pricing.org_labs_title'),        'desc' => __('pricing.org_labs_desc')],
-                ['icon' => 'pill',          'title' => __('pricing.org_pharmacies_title'),  'desc' => __('pricing.org_pharmacies_desc')],
-                ['icon' => 'code-2',        'title' => __('pricing.org_developers_title'),  'desc' => __('pricing.org_developers_desc')],
+                ['icon' => 'hospital',      'type' => 'facility',  'title' => __('pricing.org_facilities_title'),  'desc' => __('pricing.org_facilities_desc')],
+                ['icon' => 'shield',        'type' => 'insurer',   'title' => __('pricing.org_insurers_title'),    'desc' => __('pricing.org_insurers_desc')],
+                ['icon' => 'flask-conical', 'type' => 'lab',       'title' => __('pricing.org_labs_title'),        'desc' => __('pricing.org_labs_desc')],
+                ['icon' => 'pill',          'type' => 'pharmacy',  'title' => __('pricing.org_pharmacies_title'),  'desc' => __('pricing.org_pharmacies_desc')],
+                ['icon' => 'code-2',        'type' => 'developer', 'title' => __('pricing.org_developers_title'),  'desc' => __('pricing.org_developers_desc')],
             ];
         @endphp
 
@@ -96,7 +96,7 @@
                     <h3 style="font-size:1.05rem;font-weight:700;color:var(--color-text-primary);margin:0 0 .4rem;">{{ $org['title'] }}</h3>
                     <p style="color:var(--color-text-secondary);font-size:.88rem;flex:1;margin:0 0 1.25rem;">{{ $org['desc'] }}</p>
                     <div style="font-weight:700;color:#0F4C81;font-size:.9rem;margin-bottom:.75rem;">{{ __('pricing.custom_pricing') }}</div>
-                    <a href="{{ route('public.contact') }}" class="btn btn-ghost" style="justify-content:center;">
+                    <a href="{{ route('public.request-demo', ['type' => $org['type'], 'source' => 'pricing']) }}" class="btn btn-ghost" style="justify-content:center;">
                         <i data-lucide="calendar" style="width:1rem;height:1rem;"></i> {{ __('pricing.request_demo') }}
                     </a>
                 </div>
