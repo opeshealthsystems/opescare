@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class OrganizationSubscription extends Model
 {
     use HasUuids;
 
     protected $fillable = [
+        'subscriber_type', 'subscriber_id', 'interval',
         'organization_id', 'organization_name', 'plan_id', 'status',
         'trial_starts_at', 'trial_ends_at',
         'current_period_start', 'current_period_end',
@@ -34,6 +36,20 @@ class OrganizationSubscription extends Model
     public function plan(): BelongsTo
     {
         return $this->belongsTo(SubscriptionPlan::class, 'plan_id');
+    }
+
+    /**
+     * Polymorphic subscriber — organization | patient | household.
+     * Resolved via the morph map registered in AppServiceProvider.
+     */
+    public function subscriber(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    public function isB2C(): bool
+    {
+        return in_array($this->subscriber_type, ['patient', 'household'], true);
     }
 
     public function invoices(): HasMany

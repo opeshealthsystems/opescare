@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Polymorphic subscriber morph map — keeps subscription rows portable
+        // and decoupled from model FQCNs (B2B organizations + B2C patients/households).
+        // 'household' is added in Phase 3 alongside the Household model.
+        Relation::morphMap([
+            'patient' => \App\Models\Patient::class,
+        ]);
+
         // Clinical module routes (Group 3 + wired modules) — loaded here to
         // avoid touching the sealed routes/api.php file.
         Route::middleware('api')
