@@ -1,53 +1,53 @@
 @extends('layouts.portal')
-@section('title', 'Widget Embed — Connect Suite')
+@section('title', __('public.adm_connect_widget_title'))
 @section('sidebar') @include('portals.admin.connect._sidebar') @endsection
 
 @section('content')
 
 <div class="page-head">
-    <h2><i data-lucide="layout-panel-left"></i> Widget Embed Generator</h2>
+    <h2><i data-lucide="layout-panel-left"></i> {{ __('public.adm_connect_widget_heading') }}</h2>
     <div class="page-head__spacer"></div>
 </div>
-<p class="td-muted mb-6">Generate embed snippets for the OpesCare Connect Widget</p>
+<p class="td-muted mb-6">{{ __('public.adm_connect_widget_subtitle') }}</p>
 
 <div class="field-grid">
 
     {{-- Configuration Panel --}}
     <div class="panel">
-        <div class="panel-header"><h3 class="panel-title"><i data-lucide="settings"></i> Widget Configuration</h3></div>
+        <div class="panel-header"><h3 class="panel-title"><i data-lucide="settings"></i> {{ __('public.adm_connect_widget_config_title') }}</h3></div>
         <div class="panel-body">
             <div class="form-group">
-                <label class="form-label">Widget Type</label>
+                <label class="form-label">{{ __('public.adm_connect_widget_lbl_type') }}</label>
                 <select id="widgetType" class="form-control" onchange="regenerate()">
-                    <option value="appointment">Appointment Booking</option>
-                    <option value="health_id_verify">Health ID Verification</option>
-                    <option value="patient_summary">Patient Summary</option>
-                    <option value="queue_status">Queue Status</option>
+                    <option value="appointment">{{ __('public.adm_connect_widget_opt_appointment') }}</option>
+                    <option value="health_id_verify">{{ __('public.adm_connect_widget_opt_health_id') }}</option>
+                    <option value="patient_summary">{{ __('public.adm_connect_widget_opt_patient_summary') }}</option>
+                    <option value="queue_status">{{ __('public.adm_connect_widget_opt_queue') }}</option>
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label">API Client</label>
+                <label class="form-label">{{ __('public.adm_connect_widget_lbl_client') }}</label>
                 <select id="clientId" class="form-control" onchange="regenerate()">
-                    <option value="">— Select Active Client —</option>
+                    <option value="">{{ __('public.adm_connect_widget_select_client_ph') }}</option>
                     @foreach($clients as $client)
                         <option value="{{ $client->client_id }}">{{ $client->name }} ({{ $client->environment }})</option>
                     @endforeach
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label">Facility ID</label>
-                <input type="text" id="facilityId" class="form-control" placeholder="UUID of the facility" oninput="regenerate()">
+                <label class="form-label">{{ __('public.adm_connect_widget_lbl_facility') }}</label>
+                <input type="text" id="facilityId" class="form-control" placeholder="{{ __('public.adm_connect_widget_ph_facility') }}" oninput="regenerate()">
             </div>
             <div class="form-group">
-                <label class="form-label">Theme</label>
+                <label class="form-label">{{ __('public.adm_connect_widget_lbl_theme') }}</label>
                 <select id="widgetTheme" class="form-control" onchange="regenerate()">
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                    <option value="auto">Auto (system preference)</option>
+                    <option value="light">{{ __('public.adm_connect_widget_opt_light') }}</option>
+                    <option value="dark">{{ __('public.adm_connect_widget_opt_dark') }}</option>
+                    <option value="auto">{{ __('public.adm_connect_widget_opt_auto') }}</option>
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label">Language</label>
+                <label class="form-label">{{ __('public.adm_connect_widget_lbl_lang') }}</label>
                 <select id="widgetLang" class="form-control" onchange="regenerate()">
                     <option value="en">English</option>
                     <option value="fr">French</option>
@@ -58,7 +58,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label">Primary Colour</label>
+                <label class="form-label">{{ __('public.adm_connect_widget_lbl_color') }}</label>
                 <input type="color" id="widgetColor" class="form-control" value="#0891b2" onchange="regenerate()">
             </div>
         </div>
@@ -68,24 +68,24 @@
     <div>
         <div class="panel mb-6">
             <div class="panel-header">
-                <h3 class="panel-title"><i data-lucide="code-2"></i> Script Tag</h3>
-                <button class="btn btn-ghost btn-sm" onclick="copyCode('scriptCode')"><i data-lucide="copy"></i> Copy</button>
+                <h3 class="panel-title"><i data-lucide="code-2"></i> {{ __('public.adm_connect_widget_script_title') }}</h3>
+                <button class="btn btn-ghost btn-sm" onclick="copyCode('scriptCode')"><i data-lucide="copy"></i> {{ __('public.adm_connect_widget_btn_copy') }}</button>
             </div>
             <pre id="scriptCode" class="code-block"></pre>
         </div>
 
         <div class="panel mb-6">
             <div class="panel-header">
-                <h3 class="panel-title"><i data-lucide="code"></i> HTML Embed Tag</h3>
-                <button class="btn btn-ghost btn-sm" onclick="copyCode('embedCode')"><i data-lucide="copy"></i> Copy</button>
+                <h3 class="panel-title"><i data-lucide="code"></i> {{ __('public.adm_connect_widget_embed_title') }}</h3>
+                <button class="btn btn-ghost btn-sm" onclick="copyCode('embedCode')"><i data-lucide="copy"></i> {{ __('public.adm_connect_widget_btn_copy') }}</button>
             </div>
             <pre id="embedCode" class="code-block"></pre>
         </div>
 
         <div class="panel">
             <div class="panel-header">
-                <h3 class="panel-title"><i data-lucide="braces"></i> JavaScript Init</h3>
-                <button class="btn btn-ghost btn-sm" onclick="copyCode('jsCode')"><i data-lucide="copy"></i> Copy</button>
+                <h3 class="panel-title"><i data-lucide="braces"></i> {{ __('public.adm_connect_widget_js_title') }}</h3>
+                <button class="btn btn-ghost btn-sm" onclick="copyCode('jsCode')"><i data-lucide="copy"></i> {{ __('public.adm_connect_widget_btn_copy') }}</button>
             </div>
             <pre id="jsCode" class="code-block"></pre>
         </div>
@@ -95,24 +95,24 @@
 
 {{-- Documentation --}}
 <div class="panel mt-6">
-    <div class="panel-header"><h3 class="panel-title"><i data-lucide="book-open"></i> Integration Guide</h3></div>
+    <div class="panel-header"><h3 class="panel-title"><i data-lucide="book-open"></i> {{ __('public.adm_connect_widget_guide_title') }}</h3></div>
     <div class="panel-body">
         <div class="stat-grid">
             <div class="stat-card">
-                <div class="stat-card__head"><i data-lucide="check-circle"></i> <span class="kv-strong">Step 1 — Add Script</span></div>
-                <p class="td-muted">Place the script tag in the <code class="code-token">&lt;head&gt;</code> of your page. The widget loads asynchronously and will not block rendering.</p>
+                <div class="stat-card__head"><i data-lucide="check-circle"></i> <span class="kv-strong">{{ __('public.adm_connect_widget_step1_title') }}</span></div>
+                <p class="td-muted">{{ __('public.adm_connect_widget_step1_desc') }}</p>
             </div>
             <div class="stat-card">
-                <div class="stat-card__head"><i data-lucide="code"></i> <span class="kv-strong">Step 2 — Place Embed Tag</span></div>
-                <p class="td-muted">Drop the <code class="code-token">&lt;opescare-widget&gt;</code> tag anywhere in your HTML where you want the widget to render.</p>
+                <div class="stat-card__head"><i data-lucide="code"></i> <span class="kv-strong">{{ __('public.adm_connect_widget_step2_title') }}</span></div>
+                <p class="td-muted">{{ __('public.adm_connect_widget_step2_desc') }}</p>
             </div>
             <div class="stat-card">
-                <div class="stat-card__head"><i data-lucide="key"></i> <span class="kv-strong">Step 3 — Authenticate</span></div>
-                <p class="td-muted">Pass a short-lived session token from your server via <code class="code-token">OpesCareWidget.setToken(token)</code> after the user logs in.</p>
+                <div class="stat-card__head"><i data-lucide="key"></i> <span class="kv-strong">{{ __('public.adm_connect_widget_step3_title') }}</span></div>
+                <p class="td-muted">{{ __('public.adm_connect_widget_step3_desc') }}</p>
             </div>
             <div class="stat-card">
-                <div class="stat-card__head"><i data-lucide="shield-check"></i> <span class="kv-strong">Security</span></div>
-                <p class="td-muted">Never embed your API secret in front-end code. Widget sessions are scoped and expire. All traffic is HTTPS.</p>
+                <div class="stat-card__head"><i data-lucide="shield-check"></i> <span class="kv-strong">{{ __('public.adm_connect_widget_security_title') }}</span></div>
+                <p class="td-muted">{{ __('public.adm_connect_widget_security_desc') }}</p>
             </div>
         </div>
     </div>

@@ -1,52 +1,52 @@
 @extends('layouts.portal')
-@section('title', 'Support Tickets')
+@section('title', __('public.adm_sup_idx_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', 'Admin')
 @section('breadcrumb_home_url', route('portals.admin'))
-@section('breadcrumb_section', 'Support')
+@section('breadcrumb_section', __('public.adm_sup_idx_breadcrumb_section'))
 @section('content')
 
 <div class="page-head">
-    <h2>Support Tickets</h2>
+    <h2>{{ __('public.adm_sup_idx_heading') }}</h2>
     <div class="page-head__spacer"></div>
 </div>
-<p class="td-muted mb-6">Manage and resolve platform support requests.</p>
+<p class="td-muted mb-6">{{ __('public.adm_sup_idx_desc') }}</p>
 
 @if(session('success'))<div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
 @if(session('error'))<div class="alert alert-danger mb-6"><i data-lucide="alert-circle"></i><div>{{ session('error') }}</div></div>@endif
 
 <div class="stat-grid mb-6">
-    <div class="stat-card stat-card--primary"><div class="stat-card__head"><i data-lucide="ticket"></i></div><div class="stat-card__label">Total</div><div class="stat-card__value">{{ $stats['total'] ?? 0 }}</div></div>
-    <div class="stat-card stat-card--danger"><div class="stat-card__head"><i data-lucide="alert-circle"></i></div><div class="stat-card__label">Open</div><div class="stat-card__value">{{ $stats['open'] ?? 0 }}</div></div>
-    <div class="stat-card stat-card--warning"><div class="stat-card__head"><i data-lucide="clock"></i></div><div class="stat-card__label">Pending</div><div class="stat-card__value">{{ $stats['pending'] ?? 0 }}</div></div>
-    <div class="stat-card stat-card--success"><div class="stat-card__head"><i data-lucide="check-circle"></i></div><div class="stat-card__label">Resolved</div><div class="stat-card__value">{{ $stats['resolved'] ?? 0 }}</div></div>
+    <div class="stat-card stat-card--primary"><div class="stat-card__head"><i data-lucide="ticket"></i></div><div class="stat-card__label">{{ __('public.adm_sup_idx_stat_total') }}</div><div class="stat-card__value">{{ $stats['total'] ?? 0 }}</div></div>
+    <div class="stat-card stat-card--danger"><div class="stat-card__head"><i data-lucide="alert-circle"></i></div><div class="stat-card__label">{{ __('public.adm_sup_idx_stat_open') }}</div><div class="stat-card__value">{{ $stats['open'] ?? 0 }}</div></div>
+    <div class="stat-card stat-card--warning"><div class="stat-card__head"><i data-lucide="clock"></i></div><div class="stat-card__label">{{ __('public.adm_sup_idx_stat_pending') }}</div><div class="stat-card__value">{{ $stats['pending'] ?? 0 }}</div></div>
+    <div class="stat-card stat-card--success"><div class="stat-card__head"><i data-lucide="check-circle"></i></div><div class="stat-card__label">{{ __('public.adm_sup_idx_stat_resolved') }}</div><div class="stat-card__value">{{ $stats['resolved'] ?? 0 }}</div></div>
 </div>
 
 <form method="GET" action="{{ route('portals.admin.support.index') }}" class="filter-bar">
     <select name="status" class="filter-select" aria-label="Status">
-        <option value="">All statuses</option>
+        <option value="">{{ __('public.adm_sup_idx_filter_all_statuses') }}</option>
         @foreach(['open','pending','resolved','closed'] as $s)
         <option value="{{ $s }}" @selected(request('status')===$s)>{{ ucfirst($s) }}</option>
         @endforeach
     </select>
     <select name="priority" class="filter-select" aria-label="Priority">
-        <option value="">All priorities</option>
+        <option value="">{{ __('public.adm_sup_idx_filter_all_priorities') }}</option>
         @foreach(['low','medium','high','urgent'] as $p)
         <option value="{{ $p }}" @selected(request('priority')===$p)>{{ ucfirst($p) }}</option>
         @endforeach
     </select>
     <select name="category" class="filter-select" aria-label="Category">
-        <option value="">All categories</option>
+        <option value="">{{ __('public.adm_sup_idx_filter_all_categories') }}</option>
         @foreach($categories ?? [] as $cat)
         <option value="{{ $cat }}" @selected(request('category')===$cat)>{{ ucfirst($cat) }}</option>
         @endforeach
     </select>
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="search" placeholder="Ticket # or subject…" value="{{ request('search') }}" aria-label="Search">
+        <input type="text" name="search" placeholder="{{ __('public.adm_sup_idx_ph_search') }}" value="{{ request('search') }}" aria-label="Search">
     </label>
-    <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> Filter</button>
-    <a href="{{ route('portals.admin.support.index') }}" class="btn btn-ghost btn-sm">Reset</a>
+    <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> {{ __('public.adm_sup_idx_btn_filter') }}</button>
+    <a href="{{ route('portals.admin.support.index') }}" class="btn btn-ghost btn-sm">{{ __('public.adm_sup_idx_btn_reset') }}</a>
 </form>
 
 <div class="panel">
@@ -54,14 +54,14 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Ticket #</th>
-                    <th>Subject</th>
-                    <th>Category</th>
-                    <th>Priority</th>
-                    <th>Status</th>
-                    <th>Assignee</th>
-                    <th>Created</th>
-                    <th class="row-actions">Actions</th>
+                    <th>{{ __('public.adm_sup_idx_col_ticket_num') }}</th>
+                    <th>{{ __('public.adm_sup_idx_col_subject') }}</th>
+                    <th>{{ __('public.adm_sup_idx_col_category') }}</th>
+                    <th>{{ __('public.adm_sup_idx_col_priority') }}</th>
+                    <th>{{ __('public.adm_sup_idx_col_status') }}</th>
+                    <th>{{ __('public.adm_sup_idx_col_assignee') }}</th>
+                    <th>{{ __('public.adm_sup_idx_col_created') }}</th>
+                    <th class="row-actions">{{ __('public.adm_sup_idx_col_actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -86,7 +86,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="8" class="td-muted empty-cell">No tickets found.</td></tr>
+                <tr><td colspan="8" class="td-muted empty-cell">{{ __('public.adm_sup_idx_empty') }}</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -101,13 +101,13 @@
     @if(!in_array($ticket->status??'',['closed','resolved']))
     <div id="close-{{ $ticket->id }}" class="modal-backdrop mt-6" hidden>
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="close-{{ $ticket->id }}-title">
-            <h3 class="modal__title" id="close-{{ $ticket->id }}-title"><i data-lucide="x-circle"></i> Close ticket</h3>
+            <h3 class="modal__title" id="close-{{ $ticket->id }}-title"><i data-lucide="x-circle"></i> {{ __('public.adm_sup_idx_modal_close_title') }}</h3>
             <form method="POST" action="{{ route('portals.admin.support.close', $ticket) }}">
                 @csrf @method('PATCH')
-                <div class="modal__body"><p>Close ticket <strong>#{{ $ticket->ticket_number ?? $ticket->id }}</strong>?</p></div>
+                <div class="modal__body"><p>{{ __('public.adm_sup_idx_modal_close_title') }} <strong>#{{ $ticket->ticket_number ?? $ticket->id }}</strong>?</p></div>
                 <div class="modal__footer">
-                    <button type="button" class="btn btn-ghost" onclick="opCloseModal('close-{{ $ticket->id }}')">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Close</button>
+                    <button type="button" class="btn btn-ghost" onclick="opCloseModal('close-{{ $ticket->id }}')">{{ __('public.adm_sup_idx_modal_close_btn_cancel') }}</button>
+                    <button type="submit" class="btn btn-danger">{{ __('public.adm_sup_idx_modal_close_btn_close') }}</button>
                 </div>
             </form>
         </div>

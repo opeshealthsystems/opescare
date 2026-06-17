@@ -1,15 +1,15 @@
 ﻿@extends('layouts.public')
 
-@section('title', 'Security, Trust & Regulatory Compliance | OpesCare')
-@section('meta_description', 'OpesCare security architecture — institutional-grade encryption, zero-trust access, immutable audit logs, and compliance with Cameroon law, WHO digital health standards, and HL7 FHIR R4.')
+@section('title', __('public.sec_page.page_title'))
+@section('meta_description', __('public.sec_page.meta_description'))
 
 @section('content')
     <header class="content-header">
         <div class="container">
-            <div class="badge" style="background-color: var(--color-primary-light); color: var(--color-primary); margin-bottom: 1rem;">Core Priority</div>
-            <h1>Security and responsibility built into every layer.</h1>
+            <div class="badge" style="background-color: var(--color-primary-light); color: var(--color-primary); margin-bottom: 1rem;">{{ __('public.sec_page.badge') }}</div>
+            <h1>{{ __('public.sec_page.hero_title') }}</h1>
             <p class="text-muted" style="max-width: 800px; margin: 0 auto; font-size: 1.25rem;">
-                We protect sensitive health data through institutional-grade security protocols, comprehensive auditing, a compliance-first architecture, and full alignment with Cameroon law and international digital health standards.
+                {{ __('public.sec_page.hero_subtitle') }}
             </p>
         </div>
     </header>
@@ -19,37 +19,37 @@
             <div class="card-grid">
                 <div class="card">
                     <div class="card-icon"><i data-lucide="lock"></i></div>
-                    <h3>End-to-End Encryption</h3>
-                    <p>All patient data is encrypted both at rest and in transit using industry-standard AES-256 and TLS 1.3 protocols.</p>
+                    <h3>{{ __('public.sec_page.card_encryption_title') }}</h3>
+                    <p>{{ __('public.sec_page.card_encryption_desc') }}</p>
                 </div>
                 <div class="card">
                     <div class="card-icon"><i data-lucide="file-search"></i></div>
-                    <h3>Comprehensive Auditing</h3>
-                    <p>Every single access request, data exchange, and consent change is recorded in an immutable audit log, viewable by patients and facility admins.</p>
+                    <h3>{{ __('public.sec_page.card_audit_title') }}</h3>
+                    <p>{{ __('public.sec_page.card_audit_desc') }}</p>
                 </div>
                 <div class="card">
                     <div class="card-icon"><i data-lucide="shield-check"></i></div>
-                    <h3>Consent-Based Access</h3>
-                    <p>Access to sensitive clinical information is strictly controlled by patient consent, except in verified and audited emergency scenarios.</p>
+                    <h3>{{ __('public.sec_page.card_consent_title') }}</h3>
+                    <p>{{ __('public.sec_page.card_consent_desc') }}</p>
                 </div>
                 <div class="card">
                     <div class="card-icon"><i data-lucide="globe"></i></div>
-                    <h3>Compliance First</h3>
-                    <p>Designed to align with global health data protection standards (GDPR, HIPAA principles) and local Cameroonian regulations.</p>
+                    <h3>{{ __('public.sec_page.card_compliance_title') }}</h3>
+                    <p>{{ __('public.sec_page.card_compliance_desc') }}</p>
                 </div>
             </div>
 
             <div style="margin-top: 6rem; padding: 3rem; background-color: var(--color-background); border-radius: 1.5rem; border: 1px solid var(--color-border);">
                 <div class="hero-grid">
                     <div class="hero-content">
-                        <h2>Infrastructure Integrity</h2>
-                        <p class="text-muted">Our platform is hosted in secure, highly-available data centres with 24/7 monitoring and automated threat detection.</p>
+                        <h2>{{ __('public.sec_page.infra_title') }}</h2>
+                        <p class="text-muted">{{ __('public.sec_page.infra_subtitle') }}</p>
                         <ul style="list-style:none;padding:0;margin:1.5rem 0 0;display:grid;gap:.75rem;">
-                            <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> Regular penetration testing and vulnerability scanning</li>
-                            <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> Zero-trust network architecture — no implicit trust</li>
-                            <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> Multi-factor authentication (MFA) enforced for all staff</li>
-                            <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> Automatic failover and high-availability deployment</li>
-                            <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> Immutable audit logs — cannot be altered after creation</li>
+                            <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.sec_page.infra_pentest') }}</li>
+                            <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.sec_page.infra_zerotrust') }}</li>
+                            <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.sec_page.infra_mfa') }}</li>
+                            <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.sec_page.infra_failover') }}</li>
+                            <li style="display:flex;gap:.75rem;"><i data-lucide="check-circle" style="width:1.1rem;height:1.1rem;color:#14B8A6;flex-shrink:0;margin-top:.15rem;"></i> {{ __('public.sec_page.infra_audit') }}</li>
                         </ul>
                     </div>
                     <div class="hero-visual" style="display:flex;justify-content:center;align-items:center;">
@@ -74,17 +74,17 @@
     <section class="section" style="background:#F8FAFC;">
         <div class="container">
             <div class="section-header">
-                <h2>Technical security controls</h2>
-                <p class="text-muted">A layered security model protects patient data at every stage of processing and transmission.</p>
+                <h2>{{ __('public.sec_page.tech_title') }}</h2>
+                <p class="text-muted">{{ __('public.sec_page.tech_subtitle') }}</p>
             </div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;max-width:960px;margin:0 auto;">
                 @foreach([
-                    ['icon'=>'lock','title'=>'AES-256 Encryption at Rest','desc'=>'All stored patient data, audit logs, and access tokens are encrypted using AES-256.'],
-                    ['icon'=>'shield','title'=>'TLS 1.3 in Transit','desc'=>'All API communications are encrypted using TLS 1.3. Older protocol versions are rejected.'],
-                    ['icon'=>'key-round','title'=>'OAuth 2.0 with Short-Lived Tokens','desc'=>'API access tokens expire quickly. Refresh tokens are rotated on use.'],
-                    ['icon'=>'fingerprint','title'=>'Biometric OTP Support','desc'=>'Patient portal supports TOTP-based 2FA as an additional authentication layer.'],
-                    ['icon'=>'scan','title'=>'OWASP Top 10 Mitigations','desc'=>'The platform is developed with OWASP Top 10 mitigations applied at every endpoint.'],
-                    ['icon'=>'file-search','title'=>'Immutable Audit Logs','desc'=>'Every access event is written to an append-only audit store and cannot be modified.'],
+                    ['icon'=>'lock','title'=>__('public.sec_page.ctrl_aes_title'),'desc'=>__('public.sec_page.ctrl_aes_desc')],
+                    ['icon'=>'shield','title'=>__('public.sec_page.ctrl_tls_title'),'desc'=>__('public.sec_page.ctrl_tls_desc')],
+                    ['icon'=>'key-round','title'=>__('public.sec_page.ctrl_oauth_title'),'desc'=>__('public.sec_page.ctrl_oauth_desc')],
+                    ['icon'=>'fingerprint','title'=>__('public.sec_page.ctrl_otp_title'),'desc'=>__('public.sec_page.ctrl_otp_desc')],
+                    ['icon'=>'scan','title'=>__('public.sec_page.ctrl_owasp_title'),'desc'=>__('public.sec_page.ctrl_owasp_desc')],
+                    ['icon'=>'file-search','title'=>__('public.sec_page.ctrl_log_title'),'desc'=>__('public.sec_page.ctrl_log_desc')],
                 ] as $ctrl)
                 <div style="background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;padding:1.75rem;">
                     <div style="width:2.5rem;height:2.5rem;background:rgba(15,76,129,.08);color:#0F4C81;border-radius:.875rem;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
@@ -102,8 +102,8 @@
     <section class="section">
         <div class="container">
             <div class="section-header">
-                <h2>Regulatory and Standards Compliance</h2>
-                <p class="text-muted">OpesCare is designed to meet and exceed the requirements of Cameroon law and international digital health frameworks.</p>
+                <h2>{{ __('public.sec_page.reg_title') }}</h2>
+                <p class="text-muted">{{ __('public.sec_page.reg_subtitle') }}</p>
             </div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;max-width:1060px;margin:0 auto;">
                 @foreach([
@@ -130,8 +130,8 @@
     <section class="section" style="background:#F8FAFC;">
         <div class="container" style="max-width:860px;">
             <div class="section-header">
-                <h2>Data Breach Response Protocol</h2>
-                <p class="text-muted">We maintain a documented incident response plan consistent with Cameroon Law No. 2010/012 and WHO health data governance standards.</p>
+                <h2>{{ __('public.sec_page.breach_title') }}</h2>
+                <p class="text-muted">{{ __('public.sec_page.breach_subtitle') }}</p>
             </div>
             <div style="display:grid;gap:1rem;">
                 @foreach([
@@ -158,11 +158,11 @@
         <div class="container" style="max-width:760px;">
             <div style="background:#0F2744;border-radius:1.5rem;padding:3rem;color:#fff;text-align:center;">
                 <i data-lucide="bug" style="width:2.5rem;height:2.5rem;color:#14B8A6;margin-bottom:1.5rem;"></i>
-                <h2 style="color:#fff;margin-bottom:1rem;">Responsible Disclosure</h2>
-                <p style="color:rgba(255,255,255,.75);margin-bottom:1.5rem;">If you believe you have found a security vulnerability in the OpesCare platform, please contact our security team directly. We commit to acknowledging receipt within 48 hours and providing a timeline for resolution. We do not pursue legal action against researchers who report in good faith.</p>
+                <h2 style="color:#fff;margin-bottom:1rem;">{{ __('public.sec_page.disclosure_title') }}</h2>
+                <p style="color:rgba(255,255,255,.75);margin-bottom:1.5rem;">{{ __('public.sec_page.disclosure_body') }}</p>
                 <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
-                    <a href="mailto:security@opeshealthsystems.com" class="btn btn-primary">Report a Vulnerability</a>
-                    <a href="{{ route('public.privacy') }}" class="btn" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);">Privacy Policy</a>
+                    <a href="mailto:security@opeshealthsystems.com" class="btn btn-primary">{{ __('public.sec_page.btn_report') }}</a>
+                    <a href="{{ route('public.privacy') }}" class="btn" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);">{{ __('public.sec_page.btn_privacy') }}</a>
                 </div>
             </div>
         </div>

@@ -1,19 +1,19 @@
 @extends('layouts.portal')
-@section('title', 'Maintenance Windows')
+@section('title', __('public.adm_cc_mnt_title'))
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin Portal')
+@section('breadcrumb_home', __('public.adm_cc_mnt_breadcrumb_home'))
 @section('breadcrumb_home_url', route('portals.admin'))
-@section('breadcrumb_section', 'Maintenance')
+@section('breadcrumb_section', __('public.adm_cc_mnt_breadcrumb_section'))
 
 @section('content')
 <div class="page-header">
     <div>
-        <h1 class="page-title">Maintenance Windows</h1>
-        <p class="page-subtitle">Schedule and manage platform downtime windows.</p>
+        <h1 class="page-title">{{ __('public.adm_cc_mnt_heading') }}</h1>
+        <p class="page-subtitle">{{ __('public.adm_cc_mnt_subtitle') }}</p>
     </div>
     <div class="page-head__spacer"></div>
     <button type="button" class="btn btn-primary btn-sm" onclick="openCreateModal()">
-        <i data-lucide="plus"></i> Schedule Maintenance
+        <i data-lucide="plus"></i> {{ __('public.adm_cc_mnt_btn_schedule') }}
     </button>
 </div>
 
@@ -30,7 +30,7 @@
 <div class="banner banner--danger">
     <i data-lucide="wrench"></i>
     <div>
-        <strong>Maintenance in progress:</strong> {{ $active->title }}
+        <strong>{{ __('public.adm_cc_mnt_banner_active') }}</strong> {{ $active->title }}
         <span class="td-muted text-sm">Until {{ \Carbon\Carbon::parse($active->ends_at)->format('M d, Y H:i') }}</span>
     </div>
 </div>
@@ -41,14 +41,14 @@
         @if($windows->count() === 0)
             <div class="empty-state">
                 <div class="empty-state-icon"><i data-lucide="wrench"></i></div>
-                <h3>No maintenance windows</h3>
-                <p>Schedule a maintenance window to notify users of planned downtime.</p>
+                <h3>{{ __('public.adm_cc_mnt_empty_heading') }}</h3>
+                <p>{{ __('public.adm_cc_mnt_empty_body') }}</p>
             </div>
         @else
         <div class="table-wrapper">
             <table class="data-table">
                 <thead><tr>
-                    <th>Title</th><th>Starts</th><th>Ends</th><th>Status</th><th>Emergency Access</th><th>Created By</th><th>Actions</th>
+                    <th>{{ __('public.adm_cc_mnt_col_title') }}</th><th>{{ __('public.adm_cc_mnt_col_starts') }}</th><th>{{ __('public.adm_cc_mnt_col_ends') }}</th><th>{{ __('public.adm_cc_mnt_col_status') }}</th><th>{{ __('public.adm_cc_mnt_col_emergency') }}</th><th>{{ __('public.adm_cc_mnt_col_created_by') }}</th><th>{{ __('public.adm_cc_mnt_col_actions') }}</th>
                 </tr></thead>
                 <tbody>
                     @foreach($windows as $win)
@@ -70,20 +70,20 @@
                         <td data-label="Ends">{{ $ends->format('M d, Y H:i') }}</td>
                         <td data-label="Status">
                             @if($live)
-                                <span class="badge badge-danger badge-sm">Live</span>
+                                <span class="badge badge-danger badge-sm">{{ __('public.adm_cc_mnt_badge_live') }}</span>
                             @elseif($upcoming)
-                                <span class="badge badge-warning badge-sm">Upcoming</span>
+                                <span class="badge badge-warning badge-sm">{{ __('public.adm_cc_mnt_badge_upcoming') }}</span>
                             @elseif(!$win->is_active)
-                                <span class="badge badge-neutral badge-sm">Inactive</span>
+                                <span class="badge badge-neutral badge-sm">{{ __('public.adm_cc_mnt_badge_inactive') }}</span>
                             @else
-                                <span class="badge badge-neutral badge-sm">Expired</span>
+                                <span class="badge badge-neutral badge-sm">{{ __('public.adm_cc_mnt_badge_expired') }}</span>
                             @endif
                         </td>
                         <td data-label="Emergency Access">
                             @if($win->allow_emergency_access)
-                                <span class="badge badge-success badge-sm">Allowed</span>
+                                <span class="badge badge-success badge-sm">{{ __('public.adm_cc_mnt_badge_allowed') }}</span>
                             @else
-                                <span class="badge badge-neutral badge-sm">Blocked</span>
+                                <span class="badge badge-neutral badge-sm">{{ __('public.adm_cc_mnt_badge_blocked') }}</span>
                             @endif
                         </td>
                         <td data-label="Created By" class="td-muted">{{ $win->created_by ?? '—' }}</td>
@@ -110,38 +110,38 @@
 <div id="create-modal" class="modal-fixed">
     <div class="modal-fixed__panel modal-fixed__panel--md">
         <div class="modal-fixed__head">
-            <h3 class="modal-fixed__title">Schedule maintenance window</h3>
+            <h3 class="modal-fixed__title">{{ __('public.adm_cc_mnt_modal_heading') }}</h3>
             <button type="button" class="icon-btn" aria-label="Close" onclick="closeCreateModal()"><i data-lucide="x"></i></button>
         </div>
         <form method="POST" action="{{ route('portals.admin.cc.maintenance.store') }}">
             @csrf
             <div class="form-group mb-3">
-                <label class="form-label form-label-required">Title</label>
-                <input type="text" name="title" class="form-control" required maxlength="150" placeholder="e.g. Database migration v2.1">
+                <label class="form-label form-label-required">{{ __('public.adm_cc_mnt_modal_lbl_title') }}</label>
+                <input type="text" name="title" class="form-control" required maxlength="150" placeholder="{{ __('public.adm_cc_mnt_modal_ph_title') }}">
             </div>
             <div class="form-group mb-3">
-                <label class="form-label">Message <span class="td-muted">(shown to users)</span></label>
-                <textarea name="message" class="form-control" rows="2" maxlength="500" placeholder="e.g. The platform will be temporarily unavailable for scheduled maintenance."></textarea>
+                <label class="form-label">{{ __('public.adm_cc_mnt_modal_lbl_message') }} <span class="td-muted">{{ __('public.adm_cc_mnt_modal_lbl_message_hint') }}</span></label>
+                <textarea name="message" class="form-control" rows="2" maxlength="500" placeholder="{{ __('public.adm_cc_mnt_modal_ph_message') }}"></textarea>
             </div>
             <div class="form-row mb-3">
                 <div class="form-group">
-                    <label class="form-label form-label-required">Start Time</label>
+                    <label class="form-label form-label-required">{{ __('public.adm_cc_mnt_modal_lbl_start') }}</label>
                     <input type="datetime-local" name="starts_at" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label form-label-required">End Time</label>
+                    <label class="form-label form-label-required">{{ __('public.adm_cc_mnt_modal_lbl_end') }}</label>
                     <input type="datetime-local" name="ends_at" class="form-control" required>
                 </div>
             </div>
             <div class="form-group mb-4">
                 <label class="form-check">
                     <input type="checkbox" name="allow_emergency_access" value="1">
-                    Allow emergency access during maintenance
+                    {{ __('public.adm_cc_mnt_modal_allow_emergency') }}
                 </label>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeCreateModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary btn-sm">Schedule</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeCreateModal()">{{ __('public.adm_cc_mnt_modal_btn_cancel') }}</button>
+                <button type="submit" class="btn btn-primary btn-sm">{{ __('public.adm_cc_mnt_modal_btn_schedule') }}</button>
             </div>
         </form>
     </div>

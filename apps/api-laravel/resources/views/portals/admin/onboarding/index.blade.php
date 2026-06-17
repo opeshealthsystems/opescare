@@ -1,54 +1,54 @@
 @extends('layouts.portal')
-@section('title', 'Facility Onboarding')
+@section('title', __('public.adm_onboard_idx_title'))
 @section('sidebar') @include('portals.admin.control_center._sidebar') @endsection
 
 @section('content')
 
 <div class="breadcrumb">
-    <a href="{{ route('portals.admin.onboarding') }}">Onboarding</a>
+    <a href="{{ route('portals.admin.onboarding') }}">{{ __('public.adm_onboard_idx_breadcrumb') }}</a>
     <i data-lucide="chevron-right"></i>
-    <span>Facilities</span>
+    <span>{{ __('public.adm_onboard_idx_breadcrumb_facilities') }}</span>
 </div>
 
 <div class="page-head">
-    <h2>Facility onboarding &amp; go-live</h2>
+    <h2>{{ __('public.adm_onboard_idx_page_head') }}</h2>
 </div>
-<p class="td-muted mb-6">Track onboarding progress and approve facilities for live operations.</p>
+<p class="td-muted mb-6">{{ __('public.adm_onboard_idx_desc') }}</p>
 
 {{-- KPI Strip --}}
 <div class="stat-grid mb-6">
     <div class="stat-card stat-card--primary">
-        <div class="stat-card__head"><i data-lucide="building-2"></i><span class="stat-card__label">Facilities</span></div>
+        <div class="stat-card__head"><i data-lucide="building-2"></i><span class="stat-card__label">{{ __('public.adm_onboard_idx_stat_facilities') }}</span></div>
         <div class="stat-card__value">{{ $stats['total'] }}</div>
     </div>
     <div class="stat-card stat-card--success">
-        <div class="stat-card__head"><i data-lucide="check-circle-2"></i><span class="stat-card__label">Approved</span></div>
+        <div class="stat-card__head"><i data-lucide="check-circle-2"></i><span class="stat-card__label">{{ __('public.adm_onboard_idx_stat_approved') }}</span></div>
         <div class="stat-card__value">{{ $stats['approved'] }}</div>
     </div>
     <div class="stat-card stat-card--primary">
-        <div class="stat-card__head"><i data-lucide="clock"></i><span class="stat-card__label">Ready to approve</span></div>
+        <div class="stat-card__head"><i data-lucide="clock"></i><span class="stat-card__label">{{ __('public.adm_onboard_idx_stat_ready') }}</span></div>
         <div class="stat-card__value">{{ $stats['ready_for_approval'] }}</div>
     </div>
     <div class="stat-card stat-card--warning">
-        <div class="stat-card__head"><i data-lucide="alert-circle"></i><span class="stat-card__label">In progress</span></div>
+        <div class="stat-card__head"><i data-lucide="alert-circle"></i><span class="stat-card__label">{{ __('public.adm_onboard_idx_stat_in_progress') }}</span></div>
         <div class="stat-card__value">{{ $stats['pending'] }}</div>
     </div>
 </div>
 
 <div class="panel">
     <div class="panel-header">
-        <h3 class="panel-title"><i data-lucide="rocket"></i> All facilities</h3>
+        <h3 class="panel-title"><i data-lucide="rocket"></i> {{ __('public.adm_onboard_idx_panel_title') }}</h3>
     </div>
     <div class="panel-body panel-body--flush">
         <div class="table-wrapper">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Facility</th>
-                    <th>Type</th>
-                    <th>Checklist Progress</th>
-                    <th>Status</th>
-                    <th>Approved</th>
+                    <th>{{ __('public.adm_onboard_idx_col_facility') }}</th>
+                    <th>{{ __('public.adm_onboard_idx_col_type') }}</th>
+                    <th>{{ __('public.adm_onboard_idx_col_progress') }}</th>
+                    <th>{{ __('public.adm_onboard_idx_col_status') }}</th>
+                    <th>{{ __('public.adm_onboard_idx_col_approved') }}</th>
                     <th class="row-actions"></th>
                 </tr>
             </thead>
@@ -67,9 +67,9 @@
                         };
                     @endphp
                     <tr>
-                        <td data-label="Facility" class="td-strong">{{ $facility->name }}</td>
-                        <td data-label="Type">{{ ucfirst($facility->type ?? '—') }}</td>
-                        <td data-label="Checklist Progress">
+                        <td data-label="{{ __('public.adm_onboard_idx_col_facility') }}" class="td-strong">{{ $facility->name }}</td>
+                        <td data-label="{{ __('public.adm_onboard_idx_col_type') }}">{{ ucfirst($facility->type ?? '—') }}</td>
+                        <td data-label="{{ __('public.adm_onboard_idx_col_progress') }}">
                             <div class="breakdown__row breakdown__row--2col">
                                 <div class="breakdown__track">
                                     <div class="breakdown__fill {{ $pct === 100 ? 'breakdown__fill--teal' : '' }}" style="width: {{ $pct }}%"></div>
@@ -77,16 +77,16 @@
                                 <span class="td-muted">{{ $done }}/{{ $total }}</span>
                             </div>
                         </td>
-                        <td data-label="Status">
+                        <td data-label="{{ __('public.adm_onboard_idx_col_status') }}">
                             <span class="badge badge--{{ $statusColor }} badge-sm">{{ str_replace('_', ' ', ucfirst($r->status)) }}</span>
                         </td>
-                        <td data-label="Approved" class="td-muted">{{ $r->approved_at?->format('d M Y') ?? '—' }}</td>
+                        <td data-label="{{ __('public.adm_onboard_idx_col_approved') }}" class="td-muted">{{ $r->approved_at?->format('d M Y') ?? '—' }}</td>
                         <td class="row-actions">
-                            <a href="{{ route('portals.admin.onboarding.show', $facility) }}" class="btn btn-secondary btn-sm">Manage</a>
+                            <a href="{{ route('portals.admin.onboarding.show', $facility) }}" class="btn btn-secondary btn-sm">{{ __('public.adm_onboard_idx_btn_manage') }}</a>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="td-muted empty-cell">No facilities found.</td></tr>
+                    <tr><td colspan="6" class="td-muted empty-cell">{{ __('public.adm_onboard_idx_empty') }}</td></tr>
                 @endforelse
             </tbody>
         </table>

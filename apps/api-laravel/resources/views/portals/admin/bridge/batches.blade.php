@@ -1,22 +1,22 @@
 @extends('layouts.portal')
-@section('title', 'Sync Batches — ' . $agent->name)
+@section('title', __('public.adm_bridge_batches_title') . $agent->name)
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin')
+@section('breadcrumb_home', __('public.adm_breadcrumb_home'))
 @section('breadcrumb_home_url', route('portals.admin'))
 @section('breadcrumb_section', 'Bridge')
 
 @section('content')
 
 <div class="breadcrumb">
-    <a href="{{ route('portals.admin.bridge') }}">Bridge Agents</a>
+    <a href="{{ route('portals.admin.bridge') }}">{{ __('public.adm_bridge_breadcrumb') }}</a>
     <i data-lucide="chevron-right"></i>
     <span>{{ $agent->name }}</span>
 </div>
 
 <div class="page-head">
-    <h2>Sync Batches</h2>
+    <h2>{{ __('public.adm_bridge_batches_h2') }}</h2>
     <div class="page-head__spacer"></div>
-    <a href="{{ route('portals.admin.bridge') }}" class="btn btn-secondary"><i data-lucide="arrow-left"></i> All Agents</a>
+    <a href="{{ route('portals.admin.bridge') }}" class="btn btn-secondary"><i data-lucide="arrow-left"></i> {{ __('public.adm_bridge_btn_all_agents') }}</a>
 </div>
 <p class="td-muted mb-6">{{ $agent->name }} · <span class="code-token">{{ $agent->displayKey() }}</span></p>
 
@@ -25,15 +25,15 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Batch ID</th>
-                    <th>Sync Type</th>
-                    <th>Status</th>
-                    <th>Records</th>
-                    <th>Inserted</th>
-                    <th>Updated</th>
-                    <th>Errors</th>
-                    <th>Started</th>
-                    <th>Completed</th>
+                    <th>{{ __('public.adm_bridge_col_batch_id') }}</th>
+                    <th>{{ __('public.adm_bridge_col_sync_type') }}</th>
+                    <th>{{ __('public.adm_bridge_col_status') }}</th>
+                    <th>{{ __('public.adm_bridge_col_records') }}</th>
+                    <th>{{ __('public.adm_bridge_col_inserted') }}</th>
+                    <th>{{ __('public.adm_bridge_col_updated') }}</th>
+                    <th>{{ __('public.adm_bridge_col_errors') }}</th>
+                    <th>{{ __('public.adm_bridge_col_started') }}</th>
+                    <th>{{ __('public.adm_bridge_col_completed') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -63,7 +63,7 @@
                         <td data-label="Completed">{{ $batch->completed_at ? $batch->completed_at->format('d M H:i') : '—' }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="9" class="td-muted empty-cell">No sync batches yet.</td></tr>
+                    <tr><td colspan="9" class="td-muted empty-cell">{{ __('public.adm_bridge_batches_empty') }}</td></tr>
                 @endforelse
             </tbody>
         </table>

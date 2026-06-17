@@ -1,22 +1,22 @@
 @extends('layouts.portal')
-@section('title', 'Facility Go-Live Readiness')
+@section('title', __('public.adm_golive_page_title'))
 @section('sidebar') @include('portals.admin.control_center._sidebar') @endsection
 
 @section('content')
 
 <div class="breadcrumb">
-    <span>Go-Live Readiness</span>
+    <span>{{ __('public.adm_golive_breadcrumb') }}</span>
 </div>
 
 <div class="page-head">
-    <h2>Facility go-live readiness</h2>
+    <h2>{{ __('public.adm_golive_title') }}</h2>
 </div>
 
 <div class="panel">
     <div class="empty-state">
         <div class="empty-state-icon"><i data-lucide="rocket"></i></div>
-        <h3>No facilities registered</h3>
-        <p>Once a facility is onboarded, its go-live readiness checklist will appear here.</p>
+        <h3>{{ __('public.adm_golive_empty_h3') }}</h3>
+        <p>{{ __('public.adm_golive_empty_p') }}</p>
     </div>
 </div>
 

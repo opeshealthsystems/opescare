@@ -1,15 +1,15 @@
 @extends('layouts.portal')
-@section('title', 'Module Toggles')
+@section('title', __('public.adm_cc_mod_title'))
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin Portal')
+@section('breadcrumb_home', __('public.adm_cc_mod_breadcrumb_home'))
 @section('breadcrumb_home_url', route('portals.admin'))
-@section('breadcrumb_section', 'Module Toggles')
+@section('breadcrumb_section', __('public.adm_cc_mod_breadcrumb_section'))
 
 @section('content')
 <div class="page-header">
     <div>
-        <h1 class="page-title">Module Toggles</h1>
-        <p class="page-subtitle">Enable or disable platform modules by scope.</p>
+        <h1 class="page-title">{{ __('public.adm_cc_mod_heading') }}</h1>
+        <p class="page-subtitle">{{ __('public.adm_cc_mod_subtitle') }}</p>
     </div>
 </div>
 
@@ -24,8 +24,8 @@
     @if($modules->count() === 0)
         <div class="empty-state">
             <div class="empty-state-icon"><i data-lucide="puzzle"></i></div>
-            <h3>No module toggles</h3>
-            <p>Visit the Control Center dashboard to seed default modules.</p>
+            <h3>{{ __('public.adm_cc_mod_empty_heading') }}</h3>
+            <p>{{ __('public.adm_cc_mod_empty_body') }}</p>
         </div>
     @else
     <div class="panel-body">
@@ -38,11 +38,11 @@
                     <span class="badge badge-neutral badge-sm">{{ $mod->scope }}</span>
                     @if($mod->scope_value)<span class="td-muted">{{ $mod->scope_value }}</span>@endif
                     @if(!$mod->enabled && $mod->disable_reason)<span class="td-muted">· {{ $mod->disable_reason }}</span>@endif
-                    @if($mod->updated_by)<span class="td-muted">· Updated by {{ $mod->updated_by }}</span>@endif
+                    @if($mod->updated_by)<span class="td-muted">· {{ __('public.adm_cc_mod_updated_by') }} {{ $mod->updated_by }}</span>@endif
                 </div>
             </div>
             <span class="badge {{ $mod->enabled ? 'badge-success' : 'badge-neutral' }} badge-sm">
-                {{ $mod->enabled ? 'Enabled' : 'Disabled' }}
+                {{ $mod->enabled ? __('public.adm_cc_mod_badge_enabled') : __('public.adm_cc_mod_badge_disabled') }}
             </span>
             @if($mod->enabled)
                 <label class="switch">
@@ -72,7 +72,7 @@
 <div id="disable-modal" class="modal-fixed">
     <div class="modal-fixed__panel modal-fixed__panel--sm">
         <div class="modal-fixed__head">
-            <h3 class="modal-fixed__title">Disable module</h3>
+            <h3 class="modal-fixed__title">{{ __('public.adm_cc_mod_disable_modal_heading') }}</h3>
             <button type="button" class="icon-btn" aria-label="Close" onclick="closeDisableModal()"><i data-lucide="x"></i></button>
         </div>
         <p id="disable-module-name" class="td-muted text-sm mb-4"></p>
@@ -80,12 +80,12 @@
             @csrf
             <input type="hidden" name="enabled" value="0">
             <div class="form-group mb-4">
-                <label class="form-label">Reason for disabling <span class="td-muted">(optional)</span></label>
-                <textarea name="disable_reason" class="form-control" rows="2" maxlength="255" placeholder="e.g. Scheduled maintenance…"></textarea>
+                <label class="form-label">{{ __('public.adm_cc_mod_disable_modal_lbl_reason') }} <span class="td-muted">{{ __('public.adm_cc_mod_disable_modal_hint_optional') }}</span></label>
+                <textarea name="disable_reason" class="form-control" rows="2" maxlength="255" placeholder="{{ __('public.adm_cc_mod_disable_modal_ph_reason') }}"></textarea>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeDisableModal()">Cancel</button>
-                <button type="submit" class="btn btn-danger btn-sm">Disable Module</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeDisableModal()">{{ __('public.adm_cc_mod_disable_modal_btn_cancel') }}</button>
+                <button type="submit" class="btn btn-danger btn-sm">{{ __('public.adm_cc_mod_disable_modal_btn_disable') }}</button>
             </div>
         </form>
     </div>

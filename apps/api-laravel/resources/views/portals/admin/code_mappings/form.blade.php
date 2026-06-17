@@ -1,23 +1,23 @@
 @extends('layouts.portal')
-@section('title', 'Add Code Mapping')
+@section('title', __('public.adm_codemap_form_title'))
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin')
+@section('breadcrumb_home', __('public.adm_codemap_form_breadcrumb_home'))
 @section('breadcrumb_home_url', route('portals.admin'))
-@section('breadcrumb_section', 'Code Mappings')
+@section('breadcrumb_section', __('public.adm_codemap_form_breadcrumb_parent'))
 
 @section('content')
 
 <div class="breadcrumb">
-    <a href="{{ route('portals.admin.code_mappings.index') }}">Code System Mappings</a>
+    <a href="{{ route('portals.admin.code_mappings.index') }}">{{ __('public.adm_codemap_form_breadcrumb_parent') }}</a>
     <i data-lucide="chevron-right"></i>
-    <span>Add Mapping</span>
+    <span>{{ __('public.adm_codemap_form_breadcrumb_add') }}</span>
 </div>
 
 <div class="page-head">
-    <h2>Add Code Mapping</h2>
+    <h2>{{ __('public.adm_codemap_form_heading') }}</h2>
     <div class="page-head__spacer"></div>
 </div>
-<p class="td-muted mb-6">Map a local OpesCare code to a standard terminology</p>
+<p class="td-muted mb-6">{{ __('public.adm_codemap_form_desc') }}</p>
 
 <div class="panel">
     <div class="panel-body">
@@ -26,14 +26,14 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label form-label-required">Local Code</label>
-                    <input type="text" name="local_code" value="{{ old('local_code') }}" required placeholder="e.g. CBC-001, DIAG-A09" class="form-control">
+                    <label class="form-label form-label-required">{{ __('public.adm_codemap_form_lbl_local_code') }}</label>
+                    <input type="text" name="local_code" value="{{ old('local_code') }}" required placeholder="{{ __('public.adm_codemap_form_ph_local_code') }}" class="form-control">
                     @error('local_code') <div class="form-hint">{{ $message }}</div> @enderror
                 </div>
                 <div class="form-group">
-                    <label class="form-label form-label-required">Resource Type</label>
+                    <label class="form-label form-label-required">{{ __('public.adm_codemap_form_lbl_resource_type') }}</label>
                     <select name="resource_type" required class="form-control">
-                        <option value="">Select type…</option>
+                        <option value="">{{ __('public.adm_codemap_form_opt_select_type') }}</option>
                         @foreach($resourceTypes as $rt)
                         <option value="{{ $rt }}" {{ old('resource_type') === $rt ? 'selected' : '' }}>{{ $rt }}</option>
                         @endforeach
@@ -43,22 +43,22 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">Local Name</label>
-                <input type="text" name="local_name" value="{{ old('local_name') }}" placeholder="e.g. Complete Blood Count, Acute gastroenteritis" class="form-control">
+                <label class="form-label">{{ __('public.adm_codemap_form_lbl_local_name') }}</label>
+                <input type="text" name="local_name" value="{{ old('local_name') }}" placeholder="{{ __('public.adm_codemap_form_ph_local_name') }}" class="form-control">
             </div>
 
             <div class="form-group">
-                <label class="form-label">Local Unit <span class="td-muted">(lab tests)</span></label>
-                <input type="text" name="local_unit" value="{{ old('local_unit') }}" placeholder="e.g. g/dL, mmol/L, cells/µL" class="form-control">
+                <label class="form-label">{{ __('public.adm_codemap_form_lbl_local_unit') }} <span class="td-muted">{{ __('public.adm_codemap_form_lbl_local_unit_hint') }}</span></label>
+                <input type="text" name="local_unit" value="{{ old('local_unit') }}" placeholder="{{ __('public.adm_codemap_form_ph_local_unit') }}" class="form-control">
             </div>
 
-            <div class="panel-header mt-6 mb-6"><h3 class="panel-title">Standard Terminology</h3></div>
+            <div class="panel-header mt-6 mb-6"><h3 class="panel-title">{{ __('public.adm_codemap_form_section_standard') }}</h3></div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label form-label-required">Standard System</label>
+                    <label class="form-label form-label-required">{{ __('public.adm_codemap_form_lbl_std_system') }}</label>
                     <select name="standard_system" required class="form-control">
-                        <option value="">Select system…</option>
+                        <option value="">{{ __('public.adm_codemap_form_opt_select_system') }}</option>
                         @foreach($systems as $sys)
                         <option value="{{ $sys }}" {{ old('standard_system') === $sys ? 'selected' : '' }}>{{ strtoupper($sys) }}</option>
                         @endforeach
@@ -66,20 +66,20 @@
                     @error('standard_system') <div class="form-hint">{{ $message }}</div> @enderror
                 </div>
                 <div class="form-group">
-                    <label class="form-label form-label-required">Standard Code</label>
-                    <input type="text" name="standard_code" value="{{ old('standard_code') }}" required placeholder="e.g. 58410-2, A09, J01CA01" class="form-control mono">
+                    <label class="form-label form-label-required">{{ __('public.adm_codemap_form_lbl_std_code') }}</label>
+                    <input type="text" name="standard_code" value="{{ old('standard_code') }}" required placeholder="{{ __('public.adm_codemap_form_ph_std_code') }}" class="form-control mono">
                     @error('standard_code') <div class="form-hint">{{ $message }}</div> @enderror
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Standard Display Name</label>
-                <input type="text" name="standard_display" value="{{ old('standard_display') }}" placeholder="e.g. CBC W Auto Differential panel, Infectious gastroenteritis NOS" class="form-control">
+                <label class="form-label">{{ __('public.adm_codemap_form_lbl_std_display') }}</label>
+                <input type="text" name="standard_display" value="{{ old('standard_display') }}" placeholder="{{ __('public.adm_codemap_form_ph_std_display') }}" class="form-control">
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label form-label-required">Mapping Confidence</label>
+                    <label class="form-label form-label-required">{{ __('public.adm_codemap_form_lbl_confidence') }}</label>
                     <select name="mapping_confidence" required class="form-control">
                         @foreach($confidences as $c)
                         <option value="{{ $c }}" {{ old('mapping_confidence', 'manual') === $c ? 'selected' : '' }}>{{ ucfirst($c) }}</option>
@@ -87,24 +87,24 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Standard Version</label>
-                    <input type="text" name="standard_version" value="{{ old('standard_version') }}" placeholder="e.g. 2.77, 11th Rev" class="form-control">
+                    <label class="form-label">{{ __('public.adm_codemap_form_lbl_std_version') }}</label>
+                    <input type="text" name="standard_version" value="{{ old('standard_version') }}" placeholder="{{ __('public.adm_codemap_form_ph_std_version') }}" class="form-control">
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Notes</label>
-                <textarea name="notes" rows="2" placeholder="Optional mapping notes or justification…" class="form-control">{{ old('notes') }}</textarea>
+                <label class="form-label">{{ __('public.adm_codemap_form_lbl_notes') }}</label>
+                <textarea name="notes" rows="2" placeholder="{{ __('public.adm_codemap_form_ph_notes') }}" class="form-control">{{ old('notes') }}</textarea>
             </div>
 
             <div class="alert alert-warning mb-6">
                 <i data-lucide="info"></i>
-                <div>New mappings are created with <strong>Pending</strong> status and must be approved by a super_admin or data_steward before they are used in FHIR output and public health reports.</div>
+                <div>{{ __('public.adm_codemap_form_alert_pending') }} <strong>{{ __('public.adm_codemap_form_alert_pending_status') }}</strong> {{ __('public.adm_codemap_form_alert_pending_rest') }}</div>
             </div>
 
             <div class="row-actions">
-                <button type="submit" class="btn btn-primary">Add Mapping</button>
-                <a href="{{ route('portals.admin.code_mappings.index') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">{{ __('public.adm_codemap_form_btn_add') }}</button>
+                <a href="{{ route('portals.admin.code_mappings.index') }}" class="btn btn-secondary">{{ __('public.adm_codemap_form_btn_cancel') }}</a>
             </div>
         </form>
     </div>

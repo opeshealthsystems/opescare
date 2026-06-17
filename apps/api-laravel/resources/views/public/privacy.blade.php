@@ -1,21 +1,21 @@
 @extends('layouts.public')
 
-@section('title', 'Privacy Policy & Patient Data Protection | OpesCare')
-@section('meta_description', 'OpesCare Privacy Policy — how we collect, process, protect and respect your health data under Cameroon law, WHO digital health standards and international data protection frameworks.')
+@section('title', __('public.privacy_page.page_title'))
+@section('meta_description', __('public.privacy_page.meta_description'))
 
 @section('content')
 
     <header class="content-header">
         <div class="container">
-            <div class="badge" style="background:rgba(15,76,129,.12);color:#0F4C81;margin-bottom:1rem;">Legal Document</div>
-            <h1>Privacy Policy &amp; Patient Data Protection</h1>
+            <div class="badge" style="background:rgba(15,76,129,.12);color:#0F4C81;margin-bottom:1rem;">{{ __('public.privacy_page.badge') }}</div>
+            <h1>{{ __('public.privacy_page.hero_title') }}</h1>
             <p class="text-muted" style="max-width:760px;margin:0 auto;">
-                This policy describes how Opes Health Systems Sarl operates OpesCare, how we collect, use, protect and share your personal and health data, and what rights you have under the laws of the Republic of Cameroon and applicable international standards.
+                {{ __('public.privacy_page.hero_subtitle') }}
             </p>
             <div style="margin-top:1.5rem;display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;font-size:0.875rem;color:var(--color-text-muted);">
-                <span><strong>Effective date:</strong> 1 June 2026</span>
-                <span><strong>Last updated:</strong> 7 June 2026</span>
-                <span><strong>Version:</strong> 2.0</span>
+                <span><strong>{{ __('public.privacy_page.effective_date') }}</strong> 1 June 2026</span>
+                <span><strong>{{ __('public.privacy_page.last_updated') }}</strong> 7 June 2026</span>
+                <span><strong>{{ __('public.privacy_page.version') }}</strong> 2.0</span>
             </div>
         </div>
     </header>
@@ -23,7 +23,7 @@
     {{-- Quick nav --}}
     <section style="background:#F8FAFC;border-bottom:1px solid #E2E8F0;padding:1.25rem 0;">
         <div class="container">
-            <p style="font-size:0.8125rem;color:var(--color-text-muted);margin:0 0 0.5rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Jump to section</p>
+            <p style="font-size:0.8125rem;color:var(--color-text-muted);margin:0 0 0.5rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">{{ __('public.privacy_page.jump_to') }}</p>
             <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
                 @foreach([
                     ['#controller','Data Controller'],
@@ -324,7 +324,7 @@
             {{-- Footer note --}}
             <div style="margin-top:4rem;padding:2rem;background:var(--color-bg,#F8FAFC);border:1px solid #E2E8F0;border-radius:1rem;font-size:0.875rem;color:var(--color-text-muted);">
                 <p style="margin:0 0 0.5rem;"><strong>Effective date:</strong> 1 June 2026 &nbsp;|&nbsp; <strong>Version:</strong> 2.0 &nbsp;|&nbsp; <strong>Last updated:</strong> 7 June 2026</p>
-                <p style="margin:0;">Governing law: Republic of Cameroon &nbsp;|&nbsp; Language: English (French version available upon request). &nbsp;|&nbsp; For legal correspondence: <a href="mailto:legal@opeshealthsystems.com">legal@opeshealthsystems.com</a></p>
+                <p style="margin:0;">{{ __('public.privacy_page.governing_law') }} Republic of Cameroon &nbsp;|&nbsp; {{ __('public.privacy_page.footer_note') }} &nbsp;|&nbsp; For legal correspondence: <a href="mailto:legal@opeshealthsystems.com">legal@opeshealthsystems.com</a></p>
             </div>
 
         </div>

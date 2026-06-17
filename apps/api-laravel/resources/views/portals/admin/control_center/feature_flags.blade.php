@@ -1,15 +1,15 @@
 @extends('layouts.portal')
-@section('title', 'Feature Flags')
+@section('title', __('public.adm_cc_ff_title'))
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin Portal')
+@section('breadcrumb_home', __('public.adm_cc_ff_breadcrumb_home'))
 @section('breadcrumb_home_url', route('portals.admin'))
-@section('breadcrumb_section', 'Feature Flags')
+@section('breadcrumb_section', __('public.adm_cc_ff_breadcrumb_section'))
 
 @section('content')
 <div class="page-header">
     <div>
-        <h1 class="page-title">Feature Flags</h1>
-        <p class="page-subtitle">Enable or disable product features globally or by scope.</p>
+        <h1 class="page-title">{{ __('public.adm_cc_ff_heading') }}</h1>
+        <p class="page-subtitle">{{ __('public.adm_cc_ff_subtitle') }}</p>
     </div>
 </div>
 
@@ -24,8 +24,8 @@
     @if($flags->count() === 0)
         <div class="empty-state">
             <div class="empty-state-icon"><i data-lucide="toggle-right"></i></div>
-            <h3>No feature flags</h3>
-            <p>Visit the Control Center dashboard to seed default flags.</p>
+            <h3>{{ __('public.adm_cc_ff_empty_heading') }}</h3>
+            <p>{{ __('public.adm_cc_ff_empty_body') }}</p>
         </div>
     @else
     <div class="panel-body">
@@ -36,11 +36,11 @@
                 <div class="toggle-row__desc">
                     <span class="code-token">{{ $flag->key }}</span>
                     <span class="badge badge-neutral badge-sm">{{ $flag->scope }}</span>
-                    @if($flag->updated_by)<span class="td-muted">· Updated by {{ $flag->updated_by }}</span>@endif
+                    @if($flag->updated_by)<span class="td-muted">· {{ __('public.adm_cc_ff_updated_by') }} {{ $flag->updated_by }}</span>@endif
                 </div>
             </div>
             <span class="badge {{ $flag->enabled ? 'badge-success' : 'badge-neutral' }} badge-sm">
-                {{ $flag->enabled ? 'Enabled' : 'Disabled' }}
+                {{ $flag->enabled ? __('public.adm_cc_ff_badge_enabled') : __('public.adm_cc_ff_badge_disabled') }}
             </span>
             <form method="POST" action="{{ route('portals.admin.cc.feature_flags.toggle', urlencode($flag->key)) }}" class="inline-form">
                 @csrf

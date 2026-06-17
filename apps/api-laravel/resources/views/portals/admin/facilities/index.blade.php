@@ -1,22 +1,22 @@
 @extends('layouts.portal')
-@section('title', 'All Facilities')
+@section('title', __('public.adm_fac_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', 'Admin')
 @section('breadcrumb_home_url', route('portals.admin'))
-@section('breadcrumb_section', 'Facilities')
+@section('breadcrumb_section', __('public.adm_fac_breadcrumb'))
 @section('content')
 
 <div class="breadcrumb">
-    <a href="{{ route('admin.facilities.index') }}">Facilities</a>
+    <a href="{{ route('admin.facilities.index') }}">{{ __('public.adm_fac_breadcrumb') }}</a>
     <i data-lucide="chevron-right"></i>
-    <span>Directory</span>
+    <span>{{ __('public.adm_fac_breadcrumb_dir') }}</span>
 </div>
 
 <div class="page-head">
-    <h2>Facilities &amp; organizations</h2>
+    <h2>{{ __('public.adm_fac_heading') }}</h2>
     <div class="page-head__spacer"></div>
     <a href="{{ route('admin.facilities.index') }}#add" class="btn btn-primary">
-        <i data-lucide="plus"></i> Add facility
+        <i data-lucide="plus"></i> {{ __('public.adm_fac_btn_add') }}
     </a>
 </div>
 
@@ -26,22 +26,22 @@
 <form method="GET" action="{{ route('admin.facilities.index') }}" class="filter-bar">
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search name or license" aria-label="Search facilities">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('public.adm_fac_ph_search') }}" aria-label="Search facilities">
     </label>
     <select name="type" class="filter-select" aria-label="Type" onchange="this.form.submit()">
-        <option value="">All types</option>
+        <option value="">{{ __('public.adm_fac_opt_all_types') }}</option>
         @foreach(['hospital','clinic','laboratory','pharmacy','radiology','specialist'] as $t)
         <option value="{{ $t }}" {{ request('type')===$t?'selected':'' }}>{{ ucfirst($t) }}</option>
         @endforeach
     </select>
     <select name="status" class="filter-select" aria-label="Status" onchange="this.form.submit()">
-        <option value="">All statuses</option>
-        <option value="active" {{ request('status')==='active'?'selected':'' }}>Active</option>
-        <option value="pending_approval" {{ request('status')==='pending_approval'?'selected':'' }}>Pending</option>
-        <option value="suspended" {{ request('status')==='suspended'?'selected':'' }}>Suspended</option>
+        <option value="">{{ __('public.adm_fac_opt_all_statuses') }}</option>
+        <option value="active" {{ request('status')==='active'?'selected':'' }}>{{ __('public.adm_fac_opt_active') }}</option>
+        <option value="pending_approval" {{ request('status')==='pending_approval'?'selected':'' }}>{{ __('public.adm_fac_opt_pending') }}</option>
+        <option value="suspended" {{ request('status')==='suspended'?'selected':'' }}>{{ __('public.adm_fac_opt_suspended') }}</option>
     </select>
-    <button type="submit" class="btn btn-secondary btn-sm"><i data-lucide="filter"></i> Filter</button>
-    <a href="{{ route('admin.facilities.index') }}" class="btn btn-ghost btn-sm">Reset</a>
+    <button type="submit" class="btn btn-secondary btn-sm"><i data-lucide="filter"></i> {{ __('public.adm_fac_btn_filter') }}</button>
+    <a href="{{ route('admin.facilities.index') }}" class="btn btn-ghost btn-sm">{{ __('public.adm_fac_btn_reset') }}</a>
 </form>
 
 <div class="panel">
@@ -52,32 +52,32 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Facility</th>
-                    <th>Type</th>
-                    <th>Region</th>
-                    <th>Status</th>
-                    <th class="row-actions">Actions</th>
+                    <th>{{ __('public.adm_fac_col_facility') }}</th>
+                    <th>{{ __('public.adm_fac_col_type') }}</th>
+                    <th>{{ __('public.adm_fac_col_region') }}</th>
+                    <th>{{ __('public.adm_fac_col_status') }}</th>
+                    <th class="row-actions">{{ __('public.adm_fac_col_actions') }}</th>
                 </tr>
             </thead>
             <tbody>
             @forelse($facilities as $f)
                 <tr>
-                    <td data-label="Facility">
+                    <td data-label="{{ __('public.adm_fac_col_facility') }}">
                         @php $typeIcon = ['hospital'=>'building-2','laboratory'=>'flask-conical','pharmacy'=>'pill','radiology'=>'scan'][$f->type] ?? 'building'; @endphp
                         <span class="cell-with-icon">
                             <i data-lucide="{{ $typeIcon }}"></i>
                             <span class="td-strong">{{ $f->name }}</span>
                         </span>
                     </td>
-                    <td data-label="Type">{{ ucfirst($f->type ?? '—') }}</td>
-                    <td data-label="Region">{{ $f->region ?? '—' }}</td>
-                    <td data-label="Status">
-                        @if($f->status==='active')<span class="badge badge-success">Active</span>
-                        @elseif($f->status==='suspended')<span class="badge badge-danger">Suspended</span>
-                        @elseif($f->status==='pending_approval')<span class="badge badge-warning">Pending</span>
+                    <td data-label="{{ __('public.adm_fac_col_type') }}">{{ ucfirst($f->type ?? '—') }}</td>
+                    <td data-label="{{ __('public.adm_fac_col_region') }}">{{ $f->region ?? '—' }}</td>
+                    <td data-label="{{ __('public.adm_fac_col_status') }}">
+                        @if($f->status==='active')<span class="badge badge-success">{{ __('public.adm_fac_badge_active') }}</span>
+                        @elseif($f->status==='suspended')<span class="badge badge-danger">{{ __('public.adm_fac_badge_suspended') }}</span>
+                        @elseif($f->status==='pending_approval')<span class="badge badge-warning">{{ __('public.adm_fac_badge_pending') }}</span>
                         @else<span class="badge badge-neutral">{{ ucfirst($f->status ?? 'pending') }}</span>@endif
                     </td>
-                    <td class="row-actions" data-label="Actions">
+                    <td class="row-actions" data-label="{{ __('public.adm_fac_col_actions') }}">
                         <a href="{{ route('admin.facilities.show', $f->id) }}" class="icon-btn" aria-label="View facility" title="View">
                             <i data-lucide="eye"></i>
                         </a>
@@ -94,7 +94,7 @@
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="5" class="td-muted empty-cell">No facilities found.</td></tr>
+                <tr><td colspan="5" class="td-muted empty-cell">{{ __('public.adm_fac_empty') }}</td></tr>
             @endforelse
             </tbody>
         </table>

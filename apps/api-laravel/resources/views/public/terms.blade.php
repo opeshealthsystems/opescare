@@ -1,22 +1,22 @@
 @extends('layouts.public')
 
-@section('title', 'Terms and Conditions | OpesCare Legal Framework')
-@section('meta_description', 'OpesCare Terms and Conditions — the binding legal agreement governing use of the OpesCare health interoperability platform under Cameroon law and WHO digital health standards.')
+@section('title', __('public.terms_page.page_title'))
+@section('meta_description', __('public.terms_page.meta_description'))
 
 @section('content')
 
     <header class="content-header">
         <div class="container">
-            <div class="badge" style="background:rgba(15,76,129,.12);color:#0F4C81;margin-bottom:1rem;">Legal Document</div>
-            <h1>Terms and Conditions of Service</h1>
+            <div class="badge" style="background:rgba(15,76,129,.12);color:#0F4C81;margin-bottom:1rem;">{{ __('public.terms_page.badge') }}</div>
+            <h1>{{ __('public.terms_page.hero_title') }}</h1>
             <p class="text-muted" style="max-width:760px;margin:0 auto;">
-                These Terms and Conditions constitute a legally binding agreement between you and Opes Health Systems Sarl governing your access to and use of the OpesCare platform. Please read them carefully before registering or using any OpesCare service.
+                {{ __('public.terms_page.hero_subtitle') }}
             </p>
             <div style="margin-top:1.5rem;display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;font-size:0.875rem;color:var(--color-text-muted);">
-                <span><strong>Effective date:</strong> 1 June 2026</span>
-                <span><strong>Last updated:</strong> 7 June 2026</span>
-                <span><strong>Version:</strong> 2.0</span>
-                <span><strong>Governing law:</strong> Republic of Cameroon</span>
+                <span><strong>{{ __('public.terms_page.effective_date') }}</strong> 1 June 2026</span>
+                <span><strong>{{ __('public.terms_page.last_updated') }}</strong> 7 June 2026</span>
+                <span><strong>{{ __('public.terms_page.version') }}</strong> 2.0</span>
+                <span><strong>{{ __('public.terms_page.governing_law_label') }}</strong> Republic of Cameroon</span>
             </div>
         </div>
     </header>
@@ -24,7 +24,7 @@
     {{-- Quick nav --}}
     <section style="background:#F8FAFC;border-bottom:1px solid #E2E8F0;padding:1.25rem 0;">
         <div class="container">
-            <p style="font-size:0.8125rem;color:var(--color-text-muted);margin:0 0 0.5rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Sections</p>
+            <p style="font-size:0.8125rem;color:var(--color-text-muted);margin:0 0 0.5rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">{{ __('public.terms_page.sections_label') }}</p>
             <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
                 @foreach([
                     ['#parties','Parties'],
@@ -280,8 +280,8 @@
 
             {{-- Footer --}}
             <div style="margin-top:4rem;padding:2rem;background:var(--color-bg,#F8FAFC);border:1px solid #E2E8F0;border-radius:1rem;font-size:0.875rem;color:var(--color-text-muted);">
-                <p style="margin:0 0 0.5rem;"><strong>Effective date:</strong> 1 June 2026 &nbsp;|&nbsp; <strong>Version:</strong> 2.0 &nbsp;|&nbsp; <strong>Last updated:</strong> 7 June 2026</p>
-                <p style="margin:0;"><strong>Governing law:</strong> Republic of Cameroon &nbsp;|&nbsp; <strong>Jurisdiction:</strong> Courts of Yaoundé, Cameroon &nbsp;|&nbsp; <strong>Languages:</strong> English (French available on request)</p>
+                <p style="margin:0 0 0.5rem;"><strong>{{ __('public.terms_page.effective_date') }}</strong> 1 June 2026 &nbsp;|&nbsp; <strong>{{ __('public.terms_page.version') }}</strong> 2.0 &nbsp;|&nbsp; <strong>{{ __('public.terms_page.last_updated') }}</strong> 7 June 2026</p>
+                <p style="margin:0;"><strong>{{ __('public.terms_page.governing_law_label') }}</strong> Republic of Cameroon &nbsp;|&nbsp; <strong>{{ __('public.terms_page.jurisdiction') }}</strong> Courts of Yaoundé, Cameroon &nbsp;|&nbsp; <strong>{{ __('public.terms_page.languages') }}</strong> English (French available on request)</p>
             </div>
 
         </div>

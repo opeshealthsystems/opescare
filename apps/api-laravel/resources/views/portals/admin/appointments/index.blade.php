@@ -1,15 +1,15 @@
 @extends('layouts.portal')
-@section('title', 'Appointments')
+@section('title', __('public.adm_appt_page_title'))
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin')
+@section('breadcrumb_home', __('public.adm_breadcrumb_home'))
 @section('breadcrumb_home_url', route('portals.admin'))
-@section('breadcrumb_section', 'Appointments')
+@section('breadcrumb_section', __('public.adm_appt_breadcrumb'))
 @section('content')
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Appointments</h1>
-        <p class="page-subtitle">All appointments across every facility.</p>
+        <h1 class="page-title">{{ __('public.adm_appt_page_title') }}</h1>
+        <p class="page-subtitle">{{ __('public.adm_appt_subtitle') }}</p>
     </div>
 </div>
 
@@ -17,41 +17,41 @@
 @if(session('error'))<div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;"><i data-lucide="alert-circle"></i><div>{{ session('error') }}</div></div>@endif
 
 <div class="kpi-grid" style="margin-bottom:1.5rem;">
-    <div class="kpi-card"><div class="kpi-icon blue"><i data-lucide="calendar"></i></div><div class="kpi-body"><div class="kpi-label">Today Total</div><div class="kpi-value">{{ $stats['total'] ?? 0 }}</div></div></div>
-    <div class="kpi-card"><div class="kpi-icon teal"><i data-lucide="check-circle"></i></div><div class="kpi-body"><div class="kpi-label">Confirmed</div><div class="kpi-value text-teal">{{ $stats['confirmed'] ?? 0 }}</div></div></div>
-    <div class="kpi-card"><div class="kpi-icon danger"><i data-lucide="ban"></i></div><div class="kpi-body"><div class="kpi-label">Cancelled</div><div class="kpi-value text-danger">{{ $stats['cancelled'] ?? 0 }}</div></div></div>
-    <div class="kpi-card"><div class="kpi-icon warning"><i data-lucide="user-x"></i></div><div class="kpi-body"><div class="kpi-label">No-show</div><div class="kpi-value text-warning">{{ $stats['no_show'] ?? 0 }}</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon blue"><i data-lucide="calendar"></i></div><div class="kpi-body"><div class="kpi-label">{{ __('public.adm_appt_kpi_total') }}</div><div class="kpi-value">{{ $stats['total'] ?? 0 }}</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon teal"><i data-lucide="check-circle"></i></div><div class="kpi-body"><div class="kpi-label">{{ __('public.adm_appt_kpi_confirmed') }}</div><div class="kpi-value text-teal">{{ $stats['confirmed'] ?? 0 }}</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon danger"><i data-lucide="ban"></i></div><div class="kpi-body"><div class="kpi-label">{{ __('public.adm_appt_kpi_cancelled') }}</div><div class="kpi-value text-danger">{{ $stats['cancelled'] ?? 0 }}</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon warning"><i data-lucide="user-x"></i></div><div class="kpi-body"><div class="kpi-label">{{ __('public.adm_appt_kpi_noshow') }}</div><div class="kpi-value text-warning">{{ $stats['no_show'] ?? 0 }}</div></div></div>
 </div>
 
 <form method="GET" action="{{ route('portals.admin.appointments.index') }}" class="panel" style="padding:1rem;margin-bottom:1rem;">
     <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end;">
-        <div style="flex:1;min-width:180px;"><label class="filter-label">Search (Health ID)</label>
-            <input type="text" name="search" class="form-control form-control-sm" placeholder="Health ID…" value="{{ request('search') }}">
+        <div style="flex:1;min-width:180px;"><label class="filter-label">{{ __('public.adm_appt_filter_search_lbl') }}</label>
+            <input type="text" name="search" class="form-control form-control-sm" placeholder="{{ __('public.adm_appt_filter_search_ph') }}" value="{{ request('search') }}">
         </div>
-        <div><label class="filter-label">Status</label>
+        <div><label class="filter-label">{{ __('public.adm_appt_filter_status_lbl') }}</label>
             <select name="status" class="form-control form-control-sm">
-                <option value="">All</option>
+                <option value="">{{ __('public.adm_appt_opt_all') }}</option>
                 @foreach(['scheduled','confirmed','cancelled','no_show','completed'] as $s)
                 <option value="{{ $s }}" @selected(request('status')===$s)>{{ ucfirst(str_replace('_',' ',$s)) }}</option>
                 @endforeach
             </select>
         </div>
-        <div><label class="filter-label">Facility</label>
+        <div><label class="filter-label">{{ __('public.adm_appt_filter_facility_lbl') }}</label>
             <select name="facility_id" class="form-control form-control-sm">
-                <option value="">All Facilities</option>
+                <option value="">{{ __('public.adm_appt_opt_all_facilities') }}</option>
                 @foreach($facilities??[] as $facility)
                 <option value="{{ $facility->id }}" @selected(request('facility_id')==$facility->id)>{{ $facility->name }}</option>
                 @endforeach
             </select>
         </div>
-        <div><label class="filter-label">From</label>
+        <div><label class="filter-label">{{ __('public.adm_appt_filter_from_lbl') }}</label>
             <input type="date" name="date_from" class="form-control form-control-sm" value="{{ request('date_from') }}">
         </div>
-        <div><label class="filter-label">To</label>
+        <div><label class="filter-label">{{ __('public.adm_appt_filter_to_lbl') }}</label>
             <input type="date" name="date_to" class="form-control form-control-sm" value="{{ request('date_to') }}">
         </div>
-        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-        <a href="{{ route('portals.admin.appointments.index') }}" class="btn btn-ghost btn-sm">Reset</a>
+        <button type="submit" class="btn btn-primary btn-sm">{{ __('public.adm_appt_btn_filter') }}</button>
+        <a href="{{ route('portals.admin.appointments.index') }}" class="btn btn-ghost btn-sm">{{ __('public.adm_appt_btn_reset') }}</a>
     </div>
 </form>
 
@@ -60,13 +60,13 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Patient</th>
-                    <th>Facility</th>
-                    <th>Type</th>
-                    <th>Scheduled At</th>
-                    <th>Status</th>
-                    <th>Provider</th>
-                    <th style="text-align:right;">Actions</th>
+                    <th>{{ __('public.adm_appt_col_patient') }}</th>
+                    <th>{{ __('public.adm_appt_col_facility') }}</th>
+                    <th>{{ __('public.adm_appt_col_type') }}</th>
+                    <th>{{ __('public.adm_appt_col_scheduled_at') }}</th>
+                    <th>{{ __('public.adm_appt_col_status') }}</th>
+                    <th>{{ __('public.adm_appt_col_provider') }}</th>
+                    <th style="text-align:right;"><span class="sr-only">{{ __('public.adm_appt_col_actions') }}</span></th>
                 </tr>
             </thead>
             <tbody>
@@ -92,7 +92,7 @@
                             @if(!in_array($appointment->status??'',['cancelled','completed']))
                             <button onclick="openCancelModal('{{ $appointment->id }}','{{ route('portals.admin.appointments.cancel',$appointment) }}')" class="btn btn-warning btn-xs"><i data-lucide="ban"></i></button>
                             @endif
-                            <form method="POST" action="{{ route('portals.admin.appointments.destroy',$appointment) }}" onsubmit="return confirm('Delete this appointment?')">
+                            <form method="POST" action="{{ route('portals.admin.appointments.destroy',$appointment) }}" onsubmit="return confirm('{{ addslashes(__('public.adm_appt_js_confirm_delete')) }}')">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-xs"><i data-lucide="trash-2"></i></button>
                             </form>
@@ -100,7 +100,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--p-text-muted);">No appointments found.</td></tr>
+                <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--p-text-muted);">{{ __('public.adm_appt_empty') }}</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -114,20 +114,20 @@
 <div id="cancel-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;background:rgba(15,23,42,.7);backdrop-filter:blur(4px);padding:1rem;" role="dialog">
     <div style="background:var(--p-surface);border:1px solid var(--p-border);border-radius:var(--p-radius-xl);width:100%;max-width:480px;overflow:hidden;box-shadow:var(--p-shadow-lg);">
         <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--p-border);display:flex;justify-content:space-between;align-items:center;">
-            <h3 style="margin:0;font-size:1rem;font-weight:700;">Cancel Appointment</h3>
+            <h3 style="margin:0;font-size:1rem;font-weight:700;">{{ __('public.adm_appt_modal_cancel_title') }}</h3>
             <button onclick="document.getElementById('cancel-modal').style.display='none'" class="topbar-icon-btn"><i data-lucide="x"></i></button>
         </div>
         <form method="POST" id="cancel-form" action="">
             @csrf @method('PATCH')
             <div style="padding:1.5rem;">
                 <div class="form-group">
-                    <label class="form-label">Cancellation Reason <span style="color:var(--p-danger);">*</span></label>
-                    <textarea name="reason" class="form-control" rows="3" placeholder="Enter reason for cancellation…" required></textarea>
+                    <label class="form-label">{{ __('public.adm_appt_modal_cancel_reason_lbl') }} <span style="color:var(--p-danger);">*</span></label>
+                    <textarea name="reason" class="form-control" rows="3" placeholder="{{ __('public.adm_appt_modal_cancel_reason_ph') }}" required></textarea>
                 </div>
             </div>
             <div style="padding:1rem 1.5rem;border-top:1px solid var(--p-border);display:flex;gap:.75rem;justify-content:flex-end;">
-                <button type="button" onclick="document.getElementById('cancel-modal').style.display='none'" class="btn btn-ghost">Close</button>
-                <button type="submit" class="btn btn-danger"><i data-lucide="ban"></i> Confirm Cancel</button>
+                <button type="button" onclick="document.getElementById('cancel-modal').style.display='none'" class="btn btn-ghost">{{ __('public.adm_appt_modal_close') }}</button>
+                <button type="submit" class="btn btn-danger"><i data-lucide="ban"></i> {{ __('public.adm_appt_modal_confirm_cancel') }}</button>
             </div>
         </form>
     </div>

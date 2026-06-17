@@ -1,35 +1,35 @@
 @extends('layouts.portal')
-@section('title', 'Allergy Alert Rules')
+@section('title', __('public.adm_cdss_allergy_title'))
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin')
+@section('breadcrumb_home', __('public.adm_breadcrumb_home'))
 @section('breadcrumb_home_url', route('portals.admin'))
 @section('breadcrumb_section', 'CDSS')
 @section('content')
 
 <div class="breadcrumb">
-    <a href="{{ route('portals.admin.cdss.index') }}">CDSS Rules</a>
+    <a href="{{ route('portals.admin.cdss.index') }}">{{ __('public.adm_cdss_page_title') }}</a>
     <i data-lucide="chevron-right"></i>
-    <span>Allergy Alert Rules</span>
+    <span>{{ __('public.adm_cdss_allergy_h2') }}</span>
 </div>
 
 <div class="page-head">
-    <h2>Allergy Alert Rules</h2>
+    <h2>{{ __('public.adm_cdss_allergy_h2') }}</h2>
     <div class="page-head__spacer"></div>
-    <button onclick="opOpenModal('add-allergy-modal')" class="btn btn-warning"><i data-lucide="plus"></i> Add Rule</button>
+    <button onclick="opOpenModal('add-allergy-modal')" class="btn btn-warning"><i data-lucide="plus"></i> {{ __('public.adm_cdss_btn_add_rule') }}</button>
 </div>
 
 @if(session('success'))<div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
 @if(session('error'))<div class="alert alert-danger mb-6"><i data-lucide="alert-circle"></i><div>{{ session('error') }}</div></div>@endif
 
 <div class="tabs mb-6">
-    <a href="{{ route('portals.admin.cdss.drug-interactions') }}" class="tab">Drug Interactions</a>
-    <a href="{{ route('portals.admin.cdss.allergy-alerts') }}" class="tab active">Allergy Alerts</a>
-    <a href="{{ route('portals.admin.cdss.lab-alerts') }}" class="tab">Lab Alerts</a>
+    <a href="{{ route('portals.admin.cdss.drug-interactions') }}" class="tab">{{ __('public.adm_cdss_tab_drug') }}</a>
+    <a href="{{ route('portals.admin.cdss.allergy-alerts') }}" class="tab active">{{ __('public.adm_cdss_tab_allergy') }}</a>
+    <a href="{{ route('portals.admin.cdss.lab-alerts') }}" class="tab">{{ __('public.adm_cdss_tab_lab') }}</a>
 </div>
 
 <div class="alert alert-warning mb-6">
     <i data-lucide="alert-triangle"></i>
-    <div>These rules affect clinical decision support. Review carefully before adding.</div>
+    <div>{{ __('public.adm_cdss_caution_msg') }}</div>
 </div>
 
 <div class="panel">
@@ -37,12 +37,12 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Drug Name</th>
-                    <th>Allergen Class</th>
-                    <th>Severity</th>
-                    <th>Reaction Type</th>
-                    <th>Created</th>
-                    <th class="row-actions">Actions</th>
+                    <th>{{ __('public.adm_cdss_col_drug_name') }}</th>
+                    <th>{{ __('public.adm_cdss_col_allergen_class') }}</th>
+                    <th>{{ __('public.adm_cdss_col_severity') }}</th>
+                    <th>{{ __('public.adm_cdss_col_reaction_type') }}</th>
+                    <th>{{ __('public.adm_cdss_col_created') }}</th>
+                    <th class="row-actions">{{ __('public.adm_cdss_col_actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,7 +59,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="6" class="td-muted empty-cell">No allergy alert rules found.</td></tr>
+                <tr><td colspan="6" class="td-muted empty-cell">{{ __('public.adm_cdss_allergy_empty') }}</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -73,13 +73,13 @@
 @foreach($rules as $rule)
 <div id="delete-allergy-{{ $rule->id }}" class="modal-backdrop mt-6" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="delete-allergy-{{ $rule->id }}-title">
-        <h3 class="modal__title" id="delete-allergy-{{ $rule->id }}-title"><i data-lucide="trash-2"></i> Delete allergy rule</h3>
+        <h3 class="modal__title" id="delete-allergy-{{ $rule->id }}-title"><i data-lucide="trash-2"></i> {{ __('public.adm_cdss_modal_delete_allergy_title') }}</h3>
         <form action="{{ route('portals.admin.cdss.destroy-allergy', $rule->id) }}" method="POST">
             @csrf @method('DELETE')
             <div class="modal__body"><p>Delete this allergy alert rule for <strong>{{ $rule->drug_name }}</strong>?</p></div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost" onclick="opCloseModal('delete-allergy-{{ $rule->id }}')">Cancel</button>
-                <button type="submit" class="btn btn-danger">Delete</button>
+                <button type="button" class="btn btn-ghost" onclick="opCloseModal('delete-allergy-{{ $rule->id }}')">{{ __('public.adm_cdss_btn_cancel') }}</button>
+                <button type="submit" class="btn btn-danger">{{ __('public.adm_cdss_btn_delete') }}</button>
             </div>
         </form>
     </div>
@@ -89,37 +89,37 @@
 {{-- Add Allergy Modal --}}
 <div id="add-allergy-modal" class="modal-backdrop mt-6" hidden>
     <div class="modal modal--md" role="dialog" aria-modal="true" aria-labelledby="add-allergy-title">
-        <h3 class="modal__title" id="add-allergy-title"><i data-lucide="shield-alert"></i> Add Allergy Alert Rule</h3>
+        <h3 class="modal__title" id="add-allergy-title"><i data-lucide="shield-alert"></i> {{ __('public.adm_cdss_modal_add_allergy_title') }}</h3>
         <form action="{{ route('portals.admin.cdss.store-allergy') }}" method="POST">
             @csrf
             <div class="modal__body">
                 <div class="form-group">
-                    <label class="form-label form-label-required">Drug Name</label>
-                    <input type="text" name="drug_name" class="form-control" placeholder="e.g. Amoxicillin" required>
+                    <label class="form-label form-label-required">{{ __('public.adm_cdss_lbl_drug_name') }}</label>
+                    <input type="text" name="drug_name" class="form-control" placeholder="{{ __('public.adm_cdss_ph_drug_name') }}" required>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label form-label-required">Allergen Class</label>
-                        <input type="text" name="allergen_class" class="form-control" placeholder="e.g. Penicillin" required>
+                        <label class="form-label form-label-required">{{ __('public.adm_cdss_lbl_allergen_class') }}</label>
+                        <input type="text" name="allergen_class" class="form-control" placeholder="{{ __('public.adm_cdss_ph_allergen_class') }}" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label form-label-required">Severity</label>
+                        <label class="form-label form-label-required">{{ __('public.adm_cdss_lbl_severity') }}</label>
                         <select name="severity" class="form-control" required>
-                            <option value="">Select…</option>
-                            <option value="mild">Mild</option>
-                            <option value="moderate">Moderate</option>
-                            <option value="severe">Severe</option>
+                            <option value="">{{ __('public.adm_cdss_opt_select') }}</option>
+                            <option value="mild">{{ __('public.adm_cdss_opt_mild') }}</option>
+                            <option value="moderate">{{ __('public.adm_cdss_opt_moderate') }}</option>
+                            <option value="severe">{{ __('public.adm_cdss_opt_severe') }}</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Reaction Type</label>
-                    <input type="text" name="reaction_type" class="form-control" placeholder="e.g. Anaphylaxis, Rash, Urticaria">
+                    <label class="form-label">{{ __('public.adm_cdss_lbl_reaction_type') }}</label>
+                    <input type="text" name="reaction_type" class="form-control" placeholder="{{ __('public.adm_cdss_ph_reaction_type') }}">
                 </div>
             </div>
             <div class="modal__footer">
-                <button type="button" onclick="opCloseModal('add-allergy-modal')" class="btn btn-ghost">Cancel</button>
-                <button type="submit" class="btn btn-warning"><i data-lucide="plus"></i> Add Rule</button>
+                <button type="button" onclick="opCloseModal('add-allergy-modal')" class="btn btn-ghost">{{ __('public.adm_cdss_btn_cancel') }}</button>
+                <button type="submit" class="btn btn-warning"><i data-lucide="plus"></i> {{ __('public.adm_cdss_btn_add_rule') }}</button>
             </div>
         </form>
     </div>

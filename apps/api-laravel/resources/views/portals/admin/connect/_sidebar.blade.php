@@ -2,18 +2,18 @@
     <div class="sidebar-header">
         <div class="sidebar-logo">
             <i data-lucide="plug-zap"></i>
-            <span>Connect Suite</span>
+            <span>{{ __('public.adm_connect_sidebar_title') }}</span>
         </div>
     </div>
 
-    <div class="sidebar-section-label">OVERVIEW</div>
+    <div class="sidebar-section-label">{{ __('public.adm_connect_sidebar_section_overview') }}</div>
     <a href="{{ route('portals.admin.connect') }}"
        class="sidebar-link {{ request()->routeIs('portals.admin.connect') ? 'active' : '' }}">
         <i data-lucide="layout-dashboard"></i>
-        <span>Dashboard</span>
+        <span>{{ __('public.adm_connect_sidebar_dashboard') }}</span>
     </a>
 
-    <div class="sidebar-section-label">MANAGEMENT</div>
+    <div class="sidebar-section-label">{{ __('public.adm_connect_sidebar_section_mgmt') }}</div>
     <a href="{{ route('portals.admin.connect.clients') }}"
        class="sidebar-link {{ request()->routeIs('portals.admin.connect.clients') ? 'active' : '' }}">
         <i data-lucide="app-window"></i>
@@ -33,7 +33,7 @@
     <a href="{{ route('portals.admin.connect.webhooks') }}"
        class="sidebar-link {{ request()->routeIs('portals.admin.connect.webhooks') ? 'active' : '' }}">
         <i data-lucide="webhook"></i>
-        <span>Webhooks</span>
+        <span>{{ __('public.adm_connect_sidebar_webhooks') }}</span>
         @php $failed = \App\Models\WebhookDeliveryLog::where('status','failed')->count(); @endphp
         @if($failed > 0)
             <span class="sidebar-badge sidebar-badge--danger">{{ $failed }}</span>
@@ -43,16 +43,16 @@
     <a href="{{ route('portals.admin.connect.widget') }}"
        class="sidebar-link {{ request()->routeIs('portals.admin.connect.widget') ? 'active' : '' }}">
         <i data-lucide="layout-panel-left"></i>
-        <span>Widget Embed</span>
+        <span>{{ __('public.adm_connect_sidebar_widget_embed') }}</span>
     </a>
 
-    <div class="sidebar-section-label">NAVIGATE</div>
+    <div class="sidebar-section-label">{{ __('public.adm_connect_sidebar_section_navigate') }}</div>
     <a href="{{ route('portals.admin.cc') }}" class="sidebar-link">
         <i data-lucide="arrow-left"></i>
-        <span>Control Center</span>
+        <span>{{ __('public.adm_connect_sidebar_control_center') }}</span>
     </a>
     <a href="{{ route('portals.admin') }}" class="sidebar-link">
         <i data-lucide="home"></i>
-        <span>Admin Home</span>
+        <span>{{ __('public.adm_connect_sidebar_admin_home') }}</span>
     </a>
 </nav>

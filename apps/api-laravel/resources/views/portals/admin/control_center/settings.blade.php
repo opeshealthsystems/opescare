@@ -1,15 +1,15 @@
 @extends('layouts.portal')
-@section('title', 'Platform Settings')
+@section('title', __('public.adm_cc_set_title'))
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin Portal')
+@section('breadcrumb_home', __('public.adm_cc_set_breadcrumb_home'))
 @section('breadcrumb_home_url', route('portals.admin'))
-@section('breadcrumb_section', 'Platform Settings')
+@section('breadcrumb_section', __('public.adm_cc_set_breadcrumb_section'))
 
 @section('content')
 <div class="page-header">
     <div>
-        <h1 class="page-title">Platform Settings</h1>
-        <p class="page-subtitle">Manage global platform configuration values.</p>
+        <h1 class="page-title">{{ __('public.adm_cc_set_heading') }}</h1>
+        <p class="page-subtitle">{{ __('public.adm_cc_set_subtitle') }}</p>
     </div>
 </div>
 
@@ -29,7 +29,7 @@
         <div class="table-wrapper">
             <table class="data-table">
                 <thead><tr>
-                    <th>Key</th><th>Value</th><th>Type</th><th>Description</th><th class="row-actions"></th>
+                    <th>{{ __('public.adm_cc_set_col_key') }}</th><th>{{ __('public.adm_cc_set_col_value') }}</th><th>{{ __('public.adm_cc_set_col_type') }}</th><th>{{ __('public.adm_cc_set_col_description') }}</th><th class="row-actions"></th>
                 </tr></thead>
                 <tbody>
                     @foreach($settings as $setting)
@@ -41,7 +41,7 @@
                         <td class="row-actions">
                             <button type="button" class="btn btn-ghost btn-sm"
                                 onclick="openEditModal('{{ $setting['key'] }}', '{{ addslashes($setting['value']) }}')">
-                                <i data-lucide="pencil"></i> Edit
+                                <i data-lucide="pencil"></i> {{ __('public.adm_cc_set_btn_edit') }}
                             </button>
                         </td>
                     </tr>
@@ -54,8 +54,8 @@
 @empty
     <div class="empty-state">
         <div class="empty-state-icon"><i data-lucide="sliders-horizontal"></i></div>
-        <h3>No settings</h3>
-        <p>Visit the Control Center to seed default settings.</p>
+        <h3>{{ __('public.adm_cc_set_empty_heading') }}</h3>
+        <p>{{ __('public.adm_cc_set_empty_body') }}</p>
     </div>
 @endforelse
 
@@ -63,22 +63,22 @@
 <div id="edit-modal" class="modal-fixed">
     <div class="modal-fixed__panel modal-fixed__panel--sm">
         <div class="modal-fixed__head">
-            <h3 class="modal-fixed__title">Edit setting</h3>
+            <h3 class="modal-fixed__title">{{ __('public.adm_cc_set_edit_modal_heading') }}</h3>
             <button type="button" class="icon-btn" aria-label="Close" onclick="closeEditModal()"><i data-lucide="x"></i></button>
         </div>
         <form method="POST" action="{{ route('portals.admin.cc.settings.update') }}">
             @csrf
             <div class="form-group mb-3">
-                <label class="form-label">Key</label>
+                <label class="form-label">{{ __('public.adm_cc_set_edit_modal_lbl_key') }}</label>
                 <input type="text" id="edit-key" name="key" class="form-control" readonly>
             </div>
             <div class="form-group mb-4">
-                <label class="form-label form-label-required">Value</label>
+                <label class="form-label form-label-required">{{ __('public.adm_cc_set_edit_modal_lbl_value') }}</label>
                 <input type="text" id="edit-value" name="value" class="form-control" required maxlength="500">
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="closeEditModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="closeEditModal()">{{ __('public.adm_cc_set_edit_modal_btn_cancel') }}</button>
+                <button type="submit" class="btn btn-primary btn-sm">{{ __('public.adm_cc_set_edit_modal_btn_save') }}</button>
             </div>
         </form>
     </div>

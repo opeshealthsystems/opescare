@@ -1,7 +1,7 @@
-@extends('layouts.public')
+﻿@extends('layouts.public')
 
-@section('title', __('public.faq.page_title', [], app()->getLocale()) ?: 'Frequently Asked Questions | OpesCare')
-@section('meta_description', 'Answers to the most common questions about OpesCare Health ID, data privacy, platform integration, and clinical access.')
+@section('title', __('public.faq.page_title'))
+@section('meta_description', __('public.faq.meta_description'))
 
 @section('content')
 
@@ -9,10 +9,10 @@
     <div class="container" style="text-align:center;">
         <div style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:2rem;padding:0.35rem 1rem;font-size:0.75rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#BAE6FD;margin-bottom:1.5rem;">
             <i data-lucide="help-circle" style="width:0.875rem;height:0.875rem;"></i>
-            {{ __('public.faq.badge', [], app()->getLocale()) ?: 'FAQ' }}
+            {{ __('public.faq.badge') }}
         </div>
-        <h1 style="font-size:clamp(2rem,4vw,3rem);font-weight:900;margin:0 0 1rem;">{{ __('public.faq.heading', [], app()->getLocale()) ?: 'Frequently Asked Questions' }}</h1>
-        <p style="font-size:1.125rem;color:#BAE6FD;max-width:560px;margin:0 auto;">{{ __('public.faq.subheading', [], app()->getLocale()) ?: 'Everything you need to know about OpesCare.' }}</p>
+        <h1 style="font-size:clamp(2rem,4vw,3rem);font-weight:900;margin:0 0 1rem;">{{ __('public.faq.heading') }}</h1>
+        <p style="font-size:1.125rem;color:#BAE6FD;max-width:560px;margin:0 auto;">{{ __('public.faq.subheading') }}</p>
     </div>
 </section>
 
@@ -46,11 +46,11 @@
             <div style="width:3rem;height:3rem;border-radius:50%;background:#0F4C81;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
                 <i data-lucide="headset" style="width:1.25rem;height:1.25rem;color:#fff;"></i>
             </div>
-            <h3 style="font-size:1.25rem;font-weight:800;color:var(--color-text-primary);margin:0 0 0.5rem;">{{ __('public.faq.cta_title', [], app()->getLocale()) ?: 'Still have questions?' }}</h3>
-            <p style="font-size:0.9rem;color:var(--color-text-muted);margin:0 0 1.5rem;">{{ __('public.faq.cta_body', [], app()->getLocale()) ?: 'Our support team is ready to help you with any questions not answered here.' }}</p>
+            <h3 style="font-size:1.25rem;font-weight:800;color:var(--color-text-primary);margin:0 0 0.5rem;">{{ __('public.faq.cta_title') }}</h3>
+            <p style="font-size:0.9rem;color:var(--color-text-muted);margin:0 0 1.5rem;">{{ __('public.faq.cta_body') }}</p>
             <a href="{{ route('public.contact') }}" style="display:inline-flex;align-items:center;gap:0.5rem;background:#0F4C81;color:#fff;font-size:0.875rem;font-weight:700;border-radius:0.5rem;padding:0.75rem 1.75rem;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='#0E3F6C'" onmouseout="this.style.background='#0F4C81'">
                 <i data-lucide="send" style="width:1rem;height:1rem;"></i>
-                {{ __('public.faq.cta_button', [], app()->getLocale()) ?: 'Contact Support' }}
+                {{ __('public.faq.cta_button') }}
             </a>
         </div>
 

@@ -1,15 +1,15 @@
 @extends('layouts.portal')
-@section('title', 'Master Admin Control Center')
+@section('title', __('public.adm_cc_idx_title'))
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin Portal')
+@section('breadcrumb_home', __('public.adm_cc_idx_breadcrumb_home'))
 @section('breadcrumb_home_url', route('portals.admin'))
-@section('breadcrumb_section', 'Control Center')
+@section('breadcrumb_section', __('public.adm_cc_idx_breadcrumb_section'))
 
 @section('content')
 <div class="page-header">
     <div>
-        <h1 class="page-title">Master Admin Control Center</h1>
-        <p class="page-subtitle">Manage platform settings, feature flags, modules, maintenance, and system health.</p>
+        <h1 class="page-title">{{ __('public.adm_cc_idx_heading') }}</h1>
+        <p class="page-subtitle">{{ __('public.adm_cc_idx_subtitle') }}</p>
     </div>
 </div>
 
@@ -25,16 +25,16 @@
 @if($anyError)
 <div class="banner banner--danger">
     <i data-lucide="alert-triangle"></i>
-    <div><strong>System issues detected.</strong> Check System Health for details.</div>
+    <div><strong>{{ __('public.adm_cc_idx_banner_error_msg') }}</strong> {{ __('public.adm_cc_idx_banner_error_detail') }}</div>
     <div class="banner__spacer"></div>
-    <a href="{{ route('portals.admin.cc.health') }}" class="btn btn-danger btn-sm">View Health</a>
+    <a href="{{ route('portals.admin.cc.health') }}" class="btn btn-danger btn-sm">{{ __('public.adm_cc_idx_banner_error_btn') }}</a>
 </div>
 @elseif($anyWarn)
 <div class="banner banner--warning">
     <i data-lucide="alert-circle"></i>
-    <div><strong>Warning:</strong> Some system checks need attention.</div>
+    <div><strong>{{ __('public.adm_cc_idx_banner_warn_label') }}</strong> {{ __('public.adm_cc_idx_banner_warn_detail') }}</div>
     <div class="banner__spacer"></div>
-    <a href="{{ route('portals.admin.cc.health') }}" class="btn btn-secondary btn-sm">View Health</a>
+    <a href="{{ route('portals.admin.cc.health') }}" class="btn btn-secondary btn-sm">{{ __('public.adm_cc_idx_banner_warn_btn') }}</a>
 </div>
 @endif
 
@@ -42,20 +42,20 @@
 <div class="mb-6">
     <div class="section-head section-head--danger">
         <i data-lucide="zap"></i>
-        <h2>God Mode — Platform Management</h2>
+        <h2>{{ __('public.adm_cc_idx_god_mode_heading') }}</h2>
     </div>
     <div class="card-grid">
         @php $godCards = [
-            ['Users',               'users',        '/portals/admin/users',         'Manage all platform users'],
-            ['Facilities',          'building',     '/portals/admin/facilities',     'Hospitals, clinics & labs'],
-            ['Patients',            'heart-pulse',  '/portals/admin/patients',       'Global patient registry'],
-            ['Staff',               'user-check',   '/portals/admin/staff',          'Clinical & admin staff'],
-            ['Financial',           'banknote',     '/portals/admin/financial',      'Billing, invoices & revenue'],
-            ['Appointments',        'calendar',     '/portals/admin/appointments',   'Scheduling across facilities'],
-            ['Support Tickets',     'headphones',   '/portals/admin/support',        'Help desk & issue queue'],
-            ['CDSS Rules',          'activity',     '/portals/admin/cdss',           'Clinical decision support'],
-            ['Roles & Permissions', 'shield',       '/portals/admin/roles',          'Access control & RBAC'],
-            ['Organizations',       'landmark',     '/portals/admin/organizations',  'Tenant & org management'],
+            [__('public.adm_cc_idx_god_users'),        'users',        '/portals/admin/users',         __('public.adm_cc_idx_god_users_desc')],
+            [__('public.adm_cc_idx_god_facilities'),   'building',     '/portals/admin/facilities',     __('public.adm_cc_idx_god_facilities_desc')],
+            [__('public.adm_cc_idx_god_patients'),     'heart-pulse',  '/portals/admin/patients',       __('public.adm_cc_idx_god_patients_desc')],
+            [__('public.adm_cc_idx_god_staff'),        'user-check',   '/portals/admin/staff',          __('public.adm_cc_idx_god_staff_desc')],
+            [__('public.adm_cc_idx_god_financial'),    'banknote',     '/portals/admin/financial',      __('public.adm_cc_idx_god_financial_desc')],
+            [__('public.adm_cc_idx_god_appointments'), 'calendar',     '/portals/admin/appointments',   __('public.adm_cc_idx_god_appointments_desc')],
+            [__('public.adm_cc_idx_god_support'),      'headphones',   '/portals/admin/support',        __('public.adm_cc_idx_god_support_desc')],
+            [__('public.adm_cc_idx_god_cdss'),         'activity',     '/portals/admin/cdss',           __('public.adm_cc_idx_god_cdss_desc')],
+            [__('public.adm_cc_idx_god_roles'),        'shield',       '/portals/admin/roles',          __('public.adm_cc_idx_god_roles_desc')],
+            [__('public.adm_cc_idx_god_orgs'),         'landmark',     '/portals/admin/organizations',  __('public.adm_cc_idx_god_orgs_desc')],
         ]; @endphp
         @foreach($godCards as [$title, $icon, $url, $desc])
         <a href="{{ $url }}" class="nav-card nav-card--danger">
@@ -72,12 +72,12 @@
 {{-- Quick nav cards --}}
 <div class="card-grid mb-6">
     @php $cards = [
-        ['Platform Settings', 'sliders-horizontal', route('portals.admin.cc.settings'),   'Manage system-wide configuration'],
-        ['Feature Flags',     'toggle-right',       route('portals.admin.cc.feature_flags'),'Enable/disable product features'],
-        ['Module Toggles',    'puzzle',             route('portals.admin.cc.modules'),     'Turn modules on/off per scope'],
-        ['Maintenance',       'wrench',             route('portals.admin.cc.maintenance'), 'Schedule downtime windows'],
-        ['System Health',     'activity',           route('portals.admin.cc.health'),      'Live platform health checks'],
-        ['Admin Log',         'scroll-text',        route('portals.admin.cc.audit'),       'Track all admin actions'],
+        [__('public.adm_cc_idx_nav_settings'),    'sliders-horizontal', route('portals.admin.cc.settings'),      __('public.adm_cc_idx_nav_settings_desc')],
+        [__('public.adm_cc_idx_nav_flags'),       'toggle-right',       route('portals.admin.cc.feature_flags'), __('public.adm_cc_idx_nav_flags_desc')],
+        [__('public.adm_cc_idx_nav_modules'),     'puzzle',             route('portals.admin.cc.modules'),       __('public.adm_cc_idx_nav_modules_desc')],
+        [__('public.adm_cc_idx_nav_maintenance'), 'wrench',             route('portals.admin.cc.maintenance'),   __('public.adm_cc_idx_nav_maintenance_desc')],
+        [__('public.adm_cc_idx_nav_health'),      'activity',           route('portals.admin.cc.health'),        __('public.adm_cc_idx_nav_health_desc')],
+        [__('public.adm_cc_idx_nav_audit'),       'scroll-text',        route('portals.admin.cc.audit'),         __('public.adm_cc_idx_nav_audit_desc')],
     ]; @endphp
     @foreach($cards as [$title, $icon, $url, $desc])
     <a href="{{ $url }}" class="nav-card">
@@ -93,17 +93,17 @@
 {{-- Recent Admin Actions --}}
 <div class="panel">
     <div class="panel-header">
-        <h3 class="panel-title"><i data-lucide="scroll-text"></i> Recent admin actions</h3>
-        <a href="{{ route('portals.admin.cc.audit') }}" class="btn btn-ghost btn-sm">View All</a>
+        <h3 class="panel-title"><i data-lucide="scroll-text"></i> {{ __('public.adm_cc_idx_recent_heading') }}</h3>
+        <a href="{{ route('portals.admin.cc.audit') }}" class="btn btn-ghost btn-sm">{{ __('public.adm_cc_idx_recent_view_all') }}</a>
     </div>
     <div class="panel-body panel-body--flush">
         @if($actions->count() === 0)
-            <div class="td-muted empty-cell">No actions recorded yet.</div>
+            <div class="td-muted empty-cell">{{ __('public.adm_cc_idx_recent_empty') }}</div>
         @else
         <div class="table-wrapper">
             <table class="data-table">
                 <thead><tr>
-                    <th>Action</th><th>Resource</th><th>Actor</th><th>When</th>
+                    <th>{{ __('public.adm_cc_idx_col_action') }}</th><th>{{ __('public.adm_cc_idx_col_resource') }}</th><th>{{ __('public.adm_cc_idx_col_actor') }}</th><th>{{ __('public.adm_cc_idx_col_when') }}</th>
                 </tr></thead>
                 <tbody>
                     @foreach($actions as $a)

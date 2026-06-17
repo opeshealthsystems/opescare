@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'SDK Tokens — Connect Suite')
+@section('title', __('public.adm_connect_tokens_title'))
 
 @section('sidebar')
     @include('portals.admin.connect._sidebar')
@@ -9,13 +9,13 @@
 @section('content')
 
 <div class="page-head">
-    <h2><i data-lucide="key-round"></i> SDK Tokens</h2>
+    <h2><i data-lucide="key-round"></i> {{ __('public.adm_connect_tokens_heading') }}</h2>
     <div class="page-head__spacer"></div>
     <button class="btn btn-primary" onclick="opOpenModal('issueModal')">
-        <i data-lucide="plus"></i> Issue Token
+        <i data-lucide="plus"></i> {{ __('public.adm_connect_tokens_btn_issue') }}
     </button>
 </div>
-<p class="td-muted mb-6">Issue and manage long-lived SDK authentication tokens</p>
+<p class="td-muted mb-6">{{ __('public.adm_connect_tokens_subtitle') }}</p>
 
 @if(session('success'))<div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
 @if(session('error'))<div class="alert alert-danger mb-6"><i data-lucide="alert-circle"></i><div>{{ session('error') }}</div></div>@endif
@@ -23,14 +23,14 @@
 {{-- One-time Token Display --}}
 @if(session('new_token'))
 <div class="panel mb-6">
-    <div class="panel-header"><h3 class="panel-title"><i data-lucide="shield-check"></i> New Token Issued — Copy Now</h3></div>
+    <div class="panel-header"><h3 class="panel-title"><i data-lucide="shield-check"></i> {{ __('public.adm_connect_tokens_new_title') }}</h3></div>
     <div class="panel-body">
-        <p class="mb-6"><i data-lucide="alert-triangle"></i> This token will <strong>never be shown again</strong>. Copy it immediately and store it securely.</p>
+        <p class="mb-6"><i data-lucide="alert-triangle"></i> {{ __('public.adm_connect_tokens_warn_once') }}</p>
         <div class="filter-bar">
             <code id="newTokenVal" class="code-token code-token--block">{{ session('new_token') }}</code>
-            <button class="btn btn-success btn-sm" onclick="copyToken()"><i data-lucide="copy"></i> Copy</button>
+            <button class="btn btn-success btn-sm" onclick="copyToken()"><i data-lucide="copy"></i> {{ __('public.adm_connect_tokens_btn_copy') }}</button>
         </div>
-        <div id="copiedMsg" class="text-success mt-6" hidden><i data-lucide="check"></i> Copied to clipboard!</div>
+        <div id="copiedMsg" class="text-success mt-6" hidden><i data-lucide="check"></i> {{ __('public.adm_connect_tokens_copied') }}</div>
     </div>
 </div>
 <script>
@@ -48,53 +48,53 @@ function copyToken(){
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Token</th>
-                    <th>Client</th>
-                    <th>Label</th>
-                    <th>Environment</th>
-                    <th>Scopes</th>
-                    <th>Status</th>
-                    <th>Expires</th>
-                    <th>Last Used</th>
-                    <th class="row-actions">Actions</th>
+                    <th>{{ __('public.adm_connect_tokens_col_token') }}</th>
+                    <th>{{ __('public.adm_connect_tokens_col_client') }}</th>
+                    <th>{{ __('public.adm_connect_tokens_col_label') }}</th>
+                    <th>{{ __('public.adm_connect_tokens_col_env') }}</th>
+                    <th>{{ __('public.adm_connect_tokens_col_scopes') }}</th>
+                    <th>{{ __('public.adm_connect_tokens_col_status') }}</th>
+                    <th>{{ __('public.adm_connect_tokens_col_expires') }}</th>
+                    <th>{{ __('public.adm_connect_tokens_col_last_used') }}</th>
+                    <th class="row-actions">{{ __('public.adm_connect_tokens_col_actions') }}</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($tokens as $token)
                     <tr>
-                        <td data-label="Token"><span class="code-token">{{ $token->displayToken() }}</span></td>
-                        <td data-label="Client">{{ $token->client_id }}</td>
-                        <td data-label="Label">{{ $token->label ?: '—' }}</td>
-                        <td data-label="Environment">
+                        <td data-label="{{ __('public.adm_connect_tokens_col_token') }}"><span class="code-token">{{ $token->displayToken() }}</span></td>
+                        <td data-label="{{ __('public.adm_connect_tokens_col_client') }}">{{ $token->client_id }}</td>
+                        <td data-label="{{ __('public.adm_connect_tokens_col_label') }}">{{ $token->label ?: '—' }}</td>
+                        <td data-label="{{ __('public.adm_connect_tokens_col_env') }}">
                             <span class="badge badge-{{ $token->environment === 'sandbox' ? 'primary' : 'success' }}">{{ $token->environment }}</span>
                         </td>
-                        <td data-label="Scopes">
+                        <td data-label="{{ __('public.adm_connect_tokens_col_scopes') }}">
                             @foreach(array_slice($token->scopes ?? [], 0, 2) as $scope)
                                 <span class="badge badge-purple">{{ $scope }}</span>
                             @endforeach
                             @if(count($token->scopes ?? []) > 2)<span class="td-muted">+{{ count($token->scopes) - 2 }}</span>@endif
                         </td>
-                        <td data-label="Status">
+                        <td data-label="{{ __('public.adm_connect_tokens_col_status') }}">
                             @if(!$token->is_active)
-                                <span class="badge badge-danger">Revoked</span>
+                                <span class="badge badge-danger">{{ __('public.adm_connect_tokens_status_revoked') }}</span>
                             @elseif($token->isExpired())
-                                <span class="badge badge-warning">Expired</span>
+                                <span class="badge badge-warning">{{ __('public.adm_connect_tokens_status_expired') }}</span>
                             @else
-                                <span class="badge badge-success">Active</span>
+                                <span class="badge badge-success">{{ __('public.adm_connect_tokens_status_active') }}</span>
                             @endif
                         </td>
-                        <td data-label="Expires">{{ $token->expires_at ? $token->expires_at->format('d M Y') : 'Never' }}</td>
-                        <td data-label="Last Used">{{ $token->last_used_at ? $token->last_used_at->diffForHumans() : '—' }}</td>
-                        <td class="row-actions" data-label="Actions">
+                        <td data-label="{{ __('public.adm_connect_tokens_col_expires') }}">{{ $token->expires_at ? $token->expires_at->format('d M Y') : __('public.adm_connect_tokens_expires_never') }}</td>
+                        <td data-label="{{ __('public.adm_connect_tokens_col_last_used') }}">{{ $token->last_used_at ? $token->last_used_at->diffForHumans() : '—' }}</td>
+                        <td class="row-actions" data-label="{{ __('public.adm_connect_tokens_col_actions') }}">
                             @if($token->is_active && !$token->isExpired())
-                                <button type="button" class="btn btn-danger btn-sm" title="Revoke" onclick="opOpenModal('revoke-{{ $token->id }}')"><i data-lucide="x-circle"></i> Revoke</button>
+                                <button type="button" class="btn btn-danger btn-sm" title="{{ __('public.adm_connect_tokens_btn_revoke') }}" onclick="opOpenModal('revoke-{{ $token->id }}')"><i data-lucide="x-circle"></i> {{ __('public.adm_connect_tokens_btn_revoke') }}</button>
                             @else
                                 <span class="td-muted">—</span>
                             @endif
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="9" class="td-muted empty-cell">No tokens issued yet</td></tr>
+                    <tr><td colspan="9" class="td-muted empty-cell">{{ __('public.adm_connect_tokens_empty') }}</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -109,13 +109,13 @@ function copyToken(){
     @if($token->is_active && !$token->isExpired())
     <div id="revoke-{{ $token->id }}" class="modal-backdrop mt-6" hidden>
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="revoke-{{ $token->id }}-title">
-            <h3 class="modal__title" id="revoke-{{ $token->id }}-title"><i data-lucide="x-circle"></i> Revoke token</h3>
+            <h3 class="modal__title" id="revoke-{{ $token->id }}-title"><i data-lucide="x-circle"></i> {{ __('public.adm_connect_tokens_modal_revoke_title') }}</h3>
             <form method="POST" action="{{ route('portals.admin.connect.tokens.revoke', $token->id) }}">
                 @csrf
-                <div class="modal__body"><p>Revoke this token? The client will lose access immediately.</p></div>
+                <div class="modal__body"><p>{{ __('public.adm_connect_tokens_modal_revoke_body') }}</p></div>
                 <div class="modal__footer">
-                    <button type="button" class="btn btn-ghost" onclick="opCloseModal('revoke-{{ $token->id }}')">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Revoke</button>
+                    <button type="button" class="btn btn-ghost" onclick="opCloseModal('revoke-{{ $token->id }}')">{{ __('public.adm_connect_tokens_btn_cancel') }}</button>
+                    <button type="submit" class="btn btn-danger">{{ __('public.adm_connect_tokens_btn_revoke') }}</button>
                 </div>
             </form>
         </div>
@@ -126,43 +126,43 @@ function copyToken(){
 {{-- Issue Token Modal --}}
 <div id="issueModal" class="modal-backdrop mt-6" {{ $errors->any() ? '' : 'hidden' }}>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="issueModal-title">
-        <h3 class="modal__title" id="issueModal-title"><i data-lucide="key-round"></i> Issue New SDK Token</h3>
+        <h3 class="modal__title" id="issueModal-title"><i data-lucide="key-round"></i> {{ __('public.adm_connect_tokens_modal_issue_title') }}</h3>
         <form method="POST" action="{{ route('portals.admin.connect.tokens.store') }}">
             @csrf
             <div class="modal__body">
                 <div class="form-group">
-                    <label class="form-label form-label-required">Client</label>
+                    <label class="form-label form-label-required">{{ __('public.adm_connect_tokens_lbl_client') }}</label>
                     <select name="client_id" class="form-control" required>
-                        <option value="">— Select Active Client —</option>
+                        <option value="">{{ __('public.adm_connect_tokens_select_client_ph') }}</option>
                         @foreach($clients as $client)
                             <option value="{{ $client->client_id }}" {{ old('client_id') == $client->client_id ? 'selected' : '' }}>{{ $client->name }} ({{ $client->environment }})</option>
                         @endforeach
                     </select>
                     @if($clients->isEmpty())
-                        <div class="form-hint">No active clients found. <a href="{{ route('portals.admin.connect.clients') }}">Create one first.</a></div>
+                        <div class="form-hint">{{ __('public.adm_connect_tokens_no_clients') }} <a href="{{ route('portals.admin.connect.clients') }}">{{ __('public.adm_connect_tokens_create_first') }}</a></div>
                     @endif
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Label / Description</label>
-                    <input type="text" name="label" class="form-control" placeholder="e.g. Production deployment, CI/CD pipeline" maxlength="80" value="{{ old('label') }}">
+                    <label class="form-label">{{ __('public.adm_connect_tokens_lbl_label') }}</label>
+                    <input type="text" name="label" class="form-control" placeholder="{{ __('public.adm_connect_tokens_ph_label') }}" maxlength="80" value="{{ old('label') }}">
                 </div>
                 <div class="form-group">
-                    <label class="form-label form-label-required">Environment</label>
+                    <label class="form-label form-label-required">{{ __('public.adm_connect_tokens_lbl_env') }}</label>
                     <select name="environment" class="form-control" required>
-                        <option value="sandbox" {{ old('environment') == 'sandbox' ? 'selected' : '' }}>Sandbox</option>
-                        <option value="production" {{ old('environment') == 'production' ? 'selected' : '' }}>Production</option>
+                        <option value="sandbox" {{ old('environment') == 'sandbox' ? 'selected' : '' }}>{{ __('public.adm_connect_clients_filter_sandbox') }}</option>
+                        <option value="production" {{ old('environment') == 'production' ? 'selected' : '' }}>{{ __('public.adm_connect_clients_filter_production') }}</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Expires In (Days)</label>
-                    <input type="number" name="expires_days" class="form-control" placeholder="Leave blank for no expiry" min="1" max="365" value="{{ old('expires_days') }}">
-                    <div class="form-hint">Max 365 days. Blank = never expires.</div>
+                    <label class="form-label">{{ __('public.adm_connect_tokens_lbl_expires') }}</label>
+                    <input type="number" name="expires_days" class="form-control" placeholder="{{ __('public.adm_connect_tokens_ph_expires') }}" min="1" max="365" value="{{ old('expires_days') }}">
+                    <div class="form-hint">{{ __('public.adm_connect_tokens_hint_expires') }}</div>
                 </div>
-                <div class="alert alert-warning"><i data-lucide="triangle-alert"></i><div>The token will be shown <strong>only once</strong> after creation. Copy it immediately.</div></div>
+                <div class="alert alert-warning"><i data-lucide="triangle-alert"></i><div>{{ __('public.adm_connect_tokens_warn_once2') }}</div></div>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost" onclick="opCloseModal('issueModal')">Cancel</button>
-                <button type="submit" class="btn btn-primary"><i data-lucide="key-round"></i> Issue Token</button>
+                <button type="button" class="btn btn-ghost" onclick="opCloseModal('issueModal')">{{ __('public.adm_connect_tokens_btn_cancel') }}</button>
+                <button type="submit" class="btn btn-primary"><i data-lucide="key-round"></i> {{ __('public.adm_connect_tokens_btn_issue_submit') }}</button>
             </div>
         </form>
     </div>

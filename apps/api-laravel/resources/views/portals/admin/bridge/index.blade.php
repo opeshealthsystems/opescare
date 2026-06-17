@@ -1,20 +1,20 @@
 @extends('layouts.portal')
-@section('title', 'Bridge Agents — Admin')
+@section('title', __('public.adm_bridge_page_title'))
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin')
+@section('breadcrumb_home', __('public.adm_breadcrumb_home'))
 @section('breadcrumb_home_url', route('portals.admin'))
-@section('breadcrumb_section', 'Bridge')
+@section('breadcrumb_section', __('public.adm_bridge_breadcrumb_section'))
 
 @section('content')
 
 <div class="page-head">
-    <h2><i data-lucide="cable"></i> Bridge Agents</h2>
+    <h2><i data-lucide="cable"></i> {{ __('public.adm_bridge_h2') }}</h2>
     <div class="page-head__spacer"></div>
     <button class="btn btn-primary" onclick="opOpenModal('createModal')">
-        <i data-lucide="plus"></i> Register Agent
+        <i data-lucide="plus"></i> {{ __('public.adm_bridge_btn_register') }}
     </button>
 </div>
-<p class="td-muted mb-6">Manage agents that sync data from external EMR and legacy systems</p>
+<p class="td-muted mb-6">{{ __('public.adm_bridge_subtitle') }}</p>
 
 @if(session('success'))<div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
 @if(session('error'))<div class="alert alert-danger mb-6"><i data-lucide="alert-circle"></i><div>{{ session('error') }}</div></div>@endif
@@ -22,13 +22,13 @@
 {{-- One-time key banner --}}
 @if(session('new_agent_key'))
 <div class="panel mb-6">
-    <div class="panel-header"><h3 class="panel-title"><i data-lucide="key"></i> New Agent Key — Copy Now (shown once only)</h3></div>
+    <div class="panel-header"><h3 class="panel-title"><i data-lucide="key"></i> {{ __('public.adm_bridge_key_banner_title') }}</h3></div>
     <div class="panel-body">
         <div class="filter-bar">
             <code id="newKey" class="code-token code-token--block">{{ session('new_agent_key') }}</code>
-            <button class="btn btn-secondary btn-sm" onclick="copyKey()"><i data-lucide="copy"></i> Copy Key</button>
+            <button class="btn btn-secondary btn-sm" onclick="copyKey()"><i data-lucide="copy"></i> {{ __('public.adm_bridge_btn_copy_key') }}</button>
         </div>
-        <p class="td-muted mt-6">Store this key securely in your Bridge Agent config. It cannot be recovered.</p>
+        <p class="td-muted mt-6">{{ __('public.adm_bridge_key_store_note') }}</p>
     </div>
 </div>
 @endif
@@ -38,22 +38,22 @@
     <div class="stat-card stat-card--primary">
         <div class="stat-card__head"><i data-lucide="cable"></i></div>
         <div class="stat-card__value">{{ $stats['total'] }}</div>
-        <div class="stat-card__label">Total Agents</div>
+        <div class="stat-card__label">{{ __('public.adm_bridge_kpi_total') }}</div>
     </div>
     <div class="stat-card stat-card--success">
         <div class="stat-card__head"><i data-lucide="check-circle"></i></div>
         <div class="stat-card__value">{{ $stats['active'] }}</div>
-        <div class="stat-card__label">Active</div>
+        <div class="stat-card__label">{{ __('public.adm_bridge_kpi_active') }}</div>
     </div>
     <div class="stat-card stat-card--primary">
         <div class="stat-card__head"><i data-lucide="layers"></i></div>
         <div class="stat-card__value">{{ $stats['totalBatches'] }}</div>
-        <div class="stat-card__label">Total Batches</div>
+        <div class="stat-card__label">{{ __('public.adm_bridge_kpi_total_batches') }}</div>
     </div>
     <div class="stat-card stat-card--danger">
         <div class="stat-card__head"><i data-lucide="x-circle"></i></div>
         <div class="stat-card__value">{{ $stats['failedBatches'] }}</div>
-        <div class="stat-card__label">Failed Batches</div>
+        <div class="stat-card__label">{{ __('public.adm_bridge_kpi_failed') }}</div>
     </div>
 </div>
 
@@ -62,14 +62,14 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Agent Name</th>
-                    <th>Key Prefix</th>
-                    <th>Status</th>
-                    <th>Version</th>
-                    <th>Last Seen</th>
-                    <th>Last Sync</th>
-                    <th>Batches</th>
-                    <th class="row-actions">Actions</th>
+                    <th>{{ __('public.adm_bridge_col_agent_name') }}</th>
+                    <th>{{ __('public.adm_bridge_col_key_prefix') }}</th>
+                    <th>{{ __('public.adm_bridge_col_status2') }}</th>
+                    <th>{{ __('public.adm_bridge_col_version') }}</th>
+                    <th>{{ __('public.adm_bridge_col_last_seen') }}</th>
+                    <th>{{ __('public.adm_bridge_col_last_sync') }}</th>
+                    <th>{{ __('public.adm_bridge_col_batches') }}</th>
+                    <th class="row-actions">{{ __('public.adm_bridge_col_actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -95,12 +95,12 @@
                         </td>
                         <td class="row-actions" data-label="Actions">
                             <button type="button" class="btn btn-{{ $agent->status === 'active' ? 'warning' : 'success' }} btn-sm" onclick="opOpenModal('toggle-{{ $agent->id }}')">
-                                {{ $agent->status === 'active' ? 'Suspend' : 'Reactivate' }}
+                                {{ $agent->status === 'active' ? __('public.adm_bridge_btn_suspend') : __('public.adm_bridge_btn_reactivate') }}
                             </button>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="8" class="td-muted empty-cell">No bridge agents registered yet.</td></tr>
+                    <tr><td colspan="8" class="td-muted empty-cell">{{ __('public.adm_bridge_empty') }}</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -110,7 +110,7 @@
 
 {{-- API Integration Guide --}}
 <div class="panel mt-6">
-    <div class="panel-header"><h3 class="panel-title"><i data-lucide="book-open"></i> Bridge Agent API Endpoints</h3></div>
+    <div class="panel-header"><h3 class="panel-title"><i data-lucide="book-open"></i> {{ __('public.adm_bridge_api_title') }}</h3></div>
     <div class="panel-body">
         <div class="field-grid">
             <div class="stat-card">
@@ -126,7 +126,7 @@
                 <p class="td-muted">Query recent batch results and sync health for this agent.</p>
             </div>
         </div>
-        <p class="td-muted mt-6">All endpoints require header: <code class="code-token">X-Bridge-Agent-Key: &lt;raw_key&gt;</code></p>
+        <p class="td-muted mt-6">{{ __('public.adm_bridge_api_header_note') }} <code class="code-token">X-Bridge-Agent-Key: &lt;raw_key&gt;</code></p>
     </div>
 </div>
 
@@ -134,13 +134,13 @@
 @foreach($agents as $agent)
 <div id="toggle-{{ $agent->id }}" class="modal-backdrop mt-6" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="toggle-{{ $agent->id }}-title">
-        <h3 class="modal__title" id="toggle-{{ $agent->id }}-title"><i data-lucide="cable"></i> {{ $agent->status === 'active' ? 'Suspend' : 'Reactivate' }} agent</h3>
+        <h3 class="modal__title" id="toggle-{{ $agent->id }}-title"><i data-lucide="cable"></i> {{ $agent->status === 'active' ? __('public.adm_bridge_btn_suspend') : __('public.adm_bridge_btn_reactivate') }} agent</h3>
         <form method="POST" action="{{ route('portals.admin.bridge.toggle', $agent->id) }}">
             @csrf
-            <div class="modal__body"><p>{{ $agent->status === 'active' ? 'Suspend' : 'Reactivate' }} <strong>{{ $agent->name }}</strong>?</p></div>
+            <div class="modal__body"><p>{{ $agent->status === 'active' ? __('public.adm_bridge_btn_suspend') : __('public.adm_bridge_btn_reactivate') }} <strong>{{ $agent->name }}</strong>?</p></div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost" onclick="opCloseModal('toggle-{{ $agent->id }}')">Cancel</button>
-                <button type="submit" class="btn btn-{{ $agent->status === 'active' ? 'warning' : 'success' }}">{{ $agent->status === 'active' ? 'Suspend' : 'Reactivate' }}</button>
+                <button type="button" class="btn btn-ghost" onclick="opCloseModal('toggle-{{ $agent->id }}')">{{ __('public.adm_bridge_btn_cancel') }}</button>
+                <button type="submit" class="btn btn-{{ $agent->status === 'active' ? 'warning' : 'success' }}">{{ $agent->status === 'active' ? __('public.adm_bridge_btn_suspend') : __('public.adm_bridge_btn_reactivate') }}</button>
             </div>
         </form>
     </div>
@@ -150,23 +150,23 @@
 {{-- Register Agent Modal --}}
 <div id="createModal" class="modal-backdrop mt-6" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="createModal-title">
-        <h3 class="modal__title" id="createModal-title"><i data-lucide="cable"></i> Register Bridge Agent</h3>
+        <h3 class="modal__title" id="createModal-title"><i data-lucide="cable"></i> {{ __('public.adm_bridge_modal_register_title') }}</h3>
         <form method="POST" action="{{ route('portals.admin.bridge.store') }}">
             @csrf
             <div class="modal__body">
                 <div class="form-group">
-                    <label class="form-label form-label-required">Agent Name</label>
-                    <input type="text" name="name" class="form-control" required maxlength="100" placeholder="e.g. Main Campus EMR Bridge">
+                    <label class="form-label form-label-required">{{ __('public.adm_bridge_lbl_agent_name') }}</label>
+                    <input type="text" name="name" class="form-control" required maxlength="100" placeholder="{{ __('public.adm_bridge_ph_agent_name') }}">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Notes</label>
-                    <textarea name="notes" class="form-control" rows="2" placeholder="Purpose, deployment location, etc."></textarea>
+                    <label class="form-label">{{ __('public.adm_bridge_lbl_notes') }}</label>
+                    <textarea name="notes" class="form-control" rows="2" placeholder="{{ __('public.adm_bridge_ph_notes') }}"></textarea>
                 </div>
-                <p class="td-muted">A unique agent key will be generated and shown once after registration.</p>
+                <p class="td-muted">{{ __('public.adm_bridge_key_generate_note') }}</p>
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn-ghost" onclick="opCloseModal('createModal')">Cancel</button>
-                <button type="submit" class="btn btn-primary">Register &amp; Generate Key</button>
+                <button type="button" class="btn btn-ghost" onclick="opCloseModal('createModal')">{{ __('public.adm_bridge_btn_cancel') }}</button>
+                <button type="submit" class="btn btn-primary">{{ __('public.adm_bridge_btn_register_key') }}</button>
             </div>
         </form>
     </div>
@@ -179,7 +179,7 @@ function opOpenModal(id){ document.getElementById(id).removeAttribute('hidden');
 function opCloseModal(id){ document.getElementById(id).setAttribute('hidden',''); }
 function copyKey(){
     const key = document.getElementById('newKey')?.textContent?.trim();
-    if(key) navigator.clipboard.writeText(key).then(() => alert('Key copied to clipboard!'));
+    if(key) navigator.clipboard.writeText(key).then(() => alert('{{ __('public.adm_bridge_js_key_copied') }}'));
 }
 document.addEventListener('keydown', function(e){
     if(e.key==='Escape'){ document.querySelectorAll('.modal-backdrop').forEach(function(m){ m.setAttribute('hidden',''); }); }

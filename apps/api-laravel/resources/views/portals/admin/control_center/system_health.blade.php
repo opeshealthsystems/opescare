@@ -1,19 +1,19 @@
 @extends('layouts.portal')
-@section('title', 'System Health')
+@section('title', __('public.adm_cc_hlth_title'))
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin Portal')
+@section('breadcrumb_home', __('public.adm_cc_hlth_breadcrumb_home'))
 @section('breadcrumb_home_url', route('portals.admin'))
-@section('breadcrumb_section', 'System Health')
+@section('breadcrumb_section', __('public.adm_cc_hlth_breadcrumb_section'))
 
 @section('content')
 <div class="page-header">
     <div>
-        <h1 class="page-title">System Health</h1>
-        <p class="page-subtitle">Live platform health checks and diagnostics.</p>
+        <h1 class="page-title">{{ __('public.adm_cc_hlth_heading') }}</h1>
+        <p class="page-subtitle">{{ __('public.adm_cc_hlth_subtitle') }}</p>
     </div>
     <div class="page-head__spacer"></div>
     <a href="{{ route('portals.admin.cc.health') }}" class="btn btn-ghost btn-sm">
-        <i data-lucide="refresh-cw"></i> Refresh
+        <i data-lucide="refresh-cw"></i> {{ __('public.adm_cc_hlth_btn_refresh') }}
     </a>
 </div>
 
@@ -37,10 +37,10 @@
         default   => 'minus-circle',
     };
     $checks = [
-        ['Database',         $health['database']    ?? ['status'=>'unknown'], 'Connection check'],
-        ['Storage',          $health['storage']     ?? ['status'=>'unknown'], 'Disk write check'],
-        ['Queue',            $health['queue']       ?? ['status'=>'unknown'], 'Queue table check'],
-        ['Maintenance Mode', $health['maintenance'] ?? ['status'=>'ok'],      'Platform maintenance status'],
+        [__('public.adm_cc_hlth_check_database'),    $health['database']    ?? ['status'=>'unknown'], __('public.adm_cc_hlth_check_database_msg')],
+        [__('public.adm_cc_hlth_check_storage'),     $health['storage']     ?? ['status'=>'unknown'], __('public.adm_cc_hlth_check_storage_msg')],
+        [__('public.adm_cc_hlth_check_queue'),       $health['queue']       ?? ['status'=>'unknown'], __('public.adm_cc_hlth_check_queue_msg')],
+        [__('public.adm_cc_hlth_check_maintenance'), $health['maintenance'] ?? ['status'=>'ok'],      __('public.adm_cc_hlth_check_maintenance_msg')],
     ];
     $fj = $health['failed_jobs'] ?? ['status'=>'ok','count'=>0,'message'=>''];
     $fjStatus = ($fj['count'] ?? 0) > 0 ? 'warning' : 'ok';
@@ -63,10 +63,10 @@
     <div class="stat-card {{ $statusVariant($fjStatus) }}">
         <div class="stat-card__head">
             <i data-lucide="{{ $statusIcon($fjStatus) }}"></i>
-            <span class="stat-card__label">Failed Jobs</span>
+            <span class="stat-card__label">{{ __('public.adm_cc_hlth_check_failed_jobs') }}</span>
             <span class="badge {{ $fjStatus === 'warning' ? 'badge-warning' : 'badge-success' }}  badge-sm ml-auto">{{ $fj['count'] ?? 0 }}</span>
         </div>
-        <p class="nav-card__desc">{{ $fj['message'] ?? 'Jobs in failed_jobs table' }}</p>
+        <p class="nav-card__desc">{{ $fj['message'] ?? __('public.adm_cc_hlth_check_failed_jobs_msg') }}</p>
     </div>
 
 </div>
@@ -74,7 +74,7 @@
 {{-- Summary Panel --}}
 <div class="panel">
     <div class="panel-header">
-        <h3 class="panel-title"><i data-lucide="stethoscope"></i> Diagnostic summary</h3>
+        <h3 class="panel-title"><i data-lucide="stethoscope"></i> {{ __('public.adm_cc_hlth_summary_heading') }}</h3>
     </div>
     <div class="panel-body">
         @php
@@ -85,35 +85,35 @@
         <div class="stat-grid mb-4">
             <div class="stat-card stat-card--success">
                 <div class="stat-card__value">{{ $oks }}</div>
-                <div class="stat-card__label">Healthy</div>
+                <div class="stat-card__label">{{ __('public.adm_cc_hlth_stat_healthy') }}</div>
             </div>
             <div class="stat-card stat-card--warning">
                 <div class="stat-card__value">{{ $warnings }}</div>
-                <div class="stat-card__label">Warnings</div>
+                <div class="stat-card__label">{{ __('public.adm_cc_hlth_stat_warnings') }}</div>
             </div>
             <div class="stat-card stat-card--danger">
                 <div class="stat-card__value">{{ $errors }}</div>
-                <div class="stat-card__label">Errors</div>
+                <div class="stat-card__label">{{ __('public.adm_cc_hlth_stat_errors') }}</div>
             </div>
         </div>
         @if($errors > 0)
             <div class="alert alert-danger">
                 <i data-lucide="alert-triangle"></i>
-                <div>Critical issues detected. Immediate action required.</div>
+                <div>{{ __('public.adm_cc_hlth_alert_critical') }}</div>
             </div>
         @elseif($warnings > 0)
             <div class="alert alert-warning">
                 <i data-lucide="alert-circle"></i>
-                <div>Some checks need attention. Review warnings above.</div>
+                <div>{{ __('public.adm_cc_hlth_alert_warning') }}</div>
             </div>
         @else
             <div class="alert alert-success">
                 <i data-lucide="check-circle"></i>
-                <div>All systems operational.</div>
+                <div>{{ __('public.adm_cc_hlth_alert_ok') }}</div>
             </div>
         @endif
         <div class="td-muted text-sm mt-6">
-            Last checked: {{ now()->format('M d, Y H:i:s') }} (server time)
+            {{ __('public.adm_cc_hlth_last_checked') }} {{ now()->format('M d, Y H:i:s') }} {{ __('public.adm_cc_hlth_server_time') }}
         </div>
     </div>
 </div>
