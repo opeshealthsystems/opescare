@@ -87,7 +87,7 @@ class ProviderMobileFacilityController extends Controller
         $context = MobileFacilityContext::currentFor($userId);
 
         if (!$context) {
-            return response()->json(['data' => null, 'message' => 'No facility context set.'], 200);
+            return response()->json(['data' => null, 'message' => __('api.no_facility_context_set')], 200);
         }
 
         return response()->json([

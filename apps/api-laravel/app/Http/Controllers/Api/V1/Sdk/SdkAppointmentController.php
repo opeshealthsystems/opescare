@@ -26,7 +26,7 @@ class SdkAppointmentController extends Controller
         $patient = Patient::where('health_id', $data['health_id'])->first();
 
         if (!$patient) {
-            return response()->json(['error' => 'patient_not_found', 'message' => 'No patient with that Health ID.'], 404);
+            return response()->json(['error' => 'patient_not_found', 'message' => __('api.no_patient_with_health_id')], 404);
         }
 
         $appointment = Appointment::create([
@@ -57,7 +57,7 @@ class SdkAppointmentController extends Controller
         $appointment = Appointment::find($id);
 
         if (!$appointment) {
-            return response()->json(['error' => 'not_found', 'message' => 'Appointment not found.'], 404);
+            return response()->json(['error' => 'not_found', 'message' => __('api.appointment_not_found')], 404);
         }
 
         return response()->json([

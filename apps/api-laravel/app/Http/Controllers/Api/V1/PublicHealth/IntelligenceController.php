@@ -26,7 +26,7 @@ class IntelligenceController extends Controller
     {
         $signal = PublicHealthSignal::with(['reviews', 'facility'])->find($id);
         if (!$signal) {
-            return response()->json(['error' => 'Signal not found.'], 404);
+            return response()->json(['error' => __('api.signal_not_found')], 404);
         }
         return response()->json($signal);
     }
@@ -36,7 +36,7 @@ class IntelligenceController extends Controller
         // [IDOR FIX] facility_id from middleware only — never from request body
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['error' => 'FACILITY_UNRESOLVABLE', 'message' => 'Facility could not be resolved from bearer token.'], 403);
+            return response()->json(['error' => 'FACILITY_UNRESOLVABLE', 'message' => __('api.facility_unresolved_bearer_token')], 403);
         }
 
         $validated = $request->validate([
@@ -52,14 +52,14 @@ class IntelligenceController extends Controller
         if ($signal) {
             return response()->json([
                 'status'  => 'signal_detected',
-                'message' => 'Spike alert triggered. Public health signal registered.',
+                'message' => __('api.spike_alert_triggered'),
                 'signal'  => $signal
             ], 201);
         }
 
         return response()->json([
             'status'  => 'normal',
-            'message' => 'No abnormal spikes detected above threshold baseline.'
+            'message' => __('api.no_abnormal_spikes')
         ], 200);
     }
 
@@ -72,7 +72,7 @@ class IntelligenceController extends Controller
 
         $signal = PublicHealthSignal::find($id);
         if (!$signal) {
-            return response()->json(['error' => 'Signal not found.'], 404);
+            return response()->json(['error' => __('api.signal_not_found')], 404);
         }
 
         // Resolve operator identity from middleware-set attributes only
@@ -86,7 +86,7 @@ class IntelligenceController extends Controller
         }
 
         if (!$operatorId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $action  = $request->input('action');
@@ -117,7 +117,7 @@ class IntelligenceController extends Controller
 
         return response()->json([
             'status'  => $signal->status,
-            'message' => 'Signal review registered successfully.'
+            'message' => __('api.signal_review_registered')
         ]);
     }
 

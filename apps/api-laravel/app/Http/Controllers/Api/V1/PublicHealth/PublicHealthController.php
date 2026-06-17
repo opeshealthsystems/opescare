@@ -75,7 +75,7 @@ class PublicHealthController extends Controller
     {
         $report = PublicHealthReport::with(['reportType', 'facility', 'items', 'qualityChecks'])->find($id);
         if (!$report) {
-            return response()->json(['error' => 'Report not found.'], 404);
+            return response()->json(['error' => __('api.report_not_found')], 404);
         }
         return response()->json($report);
     }
@@ -85,7 +85,7 @@ class PublicHealthController extends Controller
         // [IDOR FIX] facility_id from middleware only — never from request body
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['error' => 'FACILITY_UNRESOLVABLE', 'message' => 'Facility could not be resolved from bearer token.'], 403);
+            return response()->json(['error' => 'FACILITY_UNRESOLVABLE', 'message' => __('api.facility_unresolved_bearer_token')], 403);
         }
 
         $validated = $request->validate([
@@ -100,7 +100,7 @@ class PublicHealthController extends Controller
         );
 
         return response()->json([
-            'message'         => 'Draft reports generation completed.',
+            'message'         => __('api.draft_reports_generated'),
             'generated_count' => count($reports),
             'reports'         => $reports
         ]);
@@ -110,7 +110,7 @@ class PublicHealthController extends Controller
     {
         $report = PublicHealthReport::find($id);
         if (!$report) {
-            return response()->json(['error' => 'Report not found.'], 404);
+            return response()->json(['error' => __('api.report_not_found')], 404);
         }
         return response()->json($report->qualityChecks);
     }
@@ -138,7 +138,7 @@ class PublicHealthController extends Controller
         if ($clientFacilityId && $clientFacilityId !== $facilityId) {
             return response()->json([
                 'error'   => 'forbidden',
-                'message' => 'You do not have access to analytics for this facility.',
+                'message' => __('api.analytics_access_denied'),
             ], 403);
         }
 
@@ -156,11 +156,11 @@ class PublicHealthController extends Controller
     {
         $operatorId = $this->resolveOperatorId($request);
         if (!$operatorId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $report = PublicHealthReport::find($id);
-        if (!$report) return response()->json(['error' => 'Report not found.'], 404);
+        if (!$report) return response()->json(['error' => __('api.report_not_found')], 404);
 
         $report->status = 'pending_review';
         $report->save();
@@ -174,7 +174,7 @@ class PublicHealthController extends Controller
             'changed_at' => now()
         ]);
 
-        return response()->json(['status' => 'pending_review', 'message' => 'Report successfully submitted for review.']);
+        return response()->json(['status' => 'pending_review', 'message' => __('api.report_submitted_review')]);
     }
 
     public function assignReport($id, Request $request)
@@ -183,11 +183,11 @@ class PublicHealthController extends Controller
 
         $operatorId = $this->resolveOperatorId($request);
         if (!$operatorId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $report = PublicHealthReport::find($id);
-        if (!$report) return response()->json(['error' => 'Report not found.'], 404);
+        if (!$report) return response()->json(['error' => __('api.report_not_found')], 404);
 
         $assigneeId = $request->input('assigned_to');
 
@@ -199,18 +199,18 @@ class PublicHealthController extends Controller
             'assigned_at'       => now()
         ]);
 
-        return response()->json(['message' => 'Report successfully assigned for review.']);
+        return response()->json(['message' => __('api.report_assigned_review')]);
     }
 
     public function approveReport($id, Request $request)
     {
         $operatorId = $this->resolveOperatorId($request);
         if (!$operatorId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $report = PublicHealthReport::find($id);
-        if (!$report) return response()->json(['error' => 'Report not found.'], 404);
+        if (!$report) return response()->json(['error' => __('api.report_not_found')], 404);
 
         $oldStatus = $report->status;
         $report->status = 'approved_for_submission';
@@ -233,7 +233,7 @@ class PublicHealthController extends Controller
             'changed_at' => now()
         ]);
 
-        return response()->json(['status' => 'approved_for_submission', 'message' => 'Report approved.']);
+        return response()->json(['status' => 'approved_for_submission', 'message' => __('api.report_approved')]);
     }
 
     public function requestCorrection($id, Request $request)
@@ -242,11 +242,11 @@ class PublicHealthController extends Controller
 
         $operatorId = $this->resolveOperatorId($request);
         if (!$operatorId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $report = PublicHealthReport::find($id);
-        if (!$report) return response()->json(['error' => 'Report not found.'], 404);
+        if (!$report) return response()->json(['error' => __('api.report_not_found')], 404);
 
         $oldStatus = $report->status;
         $report->status = 'requires_correction';
@@ -272,7 +272,7 @@ class PublicHealthController extends Controller
             'changed_at' => now()
         ]);
 
-        return response()->json(['status' => 'requires_correction', 'message' => 'Correction requested.']);
+        return response()->json(['status' => 'requires_correction', 'message' => __('api.correction_requested')]);
     }
 
     public function rejectReport($id, Request $request)
@@ -281,11 +281,11 @@ class PublicHealthController extends Controller
 
         $operatorId = $this->resolveOperatorId($request);
         if (!$operatorId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $report = PublicHealthReport::find($id);
-        if (!$report) return response()->json(['error' => 'Report not found.'], 404);
+        if (!$report) return response()->json(['error' => __('api.report_not_found')], 404);
 
         $oldStatus = $report->status;
         $report->status = 'rejected';
@@ -310,7 +310,7 @@ class PublicHealthController extends Controller
             'changed_at' => now()
         ]);
 
-        return response()->json(['status' => 'rejected', 'message' => 'Report rejected.']);
+        return response()->json(['status' => 'rejected', 'message' => __('api.report_rejected')]);
     }
 
     public function cancelReport($id, Request $request)
@@ -319,11 +319,11 @@ class PublicHealthController extends Controller
 
         $operatorId = $this->resolveOperatorId($request);
         if (!$operatorId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $report = PublicHealthReport::find($id);
-        if (!$report) return response()->json(['error' => 'Report not found.'], 404);
+        if (!$report) return response()->json(['error' => __('api.report_not_found')], 404);
 
         $oldStatus = $report->status;
         $report->status = 'cancelled';
@@ -340,7 +340,7 @@ class PublicHealthController extends Controller
             'changed_at' => now()
         ]);
 
-        return response()->json(['status' => 'cancelled', 'message' => 'Report cancelled.']);
+        return response()->json(['status' => 'cancelled', 'message' => __('api.report_cancelled')]);
     }
 
     public function correctReport($id, Request $request)
@@ -352,11 +352,11 @@ class PublicHealthController extends Controller
 
         $operatorId = $this->resolveOperatorId($request);
         if (!$operatorId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $report = PublicHealthReport::find($id);
-        if (!$report) return response()->json(['error' => 'Report not found.'], 404);
+        if (!$report) return response()->json(['error' => __('api.report_not_found')], 404);
 
         $reason = $request->input('reason');
 
@@ -385,21 +385,21 @@ class PublicHealthController extends Controller
         return response()->json([
             'status'  => 'draft',
             'version' => $newVersion,
-            'message' => 'Report updated and version preserved.'
+            'message' => __('api.report_updated_versioned')
         ]);
     }
 
     public function getVersions($id)
     {
         $report = PublicHealthReport::find($id);
-        if (!$report) return response()->json(['error' => 'Report not found.'], 404);
+        if (!$report) return response()->json(['error' => __('api.report_not_found')], 404);
         return response()->json(ReportVersion::where('report_id', $report->id)->get());
     }
 
     public function getStatusHistory($id)
     {
         $report = PublicHealthReport::find($id);
-        if (!$report) return response()->json(['error' => 'Report not found.'], 404);
+        if (!$report) return response()->json(['error' => __('api.report_not_found')], 404);
         return response()->json(ReportStatusHistory::where('report_id', $report->id)->get());
     }
 
@@ -436,18 +436,18 @@ class PublicHealthController extends Controller
 
         $operatorId = $this->resolveOperatorId($request);
         if (!$operatorId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $report = PublicHealthReport::find($id);
-        if (!$report) return response()->json(['error' => 'Report not found.'], 404);
+        if (!$report) return response()->json(['error' => __('api.report_not_found')], 404);
 
         if ($report->status !== 'approved_for_submission') {
-            return response()->json(['error' => 'Report must be approved before submission.'], 400);
+            return response()->json(['error' => __('api.report_must_be_approved')], 400);
         }
 
         $profile = SubmissionProfile::find($request->input('profile_id'));
-        if (!$profile) return response()->json(['error' => 'Submission profile not found.'], 404);
+        if (!$profile) return response()->json(['error' => __('api.submission_profile_not_found')], 404);
 
         $submission = ReportSubmission::create([
             'report_id'              => $report->id,
@@ -476,16 +476,16 @@ class PublicHealthController extends Controller
     {
         $operatorId = $this->resolveOperatorId($request);
         if (!$operatorId) {
-            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => 'Actor identity could not be resolved from request context.'], 403);
+            return response()->json(['error' => 'ACTOR_UNRESOLVABLE', 'message' => __('api.actor_unresolved_request')], 403);
         }
 
         $report = PublicHealthReport::find($id);
-        if (!$report) return response()->json(['error' => 'Report not found.'], 404);
+        if (!$report) return response()->json(['error' => __('api.report_not_found')], 404);
 
         $export = $this->exportService->exportCsv($report, $operatorId);
 
         return response()->json([
-            'message'    => 'Export successfully created with Small-Cell Suppression.',
+            'message'    => __('api.export_created_suppression'),
             'export_id'  => $export->id,
             'expires_at' => $export->expires_at
         ]);
@@ -508,11 +508,11 @@ class PublicHealthController extends Controller
     {
         $export = ExportFile::find($id);
         if (!$export) {
-            return response()->json(['error' => 'File not found.'], 404);
+            return response()->json(['error' => __('api.file_not_found')], 404);
         }
 
         if (now()->isAfter($export->expires_at)) {
-            return response()->json(['error' => 'Export file has expired.'], 410);
+            return response()->json(['error' => __('api.export_file_expired')], 410);
         }
 
         $export->download_count++;

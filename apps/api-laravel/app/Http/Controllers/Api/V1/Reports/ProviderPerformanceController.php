@@ -22,7 +22,7 @@ class ProviderPerformanceController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'Facility could not be resolved.', 'code' => 'FACILITY_UNRESOLVABLE'], 403);
+            return response()->json(['message' => __('api.facility_unresolved'), 'code' => 'FACILITY_UNRESOLVABLE'], 403);
         }
 
         $validated = $request->validate([
@@ -58,7 +58,7 @@ class ProviderPerformanceController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'Facility could not be resolved.', 'code' => 'FACILITY_UNRESOLVABLE'], 403);
+            return response()->json(['message' => __('api.facility_unresolved'), 'code' => 'FACILITY_UNRESOLVABLE'], 403);
         }
 
         $validated = $request->validate([
@@ -88,12 +88,12 @@ class ProviderPerformanceController extends Controller
     {
         $middlewareFacilityId = $request->attributes->get('facility_id');
         if (!$middlewareFacilityId) {
-            return response()->json(['message' => 'Facility could not be resolved.', 'code' => 'FACILITY_UNRESOLVABLE'], 403);
+            return response()->json(['message' => __('api.facility_unresolved'), 'code' => 'FACILITY_UNRESOLVABLE'], 403);
         }
 
         // Cross-check route param against middleware-resolved facility
         if ($facilityId !== $middlewareFacilityId) {
-            return response()->json(['message' => 'Access denied to this facility.', 'code' => 'FACILITY_ACCESS_DENIED'], 403);
+            return response()->json(['message' => __('api.access_denied_facility_to'), 'code' => 'FACILITY_ACCESS_DENIED'], 403);
         }
 
         $validated = $request->validate([

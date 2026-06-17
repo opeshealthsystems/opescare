@@ -18,7 +18,7 @@ class SdkFacilityController extends Controller
         $facility = Facility::find($id);
 
         if (!$facility) {
-            return response()->json(['error' => 'not_found', 'message' => 'Facility not found.'], 404);
+            return response()->json(['error' => 'not_found', 'message' => __('api.facility_not_found')], 404);
         }
 
         return response()->json([
@@ -40,7 +40,7 @@ class SdkFacilityController extends Controller
         $facility = Facility::find($id);
 
         if (!$facility) {
-            return response()->json(['error' => 'not_found', 'message' => 'Facility not found.'], 404);
+            return response()->json(['error' => 'not_found', 'message' => __('api.facility_not_found')], 404);
         }
 
         $items = InventoryItem::where('facility_id', $id)

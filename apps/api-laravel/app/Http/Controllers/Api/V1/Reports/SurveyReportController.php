@@ -19,7 +19,7 @@ class SurveyReportController extends Controller
     {
         $facilityId = $request->attributes->get('facility_id');
         if (!$facilityId) {
-            return response()->json(['message' => 'Facility could not be resolved.', 'code' => 'FACILITY_UNRESOLVABLE'], 403);
+            return response()->json(['message' => __('api.facility_unresolved'), 'code' => 'FACILITY_UNRESOLVABLE'], 403);
         }
 
         $validated = $request->validate([

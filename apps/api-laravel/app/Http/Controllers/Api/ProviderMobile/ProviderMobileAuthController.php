@@ -41,16 +41,16 @@ class ProviderMobileAuthController extends Controller
         $user = User::where('email', $validated['email'])->first();
 
         if (!$user) {
-            return response()->json(['error' => 'Invalid credentials.'], 401);
+            return response()->json(['error' => __('api.invalid_credentials')], 401);
         }
 
         // Reject inactive/suspended provider accounts
         if (isset($user->status) && !in_array($user->status, ['active', null], true)) {
-            return response()->json(['error' => 'Account is not active.'], 403);
+            return response()->json(['error' => __('api.account_not_active')], 403);
         }
 
         if (!Hash::check($validated['pin_hash'], $user->password)) {
-            return response()->json(['error' => 'Invalid credentials.'], 401);
+            return response()->json(['error' => __('api.invalid_credentials')], 401);
         }
 
         $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
@@ -64,7 +64,7 @@ class ProviderMobileAuthController extends Controller
 
         $payload = [
             'status'  => 'pending_2fa',
-            'message' => 'Credentials accepted. OTP sent to registered contact.',
+            'message' => __('api.credentials_accepted_otp'),
         ];
 
         if (!app()->isProduction()) {
@@ -96,7 +96,7 @@ class ProviderMobileAuthController extends Controller
             ->first();
 
         if (!$otpRecord || !Hash::check($validated['otp_code'], $otpRecord->code_hash)) {
-            return response()->json(['error' => 'Invalid or expired OTP.'], 401);
+            return response()->json(['error' => __('api.otp_invalid')], 401);
         }
 
         $otpRecord->update(['used_at' => now()]);

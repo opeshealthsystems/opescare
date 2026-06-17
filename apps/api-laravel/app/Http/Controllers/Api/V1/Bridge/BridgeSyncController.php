@@ -81,7 +81,7 @@ class BridgeSyncController extends Controller
             return response()->json([
                 'batch_id' => $batch->id,
                 'status'   => 'failed',
-                'error'    => 'Sync processing error. Batch recorded for retry.',
+                'error'    => __('api.sync_processing_error'),
             ], 500);
         }
     }

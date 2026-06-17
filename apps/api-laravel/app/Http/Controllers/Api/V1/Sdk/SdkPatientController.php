@@ -19,7 +19,7 @@ class SdkPatientController extends Controller
         $patient = Patient::where('health_id', $health_id)->first();
 
         if (!$patient) {
-            return response()->json(['error' => 'patient_not_found', 'message' => 'No patient with that Health ID.'], 404);
+            return response()->json(['error' => 'patient_not_found', 'message' => __('api.no_patient_with_health_id')], 404);
         }
 
         $allergies = AllergyRecord::where('patient_id', $patient->id)
@@ -46,7 +46,7 @@ class SdkPatientController extends Controller
         $patient = Patient::where('health_id', $health_id)->first();
 
         if (!$patient) {
-            return response()->json(['error' => 'patient_not_found', 'message' => 'No patient with that Health ID.'], 404);
+            return response()->json(['error' => 'patient_not_found', 'message' => __('api.no_patient_with_health_id')], 404);
         }
 
         $encounters = MedicalRecord::where('patient_id', $patient->id)

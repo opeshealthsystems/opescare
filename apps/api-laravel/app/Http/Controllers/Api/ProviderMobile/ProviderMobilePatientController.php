@@ -44,14 +44,14 @@ class ProviderMobilePatientController extends Controller
         if (!$patient) {
             return response()->json([
                 'found'   => false,
-                'message' => 'No patient found with Health ID: ' . $healthId,
+                'message' => __('api.no_patient_with_health_id_value', ['health_id' => $healthId]),
             ], 404);
         }
 
         if (!$hasGlobal && $facilityId && $patient->facility_id !== $facilityId) {
             return response()->json([
                 'error'   => 'PATIENT_NOT_IN_FACILITY',
-                'message' => 'Patient is not registered at your facility.',
+                'message' => __('api.patient_not_at_facility'),
             ], 403);
         }
 

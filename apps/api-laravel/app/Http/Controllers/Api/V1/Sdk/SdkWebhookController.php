@@ -54,11 +54,11 @@ class SdkWebhookController extends Controller
             ->first();
 
         if (!$subscription) {
-            return response()->json(['error' => 'not_found', 'message' => 'Subscription not found or not owned by this client.'], 404);
+            return response()->json(['error' => 'not_found', 'message' => __('api.subscription_not_owned')], 404);
         }
 
         $subscription->update(['status' => 'paused']);
 
-        return response()->json(['message' => 'Subscription removed.'], 200);
+        return response()->json(['message' => __('api.subscription_removed')], 200);
     }
 }
