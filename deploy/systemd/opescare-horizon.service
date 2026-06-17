@@ -1,0 +1,26 @@
+[Unit]
+# OpesCare queue worker (Laravel Horizon).
+# Without this running, queued work silently stops: webhooks, FHIR subscription
+# notifications, bulk exports/imports, DHIS2/MINSANTE reporting, appointment
+# reminders, and family/in-app notifications. Payments (MoMo/Orange callbacks)
+# and USSD are synchronous and unaffected, but everything async depends on this.
+Description=OpesCare Laravel Horizon
+After=network.target postgresql.service redis-server.service
+Requires=redis-server.service
+
+[Service]
+Type=simple
+# Adjust User/path to match the deploy target (DEPLOY_PATH in deploy.yml).
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/opescare/apps/api-laravel
+ExecStart=/usr/bin/php8.3 artisan horizon
+# Horizon responds to SIGTERM by gracefully finishing in-flight jobs.
+ExecStop=/usr/bin/php8.3 /var/www/opescare/apps/api-laravel/artisan horizon:terminate
+Restart=always
+RestartSec=5
+# Give in-flight jobs time to finish on stop/restart.
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target

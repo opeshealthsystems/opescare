@@ -1,0 +1,14 @@
+[Unit]
+# Runs the Laravel scheduler once. Triggered every minute by the paired
+# opescare-scheduler.timer. Without it, all scheduled work stops silently:
+# backups, data-retention enforcement, health-ID expiry notices, audit-log
+# archival, token purge, appointment reminders, and maintenance windows.
+Description=OpesCare Laravel scheduler (one-shot, run by timer)
+After=network.target postgresql.service redis-server.service
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/opescare/apps/api-laravel
+ExecStart=/usr/bin/php8.3 artisan schedule:run --no-interaction

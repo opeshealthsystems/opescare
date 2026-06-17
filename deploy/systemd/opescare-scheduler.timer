@@ -1,0 +1,12 @@
+[Unit]
+Description=Run OpesCare Laravel scheduler every minute
+Requires=opescare-scheduler.service
+
+[Timer]
+# Fire at the top of every minute; catch up if the box was briefly down.
+OnCalendar=*-*-* *:*:00
+AccuracySec=1s
+Persistent=true
+
+[Install]
+WantedBy=timers.target
