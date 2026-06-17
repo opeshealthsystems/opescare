@@ -111,20 +111,31 @@ jobs:
             set -e
             cd $DEPLOY_PATH/apps/api-laravel
 
+            # Enter maintenance mode BEFORE swapping code. New code on disk can
+            # reference schema that migrations haven't applied yet (e.g. a column
+            # added in this release) — serving traffic in that window causes 500s
+            # and potential data errors. Maintenance mode returns 503 + Retry-After
+            # instead, and we only lift it after migrations + caches + fpm reload.
+            # (--secret lets the health check bypass the maintenance screen.)
+            echo "==> Entering maintenance mode..."
+            php artisan down --retry=15 --secret="${DEPLOY_HEALTHCHECK_SECRET:-deploy-healthcheck}" || true
+
             echo "==> Pulling latest code..."
             git pull origin main --ff-only
 
             echo "==> Installing/updating dependencies..."
             composer install --no-dev --optimize-autoloader --no-interaction
 
+            # Migrations run FIRST, while in maintenance mode, so the schema is
+            # always up to date before any new-code path can be served.
+            echo "==> Running migrations (forward-only, before traffic resumes)..."
+            php artisan migrate --force
+
             echo "==> Caching config, routes, views..."
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
             php artisan event:cache
-
-            echo "==> Running migrations (safe — no destructive changes)..."
-            php artisan migrate --force
 
             echo "==> Restarting queue workers gracefully..."
             php artisan queue:restart
@@ -133,11 +144,19 @@ jobs:
             php artisan horizon:terminate
             sleep 3
 
-            echo "==> Reloading PHP-FPM (zero-downtime)..."
+            echo "==> Reloading PHP-FPM..."
             sudo systemctl reload php8.3-fpm
 
-            echo "==> Health check..."
-            curl -sf http://localhost/api/health || (echo "Health check FAILED" && exit 1)
+            # Health check via the maintenance bypass secret, BEFORE lifting
+            # maintenance — so we never expose a broken release to users.
+            echo "==> Health check (maintenance bypass)..."
+            curl -sf -H "Cookie: laravel_maintenance=${DEPLOY_HEALTHCHECK_SECRET:-deploy-healthcheck}" \
+              http://localhost/api/health \
+              || curl -sf "http://localhost/${DEPLOY_HEALTHCHECK_SECRET:-deploy-healthcheck}" \
+              || (echo "Health check FAILED — staying in maintenance mode for investigation" && exit 1)
+
+            echo "==> Lifting maintenance mode..."
+            php artisan up
 
             echo "==> Deploy complete ✓"
           ENDSSH
