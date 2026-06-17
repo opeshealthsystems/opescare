@@ -69,6 +69,26 @@
     </div>
 </div>
 
+{{-- Value banner (shown on Free) — loss-aversion framing toward Premium --}}
+@if($premium && (! $currentPlan || $currentPlan->isFree()))
+<div class="panel mb-4" style="border-left:4px solid #0F4C81;">
+    <div class="panel-body" style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between;">
+        <div style="max-width:580px;">
+            <h3 style="margin:0 0 .35rem;font-size:1.15rem;font-weight:800;color:#0F4C81;display:flex;align-items:center;gap:.5rem;">
+                <i data-lucide="sparkles"></i> {{ __('public.pat_sub_why_title') }}
+            </h3>
+            <p class="page-subtitle" style="margin:0;">{{ __('public.pat_sub_why_body') }}</p>
+        </div>
+        <form method="POST" action="{{ route('portals.patient.subscription.subscribe') }}">
+            @csrf
+            <input type="hidden" name="plan_id" value="{{ $premium->id }}">
+            <input type="hidden" name="interval" value="annual">
+            <button type="submit" class="btn btn-primary"><i data-lucide="arrow-up-circle"></i> {{ __('public.pat_sub_upgrade') }}</button>
+        </form>
+    </div>
+</div>
+@endif
+
 {{-- Available plans --}}
 @foreach($plans as $plan)
     @php $isCurrent = $currentPlan && $currentPlan->id === $plan->id; @endphp
@@ -79,6 +99,8 @@
             </h3>
             @if($isCurrent)
                 <span class="badge badge-info">{{ __('public.pat_sub_current') }}</span>
+            @elseif(! $plan->isFree())
+                <span class="badge badge-primary">{{ __('public.pat_sub_most_popular') }}</span>
             @endif
         </div>
         <div class="panel-body">
@@ -92,6 +114,24 @@
                     @endif
                 @endif
             </p>
+            @php
+                $savePct = null; $monthsFree = null;
+                if (! $plan->isFree() && $plan->annual_price_kobo && $plan->price_kobo) {
+                    $yearly = $plan->price_kobo * 12;
+                    if ($yearly > $plan->annual_price_kobo) {
+                        $savePct    = (int) round((($yearly - $plan->annual_price_kobo) / $yearly) * 100);
+                        $monthsFree = (int) round(($yearly - $plan->annual_price_kobo) / $plan->price_kobo);
+                    }
+                }
+            @endphp
+            @if($savePct)
+                <div style="margin:0 0 .9rem;">
+                    <span class="badge badge-success">
+                        <i data-lucide="piggy-bank" style="width:.85rem;height:.85rem;"></i>
+                        {{ __('public.pat_sub_save_annual', ['pct' => $savePct]) }}@if($monthsFree) · {{ __('public.pat_sub_months_free', ['n' => $monthsFree]) }}@endif
+                    </span>
+                </div>
+            @endif
 
             @if($plan->description)
                 <p class="page-subtitle" style="margin:0 0 .75rem;">{{ $plan->description }}</p>
