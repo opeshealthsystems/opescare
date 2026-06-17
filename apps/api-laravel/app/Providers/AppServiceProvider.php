@@ -46,6 +46,11 @@ class AppServiceProvider extends ServiceProvider
         Route::middleware('api')
             ->group(base_path('routes/clinical.php'));
 
+        // Marketing / growth public routes (pricing, etc.) — loaded here to keep
+        // them out of the large shared routes/web.php file.
+        Route::middleware('web')
+            ->group(base_path('routes/marketing.php'));
+
         RateLimiter::for('verify', function (Request $request) {
             return Limit::perMinute(30)->by($request->ip());
         });

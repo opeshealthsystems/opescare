@@ -84,6 +84,7 @@
                     </div>
                 </div>
                 <a href="{{ route('public.security') }}" class="nav-link">{{ __('landing.nav.security', [], app()->getLocale()) ?: 'Security' }}</a>
+                <a href="{{ route('public.pricing') }}" class="nav-link">{{ __('pricing.nav_label', [], app()->getLocale()) ?: 'Pricing' }}</a>
                 <div class="nav-dropdown">
                     <a href="{{ route('public.help') }}" class="nav-link dropdown-trigger">{{ __('landing.nav.resources', [], app()->getLocale()) ?: 'Resources' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
                     <div class="dropdown-menu">
