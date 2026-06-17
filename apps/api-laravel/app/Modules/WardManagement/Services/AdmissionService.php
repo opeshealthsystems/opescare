@@ -7,6 +7,7 @@ use App\Models\Bed;
 use App\Models\BedTransfer;
 use App\Models\DischargePlan;
 use App\Models\VisitTimeline;
+use Illuminate\Support\Facades\DB;
 
 /**
  * AdmissionService — Module 19 (Ward / Admission / Bed Management)
@@ -21,29 +22,32 @@ class AdmissionService
      */
     public function admit(array $data, string $actorId): Admission
     {
-        // Verify bed is available
-        $bed = Bed::findOrFail($data['bed_id']);
-        if ($bed->status !== 'available') {
-            throw new \RuntimeException("Bed {$bed->id} is not available.");
-        }
+        return DB::transaction(function () use ($data, $actorId) {
+            // Row-lock the bed for the duration of the transaction so two
+            // concurrent admits cannot both observe it available and double-book.
+            $bed = Bed::whereKey($data['bed_id'])->lockForUpdate()->firstOrFail();
+            if ($bed->status !== 'available') {
+                throw new \RuntimeException("Bed {$bed->id} is not available.");
+            }
 
-        $admission = Admission::create(array_merge($data, [
-            'status'       => 'admitted',
-            'admitted_at'  => $data['admitted_at'] ?? now(),
-            'admitted_by'  => $actorId,
-        ]));
+            $admission = Admission::create(array_merge($data, [
+                'status'       => 'admitted',
+                'admitted_at'  => $data['admitted_at'] ?? now(),
+                'admitted_by'  => $actorId,
+            ]));
 
-        // Mark bed as occupied
-        $bed->update(['status' => 'occupied']);
+            // Mark bed as occupied
+            $bed->update(['status' => 'occupied']);
 
-        if (isset($data['visit_id'])) {
-            VisitTimeline::record($data['visit_id'], 'patient_admitted', [
-                'admission_id' => $admission->id,
-                'bed_id'       => $bed->id,
-            ]);
-        }
+            if (isset($data['visit_id'])) {
+                VisitTimeline::record($data['visit_id'], 'patient_admitted', [
+                    'admission_id' => $admission->id,
+                    'bed_id'       => $bed->id,
+                ]);
+            }
 
-        return $admission;
+            return $admission;
+        });
     }
 
     /**

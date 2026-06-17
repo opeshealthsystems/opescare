@@ -41,7 +41,9 @@ class WardService
     {
         DB::beginTransaction();
         try {
-            $bed = Bed::findOrFail($data['bed_id']);
+            // Row-lock the bed for the duration of the transaction so two
+            // concurrent admits cannot both observe it as available and double-book.
+            $bed = Bed::whereKey($data['bed_id'])->lockForUpdate()->firstOrFail();
 
             if (!$bed->isAvailable()) {
                 throw new \RuntimeException("Bed {$bed->bed_number} is not available (status: {$bed->status}).");
