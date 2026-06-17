@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 @section('title', __('public.pharmacy_portal.page_title', [], app()->getLocale()) ?: 'Drug Inventory')
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">
@@ -29,9 +29,9 @@
 <form method="GET" class="filter-bar">
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="search" placeholder="{{ __('public.pharmacy_portal.ph_search_drug', [], $l) ?: 'Drug or generic name…' }}" value="{{ request('search') }}" aria-label="Search drugs">
+        <input type="text" name="search" placeholder="{{ __('public.pharmacy_portal.ph_search_drug', [], $l) ?: 'Drug or generic nameâ€¦' }}" value="{{ request('search') }}" aria-label="{{ __('public.aria_search_drugs') }}">
     </label>
-    <select name="stock_status" class="filter-select" aria-label="Stock status" onchange="this.form.submit()">
+    <select name="stock_status" class="filter-select" aria-label="{{ __('public.aria_stock_status') }}" onchange="this.form.submit()">
         <option value="">{{ __('public.pharmacy_portal.filter_all_stock', [], $l) ?: 'All stock' }}</option>
         <option value="in_stock" {{ request('stock_status') === 'in_stock' ? 'selected' : '' }}>{{ __('public.pharmacy_portal.filter_in_stock', [], $l) ?: 'In stock' }}</option>
         <option value="low_stock" {{ request('stock_status') === 'low_stock' ? 'selected' : '' }}>{{ __('public.pharmacy_portal.filter_low_stock', [], $l) ?: 'Low stock' }}</option>
@@ -61,7 +61,7 @@
                 @forelse($drugs as $drug)
                 <tr>
                     <td data-label="{{ __('public.pharmacy_portal.col_drug_name', [], $l) ?: 'Drug name' }}" class="td-strong">{{ $drug->medicine_name }}</td>
-                    <td data-label="{{ __('public.pharmacy_portal.col_generic', [], $l) ?: 'Generic' }}" class="td-muted">{{ $drug->generic_name ?? '—' }}</td>
+                    <td data-label="{{ __('public.pharmacy_portal.col_generic', [], $l) ?: 'Generic' }}" class="td-muted">{{ $drug->generic_name ?? 'â€”' }}</td>
                     <td data-label="{{ __('public.pharmacy_portal.col_form_strength', [], $l) ?: 'Form / strength' }}">{{ $drug->form }} {{ $drug->strength }}</td>
                     <td data-label="{{ __('public.pharmacy_portal.col_qty', [], $l) ?: 'Qty' }}" class="td-strong">{{ $drug->available_quantity }}</td>
                     <td data-label="{{ __('public.pharmacy_portal.col_stock_status', [], $l) ?: 'Stock status' }}">
@@ -73,9 +73,9 @@
                         @if($drug->is_expired)<span class="badge badge-danger">{{ __('public.pharmacy_portal.flag_expired', [], $l) ?: 'Expired' }}</span>@endif
                         @if($drug->is_recalled)<span class="badge badge-danger">{{ __('public.pharmacy_portal.flag_recalled', [], $l) ?: 'Recalled' }}</span>@endif
                         @if($drug->is_quarantined)<span class="badge badge-warning">{{ __('public.pharmacy_portal.flag_quarantined', [], $l) ?: 'Quarantined' }}</span>@endif
-                        @if(!$drug->is_expired && !$drug->is_recalled && !$drug->is_quarantined)<span class="td-muted">—</span>@endif
+                        @if(!$drug->is_expired && !$drug->is_recalled && !$drug->is_quarantined)<span class="td-muted">â€”</span>@endif
                     </td>
-                    <td data-label="{{ __('public.pharmacy_portal.col_last_updated', [], $l) ?: 'Last updated' }}" class="td-muted">{{ $drug->last_stock_update?->format('d M Y') ?? '—' }}</td>
+                    <td data-label="{{ __('public.pharmacy_portal.col_last_updated', [], $l) ?: 'Last updated' }}" class="td-muted">{{ $drug->last_stock_update?->format('d M Y') ?? 'â€”' }}</td>
                 </tr>
                 @empty
                 <tr><td colspan="7" class="td-muted empty-cell">{{ __('public.pharmacy_portal.no_drugs', [], $l) ?: 'No drugs found.' }}</td></tr>

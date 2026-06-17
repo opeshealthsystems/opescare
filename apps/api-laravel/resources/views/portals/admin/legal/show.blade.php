@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 @section('title', $document->title)
 @section('sidebar') @include('portals.admin.control_center._sidebar') @endsection
 
@@ -59,12 +59,12 @@
                             @endif
                         </td>
                         <td data-label="{{ __('public.adm_legal_show_col_published') }}" class="td-muted">
-                            {{ $ver->published_at?->format('d M Y H:i') ?? '—' }}
+                            {{ $ver->published_at?->format('d M Y H:i') ?? 'â€”' }}
                         </td>
                         <td data-label="{{ __('public.adm_legal_show_col_effective') }}" class="td-muted">
-                            {{ $ver->effective_at?->format('d M Y') ?? '—' }}
+                            {{ $ver->effective_at?->format('d M Y') ?? 'â€”' }}
                         </td>
-                        <td data-label="{{ __('public.adm_legal_show_col_change_summary') }}">{{ $ver->change_summary ?: '—' }}</td>
+                        <td data-label="{{ __('public.adm_legal_show_col_change_summary') }}">{{ $ver->change_summary ?: 'â€”' }}</td>
                     </tr>
                 @empty
                     <tr><td colspan="6" class="td-muted empty-cell">{{ __('public.adm_legal_show_empty_versions') }}</td></tr>
@@ -97,8 +97,8 @@
 <div id="publishModal" class="modal-fixed">
     <div class="modal-fixed__panel">
         <div class="modal-fixed__head">
-            <h3 class="modal-fixed__title">{{ __('public.adm_legal_show_modal_title') }} — {{ $document->title }}</h3>
-            <button type="button" class="icon-btn" aria-label="Close" onclick="opCloseModal('publishModal')"><i data-lucide="x"></i></button>
+            <h3 class="modal-fixed__title">{{ __('public.adm_legal_show_modal_title') }} â€” {{ $document->title }}</h3>
+            <button type="button" class="icon-btn" aria-label="{{ __('public.aria_close') }}" onclick="opCloseModal('publishModal')"><i data-lucide="x"></i></button>
         </div>
         <form method="POST" action="{{ route('portals.admin.legal.publish_version', $document) }}">
             @csrf

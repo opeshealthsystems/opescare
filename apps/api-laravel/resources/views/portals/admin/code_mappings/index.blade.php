@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 @section('title', __('public.adm_codemap_idx_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', __('public.adm_codemap_idx_breadcrumb_home'))
@@ -31,15 +31,15 @@
 <form method="GET" class="filter-bar">
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="q" value="{{ $search }}" placeholder="{{ __('public.adm_codemap_idx_ph_search') }}" aria-label="Search mappings">
+        <input type="text" name="q" value="{{ $search }}" placeholder="{{ __('public.adm_codemap_idx_ph_search') }}" aria-label="{{ __('public.aria_search_mappings') }}">
     </label>
-    <select name="system" class="filter-select" aria-label="System">
+    <select name="system" class="filter-select" aria-label="{{ __('public.aria_system') }}">
         <option value="">{{ __('public.adm_codemap_idx_filter_all_systems') }}</option>
         @foreach($systems as $sys)
         <option value="{{ $sys }}" {{ $system === $sys ? 'selected' : '' }}>{{ strtoupper($sys) }}</option>
         @endforeach
     </select>
-    <select name="status" class="filter-select" aria-label="Status">
+    <select name="status" class="filter-select" aria-label="{{ __('public.aria_status') }}">
         <option value="">{{ __('public.adm_codemap_idx_filter_all_statuses') }}</option>
         @foreach($statuses as $s)
         <option value="{{ $s }}" {{ $status === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
@@ -76,10 +76,10 @@
                 @forelse($mappings as $mapping)
                 <tr>
                     <td data-label="{{ __('public.adm_codemap_idx_col_local_code') }}"><span class="mono td-strong">{{ $mapping->local_code }}</span></td>
-                    <td data-label="{{ __('public.adm_codemap_idx_col_local_name') }}" title="{{ $mapping->local_name }}">{{ $mapping->local_name ?? '—' }}</td>
+                    <td data-label="{{ __('public.adm_codemap_idx_col_local_name') }}" title="{{ $mapping->local_name }}">{{ $mapping->local_name ?? 'â€”' }}</td>
                     <td data-label="{{ __('public.adm_codemap_idx_col_system') }}"><span class="badge badge-primary">{{ strtoupper($mapping->standard_system) }}</span></td>
                     <td data-label="{{ __('public.adm_codemap_idx_col_std_code') }}"><span class="mono">{{ $mapping->standard_code }}</span></td>
-                    <td data-label="{{ __('public.adm_codemap_idx_col_std_display') }}" title="{{ $mapping->standard_display }}">{{ $mapping->standard_display ?? '—' }}</td>
+                    <td data-label="{{ __('public.adm_codemap_idx_col_std_display') }}" title="{{ $mapping->standard_display }}">{{ $mapping->standard_display ?? 'â€”' }}</td>
                     <td data-label="{{ __('public.adm_codemap_idx_col_type') }}">{{ $mapping->resource_type }}</td>
                     <td data-label="{{ __('public.adm_codemap_idx_col_confidence') }}">{{ ucfirst($mapping->mapping_confidence) }}</td>
                     <td data-label="{{ __('public.adm_codemap_idx_col_status') }}"><span class="badge {{ $mapping->statusBadgeClass() }}">{{ ucfirst($mapping->status) }}</span></td>

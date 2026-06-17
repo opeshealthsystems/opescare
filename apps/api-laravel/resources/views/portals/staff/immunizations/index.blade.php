@@ -1,6 +1,6 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 
-@section('title', __('public.stf_immun_title') . ' — OpesCare Staff Portal')
+@section('title', __('public.stf_immun_title') . ' â€” OpesCare Staff Portal')
 
 @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
@@ -24,9 +24,9 @@
         <div class="filter-bar">
             <label class="filter-search">
                 <i data-lucide="search"></i>
-                <input type="text" name="patient_id" placeholder="{{ __('public.stf_immun_ph_patient_id') }}" value="{{ request('patient_id') }}" aria-label="Filter by patient health ID">
+                <input type="text" name="patient_id" placeholder="{{ __('public.stf_immun_ph_patient_id') }}" value="{{ request('patient_id') }}" aria-label="{{ __('public.aria_filter_patient_hid') }}">
             </label>
-            <input type="text" name="facility_id" class="filter-search" placeholder="{{ __('public.stf_immun_ph_facility_id') }}" value="{{ request('facility_id') }}" aria-label="Filter by facility ID">
+            <input type="text" name="facility_id" class="filter-search" placeholder="{{ __('public.stf_immun_ph_facility_id') }}" value="{{ request('facility_id') }}" aria-label="{{ __('public.aria_filter_facility_id') }}">
             <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> {{ __('public.stf_immun_filter_btn') }}</button>
             <a href="{{ route('portals.staff.immunizations') }}" class="btn btn-secondary btn-sm"><i data-lucide="x"></i> {{ __('public.stf_immun_clear_btn') }}</a>
         </div>
@@ -54,7 +54,7 @@
             </div>
         @else
             <div class="table-wrapper">
-                <table class="data-table" aria-label="Immunization records">
+                <table class="data-table" aria-label="{{ __('public.aria_immunization_records') }}">
                     <thead>
                         <tr>
                             <th>{{ __('public.stf_immun_col_vaccine') }}</th>
@@ -68,7 +68,7 @@
                         @foreach($records as $record)
                         <tr>
                             <td data-label="{{ __('public.stf_immun_col_vaccine') }}">
-                                <span class="td-strong">{{ $record->vaccine_name ?? '—' }}</span>
+                                <span class="td-strong">{{ $record->vaccine_name ?? 'â€”' }}</span>
                                 @if(!empty($record->vaccine_code))
                                 <div class="td-muted">{{ $record->vaccine_code }}</div>
                                 @endif
@@ -78,7 +78,7 @@
                             </td>
                             <td data-label="{{ __('public.stf_immun_col_date_given') }}">
                                 <span class="td-muted">
-                                    {{ $record->administered_at ? \Carbon\Carbon::parse($record->administered_at)->format('d M Y') : '—' }}
+                                    {{ $record->administered_at ? \Carbon\Carbon::parse($record->administered_at)->format('d M Y') : 'â€”' }}
                                 </span>
                             </td>
                             <td data-label="{{ __('public.stf_immun_col_dose') }}">
@@ -121,7 +121,7 @@
             </div>
         @else
             <div class="table-wrapper">
-                <table class="data-table" aria-label="Immunization schedule">
+                <table class="data-table" aria-label="{{ __('public.aria_immunization_schedule') }}">
                     <thead>
                         <tr>
                             <th>{{ __('public.stf_immun_col_vaccine') }}</th>
@@ -134,7 +134,7 @@
                         @foreach($schedule as $item)
                         <tr>
                             <td data-label="{{ __('public.stf_immun_col_vaccine') }}">
-                                <span class="td-strong">{{ $item->vaccine_name ?? '—' }}</span>
+                                <span class="td-strong">{{ $item->vaccine_name ?? 'â€”' }}</span>
                                 <div class="td-muted">Dose {{ $item->dose_number ?? '1' }}</div>
                             </td>
                             <td data-label="{{ __('public.stf_immun_col_patient') }}">
@@ -142,7 +142,7 @@
                             </td>
                             <td data-label="{{ __('public.stf_immun_col_due_date') }}">
                                 <span class="td-muted">
-                                    {{ $item->scheduled_date ? \Carbon\Carbon::parse($item->scheduled_date)->format('d M Y') : '—' }}
+                                    {{ $item->scheduled_date ? \Carbon\Carbon::parse($item->scheduled_date)->format('d M Y') : 'â€”' }}
                                 </span>
                             </td>
                             <td data-label="{{ __('public.stf_immun_col_status') }}">

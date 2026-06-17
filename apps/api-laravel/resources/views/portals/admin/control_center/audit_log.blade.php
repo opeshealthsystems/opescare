@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 @section('title', __('public.adm_cc_audit_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', __('public.adm_cc_audit_breadcrumb_home'))
@@ -41,25 +41,25 @@
                             @if($log->resource_type)
                                 <span class="badge badge-neutral badge-sm">{{ $log->resource_type }}</span>
                             @else
-                                <span class="td-muted">—</span>
+                                <span class="td-muted">â€”</span>
                             @endif
                         </td>
                         <td data-label="{{ __('public.adm_cc_audit_col_resource_id') }}" class="td-muted">
                             @if($log->resource_id)
                                 <span class="code-muted">{{ Str::limit($log->resource_id, 12) }}</span>
                             @else
-                                —
+                                â€”
                             @endif
                         </td>
                         <td data-label="{{ __('public.adm_cc_audit_col_actor') }}">{{ $log->actor_id }}</td>
-                        <td data-label="{{ __('public.adm_cc_audit_col_ip') }}" class="td-muted">{{ $log->ip_address ?? '—' }}</td>
+                        <td data-label="{{ __('public.adm_cc_audit_col_ip') }}" class="td-muted">{{ $log->ip_address ?? 'â€”' }}</td>
                         <td data-label="{{ __('public.adm_cc_audit_col_when') }}" class="td-muted">
                             {{ \Carbon\Carbon::parse($log->occurred_at)->format('M d, Y H:i') }}
                             <div class="code-muted">{{ \Carbon\Carbon::parse($log->occurred_at)->diffForHumans() }}</div>
                         </td>
                         <td class="row-actions">
                             @if($log->after || $log->before)
-                                <button type="button" class="icon-btn" aria-label="View diff"
+                                <button type="button" class="icon-btn" aria-label="{{ __('public.aria_view_diff') }}"
                                     onclick="showDiff({{ json_encode($log->before) }}, {{ json_encode($log->after) }}, '{{ addslashes($log->action) }}')">
                                     <i data-lucide="eye"></i>
                                 </button>
@@ -86,7 +86,7 @@
     <div class="modal-fixed__panel">
         <div class="modal-fixed__head">
             <h3 id="diff-title" class="modal-fixed__title"></h3>
-            <button type="button" class="icon-btn" aria-label="Close" onclick="closeDiff()">
+            <button type="button" class="icon-btn" aria-label="{{ __('public.aria_close') }}" onclick="closeDiff()">
                 <i data-lucide="x"></i>
             </button>
         </div>

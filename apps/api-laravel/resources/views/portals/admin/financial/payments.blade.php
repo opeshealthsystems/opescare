@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 @section('title', __('public.adm_fin_pay_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', 'Admin')
@@ -27,43 +27,43 @@
 <form method="GET" action="{{ route('portals.admin.financial.payments') }}" class="filter-bar">
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="Reference or phone..." aria-label="Search">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Reference or phone..." aria-label="{{ __('public.aria_search') }}">
     </label>
-    <select name="gateway" class="filter-select" aria-label="Gateway">
+    <select name="gateway" class="filter-select" aria-label="{{ __('public.aria_gateway') }}">
         <option value="">{{ __('public.adm_fin_pay_opt_all_gateways') }}</option>
         @foreach(['mtn_momo'=>'MTN MoMo','orange_money'=>'Orange Money','cash'=>'Cash','card'=>'Card','insurance'=>'Insurance','bank_transfer'=>'Bank Transfer','wallet'=>'Wallet'] as $k=>$l)
         <option value="{{ $k }}" {{ request('gateway')===$k?'selected':'' }}>{{ $l }}</option>
         @endforeach
     </select>
-    <select name="status" class="filter-select" aria-label="Status">
+    <select name="status" class="filter-select" aria-label="{{ __('public.aria_status') }}">
         <option value="">{{ __('public.adm_fin_pay_opt_all_statuses') }}</option>
         @foreach(['successful'=>'Successful','pending'=>'Pending','failed'=>'Failed','refunded'=>'Refunded','completed'=>'Completed'] as $k=>$l)
         <option value="{{ $k }}" {{ request('status')===$k?'selected':'' }}>{{ $l }}</option>
         @endforeach
     </select>
-    <select name="service_type" class="filter-select" aria-label="Service type">
+    <select name="service_type" class="filter-select" aria-label="{{ __('public.aria_service_type') }}">
         <option value="">{{ __('public.adm_fin_pay_opt_all_services') }}</option>
         @foreach(['consultation','lab_test','pharmacy','radiology','admission','subscription','emergency','procedure','dental','vaccination','manual_override'] as $s)
         <option value="{{ $s }}" {{ request('service_type')===$s?'selected':'' }}>{{ ucwords(str_replace('_',' ',$s)) }}</option>
         @endforeach
     </select>
-    <select name="device_type" class="filter-select" aria-label="Device">
+    <select name="device_type" class="filter-select" aria-label="{{ __('public.aria_device') }}">
         <option value="">{{ __('public.adm_fin_pay_opt_all_devices') }}</option>
         @foreach(['web','android','ios','pos_terminal','ussd'] as $d)
         <option value="{{ $d }}" {{ request('device_type')===$d?'selected':'' }}>{{ strtoupper($d) }}</option>
         @endforeach
     </select>
-    <select name="facility_id" class="filter-select" aria-label="Facility">
+    <select name="facility_id" class="filter-select" aria-label="{{ __('public.aria_facility') }}">
         <option value="">{{ __('public.adm_fin_pay_opt_all_facilities') }}</option>
         @foreach($facilities as $f)<option value="{{ $f->id }}" {{ request('facility_id')==$f->id?'selected':'' }}>{{ $f->name }}</option>@endforeach
     </select>
     <label class="filter-search">
         <i data-lucide="calendar"></i>
-        <input type="date" name="from_date" value="{{ request('from_date') }}" aria-label="From date">
+        <input type="date" name="from_date" value="{{ request('from_date') }}" aria-label="{{ __('public.aria_from_date') }}">
     </label>
     <label class="filter-search">
         <i data-lucide="calendar"></i>
-        <input type="date" name="to_date" value="{{ request('to_date') }}" aria-label="To date">
+        <input type="date" name="to_date" value="{{ request('to_date') }}" aria-label="{{ __('public.aria_to_date') }}">
     </label>
     <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> Filter</button>
     <a href="{{ route('portals.admin.financial.payments') }}" class="btn btn-ghost btn-sm">Reset</a>
@@ -109,18 +109,18 @@
                 @elseif($p->payer_name)
                     {{ $p->payer_name }}
                 @else
-                    <span class="td-muted">—</span>
+                    <span class="td-muted">â€”</span>
                 @endif
             </td>
-            <td data-label="{{ __('public.adm_fin_pay_col_phone') }}"><span class="mono">{{ $p->payer_phone ?? '—' }}</span></td>
+            <td data-label="{{ __('public.adm_fin_pay_col_phone') }}"><span class="mono">{{ $p->payer_phone ?? 'â€”' }}</span></td>
             <td data-label="{{ __('public.adm_fin_pay_col_gateway') }}">
                 <span class="cell-with-icon" title="{{ $gw }}">
                     <i data-lucide="{{ $icons[$gw] ?? 'credit-card' }}"></i>
                     <span>{{ ucwords(str_replace('_',' ',$gw)) }}</span>
                 </span>
             </td>
-            <td data-label="{{ __('public.adm_fin_pay_col_gw_txn') }}"><span class="mono" title="{{ $p->gateway_transaction_id }}">{{ $p->gateway_transaction_id ?? '—' }}</span></td>
-            <td data-label="{{ __('public.adm_fin_pay_col_service') }}">{{ ucwords(str_replace('_',' ',$p->service_type??'—')) }}</td>
+            <td data-label="{{ __('public.adm_fin_pay_col_gw_txn') }}"><span class="mono" title="{{ $p->gateway_transaction_id }}">{{ $p->gateway_transaction_id ?? 'â€”' }}</span></td>
+            <td data-label="{{ __('public.adm_fin_pay_col_service') }}">{{ ucwords(str_replace('_',' ',$p->service_type??'â€”')) }}</td>
             <td data-label="{{ __('public.adm_fin_pay_col_amount') }}"><strong>{{ number_format($p->amount,0,'.',',') }}</strong>
                 @if($p->refunded_amount > 0)
                 <div class="td-muted">-{{ number_format($p->refunded_amount,0,'.',',') }} refund</div>
@@ -133,10 +133,10 @@
                 @else<span class="badge badge-neutral">{{ ucfirst($p->status) }}</span>@endif
             </td>
             <td data-label="{{ __('public.adm_fin_pay_col_device') }}">
-                <span class="cell-with-icon"><i data-lucide="{{ $di[$p->device_type??''] ?? 'monitor' }}"></i> {{ strtoupper($p->device_type ?? '—') }}</span>
+                <span class="cell-with-icon"><i data-lucide="{{ $di[$p->device_type??''] ?? 'monitor' }}"></i> {{ strtoupper($p->device_type ?? 'â€”') }}</span>
             </td>
-            <td data-label="{{ __('public.adm_fin_pay_col_facility') }}">{{ $p->facility?->name ?? '—' }}</td>
-            <td data-label="{{ __('public.adm_fin_pay_col_cashier') }}">{{ $p->cashier?->name ?? '—' }}</td>
+            <td data-label="{{ __('public.adm_fin_pay_col_facility') }}">{{ $p->facility?->name ?? 'â€”' }}</td>
+            <td data-label="{{ __('public.adm_fin_pay_col_cashier') }}">{{ $p->cashier?->name ?? 'â€”' }}</td>
             <td data-label="{{ __('public.adm_fin_pay_col_datetime') }}">
                 {{ $p->created_at?->format('d M Y') }}<br>
                 <span class="td-muted">{{ $p->created_at?->format('H:i:s') }}</span>

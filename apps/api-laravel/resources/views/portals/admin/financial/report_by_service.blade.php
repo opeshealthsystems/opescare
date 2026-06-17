@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 @section('title', __('public.adm_fin_rbs_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', 'Admin')
@@ -23,11 +23,11 @@
 <form method="GET" action="{{ route('portals.admin.financial.report.by_service') }}" class="filter-bar">
     <label class="filter-search">
         <i data-lucide="calendar"></i>
-        <input type="date" name="from_date" value="{{ $from->format('Y-m-d') }}" aria-label="From date">
+        <input type="date" name="from_date" value="{{ $from->format('Y-m-d') }}" aria-label="{{ __('public.aria_from_date') }}">
     </label>
     <label class="filter-search">
         <i data-lucide="calendar"></i>
-        <input type="date" name="to_date" value="{{ $to->format('Y-m-d') }}" aria-label="To date">
+        <input type="date" name="to_date" value="{{ $to->format('Y-m-d') }}" aria-label="{{ __('public.aria_to_date') }}">
     </label>
     <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> Apply</button>
 </form>
@@ -41,7 +41,7 @@
     <div class="stat-card">
         <div class="stat-card__label">{{ __('public.adm_fin_rbs_kpi_grand') }}</div>
         <div class="stat-card__value">{{ number_format($grandTotal,0,'.',',') }} XAF</div>
-        <div class="stat-card__hint">Period: {{ $from->format('d M Y') }} – {{ $to->format('d M Y') }}</div>
+        <div class="stat-card__hint">Period: {{ $from->format('d M Y') }} â€“ {{ $to->format('d M Y') }}</div>
     </div>
 </div>
 

@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 @section('title', __('public.adm_legal_page_title'))
 @section('sidebar') @include('portals.admin.control_center._sidebar') @endsection
 
@@ -102,7 +102,7 @@
     <div class="modal-fixed__panel modal-fixed__panel--lg">
         <div class="modal-fixed__head">
             <h3 class="modal-fixed__title">{{ __('public.adm_legal_modal_new_title') }}</h3>
-            <button type="button" class="icon-btn" aria-label="Close" onclick="opCloseModal('newDocModal')"><i data-lucide="x"></i></button>
+            <button type="button" class="icon-btn" aria-label="{{ __('public.aria_close') }}" onclick="opCloseModal('newDocModal')"><i data-lucide="x"></i></button>
         </div>
         <form method="POST" action="{{ route('portals.admin.legal.store') }}">
             @csrf
@@ -112,7 +112,7 @@
             </div>
             <div class="form-group mb-3">
                 <label class="form-label form-label-required">{{ __('public.adm_legal_modal_title_label') }}</label>
-                <input type="text" name="title" class="form-control" placeholder="Terms of Use" required>
+                <input type="text" name="title" class="form-control" placeholder="{{ __('public.aria_ph_legal_title') }}" required>
             </div>
             <div class="form-group mb-4">
                 <label class="form-label form-label-required">{{ __('public.adm_legal_modal_type_label') }}</label>

@@ -1,6 +1,6 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 
-@section('title', __('public.portal.nav_appointments', [], app()->getLocale()) . ' — OpesCare Patient Portal')
+@section('title', __('public.portal.nav_appointments', [], app()->getLocale()) . ' â€” OpesCare Patient Portal')
 
 @section('breadcrumb_home', __('public.portal.my_portal', [], app()->getLocale()) ?: 'My Portal')
 @section('breadcrumb_home_url', route('portals.patient'))
@@ -45,7 +45,7 @@
         <span class="badge badge-primary">{{ $apptCount }}</span>
     </div>
     <div class="table-wrapper">
-        <table class="data-table" aria-label="Appointments list">
+        <table class="data-table" aria-label="{{ __('public.aria_appointments_list') }}">
             <thead>
                 <tr>
                     <th>{{ __('public.portal.date_time', [], app()->getLocale()) ?: 'Date & Time' }}</th>
@@ -61,7 +61,7 @@
                 <tr>
                     <td data-label="{{ __('public.portal.date_time', [], app()->getLocale()) ?: 'Date & Time' }}">
                         <span class="td-strong">
-                            {{ $appt->scheduled_at?->format('d M Y') ?? '—' }}
+                            {{ $appt->scheduled_at?->format('d M Y') ?? 'â€”' }}
                         </span>
                         @if($appt->scheduled_at)
                         <div class="td-muted">{{ $appt->scheduled_at->format('H:i') }}</div>
@@ -71,9 +71,9 @@
                         @php
                             $providerName = $appt->provider?->name
                                 ?? (($appt->provider?->first_name ?? '') . ' ' . ($appt->provider?->last_name ?? ''))
-                                ?: '—';
+                                ?: 'â€”';
                         @endphp
-                        <span class="td-strong">{{ trim($providerName) ?: '—' }}</span>
+                        <span class="td-strong">{{ trim($providerName) ?: 'â€”' }}</span>
                     </td>
                     <td data-label="{{ __('public.portal.appointment_type', [], app()->getLocale()) ?: 'Type' }}">
                         <span class="badge badge-primary">{{ ucfirst(str_replace('_', ' ', $appt->appointment_type ?? 'General')) }}</span>

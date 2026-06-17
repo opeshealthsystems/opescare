@@ -1,5 +1,5 @@
-@extends('layouts.portal')
-@section('title', $facility->name . ' — ' . __('public.adm_onboard_show_title_suffix'))
+﻿@extends('layouts.portal')
+@section('title', $facility->name . ' â€” ' . __('public.adm_onboard_show_title_suffix'))
 @section('sidebar') @include('portals.admin.control_center._sidebar') @endsection
 
 @section('content')
@@ -127,7 +127,7 @@
     <div class="modal-fixed__panel modal-fixed__panel--lg">
         <div class="modal-fixed__head">
             <h3 class="modal-fixed__title">{{ __('public.adm_onboard_show_modal_title') }}</h3>
-            <button type="button" class="icon-btn" aria-label="Close" onclick="opCloseModal('approveModal')"><i data-lucide="x"></i></button>
+            <button type="button" class="icon-btn" aria-label="{{ __('public.aria_close') }}" onclick="opCloseModal('approveModal')"><i data-lucide="x"></i></button>
         </div>
         <p class="td-muted text-sm mb-4">
             {{ __('public.adm_onboard_show_modal_desc_before') }} <strong>{{ $facility->name }}</strong> {{ __('public.adm_onboard_show_modal_desc_after') }}

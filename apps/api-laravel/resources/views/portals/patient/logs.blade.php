@@ -1,6 +1,6 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 
-@section('title', __('public.medical_id.access_logs', [], app()->getLocale()) . ' — OpesCare Patient Portal')
+@section('title', __('public.medical_id.access_logs', [], app()->getLocale()) . ' â€” OpesCare Patient Portal')
 
 @section('breadcrumb_home', __('public.portal.my_portal', [], app()->getLocale()) ?: 'My Portal')
 @section('breadcrumb_home_url', route('portals.patient'))
@@ -47,7 +47,7 @@
         </div>
     @else
         <div class="table-wrapper">
-            <table class="data-table" aria-label="Access logs">
+            <table class="data-table" aria-label="{{ __('public.aria_access_logs') }}">
                 <thead>
                     <tr>
                         <th>{{ __('public.portal.date_time', [], app()->getLocale()) ?: 'Date & Time' }}</th>
@@ -76,7 +76,7 @@
                             </span>
                         </td>
                         <td data-label="{{ __('public.portal.purpose', [], app()->getLocale()) ?: 'Purpose' }}">
-                            <span class="td-muted">{{ ucfirst(str_replace('_', ' ', $log->purpose ?? '—')) }}</span>
+                            <span class="td-muted">{{ ucfirst(str_replace('_', ' ', $log->purpose ?? 'â€”')) }}</span>
                         </td>
                         <td data-label="{{ __('public.portal.result', [], app()->getLocale()) ?: 'Result' }}">
                             @if(($log->result ?? '') === 'success')
@@ -86,7 +86,7 @@
                             @endif
                         </td>
                         <td data-label="{{ __('public.portal.details', [], app()->getLocale()) ?: 'Details' }}">
-                            <span class="td-mono">{{ $log->ip_address ?? '—' }}</span>
+                            <span class="td-mono">{{ $log->ip_address ?? 'â€”' }}</span>
                         </td>
                     </tr>
                     @endforeach

@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 @section('title', __('public.adm_fac_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', 'Admin')
@@ -26,7 +26,7 @@
 <form method="GET" action="{{ route('admin.facilities.index') }}" class="filter-bar">
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('public.adm_fac_ph_search') }}" aria-label="Search facilities">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('public.adm_fac_ph_search') }}" aria-label="{{ __('public.aria_search_facilities') }}">
     </label>
     <select name="type" class="filter-select" aria-label="Type" onchange="this.form.submit()">
         <option value="">{{ __('public.adm_fac_opt_all_types') }}</option>
@@ -34,7 +34,7 @@
         <option value="{{ $t }}" {{ request('type')===$t?'selected':'' }}>{{ ucfirst($t) }}</option>
         @endforeach
     </select>
-    <select name="status" class="filter-select" aria-label="Status" onchange="this.form.submit()">
+    <select name="status" class="filter-select" aria-label="{{ __('public.aria_status') }}" onchange="this.form.submit()">
         <option value="">{{ __('public.adm_fac_opt_all_statuses') }}</option>
         <option value="active" {{ request('status')==='active'?'selected':'' }}>{{ __('public.adm_fac_opt_active') }}</option>
         <option value="pending_approval" {{ request('status')==='pending_approval'?'selected':'' }}>{{ __('public.adm_fac_opt_pending') }}</option>
@@ -69,8 +69,8 @@
                             <span class="td-strong">{{ $f->name }}</span>
                         </span>
                     </td>
-                    <td data-label="{{ __('public.adm_fac_col_type') }}">{{ ucfirst($f->type ?? '—') }}</td>
-                    <td data-label="{{ __('public.adm_fac_col_region') }}">{{ $f->region ?? '—' }}</td>
+                    <td data-label="{{ __('public.adm_fac_col_type') }}">{{ ucfirst($f->type ?? 'â€”') }}</td>
+                    <td data-label="{{ __('public.adm_fac_col_region') }}">{{ $f->region ?? 'â€”' }}</td>
                     <td data-label="{{ __('public.adm_fac_col_status') }}">
                         @if($f->status==='active')<span class="badge badge-success">{{ __('public.adm_fac_badge_active') }}</span>
                         @elseif($f->status==='suspended')<span class="badge badge-danger">{{ __('public.adm_fac_badge_suspended') }}</span>
@@ -78,17 +78,17 @@
                         @else<span class="badge badge-neutral">{{ ucfirst($f->status ?? 'pending') }}</span>@endif
                     </td>
                     <td class="row-actions" data-label="{{ __('public.adm_fac_col_actions') }}">
-                        <a href="{{ route('admin.facilities.show', $f->id) }}" class="icon-btn" aria-label="View facility" title="View">
+                        <a href="{{ route('admin.facilities.show', $f->id) }}" class="icon-btn" aria-label="{{ __('public.aria_view_facility') }}" title="View">
                             <i data-lucide="eye"></i>
                         </a>
                         @if(($f->status ?? '') !== 'active')
                         <form method="POST" action="{{ route('admin.facilities.approve', $f->id) }}" class="inline-form">@csrf
-                            <button type="submit" class="icon-btn" aria-label="Approve facility" title="Approve"><i data-lucide="check-circle"></i></button>
+                            <button type="submit" class="icon-btn" aria-label="{{ __('public.aria_approve_facility') }}" title="{{ __('public.aria_approve') }}"><i data-lucide="check-circle"></i></button>
                         </form>
                         @endif
                         @if(($f->status ?? '') !== 'suspended')
                         <form method="POST" action="{{ route('admin.facilities.suspend', $f->id) }}" class="inline-form">@csrf
-                            <button type="submit" class="icon-btn" aria-label="Suspend facility" title="Suspend"><i data-lucide="pause-circle"></i></button>
+                            <button type="submit" class="icon-btn" aria-label="{{ __('public.aria_suspend_facility') }}" title="{{ __('public.aria_suspend') }}"><i data-lucide="pause-circle"></i></button>
                         </form>
                         @endif
                     </td>

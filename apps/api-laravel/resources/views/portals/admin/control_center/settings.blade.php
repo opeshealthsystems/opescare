@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 @section('title', __('public.adm_cc_set_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', __('public.adm_cc_set_breadcrumb_home'))
@@ -37,7 +37,7 @@
                         <td data-label="Key"><span class="code-token">{{ $setting['key'] }}</span></td>
                         <td data-label="Value" class="td-strong">{{ $setting['value'] }}</td>
                         <td data-label="Type"><span class="badge badge-neutral badge-sm">{{ $setting['value_type'] }}</span></td>
-                        <td data-label="Description" class="td-muted">{{ $setting['description'] ?? '—' }}</td>
+                        <td data-label="Description" class="td-muted">{{ $setting['description'] ?? 'â€”' }}</td>
                         <td class="row-actions">
                             <button type="button" class="btn btn-ghost btn-sm"
                                 onclick="openEditModal('{{ $setting['key'] }}', '{{ addslashes($setting['value']) }}')">
@@ -64,7 +64,7 @@
     <div class="modal-fixed__panel modal-fixed__panel--sm">
         <div class="modal-fixed__head">
             <h3 class="modal-fixed__title">{{ __('public.adm_cc_set_edit_modal_heading') }}</h3>
-            <button type="button" class="icon-btn" aria-label="Close" onclick="closeEditModal()"><i data-lucide="x"></i></button>
+            <button type="button" class="icon-btn" aria-label="{{ __('public.aria_close') }}" onclick="closeEditModal()"><i data-lucide="x"></i></button>
         </div>
         <form method="POST" action="{{ route('portals.admin.cc.settings.update') }}">
             @csrf

@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 @section('title', __('public.adm_cc_mod_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', __('public.adm_cc_mod_breadcrumb_home'))
@@ -37,8 +37,8 @@
                     <span class="code-token">{{ $mod->module_key }}</span>
                     <span class="badge badge-neutral badge-sm">{{ $mod->scope }}</span>
                     @if($mod->scope_value)<span class="td-muted">{{ $mod->scope_value }}</span>@endif
-                    @if(!$mod->enabled && $mod->disable_reason)<span class="td-muted">· {{ $mod->disable_reason }}</span>@endif
-                    @if($mod->updated_by)<span class="td-muted">· {{ __('public.adm_cc_mod_updated_by') }} {{ $mod->updated_by }}</span>@endif
+                    @if(!$mod->enabled && $mod->disable_reason)<span class="td-muted">Â· {{ $mod->disable_reason }}</span>@endif
+                    @if($mod->updated_by)<span class="td-muted">Â· {{ __('public.adm_cc_mod_updated_by') }} {{ $mod->updated_by }}</span>@endif
                 </div>
             </div>
             <span class="badge {{ $mod->enabled ? 'badge-success' : 'badge-neutral' }} badge-sm">
@@ -73,7 +73,7 @@
     <div class="modal-fixed__panel modal-fixed__panel--sm">
         <div class="modal-fixed__head">
             <h3 class="modal-fixed__title">{{ __('public.adm_cc_mod_disable_modal_heading') }}</h3>
-            <button type="button" class="icon-btn" aria-label="Close" onclick="closeDisableModal()"><i data-lucide="x"></i></button>
+            <button type="button" class="icon-btn" aria-label="{{ __('public.aria_close') }}" onclick="closeDisableModal()"><i data-lucide="x"></i></button>
         </div>
         <p id="disable-module-name" class="td-muted text-sm mb-4"></p>
         <form id="disable-form" method="POST" action="">

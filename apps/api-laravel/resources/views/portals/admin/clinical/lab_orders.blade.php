@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 
 @section('title', __('public.adm_clin_lab_title'))
 
@@ -45,7 +45,7 @@
 
 {{-- Filters --}}
 <form method="GET" class="filter-bar">
-    <select name="status" class="filter-select" aria-label="Status" onchange="this.form.submit()">
+    <select name="status" class="filter-select" aria-label="{{ __('public.aria_status') }}" onchange="this.form.submit()">
         <option value="">{{ __('public.adm_clin_lab_filter_all_statuses') }}</option>
         <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>{{ __('public.adm_clin_lab_filter_pending') }}</option>
         <option value="collected" {{ request('status') === 'collected' ? 'selected' : '' }}>{{ __('public.adm_clin_lab_filter_collected') }}</option>
@@ -53,14 +53,14 @@
         <option value="resulted" {{ request('status') === 'resulted' ? 'selected' : '' }}>{{ __('public.adm_clin_lab_filter_resulted') }}</option>
         <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>{{ __('public.adm_clin_lab_filter_cancelled') }}</option>
     </select>
-    <select name="urgency" class="filter-select" aria-label="Urgency" onchange="this.form.submit()">
+    <select name="urgency" class="filter-select" aria-label="{{ __('public.aria_urgency') }}" onchange="this.form.submit()">
         <option value="">{{ __('public.adm_clin_lab_filter_all_urgencies') }}</option>
         <option value="urgent" {{ request('urgency') === 'urgent' ? 'selected' : '' }}>{{ __('public.adm_clin_lab_filter_urgent') }}</option>
         <option value="routine" {{ request('urgency') === 'routine' ? 'selected' : '' }}>{{ __('public.adm_clin_lab_filter_routine') }}</option>
     </select>
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="search" placeholder="{{ __('public.adm_clin_lab_ph_search') }}" value="{{ request('search') }}" aria-label="Search">
+        <input type="text" name="search" placeholder="{{ __('public.adm_clin_lab_ph_search') }}" value="{{ request('search') }}" aria-label="{{ __('public.aria_search') }}">
     </label>
     <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> {{ __('public.adm_clin_lab_btn_filter') }}</button>
     @if(request()->hasAny(['status','urgency','search']))
@@ -90,16 +90,16 @@
                         @if($order->test_code)<div class="td-muted">{{ $order->test_code }}</div>@endif
                     </td>
                     <td data-label="{{ __('public.adm_clin_lab_col_patient') }}">
-                        <div class="td-strong">{{ $order->patient?->full_name ?? '—' }}</div>
+                        <div class="td-strong">{{ $order->patient?->full_name ?? 'â€”' }}</div>
                         <div class="td-muted">{{ $order->patient?->health_id ?? '' }}</div>
                     </td>
                     <td data-label="{{ __('public.adm_clin_lab_col_urgency') }}">
                         <span class="badge {{ $order->urgency === 'urgent' ? 'badge-danger' : 'badge-neutral' }}">{{ ucfirst($order->urgency ?? 'routine') }}</span>
                     </td>
                     <td data-label="{{ __('public.adm_clin_lab_col_ordered') }}">{{ $order->ordered_at?->format('d M Y H:i') ?? $order->created_at?->format('d M Y') }}</td>
-                    <td data-label="{{ __('public.adm_clin_lab_col_collected') }}">{{ $order->collected_at?->format('d M Y H:i') ?? '—' }}</td>
+                    <td data-label="{{ __('public.adm_clin_lab_col_collected') }}">{{ $order->collected_at?->format('d M Y H:i') ?? 'â€”' }}</td>
                     <td data-label="{{ __('public.adm_clin_lab_col_status') }}"><span class="badge badge-{{ $order->statusColor() }}">{{ ucfirst($order->status) }}</span></td>
-                    <td data-label="{{ __('public.adm_clin_lab_col_resulted') }}">{{ $order->resulted_at?->format('d M Y H:i') ?? '—' }}</td>
+                    <td data-label="{{ __('public.adm_clin_lab_col_resulted') }}">{{ $order->resulted_at?->format('d M Y H:i') ?? 'â€”' }}</td>
                 </tr>
                 @empty
                 <tr><td colspan="7" class="td-muted empty-cell">{{ __('public.adm_clin_lab_empty') }}</td></tr>

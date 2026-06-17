@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 @section('title', __('public.lab_portal.page_title', [], app()->getLocale()) ?: 'Lab Work Queue')
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">
@@ -19,7 +19,7 @@
 
 <div class="page-head">
     <h2>{{ __('public.lab_portal.page_heading_orders', [], $l) ?: 'Lab work queue' }}</h2>
-    <p class="page-subtitle">{{ __('public.lab_portal.page_subtitle_orders', [], $l) ?: 'All incoming test orders — filter by status or urgency.' }}</p>
+    <p class="page-subtitle">{{ __('public.lab_portal.page_subtitle_orders', [], $l) ?: 'All incoming test orders â€” filter by status or urgency.' }}</p>
 </div>
 
 @if(session('success'))<div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
@@ -27,9 +27,9 @@
 <form method="GET" class="filter-bar">
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="search" placeholder="{{ __('public.lab_portal.ph_search_orders', [], $l) ?: 'Test name or patient…' }}" value="{{ request('search') }}" aria-label="Search orders">
+        <input type="text" name="search" placeholder="{{ __('public.lab_portal.ph_search_orders', [], $l) ?: 'Test name or patientâ€¦' }}" value="{{ request('search') }}" aria-label="{{ __('public.aria_search_orders') }}">
     </label>
-    <select name="status" class="filter-select" aria-label="Status" onchange="this.form.submit()">
+    <select name="status" class="filter-select" aria-label="{{ __('public.aria_status') }}" onchange="this.form.submit()">
         <option value="">{{ __('public.lab_portal.filter_all_active', [], $l) ?: 'Active (all)' }}</option>
         <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>{{ __('public.lab_portal.filter_status_pending', [], $l) ?: 'Pending' }}</option>
         <option value="collected" {{ request('status') === 'collected' ? 'selected' : '' }}>{{ __('public.lab_portal.filter_status_collected', [], $l) ?: 'Collected' }}</option>
@@ -37,7 +37,7 @@
         <option value="resulted" {{ request('status') === 'resulted' ? 'selected' : '' }}>{{ __('public.lab_portal.filter_status_resulted', [], $l) ?: 'Resulted' }}</option>
         <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>{{ __('public.lab_portal.filter_status_cancelled', [], $l) ?: 'Cancelled' }}</option>
     </select>
-    <select name="urgency" class="filter-select" aria-label="Urgency" onchange="this.form.submit()">
+    <select name="urgency" class="filter-select" aria-label="{{ __('public.aria_urgency') }}" onchange="this.form.submit()">
         <option value="">{{ __('public.lab_portal.filter_all_urgency', [], $l) ?: 'All urgency' }}</option>
         <option value="urgent" {{ request('urgency') === 'urgent' ? 'selected' : '' }}>{{ __('public.lab_portal.filter_urgency_urgent', [], $l) ?: 'Urgent' }}</option>
         <option value="routine" {{ request('urgency') === 'routine' ? 'selected' : '' }}>{{ __('public.lab_portal.filter_urgency_routine', [], $l) ?: 'Routine' }}</option>
@@ -69,7 +69,7 @@
                         @if($order->test_code)<div class="td-muted">{{ $order->test_code }}</div>@endif
                     </td>
                     <td data-label="{{ __('public.lab_portal.col_patient', [], $l) ?: 'Patient' }}">
-                        <span class="td-strong">{{ $order->patient?->full_name ?? '—' }}</span>
+                        <span class="td-strong">{{ $order->patient?->full_name ?? 'â€”' }}</span>
                         <div class="td-muted">{{ $order->patient?->health_id ?? '' }}</div>
                     </td>
                     <td data-label="{{ __('public.lab_portal.col_urgency', [], $l) ?: 'Urgency' }}">
@@ -87,7 +87,7 @@
                             <button type="submit" class="btn btn-primary btn-sm">{{ __('public.lab_portal.btn_process', [], $l) ?: 'Process' }}</button>
                         </form>
                         @else
-                        <span class="td-muted">—</span>
+                        <span class="td-muted">â€”</span>
                         @endif
                     </td>
                 </tr>

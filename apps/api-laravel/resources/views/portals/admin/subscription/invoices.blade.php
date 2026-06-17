@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 @section('title', __('public.adm_sub_inv_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', 'Admin')
@@ -36,9 +36,9 @@
 <form method="GET" action="{{ route('portals.admin.subscription.invoices') }}" class="filter-bar">
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('public.adm_sub_inv_ph_search') }}" aria-label="Search">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('public.adm_sub_inv_ph_search') }}" aria-label="{{ __('public.aria_search') }}">
     </label>
-    <select name="status" class="filter-select" aria-label="Status">
+    <select name="status" class="filter-select" aria-label="{{ __('public.aria_status') }}">
         <option value="">{{ __('public.adm_sub_inv_filter_all_statuses') }}</option>
         <option value="sent" {{ request('status') === 'sent' ? 'selected' : '' }}>{{ __('public.adm_sub_inv_filter_sent') }}</option>
         <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>{{ __('public.adm_sub_inv_filter_paid') }}</option>
@@ -67,11 +67,11 @@
                 @forelse($invoices as $inv)
                     <tr>
                         <td data-label="{{ __('public.adm_sub_inv_col_invoice_num') }}"><span class="mono">{{ $inv->invoice_number }}</span></td>
-                        <td data-label="{{ __('public.adm_sub_inv_col_org') }}">{{ $inv->subscription?->organization_name ?? '—' }}</td>
+                        <td data-label="{{ __('public.adm_sub_inv_col_org') }}">{{ $inv->subscription?->organization_name ?? 'â€”' }}</td>
                         <td data-label="{{ __('public.adm_sub_inv_col_invoice_date') }}">{{ $inv->invoice_date->format('d M Y') }}</td>
                         <td data-label="{{ __('public.adm_sub_inv_col_due_date') }}">
                             @if($inv->isOverdue())
-                                <span class="badge badge-danger">{{ $inv->due_date->format('d M Y') }} · {{ __('public.adm_sub_inv_badge_overdue') }}</span>
+                                <span class="badge badge-danger">{{ $inv->due_date->format('d M Y') }} Â· {{ __('public.adm_sub_inv_badge_overdue') }}</span>
                             @else
                                 {{ $inv->due_date->format('d M Y') }}
                             @endif

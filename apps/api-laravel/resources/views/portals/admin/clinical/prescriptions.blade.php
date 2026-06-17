@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 
 @section('title', __('public.adm_clin_rx_title'))
 
@@ -45,7 +45,7 @@
 
 {{-- Filters --}}
 <form method="GET" class="filter-bar">
-    <select name="status" class="filter-select" aria-label="Status" onchange="this.form.submit()">
+    <select name="status" class="filter-select" aria-label="{{ __('public.aria_status') }}" onchange="this.form.submit()">
         <option value="">{{ __('public.adm_clin_rx_filter_all_statuses') }}</option>
         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>{{ __('public.adm_clin_rx_filter_active') }}</option>
         <option value="partially_dispensed" {{ request('status') === 'partially_dispensed' ? 'selected' : '' }}>{{ __('public.adm_clin_rx_filter_partially') }}</option>
@@ -55,15 +55,15 @@
     </select>
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="search" placeholder="{{ __('public.adm_clin_rx_ph_search') }}" value="{{ request('search') }}" aria-label="Patient">
+        <input type="text" name="search" placeholder="{{ __('public.adm_clin_rx_ph_search') }}" value="{{ request('search') }}" aria-label="{{ __('public.aria_patient') }}">
     </label>
     <label class="filter-search">
         <i data-lucide="calendar"></i>
-        <input type="date" name="from" value="{{ request('from') }}" aria-label="From date">
+        <input type="date" name="from" value="{{ request('from') }}" aria-label="{{ __('public.aria_from_date') }}">
     </label>
     <label class="filter-search">
         <i data-lucide="calendar"></i>
-        <input type="date" name="to" value="{{ request('to') }}" aria-label="To date">
+        <input type="date" name="to" value="{{ request('to') }}" aria-label="{{ __('public.aria_to_date') }}">
     </label>
     <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> {{ __('public.adm_clin_rx_btn_filter') }}</button>
     @if(request()->hasAny(['status','search','from','to']))
@@ -88,7 +88,7 @@
                 @forelse($prescriptions as $rx)
                 <tr>
                     <td data-label="{{ __('public.adm_clin_rx_col_patient') }}">
-                        <div class="td-strong">{{ $rx->patient?->full_name ?? '—' }}</div>
+                        <div class="td-strong">{{ $rx->patient?->full_name ?? 'â€”' }}</div>
                         <div class="td-muted">{{ $rx->patient?->health_id ?? '' }}</div>
                     </td>
                     <td data-label="{{ __('public.adm_clin_rx_col_items') }}">{{ $rx->items->count() }} item(s)</td>
@@ -97,11 +97,11 @@
                         @if($rx->expires_at)
                             <span class="{{ $rx->expires_at->isPast() ? 'text-danger' : '' }}">{{ $rx->expires_at->format('d M Y') }}</span>
                         @else
-                            <span class="td-muted">—</span>
+                            <span class="td-muted">â€”</span>
                         @endif
                     </td>
                     <td data-label="{{ __('public.adm_clin_rx_col_status') }}"><span class="badge badge-{{ $rx->statusColor() }}">{{ ucfirst(str_replace('_', ' ', $rx->status)) }}</span></td>
-                    <td data-label="{{ __('public.adm_clin_rx_col_dispensed_at') }}">{{ $rx->dispensed_at?->format('d M Y H:i') ?? '—' }}</td>
+                    <td data-label="{{ __('public.adm_clin_rx_col_dispensed_at') }}">{{ $rx->dispensed_at?->format('d M Y H:i') ?? 'â€”' }}</td>
                 </tr>
                 @empty
                 <tr><td colspan="6" class="td-muted empty-cell">{{ __('public.adm_clin_rx_empty') }}</td></tr>

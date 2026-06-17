@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 @section('title', __('public.adm_sup_idx_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', 'Admin')
@@ -23,19 +23,19 @@
 </div>
 
 <form method="GET" action="{{ route('portals.admin.support.index') }}" class="filter-bar">
-    <select name="status" class="filter-select" aria-label="Status">
+    <select name="status" class="filter-select" aria-label="{{ __('public.aria_status') }}">
         <option value="">{{ __('public.adm_sup_idx_filter_all_statuses') }}</option>
         @foreach(['open','pending','resolved','closed'] as $s)
         <option value="{{ $s }}" @selected(request('status')===$s)>{{ ucfirst($s) }}</option>
         @endforeach
     </select>
-    <select name="priority" class="filter-select" aria-label="Priority">
+    <select name="priority" class="filter-select" aria-label="{{ __('public.aria_priority') }}">
         <option value="">{{ __('public.adm_sup_idx_filter_all_priorities') }}</option>
         @foreach(['low','medium','high','urgent'] as $p)
         <option value="{{ $p }}" @selected(request('priority')===$p)>{{ ucfirst($p) }}</option>
         @endforeach
     </select>
-    <select name="category" class="filter-select" aria-label="Category">
+    <select name="category" class="filter-select" aria-label="{{ __('public.aria_category') }}">
         <option value="">{{ __('public.adm_sup_idx_filter_all_categories') }}</option>
         @foreach($categories ?? [] as $cat)
         <option value="{{ $cat }}" @selected(request('category')===$cat)>{{ ucfirst($cat) }}</option>
@@ -43,7 +43,7 @@
     </select>
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="search" placeholder="{{ __('public.adm_sup_idx_ph_search') }}" value="{{ request('search') }}" aria-label="Search">
+        <input type="text" name="search" placeholder="{{ __('public.adm_sup_idx_ph_search') }}" value="{{ request('search') }}" aria-label="{{ __('public.aria_search') }}">
     </label>
     <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> {{ __('public.adm_sup_idx_btn_filter') }}</button>
     <a href="{{ route('portals.admin.support.index') }}" class="btn btn-ghost btn-sm">{{ __('public.adm_sup_idx_btn_reset') }}</a>
@@ -76,12 +76,12 @@
                     <td data-label="Category"><span class="badge badge-neutral">{{ ucfirst($ticket->category ?? 'General') }}</span></td>
                     <td data-label="Priority"><span class="badge {{ $prioBadge }}">{{ ucfirst($ticket->priority ?? 'Medium') }}</span></td>
                     <td data-label="Status"><span class="badge {{ $statusBadge }}">{{ ucfirst($ticket->status ?? 'Open') }}</span></td>
-                    <td data-label="Assignee">{{ $ticket->assignee?->name ?? '—' }}</td>
+                    <td data-label="Assignee">{{ $ticket->assignee?->name ?? 'â€”' }}</td>
                     <td data-label="Created">{{ $ticket->created_at?->format('d M Y') }}</td>
                     <td class="row-actions" data-label="Actions">
-                        <a href="{{ route('portals.admin.support.show', $ticket) }}" class="icon-btn" aria-label="View ticket" title="View"><i data-lucide="eye"></i></a>
+                        <a href="{{ route('portals.admin.support.show', $ticket) }}" class="icon-btn" aria-label="{{ __('public.aria_view_ticket') }}" title="View"><i data-lucide="eye"></i></a>
                         @if(!in_array($ticket->status??'',['closed','resolved']))
-                        <button type="button" class="btn btn-danger btn-sm" title="Close" onclick="opOpenModal('close-{{ $ticket->id }}')"><i data-lucide="x-circle"></i></button>
+                        <button type="button" class="btn btn-danger btn-sm" title="{{ __('public.aria_close') }}" onclick="opOpenModal('close-{{ $ticket->id }}')"><i data-lucide="x-circle"></i></button>
                         @endif
                     </td>
                 </tr>

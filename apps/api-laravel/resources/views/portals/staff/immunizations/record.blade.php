@@ -1,6 +1,6 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 
-@section('title', __('public.stf_immun_rec_title') . ' — OpesCare Staff Portal')
+@section('title', __('public.stf_immun_rec_title') . ' â€” OpesCare Staff Portal')
 
 @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
@@ -77,7 +77,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label form-label-required" for="vaccine_name">{{ __('public.stf_immun_rec_lbl_vaccine_name') }}</label>
-                    <input id="vaccine_name" name="vaccine_name" class="form-control" value="{{ old('vaccine_name') }}" placeholder="e.g. Bacillus Calmette-Guérin" required aria-required="true">
+                    <input id="vaccine_name" name="vaccine_name" class="form-control" value="{{ old('vaccine_name') }}" placeholder="e.g. Bacillus Calmette-GuÃ©rin" required aria-required="true">
                 </div>
             </div>
 
@@ -115,7 +115,7 @@
                 <div class="form-group">
                     <label class="form-label" for="route">{{ __('public.stf_immun_rec_lbl_route') }}</label>
                     <select id="route" name="route" class="form-control">
-                        <option value="">— Select —</option>
+                        <option value="">â€” Select â€”</option>
                         <option value="IM"          @selected(old('route')==='IM')>IM (Intramuscular)</option>
                         <option value="SC"          @selected(old('route')==='SC')>SC (Subcutaneous)</option>
                         <option value="oral"        @selected(old('route')==='oral')>Oral</option>
@@ -143,7 +143,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="not_done_reason">{{ __('public.stf_immun_rec_lbl_not_done') }}</label>
-                    <input id="not_done_reason" name="not_done_reason" class="form-control" value="{{ old('not_done_reason') }}" placeholder="If status is Not Done">
+                    <input id="not_done_reason" name="not_done_reason" class="form-control" value="{{ old('not_done_reason') }}" placeholder="{{ __('public.aria_ph_if_not_done') }}">
                 </div>
             </div>
 

@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 @section('title', __('public.adm_users_idx_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', 'Admin')
@@ -23,13 +23,13 @@
 <form method="GET" action="{{ route('admin.users.index') }}" class="filter-bar">
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('public.adm_users_idx_ph_search') }}" aria-label="Search users">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('public.adm_users_idx_ph_search') }}" aria-label="{{ __('public.aria_search_users') }}">
     </label>
     <select name="role_id" class="filter-select" aria-label="Role" onchange="this.form.submit()">
         <option value="">{{ __('public.adm_users_idx_filter_all_roles') }}</option>
         @foreach($roles as $role)<option value="{{ $role->id }}" {{ request('role_id') == $role->id ? 'selected' : '' }}>{{ $role->name }}</option>@endforeach
     </select>
-    <select name="status" class="filter-select" aria-label="Status" onchange="this.form.submit()">
+    <select name="status" class="filter-select" aria-label="{{ __('public.aria_status') }}" onchange="this.form.submit()">
         <option value="">{{ __('public.adm_users_idx_filter_all') }}</option>
         <option value="active" {{ request('status')==='active' ? 'selected' : '' }}>{{ __('public.adm_users_idx_filter_active') }}</option>
         <option value="pending" {{ request('status')==='pending' ? 'selected' : '' }}>{{ __('public.adm_users_idx_filter_pending') }}</option>
@@ -70,15 +70,15 @@
                     <td class="row-actions" data-label="{{ __('public.adm_users_idx_col_actions') }}">
                         @if($user->status!=='active')
                         <form method="POST" action="{{ route('admin.users.activate',$user->id) }}" class="inline-form">@csrf
-                            <button type="submit" class="icon-btn" aria-label="Activate user" title="Activate"><i data-lucide="check-circle"></i></button>
+                            <button type="submit" class="icon-btn" aria-label="{{ __('public.aria_activate_user') }}" title="{{ __('public.aria_activate') }}"><i data-lucide="check-circle"></i></button>
                         </form>
                         @endif
                         @if($user->status!=='suspended')
                         <form method="POST" action="{{ route('admin.users.suspend',$user->id) }}" class="inline-form">@csrf
-                            <button type="submit" class="icon-btn" aria-label="Suspend user" title="Suspend"><i data-lucide="ban"></i></button>
+                            <button type="submit" class="icon-btn" aria-label="{{ __('public.aria_suspend_user') }}" title="{{ __('public.aria_suspend') }}"><i data-lucide="ban"></i></button>
                         </form>
                         @endif
-                        <button type="button" class="icon-btn" aria-label="Delete user" title="Delete" onclick="opOpenModal('delete-user-{{ $user->id }}')"><i data-lucide="trash-2"></i></button>
+                        <button type="button" class="icon-btn" aria-label="{{ __('public.aria_delete_user') }}" title="{{ __('public.aria_delete') }}" onclick="opOpenModal('delete-user-{{ $user->id }}')"><i data-lucide="trash-2"></i></button>
                         <div id="delete-user-{{ $user->id }}" class="modal-backdrop mt-6" hidden>
                             <div class="modal" role="dialog" aria-modal="true">
                                 <h3 class="modal__title"><i data-lucide="alert-triangle"></i> {{ __('public.adm_users_idx_modal_delete_title') }}</h3>

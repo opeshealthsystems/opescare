@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 
 @section('title', __('public.adm_connect_clients_title'))
 
@@ -85,14 +85,14 @@
                                 <form method="POST" action="{{ route('portals.admin.connect.clients.action', $client->id) }}" class="inline-form">
                                     @csrf
                                     <input type="hidden" name="action" value="approve">
-                                    <button class="btn btn-success btn-sm" title="Approve"><i data-lucide="check"></i></button>
+                                    <button class="btn btn-success btn-sm" title="{{ __('public.aria_approve') }}"><i data-lucide="check"></i></button>
                                 </form>
                             @endif
                             @if($client->status === 'active')
                                 <form method="POST" action="{{ route('portals.admin.connect.clients.action', $client->id) }}" class="inline-form">
                                     @csrf
                                     <input type="hidden" name="action" value="suspend">
-                                    <button class="btn btn-warning btn-sm" title="Suspend"><i data-lucide="pause"></i></button>
+                                    <button class="btn btn-warning btn-sm" title="{{ __('public.aria_suspend') }}"><i data-lucide="pause"></i></button>
                                 </form>
                             @endif
                             @if(in_array($client->status, ['active','suspended']))

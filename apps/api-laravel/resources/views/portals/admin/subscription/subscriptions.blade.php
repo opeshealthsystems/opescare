@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+﻿@extends('layouts.portal')
 @section('title', __('public.adm_sub_idx_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', 'Admin')
@@ -38,9 +38,9 @@
 <form method="GET" action="{{ route('portals.admin.subscription') }}" class="filter-bar">
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('public.adm_sub_idx_ph_search') }}" aria-label="Search">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('public.adm_sub_idx_ph_search') }}" aria-label="{{ __('public.aria_search') }}">
     </label>
-    <select name="status" class="filter-select" aria-label="Status">
+    <select name="status" class="filter-select" aria-label="{{ __('public.aria_status') }}">
         <option value="">{{ __('public.adm_sub_idx_filter_all_statuses') }}</option>
         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>{{ __('public.adm_sub_idx_filter_active') }}</option>
         <option value="trialing" {{ request('status') === 'trialing' ? 'selected' : '' }}>{{ __('public.adm_sub_idx_filter_trialing') }}</option>
@@ -74,7 +74,7 @@
                             @if($sub->billing_email)<div class="td-muted">{{ $sub->billing_email }}</div>@endif
                         </td>
                         <td data-label="{{ __('public.adm_sub_idx_col_plan') }}">
-                            <span class="td-strong">{{ $sub->plan->name ?? '—' }}</span>
+                            <span class="td-strong">{{ $sub->plan->name ?? 'â€”' }}</span>
                             @if($sub->plan)<div class="td-muted">{{ ucfirst($sub->plan->billing_cycle) }}</div>@endif
                         </td>
                         <td data-label="{{ __('public.adm_sub_idx_col_status') }}">
@@ -82,7 +82,7 @@
                         </td>
                         <td data-label="{{ __('public.adm_sub_idx_col_period') }}">
                             <div>{{ $sub->current_period_start->format('d M Y') }}</div>
-                            <div class="td-muted">→ {{ $sub->current_period_end->format('d M Y') }}</div>
+                            <div class="td-muted">â†’ {{ $sub->current_period_end->format('d M Y') }}</div>
                         </td>
                         <td data-label="{{ __('public.adm_sub_idx_col_days_left') }}">
                             @php $days = $sub->daysUntilExpiry(); $dc = $days < 7 ? 'danger' : ($days < 30 ? 'warning' : 'success'); @endphp
@@ -170,7 +170,7 @@
                     <select name="plan_id" class="form-control" required>
                         <option value="">{{ __('public.adm_sub_idx_ph_plan') }}</option>
                         @foreach($plans as $plan)
-                            <option value="{{ $plan->id }}">{{ $plan->name }} — {{ $plan->priceFormatted() }}/{{ $plan->billing_cycle }}</option>
+                            <option value="{{ $plan->id }}">{{ $plan->name }} â€” {{ $plan->priceFormatted() }}/{{ $plan->billing_cycle }}</option>
                         @endforeach
                     </select>
                 </div>
