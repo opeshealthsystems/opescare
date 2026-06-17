@@ -110,6 +110,9 @@
     <a href="{{ route('portals.admin.support.index') }}" class="sidebar-link {{ request()->routeIs('portals.admin.support*') ? 'active' : '' }}">
         <i data-lucide="headphones"></i><span>{{ __('public.adm_cc_sidebar_support_tickets') }}</span>
     </a>
+    <a href="{{ route('portals.admin.leads') }}" class="sidebar-link {{ request()->routeIs('portals.admin.leads*') ? 'active' : '' }}">
+        <i data-lucide="user-plus"></i><span>{{ __('leads.admin.page_title') }}</span>
+    </a>
     <a href="{{ route('portals.admin.cdss.index') }}" class="sidebar-link {{ request()->routeIs('portals.admin.cdss*') ? 'active' : '' }}">
         <i data-lucide="activity"></i><span>{{ __('public.admin_governance.nav_cdss_rules', [], app()->getLocale()) ?: 'CDSS Rules' }}</span>
     </a>
