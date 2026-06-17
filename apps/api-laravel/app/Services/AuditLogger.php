@@ -28,6 +28,17 @@ class AuditLogger
         // Store null for actor_id and record the client identifier in actor_role.
         $actorRole = $clientId ? 'integration_client:' . $clientId : 'integration_client';
 
+        // Determine if this event relates to a demo record.
+        // is_demo is never mass-assignable — we explicitly set it only when
+        // the request or the resource being acted upon is a demo record.
+        $isDemo = false;
+        if ($patientId && $resourceType === 'patient') {
+            $patient = \App\Models\Patient::withoutGlobalScope('isolate_demo')
+                ->where('id', $patientId)
+                ->value('is_demo');
+            $isDemo = (bool) $patient;
+        }
+
         return AuditEvent::create([
             'actor_id'   => null,   // no user UUID for machine-to-machine calls
             'actor_role' => $actorRole,
@@ -43,6 +54,7 @@ class AuditLogger
             'reason' => $reason ?? $request->header('X-Emergency-Reason'),
             'before_state' => $beforeState,
             'after_state' => $afterState,
+            'is_demo' => $isDemo,
             'created_at' => now()
         ]);
     }

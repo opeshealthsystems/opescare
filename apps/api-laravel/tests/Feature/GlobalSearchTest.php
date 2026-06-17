@@ -102,6 +102,19 @@ class GlobalSearchTest extends TestCase
 
     private function seedSearchRecords(): array
     {
+        $role = \App\Models\Role::firstOrCreate(
+            ['name' => 'platform_admin'],
+            ['description' => 'Platform Administrator']
+        );
+
+        $admin = new \App\Models\User();
+        $admin->id = '00000000-0000-0000-0000-000000000001';
+        $admin->name = 'Master Admin';
+        $admin->email = 'master-admin@test.com';
+        $admin->password = 'password';
+        $admin->role_id = $role->id;
+        $admin->save();
+
         $patient = Patient::create([
             'health_id' => 'OC-GS-001',
             'first_name' => 'Amina',

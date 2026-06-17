@@ -79,18 +79,31 @@ class OperationalFlowController extends Controller
 
     /**
      * Show a visit with its current allowed transitions.
+     * FIX (audit 2026-06-18): Added facility isolation check — visit must belong
+     * to the caller's facility. Previously any authenticated client could view
+     * visits across facilities (missing authorization scope).
      */
-    public function showVisit(Visit $visit, VisitManagementService $service): JsonResponse
+    public function showVisit(Visit $visit, Request $request, VisitManagementService $service): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if ($facilityId && $visit->facility_id !== $facilityId) {
+            return response()->json(['message' => 'Visit not found in your facility scope.'], 404);
+        }
         return response()->json(['data' => $this->serializeVisit($visit, $service)]);
     }
 
     /**
      * Advance a visit to a new status.
      * Body: { new_status: string, actor_id: uuid }
+     * FIX (audit 2026-06-18): Added facility isolation check.
      */
     public function transition(Visit $visit, Request $request, VisitManagementService $service): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if ($facilityId && $visit->facility_id !== $facilityId) {
+            return response()->json(['message' => 'Visit not found in your facility scope.'], 404);
+        }
+
         $validated = $request->validate([
             'new_status' => ['required', 'string'],
             'actor_id'   => ['required', 'uuid'],
@@ -111,10 +124,15 @@ class OperationalFlowController extends Controller
     /**
      * Mark a visit as completed.
      * Body: { actor_id: uuid }
+     * FIX (audit 2026-06-18): Added facility isolation check.
+     * FIX (audit 2026-06-18): Document issuance failure is now logged instead of silently swallowed.
      */
     public function completeVisit(Visit $visit, Request $request, VisitManagementService $service, DocumentIssuanceService $issuance): JsonResponse
     {
         $facilityId = $request->attributes->get('facility_id');
+        if ($facilityId && $visit->facility_id !== $facilityId) {
+            return response()->json(['message' => 'Visit not found in your facility scope.'], 404);
+        }
 
         $validated = $request->validate([
             'actor_id'            => ['required', 'uuid'],
@@ -134,7 +152,14 @@ class OperationalFlowController extends Controller
                     null,
                     $validated['actor_id']
                 );
-            } catch (\Throwable) {}
+            } catch (\Throwable $e) {
+                \Log::warning('visit_document_issuance_failed', [
+                    'visit_id'   => $visit->id,
+                    'patient_id' => $visit->patient_id,
+                    'facility_id'=> $facilityId,
+                    'error'      => $e->getMessage(),
+                ]);
+            }
         }
 
         return response()->json([
@@ -146,9 +171,15 @@ class OperationalFlowController extends Controller
     /**
      * Cancel a visit.
      * Body: { actor_id: uuid }
+     * FIX (audit 2026-06-18): Added facility isolation check.
      */
     public function cancelVisit(Visit $visit, Request $request, VisitManagementService $service): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if ($facilityId && $visit->facility_id !== $facilityId) {
+            return response()->json(['message' => 'Visit not found in your facility scope.'], 404);
+        }
+
         $validated = $request->validate([
             'actor_id' => ['required', 'uuid'],
         ]);

@@ -155,7 +155,7 @@ class MedicalRecordExportService
 
         foreach ($files as $file) {
             $lastModified = Storage::disk($this->diskName)->lastModified($file);
-            if ($lastModified < $cutoff) {
+            if ($lastModified <= $cutoff) {
                 Storage::disk($this->diskName)->delete($file);
                 $deleted++;
             }

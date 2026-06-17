@@ -70,12 +70,23 @@ class WebhookService
      *
      * [FIX H-3] Now scoped to the $clientId of the caller â€” a client cannot replay
      * events into another client's delivery pipeline.
+     *
+     * FIX (audit 2026-06-18): If $clientId is null, throws \InvalidArgumentException
+     * instead of silently broadcasting to all clients. Previously, a null $clientId
+     * bypassed the scope filter entirely, allowing cross-client event injection.
      */
     public static function replay(
         WebhookEvent $event,
         ?string      $replayedBy = null,
         ?string      $clientId   = null,
     ): void {
+        if ($clientId === null) {
+            throw new \InvalidArgumentException(
+                'replay() requires $clientId to prevent cross-client event injection. '
+                . 'Pass the authenticated integration client ID.'
+            );
+        }
+
         $payload             = $event->payload;
         $payload['event_id'] = $event->id;
 

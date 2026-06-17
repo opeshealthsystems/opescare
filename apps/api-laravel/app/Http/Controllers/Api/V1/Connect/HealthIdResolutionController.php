@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Api\V1\Connect;
 
+use App\Enums\IdentityStatus;
+use App\Enums\VerificationStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Patient;
 use App\Models\PatientMergeAlias;
 use App\Services\AuditLogger;
 use App\Services\Identity\HealthIdGeneratorService;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -171,27 +174,44 @@ class HealthIdResolutionController extends Controller
         }
 
         // ── Auto-create patient + generate Health ID (atomic) ─────────────────
+        // FIX (audit 2026-06-18): Previously had a TOCTOU race condition between
+        // generate() and Patient::create(). Now uses the generator's callback pattern
+        // which retries atomically inside the transaction on UniqueConstraintViolationException.
         try {
             $patient = DB::transaction(function () use (
                 $countryCode, $firstName, $lastName, $dob, $sex, $phone, $facilityId
             ) {
-                $newHealthId = $this->generator->generate($countryCode);
-
-                return Patient::create([
-                    'health_id'           => $newHealthId,
-                    'first_name'          => $firstName,
-                    'last_name'           => $lastName,
-                    'date_of_birth'       => $dob,
-                    'country_code'        => $countryCode,
-                    'sex'                 => $sex,
-                    'phone_number'        => $phone,
-                    'facility_id'         => $facilityId,
-                    'verification_status' => 'pending',
-                    'identity_status'     => 'unverified',
-                    // is_demo intentionally NOT set here — demo status is set only
-                    // via seeders/migrations, never through the B2B integration API.
-                ]);
+                return $this->generator->generate($countryCode, function (string $healthId) use (
+                    $countryCode, $firstName, $lastName, $dob, $sex, $phone, $facilityId
+                ) {
+                    return Patient::create([
+                        'health_id'           => $healthId,
+                        'first_name'          => $firstName,
+                        'last_name'           => $lastName,
+                        'date_of_birth'       => $dob,
+                        'country_code'        => $countryCode,
+                        'sex'                 => $sex,
+                        'phone_number'        => $phone,
+                        'facility_id'         => $facilityId,
+                        'verification_status' => VerificationStatus::Pending,
+                        'identity_status'     => IdentityStatus::Unverified,
+                        // is_demo intentionally NOT set here — demo status is set only
+                        // via seeders/migrations, never through the B2B integration API.
+                    ]);
+                });
             });
+        } catch (UniqueConstraintViolationException $e) {
+            // If we exhausted all retries, the namespace is likely exhausted.
+            Log::error('health_id_namespace_exhaustion', [
+                'client_id'  => $clientId,
+                'facility_id'=> $facilityId,
+            ]);
+
+            return response()->json([
+                'status'     => 'error',
+                'error_code' => 'CREATION_FAILED',
+                'message'    => 'Unable to generate a unique Health ID at this time. The namespace may require expansion. Please contact system administration.',
+            ], 500);
         } catch (\Throwable $e) {
             Log::error('health_id_auto_create_failed', [
                 'error'      => $e->getMessage(),

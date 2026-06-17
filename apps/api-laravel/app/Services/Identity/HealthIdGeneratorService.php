@@ -41,12 +41,22 @@ class HealthIdGeneratorService
      * Callers MUST wrap this call inside a DB::transaction() to ensure the returned
      * health_id is committed atomically with the rest of the patient record.
      *
+     * FIX (audit 2026-06-18): Now accepts an optional caller callback that is invoked
+     * inside the retry loop. This allows the caller to pass the patient creation closure
+     * directly into the generator, eliminating the TOCTOU window between generate()
+     * and create(). When $createPatientCallback is provided, the generator handles
+     * retry internally. When null, the old behaviour is preserved (caller handles retry).
+     *
      * Format:  COUNTRY-HID-BLOCK1-BLOCK2-CHECKBLOCK
      * Example: CM-HID-7KQ9-MP42-X8D1
      *
+     * @param  string    $countryCode            ISO 3166-1 alpha-2 country code
+     * @param  callable|null $createPatientCallback fn(string $healthId): Patient
+     * @return Patient|string  Patient if callback provided, health_id string otherwise
+     *
      * @throws \RuntimeException If a unique ID cannot be generated within max retries.
      */
-    public function generate(string $countryCode = 'CM'): string
+    public function generate(string $countryCode = 'CM', ?callable $createPatientCallback = null): mixed
     {
         $countryCode = strtoupper(substr($countryCode, 0, 2));
         $maxRetries  = $this->maxRetries();
@@ -54,10 +64,22 @@ class HealthIdGeneratorService
         for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
             $candidate = $this->buildCandidate($countryCode);
 
-            // isUnique() uses a DB query with UNIQUE index — still has a narrow race
-            // window, but the outer DB::transaction + UNIQUE constraint on the table
-            // will throw UniqueConstraintViolationException if two requests collide,
-            // which the caller's transaction handler catches and retries.
+            // When a callback is provided, attempt the full INSERT inside the loop
+            // so UniqueConstraintViolationException triggers an automatic retry.
+            if ($createPatientCallback !== null) {
+                try {
+                    return $createPatientCallback($candidate);
+                } catch (UniqueConstraintViolationException $e) {
+                    Log::warning('health_id_collision_retry', [
+                        'attempt'      => $attempt,
+                        'country_code' => $countryCode,
+                        'candidate'    => substr($candidate, 0, 8) . '…',
+                    ]);
+                    continue;
+                }
+            }
+
+            // Legacy path (no callback): use non-atomic existence check.
             if ($this->isUnique($candidate)) {
                 return $candidate;
             }

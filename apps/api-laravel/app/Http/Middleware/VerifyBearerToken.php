@@ -34,7 +34,9 @@ class VerifyBearerToken
         }
 
         // Test environment bypass — test suite only; explicitly blocked in production
-        if (!app()->isProduction() && app()->environment('testing') && $token === 'sk_test_bearer_bypass') {
+        // FIX (audit 2026-06-18): Added hasDebugModeEnabled guard to prevent activation
+        // when APP_ENV is misconfigured (e.g. APP_ENV=local on a staging server).
+        if (!app()->isProduction() && app()->environment('testing') && app()->hasDebugModeEnabled() && $token === 'sk_test_bearer_bypass') {
             $request->attributes->add([
                 'integration_client_id' => 'test_client_id',
                 'facility_id'           => '00000000-0000-0000-0000-000000000001',

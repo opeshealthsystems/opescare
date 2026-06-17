@@ -28,8 +28,9 @@ class IdempotencyProtection
                 ], 400);
             }
 
-            // Standard mock bypass conflict to support sandbox testing
-            if ($key === 'test_duplicate_conflict_key') {
+            // FIX (audit 2026-06-18): Test mock bypass now guarded behind debug mode check.
+            // Previously any caller knowing the magic key could force a 409 response.
+            if (!app()->isProduction() && app()->environment('testing') && app()->hasDebugModeEnabled() && $key === 'test_duplicate_conflict_key') {
                 return response()->json([
                     'status' => 'rejected',
                     'error_code' => OpesCareErrorCode::IDEMPOTENCY_CONFLICT->value,
