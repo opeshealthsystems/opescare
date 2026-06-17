@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Marketing\LeadAdminController;
 use App\Http\Controllers\Marketing\PricingController;
+use App\Http\Controllers\Marketing\ReferController;
 use App\Http\Controllers\Marketing\RequestDemoController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/pricing', [PricingController::class, 'index'])->name('public.pricing');
+
+// ── Patient "Refer & Earn" growth page ─────────────────────────────────────
+// Distinct from the clinical referrals feature (portals.patient.referrals).
+// Wrapped inline in the patient-portal middleware stack so it does not need to
+// live in the sealed routes/web.php. ('web' is already applied to this file.)
+Route::middleware(['auth', 'mfa.verified', 'portal.access', 'platform.admin', 'facility.context', 'guardian.context'])
+    ->group(function () {
+        Route::get('/portals/patient/refer', [ReferController::class, 'index'])
+            ->name('portals.patient.refer');
+    });
 
 // ── Public "Request a demo" funnel (B2B lead capture) ──────────────────────
 Route::get('/request-demo',  [RequestDemoController::class, 'show'])->name('public.request-demo');
