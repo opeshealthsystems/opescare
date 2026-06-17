@@ -209,6 +209,13 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
         Route::get('/portals/patient/allergies',     [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'allergies'])->name('portals.patient.allergies');
         Route::get('/portals/patient/clinical',      [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'clinicalHistory'])->name('portals.patient.clinical');
         Route::get('/portals/patient/immunizations', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'immunizations'])->name('portals.patient.immunizations');
+        // Health timeline + clinical extensions (mirrors mobile endpoints)
+        Route::get('/portals/patient/timeline',   [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'timeline'])->name('portals.patient.timeline');
+        Route::get('/portals/patient/care-plans', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'carePlans'])->name('portals.patient.care-plans');
+        Route::get('/portals/patient/referrals',  [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'referrals'])->name('portals.patient.referrals');
+        Route::get('/portals/patient/surveys',    [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'surveys'])->name('portals.patient.surveys');
+        Route::get('/portals/patient/settings',   [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'settings'])->name('portals.patient.settings');
+        Route::post('/portals/patient/settings',  [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'updateSettings'])->name('portals.patient.settings.update');
 
         // Insurance marketplace
         Route::get('/portals/patient/insurance',                 [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'insuranceMarketplace'])->name('portals.patient.insurance');

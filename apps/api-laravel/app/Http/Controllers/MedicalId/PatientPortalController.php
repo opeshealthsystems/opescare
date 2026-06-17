@@ -1016,4 +1016,208 @@ class PatientPortalController extends Controller
 
         return redirect()->route('portals.patient.subscription')->with('success', __('flash.subscription_cancelled'));
     }
+
+    /**
+     * Health Timeline — chronological feed of visits, lab results and prescriptions.
+     *
+     * Mirrors Api/Mobile/MobilePatientController@getTimeline: aggregates Visit,
+     * resulted LabOrder, and Prescription records into a single newest-first list.
+     */
+    public function timeline(Request $request)
+    {
+        $patient = $this->resolveViewingPatient();
+
+        $events = collect();
+
+        if ($patient) {
+            $visits = \App\Models\Visit::where('patient_id', $patient->id)
+                ->with('facility:id,name')
+                ->latest('created_at')
+                ->take(50)
+                ->get();
+            foreach ($visits as $v) {
+                $events->push((object) [
+                    'event_type'    => 'visit',
+                    'facility_name' => $v->facility?->name,
+                    'occurred_at'   => $v->created_at,
+                    'summary'       => ucfirst((string) ($v->visit_type ?? 'outpatient')),
+                ]);
+            }
+
+            $labs = \App\Models\LabOrder::where('patient_id', $patient->id)
+                ->where('status', 'resulted')
+                ->with('facility:id,name')
+                ->latest('resulted_at')
+                ->take(50)
+                ->get();
+            foreach ($labs as $l) {
+                $events->push((object) [
+                    'event_type'    => 'lab_result',
+                    'facility_name' => $l->facility?->name,
+                    'occurred_at'   => $l->resulted_at ?? $l->ordered_at,
+                    'summary'       => $l->test_name,
+                ]);
+            }
+
+            $prescriptions = Prescription::where('patient_id', $patient->id)
+                ->with(['facility:id,name', 'items'])
+                ->latest('prescribed_at')
+                ->take(50)
+                ->get();
+            foreach ($prescriptions as $p) {
+                $events->push((object) [
+                    'event_type'    => 'prescription',
+                    'facility_name' => $p->facility?->name,
+                    'occurred_at'   => $p->prescribed_at,
+                    'summary'       => $p->items->count(),
+                ]);
+            }
+
+            $this->ctx->auditPatientAccess(
+                actionType:   'patient_timeline_view',
+                resourceType: 'Patient',
+                resourceId:   $patient->id,
+                patientId:    $patient->id,
+            );
+        }
+
+        $events = $events->sortByDesc('occurred_at')->values();
+
+        return view('portals.patient.timeline', compact('patient', 'events'));
+    }
+
+    /**
+     * Care Plans — active plans with goals and interventions.
+     *
+     * Mirrors Api/Mobile/MobileCarePlanController@index via CarePlanService:
+     * active CarePlan records for the patient, eager-loading goals + interventions.
+     */
+    public function carePlans(Request $request)
+    {
+        $patient = $this->resolveViewingPatient();
+
+        $carePlans = collect();
+        if ($patient) {
+            $carePlans = app(\App\Services\Clinical\CarePlanService::class)
+                ->getActivePlansForPatient((string) $patient->id);
+
+            $this->ctx->auditPatientAccess(
+                actionType:   'patient_care_plans_view',
+                resourceType: 'CarePlan',
+                resourceId:   null,
+                patientId:    $patient->id,
+            );
+        }
+
+        return view('portals.patient.care-plans', compact('patient', 'carePlans'));
+    }
+
+    /**
+     * Referrals — the patient's referral cases and their status.
+     *
+     * Mirrors Api/Mobile/MobileReferralController@index: ReferralCase records for
+     * the patient with referring/receiving facility names, newest-first.
+     */
+    public function referrals(Request $request)
+    {
+        $patient = $this->resolveViewingPatient();
+
+        $referrals = $patient
+            ? \App\Models\ReferralCase::where('patient_id', $patient->id)
+                ->with(['referringFacility:id,name', 'receivingFacility:id,name'])
+                ->latest()
+                ->get()
+            : collect();
+
+        if ($patient) {
+            $this->ctx->auditPatientAccess(
+                actionType:   'patient_referrals_view',
+                resourceType: 'ReferralCase',
+                resourceId:   null,
+                patientId:    $patient->id,
+            );
+        }
+
+        return view('portals.patient.referrals', compact('patient', 'referrals'));
+    }
+
+    /**
+     * Surveys — questionnaires assigned to the patient (read-only list).
+     *
+     * Mirrors Api/Mobile/MobileSurveyController@index but lists all of the
+     * patient's surveys (not only 'sent') so completed history is visible too.
+     */
+    public function surveys(Request $request)
+    {
+        $patient = $this->resolveViewingPatient();
+
+        $surveys = $patient
+            ? \App\Models\PatientSurvey::where('patient_id', $patient->id)
+                ->with(['facility:id,name', 'responses'])
+                ->orderByDesc('sent_at')
+                ->get()
+            : collect();
+
+        if ($patient) {
+            $this->ctx->auditPatientAccess(
+                actionType:   'patient_surveys_view',
+                resourceType: 'PatientSurvey',
+                resourceId:   null,
+                patientId:    $patient->id,
+            );
+        }
+
+        return view('portals.patient.surveys', compact('patient', 'surveys'));
+    }
+
+    /**
+     * Settings / Notifications — read notification & app preferences.
+     *
+     * Mirrors Api/Mobile/MobileSettingsController: MobileAppSetting::forPatient()
+     * (notification toggles, language, theme, biometric). The web form posts to
+     * updateSettings() for the boolean notification preferences.
+     */
+    public function settings(Request $request)
+    {
+        $patient = $this->resolveViewingPatient();
+
+        $settings = $patient
+            ? \App\Models\MobileAppSetting::forPatient((string) $patient->id)
+            : null;
+
+        return view('portals.patient.settings', compact('patient', 'settings'));
+    }
+
+    /**
+     * Update notification preferences from the web settings form.
+     */
+    public function updateSettings(Request $request)
+    {
+        $this->assertWriteAllowed();
+        $patient = $this->resolveViewingPatient();
+        abort_if(!$patient, 403);
+
+        $validated = $request->validate([
+            'push_appointments'     => 'sometimes|boolean',
+            'push_lab_results'      => 'sometimes|boolean',
+            'push_prescriptions'    => 'sometimes|boolean',
+            'push_billing'          => 'sometimes|boolean',
+            'push_consent_requests' => 'sometimes|boolean',
+            'preferred_theme'       => 'sometimes|in:light,dark,system',
+        ]);
+
+        // Unchecked checkboxes are absent from the request — coerce to false.
+        $data = [];
+        foreach (['push_appointments', 'push_lab_results', 'push_prescriptions', 'push_billing', 'push_consent_requests'] as $field) {
+            $data[$field] = $request->boolean($field);
+        }
+        if (array_key_exists('preferred_theme', $validated)) {
+            $data['preferred_theme'] = $validated['preferred_theme'];
+        }
+
+        $settings = \App\Models\MobileAppSetting::forPatient((string) $patient->id);
+        $settings->update($data);
+
+        return redirect()->route('portals.patient.settings')->with('success', __('flash.settings_updated'));
+    }
 }

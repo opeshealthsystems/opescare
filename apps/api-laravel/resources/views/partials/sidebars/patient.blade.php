@@ -26,6 +26,14 @@
         <i data-lucide="file-text"></i>
         <span>{{ __('public.portal.nav_documents', [], $l) ?: 'Documents' }}</span>
     </a>
+    <a href="{{ route('portals.patient.timeline') }}" class="sidebar-link {{ request()->routeIs('portals.patient.timeline') ? 'active' : '' }}">
+        <i data-lucide="history"></i>
+        <span>{{ __('public.pat_nav_timeline', [], $l) ?: 'Health Timeline' }}</span>
+    </a>
+    <a href="{{ route('portals.patient.surveys') }}" class="sidebar-link {{ request()->routeIs('portals.patient.surveys') ? 'active' : '' }}">
+        <i data-lucide="clipboard-check"></i>
+        <span>{{ __('public.pat_nav_surveys', [], $l) ?: 'Surveys' }}</span>
+    </a>
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_clinical', [], $l) ?: 'Clinical' }}</div>
@@ -40,6 +48,14 @@
     <a href="{{ route('portals.patient.immunizations') }}" class="sidebar-link {{ request()->routeIs('portals.patient.immunizations') ? 'active' : '' }}">
         <i data-lucide="syringe"></i>
         <span>{{ __('public.portal.nav_immunizations', [], $l) ?: 'Immunizations' }}</span>
+    </a>
+    <a href="{{ route('portals.patient.care-plans') }}" class="sidebar-link {{ request()->routeIs('portals.patient.care-plans') ? 'active' : '' }}">
+        <i data-lucide="clipboard-list"></i>
+        <span>{{ __('public.pat_nav_care_plans', [], $l) ?: 'Care Plans' }}</span>
+    </a>
+    <a href="{{ route('portals.patient.referrals') }}" class="sidebar-link {{ request()->routeIs('portals.patient.referrals') ? 'active' : '' }}">
+        <i data-lucide="share-2"></i>
+        <span>{{ __('public.pat_nav_referrals', [], $l) ?: 'Referrals' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
@@ -69,6 +85,13 @@
     <a href="{{ route('portals.patient.profile') }}" class="sidebar-link">
         <i data-lucide="user-cog"></i>
         <span>{{ __('public.portal.nav_profile', [], $l) ?: 'My Profile' }}</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.pat_nav_account', [], $l) ?: 'Account' }}</div>
+    <a href="{{ route('portals.patient.settings') }}" class="sidebar-link {{ request()->routeIs('portals.patient.settings') ? 'active' : '' }}">
+        <i data-lucide="settings"></i>
+        <span>{{ __('public.pat_nav_settings', [], $l) ?: 'Settings' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">

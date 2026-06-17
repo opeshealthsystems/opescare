@@ -268,6 +268,7 @@ return [
     'consent_access_revoked'              => 'Accès au consentement révoqué.',
     'document_not_available'              => 'Ce document n\'est pas encore disponible au téléchargement. Veuillez réessayer plus tard.',
     'profile_updated'                     => 'Profil mis à jour avec succès.',
+    'settings_updated'                    => 'Préférences de notification mises à jour.',
     'policy_already_active'               => 'Vous avez déjà une police active pour ce régime.',
     'enrollment_submitted'                => 'Inscription soumise ! Votre police est en attente d\'activation et sera confirmée sous 1 à 2 jours ouvrables.',
     // Pharmacy

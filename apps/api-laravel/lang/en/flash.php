@@ -268,6 +268,7 @@ return [
     'consent_access_revoked'              => 'Consent access revoked.',
     'document_not_available'              => 'This document is not yet available for download. Please check back later.',
     'profile_updated'                     => 'Profile updated successfully.',
+    'settings_updated'                    => 'Notification preferences updated.',
     'policy_already_active'               => 'You already have an active policy for this plan.',
     'enrollment_submitted'                => 'Enrollment submitted! Your policy is pending activation and will be confirmed within 1–2 business days.',
     // Pharmacy
