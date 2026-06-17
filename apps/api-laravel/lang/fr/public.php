@@ -6601,6 +6601,7 @@ return [
     'pat_sub_annual'           => '/an',
     'pat_sub_current'          => 'Actuel',
     'pat_sub_choose'           => 'Choisir ce forfait',
+    'pat_sub_upgrade'          => 'Passer à Premium',
     'pat_sub_choose_cadence'   => 'Cycle de facturation',
     'pat_sub_monthly_opt'      => 'Mensuel',
     'pat_sub_annual_opt'       => 'Annuel',

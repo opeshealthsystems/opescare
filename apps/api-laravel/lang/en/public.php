@@ -6615,6 +6615,7 @@ return [
     'pat_sub_annual'           => '/year',
     'pat_sub_current'          => 'Current',
     'pat_sub_choose'           => 'Choose plan',
+    'pat_sub_upgrade'          => 'Upgrade to Premium',
     'pat_sub_choose_cadence'   => 'Billing cycle',
     'pat_sub_monthly_opt'      => 'Monthly',
     'pat_sub_annual_opt'       => 'Annual',
