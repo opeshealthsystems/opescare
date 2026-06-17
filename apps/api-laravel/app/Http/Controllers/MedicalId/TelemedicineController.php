@@ -94,7 +94,7 @@ class TelemedicineController extends Controller
 
             return redirect()
                 ->route('portals.staff.telemedicine.show', $consultation->id)
-                ->with('success', 'Teleconsultation scheduled successfully.');
+                ->with('success', __('flash.teleconsultation_scheduled'));
         } catch (Throwable $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }
@@ -117,14 +117,14 @@ class TelemedicineController extends Controller
         $consultation = Teleconsultation::findOrFail($id);
 
         if (! $consentSvc->canProceed($consultation)) {
-            return back()->with('error', 'Patient consent must be obtained before starting the call.');
+            return back()->with('error', __('flash.tele_consent_required'));
         }
 
         try {
             $session = $svc->startCall($consultation);
             return redirect()
                 ->route('portals.staff.telemedicine.show', $consultation->id)
-                ->with('success', 'Call started.');
+                ->with('success', __('flash.tele_call_started'));
         } catch (Throwable $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -137,14 +137,14 @@ class TelemedicineController extends Controller
         $consultation = Teleconsultation::with('callSession')->findOrFail($id);
 
         if (! $consultation->callSession) {
-            return back()->with('error', 'No active call session found.');
+            return back()->with('error', __('flash.tele_no_active_call'));
         }
 
         try {
             $svc->endCall($consultation, $consultation->callSession);
             return redirect()
                 ->route('portals.staff.telemedicine.show', $consultation->id)
-                ->with('success', 'Consultation completed.');
+                ->with('success', __('flash.tele_consultation_completed'));
         } catch (Throwable $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -164,7 +164,7 @@ class TelemedicineController extends Controller
             $svc->cancel($consultation, $data['reason']);
             return redirect()
                 ->route('portals.staff.telemedicine.index')
-                ->with('success', 'Consultation cancelled.');
+                ->with('success', __('flash.tele_consultation_cancelled'));
         } catch (Throwable $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -189,7 +189,7 @@ class TelemedicineController extends Controller
                 $data['consent_text_version'] ?? '1.0',
             );
 
-            return back()->with('success', 'Consent recorded.');
+            return back()->with('success', __('flash.tele_consent_recorded'));
         } catch (Throwable $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -213,7 +213,7 @@ class TelemedicineController extends Controller
         $next = $svc->callNext($this->demoFacilityId());
 
         if (! $next) {
-            return back()->with('info', 'No patients in the waiting room.');
+            return back()->with('info', __('flash.tele_no_waiting_patients'));
         }
 
         return redirect()

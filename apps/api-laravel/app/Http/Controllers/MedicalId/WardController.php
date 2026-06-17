@@ -56,7 +56,7 @@ class WardController extends Controller
                 'is_active'   => true,
             ]));
 
-            return redirect()->route('portals.staff.wards')->with('success', 'Ward created with beds.');
+            return redirect()->route('portals.staff.wards')->with('success', __('flash.ward_created'));
         } catch (Throwable $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }
@@ -96,7 +96,7 @@ class WardController extends Controller
             ]), $this->demoActorId());
 
             return redirect()->route('portals.staff.wards.admissions')
-                ->with('success', 'Patient admitted successfully.');
+                ->with('success', __('flash.patient_admitted'));
         } catch (Throwable $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }
@@ -116,7 +116,7 @@ class WardController extends Controller
             $svc->discharge($admission, $request->validated(), $this->demoActorId());
 
             return redirect()->route('portals.staff.wards.admissions')
-                ->with('success', 'Patient discharged.');
+                ->with('success', __('flash.patient_discharged'));
         } catch (Throwable $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -136,7 +136,7 @@ class WardController extends Controller
             $svc->transfer($admission, $request->to_bed_id, $request->reason, $this->demoActorId());
 
             return redirect()->route('portals.staff.wards.admissions')
-                ->with('success', 'Bed transfer completed.');
+                ->with('success', __('flash.bed_transfer_completed'));
         } catch (Throwable $e) {
             return back()->with('error', $e->getMessage());
         }

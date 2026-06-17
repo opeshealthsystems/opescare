@@ -113,7 +113,7 @@ class ConnectPortalController extends Controller
             $result = $svc->issueToken($client, $request->validated(), $this->demoActorId());
 
             return redirect()->route('portals.admin.connect.tokens')
-                ->with('success', 'Token issued successfully.')
+                ->with('success', __('flash.token_issued'))
                 ->with('new_token', $result['raw_token']);
         } catch (Throwable $e) {
             return back()->withInput()->with('error', $e->getMessage());
@@ -126,7 +126,7 @@ class ConnectPortalController extends Controller
         try {
             $svc->revokeToken($token, $this->demoActorId());
             return redirect()->route('portals.admin.connect.tokens')
-                ->with('success', 'Token revoked.');
+                ->with('success', __('flash.token_revoked'));
         } catch (Throwable $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -152,7 +152,7 @@ class ConnectPortalController extends Controller
         $sub = WebhookSubscription::findOrFail($id);
         $sub->update(['status' => $sub->status === 'active' ? 'paused' : 'active']);
         return redirect()->route('portals.admin.connect.webhooks')
-            ->with('success', 'Webhook subscription updated.');
+            ->with('success', __('flash.webhook_subscription_updated'));
     }
 
     // ── Widget Embed ──────────────────────────────────────────────

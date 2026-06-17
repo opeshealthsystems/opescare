@@ -321,9 +321,7 @@ class DataSubjectRightsController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('home')
-            ->with('info', 'Your personal data has been erased from OpesCare. '
-                . 'Some clinical records may be retained as required by Cameroon health law. '
-                . 'You will receive a confirmation within 30 days.');
+            ->with('info', __('flash.data_erased'));
     }
 
     // ─────────────────────────────────────────────────────────────────────────

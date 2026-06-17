@@ -102,7 +102,7 @@ class KpiDashboardController extends Controller
 
         return redirect()
             ->route('portals.admin.kpi.index')
-            ->with('success', 'Export request submitted. Export ID: ' . $export->id);
+            ->with('success', __('flash.kpi_export_submitted', ['id' => $export->id]));
     }
 
     // ── Recompute Snapshots ───────────────────────────────────────────────────
@@ -115,7 +115,7 @@ class KpiDashboardController extends Controller
         $this->analytics->seedCoreMetrics();
         $this->analytics->computeDailySnapshots($facilityId, $date);
 
-        return back()->with('success', 'KPI snapshots recomputed for ' . $date->toDateString() . '.');
+        return back()->with('success', __('flash.kpi_snapshots_recomputed', ['date' => $date->toDateString()]));
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

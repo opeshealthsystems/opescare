@@ -248,7 +248,7 @@ class PatientPortalController extends Controller
             ->first();
 
         if (!$qrRecord) {
-            return back()->with('warning', 'This QR token was not found or is already inactive.');
+            return back()->with('warning', __('flash.qr_token_not_found'));
         }
 
         (new QrTokenService())->revokeToken($qrRecord);
@@ -260,7 +260,7 @@ class PatientPortalController extends Controller
             patientId:    $patient->id,
         );
 
-        return back()->with('success', 'QR token has been revoked. It can no longer be scanned.');
+        return back()->with('success', __('flash.qr_token_revoked'));
     }
 
     /**
@@ -398,7 +398,7 @@ class PatientPortalController extends Controller
         );
 
         return redirect()->route('portals.patient.appointments')
-            ->with('success', 'Your appointment has been cancelled.');
+            ->with('success', __('flash.patient_appointment_cancelled'));
     }
 
     /**
@@ -474,7 +474,7 @@ class PatientPortalController extends Controller
         );
 
         return redirect()->route('portals.patient.prescriptions')
-            ->with('success', 'Refill request submitted. Your prescribing facility will review it and contact you within 1–2 business days.');
+            ->with('success', __('flash.refill_submitted'));
     }
 
     /**
@@ -539,7 +539,7 @@ class PatientPortalController extends Controller
             patientId:    $patient->id,
         );
 
-        return redirect()->route('portals.patient.consent')->with('success', 'Consent approved.');
+        return redirect()->route('portals.patient.consent')->with('success', __('flash.consent_approved'));
     }
 
     /**
@@ -566,7 +566,7 @@ class PatientPortalController extends Controller
             patientId:    $patient->id,
         );
 
-        return redirect()->route('portals.patient.consent')->with('success', 'Consent denied.');
+        return redirect()->route('portals.patient.consent')->with('success', __('flash.consent_denied'));
     }
 
     /**
@@ -599,7 +599,7 @@ class PatientPortalController extends Controller
             patientId:    $patient->id,
         );
 
-        return redirect()->route('portals.patient.consent')->with('success', 'Consent access revoked.');
+        return redirect()->route('portals.patient.consent')->with('success', __('flash.consent_access_revoked'));
     }
 
     /**
@@ -644,7 +644,7 @@ class PatientPortalController extends Controller
             ->firstOrFail();
 
         if (!$doc->pdf_path || !Storage::exists($doc->pdf_path)) {
-            return back()->with('warning', 'This document is not yet available for download. Please check back later.');
+            return back()->with('warning', __('flash.document_not_available'));
         }
 
         $this->ctx->auditPatientAccess(
@@ -747,7 +747,7 @@ class PatientPortalController extends Controller
             patientId:    $patient->id,
         );
 
-        return redirect()->route('portals.patient.profile')->with('success', 'Profile updated successfully.');
+        return redirect()->route('portals.patient.profile')->with('success', __('flash.profile_updated'));
     }
 
     /**
@@ -936,7 +936,7 @@ class PatientPortalController extends Controller
             ->first();
 
         if ($existing) {
-            return back()->with('warning', 'You already have an active policy for this plan.');
+            return back()->with('warning', __('flash.policy_already_active'));
         }
 
         $validated = $request->validate([
@@ -956,6 +956,6 @@ class PatientPortalController extends Controller
 
         return redirect()
             ->route('portals.patient.insurance')
-            ->with('success', 'Enrollment submitted! Your policy is pending activation and will be confirmed within 1–2 business days.');
+            ->with('success', __('flash.enrollment_submitted'));
     }
 }

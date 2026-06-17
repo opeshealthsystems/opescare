@@ -89,10 +89,10 @@ class AdminAppointmentsController extends Controller
                 $this->actorId()
             );
         } catch (\Throwable $e) {
-            return redirect()->back()->with('error', 'Failed to cancel appointment: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('flash.appointment_cancel_failed_reason', ['error' => $e->getMessage()]));
         }
 
-        return redirect()->back()->with('success', 'Appointment cancelled successfully.');
+        return redirect()->back()->with('success', __('flash.appointment_cancelled'));
     }
 
     public function destroy(string $id)
@@ -102,11 +102,11 @@ class AdminAppointmentsController extends Controller
         $appointment = Appointment::findOrFail($id);
 
         if ($appointment->status !== 'cancelled') {
-            return redirect()->back()->with('error', 'Only cancelled appointments can be deleted.');
+            return redirect()->back()->with('error', __('flash.appointment_only_cancelled_deletable'));
         }
 
         $appointment->delete();
 
-        return redirect()->route('admin.appointments.index')->with('success', 'Appointment deleted.');
+        return redirect()->route('admin.appointments.index')->with('success', __('flash.appointment_deleted'));
     }
 }

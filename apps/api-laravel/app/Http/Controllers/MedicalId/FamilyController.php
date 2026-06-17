@@ -88,7 +88,7 @@ class FamilyController extends Controller
         });
 
         return redirect()->route('portals.patient.family')
-            ->with('success', 'Dependent added successfully.');
+            ->with('success', __('flash.dependent_added'));
     }
 
     public function inviteForm()
@@ -113,11 +113,11 @@ class FamilyController extends Controller
             ->first();
 
         if (!$patient) {
-            return back()->withErrors(['health_id_or_email' => 'No patient found with that Health ID or email.']);
+            return back()->withErrors(['health_id_or_email' => __('flash.family_no_patient_found')]);
         }
 
         if ($patient->id === Auth::user()?->patient_id) {
-            return back()->withErrors(['health_id_or_email' => 'You cannot link yourself as a dependent.']);
+            return back()->withErrors(['health_id_or_email' => __('flash.family_cannot_link_self')]);
         }
 
         $existing = FamilyLink::where('guardian_user_id', Auth::id())
@@ -126,7 +126,7 @@ class FamilyController extends Controller
             ->exists();
 
         if ($existing) {
-            return back()->withErrors(['health_id_or_email' => 'A link already exists for this patient.']);
+            return back()->withErrors(['health_id_or_email' => __('flash.family_link_exists')]);
         }
 
         $rawToken = Str::random(64);
@@ -148,7 +148,7 @@ class FamilyController extends Controller
         }
 
         return redirect()->route('portals.patient.family')
-            ->with('success', 'Invite sent. The link will be active once accepted.');
+            ->with('success', __('flash.family_invite_sent'));
     }
 
     public function acceptInvite(string $token)
@@ -173,13 +173,13 @@ class FamilyController extends Controller
         // Must be authenticated to accept a family invite
         if (!Auth::check()) {
             return redirect()->route('login')
-                ->with('error', 'Please log in to accept this family invite.');
+                ->with('error', __('flash.family_login_required'));
         }
 
         $link = $this->findPendingByToken($token);
         if (!$link) {
             return redirect()->route('login')
-                ->with('error', 'Invite link is invalid or expired.');
+                ->with('error', __('flash.family_invite_invalid'));
         }
 
         // Only the dependent patient (the person being linked) may accept
@@ -196,7 +196,7 @@ class FamilyController extends Controller
         ]);
 
         return redirect()->route('portals.patient')
-            ->with('success', 'Guardian access granted successfully.');
+            ->with('success', __('flash.guardian_access_granted'));
     }
 
     public function editForm(string $id)
@@ -241,7 +241,7 @@ class FamilyController extends Controller
         ]);
 
         return redirect()->route('portals.patient.family')
-            ->with('success', 'Family link updated.');
+            ->with('success', __('flash.family_link_updated'));
     }
 
     public function revoke(string $id)
@@ -262,7 +262,7 @@ class FamilyController extends Controller
         session()->forget('guardian_viewing_patient_id');
 
         return redirect()->route('portals.patient.family')
-            ->with('success', 'Guardian access revoked.');
+            ->with('success', __('flash.guardian_access_revoked'));
     }
 
     public function switchTo(string $patientId)
@@ -303,7 +303,7 @@ class FamilyController extends Controller
         $link->update(['age_transition_expires_at' => null]);
 
         return redirect()->route('portals.patient')
-            ->with('success', 'Guardian access re-granted.');
+            ->with('success', __('flash.guardian_access_regranted'));
     }
 
     public function guardianConsentDeny(string $id)
@@ -316,7 +316,7 @@ class FamilyController extends Controller
         $link->update(['status' => 'revoked']);
 
         return redirect()->route('portals.patient')
-            ->with('success', 'Guardian access removed.');
+            ->with('success', __('flash.guardian_access_removed'));
     }
 
     private function findPendingByToken(string $rawToken): ?FamilyLink

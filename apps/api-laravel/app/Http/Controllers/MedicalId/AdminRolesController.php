@@ -51,7 +51,7 @@ class AdminRolesController extends Controller
             'description' => $validated['description'] ?? null,
         ]);
 
-        return redirect()->back()->with('success', 'Role created successfully.');
+        return redirect()->back()->with('success', __('flash.role_created'));
     }
 
     public function update(Request $request, string $id)
@@ -63,7 +63,7 @@ class AdminRolesController extends Controller
         $role = Role::findOrFail($id);
 
         if (in_array(strtolower($role->name), self::PROTECTED_ROLES, true)) {
-            return redirect()->back()->with('error', 'Built-in roles cannot be renamed or modified.');
+            return redirect()->back()->with('error', __('flash.role_builtin_locked'));
         }
 
         $validated = $request->validate([
@@ -75,7 +75,7 @@ class AdminRolesController extends Controller
             'description' => $validated['description'] ?? $role->description,
         ]);
 
-        return redirect()->back()->with('success', 'Role updated successfully.');
+        return redirect()->back()->with('success', __('flash.role_updated'));
     }
 
     public function destroy(string $id)
@@ -87,12 +87,12 @@ class AdminRolesController extends Controller
         $role = Role::findOrFail($id);
 
         if ($role->users()->exists()) {
-            return redirect()->back()->with('error', 'Cannot delete a role that has users assigned to it.');
+            return redirect()->back()->with('error', __('flash.role_delete_has_users'));
         }
 
         $role->delete();
 
-        return redirect()->back()->with('success', 'Role deleted successfully.');
+        return redirect()->back()->with('success', __('flash.role_deleted'));
     }
 
     public function users(Request $request, string $id)

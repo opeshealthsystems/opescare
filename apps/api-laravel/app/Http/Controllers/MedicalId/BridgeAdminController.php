@@ -64,7 +64,7 @@ class BridgeAdminController extends Controller
         ]);
 
         return redirect()->route('portals.admin.bridge')
-            ->with('success', 'Bridge Agent registered.')
+            ->with('success', __('flash.bridge_agent_registered'))
             ->with('new_agent_key', $rawKey);
     }
 
@@ -74,7 +74,7 @@ class BridgeAdminController extends Controller
         $agent->update(['status' => $agent->status === 'active' ? 'suspended' : 'active']);
 
         return redirect()->route('portals.admin.bridge')
-            ->with('success', 'Bridge Agent status updated.');
+            ->with('success', __('flash.bridge_agent_status_updated'));
     }
 
     public function batches(string $id)

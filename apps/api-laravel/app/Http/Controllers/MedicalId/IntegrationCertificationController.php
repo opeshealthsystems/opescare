@@ -91,7 +91,7 @@ class IntegrationCertificationController extends Controller
 
         return redirect()
             ->route('portals.admin.certifications.show', $certification)
-            ->with('success', 'Certification process started for ' . $certification->integration_name);
+            ->with('success', __('flash.certification_started', ['name' => $certification->integration_name]));
     }
 
     // ── Record Test Run ───────────────────────────────────────────────────────
@@ -127,7 +127,7 @@ class IntegrationCertificationController extends Controller
 
         return redirect()
             ->route('portals.admin.certifications.show', $certification)
-            ->with('success', 'Test run recorded. Pass rate: ' . $testRun->passRate() . '%');
+            ->with('success', __('flash.certification_test_recorded', ['rate' => $testRun->passRate()]));
     }
 
     // ── Issue Badge ───────────────────────────────────────────────────────────
@@ -135,11 +135,11 @@ class IntegrationCertificationController extends Controller
     public function issueBadge(Request $request, IntegrationCertification $certification): RedirectResponse
     {
         if (!$certification->isPassed()) {
-            return back()->with('error', 'Badge can only be issued for passed certifications.');
+            return back()->with('error', __('flash.certification_badge_only_passed'));
         }
 
         if ($certification->badge) {
-            return back()->with('error', 'A badge is already issued for this certification.');
+            return back()->with('error', __('flash.certification_badge_exists'));
         }
 
         $validated = $request->validate([
@@ -167,7 +167,7 @@ class IntegrationCertificationController extends Controller
 
         return redirect()
             ->route('portals.admin.certifications.show', $certification)
-            ->with('success', 'Certification badge issued: ' . strtoupper($validated['certification_level']));
+            ->with('success', __('flash.certification_badge_issued', ['level' => strtoupper($validated['certification_level'])]));
     }
 
     // ── Revoke Badge ──────────────────────────────────────────────────────────
@@ -183,7 +183,7 @@ class IntegrationCertificationController extends Controller
 
         return redirect()
             ->route('portals.admin.certifications.show', $badge->certification)
-            ->with('success', 'Badge revoked.');
+            ->with('success', __('flash.certification_badge_revoked'));
     }
 
     // ── Seed Core Requirements ─────────────────────────────────────────────
@@ -192,7 +192,7 @@ class IntegrationCertificationController extends Controller
     {
         $this->ensureCoreRequirements();
 
-        return back()->with('success', 'Core certification requirements seeded.');
+        return back()->with('success', __('flash.certification_requirements_seeded'));
     }
 
     // ── Helper ────────────────────────────────────────────────────────────────

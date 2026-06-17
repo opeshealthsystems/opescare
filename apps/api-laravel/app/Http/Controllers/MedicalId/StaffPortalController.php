@@ -219,7 +219,7 @@ class StaffPortalController extends Controller
         $facilityId = $this->ctx->facilityId() ?? $request->input('facility_id');
 
         if (!$facilityId) {
-            return redirect()->back()->with('error', 'No facility context. Please select a facility first.');
+            return redirect()->back()->with('error', __('flash.no_facility_context_select'));
         }
 
         try {
@@ -325,7 +325,7 @@ class StaffPortalController extends Controller
         $facilityId = $this->ctx->facilityId() ?? $request->input('facility_id');
 
         if (!$facilityId) {
-            return redirect()->back()->withInput()->with('error', 'No facility context.');
+            return redirect()->back()->withInput()->with('error', __('flash.no_facility_context'));
         }
 
         try {
@@ -506,7 +506,7 @@ class StaffPortalController extends Controller
         ]);
 
         return redirect()->route('portals.staff.referrals')
-            ->with('success', 'Referral draft created successfully.');
+            ->with('success', __('flash.referral_draft_created'));
     }
 
     public function referralsShow(Request $request, $id)
@@ -532,27 +532,27 @@ class StaffPortalController extends Controller
 
     public function referralsSend(Request $request, $id)
     {
-        return redirect()->route('portals.staff.referrals.show', $id)->with('success', 'Referral sent.');
+        return redirect()->route('portals.staff.referrals.show', $id)->with('success', __('flash.referral_sent'));
     }
 
     public function referralsAccept(Request $request, $id)
     {
-        return redirect()->route('portals.staff.referrals.show', $id)->with('success', 'Referral accepted.');
+        return redirect()->route('portals.staff.referrals.show', $id)->with('success', __('flash.referral_accepted'));
     }
 
     public function referralsReject(Request $request, $id)
     {
-        return redirect()->route('portals.staff.referrals.show', $id)->with('success', 'Referral rejected.');
+        return redirect()->route('portals.staff.referrals.show', $id)->with('success', __('flash.referral_rejected'));
     }
 
     public function referralsComplete(Request $request, $id)
     {
-        return redirect()->route('portals.staff.referrals.show', $id)->with('success', 'Referral marked as completed.');
+        return redirect()->route('portals.staff.referrals.show', $id)->with('success', __('flash.referral_completed'));
     }
 
     public function referralsCancel(Request $request, $id)
     {
-        return redirect()->route('portals.staff.referrals')->with('success', 'Referral cancelled.');
+        return redirect()->route('portals.staff.referrals')->with('success', __('flash.referral_cancelled'));
     }
 
     // ─── Immunizations ────────────────────────────────────────────
@@ -581,7 +581,7 @@ class StaffPortalController extends Controller
             'status'          => 'required|in:completed,not_done',
         ]);
 
-        return redirect()->route('portals.staff.immunizations')->with('success', 'Immunization record saved.');
+        return redirect()->route('portals.staff.immunizations')->with('success', __('flash.immunization_saved'));
     }
 
     // ─── Global Search ────────────────────────────────────────────

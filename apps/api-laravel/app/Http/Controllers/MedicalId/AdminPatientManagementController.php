@@ -125,7 +125,7 @@ class AdminPatientManagementController extends Controller
         $patient->fill($validated);
         $patient->save();
 
-        return redirect()->back()->with('success', 'Patient record updated successfully.');
+        return redirect()->back()->with('success', __('flash.patient_updated'));
     }
 
     public function suspend(string $id): RedirectResponse
@@ -138,7 +138,7 @@ class AdminPatientManagementController extends Controller
         $patient->identity_status = IdentityStatus::Suspended;
         $patient->save();
 
-        return redirect()->back()->with('success', 'Patient has been suspended.');
+        return redirect()->back()->with('success', __('flash.patient_suspended'));
     }
 
     public function activate(string $id): RedirectResponse
@@ -151,7 +151,7 @@ class AdminPatientManagementController extends Controller
         $patient->identity_status = IdentityStatus::Active;
         $patient->save();
 
-        return redirect()->back()->with('success', 'Patient has been activated.');
+        return redirect()->back()->with('success', __('flash.patient_activated'));
     }
 
     public function destroy(string $id): RedirectResponse
@@ -171,6 +171,6 @@ class AdminPatientManagementController extends Controller
 
         $patient->delete();
 
-        return redirect()->route('admin.patients.index')->with('success', 'Patient record permanently deleted.');
+        return redirect()->route('admin.patients.index')->with('success', __('flash.patient_permanently_deleted'));
     }
 }

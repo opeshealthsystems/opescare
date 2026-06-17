@@ -70,7 +70,7 @@ class DataImportController extends Controller
             );
 
             return redirect()->route('portals.staff.data_import.mapping', $job->id)
-                ->with('success', 'File uploaded. Review the column mapping below.');
+                ->with('success', __('flash.import_file_uploaded'));
         } catch (Throwable $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
@@ -106,7 +106,7 @@ class DataImportController extends Controller
             $mappingSvc->applyMapping($job, $mapping, $this->demoActorId(), $request->save_as ?: null);
 
             return redirect()->route('portals.staff.data_import.validate', $id)
-                ->with('success', 'Mapping saved. Running validation…');
+                ->with('success', __('flash.import_mapping_saved'));
         } catch (Throwable $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
@@ -121,7 +121,7 @@ class DataImportController extends Controller
             $validationSvc->validate($job);
 
             return redirect()->route('portals.staff.data_import.preview', $id)
-                ->with('success', 'Validation complete.');
+                ->with('success', __('flash.import_validation_complete'));
         } catch (Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -177,7 +177,7 @@ class DataImportController extends Controller
             $rollbackSvc->rollback($job, $this->demoActorId(), $request->reason);
 
             return redirect()->route('portals.staff.data_import.index')
-                ->with('success', 'Import rolled back.');
+                ->with('success', __('flash.import_rolled_back'));
         } catch (Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -192,7 +192,7 @@ class DataImportController extends Controller
             $svc->cancelJob($job, $this->demoActorId());
 
             return redirect()->route('portals.staff.data_import.index')
-                ->with('success', 'Import cancelled.');
+                ->with('success', __('flash.import_cancelled'));
         } catch (Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

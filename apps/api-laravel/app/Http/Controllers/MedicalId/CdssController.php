@@ -96,7 +96,7 @@ class CdssController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['status' => 'acknowledged', 'alert_id' => $alert->id]);
         }
-        return back()->with('success', 'Alert acknowledged.');
+        return back()->with('success', __('flash.alert_acknowledged'));
     }
 
     /** Override an alert with a required reason */
@@ -117,7 +117,7 @@ class CdssController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['status' => 'overridden', 'override_id' => $override->id]);
         }
-        return back()->with('success', 'Alert overridden and reason recorded.');
+        return back()->with('success', __('flash.alert_overridden'));
     }
 
     /** Dismiss an info-level alert */
@@ -128,7 +128,7 @@ class CdssController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['status' => 'dismissed']);
         }
-        return back()->with('success', 'Alert dismissed.');
+        return back()->with('success', __('flash.alert_dismissed'));
     }
 
     /** Run CDSS checks (called from consultation/prescription workflow) */

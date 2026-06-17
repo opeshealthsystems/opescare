@@ -65,7 +65,7 @@ class AdminCdssRulesController extends Controller
                 ->withQueryString();
         } catch (\Throwable $e) {
             $rules = collect()->paginate(25);
-            return redirect()->back()->with('error', 'Unable to load drug interaction rules: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('flash.drug_rule_load_failed', ['error' => $e->getMessage()]));
         }
 
         $severities = ['mild', 'moderate', 'severe', 'contraindicated'];
@@ -98,10 +98,10 @@ class AdminCdssRulesController extends Controller
                 'is_active'                => true,
             ]);
         } catch (\Throwable $e) {
-            return redirect()->back()->with('error', 'Failed to create drug interaction rule: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('flash.drug_rule_create_failed', ['error' => $e->getMessage()]));
         }
 
-        return redirect()->back()->with('success', 'Drug interaction rule created successfully.');
+        return redirect()->back()->with('success', __('flash.drug_rule_created'));
     }
 
     public function destroyDrugInteraction(string $id)
@@ -111,10 +111,10 @@ class AdminCdssRulesController extends Controller
         try {
             DrugInteractionRule::findOrFail($id)->delete();
         } catch (\Throwable $e) {
-            return redirect()->back()->with('error', 'Failed to delete drug interaction rule: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('flash.drug_rule_delete_failed', ['error' => $e->getMessage()]));
         }
 
-        return redirect()->back()->with('success', 'Drug interaction rule deleted.');
+        return redirect()->back()->with('success', __('flash.drug_rule_deleted'));
     }
 
     public function allergyAlerts(Request $request)
@@ -127,7 +127,7 @@ class AdminCdssRulesController extends Controller
                 ->paginate(25)
                 ->withQueryString();
         } catch (\Throwable $e) {
-            return redirect()->back()->with('error', 'Unable to load allergy alert rules: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('flash.allergy_rule_load_failed', ['error' => $e->getMessage()]));
         }
 
         return view('portals.admin.cdss.allergy_alerts', compact('rules'));
@@ -158,10 +158,10 @@ class AdminCdssRulesController extends Controller
                 'facility_id'           => $request->input('facility_id'),
             ]);
         } catch (\Throwable $e) {
-            return redirect()->back()->with('error', 'Failed to create allergy alert rule: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('flash.allergy_rule_create_failed', ['error' => $e->getMessage()]));
         }
 
-        return redirect()->back()->with('success', 'Allergy alert rule created successfully.');
+        return redirect()->back()->with('success', __('flash.allergy_rule_created'));
     }
 
     public function destroyAllergyAlert(string $id)
@@ -171,10 +171,10 @@ class AdminCdssRulesController extends Controller
         try {
             AllergyAlertRule::findOrFail($id)->delete();
         } catch (\Throwable $e) {
-            return redirect()->back()->with('error', 'Failed to delete allergy alert rule: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('flash.allergy_rule_delete_failed', ['error' => $e->getMessage()]));
         }
 
-        return redirect()->back()->with('success', 'Allergy alert rule deleted.');
+        return redirect()->back()->with('success', __('flash.allergy_rule_deleted'));
     }
 
     public function labAlerts(Request $request)
@@ -187,7 +187,7 @@ class AdminCdssRulesController extends Controller
                 ->paginate(25)
                 ->withQueryString();
         } catch (\Throwable $e) {
-            return redirect()->back()->with('error', 'Unable to load lab alert rules: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('flash.lab_rule_load_failed', ['error' => $e->getMessage()]));
         }
 
         return view('portals.admin.cdss.lab_alerts', compact('rules'));
@@ -235,10 +235,10 @@ class AdminCdssRulesController extends Controller
 
             LabAlertRule::create($data);
         } catch (\Throwable $e) {
-            return redirect()->back()->with('error', 'Failed to create lab alert rule: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('flash.lab_rule_create_failed', ['error' => $e->getMessage()]));
         }
 
-        return redirect()->back()->with('success', 'Lab alert rule created successfully.');
+        return redirect()->back()->with('success', __('flash.lab_rule_created'));
     }
 
     public function destroyLabAlert(string $id)
@@ -248,9 +248,9 @@ class AdminCdssRulesController extends Controller
         try {
             LabAlertRule::findOrFail($id)->delete();
         } catch (\Throwable $e) {
-            return redirect()->back()->with('error', 'Failed to delete lab alert rule: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('flash.lab_rule_delete_failed', ['error' => $e->getMessage()]));
         }
 
-        return redirect()->back()->with('success', 'Lab alert rule deleted.');
+        return redirect()->back()->with('success', __('flash.lab_rule_deleted'));
     }
 }

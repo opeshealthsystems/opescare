@@ -77,9 +77,9 @@ class VisitPortalController extends Controller
             ]));
 
             return redirect()->route('portals.staff.visits')
-                ->with('success', 'Visit #' . substr($visit->id, 0, 8) . ' created.');
+                ->with('success', __('flash.visit_created', ['id' => substr($visit->id, 0, 8)]));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to create visit: ' . $e->getMessage());
+            return back()->with('error', __('flash.visit_create_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -96,9 +96,9 @@ class VisitPortalController extends Controller
         try {
             $svc->transition($id, $data['status'], $this->demoActorId());
 
-            return back()->with('success', 'Visit status updated to: ' . ucwords(str_replace('_', ' ', $data['status'])));
+            return back()->with('success', __('flash.visit_status_updated', ['status' => ucwords(str_replace('_', ' ', $data['status']))]));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to advance visit: ' . $e->getMessage());
+            return back()->with('error', __('flash.visit_advance_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -107,9 +107,9 @@ class VisitPortalController extends Controller
         try {
             $svc->complete($id, $this->demoActorId());
 
-            return back()->with('success', 'Visit completed successfully.');
+            return back()->with('success', __('flash.visit_completed'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to complete visit: ' . $e->getMessage());
+            return back()->with('error', __('flash.visit_complete_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -118,9 +118,9 @@ class VisitPortalController extends Controller
         try {
             $svc->cancel($id, $this->demoActorId());
 
-            return back()->with('success', 'Visit cancelled.');
+            return back()->with('success', __('flash.visit_cancelled'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to cancel visit: ' . $e->getMessage());
+            return back()->with('error', __('flash.visit_cancel_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -142,9 +142,9 @@ class VisitPortalController extends Controller
         try {
             $svc->escalateEmergency($id, $req->reason, $this->demoActorId());
             return redirect()->route('portals.staff.visits.triage', $id)
-                ->with('success', 'Visit escalated to EMERGENCY. Acuity set to Resuscitation (Level 1).');
+                ->with('success', __('flash.visit_escalated_emergency'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Escalation failed: ' . $e->getMessage());
+            return back()->with('error', __('flash.visit_escalation_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -198,9 +198,9 @@ class VisitPortalController extends Controller
             }
 
             return redirect()->route('portals.staff.visits')
-                ->with('success', 'Triage recorded for visit.');
+                ->with('success', __('flash.visit_triage_recorded'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to record triage: ' . $e->getMessage());
+            return back()->with('error', __('flash.visit_triage_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -242,7 +242,7 @@ class VisitPortalController extends Controller
             return redirect()->route('portals.staff.visits')
                 ->with('success', $msg);
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to save clinical note: ' . $e->getMessage());
+            return back()->with('error', __('flash.visit_note_save_failed', ['error' => $e->getMessage()]));
         }
     }
 }

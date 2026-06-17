@@ -163,7 +163,7 @@ class LitePortalController extends Controller
         ]);
 
         return redirect()->route('portals.lite.dashboard')
-            ->with('success', 'Patient checked in to queue.');
+            ->with('success', __('flash.patient_checked_in_queue'));
     }
 
     /**
@@ -270,7 +270,7 @@ class LitePortalController extends Controller
             $data['note'] ?? ''
         );
 
-        return back()->with('success', 'Conflict ' . $data['resolution'] . '.');
+        return back()->with('success', __('flash.conflict_resolved', ['resolution' => $data['resolution']]));
     }
 
     /**

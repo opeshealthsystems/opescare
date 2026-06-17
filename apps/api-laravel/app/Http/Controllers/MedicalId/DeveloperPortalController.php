@@ -95,7 +95,7 @@ class DeveloperPortalController extends Controller
         AuditLogger::log($request, 'developer_account_created', 'developer_account', $account->id);
 
         return redirect()->route('portals.developer.dashboard')
-            ->with('success', 'Welcome to the OpesCare Developer Portal! Your sandbox account is ready.');
+            ->with('success', __('flash.developer_welcome'));
     }
 
     // ── Dashboard ──────────────────────────────────────────────────────────────
@@ -159,7 +159,7 @@ class DeveloperPortalController extends Controller
         $developer = $this->currentDeveloper();
         if (!$developer || !$developer->isActive()) {
             return redirect()->route('portals.developer.dashboard')
-                ->with('error', 'Your developer account must be active to create apps.');
+                ->with('error', __('flash.developer_account_must_be_active_apps'));
         }
 
         return view('portals.developer.create_app', compact('developer'));
@@ -170,7 +170,7 @@ class DeveloperPortalController extends Controller
         $developer = $this->currentDeveloper();
         if (!$developer || !$developer->isActive()) {
             return redirect()->route('portals.developer.dashboard')
-                ->with('error', 'Developer account must be active.');
+                ->with('error', __('flash.developer_account_must_be_active'));
         }
 
         $request->validate([
@@ -203,7 +203,7 @@ class DeveloperPortalController extends Controller
 
         // Show the secret ONCE — store the plain secret in flash so the view can display it
         return redirect()->route('portals.developer.apps.show', $client->id)
-            ->with('success', 'App created.')
+            ->with('success', __('flash.developer_app_created'))
             ->with('new_client_secret', $clientSecret)  // shown once in view
             ->with('new_client_id', $clientId);
     }
@@ -269,7 +269,7 @@ class DeveloperPortalController extends Controller
         $developer = $this->currentDeveloper();
         if (!$developer || !$developer->isActive()) {
             return redirect()->route('portals.developer.dashboard')
-                ->with('error', 'Developer account must be active.');
+                ->with('error', __('flash.developer_account_must_be_active'));
         }
 
         $clients = IntegrationClient::where('created_by', $developer->email)
@@ -311,7 +311,7 @@ class DeveloperPortalController extends Controller
         $developer = $this->currentDeveloper();
         if (!$developer || !$developer->isActive()) {
             return redirect()->route('portals.developer.dashboard')
-                ->with('error', 'Developer account must be active.');
+                ->with('error', __('flash.developer_account_must_be_active'));
         }
 
         $request->validate([
@@ -349,7 +349,7 @@ class DeveloperPortalController extends Controller
         AuditLogger::log($request, 'production_access_requested', 'production_access_request', $prodRequest->id);
 
         return redirect()->route('portals.developer.production_requests')
-            ->with('success', 'Production access request submitted. Our team will review within 3–5 business days.');
+            ->with('success', __('flash.developer_prod_access_submitted'));
     }
 
     // ── Webhook Delivery Logs ─────────────────────────────────────────────────
@@ -427,7 +427,7 @@ class DeveloperPortalController extends Controller
 
         AuditLogger::log($request, 'production_access_approved', 'production_access_request', $prodRequest->id);
 
-        return back()->with('success', 'Production access approved and client promoted.');
+        return back()->with('success', __('flash.developer_prod_access_approved'));
     }
 
     public function adminRejectProductionRequest(Request $request, ProductionAccessRequest $prodRequest)
@@ -440,7 +440,7 @@ class DeveloperPortalController extends Controller
 
         AuditLogger::log($request, 'production_access_rejected', 'production_access_request', $prodRequest->id);
 
-        return back()->with('success', 'Request rejected. Developer will be notified.');
+        return back()->with('success', __('flash.developer_request_rejected'));
     }
 
     public function adminDeveloperAccounts(Request $request)
@@ -469,7 +469,7 @@ class DeveloperPortalController extends Controller
 
         AuditLogger::log($request, 'developer_account_suspended', 'developer_account', $account->id);
 
-        return back()->with('success', 'Developer account suspended.');
+        return back()->with('success', __('flash.developer_account_suspended'));
     }
 
     // ── API Usage Analytics ───────────────────────────────────────────────────

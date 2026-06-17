@@ -47,7 +47,7 @@ class AdminControlCenterController extends Controller
 
         try {
             $svc->updateSetting($request->key, $request->value, $this->demoActorId(), $request->ip());
-            return redirect()->route('portals.admin.cc.settings')->with('success', 'Setting updated.');
+            return redirect()->route('portals.admin.cc.settings')->with('success', __('flash.setting_updated'));
         } catch (Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -65,7 +65,7 @@ class AdminControlCenterController extends Controller
     {
         try {
             $svc->toggleFeatureFlag($key, (bool) $request->input('enabled', false), $this->demoActorId(), $request->ip());
-            return redirect()->route('portals.admin.cc.feature_flags')->with('success', 'Feature flag updated.');
+            return redirect()->route('portals.admin.cc.feature_flags')->with('success', __('flash.feature_flag_updated'));
         } catch (Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -85,7 +85,7 @@ class AdminControlCenterController extends Controller
 
         try {
             $svc->toggleModule($key, (bool) $request->input('enabled', false), $this->demoActorId(), $request->reason, $request->ip());
-            return redirect()->route('portals.admin.cc.modules')->with('success', 'Module toggle updated.');
+            return redirect()->route('portals.admin.cc.modules')->with('success', __('flash.module_toggle_updated'));
         } catch (Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -111,7 +111,7 @@ class AdminControlCenterController extends Controller
 
         try {
             $svc->createMaintenanceWindow($request->all(), $this->demoActorId(), $request->ip());
-            return redirect()->route('portals.admin.cc.maintenance')->with('success', 'Maintenance window created.');
+            return redirect()->route('portals.admin.cc.maintenance')->with('success', __('flash.maintenance_window_created'));
         } catch (Throwable $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
@@ -121,7 +121,7 @@ class AdminControlCenterController extends Controller
     {
         try {
             $svc->toggleMaintenance($id, (bool) $request->input('active', false), $this->demoActorId(), $request->ip());
-            return redirect()->route('portals.admin.cc.maintenance')->with('success', 'Maintenance window updated.');
+            return redirect()->route('portals.admin.cc.maintenance')->with('success', __('flash.maintenance_window_updated'));
         } catch (Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

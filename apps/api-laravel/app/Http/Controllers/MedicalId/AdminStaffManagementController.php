@@ -97,7 +97,7 @@ class AdminStaffManagementController extends Controller
             $profile->save();
         }
 
-        return redirect()->back()->with('success', 'Staff member suspended successfully.');
+        return redirect()->back()->with('success', __('flash.staff_member_suspended'));
     }
 
     public function activate(string $id)
@@ -113,6 +113,6 @@ class AdminStaffManagementController extends Controller
             $profile->save();
         }
 
-        return redirect()->back()->with('success', 'Staff member activated successfully.');
+        return redirect()->back()->with('success', __('flash.staff_member_activated'));
     }
 }

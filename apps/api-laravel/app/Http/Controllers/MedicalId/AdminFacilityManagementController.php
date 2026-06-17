@@ -80,7 +80,7 @@ class AdminFacilityManagementController
 
         Facility::create($data);
 
-        return redirect()->route('admin.facilities.index')->with('success', 'Facility created successfully.');
+        return redirect()->route('admin.facilities.index')->with('success', __('flash.facility_created'));
     }
 
     public function update(Request $request, string $id)
@@ -101,7 +101,7 @@ class AdminFacilityManagementController
 
         $facility->update($data);
 
-        return redirect()->back()->with('success', 'Facility updated successfully.');
+        return redirect()->back()->with('success', __('flash.facility_updated'));
     }
 
     public function suspend(string $id)
@@ -111,7 +111,7 @@ class AdminFacilityManagementController
         $facility = Facility::findOrFail($id);
         $facility->update(['status' => 'suspended']);
 
-        return redirect()->back()->with('success', 'Facility suspended.');
+        return redirect()->back()->with('success', __('flash.facility_suspended'));
     }
 
     public function activate(string $id)
@@ -121,7 +121,7 @@ class AdminFacilityManagementController
         $facility = Facility::findOrFail($id);
         $facility->update(['status' => 'active']);
 
-        return redirect()->back()->with('success', 'Facility activated.');
+        return redirect()->back()->with('success', __('flash.facility_activated'));
     }
 
     public function approve(string $id)
@@ -138,7 +138,7 @@ class AdminFacilityManagementController
 
         $facility->update($updates);
 
-        return redirect()->back()->with('success', 'Facility approved.');
+        return redirect()->back()->with('success', __('flash.facility_approved'));
     }
 
     public function destroy(string $id)
@@ -148,11 +148,11 @@ class AdminFacilityManagementController
         $facility = Facility::findOrFail($id);
 
         if (Patient::where('facility_id', $id)->exists()) {
-            return redirect()->back()->with('error', 'Cannot delete facility with active records.');
+            return redirect()->back()->with('error', __('flash.facility_delete_active_records'));
         }
 
         $facility->delete();
 
-        return redirect()->route('admin.facilities.index')->with('success', 'Facility deleted.');
+        return redirect()->route('admin.facilities.index')->with('success', __('flash.facility_deleted'));
     }
 }

@@ -108,7 +108,7 @@ class PharmacyPortalController extends Controller
         $rx->save();
 
         return redirect()->route('portals.pharmacy.prescriptions')
-            ->with('success', 'Prescription marked as dispensed.');
+            ->with('success', __('flash.prescription_dispensed'));
     }
 
     // ------------------------------------------------------------------

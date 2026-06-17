@@ -209,7 +209,7 @@ class AdminFinancialController extends Controller
 
         $invoice = Invoice::findOrFail($id);
         if (!in_array($invoice->status, ['draft', 'unpaid'])) {
-            return redirect()->back()->with('error', 'Only draft or unpaid invoices can be voided.');
+            return redirect()->back()->with('error', __('flash.invoice_void_only_draft_unpaid'));
         }
         $invoice->update(['status' => 'cancelled']);
         return redirect()->back()->with('success', "Invoice #{$invoice->invoice_number} voided.");

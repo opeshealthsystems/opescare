@@ -72,7 +72,7 @@ class SubscriptionAdminController extends Controller
         $svc->createPlan($data, $this->demoActorId());
 
         return redirect()->route('portals.admin.subscription.plans')
-            ->with('success', 'Subscription plan created.');
+            ->with('success', __('flash.subscription_plan_created'));
     }
 
     public function plansToggle(Request $request, string $planId, SubscriptionService $svc)
@@ -131,7 +131,7 @@ class SubscriptionAdminController extends Controller
         );
 
         return redirect()->route('portals.admin.subscription.subscriptions')
-            ->with('success', 'Subscription created.');
+            ->with('success', __('flash.subscription_created'));
     }
 
     public function subscriptionsCancel(Request $request, string $id, SubscriptionService $svc)
@@ -139,25 +139,25 @@ class SubscriptionAdminController extends Controller
         $request->validate(['reason' => 'required|string|min:5|max:500']);
         $svc->cancelSubscription($id, $request->reason, $this->demoActorId());
 
-        return back()->with('success', 'Subscription cancelled.');
+        return back()->with('success', __('flash.subscription_cancelled'));
     }
 
     public function subscriptionsRenew(string $id, SubscriptionService $svc)
     {
         $svc->renewSubscription($id, $this->demoActorId());
-        return back()->with('success', 'Subscription renewed.');
+        return back()->with('success', __('flash.subscription_renewed'));
     }
 
     public function subscriptionsPause(string $id, SubscriptionService $svc)
     {
         $svc->pauseSubscription($id, $this->demoActorId());
-        return back()->with('success', 'Subscription paused.');
+        return back()->with('success', __('flash.subscription_paused'));
     }
 
     public function subscriptionsReactivate(string $id, SubscriptionService $svc)
     {
         $svc->reactivateSubscription($id, $this->demoActorId());
-        return back()->with('success', 'Subscription reactivated.');
+        return back()->with('success', __('flash.subscription_reactivated'));
     }
 
     public function subscriptionsChangePlan(Request $request, string $id, SubscriptionService $svc)
@@ -165,7 +165,7 @@ class SubscriptionAdminController extends Controller
         $request->validate(['plan_id' => 'required|uuid']);
         $svc->changePlan($id, $request->plan_id, $this->demoActorId());
 
-        return back()->with('success', 'Plan changed.');
+        return back()->with('success', __('flash.plan_changed'));
     }
 
     public function subscriptionDetail(string $id)
@@ -217,6 +217,6 @@ class SubscriptionAdminController extends Controller
 
         $svc->markInvoicePaid($id, $request->payment_reference, $request->payment_method, $this->demoActorId());
 
-        return back()->with('success', 'Invoice marked as paid.');
+        return back()->with('success', __('flash.invoice_paid'));
     }
 }

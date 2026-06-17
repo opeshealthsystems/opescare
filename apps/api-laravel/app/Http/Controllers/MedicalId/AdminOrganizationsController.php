@@ -105,7 +105,7 @@ class AdminOrganizationsController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'Facility approved successfully.');
+        return redirect()->back()->with('success', __('flash.facility_approved'));
     }
 
     public function reject(string $id, Request $request): RedirectResponse
@@ -155,7 +155,7 @@ class AdminOrganizationsController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'Facility rejected.');
+        return redirect()->back()->with('success', __('flash.facility_rejected'));
     }
 
     public function destroy(string $id): RedirectResponse
@@ -167,11 +167,11 @@ class AdminOrganizationsController extends Controller
         $facility = Facility::findOrFail($id);
 
         if ($facility->status === 'active') {
-            return redirect()->back()->with('error', 'Cannot delete an active facility. Suspend it first.');
+            return redirect()->back()->with('error', __('flash.facility_delete_active'));
         }
 
         $facility->delete();
 
-        return redirect()->route('portals.admin.organizations.index')->with('success', 'Facility deleted.');
+        return redirect()->route('portals.admin.organizations.index')->with('success', __('flash.facility_deleted'));
     }
 }

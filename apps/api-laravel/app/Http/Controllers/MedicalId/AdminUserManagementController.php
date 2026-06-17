@@ -82,7 +82,7 @@ class AdminUserManagementController extends Controller
         $user->role_id = $roleId;
         $user->save();
 
-        return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
+        return redirect()->route('admin.users.index')->with('success', __('flash.user_created'));
     }
 
     public function update(Request $request, string $id)
@@ -104,7 +104,7 @@ class AdminUserManagementController extends Controller
         $user->role_id = $validated['role_id'];
         $user->save();
 
-        return redirect()->back()->with('success', 'User updated successfully.');
+        return redirect()->back()->with('success', __('flash.user_updated'));
     }
 
     public function suspend(string $id)
@@ -115,7 +115,7 @@ class AdminUserManagementController extends Controller
         $user->status = 'suspended';
         $user->save();
 
-        return redirect()->back()->with('success', 'User suspended.');
+        return redirect()->back()->with('success', __('flash.user_suspended'));
     }
 
     public function activate(string $id)
@@ -126,7 +126,7 @@ class AdminUserManagementController extends Controller
         $user->status = 'active';
         $user->save();
 
-        return redirect()->back()->with('success', 'User activated.');
+        return redirect()->back()->with('success', __('flash.user_activated'));
     }
 
     public function resetPassword(Request $request, string $id)
@@ -141,7 +141,7 @@ class AdminUserManagementController extends Controller
         $user->password = Hash::make($request->input('password'));
         $user->save();
 
-        return redirect()->back()->with('success', 'Password reset successfully.');
+        return redirect()->back()->with('success', __('flash.user_password_reset'));
     }
 
     public function destroy(string $id)
@@ -151,19 +151,19 @@ class AdminUserManagementController extends Controller
         $user = User::findOrFail($id);
 
         if ($user->id === Auth::id()) {
-            return redirect()->back()->with('error', 'You cannot delete your own account.');
+            return redirect()->back()->with('error', __('flash.user_delete_self'));
         }
 
         $superAdminRole = Role::where('name', 'super_admin')->first();
         if ($superAdminRole) {
             $superAdminCount = User::where('role_id', $superAdminRole->id)->count();
             if ($superAdminCount <= 1 && $user->role_id === $superAdminRole->id) {
-                return redirect()->back()->with('error', 'Cannot delete the last super admin.');
+                return redirect()->back()->with('error', __('flash.user_delete_last_super_admin'));
             }
         }
 
         $user->delete();
 
-        return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
+        return redirect()->route('admin.users.index')->with('success', __('flash.user_deleted'));
     }
 }

@@ -51,7 +51,7 @@ class InventoryPortalController extends Controller
         $this->pharmacyService->addItem($this->demoFacilityId(), $request->except(['_token']));
 
         return redirect()->route('portals.staff.inventory.pharmacy')
-            ->with('success', 'Item added to pharmacy inventory.');
+            ->with('success', __('flash.inventory_item_added'));
     }
 
     public function pharmacyRestock(Request $request, string $id): RedirectResponse
@@ -59,7 +59,7 @@ class InventoryPortalController extends Controller
         $request->validate(['quantity' => 'required|integer|min:1']);
         $this->pharmacyService->adjustQuantity($id, (int) $request->input('quantity'), 'add');
         return redirect()->route('portals.staff.inventory.pharmacy')
-            ->with('success', 'Stock restocked.');
+            ->with('success', __('flash.inventory_restocked'));
     }
 
     public function pharmacyDispense(Request $request, string $id): RedirectResponse
@@ -68,7 +68,7 @@ class InventoryPortalController extends Controller
         try {
             $this->pharmacyService->adjustQuantity($id, (int) $request->input('quantity'), 'subtract');
             return redirect()->route('portals.staff.inventory.pharmacy')
-                ->with('success', 'Stock dispensed.');
+                ->with('success', __('flash.inventory_dispensed'));
         } catch (\Throwable $e) {
             return redirect()->route('portals.staff.inventory.pharmacy')
                 ->with('error', $e->getMessage());
@@ -81,14 +81,14 @@ class InventoryPortalController extends Controller
             'is_expired', 'is_recalled', 'is_quarantined',
         ]));
         return redirect()->route('portals.staff.inventory.pharmacy')
-            ->with('success', 'Item flags updated.');
+            ->with('success', __('flash.inventory_item_flags_updated'));
     }
 
     public function pharmacyDelete(string $id): RedirectResponse
     {
         $this->pharmacyService->removeItem($id);
         return redirect()->route('portals.staff.inventory.pharmacy')
-            ->with('success', 'Item removed from inventory.');
+            ->with('success', __('flash.inventory_item_removed'));
     }
 
     // ── Blood Inventory ───────────────────────────────────────
@@ -113,7 +113,7 @@ class InventoryPortalController extends Controller
         $this->bloodService->upsertUnit($this->demoFacilityId(), $request->except(['_token']));
 
         return redirect()->route('portals.staff.inventory.blood')
-            ->with('success', 'Blood inventory updated.');
+            ->with('success', __('flash.blood_inventory_updated'));
     }
 
     public function bloodAdjust(Request $request, string $id): RedirectResponse
@@ -126,7 +126,7 @@ class InventoryPortalController extends Controller
         $this->bloodService->adjustUnits($id, (int) $request->input('units'), $request->input('direction'));
 
         return redirect()->route('portals.staff.inventory.blood')
-            ->with('success', 'Blood stock adjusted.');
+            ->with('success', __('flash.blood_stock_adjusted'));
     }
 
     public function bloodFlag(Request $request, string $id): RedirectResponse
@@ -135,6 +135,6 @@ class InventoryPortalController extends Controller
             'is_expired', 'is_quarantined', 'is_unsafe',
         ]));
         return redirect()->route('portals.staff.inventory.blood')
-            ->with('success', 'Blood unit flags updated.');
+            ->with('success', __('flash.blood_unit_flags_updated'));
     }
 }

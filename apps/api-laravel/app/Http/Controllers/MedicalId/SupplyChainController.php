@@ -80,7 +80,7 @@ class SupplyChainController extends Controller
         try {
             $svc->createItem($this->demoFacilityId(), $request->validated(), $this->demoActorId());
             return redirect()->route('portals.staff.supply.items')
-                ->with('success', 'Item created successfully.');
+                ->with('success', __('flash.supply_item_created'));
         } catch (Throwable $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }
@@ -112,7 +112,7 @@ class SupplyChainController extends Controller
         try {
             $svc->createSupplier($this->demoFacilityId(), $request->validated(), $this->demoActorId());
             return redirect()->route('portals.staff.supply.suppliers')
-                ->with('success', 'Supplier added.');
+                ->with('success', __('flash.supplier_added'));
         } catch (Throwable $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }
@@ -152,7 +152,7 @@ class SupplyChainController extends Controller
         try {
             $svc->receiveStock($this->demoFacilityId(), $request->validated(), $this->demoActorId());
             return redirect()->route('portals.staff.supply.stock')
-                ->with('success', 'Stock received successfully.');
+                ->with('success', __('flash.stock_received'));
         } catch (Throwable $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }
@@ -168,7 +168,7 @@ class SupplyChainController extends Controller
         try {
             $svc->adjustStock($this->demoFacilityId(), $batchId, $request->validated(), $this->demoActorId());
             return redirect()->route('portals.staff.supply.stock')
-                ->with('success', 'Stock adjusted.');
+                ->with('success', __('flash.stock_adjusted'));
         } catch (Throwable $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -274,7 +274,7 @@ class SupplyChainController extends Controller
 
             $gr = $svc->receiveGoodsReceipt($this->demoFacilityId(), $payload, $this->demoActorId());
             return redirect()->route('portals.staff.supply.goods_receipts')
-                ->with('success', 'Goods receipt ' . ($gr->receipt_number ?: '') . ' posted.');
+                ->with('success', __('flash.goods_receipt_posted', ['number' => ($gr->receipt_number ?: '')]));
         } catch (Throwable $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }

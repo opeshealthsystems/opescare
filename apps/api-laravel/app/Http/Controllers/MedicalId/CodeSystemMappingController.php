@@ -102,7 +102,7 @@ class CodeSystemMappingController extends Controller
 
         return redirect()
             ->route('portals.admin.code_mappings.index')
-            ->with('success', 'Mapping created and pending approval.');
+            ->with('success', __('flash.mapping_created_pending'));
     }
 
     // ── Approve ───────────────────────────────────────────────────────────────
@@ -110,12 +110,12 @@ class CodeSystemMappingController extends Controller
     public function approve(CodeSystemMapping $mapping): RedirectResponse
     {
         if (!$mapping->isPending()) {
-            return back()->with('error', 'Only pending mappings can be approved.');
+            return back()->with('error', __('flash.mapping_only_pending_approvable'));
         }
 
         $mapping->approve($this->demoActorId());
 
-        return back()->with('success', 'Mapping approved: ' . $mapping->local_code . ' → ' . $mapping->standard_code);
+        return back()->with('success', __('flash.mapping_approved', ['from' => $mapping->local_code, 'to' => $mapping->standard_code]));
     }
 
     // ── Reject ────────────────────────────────────────────────────────────────
@@ -123,7 +123,7 @@ class CodeSystemMappingController extends Controller
     public function reject(CodeSystemMapping $mapping): RedirectResponse
     {
         $mapping->reject();
-        return back()->with('success', 'Mapping rejected.');
+        return back()->with('success', __('flash.mapping_rejected'));
     }
 
     // ── Destroy ───────────────────────────────────────────────────────────────
@@ -131,7 +131,7 @@ class CodeSystemMappingController extends Controller
     public function destroy(CodeSystemMapping $mapping): RedirectResponse
     {
         $mapping->delete();
-        return back()->with('success', 'Mapping deleted.');
+        return back()->with('success', __('flash.mapping_deleted'));
     }
 
     // ── Helper ────────────────────────────────────────────────────────────────

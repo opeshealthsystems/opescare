@@ -98,7 +98,7 @@ class AdminSupportController extends Controller
             'status'      => 'in_progress',
         ]);
 
-        return redirect()->back()->with('success', 'Ticket assigned successfully.');
+        return redirect()->back()->with('success', __('flash.ticket_assigned'));
     }
 
     public function close(string $id)
@@ -114,7 +114,7 @@ class AdminSupportController extends Controller
             'resolved_at' => Carbon::now(),
         ]);
 
-        return redirect()->back()->with('success', 'Ticket closed successfully.');
+        return redirect()->back()->with('success', __('flash.ticket_closed'));
     }
 
     public function reopen(string $id)
@@ -129,7 +129,7 @@ class AdminSupportController extends Controller
             'status' => 'open',
         ]);
 
-        return redirect()->back()->with('success', 'Ticket reopened successfully.');
+        return redirect()->back()->with('success', __('flash.ticket_reopened'));
     }
 
     public function destroy(string $id)
@@ -141,6 +141,6 @@ class AdminSupportController extends Controller
         $ticket = SupportTicket::findOrFail($id);
         $ticket->delete();
 
-        return redirect()->route('admin.support.index')->with('success', 'Ticket deleted successfully.');
+        return redirect()->route('admin.support.index')->with('success', __('flash.ticket_deleted'));
     }
 }

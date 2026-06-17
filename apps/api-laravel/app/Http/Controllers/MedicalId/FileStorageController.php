@@ -87,9 +87,9 @@ class FileStorageController extends Controller
                     'resource_type' => $request->resource_type,
                     'resource_id'   => $request->resource_id,
                 ])
-                ->with('success', 'File uploaded and attached successfully.');
+                ->with('success', __('flash.file_uploaded_attached'));
         } catch (Throwable $e) {
-            return back()->withInput()->with('error', 'Upload failed: ' . $e->getMessage());
+            return back()->withInput()->with('error', __('flash.file_upload_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -133,9 +133,9 @@ class FileStorageController extends Controller
                     'resource_type' => $resourceType,
                     'resource_id'   => $resourceId,
                 ])
-                ->with('success', 'Attachment removed.');
+                ->with('success', __('flash.attachment_removed'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Delete failed: ' . $e->getMessage());
+            return back()->with('error', __('flash.file_delete_failed', ['error' => $e->getMessage()]));
         }
     }
 }

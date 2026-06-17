@@ -71,7 +71,7 @@ class LegalAdminController extends Controller
 
         // Check version uniqueness
         if ($document->versions()->where('version', $data['version'])->exists()) {
-            return back()->withErrors(['version' => 'This version number already exists for this document.']);
+            return back()->withErrors(['version' => __('flash.document_version_exists')]);
         }
 
         $this->legalService->publishVersion(
@@ -168,7 +168,7 @@ class LegalAdminController extends Controller
             'resolved_at' => now(),
         ]);
 
-        return back()->with('success', 'Privacy complaint resolved.');
+        return back()->with('success', __('flash.privacy_complaint_resolved'));
     }
 
     // ------------------------------------------------------------------

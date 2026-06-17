@@ -85,10 +85,10 @@ class OnboardingPortalController extends Controller
                 $this->demoActorId()
             );
         } catch (\InvalidArgumentException) {
-            return back()->with('error', 'Unknown checklist item.');
+            return back()->with('error', __('flash.checklist_item_unknown'));
         }
 
-        return back()->with('success', 'Checklist item updated.');
+        return back()->with('success', __('flash.checklist_item_updated'));
     }
 
     // -------------------------------------------------------------------------
@@ -106,12 +106,12 @@ class OnboardingPortalController extends Controller
         try {
             $this->goLiveService->approveGoLive($readiness, $this->demoActorId(), $validated['approval_note']);
         } catch (\RuntimeException $e) {
-            return back()->with('error', 'Cannot approve: checklist is incomplete. Please complete all items first.');
+            return back()->with('error', __('flash.onboarding_incomplete'));
         }
 
         return redirect()
             ->route('portals.admin.onboarding.show', $facility)
-            ->with('success', 'Go-live approved for ' . $facility->name . '!');
+            ->with('success', __('flash.onboarding_golive_approved', ['name' => $facility->name]));
     }
 
     // -------------------------------------------------------------------------

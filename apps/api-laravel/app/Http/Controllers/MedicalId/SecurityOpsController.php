@@ -76,7 +76,7 @@ class SecurityOpsController extends Controller
             ]);
 
             return redirect()->route('portals.admin.security.incidents')
-                ->with('success', 'Security incident logged.');
+                ->with('success', __('flash.security_incident_logged'));
         } catch (Throwable $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }
@@ -96,7 +96,7 @@ class SecurityOpsController extends Controller
             $incident->update($request->only(['status', 'summary', 'contained_at', 'resolved_at']));
 
             return redirect()->route('portals.admin.security.incidents')
-                ->with('success', 'Incident updated.');
+                ->with('success', __('flash.incident_updated'));
         } catch (Throwable $e) {
             return back()->with('error', $e->getMessage());
         }

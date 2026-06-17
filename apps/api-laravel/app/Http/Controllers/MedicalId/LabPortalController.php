@@ -168,7 +168,7 @@ class LabPortalController extends Controller
         $order->collected_at = now();
         $order->save();
 
-        return back()->with('success', 'Sample marked as collected.');
+        return back()->with('success', __('flash.sample_collected'));
     }
 
     // ------------------------------------------------------------------
@@ -183,6 +183,6 @@ class LabPortalController extends Controller
         $order->status = 'processing';
         $order->save();
 
-        return back()->with('success', 'Order moved to processing.');
+        return back()->with('success', __('flash.order_moved_processing'));
     }
 }

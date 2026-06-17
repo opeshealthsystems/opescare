@@ -115,9 +115,9 @@ class InsurancePortalController extends Controller
             ]);
 
             return redirect()->route('portals.insurance.policies')
-                ->with('success', 'Insurance policy registered successfully.');
+                ->with('success', __('flash.insurance_policy_registered'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to register policy: ' . $e->getMessage());
+            return back()->with('error', __('flash.insurance_policy_register_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -131,9 +131,9 @@ class InsurancePortalController extends Controller
                 'verified_at' => now(),
             ]);
 
-            return back()->with('success', 'Policy activated.');
+            return back()->with('success', __('flash.insurance_policy_activated'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to activate policy: ' . $e->getMessage());
+            return back()->with('error', __('flash.insurance_policy_activate_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -143,9 +143,9 @@ class InsurancePortalController extends Controller
             $policy = PatientInsurancePolicy::findOrFail($id);
             $policy->update(['status' => 'inactive']);
 
-            return back()->with('success', 'Policy deactivated.');
+            return back()->with('success', __('flash.insurance_policy_deactivated'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to deactivate policy: ' . $e->getMessage());
+            return back()->with('error', __('flash.insurance_policy_deactivate_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -168,9 +168,9 @@ class InsurancePortalController extends Controller
                 $data['notes'] ?? null
             );
 
-            return back()->with('success', 'Eligibility check recorded.');
+            return back()->with('success', __('flash.insurance_eligibility_recorded'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to record eligibility: ' . $e->getMessage());
+            return back()->with('error', __('flash.insurance_eligibility_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -213,9 +213,9 @@ class InsurancePortalController extends Controller
             ]));
 
             return redirect()->route('portals.insurance.preauths')
-                ->with('success', 'Preauthorization request created.');
+                ->with('success', __('flash.insurance_preauth_created'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to create request: ' . $e->getMessage());
+            return back()->with('error', __('flash.insurance_preauth_create_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -224,9 +224,9 @@ class InsurancePortalController extends Controller
         try {
             $svc->submit($id, $this->demoActorId());
 
-            return back()->with('success', 'Preauthorization request submitted to payer.');
+            return back()->with('success', __('flash.insurance_preauth_submitted'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to submit: ' . $e->getMessage());
+            return back()->with('error', __('flash.insurance_preauth_submit_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -242,9 +242,9 @@ class InsurancePortalController extends Controller
         try {
             $svc->decide($id, $this->demoActorId(), $data);
 
-            return back()->with('success', 'Decision recorded.');
+            return back()->with('success', __('flash.insurance_decision_recorded'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to record decision: ' . $e->getMessage());
+            return back()->with('error', __('flash.insurance_decision_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -253,9 +253,9 @@ class InsurancePortalController extends Controller
         try {
             $svc->cancel($id, $this->demoActorId());
 
-            return back()->with('success', 'Preauthorization request cancelled.');
+            return back()->with('success', __('flash.insurance_preauth_cancelled'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to cancel: ' . $e->getMessage());
+            return back()->with('error', __('flash.insurance_preauth_cancel_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -303,9 +303,9 @@ class InsurancePortalController extends Controller
             ]));
 
             return redirect()->route('portals.insurance.claims')
-                ->with('success', 'Insurance claim created successfully.');
+                ->with('success', __('flash.insurance_claim_created'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to create claim: ' . $e->getMessage());
+            return back()->with('error', __('flash.insurance_claim_create_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -314,9 +314,9 @@ class InsurancePortalController extends Controller
         try {
             $svc->submit($id, $this->demoActorId());
 
-            return back()->with('success', 'Claim submitted to payer.');
+            return back()->with('success', __('flash.insurance_claim_submitted'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to submit claim: ' . $e->getMessage());
+            return back()->with('error', __('flash.insurance_claim_submit_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -332,9 +332,9 @@ class InsurancePortalController extends Controller
         try {
             $svc->decide($id, $this->demoActorId(), $data);
 
-            return back()->with('success', 'Decision recorded on claim.');
+            return back()->with('success', __('flash.insurance_claim_decision_recorded'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to record decision: ' . $e->getMessage());
+            return back()->with('error', __('flash.insurance_decision_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -343,9 +343,9 @@ class InsurancePortalController extends Controller
         try {
             $svc->cancel($id, $this->demoActorId());
 
-            return back()->with('success', 'Claim cancelled.');
+            return back()->with('success', __('flash.insurance_claim_cancelled'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to cancel claim: ' . $e->getMessage());
+            return back()->with('error', __('flash.insurance_claim_cancel_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -361,9 +361,9 @@ class InsurancePortalController extends Controller
         try {
             $svc->recordPayment($id, $this->demoActorId(), $data);
 
-            return back()->with('success', 'Claim payment recorded.');
+            return back()->with('success', __('flash.insurance_claim_payment_recorded'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to record payment: ' . $e->getMessage());
+            return back()->with('error', __('flash.insurance_claim_payment_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -393,9 +393,9 @@ class InsurancePortalController extends Controller
         try {
             InsuranceProvider::create(array_merge($data, ['status' => 'active']));
 
-            return back()->with('success', 'Insurance provider added.');
+            return back()->with('success', __('flash.insurance_provider_added'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to add provider: ' . $e->getMessage());
+            return back()->with('error', __('flash.insurance_provider_add_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -418,9 +418,9 @@ class InsurancePortalController extends Controller
                 'status'                    => 'active',
             ]));
 
-            return back()->with('success', 'Insurance plan added.');
+            return back()->with('success', __('flash.insurance_plan_added'));
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to add plan: ' . $e->getMessage());
+            return back()->with('error', __('flash.insurance_plan_add_failed', ['error' => $e->getMessage()]));
         }
     }
 }

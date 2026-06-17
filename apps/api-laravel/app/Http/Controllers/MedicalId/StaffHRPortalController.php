@@ -70,7 +70,7 @@ class StaffHRPortalController extends Controller
         $this->staffService->createStaffProfile($facilityId, $data);
 
         return redirect()->route('portals.staff.hr.directory')
-            ->with('success', 'Staff member added successfully.');
+            ->with('success', __('flash.staff_member_added'));
     }
 
     public function directoryStatus(Request $request, string $id): RedirectResponse
@@ -79,7 +79,7 @@ class StaffHRPortalController extends Controller
         try {
             $this->staffService->updateStaffStatus($id, $request->input('status'));
             return redirect()->route('portals.staff.hr.directory')
-                ->with('success', 'Staff status updated.');
+                ->with('success', __('flash.staff_status_updated'));
         } catch (\Throwable $e) {
             return redirect()->route('portals.staff.hr.directory')
                 ->with('error', $e->getMessage());
@@ -97,7 +97,7 @@ class StaffHRPortalController extends Controller
         $this->staffService->addLicense($id, $request->except(['_token']));
 
         return redirect()->route('portals.staff.hr.directory')
-            ->with('success', 'License added.');
+            ->with('success', __('flash.staff_license_added'));
     }
 
     // ── Shifts ────────────────────────────────────────────────
@@ -120,14 +120,14 @@ class StaffHRPortalController extends Controller
         $this->rosterService->createShift($this->demoFacilityId(), $request->except(['_token']));
 
         return redirect()->route('portals.staff.hr.shifts')
-            ->with('success', 'Shift created.');
+            ->with('success', __('flash.shift_created'));
     }
 
     public function shiftsToggle(string $id): RedirectResponse
     {
         $this->rosterService->toggleShiftStatus($id);
         return redirect()->route('portals.staff.hr.shifts')
-            ->with('success', 'Shift status updated.');
+            ->with('success', __('flash.shift_status_updated'));
     }
 
     // ── Rosters ───────────────────────────────────────────────
@@ -165,7 +165,7 @@ class StaffHRPortalController extends Controller
         );
 
         return redirect()->route('portals.staff.hr.roster')
-            ->with('success', 'Roster created.');
+            ->with('success', __('flash.roster_created'));
     }
 
     public function rosterPublish(string $id): RedirectResponse
@@ -173,7 +173,7 @@ class StaffHRPortalController extends Controller
         try {
             $this->rosterService->publishRoster($id);
             return redirect()->route('portals.staff.hr.roster')
-                ->with('success', 'Roster published.');
+                ->with('success', __('flash.roster_published'));
         } catch (\Throwable $e) {
             return redirect()->route('portals.staff.hr.roster')
                 ->with('error', $e->getMessage());
@@ -185,7 +185,7 @@ class StaffHRPortalController extends Controller
         try {
             $this->rosterService->archiveRoster($id);
             return redirect()->route('portals.staff.hr.roster')
-                ->with('success', 'Roster archived.');
+                ->with('success', __('flash.roster_archived'));
         } catch (\Throwable $e) {
             return redirect()->route('portals.staff.hr.roster')
                 ->with('error', $e->getMessage());
@@ -207,7 +207,7 @@ class StaffHRPortalController extends Controller
                 $request->except(['_token'])
             );
             return redirect()->route('portals.staff.hr.roster')
-                ->with('success', 'Assignment added.');
+                ->with('success', __('flash.assignment_added'));
         } catch (\Throwable $e) {
             return redirect()->route('portals.staff.hr.roster')
                 ->with('error', $e->getMessage());
@@ -218,7 +218,7 @@ class StaffHRPortalController extends Controller
     {
         $this->rosterService->removeAssignment($assignmentId);
         return redirect()->route('portals.staff.hr.roster')
-            ->with('success', 'Assignment removed.');
+            ->with('success', __('flash.assignment_removed'));
     }
 
     // ── Leave ─────────────────────────────────────────────────
@@ -250,7 +250,7 @@ class StaffHRPortalController extends Controller
         );
 
         return redirect()->route('portals.staff.hr.leave')
-            ->with('success', 'Leave request submitted.');
+            ->with('success', __('flash.leave_request_submitted'));
     }
 
     public function leaveApprove(Request $request, string $id): RedirectResponse
@@ -258,7 +258,7 @@ class StaffHRPortalController extends Controller
         try {
             $this->leaveService->approveLeave($id, $this->demoActorId(), $request->input('review_notes'));
             return redirect()->route('portals.staff.hr.leave')
-                ->with('success', 'Leave approved.');
+                ->with('success', __('flash.leave_approved'));
         } catch (\Throwable $e) {
             return redirect()->route('portals.staff.hr.leave')
                 ->with('error', $e->getMessage());
@@ -270,7 +270,7 @@ class StaffHRPortalController extends Controller
         try {
             $this->leaveService->rejectLeave($id, $this->demoActorId(), $request->input('review_notes'));
             return redirect()->route('portals.staff.hr.leave')
-                ->with('success', 'Leave rejected.');
+                ->with('success', __('flash.leave_rejected'));
         } catch (\Throwable $e) {
             return redirect()->route('portals.staff.hr.leave')
                 ->with('error', $e->getMessage());
@@ -282,7 +282,7 @@ class StaffHRPortalController extends Controller
         try {
             $this->leaveService->withdrawLeave($id);
             return redirect()->route('portals.staff.hr.leave')
-                ->with('success', 'Leave request withdrawn.');
+                ->with('success', __('flash.leave_request_withdrawn'));
         } catch (\Throwable $e) {
             return redirect()->route('portals.staff.hr.leave')
                 ->with('error', $e->getMessage());
