@@ -182,6 +182,11 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
 
     Route::middleware(['guardian.context'])->group(function () {
         Route::get('/portals/patient/appointments', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'appointments'])->name('portals.patient.appointments');
+        // Booking + reschedule (book must precede the {id} routes)
+        Route::get('/portals/patient/appointments/book', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'bookAppointmentForm'])->name('portals.patient.appointments.book');
+        Route::post('/portals/patient/appointments/book', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'bookAppointment'])->name('portals.patient.appointments.book.store');
+        Route::get('/portals/patient/appointments/{id}/reschedule', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'rescheduleAppointmentForm'])->name('portals.patient.appointments.reschedule');
+        Route::post('/portals/patient/appointments/{id}/reschedule', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'rescheduleAppointment'])->name('portals.patient.appointments.reschedule.store');
         Route::post('/portals/patient/appointments/{id}/cancel', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'cancelAppointment'])->name('portals.patient.appointments.cancel');
         Route::get('/portals/patient/labs', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'labResults'])->name('portals.patient.labs');
         Route::get('/portals/patient/prescriptions', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'prescriptions'])->name('portals.patient.prescriptions');

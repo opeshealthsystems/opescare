@@ -403,7 +403,7 @@ class PatientPortalController extends Controller
             ->where('patient_id', $patient->id)
             ->firstOrFail();
 
-        abort_if(!in_array($appt->status, ['scheduled', 'confirmed']), 422, 'This appointment cannot be cancelled.');
+        abort_if(!in_array($appt->status, ['requested', 'scheduled', 'confirmed']), 422, 'This appointment cannot be cancelled.');
 
         $appt->update([
             'status'               => 'cancelled',
@@ -421,6 +421,106 @@ class PatientPortalController extends Controller
 
         return redirect()->route('portals.patient.appointments')
             ->with('success', __('flash.patient_appointment_cancelled'));
+    }
+
+    /** Appointment types a patient may request. */
+    private function appointmentTypes(): array
+    {
+        return ['consultation', 'follow_up', 'vaccination', 'lab_test', 'antenatal', 'dental', 'general'];
+    }
+
+    /** GET — appointment request form (pick facility, type, date/time, reason). */
+    public function bookAppointmentForm(Request $request)
+    {
+        $patient = $this->resolveViewingPatient();
+        abort_if(!$patient, 403);
+
+        $facilities = \App\Models\Facility::orderBy('name')->limit(300)->get(['id', 'name']);
+
+        return view('portals.patient.appointment_book', [
+            'patient'     => $patient,
+            'facilities'  => $facilities,
+            'types'       => $this->appointmentTypes(),
+            'defaultFacility' => $patient->facility_id,
+        ]);
+    }
+
+    /** POST — create a patient-requested appointment (status: requested). */
+    public function bookAppointment(Request $request)
+    {
+        $this->assertWriteAllowed();
+        $patient = $this->resolveViewingPatient();
+        abort_if(!$patient, 403);
+
+        $validated = $request->validate([
+            'facility_id'      => 'required|uuid|exists:facilities,id',
+            'appointment_type' => 'required|string|in:' . implode(',', $this->appointmentTypes()),
+            'scheduled_at'     => 'required|date|after:now',
+            'reason'           => 'nullable|string|max:500',
+        ]);
+
+        $appt = Appointment::create([
+            'patient_id'       => $patient->id,
+            'facility_id'      => $validated['facility_id'],
+            'appointment_type' => $validated['appointment_type'],
+            'scheduled_at'     => $validated['scheduled_at'],
+            'status'           => 'requested',
+            'booked_by_type'   => 'patient',
+            'booked_by_id'     => $patient->id,
+            'reason'           => $validated['reason'] ?? null,
+        ]);
+
+        $this->ctx->auditPatientAccess(
+            actionType:   'patient_appointment_requested',
+            resourceType: 'Appointment',
+            resourceId:   $appt->id,
+            patientId:    $patient->id,
+        );
+
+        return redirect()->route('portals.patient.appointments')
+            ->with('success', __('flash.patient_appointment_requested'));
+    }
+
+    /** GET — reschedule form for a pending/scheduled appointment. */
+    public function rescheduleAppointmentForm(Request $request, string $id)
+    {
+        $patient = $this->resolveViewingPatient();
+        abort_if(!$patient, 403);
+
+        $appt = Appointment::where('id', $id)->where('patient_id', $patient->id)->firstOrFail();
+        abort_if(!in_array($appt->status, ['requested', 'scheduled', 'confirmed']), 422, 'This appointment cannot be rescheduled.');
+
+        return view('portals.patient.appointment_reschedule', compact('patient', 'appt'));
+    }
+
+    /** POST — apply a new date/time to an appointment (re-enters 'requested'). */
+    public function rescheduleAppointment(Request $request, string $id)
+    {
+        $this->assertWriteAllowed();
+        $patient = $this->resolveViewingPatient();
+        abort_if(!$patient, 403);
+
+        $appt = Appointment::where('id', $id)->where('patient_id', $patient->id)->firstOrFail();
+        abort_if(!in_array($appt->status, ['requested', 'scheduled', 'confirmed']), 422, 'This appointment cannot be rescheduled.');
+
+        $validated = $request->validate([
+            'scheduled_at' => 'required|date|after:now',
+        ]);
+
+        $appt->update([
+            'scheduled_at' => $validated['scheduled_at'],
+            'status'       => 'requested',
+        ]);
+
+        $this->ctx->auditPatientAccess(
+            actionType:   'patient_appointment_rescheduled',
+            resourceType: 'Appointment',
+            resourceId:   $appt->id,
+            patientId:    $patient->id,
+        );
+
+        return redirect()->route('portals.patient.appointments')
+            ->with('success', __('flash.patient_appointment_rescheduled'));
     }
 
     /**

@@ -262,6 +262,8 @@ return [
     'qr_token_not_found'                  => 'This QR token was not found or is already inactive.',
     'qr_token_revoked'                    => 'QR token has been revoked. It can no longer be scanned.',
     'patient_appointment_cancelled'       => 'Your appointment has been cancelled.',
+    'patient_appointment_requested'       => 'Your appointment request has been sent to the facility.',
+    'patient_appointment_rescheduled'     => 'Your appointment has been rescheduled.',
     'refill_submitted'                    => 'Refill request submitted. Your prescribing facility will review it and contact you within 1–2 business days.',
     'consent_approved'                    => 'Consent approved.',
     'consent_denied'                      => 'Consent denied.',

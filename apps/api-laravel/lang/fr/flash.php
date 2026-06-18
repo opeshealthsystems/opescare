@@ -262,6 +262,8 @@ return [
     'qr_token_not_found'                  => 'Ce jeton QR est introuvable ou déjà inactif.',
     'qr_token_revoked'                    => 'Le jeton QR a été révoqué. Il ne peut plus être scanné.',
     'patient_appointment_cancelled'       => 'Votre rendez-vous a été annulé.',
+    'patient_appointment_requested'       => 'Votre demande de rendez-vous a été envoyée à l’établissement.',
+    'patient_appointment_rescheduled'     => 'Votre rendez-vous a été reporté.',
     'refill_submitted'                    => 'Demande de renouvellement soumise. Votre établissement prescripteur l\'examinera et vous contactera sous 1 à 2 jours ouvrables.',
     'consent_approved'                    => 'Consentement approuvé.',
     'consent_denied'                      => 'Consentement refusé.',

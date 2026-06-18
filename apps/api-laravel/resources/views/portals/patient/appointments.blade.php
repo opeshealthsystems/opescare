@@ -18,6 +18,9 @@
         <h1 class="page-title">{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'My Appointments' }}</h1>
         <p class="page-subtitle">{{ __('public.portal.appointments_subtitle', [], app()->getLocale()) ?: 'View your upcoming and past appointments.' }}</p>
     </div>
+    <a href="{{ route('portals.patient.appointments.book') }}" class="btn btn-primary">
+        <i data-lucide="calendar-plus"></i> {{ __('public.appt_book_btn') }}
+    </a>
 </div>
 
 @if(session('success'))
@@ -94,7 +97,10 @@
                         <span class="badge {{ $stCls }}">{{ ucfirst(str_replace('_', ' ', $appt->status ?? 'Scheduled')) }}</span>
                     </td>
                     <td class="row-actions">
-                        @if(in_array($appt->status, ['scheduled', 'confirmed']))
+                        @if(in_array($appt->status, ['requested', 'scheduled', 'confirmed']))
+                        <a href="{{ route('portals.patient.appointments.reschedule', $appt->id) }}" class="btn btn-secondary btn-sm">
+                            <i data-lucide="calendar-clock"></i> {{ __('public.appt_reschedule_btn') }}
+                        </a>
                         <button type="button" class="btn btn-danger btn-sm" onclick="opOpenModal('cancel-appt-{{ $appt->id }}')">
                             <i data-lucide="x-circle"></i> {{ __('public.portal.btn_cancel_appointment', [], app()->getLocale()) ?: 'Cancel' }}
                         </button>
@@ -113,7 +119,7 @@
 </div>
 
 @foreach($appointments as $appt)
-    @if(in_array($appt->status, ['scheduled', 'confirmed']))
+    @if(in_array($appt->status, ['requested', 'scheduled', 'confirmed']))
     <div id="cancel-appt-{{ $appt->id }}" class="modal-backdrop mt-6" hidden>
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cancel-appt-{{ $appt->id }}-title">
             <h3 class="modal__title" id="cancel-appt-{{ $appt->id }}-title"><i data-lucide="x-circle"></i> {{ __('public.portal.modal_cancel_appt_title', [], app()->getLocale()) ?: 'Cancel appointment' }}</h3>
