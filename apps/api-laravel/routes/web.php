@@ -674,6 +674,13 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access'])->group(funct
     Route::get('/portals/healthorg/outreach',  [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'outreach'])->name('portals.healthorg.outreach');
     Route::get('/portals/healthorg/reports',   [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'reports'])->name('portals.healthorg.reports');
     Route::get('/portals/healthorg/signals',   [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'signals'])->name('portals.healthorg.signals');
+    // Health-Org write flows (programs, outreach, reports, signal review)
+    Route::post('/portals/healthorg/programs',  [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'storeProgram'])->name('portals.healthorg.programs.store');
+    Route::post('/portals/healthorg/outreach',  [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'storeOutreach'])->name('portals.healthorg.outreach.store');
+    Route::post('/portals/healthorg/outreach/{id}/complete', [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'completeOutreach'])->name('portals.healthorg.outreach.complete');
+    Route::post('/portals/healthorg/reports',   [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'storeReport'])->name('portals.healthorg.reports.store');
+    Route::post('/portals/healthorg/reports/{id}/submit', [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'submitReport'])->name('portals.healthorg.reports.submit');
+    Route::post('/portals/healthorg/signals/{id}/review', [\App\Http\Controllers\MedicalId\HealthOrgPortalController::class, 'reviewSignal'])->name('portals.healthorg.signals.review');
 });
 
 /*
