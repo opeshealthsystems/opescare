@@ -152,14 +152,27 @@ class LitePortalController extends Controller
 
         $facilityId = $this->demoFacilityId();
 
-        \App\Models\PatientQueueEntry::create([
-            'patient_id'  => $data['patient_id'],
-            'facility_id' => $facilityId,
-            'status'      => 'waiting',
-            'priority'    => $data['priority'] ?? 3,
-            'reason'      => $data['reason'] ?? null,
-            'queued_by'   => $this->demoActorId(),
-            'queued_at'   => now(),
+        // Walk-in check-in goes through the canonical QueueService, which creates
+        // the PatientCheckIn + QueueTicket (with a generated queue number) and a
+        // visit. destination_queue is a FacilityQueue name — use the facility's
+        // first active queue. If none is configured, fail gracefully.
+        $queue = \App\Models\FacilityQueue::where('facility_id', $facilityId)
+            ->where('is_active', true)
+            ->orderBy('created_at')
+            ->first();
+
+        if (! $queue) {
+            return redirect()->route('portals.lite.dashboard')
+                ->with('error', __('flash.no_queue_configured'));
+        }
+
+        app(\App\Modules\Queue\Services\QueueService::class)->checkInWalkIn([
+            'patient_id'        => $data['patient_id'],
+            'facility_id'       => $facilityId,
+            'destination_queue' => $queue->name,
+            'priority_level'    => $data['priority'] ?? 5,
+            'check_in_type'     => 'walk_in',
+            'actor_id'          => $this->demoActorId(),
         ]);
 
         return redirect()->route('portals.lite.dashboard')

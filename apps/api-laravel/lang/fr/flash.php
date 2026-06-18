@@ -342,4 +342,5 @@ return [
     'bed_transfer_completed'              => 'Transfert de lit terminé.',
     'subscription_checkout_pending'       => 'Le paiement Mobile Money pour les forfaits premium sera bientôt disponible.',
     'feature_requires_upgrade'            => 'Passez à Premium pour utiliser cette fonctionnalité.',
+    'no_queue_configured'                 => "Aucune file d'attente active n'est configurée pour cet établissement. Configurez-en une avant d'enregistrer des patients.",
 ];

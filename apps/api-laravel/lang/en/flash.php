@@ -342,4 +342,5 @@ return [
     'bed_transfer_completed'              => 'Bed transfer completed.',
     'subscription_checkout_pending'       => 'Mobile Money checkout for premium plans is coming soon.',
     'feature_requires_upgrade'            => 'Upgrade to Premium to use this feature.',
+    'no_queue_configured'                 => 'No active queue is configured for this facility. Set one up before checking in patients.',
 ];
