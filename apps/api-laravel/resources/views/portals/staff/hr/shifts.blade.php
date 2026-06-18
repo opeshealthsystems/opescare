@@ -183,7 +183,7 @@
                                     @csrf
                                     <button type="submit" class="btn btn-ghost btn-xs">
                                         <i data-lucide="{{ $shift->status === 'active' ? 'pause-circle' : 'play-circle' }}"></i>
-                                        {{ $shift->status === 'active' ? __('public.staff_portal.hr_shifts_deactivate', [], app()->getLocale()) ?: 'Deactivate' : __('public.staff_portal.hr_shifts_activate', [], app()->getLocale()) ?: 'Activate' }}
+                                        {{ $shift->status === 'active' ? (__('public.staff_portal.hr_shifts_deactivate', [], app()->getLocale()) ?: 'Deactivate') : (__('public.staff_portal.hr_shifts_activate', [], app()->getLocale()) ?: 'Activate') }}
                                     </button>
                                 </form>
                             </td>

@@ -57,19 +57,19 @@ class AnalyticsDashboardController extends Controller
         $facilityId = $this->facilityId();
         [$from, $to] = $this->periodDates($period);
 
-        $totalQueued = DB::table('patient_queue_entries')
+        $totalQueued = DB::table('queue_tickets')
             ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereBetween('created_at', [$from, $to])
             ->count();
 
-        $avgWaitMin = DB::table('patient_queue_entries')
+        $avgWaitMin = DB::table('queue_tickets')
             ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereNotNull('called_at')
             ->whereBetween('created_at', [$from, $to])
-            ->selectRaw('AVG(EXTRACT(EPOCH FROM (called_at - created_at))/60) as avg_wait')
+            ->selectRaw('AVG(EXTRACT(EPOCH FROM (called_at - checked_in_at))/60) as avg_wait')
             ->value('avg_wait');
 
-        $byStatus = DB::table('patient_queue_entries')
+        $byStatus = DB::table('queue_tickets')
             ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereBetween('created_at', [$from, $to])
             ->selectRaw('status, COUNT(*) as cnt')
@@ -77,16 +77,16 @@ class AnalyticsDashboardController extends Controller
             ->pluck('cnt', 'status')
             ->toArray();
 
-        $byPriority = DB::table('patient_queue_entries')
+        $byPriority = DB::table('queue_tickets')
             ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereBetween('created_at', [$from, $to])
-            ->selectRaw('priority, COUNT(*) as cnt')
-            ->groupBy('priority')
-            ->orderBy('priority')
-            ->pluck('cnt', 'priority')
+            ->selectRaw('priority_level, COUNT(*) as cnt')
+            ->groupBy('priority_level')
+            ->orderBy('priority_level')
+            ->pluck('cnt', 'priority_level')
             ->toArray();
 
-        $dailyTrend = DB::table('patient_queue_entries')
+        $dailyTrend = DB::table('queue_tickets')
             ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereBetween('created_at', [$from, $to])
             ->selectRaw('DATE(created_at) as day, COUNT(*) as total')
@@ -108,33 +108,37 @@ class AnalyticsDashboardController extends Controller
         $facilityId = $this->facilityId();
         [$from, $to] = $this->periodDates($period);
 
-        $totalBeds      = DB::table('ward_beds')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->count();
-        $occupiedBeds   = DB::table('ward_beds')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->where('status', 'occupied')->count();
+        // beds have no facility_id of their own — they are scoped via their ward.
+        $bedsByFacility = fn ($q) => $q->join('wards', 'wards.id', '=', 'beds.ward_id')
+            ->when($facilityId, fn ($qq) => $qq->where('wards.facility_id', $facilityId));
+
+        $totalBeds      = DB::table('beds')->tap($bedsByFacility)->count();
+        $occupiedBeds   = DB::table('beds')->tap($bedsByFacility)->where('beds.status', 'occupied')->count();
         $occupancyRate  = $totalBeds > 0 ? round($occupiedBeds / $totalBeds * 100, 1) : 0;
 
-        $admissions = DB::table('ward_admissions')
+        $admissions = DB::table('admissions')
             ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereBetween('admitted_at', [$from, $to])
             ->count();
 
-        $discharges = DB::table('ward_admissions')
+        $discharges = DB::table('admissions')
             ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereNotNull('discharged_at')
             ->whereBetween('discharged_at', [$from, $to])
             ->count();
 
-        $avgLosHours = DB::table('ward_admissions')
+        $avgLosHours = DB::table('admissions')
             ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereNotNull('discharged_at')
             ->whereBetween('admitted_at', [$from, $to])
             ->selectRaw('AVG(EXTRACT(EPOCH FROM (discharged_at - admitted_at))/3600) as avg_los')
             ->value('avg_los');
 
-        $byWard = DB::table('ward_beds')
-            ->join('wards', 'wards.id', '=', 'ward_beds.ward_id')
-            ->when($facilityId, fn ($q) => $q->where('ward_beds.facility_id', $facilityId))
-            ->selectRaw('wards.name as ward_name, COUNT(*) as total_beds,
-                SUM(CASE WHEN ward_beds.status = "occupied" THEN 1 ELSE 0 END) as occupied')
+        $byWard = DB::table('beds')
+            ->join('wards', 'wards.id', '=', 'beds.ward_id')
+            ->when($facilityId, fn ($q) => $q->where('wards.facility_id', $facilityId))
+            ->selectRaw("wards.name as ward_name, COUNT(*) as total_beds,
+                SUM(CASE WHEN beds.status = 'occupied' THEN 1 ELSE 0 END) as occupied")
             ->groupBy('wards.id', 'wards.name')
             ->get()
             ->toArray();
@@ -156,19 +160,20 @@ class AnalyticsDashboardController extends Controller
         $revenue   = $this->analytics->revenueSummary($facilityId, $from, $to);
         $revTrend  = $this->analytics->revenueTrend($facilityId, $from, $to);
 
-        $byPaymentMode = DB::table('invoices')
+        // Payment mode breakdown lives on the payments table (invoices have no payment_mode).
+        $byPaymentMode = DB::table('payments')
             ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
-            ->where('status', 'paid')
-            ->whereBetween('paid_at', [$from, $to])
-            ->selectRaw('payment_mode, SUM(total_amount) as total, COUNT(*) as cnt')
-            ->groupBy('payment_mode')
+            ->where('status', 'completed')
+            ->whereBetween('confirmed_at', [$from, $to])
+            ->selectRaw('method as payment_mode, SUM(amount) as total, COUNT(*) as cnt')
+            ->groupBy('method')
             ->get()
             ->toArray();
 
         $outstandingAmount = DB::table('invoices')
             ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
             ->whereIn('status', ['pending', 'partial'])
-            ->sum('balance_due');
+            ->sum('balance_amount');
 
         $outstandingCount = DB::table('invoices')
             ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
@@ -200,23 +205,23 @@ class AnalyticsDashboardController extends Controller
 
         // Patient record completeness
         $totalPatients    = DB::table('patients')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->count();
-        $withPhone        = DB::table('patients')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->whereNotNull('phone')->count();
+        $withPhone        = DB::table('patients')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->whereNotNull('phone_number')->count();
         $withAddress      = DB::table('patients')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->whereNotNull('address')->count();
         $withDob          = DB::table('patients')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->whereNotNull('date_of_birth')->count();
-        $withNhis         = DB::table('patients')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->whereNotNull('nhis_number')->count();
-        $withNextOfKin    = DB::table('patients')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->whereNotNull('next_of_kin_name')->count();
+        // National health-insurance identifier on this schema is cnamgs_id; next-of-kin is stored in emergency_contact.
+        $withNhis         = DB::table('patients')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->whereNotNull('cnamgs_id')->count();
+        $withNextOfKin    = DB::table('patients')->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))->whereNotNull('emergency_contact')->count();
 
-        // Import history
-        $importStats = DB::table('data_import_batches')
-            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
-            ->selectRaw('status, COUNT(*) as cnt, SUM(total_records) as records')
+        // Import history (import_batches has no facility_id — it links via its import job).
+        $importStats = DB::table('import_batches')
+            ->selectRaw('status, COUNT(*) as cnt, SUM(total_rows) as records')
             ->groupBy('status')
             ->get()
             ->keyBy('status')
             ->toArray();
 
-        $recentImports = DB::table('data_import_batches')
-            ->when($facilityId, fn ($q) => $q->where('facility_id', $facilityId))
+        $recentImports = DB::table('import_batches')
+            ->selectRaw('*, total_rows as total_records')
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get()
@@ -233,7 +238,7 @@ class AnalyticsDashboardController extends Controller
         $overrideRate = ClinicalAlert::where('facility_id', $facilityId)
             ->whereDate('triggered_at', '>=', now()->subDays(30))
             ->selectRaw(
-                'ROUND(SUM(CASE WHEN status = "overridden" THEN 1 ELSE 0 END) / NULLIF(COUNT(*),0) * 100, 1) as rate'
+                "ROUND(SUM(CASE WHEN status = 'overridden' THEN 1 ELSE 0 END) / NULLIF(COUNT(*),0) * 100, 1) as rate"
             )
             ->value('rate');
 
