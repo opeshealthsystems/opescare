@@ -469,6 +469,8 @@ return [
         'chk_require_consent_hint'=> 'Providers can only see a masked preview without your explicit consent.',
         'chk_emergency_access_lbl'=> 'Allow Emergency Access',
         'chk_emergency_access_hint'=> 'Permit audited break-glass access during emergencies without standard consent.',
+        'btn_download_my_data'     => 'Download my data',
+        'data_export_hint'         => 'Download a copy of all your personal health data (Law No. 2010/012).',
         'btn_save_changes_form'  => 'Save Changes',
 
         // Prescriptions heading

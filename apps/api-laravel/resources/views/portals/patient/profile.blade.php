@@ -235,6 +235,12 @@
                     </div>
                 </label>
 
+                <hr style="margin:1rem 0;border:none;border-top:1px solid var(--color-border);">
+                <a href="{{ route('portals.patient.data-rights.export') }}" class="btn btn-secondary">
+                    <i data-lucide="download"></i> {{ __('public.portal.btn_download_my_data', [], $l) ?: 'Download my data' }}
+                </a>
+                <p class="text-sm text-muted" style="margin-top:.5rem;">{{ __('public.portal.data_export_hint', [], $l) ?: 'Download a copy of all your personal health data (Law No. 2010/012).' }}</p>
+
             </div>
         </div>
 

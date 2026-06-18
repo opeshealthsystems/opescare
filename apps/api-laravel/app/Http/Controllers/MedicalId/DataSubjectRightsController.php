@@ -85,40 +85,19 @@ class DataSubjectRightsController extends Controller
                 'expires_at'         => $patient->expires_at?->toDateTimeString(),
                 'created_at'         => $patient->created_at->toIso8601String(),
             ],
+            // Full rows — the patient is entitled to all of their own data, and
+            // selecting all columns avoids brittle hard-coded column lists.
+            // toArray() still respects each model's $hidden attributes.
             'consent_records' => ConsentGrant::where('patient_id', $patient->id)
-                ->orderByDesc('created_at')
-                ->get(['id', 'requesting_facility_id', 'requesting_client_id',
-                       'requested_scope', 'status', 'granted_at', 'expires_at',
-                       'revoked_at', 'created_at'])
-                ->toArray(),
-            'allergies' => AllergyRecord::where('patient_id', $patient->id)
-                ->get(['substance', 'reaction', 'severity', 'status', 'notes', 'created_at'])
-                ->toArray(),
-            'diagnoses' => Diagnosis::where('patient_id', $patient->id)
-                ->get(['code', 'display_name', 'status', 'onset_date',
-                       'resolved_date', 'notes', 'created_at'])
-                ->toArray(),
-            'immunizations' => ImmunizationRecord::where('patient_id', $patient->id)
-                ->get(['vaccine_name', 'batch_number', 'administered_at',
-                       'facility_id', 'notes', 'created_at'])
-                ->toArray(),
-            'lab_results' => LabResult::where('patient_id', $patient->id)
-                ->get(['test_name', 'result_value', 'result_unit', 'reference_range',
-                       'status', 'collected_at', 'reported_at', 'created_at'])
-                ->toArray(),
-            'prescriptions' => Prescription::where('patient_id', $patient->id)
-                ->get(['drug_name', 'dosage', 'frequency', 'route', 'status',
-                       'prescribed_at', 'refills_remaining', 'created_at'])
-                ->toArray(),
-            'appointments' => Appointment::where('patient_id', $patient->id)
-                ->get(['appointment_type', 'status', 'scheduled_at',
-                       'facility_id', 'notes', 'created_at'])
-                ->toArray(),
+                ->orderByDesc('created_at')->get()->toArray(),
+            'allergies' => AllergyRecord::where('patient_id', $patient->id)->get()->toArray(),
+            'diagnoses' => Diagnosis::where('patient_id', $patient->id)->get()->toArray(),
+            'immunizations' => ImmunizationRecord::where('patient_id', $patient->id)->get()->toArray(),
+            'lab_results' => LabResult::where('patient_id', $patient->id)->get()->toArray(),
+            'prescriptions' => Prescription::where('patient_id', $patient->id)->get()->toArray(),
+            'appointments' => Appointment::where('patient_id', $patient->id)->get()->toArray(),
             'access_audit_log' => MedicalIdAccessEvent::where('patient_id', $patient->id)
-                ->orderByDesc('created_at')
-                ->get(['actor_type', 'facility_id', 'access_type', 'purpose',
-                       'result', 'ip_address', 'notes', 'created_at'])
-                ->toArray(),
+                ->orderByDesc('created_at')->get()->toArray(),
         ];
 
         // Audit the export itself
@@ -330,7 +309,8 @@ class DataSubjectRightsController extends Controller
 
     private function resolvePatient(Request $request): ?Patient
     {
-        $user = $request->user();
-        return $user ? Patient::where('user_id', $user->id)->first() : null;
+        // Patients are linked via users.patient_id (the patients table has no
+        // user_id column), matching PatientPortalController::resolvePatient().
+        return $request->user()?->patient;
     }
 }

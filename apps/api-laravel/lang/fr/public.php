@@ -469,6 +469,8 @@ return [
         'chk_require_consent_hint'=> "Les prestataires ne peuvent voir qu'un aperçu masqué sans votre consentement explicite.",
         'chk_emergency_access_lbl'=> "Autoriser l'accès d'urgence",
         'chk_emergency_access_hint'=> "Permettre un accès exceptionnel et audité en cas d'urgence sans consentement standard.",
+        'btn_download_my_data'     => 'Télécharger mes données',
+        'data_export_hint'         => 'Téléchargez une copie de toutes vos données de santé personnelles (Loi n° 2010/012).',
         'btn_save_changes_form'  => 'Enregistrer les modifications',
 
         // En-tête ordonnance
