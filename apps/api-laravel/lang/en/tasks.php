@@ -16,4 +16,19 @@ return [
     'acknowledged'=> 'Task acknowledged.',
     'completed'   => 'Task completed.',
     'escalated'   => 'Task escalated.',
+
+    // Admin task management
+    'admin_title'      => 'Task management',
+    'admin_subtitle'   => 'Oversee action items — create, assign, reassign and close across the platform.',
+    'admin_empty_body' => 'No tasks yet. Create one above.',
+    'new_task'         => 'New task',
+    'create_task'      => 'Create task',
+    'assign_to'        => 'Assign to',
+    'assignee'         => 'Assignee',
+    'reassign'         => 'Reassign',
+    'priority'         => 'Priority',
+    'description'      => 'Description',
+    'all_statuses'     => 'All statuses',
+    'created'          => 'Task created and assigned.',
+    'reassigned'       => 'Task reassigned.',
 ];

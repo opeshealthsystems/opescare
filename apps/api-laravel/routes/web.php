@@ -440,6 +440,12 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
     Route::post('/portals/insurance/claims/{id}/pay', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'claimsPay'])->name('portals.insurance.claims.pay');
 
     Route::get('/portals/admin', [\App\Http\Controllers\MedicalId\AdminPortalController::class, 'index'])->name('portals.admin');
+    // Facility task management (admin overview of the Tasks module)
+    Route::get('/portals/admin/tasks', [\App\Http\Controllers\MedicalId\AdminTaskController::class, 'index'])->name('portals.admin.tasks');
+    Route::post('/portals/admin/tasks', [\App\Http\Controllers\MedicalId\AdminTaskController::class, 'store'])->name('portals.admin.tasks.store');
+    Route::post('/portals/admin/tasks/{uuid}/reassign', [\App\Http\Controllers\MedicalId\AdminTaskController::class, 'reassign'])->name('portals.admin.tasks.reassign');
+    Route::post('/portals/admin/tasks/{uuid}/complete', [\App\Http\Controllers\MedicalId\AdminTaskController::class, 'complete'])->name('portals.admin.tasks.complete');
+    Route::post('/portals/admin/tasks/{uuid}/escalate', [\App\Http\Controllers\MedicalId\AdminTaskController::class, 'escalate'])->name('portals.admin.tasks.escalate');
 
     // ── Facility Clinical Register (hospital_admin / clinic_admin) ─────────
     Route::get('/portals/admin/clinical/prescriptions', [\App\Http\Controllers\MedicalId\FacilityClinicalController::class, 'prescriptions'])->name('portals.admin.clinical.prescriptions');

@@ -12,6 +12,9 @@
   <a href="{{ route('portals.admin') }}" class="nav-item {{ request()->routeIs('portals.admin') && !request()->routeIs('portals.admin.*') ? 'active' : '' }}">
     <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
   </a>
+  <a href="{{ route('portals.admin.tasks') }}" class="nav-item {{ request()->routeIs('portals.admin.tasks*') ? 'active' : '' }}">
+    <i data-lucide="clipboard-list"></i><span>{{ __('tasks.admin_title', [], $l) ?: 'Tasks' }}</span>
+  </a>
   <a href="{{ route('portals.admin.kpi.index') }}" class="nav-item {{ request()->routeIs('portals.admin.kpi.*') ? 'active' : '' }}">
     <i data-lucide="bar-chart-2"></i><span>KPI & Analytics</span>
   </a>
