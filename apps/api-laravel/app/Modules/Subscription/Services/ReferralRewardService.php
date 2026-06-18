@@ -22,7 +22,7 @@ class ReferralRewardService
     public const REFERRER_REWARD_DAYS = 30;
 
     /** Premium days granted to the new patient (referee) on signup. */
-    public const REFEREE_REWARD_DAYS = 14;
+    public const REFEREE_REWARD_DAYS = 30;
 
     public function __construct(private readonly PatientSubscriptionService $subscriptions)
     {
