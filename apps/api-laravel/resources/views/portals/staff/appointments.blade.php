@@ -13,6 +13,12 @@
         <h1 class="page-title">{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</h1>
         <p class="page-subtitle">{{ __('public.staff_portal.appointments_subtitle', [], app()->getLocale()) ?: 'View and manage scheduled patient appointments.' }}</p>
     </div>
+    <div>
+        <a href="{{ route('portals.staff.appointments.create') }}" class="btn btn-primary">
+            <i data-lucide="calendar-plus"></i>
+            {{ __('public.staff_portal.btn_book_appointment', [], app()->getLocale()) ?: 'Book Appointment' }}
+        </a>
+    </div>
 </div>
 
 {{-- Filter Bar --}}
