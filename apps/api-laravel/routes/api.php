@@ -58,7 +58,7 @@ Route::prefix('v1/support')->middleware(VerifyIntegrationClient::class)->group(f
 | OpesCare Billing and Cashier API Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/billing')->middleware([VerifyIntegrationClient::class, 'module:billing'])->group(function () {
+Route::prefix('v1/billing')->middleware([VerifyIntegrationClient::class, 'module:billing', 'throttle.client:120,1'])->group(function () {
     Route::get('/invoices', [\App\Http\Controllers\Api\V1\BillingController::class, 'invoices']);
     Route::post('/invoices', [\App\Http\Controllers\Api\V1\BillingController::class, 'createInvoice']);
     Route::post('/invoices/{invoice}/payments', [\App\Http\Controllers\Api\V1\BillingController::class, 'recordPayment']);
@@ -127,8 +127,10 @@ Route::prefix('v1/appointments')->middleware(VerifyIntegrationClient::class)->gr
 */
 Route::prefix('v1/connect')->group(function () {
     
-    // Auth token request endpoint (unprotected by client middleware, uses POST body credentials)
-    Route::post('/auth/token', [\App\Http\Controllers\Api\V1\Connect\AuthController::class, 'issueToken']);
+    // Auth token request endpoint (uses POST-body credentials). Throttled by IP
+    // via the 'verify' limiter (30/min) to bound credential brute-force.
+    Route::post('/auth/token', [\App\Http\Controllers\Api\V1\Connect\AuthController::class, 'issueToken'])
+        ->middleware('throttle:verify');
 
     // Authenticated B2B routes group — Bearer JWT (RS256) + per-client rate limit 200 req/min
     Route::middleware(['auth.bearer', 'throttle.client:200,1'])->group(function () {
