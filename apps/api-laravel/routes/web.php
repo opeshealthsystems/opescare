@@ -217,6 +217,11 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
         Route::get('/portals/patient/settings',   [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'settings'])->name('portals.patient.settings');
         Route::post('/portals/patient/settings',  [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'updateSettings'])->name('portals.patient.settings.update');
 
+        // Secure messaging (patient ↔ care team) — built on the Messaging module
+        Route::get('/portals/patient/messages', [\App\Http\Controllers\MedicalId\PatientMessagingController::class, 'index'])->name('portals.patient.messages');
+        Route::get('/portals/patient/messages/{thread}', [\App\Http\Controllers\MedicalId\PatientMessagingController::class, 'show'])->name('portals.patient.messages.show');
+        Route::post('/portals/patient/messages/{thread}/messages', [\App\Http\Controllers\MedicalId\PatientMessagingController::class, 'send'])->name('portals.patient.messages.send');
+
         // Insurance marketplace
         Route::get('/portals/patient/insurance',                 [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'insuranceMarketplace'])->name('portals.patient.insurance');
         Route::get('/portals/patient/insurance/plans/{id}',      [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'insurancePlanDetail'])->name('portals.patient.insurance.plan');
