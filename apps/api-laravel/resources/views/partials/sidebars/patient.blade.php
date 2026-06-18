@@ -79,6 +79,10 @@
         <i data-lucide="credit-card"></i>
         <span>{{ __('public.portal.nav_subscription', [], $l) ?: 'Subscription' }}</span>
     </a>
+    <a href="{{ route('portals.patient.billing') }}" class="sidebar-link {{ request()->routeIs('portals.patient.billing*') ? 'active' : '' }}">
+        <i data-lucide="receipt"></i>
+        <span>{{ __('billing.nav', [], $l) ?: 'Billing' }}</span>
+    </a>
     <a href="{{ route('portals.patient.refer') }}" class="sidebar-link {{ request()->routeIs('portals.patient.refer') ? 'active' : '' }}">
         <i data-lucide="gift"></i>
         <span>{{ __('referral.nav_label', [], $l) ?: 'Refer & Earn' }}</span>

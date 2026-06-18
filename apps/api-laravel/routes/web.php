@@ -228,6 +228,12 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
         Route::post('/portals/patient/settings',  [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'updateSettings'])->name('portals.patient.settings.update');
 
         // Secure messaging (patient ↔ care team) — built on the Messaging module
+        // Billing history + pay a facility invoice via MTN MoMo
+        Route::get('/portals/patient/billing', [\App\Http\Controllers\MedicalId\PatientBillingController::class, 'index'])->name('portals.patient.billing');
+        Route::get('/portals/patient/billing/{invoice}/pay', [\App\Http\Controllers\MedicalId\PatientBillingController::class, 'payForm'])->name('portals.patient.billing.pay');
+        Route::post('/portals/patient/billing/{invoice}/pay', [\App\Http\Controllers\MedicalId\PatientBillingController::class, 'pay'])->name('portals.patient.billing.pay.store');
+        Route::get('/portals/patient/billing/payment/{payment}/pending', [\App\Http\Controllers\MedicalId\PatientBillingController::class, 'pending'])->name('portals.patient.billing.pending');
+        Route::get('/portals/patient/billing/payment/{payment}/status', [\App\Http\Controllers\MedicalId\PatientBillingController::class, 'status'])->name('portals.patient.billing.status');
         // Notifications centre + channel preferences
         Route::get('/portals/patient/notifications', [\App\Http\Controllers\MedicalId\PatientNotificationController::class, 'index'])->name('portals.patient.notifications');
         Route::post('/portals/patient/notifications/read', [\App\Http\Controllers\MedicalId\PatientNotificationController::class, 'markAllRead'])->name('portals.patient.notifications.read');
