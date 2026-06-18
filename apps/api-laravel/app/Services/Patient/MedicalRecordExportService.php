@@ -47,7 +47,9 @@ class MedicalRecordExportService
                 'isHtml5ParserEnabled' => true,
             ]);
 
-        $filename     = sprintf('medical-record-%s-%s.pdf', $patientId, Carbon::now()->format('YmdHis'));
+        // Include a random suffix so two exports for the same patient within the
+        // same second don't collide and overwrite each other.
+        $filename     = sprintf('medical-record-%s-%s-%s.pdf', $patientId, Carbon::now()->format('YmdHis'), \Illuminate\Support\Str::random(6));
         $relativePath = $this->exportDir . '/' . $filename;
 
         Storage::disk($this->diskName)->put($relativePath, $pdf->output());
