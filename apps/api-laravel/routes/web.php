@@ -446,6 +446,11 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
     Route::post('/portals/admin/tasks/{uuid}/reassign', [\App\Http\Controllers\MedicalId\AdminTaskController::class, 'reassign'])->name('portals.admin.tasks.reassign');
     Route::post('/portals/admin/tasks/{uuid}/complete', [\App\Http\Controllers\MedicalId\AdminTaskController::class, 'complete'])->name('portals.admin.tasks.complete');
     Route::post('/portals/admin/tasks/{uuid}/escalate', [\App\Http\Controllers\MedicalId\AdminTaskController::class, 'escalate'])->name('portals.admin.tasks.escalate');
+    // Broadcasts / announcements composer
+    Route::get('/portals/admin/broadcasts', [\App\Http\Controllers\MedicalId\AdminBroadcastController::class, 'index'])->name('portals.admin.broadcasts');
+    Route::post('/portals/admin/broadcasts', [\App\Http\Controllers\MedicalId\AdminBroadcastController::class, 'store'])->name('portals.admin.broadcasts.store');
+    Route::post('/portals/admin/broadcasts/{uuid}/publish', [\App\Http\Controllers\MedicalId\AdminBroadcastController::class, 'publish'])->name('portals.admin.broadcasts.publish');
+    Route::post('/portals/admin/broadcasts/{uuid}/cancel', [\App\Http\Controllers\MedicalId\AdminBroadcastController::class, 'cancel'])->name('portals.admin.broadcasts.cancel');
 
     // ── Facility Clinical Register (hospital_admin / clinic_admin) ─────────
     Route::get('/portals/admin/clinical/prescriptions', [\App\Http\Controllers\MedicalId\FacilityClinicalController::class, 'prescriptions'])->name('portals.admin.clinical.prescriptions');

@@ -15,6 +15,9 @@
   <a href="{{ route('portals.admin.tasks') }}" class="nav-item {{ request()->routeIs('portals.admin.tasks*') ? 'active' : '' }}">
     <i data-lucide="clipboard-list"></i><span>{{ __('tasks.admin_title', [], $l) ?: 'Tasks' }}</span>
   </a>
+  <a href="{{ route('portals.admin.broadcasts') }}" class="nav-item {{ request()->routeIs('portals.admin.broadcasts*') ? 'active' : '' }}">
+    <i data-lucide="megaphone"></i><span>{{ __('broadcasts.nav', [], $l) ?: 'Broadcasts' }}</span>
+  </a>
   <a href="{{ route('portals.admin.kpi.index') }}" class="nav-item {{ request()->routeIs('portals.admin.kpi.*') ? 'active' : '' }}">
     <i data-lucide="bar-chart-2"></i><span>KPI & Analytics</span>
   </a>
