@@ -23,7 +23,8 @@ class AdminPatientManagementController extends Controller
             return redirect()->route('login');
         }
 
-        $query = Patient::with('facility');
+        // Patient has no 'facility' relationship; the listing doesn't use it.
+        $query = Patient::query();
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
