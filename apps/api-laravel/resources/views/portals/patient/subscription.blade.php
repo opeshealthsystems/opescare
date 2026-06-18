@@ -21,6 +21,9 @@
 @if(session('info'))
 <div class="alert alert-info mb-4"><i data-lucide="info"></i><div>{{ session('info') }}</div></div>
 @endif
+@if(session('error'))
+<div class="alert alert-danger mb-4"><i data-lucide="alert-triangle"></i><div>{{ session('error') }}</div></div>
+@endif
 
 @php $premium = $plans->first(fn ($p) => ! $p->isFree()); @endphp
 

@@ -86,6 +86,138 @@ class PatientSubscriptionService
         });
     }
 
+    /**
+     * Open a PENDING (unpaid) subscription as the holder for a Mobile Money
+     * checkout. status='pending' is intentionally NOT in activeSubscription()'s
+     * whitelist, so a patient gets no premium access until payment confirms.
+     * Any older pending rows for the same patient are voided first.
+     */
+    public function beginCheckout(
+        Patient $patient,
+        SubscriptionPlan $plan,
+        string $interval = 'monthly',
+        ?string $actorId = null
+    ): OrganizationSubscription {
+        OrganizationSubscription::where('subscriber_type', 'patient')
+            ->where('subscriber_id', $patient->id)
+            ->where('status', 'pending')
+            ->update(['status' => 'payment_failed', 'updated_by' => $actorId]);
+
+        // current_period_* are NOT NULL; seed placeholders (overwritten on
+        // confirmPaidCheckout). 'pending' status keeps this row out of
+        // activeSubscription(), so the placeholder period grants no access.
+        $now = now()->toDateString();
+
+        return OrganizationSubscription::create([
+            'subscriber_type'      => 'patient',
+            'subscriber_id'        => $patient->id,
+            'interval'             => $interval,
+            'plan_id'              => $plan->id,
+            'status'               => 'pending',
+            'payment_method'       => 'mtn_momo',
+            'auto_renew'           => false,
+            'current_period_start' => $now,
+            'current_period_end'   => $now,
+            'created_by'           => $actorId,
+        ]);
+    }
+
+    /** Store the payment-provider reference on a pending checkout row. */
+    public function attachPaymentReference(OrganizationSubscription $pending, string $reference): void
+    {
+        $pending->update(['payment_reference' => $reference]);
+    }
+
+    /**
+     * Confirm a pending checkout AFTER the provider reports success: set the
+     * billing period, flip to active, cancel any other active subscription
+     * (single active row), and write a paid invoice for the receipt.
+     */
+    public function confirmPaidCheckout(OrganizationSubscription $pending, ?string $actorId = null): OrganizationSubscription
+    {
+        return DB::transaction(function () use ($pending, $actorId) {
+            $patient = Patient::withoutGlobalScopes()->find($pending->subscriber_id);
+            $plan    = $pending->plan;
+
+            // Close any other active/trialing/past_due row.
+            OrganizationSubscription::where('subscriber_type', 'patient')
+                ->where('subscriber_id', $pending->subscriber_id)
+                ->where('id', '!=', $pending->id)
+                ->whereIn('status', ['active', 'trialing', 'past_due'])
+                ->update([
+                    'status'       => 'cancelled',
+                    'cancelled_at' => now()->toDateString(),
+                    'auto_renew'   => false,
+                    'updated_by'   => $actorId,
+                ]);
+
+            $start = now();
+            $end   = $pending->interval === 'annual'
+                ? $start->copy()->addYear()
+                : $start->copy()->addMonth();
+
+            $pending->update([
+                'status'               => 'active',
+                'current_period_start' => $start->toDateString(),
+                'current_period_end'   => $end->toDateString(),
+                'auto_renew'           => true,
+                'updated_by'           => $actorId,
+            ]);
+
+            $this->writePaidInvoice($pending->fresh('plan'), $patient, $actorId);
+
+            return $pending->fresh('plan.planFeatures');
+        });
+    }
+
+    /** Mark a pending checkout as failed (provider declined / timed out). */
+    public function failCheckout(OrganizationSubscription $pending, ?string $actorId = null): void
+    {
+        if ($pending->status === 'pending') {
+            $pending->update(['status' => 'payment_failed', 'updated_by' => $actorId]);
+        }
+    }
+
+    /** Amount due for an interval, in major currency units (e.g. XAF). */
+    public function amountFor(SubscriptionPlan $plan, string $interval): int
+    {
+        $kobo = $interval === 'annual'
+            ? (int) ($plan->annual_price_kobo ?: $plan->price_kobo * 12)
+            : (int) $plan->price_kobo;
+
+        return intdiv($kobo, 100);
+    }
+
+    /** Write a paid SubscriptionInvoice as the patient's receipt. */
+    private function writePaidInvoice(OrganizationSubscription $sub, ?Patient $patient, ?string $actorId): void
+    {
+        $kobo = $sub->interval === 'annual'
+            ? (int) ($sub->plan->annual_price_kobo ?: $sub->plan->price_kobo * 12)
+            : (int) $sub->plan->price_kobo;
+
+        \App\Models\SubscriptionInvoice::create([
+            'subscription_id'  => $sub->id,
+            'organization_id'  => $patient?->facility_id,
+            'invoice_number'   => 'INV-' . now()->format('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(6)),
+            'invoice_date'     => now()->toDateString(),
+            'due_date'         => now()->toDateString(),
+            'paid_at'          => now()->toDateString(),
+            'status'           => 'paid',
+            'subtotal_kobo'    => $kobo,
+            'discount_kobo'    => 0,
+            'tax_kobo'         => 0,
+            'total_kobo'       => $kobo,
+            'currency'         => $sub->plan->currency ?? 'XAF',
+            'line_items'       => [[
+                'description' => $sub->plan->name . ' (' . $sub->interval . ')',
+                'amount_kobo' => $kobo,
+            ]],
+            'payment_reference' => $sub->payment_reference,
+            'payment_method'    => 'mtn_momo',
+            'created_by'         => $actorId,
+        ]);
+    }
+
     /** Cancel at period end (stays active until current_period_end, then lapses). */
     public function cancel(Patient $patient, string $reason = '', ?string $actorId = null): ?OrganizationSubscription
     {

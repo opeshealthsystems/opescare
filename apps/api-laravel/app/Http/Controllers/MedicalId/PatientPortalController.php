@@ -1022,8 +1022,147 @@ class PatientPortalController extends Controller
             return redirect()->route('portals.patient.subscription')->with('success', __('flash.subscription_updated'));
         }
 
-        // Paid plans require Mobile Money checkout (wired in the checkout slice).
-        return redirect()->route('portals.patient.subscription')->with('info', __('flash.subscription_checkout_pending'));
+        // Paid plans go to the Mobile Money checkout (collect phone, then pay).
+        return redirect()->route('portals.patient.subscription.checkout', [
+            'plan_id'  => $plan->id,
+            'interval' => $validated['interval'],
+        ]);
+    }
+
+    /** GET — Mobile Money checkout: confirm plan + collect the MoMo phone number. */
+    public function subscriptionCheckout(Request $request)
+    {
+        $patient = $this->resolvePatient();
+        abort_if($patient === null, 403);
+
+        $validated = $request->validate([
+            'plan_id'  => 'required|uuid',
+            'interval' => 'required|in:monthly,annual',
+        ]);
+
+        $plan = \App\Models\SubscriptionPlan::forAudience('patient')->active()->findOrFail($validated['plan_id']);
+        abort_if($plan->isFree(), 404);
+
+        $svc    = app(\App\Modules\Subscription\Services\PatientSubscriptionService::class);
+        $amount = $svc->amountFor($plan, $validated['interval']);
+
+        return view('portals.patient.subscription_checkout', [
+            'patient'  => $patient,
+            'plan'     => $plan,
+            'interval' => $validated['interval'],
+            'amount'   => $amount,
+            'currency' => $plan->currency ?? 'XAF',
+        ]);
+    }
+
+    /** POST — initiate the MoMo collection and hand off to the pending poller. */
+    public function subscriptionCheckoutPay(Request $request)
+    {
+        $patient = $this->resolvePatient();
+        abort_if($patient === null, 403);
+        $this->assertWriteAllowed();
+
+        $validated = $request->validate([
+            'plan_id'  => 'required|uuid',
+            'interval' => 'required|in:monthly,annual',
+            'phone'    => 'required|string|max:20',
+        ]);
+
+        $plan = \App\Models\SubscriptionPlan::forAudience('patient')->active()->findOrFail($validated['plan_id']);
+        abort_if($plan->isFree(), 404);
+
+        $svc     = app(\App\Modules\Subscription\Services\PatientSubscriptionService::class);
+        $amount  = $svc->amountFor($plan, $validated['interval']);
+        $pending = $svc->beginCheckout($patient, $plan, $validated['interval'], (string) $patient->id);
+
+        $momo = app(\App\Services\Payments\MtnMomoService::class);
+        $result = $momo->requestPayment(
+            $validated['phone'],
+            (float) $amount,
+            $plan->currency ?? 'XAF',
+            $pending->id,
+            'OpesCare ' . $plan->name . ' subscription',
+        );
+
+        if (empty($result['success'])) {
+            $svc->failCheckout($pending, (string) $patient->id);
+            return redirect()->route('portals.patient.subscription')
+                ->with('error', __('flash.subscription_payment_failed'));
+        }
+
+        $svc->attachPaymentReference($pending, $result['reference_id']);
+
+        $this->ctx->auditPatientAccess(
+            actionType:   'patient_subscription_checkout_initiated',
+            resourceType: 'OrganizationSubscription',
+            resourceId:   $pending->id,
+            patientId:    $patient->id,
+        );
+
+        return redirect()->route('portals.patient.subscription.pending', ['subscription' => $pending->id]);
+    }
+
+    /** GET — "approve the prompt on your phone" page; polls the status endpoint. */
+    public function subscriptionCheckoutPending(Request $request, string $subscription)
+    {
+        $patient = $this->resolvePatient();
+        abort_if($patient === null, 403);
+
+        $pending = \App\Models\OrganizationSubscription::where('id', $subscription)
+            ->where('subscriber_type', 'patient')
+            ->where('subscriber_id', $patient->id)
+            ->firstOrFail();
+
+        return view('portals.patient.subscription_pending', [
+            'patient'      => $patient,
+            'subscription' => $pending,
+        ]);
+    }
+
+    /** GET (JSON) — poll the MoMo transaction; activate on success. */
+    public function subscriptionCheckoutStatus(Request $request, string $subscription)
+    {
+        $patient = $this->resolvePatient();
+        abort_if($patient === null, 403);
+
+        $pending = \App\Models\OrganizationSubscription::where('id', $subscription)
+            ->where('subscriber_type', 'patient')
+            ->where('subscriber_id', $patient->id)
+            ->firstOrFail();
+
+        $svc = app(\App\Modules\Subscription\Services\PatientSubscriptionService::class);
+
+        // Already settled by a prior poll or the webhook.
+        if ($pending->status === 'active') {
+            return response()->json(['status' => 'successful']);
+        }
+        if (in_array($pending->status, ['payment_failed', 'cancelled'], true)) {
+            return response()->json(['status' => 'failed']);
+        }
+        if (!$pending->payment_reference) {
+            return response()->json(['status' => 'failed']);
+        }
+
+        $momo   = app(\App\Services\Payments\MtnMomoService::class);
+        $status = strtoupper($momo->checkStatus($pending->payment_reference)['status'] ?? 'UNKNOWN');
+
+        if ($status === 'SUCCESSFUL') {
+            $svc->confirmPaidCheckout($pending, (string) $patient->id);
+            $this->ctx->auditPatientAccess(
+                actionType:   'patient_subscription_activated',
+                resourceType: 'OrganizationSubscription',
+                resourceId:   $pending->id,
+                patientId:    $patient->id,
+            );
+            return response()->json(['status' => 'successful']);
+        }
+
+        if ($status === 'FAILED') {
+            $svc->failCheckout($pending, (string) $patient->id);
+            return response()->json(['status' => 'failed']);
+        }
+
+        return response()->json(['status' => 'pending']);
     }
 
     /** Cancel — turns off auto-renew; access continues until the period ends. */

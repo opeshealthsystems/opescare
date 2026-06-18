@@ -196,6 +196,11 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
         Route::get('/portals/patient/subscription', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'subscription'])->name('portals.patient.subscription');
         Route::post('/portals/patient/subscription/subscribe', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'subscribe'])->name('portals.patient.subscription.subscribe');
         Route::post('/portals/patient/subscription/cancel', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'cancelSubscription'])->name('portals.patient.subscription.cancel');
+        // Mobile Money checkout for paid plans (collect phone → initiate → poll → activate)
+        Route::get('/portals/patient/subscription/checkout', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'subscriptionCheckout'])->name('portals.patient.subscription.checkout');
+        Route::post('/portals/patient/subscription/checkout', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'subscriptionCheckoutPay'])->name('portals.patient.subscription.checkout.pay');
+        Route::get('/portals/patient/subscription/pending/{subscription}', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'subscriptionCheckoutPending'])->name('portals.patient.subscription.pending');
+        Route::get('/portals/patient/subscription/pending/{subscription}/status', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'subscriptionCheckoutStatus'])->name('portals.patient.subscription.status');
         // Health ID card PDF download
         Route::get('/portals/patient/health-id-card/download', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'downloadHealthIdCard'])->name('portals.patient.health-id-card.download');
         // QR token management
