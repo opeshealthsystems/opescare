@@ -44,7 +44,8 @@ class LabPortalController extends Controller
                                 ->where('urgency', 'urgent')
                                 ->whereNotIn('status', ['resulted', 'cancelled'])
                                 ->count(),
-            'abnormal'   => LabResult::where('facility_id', $facilityId)
+            // lab_results has no facility_id — scope via the parent lab order.
+            'abnormal'   => LabResult::whereHas('labOrder', fn ($o) => $o->where('facility_id', $facilityId))
                                 ->whereIn('flag', ['H', 'HH', 'L', 'LL', 'abnormal'])
                                 ->whereDate('created_at', today())
                                 ->count(),
@@ -59,7 +60,7 @@ class LabPortalController extends Controller
             ->get();
 
         $recentResults = LabResult::with(['patient', 'labOrder'])
-            ->where('facility_id', $facilityId)
+            ->whereHas('labOrder', fn ($o) => $o->where('facility_id', $facilityId))
             ->orderByDesc('resulted_at')
             ->limit(6)
             ->get();
@@ -111,8 +112,9 @@ class LabPortalController extends Controller
     {
         $facilityId = $this->facilityId();
 
+        // lab_results has no facility_id — scope via the parent lab order.
         $q = LabResult::with(['patient', 'labOrder'])
-            ->where('facility_id', $facilityId);
+            ->whereHas('labOrder', fn ($o) => $o->where('facility_id', $facilityId));
 
         if ($flag = $req->input('flag')) {
             $q->where('flag', $flag);
