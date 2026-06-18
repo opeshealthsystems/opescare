@@ -126,6 +126,14 @@ jobs:
             echo "==> Installing/updating dependencies..."
             composer install --no-dev --optimize-autoloader --no-interaction
 
+            echo "==> Tagging Sentry release with deployed commit..."
+            DEPLOY_SHA=$(git rev-parse --short HEAD)
+            if grep -q '^SENTRY_RELEASE=' .env; then
+              sed -i "s|^SENTRY_RELEASE=.*|SENTRY_RELEASE=${DEPLOY_SHA}|" .env
+            else
+              echo "SENTRY_RELEASE=${DEPLOY_SHA}" >> .env
+            fi
+
             # Migrations run FIRST, while in maintenance mode, so the schema is
             # always up to date before any new-code path can be served.
             echo "==> Running migrations (forward-only, before traffic resumes)..."

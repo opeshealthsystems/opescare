@@ -63,6 +63,15 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
 
+        // ── Error tracking (Sentry) ─────────────────────────────────────────
+        // Report unhandled exceptions to Sentry in deployed environments only.
+        // No-op until SENTRY_LARAVEL_DSN is set; PHI is scrubbed in config/sentry.php.
+        $exceptions->reportable(function (\Throwable $e) {
+            if (app()->bound('sentry') && app()->environment('production', 'staging')) {
+                app('sentry')->captureException($e);
+            }
+        });
+
         // ── Domain exceptions ───────────────────────────────────────────────
         $exceptions->renderable(function (\App\Exceptions\SlotFullException $e, $request) {
             return response()->json([
