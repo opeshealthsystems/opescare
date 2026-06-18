@@ -55,3 +55,10 @@ Schedule::command('opescare:send-appointment-reminders')->everyFiveMinutes()->wi
 // OpesCare: Provider credential expiry notifications
 // Runs daily at 07:30; alerts administrators of credentials expiring within 30 days.
 Schedule::command('opescare:notify-expiring-credentials')->dailyAt('07:30');
+
+// OpesCare: Subscription lifecycle messaging (renewal reminders + win-back)
+// Runs daily at 08:00; queues renewal reminders for premium patient subscriptions
+// expiring within 7 days and win-back messages for recently lapsed subscriptions.
+// Messaging only — no payments are charged. Dedupe via renewal_reminded_at /
+// winback_sent_at so reruns never double-send.
+Schedule::command('subscriptions:lifecycle')->dailyAt('08:00')->withoutOverlapping();
