@@ -20,6 +20,7 @@ class OrganizationSubscription extends Model
         'cancelled_at', 'expires_at',
         'billing_email', 'billing_name', 'payment_reference', 'payment_method',
         'auto_renew', 'discount_percent', 'notes', 'created_by', 'updated_by',
+        'renewal_reminded_at', 'winback_sent_at',
     ];
 
     protected $casts = [
@@ -31,6 +32,8 @@ class OrganizationSubscription extends Model
         'expires_at'           => 'date',
         'auto_renew'           => 'boolean',
         'discount_percent'     => 'integer',
+        'renewal_reminded_at'  => 'datetime',
+        'winback_sent_at'      => 'datetime',
     ];
 
     public function plan(): BelongsTo
