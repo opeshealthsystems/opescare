@@ -169,6 +169,14 @@ class MtnMomoService implements PaymentProvider
     }
 
     /**
+     * Go-live check: can we obtain an access token with the configured creds?
+     */
+    public function canAuthenticate(): bool
+    {
+        return $this->getAccessToken() !== null;
+    }
+
+    /**
      * Obtain an OAuth2 Bearer token from MTN MoMo.
      */
     private function getAccessToken(): ?string

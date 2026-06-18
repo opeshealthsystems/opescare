@@ -34,14 +34,16 @@ class OrangeMoneyService implements PaymentProvider
 
     public function __construct()
     {
-        $this->baseUrl      = rtrim(config('services.orange_money.base_url', 'https://api.orange.com'), '/');
-        $this->clientId     = config('services.orange_money.client_id', '');
-        $this->clientSecret = config('services.orange_money.client_secret', '');
-        $this->merchantKey  = config('services.orange_money.merchant_key', '');
-        $this->currency     = config('services.orange_money.currency', 'XAF');
-        $this->returnUrl    = config('services.orange_money.return_url', '');
-        $this->cancelUrl    = config('services.orange_money.cancel_url', '');
-        $this->notifUrl     = config('services.orange_money.notif_url', '');
+        // config() returns null (not the default) when a key exists but the env
+        // var is unset — coalesce so typed string properties never receive null.
+        $this->baseUrl      = rtrim((string) (config('services.orange_money.base_url') ?? 'https://api.orange.com'), '/');
+        $this->clientId     = (string) (config('services.orange_money.client_id') ?? '');
+        $this->clientSecret = (string) (config('services.orange_money.client_secret') ?? '');
+        $this->merchantKey  = (string) (config('services.orange_money.merchant_key') ?? '');
+        $this->currency     = (string) (config('services.orange_money.currency') ?? 'XAF');
+        $this->returnUrl    = (string) (config('services.orange_money.return_url') ?? '');
+        $this->cancelUrl    = (string) (config('services.orange_money.cancel_url') ?? '');
+        $this->notifUrl     = (string) (config('services.orange_money.notif_url') ?? '');
         $this->connectTimeout = (int) (config('services.orange_money.connect_timeout') ?? 5);
         $this->timeout        = (int) (config('services.orange_money.timeout') ?? 30);
         $this->retries        = max(1, (int) (config('services.orange_money.retries') ?? 3));
@@ -139,6 +141,14 @@ class OrangeMoneyService implements PaymentProvider
         } catch (\Throwable $e) {
             return ['status' => 'UNKNOWN', 'error' => $e->getMessage()];
         }
+    }
+
+    /**
+     * Go-live check: can we obtain an access token with the configured creds?
+     */
+    public function canAuthenticate(): bool
+    {
+        return $this->getAccessToken() !== null;
     }
 
     private function getAccessToken(): ?string
