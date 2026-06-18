@@ -9,6 +9,8 @@
   "sync_interval_seconds": 300,
   "queue_db_path": "bridge_queue.db",
   "log_level": "INFO",
+  "ssl_verify": true,
+  "ssl_ca_bundle": null,
   "connector": {
     "type":           "csv_folder",
     "watch_folder":   "./data/incoming",

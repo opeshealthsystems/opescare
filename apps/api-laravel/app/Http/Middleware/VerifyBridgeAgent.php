@@ -38,24 +38,20 @@ class VerifyBridgeAgent
         }
 
         try {
-            $agent = BridgeAgent::where('status', 'active')->first();
-            // Broad fetch — we'll compare the key in PHP to preserve the dual-path
-            // rolling migration pattern. This is acceptable because active agents
-            // are small in number (one per facility, typically <50).
-            if (! $agent) {
+            $matchedAgent = null;
+            $needsUpgrade = false;
+
+            // Fetch ALL active agents and test each key (agent count is tiny —
+            // one per facility, typically <50 per deployment). This enables the
+            // dual-path Argon2id/SHA-256 rolling migration without requiring a
+            // lookup-friendly hash format.
+            $agents = BridgeAgent::where('status', 'active')->get();
+            if ($agents->isEmpty()) {
                 return response()->json([
                     'error'   => 'invalid_key',
                     'message' => 'Invalid or inactive Bridge Agent key.',
                 ], 401);
             }
-
-            // We need to find the specific agent by key check.
-            // Fetch ALL active agents and test each (agent count is tiny).
-            $matchedAgent = null;
-            $needsUpgrade = false;
-
-            // Reload all active agents — still a small set
-            $agents = BridgeAgent::where('status', 'active')->get();
 
             foreach ($agents as $candidate) {
                 $authenticated = false;

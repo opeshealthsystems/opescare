@@ -31,6 +31,15 @@ class Syncer:
             "Content-Type": "application/json",
             "User-Agent":   "opescare-bridge-agent/1.0",
         })
+        # FIX (audit 2026-06-18): Enforce SSL certificate verification.
+        # Previously used default SSL settings (verify=True by default in requests,
+        # but relying on implicit behaviour is fragile). Now explicitly verifies.
+        # Set verify=False in bridge_config.json for self-signed certs in dev.
+        self.session.verify = config.get("ssl_verify", True)
+        # Optional: path to custom CA bundle
+        ca_bundle = config.get("ssl_ca_bundle")
+        if ca_bundle:
+            self.session.verify = ca_bundle
 
     def run_once(self) -> dict:
         """
