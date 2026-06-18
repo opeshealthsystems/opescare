@@ -228,6 +228,11 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
         Route::post('/portals/patient/settings',  [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'updateSettings'])->name('portals.patient.settings.update');
 
         // Secure messaging (patient ↔ care team) — built on the Messaging module
+        // Notifications centre + channel preferences
+        Route::get('/portals/patient/notifications', [\App\Http\Controllers\MedicalId\PatientNotificationController::class, 'index'])->name('portals.patient.notifications');
+        Route::post('/portals/patient/notifications/read', [\App\Http\Controllers\MedicalId\PatientNotificationController::class, 'markAllRead'])->name('portals.patient.notifications.read');
+        Route::get('/portals/patient/notifications/preferences', [\App\Http\Controllers\MedicalId\PatientNotificationController::class, 'preferences'])->name('portals.patient.notifications.preferences');
+        Route::post('/portals/patient/notifications/preferences', [\App\Http\Controllers\MedicalId\PatientNotificationController::class, 'updatePreferences'])->name('portals.patient.notifications.preferences.update');
         Route::get('/portals/patient/messages', [\App\Http\Controllers\MedicalId\PatientMessagingController::class, 'index'])->name('portals.patient.messages');
         // Compose a new thread (must precede the {thread} wildcard)
         Route::get('/portals/patient/messages/compose', [\App\Http\Controllers\MedicalId\PatientMessagingController::class, 'composeForm'])->name('portals.patient.messages.compose');

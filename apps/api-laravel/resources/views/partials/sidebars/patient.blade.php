@@ -38,6 +38,10 @@
         <i data-lucide="messages-square"></i>
         <span>{{ __('messaging.inbox_title', [], $l) ?: 'Messages' }}</span>
     </a>
+    <a href="{{ route('portals.patient.notifications') }}" class="sidebar-link {{ request()->routeIs('portals.patient.notifications*') ? 'active' : '' }}">
+        <i data-lucide="bell"></i>
+        <span>{{ __('notifications.nav', [], $l) ?: 'Notifications' }}</span>
+    </a>
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_clinical', [], $l) ?: 'Clinical' }}</div>
