@@ -112,7 +112,9 @@ Route::post('/select-facility', [PublicPageController::class, 'submitSelectFacil
 
 // Secure Portal Access Override
 Route::get('/login', [PublicPageController::class, 'showLogin'])->name('login');
-Route::post('/login', [PublicPageController::class, 'submitLogin'])->name('login.submit');
+// Rate-limit the web login to blunt credential brute-force / password spraying
+// (the API login is throttled; the web form was not).
+Route::post('/login', [PublicPageController::class, 'submitLogin'])->middleware('throttle:5,1')->name('login.submit');
 Route::get('/mfa/challenge', [PublicPageController::class, 'showMfaChallenge'])->name('mfa.challenge');
 Route::post('/mfa/challenge', [PublicPageController::class, 'submitMfaChallenge'])->name('mfa.challenge.submit');
 

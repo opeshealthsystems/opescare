@@ -27,18 +27,28 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
      */
     protected function gate(): void
     {
-        Gate::define('viewHorizon', function ($user) {
-            $allowedEmails = array_filter(
-                explode(',', env('HORIZON_ADMIN_EMAILS', '')),
-                fn($e) => trim($e) !== ''
-            );
+        // Platform-tier roles allowed to view Horizon when no email allowlist is set.
+        $platformRoles = ['super_admin', 'platform_admin', 'system_admin'];
 
-            // Fallback: allow any user with admin/super-admin role if gate is not configured
-            if (empty($allowedEmails)) {
-                return $user?->hasRole(['admin', 'super-admin']) ?? false;
+        Gate::define('viewHorizon', function ($user) use ($platformRoles) {
+            if (!$user) {
+                return false;
             }
 
-            return in_array(trim($user->email), array_map('trim', $allowedEmails));
+            // Read from config (NOT env()) so the allowlist survives config:cache
+            // in production — env() returns null once config is cached.
+            $allowedEmails = array_filter(
+                array_map('trim', explode(',', (string) config('horizon.admin_emails', ''))),
+                fn ($e) => $e !== ''
+            );
+
+            if (!empty($allowedEmails)) {
+                return in_array(trim((string) $user->email), $allowedEmails, true);
+            }
+
+            // Fallback: platform administrators (uses the real role names; User has
+            // no hasRole() — it exposes roleName()).
+            return in_array($user->roleName(), $platformRoles, true);
         });
     }
 }

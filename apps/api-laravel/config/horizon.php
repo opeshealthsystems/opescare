@@ -261,4 +261,14 @@ return [
         'composer.json',
         '.env',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Horizon dashboard admin emails
+    |--------------------------------------------------------------------------
+    | Comma-separated emails allowed to view the Horizon dashboard in non-local
+    | environments. Read here (not via env() in the provider) so it survives
+    | `config:cache` in production.
+    */
+    'admin_emails' => env('HORIZON_ADMIN_EMAILS', ''),
 ];

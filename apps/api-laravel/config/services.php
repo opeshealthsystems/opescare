@@ -109,4 +109,10 @@ return [
         'password' => env('DHIS2_PASSWORD'),
     ],
 
+    // OpesCare Connect/SDK JWT. Read via config (not env() in the service) so the
+    // configured TTL survives config:cache in production.
+    'opescare_jwt' => [
+        'ttl' => (int) env('OPESCARE_JWT_TTL', 3600),
+    ],
+
 ];

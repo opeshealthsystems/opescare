@@ -40,7 +40,8 @@ class JwtService
     public function issue(array $claims): string
     {
         $now = time();
-        $ttl = (int) env('OPESCARE_JWT_TTL', self::TTL);
+        // Read via config (not env()) so the TTL survives config:cache in prod.
+        $ttl = (int) config('services.opescare_jwt.ttl', self::TTL);
 
         $header = $this->base64UrlEncode(json_encode([
             'alg' => self::ALGORITHM,
