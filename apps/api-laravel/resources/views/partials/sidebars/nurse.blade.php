@@ -10,6 +10,10 @@
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], $l) ?: 'Dashboard' }}</span>
     </a>
+    <a href="{{ route('portals.staff.tasks') }}" class="sidebar-link {{ request()->routeIs('portals.staff.tasks*') ? 'active' : '' }}">
+        <i data-lucide="check-square"></i>
+        <span>{{ __('tasks.nav', [], $l) ?: 'Tasks' }}</span>
+    </a>
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_clinical', [], $l) ?: 'Clinical' }}</div>

@@ -159,6 +159,11 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
         ->name('portals.patient.qr');
 
     Route::get('/portals/staff', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'index'])->name('portals.staff');
+    // Action-task inbox (surfaces the Tasks module)
+    Route::get('/portals/staff/tasks', [\App\Http\Controllers\MedicalId\TaskInboxController::class, 'index'])->name('portals.staff.tasks');
+    Route::post('/portals/staff/tasks/{uuid}/acknowledge', [\App\Http\Controllers\MedicalId\TaskInboxController::class, 'acknowledge'])->name('portals.staff.tasks.acknowledge');
+    Route::post('/portals/staff/tasks/{uuid}/complete', [\App\Http\Controllers\MedicalId\TaskInboxController::class, 'complete'])->name('portals.staff.tasks.complete');
+    Route::post('/portals/staff/tasks/{uuid}/escalate', [\App\Http\Controllers\MedicalId\TaskInboxController::class, 'escalate'])->name('portals.staff.tasks.escalate');
     Route::get('/portals/staff/appointments', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'appointments'])->name('portals.staff.appointments');
     Route::get('/portals/staff/queue', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'queue'])->name('portals.staff.queue');
     Route::get('/portals/staff/billing', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'billing'])->name('portals.staff.billing');
