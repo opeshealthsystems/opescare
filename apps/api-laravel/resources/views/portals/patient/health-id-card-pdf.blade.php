@@ -274,7 +274,7 @@
     <div class="card-footer">
         <div class="footer-left">
             <span class="status-badge">
-                {{ strtoupper($patient->verification_status ?? 'Active') }}
+                {{ strtoupper((string) ($patient->verification_status->value ?? $patient->verification_status ?? 'Active')) }}
             </span>
             <span class="country-text">
                 {{ __('public.portal.id_card_country') }}: {{ $patient->country_code ?? 'CM' }} &bull; {{ __('public.portal.id_card_minsante') }}
