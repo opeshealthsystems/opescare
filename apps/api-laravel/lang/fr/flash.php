@@ -172,6 +172,9 @@ return [
     'developer_account_must_be_active_apps'=> 'Votre compte développeur doit être actif pour créer des applications.',
     'developer_account_must_be_active'    => 'Le compte développeur doit être actif.',
     'developer_app_created'               => 'Application créée.',
+    'developer_secret_rotated'            => 'Secret renouvelé. Copiez le nouveau secret maintenant — il n’est affiché qu’une seule fois.',
+    'developer_app_disabled'              => 'Application désactivée.',
+    'developer_app_enabled'               => 'Application activée.',
     'developer_prod_access_submitted'     => 'Demande d\'accès en production soumise. Notre équipe l\'examinera sous 3 à 5 jours ouvrables.',
     'developer_prod_access_approved'      => 'Accès en production approuvé et client promu.',
     'developer_request_rejected'          => 'Demande rejetée. Le développeur sera notifié.',
@@ -247,6 +250,7 @@ return [
     // Lab
     'sample_collected'                    => 'Échantillon marqué comme prélevé.',
     'order_moved_processing'              => 'Commande passée en traitement.',
+    'lab_result_entered'                  => 'Résultat enregistré et commande marquée comme résultée.',
     // Legal
     'privacy_complaint_resolved'          => 'Plainte relative à la confidentialité résolue.',
     'document_version_exists'             => 'Ce numéro de version existe déjà pour ce document.',

@@ -12,7 +12,8 @@ class IntegrationClient extends Model
     use HasFactory;
 
     protected $fillable = [
-        'client_id', 'client_secret', 'facility_id', 'scopes', 'status', 'environment',
+        'client_id', 'client_secret', 'client_secret_argon', 'secret_upgraded_at',
+        'facility_id', 'scopes', 'status', 'environment',
         'name', 'description', 'contact_email', 'created_by',
         'approved_at', 'approved_by', 'last_used_at', 'request_count',
     ];

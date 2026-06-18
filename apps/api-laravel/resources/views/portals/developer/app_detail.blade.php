@@ -28,11 +28,32 @@
     <div class="panel mb-6">
         <div class="panel-header"><h3 class="panel-title"><i data-lucide="key"></i> {{ __('public.developer_portal.panel_save_credentials', [], $l) ?: 'Save your credentials — shown only once' }}</h3></div>
         <div class="panel-body">
-            <div class="code-block mb-6"><strong>{{ __('public.developer_portal.lbl_client_id', [], $l) ?: 'Client ID' }}:</strong> <span class="code-token" data-copy="{{ session('new_client_id') }}">{{ session('new_client_id') }}</span></div>
+            @if(session('new_client_id'))<div class="code-block mb-6"><strong>{{ __('public.developer_portal.lbl_client_id', [], $l) ?: 'Client ID' }}:</strong> <span class="code-token" data-copy="{{ session('new_client_id') }}">{{ session('new_client_id') }}</span></div>@endif
             <div class="code-block"><strong>{{ __('public.developer_portal.lbl_client_secret', [], $l) ?: 'Client Secret' }}:</strong> <span class="code-token" data-copy="{{ session('new_client_secret') }}">{{ session('new_client_secret') }}</span></div>
         </div>
     </div>
     @endif
+
+    {{-- App management: rotate secret / enable-disable --}}
+    <div class="panel mb-6">
+        <div class="panel-header"><h3 class="panel-title"><i data-lucide="settings"></i> {{ __('public.developer_portal.panel_manage', [], $l) ?: 'Manage app' }}</h3></div>
+        <div class="panel-body" style="display:flex;gap:.6rem;flex-wrap:wrap;">
+            <form method="POST" action="{{ route('portals.developer.apps.rotate', $client->id) }}"
+                  onsubmit="return confirm('{{ __('public.developer_portal.rotate_confirm', [], $l) ?: 'Rotate the secret? The old secret stops working immediately.' }}');">
+                @csrf
+                <button type="submit" class="btn btn-secondary"><i data-lucide="refresh-cw"></i> {{ __('public.developer_portal.btn_rotate', [], $l) ?: 'Rotate secret' }}</button>
+            </form>
+            <form method="POST" action="{{ route('portals.developer.apps.toggle', $client->id) }}"
+                  onsubmit="return confirm('{{ __('public.developer_portal.toggle_confirm', [], $l) ?: 'Change this app’s status?' }}');">
+                @csrf
+                @if(($client->status ?? 'active') === 'active')
+                <button type="submit" class="btn btn-ghost btn-danger"><i data-lucide="power"></i> {{ __('public.developer_portal.btn_disable', [], $l) ?: 'Disable app' }}</button>
+                @else
+                <button type="submit" class="btn btn-primary"><i data-lucide="power"></i> {{ __('public.developer_portal.btn_enable', [], $l) ?: 'Enable app' }}</button>
+                @endif
+            </form>
+        </div>
+    </div>
 
     <div class="field-grid mb-6">
 

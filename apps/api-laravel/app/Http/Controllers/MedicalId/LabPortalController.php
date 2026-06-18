@@ -187,4 +187,54 @@ class LabPortalController extends Controller
 
         return back()->with('success', __('flash.order_moved_processing'));
     }
+
+    // ------------------------------------------------------------------
+    // Enter a result for an order
+    // ------------------------------------------------------------------
+
+    /** GET — result-entry form for a collected/processing order. */
+    public function enterResultForm(Request $req, string $id)
+    {
+        $facilityId = $this->facilityId();
+        $order = LabOrder::with('patient')->where('facility_id', $facilityId)->findOrFail($id);
+
+        abort_if(!in_array($order->status, ['collected', 'processing', 'resulted']), 422, 'This order is not ready for results.');
+
+        return view('portals.lab.result_entry', compact('order'));
+    }
+
+    /** POST — store a result and mark the order resulted. */
+    public function storeResult(Request $req, string $id)
+    {
+        $facilityId = $this->facilityId();
+        $order = LabOrder::where('facility_id', $facilityId)->findOrFail($id);
+
+        abort_if(!in_array($order->status, ['collected', 'processing', 'resulted']), 422, 'This order is not ready for results.');
+
+        $data = $req->validate([
+            'parameter_name'  => 'required|string|max:160',
+            'value'           => 'required|string|max:160',
+            'unit'            => 'nullable|string|max:40',
+            'reference_range' => 'nullable|string|max:80',
+            'flag'            => 'nullable|in:N,H,L,HH,LL,abnormal',
+            'notes'           => 'nullable|string|max:1000',
+        ]);
+
+        LabResult::create([
+            'lab_order_id'    => $order->id,
+            'patient_id'      => $order->patient_id,
+            'parameter_name'  => $data['parameter_name'],
+            'value'           => $data['value'],
+            'unit'            => $data['unit'] ?? null,
+            'reference_range' => $data['reference_range'] ?? null,
+            'flag'            => $data['flag'] ?? 'N',
+            'notes'           => $data['notes'] ?? null,
+            'verified_by'     => (string) (auth()->id() ?? ''),
+            'resulted_at'     => now(),
+        ]);
+
+        $order->update(['status' => 'resulted', 'resulted_at' => now()]);
+
+        return redirect()->route('portals.lab.results')->with('success', __('flash.lab_result_entered'));
+    }
 }

@@ -232,7 +232,9 @@ class DeveloperPortalController extends Controller
         $usageSummary = ApiUsageSnapshot::summaryForClient($client->client_id, 30);
         $usageTrend   = ApiUsageSnapshot::dailyTrendForClient($client->client_id, 30);
 
-        $certification = IntegrationCertification::where('integration_client_id', $client->client_id)
+        // integration_certifications.integration_client_id is a UUID FK to
+        // integration_clients.id — match the UUID PK, not the string client_id.
+        $certification = IntegrationCertification::where('integration_client_id', $client->id)
             ->with('badge')
             ->latest()
             ->first();
@@ -246,6 +248,56 @@ class DeveloperPortalController extends Controller
             'usageTrend',
             'certification'
         ));
+    }
+
+    /** Rotate an app's client secret — Argon2id hash stored, plaintext shown once. */
+    public function rotateSecret(Request $request, string $clientId)
+    {
+        $developer = $this->currentDeveloper();
+        if (!$developer) {
+            return redirect()->route('portals.developer.dashboard');
+        }
+
+        $client = IntegrationClient::where('id', $clientId)
+            ->where('created_by', $developer->email)
+            ->firstOrFail();
+
+        $newSecret = ($client->environment === 'production' ? 'sk_live_' : 'sk_sandbox_') . Str::random(48);
+
+        $client->update([
+            // client_secret is NOT NULL; keep the legacy SHA-256 column in sync with
+            // the new secret (Argon2id remains the primary verifier).
+            'client_secret'       => hash('sha256', $newSecret),
+            'client_secret_argon' => \Illuminate\Support\Facades\Hash::make($newSecret),
+            'secret_upgraded_at'  => now(),
+        ]);
+
+        AuditLogger::log($request, 'developer_app_secret_rotated', 'integration_client', $client->id);
+
+        return redirect()->route('portals.developer.apps.show', $client->id)
+            ->with('success', __('flash.developer_secret_rotated'))
+            ->with('new_client_secret', $newSecret);
+    }
+
+    /** Enable/disable an app (toggle status active ↔ disabled). */
+    public function toggleApp(Request $request, string $clientId)
+    {
+        $developer = $this->currentDeveloper();
+        if (!$developer) {
+            return redirect()->route('portals.developer.dashboard');
+        }
+
+        $client = IntegrationClient::where('id', $clientId)
+            ->where('created_by', $developer->email)
+            ->firstOrFail();
+
+        $disabling = $client->status === 'active';
+        $client->update(['status' => $disabling ? 'disabled' : 'active']);
+
+        AuditLogger::log($request, $disabling ? 'developer_app_disabled' : 'developer_app_enabled', 'integration_client', $client->id);
+
+        return redirect()->route('portals.developer.apps.show', $client->id)
+            ->with('success', __($disabling ? 'flash.developer_app_disabled' : 'flash.developer_app_enabled'));
     }
 
     // ── Production Access Requests ─────────────────────────────────────────────

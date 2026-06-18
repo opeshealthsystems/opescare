@@ -86,6 +86,9 @@
                         <form method="POST" action="{{ route('portals.lab.orders.process', $order->id) }}" class="inline-form">@csrf
                             <button type="submit" class="btn btn-primary btn-sm">{{ __('public.lab_portal.btn_process', [], $l) ?: 'Process' }}</button>
                         </form>
+                        <a href="{{ route('portals.lab.orders.result', $order->id) }}" class="btn btn-secondary btn-sm">{{ __('public.lab_portal.btn_enter_result', [], $l) ?: 'Enter result' }}</a>
+                        @elseif($order->status === 'processing')
+                        <a href="{{ route('portals.lab.orders.result', $order->id) }}" class="btn btn-primary btn-sm"><i data-lucide="clipboard-pen-line"></i> {{ __('public.lab_portal.btn_enter_result', [], $l) ?: 'Enter result' }}</a>
                         @else
                         <span class="td-muted">â€”</span>
                         @endif

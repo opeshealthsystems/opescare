@@ -172,6 +172,9 @@ return [
     'developer_account_must_be_active_apps'=> 'Your developer account must be active to create apps.',
     'developer_account_must_be_active'    => 'Developer account must be active.',
     'developer_app_created'               => 'App created.',
+    'developer_secret_rotated'            => 'Secret rotated. Copy the new secret now — it is shown only once.',
+    'developer_app_disabled'              => 'App disabled.',
+    'developer_app_enabled'               => 'App enabled.',
     'developer_prod_access_submitted'     => 'Production access request submitted. Our team will review within 3–5 business days.',
     'developer_prod_access_approved'      => 'Production access approved and client promoted.',
     'developer_request_rejected'          => 'Request rejected. Developer will be notified.',
@@ -247,6 +250,7 @@ return [
     // Lab
     'sample_collected'                    => 'Sample marked as collected.',
     'order_moved_processing'              => 'Order moved to processing.',
+    'lab_result_entered'                  => 'Result saved and order marked resulted.',
     // Legal
     'privacy_complaint_resolved'          => 'Privacy complaint resolved.',
     'document_version_exists'             => 'This version number already exists for this document.',

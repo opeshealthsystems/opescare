@@ -695,6 +695,8 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access'])->group(funct
     Route::get('/portals/lab/samples',                           [\App\Http\Controllers\MedicalId\LabPortalController::class, 'samples'])->name('portals.lab.samples');
     Route::post('/portals/lab/orders/{id}/collect',              [\App\Http\Controllers\MedicalId\LabPortalController::class, 'markCollected'])->name('portals.lab.orders.collect');
     Route::post('/portals/lab/orders/{id}/process',              [\App\Http\Controllers\MedicalId\LabPortalController::class, 'markProcessing'])->name('portals.lab.orders.process');
+    Route::get('/portals/lab/orders/{id}/result',                [\App\Http\Controllers\MedicalId\LabPortalController::class, 'enterResultForm'])->name('portals.lab.orders.result');
+    Route::post('/portals/lab/orders/{id}/result',               [\App\Http\Controllers\MedicalId\LabPortalController::class, 'storeResult'])->name('portals.lab.orders.result.store');
 });
 
 /*
@@ -748,6 +750,8 @@ Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
     Route::get('/portals/developer/apps/create',                              [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'createApp'])->name('portals.developer.apps.create');
     Route::post('/portals/developer/apps',                                    [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'storeApp'])->name('portals.developer.apps.store');
     Route::get('/portals/developer/apps/{clientId}',                          [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'showApp'])->name('portals.developer.apps.show');
+    Route::post('/portals/developer/apps/{clientId}/rotate-secret',           [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'rotateSecret'])->name('portals.developer.apps.rotate');
+    Route::post('/portals/developer/apps/{clientId}/toggle',                  [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'toggleApp'])->name('portals.developer.apps.toggle');
 
     // Production Access Requests
     Route::get('/portals/developer/production-requests',                      [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'productionRequests'])->name('portals.developer.production_requests');
