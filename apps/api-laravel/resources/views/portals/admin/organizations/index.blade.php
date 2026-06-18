@@ -15,6 +15,10 @@
 <div class="page-head">
     <h2>{{ __('public.adm_org_idx_title') }}</h2>
     <div class="page-head__spacer"></div>
+    <a href="{{ route('portals.admin.organizations.pending') }}" class="btn btn-primary">
+        <i data-lucide="clock"></i>
+        {{ __('public.adm_org_pend_title') }}
+    </a>
 </div>
 
 @if(session('success'))<div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
