@@ -139,6 +139,9 @@ jobs:
             echo "==> Running migrations (forward-only, before traffic resumes)..."
             php artisan migrate --force
 
+            echo "==> Asserting production configuration..."
+            php artisan config:assert-production
+
             echo "==> Caching config, routes, views..."
             php artisan config:cache
             php artisan route:cache
