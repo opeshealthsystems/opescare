@@ -183,11 +183,12 @@ class DeveloperPortalController extends Controller
         $clientId     = 'sandbox_' . Str::random(24);
         $clientSecret = 'sk_sandbox_' . Str::random(48);
 
-        // Migration Sprint — Item 1: new clients use Argon2id from creation.
-        // client_secret (SHA-256 legacy) is intentionally left null for new apps.
+        // Argon2id is the primary verifier; the legacy SHA-256 column is NOT NULL,
+        // so populate it in sync with the same secret (facility_id is now nullable
+        // for developer-owned apps).
         $client = IntegrationClient::create([
             'client_id'           => $clientId,
-            'client_secret'       => null,                   // Legacy SHA-256 — not used for new clients
+            'client_secret'       => hash('sha256', $clientSecret),
             'client_secret_argon' => \Illuminate\Support\Facades\Hash::make($clientSecret),
             'secret_upgraded_at'  => now(),
             'name'                => $request->input('name'),
