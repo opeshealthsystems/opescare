@@ -107,6 +107,6 @@ class AdminAppointmentsController extends Controller
 
         $appointment->delete();
 
-        return redirect()->route('admin.appointments.index')->with('success', __('flash.appointment_deleted'));
+        return redirect()->route('portals.admin.appointments.index')->with('success', __('flash.appointment_deleted'));
     }
 }

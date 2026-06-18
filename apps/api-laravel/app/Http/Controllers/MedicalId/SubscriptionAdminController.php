@@ -132,7 +132,7 @@ class SubscriptionAdminController extends Controller
             $this->demoActorId()
         );
 
-        return redirect()->route('portals.admin.subscription.subscriptions')
+        return redirect()->route('portals.admin.subscription')
             ->with('success', __('flash.subscription_created'));
     }
 

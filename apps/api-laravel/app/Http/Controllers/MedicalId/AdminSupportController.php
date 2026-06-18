@@ -141,6 +141,6 @@ class AdminSupportController extends Controller
         $ticket = SupportTicket::findOrFail($id);
         $ticket->delete();
 
-        return redirect()->route('admin.support.index')->with('success', __('flash.ticket_deleted'));
+        return redirect()->route('portals.admin.support.index')->with('success', __('flash.ticket_deleted'));
     }
 }
