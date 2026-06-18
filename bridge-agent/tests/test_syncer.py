@@ -34,6 +34,22 @@ def syncer(config, queue):
     return Syncer(config, queue)
 
 
+def test_syncer_uses_configured_tls_verification(queue):
+    config = BridgeConfig(
+        server_url=SERVER_URL,
+        agent_id="test-agent-001",
+        agent_key="test-agent-key",
+        facility_id=FACILITY_ID,
+        connector=ConnectorConfig(type="csv_folder"),
+        ssl_verify=False,
+        ssl_ca_bundle="C:/certs/opescare-ca.pem",
+    )
+
+    syncer = Syncer(config, queue)
+
+    assert syncer.session.verify == "C:/certs/opescare-ca.pem"
+
+
 @responses_lib.activate
 def test_successful_sync_marks_delivered(syncer, queue):
     queue.enqueue("encounter", {"health_id": "CM-HID-0001", "notes": "Test"}, "idem-ok-1")

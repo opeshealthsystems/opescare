@@ -34,6 +34,8 @@ class BridgeConfig:
     queue_db_path: str = "bridge_queue.db"
     log_level: str = "INFO"
     environment: str = "sandbox"
+    ssl_verify: bool = True
+    ssl_ca_bundle: Optional[str] = None
 
 
 def load_config(path: str = "bridge_config.json") -> BridgeConfig:

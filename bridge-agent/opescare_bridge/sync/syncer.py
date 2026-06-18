@@ -35,9 +35,9 @@ class Syncer:
         # Previously used default SSL settings (verify=True by default in requests,
         # but relying on implicit behaviour is fragile). Now explicitly verifies.
         # Set verify=False in bridge_config.json for self-signed certs in dev.
-        self.session.verify = config.get("ssl_verify", True)
+        self.session.verify = config.ssl_verify
         # Optional: path to custom CA bundle
-        ca_bundle = config.get("ssl_ca_bundle")
+        ca_bundle = config.ssl_ca_bundle
         if ca_bundle:
             self.session.verify = ca_bundle
 
