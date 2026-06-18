@@ -31,6 +31,18 @@
 <div class="alert alert-danger mb-4"><i data-lucide="alert-circle"></i><div>{{ session('error') }}</div></div>
 @endif
 
+@if(!empty($context))
+<div class="panel mb-4" style="border-left:4px solid #0F4C81;">
+    <div class="panel-body" style="display:flex;align-items:center;gap:.6rem;padding:.75rem 1rem;">
+        <i data-lucide="paperclip" style="color:#0F4C81;"></i>
+        <div>
+            <div style="font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#64748b;">{{ __('messaging.ctx_about') }}</div>
+            <strong>{{ $context['label'] }}</strong>
+        </div>
+    </div>
+</div>
+@endif
+
 <div class="panel mb-4">
     <div class="panel-header">
         <h3 class="panel-title"><i data-lucide="messages-square"></i> {{ __('messaging.conversation') }}</h3>

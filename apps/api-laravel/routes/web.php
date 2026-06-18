@@ -224,6 +224,9 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
 
         // Secure messaging (patient ↔ care team) — built on the Messaging module
         Route::get('/portals/patient/messages', [\App\Http\Controllers\MedicalId\PatientMessagingController::class, 'index'])->name('portals.patient.messages');
+        // Compose a new thread (must precede the {thread} wildcard)
+        Route::get('/portals/patient/messages/compose', [\App\Http\Controllers\MedicalId\PatientMessagingController::class, 'composeForm'])->name('portals.patient.messages.compose');
+        Route::post('/portals/patient/messages', [\App\Http\Controllers\MedicalId\PatientMessagingController::class, 'store'])->name('portals.patient.messages.store');
         Route::get('/portals/patient/messages/{thread}', [\App\Http\Controllers\MedicalId\PatientMessagingController::class, 'show'])->name('portals.patient.messages.show');
         Route::post('/portals/patient/messages/{thread}/messages', [\App\Http\Controllers\MedicalId\PatientMessagingController::class, 'send'])->name('portals.patient.messages.send');
 

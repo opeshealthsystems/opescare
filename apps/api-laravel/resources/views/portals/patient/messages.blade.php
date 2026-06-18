@@ -13,6 +13,9 @@
         <h1 class="page-title">{{ __('messaging.inbox_title') }}</h1>
         <p class="page-subtitle">{{ __('messaging.inbox_subtitle') }}</p>
     </div>
+    <a href="{{ route('portals.patient.messages.compose') }}" class="btn btn-primary">
+        <i data-lucide="plus"></i> {{ __('messaging.compose_btn') }}
+    </a>
 </div>
 
 @if(session('success'))
@@ -50,6 +53,10 @@
                                         <span class="badge badge-{{ $row['status'] === 'closed' ? 'muted' : 'success' }}">
                                             {{ $row['status'] === 'closed' ? __('messaging.status_closed') : __('messaging.status_open') }}
                                         </span>
+                                        @if(!empty($row['context_type']))
+                                            @php $ctxKey = ['lab_result'=>'lab','prescription'=>'rx','appointment'=>'appt','visit'=>'visit','insurance_policy'=>'insurance'][$row['context_type']] ?? 'generic'; @endphp
+                                            <span class="badge"><i data-lucide="paperclip" style="width:.8rem;height:.8rem;"></i> {{ __('messaging.ctx_' . $ctxKey) }}</span>
+                                        @endif
                                     </div>
                                     @if($row['snippet'])
                                         <p class="page-subtitle" style="margin:.35rem 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $row['snippet'] }}</p>

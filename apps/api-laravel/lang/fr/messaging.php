@@ -38,4 +38,27 @@ return [
     // Flash
     'reply_sent'         => 'Votre message a été envoyé.',
     'reply_failed'       => "Votre message n'a pas pu être envoyé. Veuillez réessayer.",
+
+    // Composer un nouveau fil + références au dossier clinique
+    'compose_btn'         => 'Nouveau message',
+    'compose_title'       => 'Nouveau message',
+    'compose_subtitle'    => 'Envoyez un message sécurisé à votre équipe soignante.',
+    'compose_subject'     => 'Objet',
+    'compose_about'       => 'Concernant (facultatif)',
+    'compose_about_none'  => 'Général — pas un dossier précis',
+    'compose_about_hint'  => 'Associez cette conversation à un résultat de laboratoire, une ordonnance, un rendez-vous, une visite ou une police d’assurance.',
+    'compose_select_item' => 'Sélectionnez le dossier',
+    'compose_message'     => 'Message',
+    'compose_send'        => 'Envoyer le message',
+    'compose_sent'        => 'Votre message a été envoyé à votre équipe soignante.',
+    'compose_failed'      => "Votre message n'a pas pu être envoyé. Veuillez réessayer.",
+    'no_care_team'        => "La messagerie n'est pas encore disponible — votre établissement n'a pas configuré d'équipe soignante.",
+    'ctx_invalid'         => 'Le dossier sélectionné est introuvable.',
+    'ctx_about'           => 'Concernant',
+    'ctx_lab'             => 'Résultat de laboratoire',
+    'ctx_rx'              => 'Ordonnance',
+    'ctx_appt'            => 'Rendez-vous',
+    'ctx_visit'           => 'Visite',
+    'ctx_insurance'       => "Police d'assurance",
+    'ctx_generic'         => 'Dossier lié',
 ];

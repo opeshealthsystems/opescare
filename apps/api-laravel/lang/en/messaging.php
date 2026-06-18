@@ -38,4 +38,27 @@ return [
     // Flash
     'reply_sent'         => 'Your message has been sent.',
     'reply_failed'       => 'Your message could not be sent. Please try again.',
+
+    // Compose a new thread + clinical context references
+    'compose_btn'         => 'New message',
+    'compose_title'       => 'New message',
+    'compose_subtitle'    => 'Send a secure message to your care team.',
+    'compose_subject'     => 'Subject',
+    'compose_about'       => 'About (optional)',
+    'compose_about_none'  => 'General — not about a specific record',
+    'compose_about_hint'  => 'Link this conversation to a lab result, prescription, appointment, visit, or insurance policy.',
+    'compose_select_item' => 'Select the record',
+    'compose_message'     => 'Message',
+    'compose_send'        => 'Send message',
+    'compose_sent'        => 'Your message has been sent to your care team.',
+    'compose_failed'      => 'Your message could not be sent. Please try again.',
+    'no_care_team'        => 'Messaging is not available yet — your facility has not set up a care team.',
+    'ctx_invalid'         => 'The selected record could not be found.',
+    'ctx_about'           => 'About',
+    'ctx_lab'             => 'Lab result',
+    'ctx_rx'              => 'Prescription',
+    'ctx_appt'            => 'Appointment',
+    'ctx_visit'           => 'Visit',
+    'ctx_insurance'       => 'Insurance policy',
+    'ctx_generic'         => 'Linked record',
 ];
