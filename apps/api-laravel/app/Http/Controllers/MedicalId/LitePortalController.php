@@ -50,7 +50,7 @@ class LitePortalController extends Controller
         $stats      = $this->liteService->getAdminStats($facilityId);
 
         // Today's queue summary (reuse existing queue table)
-        $todayQueue = \App\Models\PatientQueueEntry::where('facility_id', $facilityId)
+        $todayQueue = \App\Models\QueueTicket::where('facility_id', $facilityId)
             ->whereDate('created_at', today())
             ->selectRaw("status, COUNT(*) as cnt")
             ->groupBy('status')

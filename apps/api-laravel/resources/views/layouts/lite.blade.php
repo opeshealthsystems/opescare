@@ -372,7 +372,7 @@
             <i data-lucide="git-merge"></i> Conflicts
         </a>
         <div class="lite-sidenav__footer">
-            <a href="{{ route('portals.staff.index') }}" class="lite-sidenav__link lite-footer-link">
+            <a href="{{ route('portals.staff') }}" class="lite-sidenav__link lite-footer-link">
                 <i data-lucide="arrow-left"></i> Full Portal
             </a>
         </div>
