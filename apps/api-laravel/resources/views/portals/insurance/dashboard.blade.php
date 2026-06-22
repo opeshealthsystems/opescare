@@ -99,7 +99,7 @@
                     <div class="td-muted">{{ $claim->created_at?->format('d M Y') }}</div>
                 </div>
                 <span class="badge badge-{{ match($claim->status) { 'paid' => 'success', 'submitted' => 'info', 'rejected' => 'danger', 'cancelled' => 'neutral', default => 'warning' } }}">
-                    {{ ucfirst($claim->status) }}
+                    @enum($claim->status)
                 </span>
             </div>
             @empty
@@ -122,7 +122,7 @@
                     <div class="td-muted">{{ $auth->created_at?->format('d M Y') }}</div>
                 </div>
                 <span class="badge badge-{{ match($auth->status) { 'approved' => 'success', 'submitted' => 'info', 'rejected' => 'danger', 'cancelled' => 'neutral', default => 'warning' } }}">
-                    {{ ucfirst($auth->status) }}
+                    @enum($auth->status)
                 </span>
             </div>
             @empty

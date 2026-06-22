@@ -83,7 +83,7 @@
                         <div class="td-muted">{{ $order->ordered_at?->diffForHumans() }}</div>
                     </td>
                     <td data-label="{{ __('public.portal.col_patient', [], app()->getLocale()) ?: 'Patient' }}">{{ $order->patient?->full_name ?? '—' }}</td>
-                    <td data-label="{{ __('public.portal.col_status', [], app()->getLocale()) ?: 'Status' }}"><span class="badge badge-{{ $order->statusColor() }}">{{ ucfirst($order->status) }}</span></td>
+                    <td data-label="{{ __('public.portal.col_status', [], app()->getLocale()) ?: 'Status' }}"><span class="badge badge-{{ $order->statusColor() }}">@enum($order->status)</span></td>
                     <td class="row-actions" data-label="">
                         @if($order->status === 'pending')
                         <form method="POST" action="{{ route('portals.lab.orders.collect', $order->id) }}" class="inline-form">@csrf

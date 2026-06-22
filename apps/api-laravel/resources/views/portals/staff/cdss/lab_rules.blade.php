@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Lab Alert Ranges — CDSS')
+@section('title', __('staff_analytics.cdss_title_lab', [], app()->getLocale()) ?: 'Lab Alert Ranges — CDSS')
 @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
 
 @section('content')
@@ -60,7 +60,7 @@
                             <td data-label="{{ __('public.staff_portal.cdss_lab_col_filters') }}" class="td-muted">
                                 @if($rule->gender_filter) {{ $rule->gender_filter === 'M' ? __('public.staff_portal.cdss_lab_filter_male') : __('public.staff_portal.cdss_lab_filter_female') }} @endif
                                 @if($rule->age_min || $rule->age_max)
-                                    <div>Age: {{ $rule->age_min ?? '0' }}–{{ $rule->age_max ?? '∞' }} {{ __('public.staff_portal.cdss_lab_filter_yrs') }}</div>
+                                    <div>{{ __('staff_analytics.cdss_lab_age_prefix', [], app()->getLocale()) ?: 'Age:' }} {{ $rule->age_min ?? '0' }}–{{ $rule->age_max ?? '∞' }} {{ __('public.staff_portal.cdss_lab_filter_yrs') }}</div>
                                 @endif
                                 @if(!$rule->gender_filter && !$rule->age_min && !$rule->age_max)
                                     {{ __('public.staff_portal.cdss_lab_filter_all') }}

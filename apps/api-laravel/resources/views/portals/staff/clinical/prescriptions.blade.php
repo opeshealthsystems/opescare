@@ -117,7 +117,7 @@
                         </td>
                         <td data-label="{{ __('public.staff_portal.clin_rx_col_status') }}">
                             <span class="badge badge-{{ $rxBadge }}">
-                                {{ ucfirst(str_replace('_', ' ', $rx->status)) }}
+                                @enum($rx->status)
                             </span>
                         </td>
                         <td data-label="{{ __('public.staff_portal.clin_rx_col_dispensed_at') }}" class="td-muted">{{ $rx->dispensed_at?->format('d M Y H:i') ?? '—' }}</td>

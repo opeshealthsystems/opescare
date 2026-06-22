@@ -73,7 +73,6 @@
                                 'draft'     => 'badge-warning',
                                 default     => 'badge-neutral',
                             };
-                            $statusLabel  = ucfirst($invoice->status ?? 'unknown');
                             $balance      = $invoice->balance_due ?? $invoice->balance ?? 0;
                             $balanceBadge = $balance > 0 ? 'badge-danger' : 'badge-teal';
                             $canPayment   = in_array($invoice->status ?? '', ['issued', 'overdue']);
@@ -101,7 +100,7 @@
                                 </span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_status', [], app()->getLocale()) ?: 'Status' }}">
-                                <span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span>
+                                <span class="badge {{ $statusBadge }}">@enum($invoice->status ?? 'unknown')</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_actions', [], app()->getLocale()) ?: 'Actions' }}">
                                 @if($canPayment)

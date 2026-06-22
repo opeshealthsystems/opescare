@@ -1,7 +1,7 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', __('public.adm_fac_title'))
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin')
+@section('breadcrumb_home', __('admin_extra.breadcrumb_admin', [], app()->getLocale()) ?: 'Admin')
 @section('breadcrumb_home_url', route('portals.admin'))
 @section('breadcrumb_section', __('public.adm_fac_breadcrumb'))
 @section('content')
@@ -28,7 +28,7 @@
         <i data-lucide="search"></i>
         <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('public.adm_fac_ph_search') }}" aria-label="{{ __('public.aria_search_facilities') }}">
     </label>
-    <select name="type" class="filter-select" aria-label="Type" onchange="this.form.submit()">
+    <select name="type" class="filter-select" aria-label="{{ __('admin_extra.aria_type', [], app()->getLocale()) ?: 'Type' }}" onchange="this.form.submit()">
         <option value="">{{ __('public.adm_fac_opt_all_types') }}</option>
         @foreach(['hospital','clinic','laboratory','pharmacy','radiology','specialist'] as $t)
         <option value="{{ $t }}" {{ request('type')===$t?'selected':'' }}>{{ ucfirst($t) }}</option>
@@ -46,7 +46,7 @@
 
 <div class="panel">
     <div class="panel-header">
-        <h3 class="panel-title"><i data-lucide="building-2"></i> {{ $facilities->total() }} facilities</h3>
+        <h3 class="panel-title"><i data-lucide="building-2"></i> {{ __('admin_extra.count_facilities', ['n' => $facilities->total()], app()->getLocale()) ?: $facilities->total().' facilities' }}</h3>
     </div>
     <div class="table-wrapper">
         <table class="data-table">
@@ -69,8 +69,8 @@
                             <span class="td-strong">{{ $f->name }}</span>
                         </span>
                     </td>
-                    <td data-label="{{ __('public.adm_fac_col_type') }}">{{ ucfirst($f->type ?? 'â€”') }}</td>
-                    <td data-label="{{ __('public.adm_fac_col_region') }}">{{ $f->region ?? 'â€”' }}</td>
+                    <td data-label="{{ __('public.adm_fac_col_type') }}">{{ ucfirst($f->type ?? '—') }}</td>
+                    <td data-label="{{ __('public.adm_fac_col_region') }}">{{ $f->region ?? '—' }}</td>
                     <td data-label="{{ __('public.adm_fac_col_status') }}">
                         @if($f->status==='active')<span class="badge badge-success">{{ __('public.adm_fac_badge_active') }}</span>
                         @elseif($f->status==='suspended')<span class="badge badge-danger">{{ __('public.adm_fac_badge_suspended') }}</span>
@@ -78,7 +78,7 @@
                         @else<span class="badge badge-neutral">{{ ucfirst($f->status ?? 'pending') }}</span>@endif
                     </td>
                     <td class="row-actions" data-label="{{ __('public.adm_fac_col_actions') }}">
-                        <a href="{{ route('admin.facilities.show', $f->id) }}" class="icon-btn" aria-label="{{ __('public.aria_view_facility') }}" title="View">
+                        <a href="{{ route('admin.facilities.show', $f->id) }}" class="icon-btn" aria-label="{{ __('public.aria_view_facility') }}" title="{{ __('admin_extra.title_view', [], app()->getLocale()) ?: 'View' }}">
                             <i data-lucide="eye"></i>
                         </a>
                         @if(($f->status ?? '') !== 'active')

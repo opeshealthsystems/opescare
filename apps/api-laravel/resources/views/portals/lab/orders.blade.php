@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', __('public.lab_portal.page_title', [], app()->getLocale()) ?: 'Lab Work Queue')
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">
@@ -19,7 +19,7 @@
 
 <div class="page-head">
     <h2>{{ __('public.lab_portal.page_heading_orders', [], $l) ?: 'Lab work queue' }}</h2>
-    <p class="page-subtitle">{{ __('public.lab_portal.page_subtitle_orders', [], $l) ?: 'All incoming test orders â€” filter by status or urgency.' }}</p>
+    <p class="page-subtitle">{{ __('public.lab_portal.page_subtitle_orders', [], $l) ?: 'All incoming test orders — filter by status or urgency.' }}</p>
 </div>
 
 @if(session('success'))<div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>@endif
@@ -27,7 +27,7 @@
 <form method="GET" class="filter-bar">
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="search" placeholder="{{ __('public.lab_portal.ph_search_orders', [], $l) ?: 'Test name or patientâ€¦' }}" value="{{ request('search') }}" aria-label="{{ __('public.aria_search_orders') }}">
+        <input type="text" name="search" placeholder="{{ __('public.lab_portal.ph_search_orders', [], $l) ?: 'Test name or patient…' }}" value="{{ request('search') }}" aria-label="{{ __('public.aria_search_orders') }}">
     </label>
     <select name="status" class="filter-select" aria-label="{{ __('public.aria_status') }}" onchange="this.form.submit()">
         <option value="">{{ __('public.lab_portal.filter_all_active', [], $l) ?: 'Active (all)' }}</option>
@@ -69,14 +69,14 @@
                         @if($order->test_code)<div class="td-muted">{{ $order->test_code }}</div>@endif
                     </td>
                     <td data-label="{{ __('public.lab_portal.col_patient', [], $l) ?: 'Patient' }}">
-                        <span class="td-strong">{{ $order->patient?->full_name ?? 'â€”' }}</span>
+                        <span class="td-strong">{{ $order->patient?->full_name ?? '—' }}</span>
                         <div class="td-muted">{{ $order->patient?->health_id ?? '' }}</div>
                     </td>
                     <td data-label="{{ __('public.lab_portal.col_urgency', [], $l) ?: 'Urgency' }}">
-                        <span class="badge {{ $order->urgency === 'urgent' ? 'badge-danger' : 'badge-neutral' }}">{{ ucfirst($order->urgency ?? 'routine') }}</span>
+                        <span class="badge {{ $order->urgency === 'urgent' ? 'badge-danger' : 'badge-neutral' }}">@enum($order->urgency ?? 'routine', 'urgency')</span>
                     </td>
                     <td data-label="{{ __('public.lab_portal.col_ordered', [], $l) ?: 'Ordered' }}" class="td-muted">{{ $order->ordered_at?->format('d M H:i') ?? $order->created_at?->format('d M') }}</td>
-                    <td data-label="{{ __('public.lab_portal.col_status', [], $l) ?: 'Status' }}"><span class="badge badge-{{ $order->statusColor() }}">{{ ucfirst($order->status) }}</span></td>
+                    <td data-label="{{ __('public.lab_portal.col_status', [], $l) ?: 'Status' }}"><span class="badge badge-{{ $order->statusColor() }}">@enum($order->status)</span></td>
                     <td class="row-actions" data-label="{{ __('public.lab_portal.col_action', [], $l) ?: 'Action' }}">
                         @if($order->status === 'pending')
                         <form method="POST" action="{{ route('portals.lab.orders.collect', $order->id) }}" class="inline-form">@csrf
@@ -90,7 +90,7 @@
                         @elseif($order->status === 'processing')
                         <a href="{{ route('portals.lab.orders.result', $order->id) }}" class="btn btn-primary btn-sm"><i data-lucide="clipboard-pen-line"></i> {{ __('public.lab_portal.btn_enter_result', [], $l) ?: 'Enter result' }}</a>
                         @else
-                        <span class="td-muted">â€”</span>
+                        <span class="td-muted">—</span>
                         @endif
                     </td>
                 </tr>

@@ -20,7 +20,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Clinical</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
         <i data-lucide="calendar-check-2"></i>
         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
@@ -175,7 +175,7 @@
                             </td>
                             <td data-label="{{ __('public.staff_portal.hr_shifts_col_status', [], app()->getLocale()) ?: 'Status' }}">
                                 <span class="badge {{ $shift->status === 'active' ? 'badge-success' : 'badge-neutral' }}">
-                                    {{ ucfirst($shift->status) }}
+                                    @enum($shift->status)
                                 </span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.hr_shifts_col_actions', [], app()->getLocale()) ?: 'Actions' }}">

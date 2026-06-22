@@ -110,7 +110,7 @@ Spacing: `--p-space-1..12`. Radius: `--p-radius`, `--p-radius-sm`.
 | KPI dashboard | KPI & trends, Reports, MINSANTE, readiness scorecards |
 | Finance overview | Financial, Payments |
 | Audit explorer | Security ops, Audit explorer, Emergency access, Action log, Closures, Complaints, Minor transitions |
-| Connect | Connect, Bridge, CDSS lists, Academy |
+| Connect | Connect, Bridge, CDSS lists |
 | Onboarding wizard | Onboarding, Go-live readiness |
 | Subscriptions & plans | Billing detail, plan tiers |
 | CDSS / code mappings | Clinical governance |

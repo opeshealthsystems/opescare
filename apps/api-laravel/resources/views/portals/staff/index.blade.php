@@ -107,6 +107,33 @@
                     </button>
                 </div>
             </form>
+
+            @isset($verification)
+                @if($verification['patient'])
+                    @php
+                        $vp = $verification['patient'];
+                        $vStatus = $vp->verification_status instanceof \BackedEnum ? $vp->verification_status->value : $vp->verification_status;
+                    @endphp
+                    <div class="alert alert-success mt-4" role="status">
+                        <i data-lucide="user-check"></i>
+                        <div>
+                            <strong>{{ $vp->first_name }} {{ $vp->last_name }}</strong>
+                            <span class="badge badge-info">@enum($vStatus ?? 'active', 'verification')</span>
+                            <div class="td-muted mt-1">
+                                <span class="mono">{{ $vp->health_id }}</span>
+                                @if($vp->date_of_birth) · {{ \Carbon\Carbon::parse($vp->date_of_birth)->format('d M Y') }}@endif
+                                @if($vp->sex) · @enum($vp->sex)@endif
+                            </div>
+                            <div class="form-hint mt-1">{{ __('public.staff_portal.verification_logged', [], app()->getLocale()) ?: 'Identity confirmed — this access has been logged and audited.' }}</div>
+                        </div>
+                    </div>
+                @else
+                    <div class="alert alert-danger mt-4" role="alert">
+                        <i data-lucide="user-x"></i>
+                        <div>{{ __('public.staff_portal.verification_not_found', [], app()->getLocale()) ?: 'No patient found for that Health ID. Check the ID and try again.' }} <span class="mono">{{ $verification['health_id'] }}</span></div>
+                    </div>
+                @endif
+            @endisset
         </div>
     </div>
 

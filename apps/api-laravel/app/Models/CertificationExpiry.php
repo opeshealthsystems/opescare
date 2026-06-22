@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * CertificationExpiry — Certification / Academy
+ * CertificationExpiry — training / certification
  *
  * Tracks the expiry lifecycle for a certification held by a staff member,
  * facility, or developer app. Triggers renewal notifications before expiry.

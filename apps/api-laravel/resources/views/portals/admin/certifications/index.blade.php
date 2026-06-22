@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', __('public.adm_cert_idx_title'))
 @section('sidebar') @include('portals.admin.control_center._sidebar') @endsection
 
@@ -57,7 +57,7 @@
         <option value="{{ $s }}" {{ $status === $s ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $s)) }}</option>
         @endforeach
     </select>
-    <select name="type" class="filter-select" aria-label="Type" onchange="this.form.submit()">
+    <select name="type" class="filter-select" aria-label="{{ __('admin_extra.aria_type', [], app()->getLocale()) ?: 'Type' }}" onchange="this.form.submit()">
         <option value="">{{ __('public.adm_cert_idx_filter_all_types') }}</option>
         @foreach($types as $t)
         <option value="{{ $t }}" {{ $type === $t ? 'selected' : '' }}>{{ strtoupper($t) }}</option>
@@ -97,7 +97,7 @@
                     <td data-label="{{ __('public.adm_cert_idx_col_type') }}">
                         <span class="badge badge--info badge-sm">{{ strtoupper($cert->integration_type) }}</span>
                     </td>
-                    <td data-label="{{ __('public.adm_cert_idx_col_vendor') }}" class="td-muted">{{ $cert->vendor_name ?? 'â€”' }}</td>
+                    <td data-label="{{ __('public.adm_cert_idx_col_vendor') }}" class="td-muted">{{ $cert->vendor_name ?? '—' }}</td>
                     <td data-label="{{ __('public.adm_cert_idx_col_status') }}">
                         <span class="badge {{ $cert->statusBadgeClass() }} badge-sm">
                             {{ ucfirst(str_replace('_', ' ', $cert->status)) }}
@@ -107,7 +107,7 @@
                         @if($cert->certification_level)
                         <span class="badge {{ $cert->levelBadgeClass() }} badge-sm">{{ ucfirst($cert->certification_level) }}</span>
                         @else
-                        <span class="td-muted">â€”</span>
+                        <span class="td-muted">—</span>
                         @endif
                     </td>
                     <td data-label="{{ __('public.adm_cert_idx_col_last_run') }}">
@@ -124,7 +124,7 @@
                         @if($cert->badge)
                             <span class="mono code-token">{{ $cert->badge->badge_code }}</span>
                         @else
-                            <span class="td-muted">â€”</span>
+                            <span class="td-muted">—</span>
                         @endif
                     </td>
                     <td class="row-actions">

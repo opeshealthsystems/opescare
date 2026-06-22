@@ -126,7 +126,7 @@
                                     @endif
                                     {{ $allergy->substance }}
                                 </span>
-                                <span class="badge {{ $sevCls }}">{{ ucfirst($allergy->severity ?? 'unknown') }}</span>
+                                <span class="badge {{ $sevCls }}">@enum($allergy->severity ?? 'unknown', 'severity')</span>
                             </div>
                             @endforeach
                         </div>
@@ -151,7 +151,7 @@
                             @foreach($conditions as $condition)
                             <div class="list-row">
                                 <span class="list-row__main">{{ $condition->display_name ?? $condition->code ?? '—' }}</span>
-                                <span class="badge {{ $condition->status === 'chronic' ? 'badge-teal' : 'badge-primary' }}">{{ ucfirst($condition->status) }}</span>
+                                <span class="badge {{ $condition->status === 'chronic' ? 'badge-teal' : 'badge-primary' }}">@enum($condition->status)</span>
                             </div>
                             @endforeach
                         </div>
@@ -203,7 +203,7 @@
                             $portalStatus = $patient->verification_status ?? $patient->identity_status ?? 'Active';
                             $portalStatus = $portalStatus instanceof \BackedEnum ? $portalStatus->value : $portalStatus;
                         @endphp
-                        {{ ucfirst(str_replace('_', ' ', $portalStatus)) }}
+                        @enum($portalStatus, 'verification')
                     </div>
                 </div>
                 <div class="form-hint mt-3">{{ __('public.portal.hint_identity_managed', [], $l) ?: 'Identity fields are managed by OpesCare. To update, contact your registered facility.' }}</div>

@@ -55,9 +55,9 @@
                         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;">
                             <div style="min-width:0;">
                                 <div style="display:flex;align-items:center;gap:.5rem;">
-                                    <strong>{{ ucfirst(str_replace('_', ' ', $ev->event_type)) }}</strong>
+                                    <strong>@enum($ev->event_type)</strong>
                                     @if($isUnread)<span class="badge badge-primary">{{ __('notifications.new') }}</span>@endif
-                                    @if(($ev->priority ?? 'normal') !== 'normal')<span class="badge badge-warning">{{ ucfirst($ev->priority) }}</span>@endif
+                                    @if(($ev->priority ?? 'normal') !== 'normal')<span class="badge badge-warning">@enum($ev->priority, 'priority')</span>@endif
                                 </div>
                                 <p class="page-subtitle" style="margin:.3rem 0 0;">{{ \Illuminate\Support\Str::limit($msg, 180) }}</p>
                             </div>

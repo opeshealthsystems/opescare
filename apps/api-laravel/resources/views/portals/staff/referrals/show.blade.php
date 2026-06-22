@@ -18,7 +18,7 @@
         'expired'   => 'badge-neutral',
         default     => 'badge-warning',
     };
-    $prCls = match($referral->priority ?? 'routine') {
+    $prCls = match($referral->urgency ?? 'routine') {
         'emergency' => 'badge-critical',
         'urgent'    => 'badge-danger',
         default     => 'badge-neutral',
@@ -34,7 +34,7 @@
 
 <div class="page-head">
     <h2>{{ __('public.stf_ref_show_page_heading') }}</h2>
-    <span class="badge {{ $stCls }}">{{ ucfirst($referral->status ?? 'draft') }}</span>
+    <span class="badge {{ $stCls }}">@enum($referral->status ?? 'draft')</span>
     <div class="page-head__spacer"></div>
     <a href="{{ route('portals.staff.referrals') }}" class="btn btn-ghost btn-sm">
         <i data-lucide="arrow-left"></i> {{ __('public.stf_ref_show_btn_back') }}
@@ -59,7 +59,7 @@
                     </tr>
                     <tr>
                         <td class="kv-strong">{{ __('public.stf_ref_show_kv_priority') }}</td>
-                        <td><span class="badge {{ $prCls }}">{{ ucfirst($referral->priority ?? 'routine') }}</span></td>
+                        <td><span class="badge {{ $prCls }}">@enum($referral->urgency ?? 'routine', 'urgency')</span></td>
                     </tr>
                     <tr>
                         <td class="kv-strong">{{ __('public.stf_ref_show_kv_ref_facility') }}</td>
@@ -71,7 +71,7 @@
                     </tr>
                     <tr>
                         <td class="kv-strong">{{ __('public.stf_ref_show_kv_specialty') }}</td>
-                        <td>{{ $referral->specialty ?? '—' }}</td>
+                        <td>{{ $referral->receiving_specialty ?? '—' }}</td>
                     </tr>
                     <tr>
                         <td class="kv-strong">{{ __('public.stf_ref_show_kv_expires') }}</td>
@@ -175,7 +175,7 @@
                         <div class="timeline-body">
                             <div class="timeline-time">{{ $referral->updated_at?->format('d M Y H:i') ?? '—' }}</div>
                             <div class="timeline-title">{{ __('public.stf_ref_show_timeline_updated') }}</div>
-                            <div class="timeline-desc">{{ ucfirst($referral->status ?? 'draft') }}</div>
+                            <div class="timeline-desc">@enum($referral->status ?? 'draft')</div>
                         </div>
                     </div>
                     @endif

@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Clinical Rules — CDSS')
+@section('title', __('staff_analytics.cdss_title_rules', [], app()->getLocale()) ?: 'Clinical Rules — CDSS')
 @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
 
 @section('content')
@@ -41,7 +41,7 @@
                         <tr>
                             <td data-label="{{ __('public.staff_portal.cdss_rules_col_code') }}"><code class="mono">{{ $rule->rule_code }}</code></td>
                             <td data-label="{{ __('public.staff_portal.cdss_rules_col_type') }}">
-                                <span class="badge badge-info">{{ str_replace('_',' ', $rule->rule_type) }}</span>
+                                <span class="badge badge-info">@enum($rule->rule_type)</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.cdss_rules_col_name') }}">
                                 <div class="td-strong">{{ $rule->name }}</div>
@@ -54,7 +54,7 @@
                                     'critical' => 'danger',
                                     'warning'  => 'warning',
                                     default    => 'info',
-                                } }}">{{ ucfirst($rule->severity) }}</span>
+                                } }}">@enum($rule->severity, 'severity')</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.cdss_rules_col_overridable') }}">
                                 @if($rule->is_overridable)

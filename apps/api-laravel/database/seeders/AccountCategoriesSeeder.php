@@ -28,7 +28,6 @@ class AccountCategoriesSeeder extends Seeder
             ['key' => 'support_customer_success', 'name' => 'Support & Customer Success Accounts',     'sort_order' => 16],
             ['key' => 'privacy_security',         'name' => 'Privacy, Security & Compliance Accounts', 'sort_order' => 17],
             ['key' => 'data_quality',             'name' => 'Data Quality / Reconciliation Accounts',  'sort_order' => 18],
-            ['key' => 'academy_certification',    'name' => 'Academy / Certification Accounts',        'sort_order' => 19],
             ['key' => 'partner_governance',       'name' => 'Partner Governance Accounts',             'sort_order' => 20],
             ['key' => 'platform_super_admin',     'name' => 'Platform / Super Admin / Demo Accounts',  'sort_order' => 21],
         ];

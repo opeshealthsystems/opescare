@@ -1,6 +1,6 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 
-@section('title', __('public.stf_immun_rec_title') . ' â€” OpesCare Staff Portal')
+@section('title', __('public.stf_immun_rec_title') . ' — OpesCare Staff Portal')
 
 @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
@@ -11,7 +11,7 @@
 <div class="breadcrumb">
     <a href="{{ route('portals.staff.immunizations') }}">{{ __('public.stf_immun_title') }}</a>
     <i data-lucide="chevron-right"></i>
-    <span>Record</span>
+    <span>{{ __('staff_clinical.breadcrumb_record', [], app()->getLocale()) ?: 'Record' }}</span>
 </div>
 
 <div class="page-head">
@@ -72,12 +72,12 @@
             <div class="form-row mb-4">
                 <div class="form-group">
                     <label class="form-label form-label-required" for="vaccine_code">{{ __('public.stf_immun_rec_lbl_vaccine_code') }}</label>
-                    <input id="vaccine_code" name="vaccine_code" class="form-control" value="{{ old('vaccine_code') }}" placeholder="e.g. BCG, OPV, DPT" required aria-required="true">
-                    <div class="form-hint">WHO-EPI code or local code</div>
+                    <input id="vaccine_code" name="vaccine_code" class="form-control" value="{{ old('vaccine_code') }}" placeholder="{{ __('staff_clinical.ph_vaccine_code', [], app()->getLocale()) ?: 'e.g. BCG, OPV, DPT' }}" required aria-required="true">
+                    <div class="form-hint">{{ __('staff_clinical.hint_vaccine_code', [], app()->getLocale()) ?: 'WHO-EPI code or local code' }}</div>
                 </div>
                 <div class="form-group">
                     <label class="form-label form-label-required" for="vaccine_name">{{ __('public.stf_immun_rec_lbl_vaccine_name') }}</label>
-                    <input id="vaccine_name" name="vaccine_name" class="form-control" value="{{ old('vaccine_name') }}" placeholder="e.g. Bacillus Calmette-GuÃ©rin" required aria-required="true">
+                    <input id="vaccine_name" name="vaccine_name" class="form-control" value="{{ old('vaccine_name') }}" placeholder="{{ __('staff_clinical.ph_vaccine_name', [], app()->getLocale()) ?: 'e.g. Bacillus Calmette-Guérin' }}" required aria-required="true">
                 </div>
             </div>
 
@@ -115,17 +115,17 @@
                 <div class="form-group">
                     <label class="form-label" for="route">{{ __('public.stf_immun_rec_lbl_route') }}</label>
                     <select id="route" name="route" class="form-control">
-                        <option value="">â€” Select â€”</option>
-                        <option value="IM"          @selected(old('route')==='IM')>IM (Intramuscular)</option>
-                        <option value="SC"          @selected(old('route')==='SC')>SC (Subcutaneous)</option>
-                        <option value="oral"        @selected(old('route')==='oral')>Oral</option>
-                        <option value="intradermal" @selected(old('route')==='intradermal')>Intradermal</option>
-                        <option value="IN"          @selected(old('route')==='IN')>Intranasal</option>
+                        <option value="">{{ __('staff_clinical.opt_select', [], app()->getLocale()) ?: '— Select —' }}</option>
+                        <option value="IM"          @selected(old('route')==='IM')>{{ __('staff_clinical.route_im', [], app()->getLocale()) ?: 'IM (Intramuscular)' }}</option>
+                        <option value="SC"          @selected(old('route')==='SC')>{{ __('staff_clinical.route_sc', [], app()->getLocale()) ?: 'SC (Subcutaneous)' }}</option>
+                        <option value="oral"        @selected(old('route')==='oral')>{{ __('staff_clinical.route_oral', [], app()->getLocale()) ?: 'Oral' }}</option>
+                        <option value="intradermal" @selected(old('route')==='intradermal')>{{ __('staff_clinical.route_intradermal', [], app()->getLocale()) ?: 'Intradermal' }}</option>
+                        <option value="IN"          @selected(old('route')==='IN')>{{ __('staff_clinical.route_intranasal', [], app()->getLocale()) ?: 'Intranasal' }}</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="site">{{ __('public.stf_immun_rec_lbl_site') }}</label>
-                    <input id="site" name="site" class="form-control" value="{{ old('site') }}" placeholder="e.g. Left deltoid">
+                    <input id="site" name="site" class="form-control" value="{{ old('site') }}" placeholder="{{ __('staff_clinical.ph_site', [], app()->getLocale()) ?: 'e.g. Left deltoid' }}">
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="dose_quantity">{{ __('public.stf_immun_rec_lbl_dose_qty') }}</label>
@@ -137,8 +137,8 @@
                 <div class="form-group">
                     <label class="form-label form-label-required" for="status">{{ __('public.stf_immun_rec_lbl_status') }}</label>
                     <select id="status" name="status" class="form-control" required aria-required="true">
-                        <option value="completed" @selected(old('status','completed')==='completed')>Completed</option>
-                        <option value="not_done"  @selected(old('status')==='not_done')>Not Done</option>
+                        <option value="completed" @selected(old('status','completed')==='completed')>{{ __('staff_clinical.opt_completed', [], app()->getLocale()) ?: 'Completed' }}</option>
+                        <option value="not_done"  @selected(old('status')==='not_done')>{{ __('staff_clinical.opt_not_done', [], app()->getLocale()) ?: 'Not Done' }}</option>
                     </select>
                 </div>
                 <div class="form-group">

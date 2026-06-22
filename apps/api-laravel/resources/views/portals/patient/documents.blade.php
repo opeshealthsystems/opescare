@@ -69,7 +69,7 @@
                         <span class="td-strong">{{ $doc->title ?? __('public.portal.lbl_untitled_document', [], $l) ?: 'Untitled Document' }}</span>
                     </td>
                     <td data-label="{{ __('public.portal.col_type', [], $l) ?: 'Type' }}">
-                        <span class="td-muted">{{ str_replace('_', ' ', ucfirst($doc->document_type)) }}</span>
+                        <span class="td-muted">@enum($doc->document_type)</span>
                     </td>
                     <td data-label="{{ __('public.portal.col_number', [], $l) ?: 'Number' }}">
                         <span class="td-mono">{{ $doc->document_number ?? '—' }}</span>
@@ -78,7 +78,7 @@
                         @php
                             $statusCls = match($doc->status) { 'released' => 'badge-success', 'revoked' => 'badge-danger', default => 'badge-neutral' };
                         @endphp
-                        <span class="badge {{ $statusCls }}">{{ ucfirst($doc->status) }}</span>
+                        <span class="badge {{ $statusCls }}">@enum($doc->status)</span>
                     </td>
                     <td data-label="{{ __('public.portal.col_issued', [], $l) ?: 'Issued' }}">
                         <span class="td-muted">{{ $doc->issued_at?->format('d M Y') ?? '—' }}</span>

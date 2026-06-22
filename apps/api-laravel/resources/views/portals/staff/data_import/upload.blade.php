@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'New Import — Upload File')
+@section('title', __('staff_data.title_upload', [], app()->getLocale()) ?: 'New Import — Upload File')
 
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">{{ __('public.staff_portal.cdss_sidebar_role') }}</div>
@@ -25,9 +25,9 @@
         <i data-lucide="package"></i> {{ __('public.portal.nav_supply') }}</a>
 @endsection
 
-@section('breadcrumb_home', 'Staff Portal')
+@section('breadcrumb_home', __('staff_data.bc_home', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Data Import')
+@section('breadcrumb_section', __('staff_data.bc_section', [], app()->getLocale()) ?: 'Data Import')
 
 @section('content')
 
@@ -63,7 +63,7 @@
 
                 {{-- Field hint panel --}}
                 <div id="field-hint" style="display:none;background:var(--p-surface-2,#f8f9fa);border:1px solid var(--p-border);border-radius:var(--p-radius);padding:.85rem 1rem;margin-bottom:1rem;font-size:.82rem;">
-                    <div style="font-weight:600;margin-bottom:.4rem;">Expected columns for this type:</div>
+                    <div style="font-weight:600;margin-bottom:.4rem;">{{ __('staff_data.expected_columns', [], app()->getLocale()) ?: 'Expected columns for this type:' }}</div>
                     <div id="field-hint-required" style="margin-bottom:.3rem;"></div>
                     <div id="field-hint-optional" style="color:var(--p-text-muted);"></div>
                 </div>
@@ -105,8 +105,8 @@ function updateFieldHint(type) {
     }
 
     var fields = importTypeFields[type];
-    req.innerHTML = '<strong>Required:</strong> ' + fields.required.join(', ');
-    opt.innerHTML = fields.optional.length ? '<strong>Optional:</strong> ' + fields.optional.join(', ') : '';
+    req.innerHTML = '<strong>{{ __('staff_data.js_required', [], app()->getLocale()) ?: 'Required:' }}</strong> ' + fields.required.join(', ');
+    opt.innerHTML = fields.optional.length ? '<strong>{{ __('staff_data.js_optional', [], app()->getLocale()) ?: 'Optional:' }}</strong> ' + fields.optional.join(', ') : '';
     hint.style.display = 'block';
 }
 // Trigger on page load if old value set

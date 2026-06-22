@@ -41,8 +41,6 @@ class RequireApiAdminRole
         'implementation_lead', 'training_support',
         // Partner governance
         'partner_admin', 'partner_reviewer', 'partner_compliance', 'partner_technical',
-        // Academy administration
-        'academy_admin',
     ];
 
     public function handle(Request $request, Closure $next): mixed

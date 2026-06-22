@@ -1,6 +1,6 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 
-@section('title', __('public.portal.nav_appointments', [], app()->getLocale()) . ' â€” OpesCare Patient Portal')
+@section('title', __('public.portal.nav_appointments', [], app()->getLocale()) . ' — OpesCare Patient Portal')
 
 @section('breadcrumb_home', __('public.portal.my_portal', [], app()->getLocale()) ?: 'My Portal')
 @section('breadcrumb_home_url', route('portals.patient'))
@@ -64,7 +64,7 @@
                 <tr>
                     <td data-label="{{ __('public.portal.date_time', [], app()->getLocale()) ?: 'Date & Time' }}">
                         <span class="td-strong">
-                            {{ $appt->scheduled_at?->format('d M Y') ?? 'â€”' }}
+                            {{ $appt->scheduled_at?->format('d M Y') ?? '—' }}
                         </span>
                         @if($appt->scheduled_at)
                         <div class="td-muted">{{ $appt->scheduled_at->format('H:i') }}</div>
@@ -74,15 +74,15 @@
                         @php
                             $providerName = $appt->provider?->name
                                 ?? (($appt->provider?->first_name ?? '') . ' ' . ($appt->provider?->last_name ?? ''))
-                                ?: 'â€”';
+                                ?: '—';
                         @endphp
-                        <span class="td-strong">{{ trim($providerName) ?: 'â€”' }}</span>
+                        <span class="td-strong">{{ trim($providerName) ?: '—' }}</span>
                     </td>
                     <td data-label="{{ __('public.portal.appointment_type', [], app()->getLocale()) ?: 'Type' }}">
-                        <span class="badge badge-primary">{{ ucfirst(str_replace('_', ' ', $appt->appointment_type ?? 'General')) }}</span>
+                        <span class="badge badge-primary">@enum($appt->appointment_type ?? 'General')</span>
                     </td>
                     <td data-label="{{ __('public.portal.facility', [], app()->getLocale()) ?: 'Facility' }}">
-                        <span class="td-muted">{{ $appt->facility?->name ?? 'Unknown Facility' }}</span>
+                        <span class="td-muted">{{ $appt->facility?->name ?? __('public.portal.unknown_facility', [], app()->getLocale()) ?: 'Unknown Facility' }}</span>
                     </td>
                     <td data-label="{{ __('public.portal.status', [], app()->getLocale()) ?: 'Status' }}">
                         @php
@@ -94,7 +94,7 @@
                                 default      => 'badge-primary',
                             };
                         @endphp
-                        <span class="badge {{ $stCls }}">{{ ucfirst(str_replace('_', ' ', $appt->status ?? 'Scheduled')) }}</span>
+                        <span class="badge {{ $stCls }}">@enum($appt->status ?? 'Scheduled')</span>
                     </td>
                     <td class="row-actions">
                         @if(in_array($appt->status, ['requested', 'scheduled', 'confirmed']))

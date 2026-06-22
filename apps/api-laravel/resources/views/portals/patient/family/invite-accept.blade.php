@@ -21,7 +21,7 @@
             <p>
                 <strong>{{ $link->guardianUser->name ?? $link->guardianUser->email }}</strong> {{ __('public.portal.invite_accept_wants') }}
                 <strong>{{ $link->dependentPatient->first_name }} {{ $link->dependentPatient->last_name }}</strong>{{ __('public.portal.invite_accept_records') }}
-                <strong>{{ ucfirst(str_replace('_',' ',$link->relationship)) }}</strong>
+                <strong>@enum($link->relationship)</strong>
                 {{ __('public.portal.invite_accept_with') }} <strong>{{ $link->access_level === 'full' ? __('public.portal.invite_accept_full') : __('public.portal.invite_accept_readonly') }}</strong> {{ __('public.portal.invite_accept_access') }}
             </p>
         </div>

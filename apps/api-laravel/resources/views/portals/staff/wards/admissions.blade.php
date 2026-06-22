@@ -77,7 +77,7 @@
                             <span class="mono">{{ $adm->bed?->bed_number ?? '—' }}</span>
                         </td>
                         <td data-label="{{ __('public.staff_wards.col_ward', [], $l) ?: 'Ward' }}">{{ $adm->bed?->ward?->name ?? '—' }}</td>
-                        <td data-label="{{ __('public.staff_wards.col_status', [], $l) ?: 'Status' }}"><span class="badge {{ $stBadge }}">{{ ucfirst($adm->status) }}</span></td>
+                        <td data-label="{{ __('public.staff_wards.col_status', [], $l) ?: 'Status' }}"><span class="badge {{ $stBadge }}">@enum($adm->status)</span></td>
                         <td data-label="{{ __('public.staff_wards.col_admitted', [], $l) ?: 'Admitted' }}" class="td-muted">
                             {{ \Carbon\Carbon::parse($adm->admitted_at)->format('M d, Y H:i') }}
                         </td>
@@ -130,7 +130,7 @@
                                 ->whereHas('ward', fn($q) => $q->where('is_active',true))
                                 ->orderBy('ward_id')
                                 ->get();
-                            $byWard = $availBeds->groupBy(fn($b) => $b->ward?->name ?? 'Unknown');
+                            $byWard = $availBeds->groupBy(fn($b) => $b->ward?->name ?? (__('staff_clinical.ward_unknown', [], $l) ?: 'Unknown'));
                         @endphp
                         @foreach($byWard as $wardName => $beds)
                             <optgroup label="{{ $wardName }}">
@@ -146,7 +146,7 @@
                     <textarea name="admission_reason" class="form-control" rows="2" maxlength="500" placeholder="{{ __('public.stf_wards_adm_ph_reason') }}"></textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">{{ __('public.staff_wards.field_visit_id', [], $l) ?: 'Visit ID' }} <span class="td-muted">(optional)</span></label>
+                    <label class="form-label">{{ __('public.staff_wards.field_visit_id', [], $l) ?: 'Visit ID' }} <span class="td-muted">{{ __('staff_clinical.lbl_optional', [], $l) ?: '(optional)' }}</span></label>
                     <input type="text" name="visit_id" class="form-control" placeholder="{{ __('public.stf_wards_adm_ph_visit_id') }}">
                 </div>
             </div>

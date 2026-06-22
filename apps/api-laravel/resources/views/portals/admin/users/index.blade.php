@@ -1,7 +1,7 @@
 ﻿@extends('layouts.portal')
 @section('title', __('public.adm_users_idx_title'))
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin')
+@section('breadcrumb_home', __('admin_extra.breadcrumb_admin', [], app()->getLocale()) ?: 'Admin')
 @section('breadcrumb_home_url', route('portals.admin'))
 @section('breadcrumb_section', __('public.adm_users_idx_breadcrumb_section'))
 @section('content')
@@ -25,7 +25,7 @@
         <i data-lucide="search"></i>
         <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('public.adm_users_idx_ph_search') }}" aria-label="{{ __('public.aria_search_users') }}">
     </label>
-    <select name="role_id" class="filter-select" aria-label="Role" onchange="this.form.submit()">
+    <select name="role_id" class="filter-select" aria-label="{{ __('admin_extra.aria_role', [], app()->getLocale()) ?: 'Role' }}" onchange="this.form.submit()">
         <option value="">{{ __('public.adm_users_idx_filter_all_roles') }}</option>
         @foreach($roles as $role)<option value="{{ $role->id }}" {{ request('role_id') == $role->id ? 'selected' : '' }}>{{ $role->name }}</option>@endforeach
     </select>
@@ -41,7 +41,7 @@
 
 <div class="panel">
     <div class="panel-header">
-        <h3 class="panel-title"><i data-lucide="users"></i> {{ $users->total() }} users</h3>
+        <h3 class="panel-title"><i data-lucide="users"></i> {{ __('admin_extra.count_users', ['n' => $users->total()], app()->getLocale()) ?: $users->total().' users' }}</h3>
     </div>
     <div class="table-wrapper">
         <table class="data-table">
@@ -60,7 +60,7 @@
                 <tr>
                     <td data-label="{{ __('public.adm_users_idx_col_name') }}"><span class="td-strong">{{ $user->name }}</span></td>
                     <td data-label="{{ __('public.adm_users_idx_col_email') }}">{{ $user->email }}</td>
-                    <td data-label="{{ __('public.adm_users_idx_col_role') }}"><span class="badge badge-neutral">{{ $user->role?->name ?? 'none' }}</span></td>
+                    <td data-label="{{ __('public.adm_users_idx_col_role') }}"><span class="badge badge-neutral">{{ $user->role?->name ?? (__('admin_extra.users_role_none', [], app()->getLocale()) ?: 'none') }}</span></td>
                     <td data-label="{{ __('public.adm_users_idx_col_status') }}">
                         @if($user->status==='active')<span class="badge badge-success">{{ __('public.adm_users_idx_badge_active') }}</span>
                         @elseif($user->status==='suspended')<span class="badge badge-danger">{{ __('public.adm_users_idx_badge_suspended') }}</span>

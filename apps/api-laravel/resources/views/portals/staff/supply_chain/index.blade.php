@@ -63,7 +63,7 @@
                     <div class="list-row">
                         <div>
                             <div class="td-strong">{{ $item->name }}</div>
-                            <div class="td-muted">{{ $item->code }} · {{ ucfirst($item->category) }}</div>
+                            <div class="td-muted">{{ $item->code }} · @enum($item->category)</div>
                         </div>
                         <div>
                             <span class="badge badge-danger">{{ $item->totalStock(request()->facilityId ?? \App\Models\Facility::value('id')) }} {{ $item->unit }}</span>
@@ -135,7 +135,7 @@
                                     ($mv->movement_type === 'dispense' ? 'info' :
                                     ($mv->movement_type === 'write_off' ? 'danger' :
                                     ($mv->movement_type === 'adjustment' ? 'warning' : 'default')))
-                                }}">{{ str_replace('_', ' ', $mv->movement_type) }}</span>
+                                }}">@enum($mv->movement_type)</span>
                             </td>
                             <td data-label="{{ __('public.stf_supply_index_col_qty') }}" class="td-strong">{{ $mv->quantity }}</td>
                             <td data-label="{{ __('public.stf_supply_index_col_by') }}" class="td-muted">{{ $mv->performed_by ?: '—' }}</td>

@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Import Audit Log')
+@section('title', __('staff_data.title_audit', [], app()->getLocale()) ?: 'Import Audit Log')
 
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">{{ __('public.staff_portal.cdss_sidebar_role') }}</div>
@@ -22,9 +22,9 @@
         <i data-lucide="package"></i> {{ __('public.portal.nav_supply') }}</a>
 @endsection
 
-@section('breadcrumb_home', 'Staff Portal')
+@section('breadcrumb_home', __('staff_data.bc_home', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Data Import')
+@section('breadcrumb_section', __('staff_data.bc_section', [], app()->getLocale()) ?: 'Data Import')
 
 @section('content')
 
@@ -56,11 +56,11 @@
                         </div>
                         <div style="flex:1;min-width:0;">
                             <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;">
-                                <span style="font-weight:600;font-size:.88rem;text-transform:capitalize;">{{ str_replace('_', ' ', $event->action) }}</span>
+                                <span style="font-weight:600;font-size:.88rem;text-transform:capitalize;">@enum($event->action)</span>
                                 <span style="font-size:.75rem;color:var(--p-text-muted);">{{ \Carbon\Carbon::parse($event->occurred_at)->format('M d, Y H:i:s') }}</span>
                             </div>
                             @if($event->actor_id)
-                                <div style="font-size:.78rem;color:var(--p-text-muted);margin-top:.15rem;">by {{ $event->actor_id }}</div>
+                                <div style="font-size:.78rem;color:var(--p-text-muted);margin-top:.15rem;">{{ __('staff_data.audit_by', ['id' => $event->actor_id], app()->getLocale()) ?: 'by '.$event->actor_id }}</div>
                             @endif
                             @if($event->details)
                                 <div style="margin-top:.4rem;font-size:.78rem;background:var(--p-surface-2,#f1f5f9);border-radius:var(--p-radius);padding:.4rem .6rem;font-family:monospace;overflow-x:auto;">

@@ -81,10 +81,10 @@
                         <span class="td-muted">{{ $referral->reason ?: '—' }}</span>
                     </td>
                     <td data-label="{{ __('public.pat_referral_col_urgency', [], $l) }}">
-                        <span class="badge {{ $urgencyBadge }}">{{ ucfirst($referral->urgency ?? 'routine') }}</span>
+                        <span class="badge {{ $urgencyBadge }}">@enum($referral->urgency ?? 'routine', 'urgency')</span>
                     </td>
                     <td data-label="{{ __('public.pat_referral_col_status', [], $l) }}">
-                        <span class="badge {{ $statusBadge }}">{{ ucfirst(str_replace('_', ' ', $referral->status ?? 'pending')) }}</span>
+                        <span class="badge {{ $statusBadge }}">@enum($referral->status ?? 'pending')</span>
                     </td>
                     <td data-label="{{ __('public.pat_referral_col_date', [], $l) }}">
                         <span class="td-muted">{{ $referral->created_at?->isoFormat('LL') ?? '—' }}</span>

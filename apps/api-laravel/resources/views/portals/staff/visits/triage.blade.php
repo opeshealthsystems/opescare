@@ -159,7 +159,7 @@
             default     => 'badge-neutral',
         };
     @endphp
-    <span class="badge {{ $statusBadge }}">{{ ucwords(str_replace('_', ' ', $visit->status)) }}</span>
+    <span class="badge {{ $statusBadge }}">@enum($visit->status)</span>
 </p>
 
 {{-- Emergency Banner --}}
@@ -176,7 +176,7 @@
     <i data-lucide="alert-triangle"></i>
     <div>
         <strong>{{ __('public.staff_portal.alert_critical_acuity', [], $l) ?: 'Critical acuity detected.' }}</strong>
-        <span>{{ __('public.staff_portal.col_acuity', [], $l) ?: 'Acuity' }}: {{ ucwords(str_replace('_',' ',$lastTriage->acuity_score)) }}</span>
+        <span>{{ __('public.staff_portal.col_acuity', [], $l) ?: 'Acuity' }}: @enum($lastTriage->acuity_score)</span>
     </div>
     <button type="button" class="btn btn-danger btn-sm" onclick="openEscalateModal()">{{ __('public.staff_portal.btn_escalate_emergency', [], $l) ?: 'Escalate to Emergency' }}</button>
 </div>
@@ -247,7 +247,7 @@
                             @if($hasCriticalVital)<span class="badge badge-critical">{{ __('public.staff_portal.alert_critical_acuity', [], $l) ?: 'Critical' }}</span>@endif
                         </td>
                         <td data-label="{{ __('public.staff_portal.col_complaint', [], $l) ?: 'Complaint' }}">{{ Str::limit($triage->presenting_complaint ?? '--', 50) }}</td>
-                        <td data-label="{{ __('public.staff_portal.col_acuity', [], $l) ?: 'Acuity' }}"><span class="badge {{ $acuityBadge }}">{{ ucwords(str_replace('_',' ',$triage->acuity_score ?? '--')) }}</span></td>
+                        <td data-label="{{ __('public.staff_portal.col_acuity', [], $l) ?: 'Acuity' }}"><span class="badge {{ $acuityBadge }}">@enum($triage->acuity_score ?? '--')</span></td>
                         <td data-label="{{ __('public.staff_portal.col_pain', [], $l) ?: 'Pain' }}">{{ $triage->pain_score !== null ? $triage->pain_score . '/10' : '--' }}</td>
                         <td data-label="{{ __('public.staff_portal.col_vitals', [], $l) ?: 'Vitals' }}" class="mono">
                             @if($v)
@@ -309,7 +309,7 @@
                 <div class="form-group">
                     <label class="form-label">{{ __('public.staff_portal.field_pregnancy_status', [], $l) ?: 'Pregnancy Status' }}</label>
                     <select name="pregnancy_status" class="form-control">
-                        <option value="">N/A</option>
+                        <option value="">{{ __('staff_clinical.opt_na', [], $l) ?: 'N/A' }}</option>
                         <option value="not_applicable">{{ __('public.staff_portal.opt_not_applicable', [], $l) ?: 'Not Applicable' }}</option>
                         <option value="not_pregnant">{{ __('public.staff_portal.opt_not_pregnant', [], $l) ?: 'Not Pregnant' }}</option>
                         <option value="pregnant">{{ __('public.staff_portal.opt_pregnant', [], $l) ?: 'Pregnant' }}</option>
@@ -409,11 +409,11 @@ document.getElementById('escalate-modal').addEventListener('click', function(e) 
 
 // Live vital sign range feedback + auto-acuity suggestion
 const ranges = {
-    v_spo2:  { critical: [0, 90],  warning: [90, 95],  label: 'SpO₂',       criticalNote: 'Severe hypoxia — suggest Resuscitation', warningNote: 'Low O₂ — suggest Critical' },
-    v_pulse: { critical: [[0,50],[150,400]], warning: [[50,60],[100,150]], label: 'Pulse', criticalNote: 'Extreme HR — suggest Critical', warningNote: 'Abnormal HR' },
-    v_sys:   { critical: [0, 90],  warning: [90, 100], label: 'BP Systolic', criticalNote: 'Hypotension — suggest Critical', warningNote: 'Low blood pressure' },
-    v_temp:  { critical: [[0,35],[40,50]], warning: [[35,36],[38.5,40]], label: 'Temp', criticalNote: 'Extreme temperature', warningNote: 'Abnormal temperature' },
-    v_rr:    { critical: [0, 8],   warning: [8, 12],   label: 'Resp. Rate',  criticalNote: 'Respiratory failure risk', warningNote: 'Abnormal breathing rate' },
+    v_spo2:  { critical: [0, 90],  warning: [90, 95],  label: @json(__('staff_clinical.vital_spo2', [], app()->getLocale()) ?: 'SpO₂'),       criticalNote: @json(__('staff_clinical.note_spo2_crit', [], app()->getLocale()) ?: 'Severe hypoxia — suggest Resuscitation'), warningNote: @json(__('staff_clinical.note_spo2_warn', [], app()->getLocale()) ?: 'Low O₂ — suggest Critical') },
+    v_pulse: { critical: [[0,50],[150,400]], warning: [[50,60],[100,150]], label: @json(__('staff_clinical.vital_pulse', [], app()->getLocale()) ?: 'Pulse'), criticalNote: @json(__('staff_clinical.note_pulse_crit', [], app()->getLocale()) ?: 'Extreme HR — suggest Critical'), warningNote: @json(__('staff_clinical.note_pulse_warn', [], app()->getLocale()) ?: 'Abnormal HR') },
+    v_sys:   { critical: [0, 90],  warning: [90, 100], label: @json(__('staff_clinical.vital_bp_sys', [], app()->getLocale()) ?: 'BP Systolic'), criticalNote: @json(__('staff_clinical.note_bp_crit', [], app()->getLocale()) ?: 'Hypotension — suggest Critical'), warningNote: @json(__('staff_clinical.note_bp_warn', [], app()->getLocale()) ?: 'Low blood pressure') },
+    v_temp:  { critical: [[0,35],[40,50]], warning: [[35,36],[38.5,40]], label: @json(__('staff_clinical.vital_temp', [], app()->getLocale()) ?: 'Temp'), criticalNote: @json(__('staff_clinical.note_temp_crit', [], app()->getLocale()) ?: 'Extreme temperature'), warningNote: @json(__('staff_clinical.note_temp_warn', [], app()->getLocale()) ?: 'Abnormal temperature') },
+    v_rr:    { critical: [0, 8],   warning: [8, 12],   label: @json(__('staff_clinical.vital_rr', [], app()->getLocale()) ?: 'Resp. Rate'),  criticalNote: @json(__('staff_clinical.note_rr_crit', [], app()->getLocale()) ?: 'Respiratory failure risk'), warningNote: @json(__('staff_clinical.note_rr_warn', [], app()->getLocale()) ?: 'Abnormal breathing rate') },
 };
 
 function checkRange(id) {

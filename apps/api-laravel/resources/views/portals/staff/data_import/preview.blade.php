@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Import — Preview & Validate')
+@section('title', __('staff_data.title_preview', [], app()->getLocale()) ?: 'Import — Preview & Validate')
 
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">{{ __('public.staff_portal.cdss_sidebar_role') }}</div>
@@ -22,9 +22,9 @@
         <i data-lucide="package"></i> {{ __('public.portal.nav_supply') }}</a>
 @endsection
 
-@section('breadcrumb_home', 'Staff Portal')
+@section('breadcrumb_home', __('staff_data.bc_home', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Data Import')
+@section('breadcrumb_section', __('staff_data.bc_section', [], app()->getLocale()) ?: 'Data Import')
 
 @section('content')
 
@@ -42,7 +42,7 @@
         <div class="panel-header">
             <h3 class="panel-title">{{ __('public.stf_import_validation_summary') }}</h3>
             <span class="badge {{ $job->status === 'validated' ? 'badge-success' : 'badge-danger' }}">
-                {{ ucwords(str_replace('_', ' ', $job->status)) }}
+                @enum($job->status)
             </span>
         </div>
         <div class="panel-body">
@@ -124,7 +124,7 @@
                     <form method="POST" action="{{ route('portals.staff.data_import.approve', $job->id) }}" class="inline-form">
                         @csrf
                         <button type="submit" class="btn btn-primary btn-sm"
-                            onclick="return confirm('Approve and execute this import? This will create {{ $job->valid_rows }} record(s).')">
+                            onclick="return confirm('{{ __('staff_data.confirm_approve', ['n' => $job->valid_rows], app()->getLocale()) ?: 'Approve and execute this import? This will create '.$job->valid_rows.' record(s).' }}')">
                             <i data-lucide="check-circle"></i>
                             {{ __('public.stf_import_approve_btn') }} {{ number_format($job->valid_rows) }} {{ __('public.stf_import_records_suffix') }}
                         </button>

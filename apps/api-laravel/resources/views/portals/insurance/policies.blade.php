@@ -122,13 +122,13 @@
                             </td>
                             <td data-label="{{ __('public.insurance_portal.policies_col_eligibility', [], $l) ?: 'Eligibility' }}">
                                 @if($eligibility)
-                                    <span class="badge {{ $eligBadge }}">{{ ucwords(str_replace('_',' ',$eligibility->status)) }}</span>
+                                    <span class="badge {{ $eligBadge }}">@enum($eligibility->status)</span>
                                 @else
                                     <span class="badge badge-neutral">{{ __('public.insurance_portal.policies_lbl_not_checked', [], $l) ?: 'Not Checked' }}</span>
                                 @endif
                             </td>
                             <td data-label="{{ __('public.insurance_portal.policies_col_status', [], $l) ?: 'Status' }}">
-                                <span class="badge {{ $statusBadge }}">{{ ucwords($policy->status) }}</span>
+                                <span class="badge {{ $statusBadge }}">@enum($policy->status)</span>
                             </td>
                             <td data-label="{{ __('public.insurance_portal.policies_col_actions', [], $l) ?: 'Actions' }}" class="row-actions">
                                 {{-- Eligibility check --}}

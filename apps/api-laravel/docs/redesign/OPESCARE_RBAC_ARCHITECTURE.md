@@ -131,7 +131,7 @@ optional `labtech`/`pharmacist`.
 `super_admin`, `platform_admin`, `system_admin`, `product_admin`,
 `country_admin`, `regional_admin`, plus platform-company functions
 (`security_officer`, `compliance_officer`, `support_agent`, `partner_admin`,
-`academy_admin`, …). Portal: **/portals/admin/** god-mode.
+…). Portal: **/portals/admin/** god-mode.
 
 ---
 

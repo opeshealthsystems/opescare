@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', __('public.adm_sub_idx_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', 'Admin')
@@ -74,7 +74,7 @@
                             @if($sub->billing_email)<div class="td-muted">{{ $sub->billing_email }}</div>@endif
                         </td>
                         <td data-label="{{ __('public.adm_sub_idx_col_plan') }}">
-                            <span class="td-strong">{{ $sub->plan->name ?? 'â€”' }}</span>
+                            <span class="td-strong">{{ $sub->plan->name ?? '—' }}</span>
                             @if($sub->plan)<div class="td-muted">{{ ucfirst($sub->plan->billing_cycle) }}</div>@endif
                         </td>
                         <td data-label="{{ __('public.adm_sub_idx_col_status') }}">
@@ -170,7 +170,7 @@
                     <select name="plan_id" class="form-control" required>
                         <option value="">{{ __('public.adm_sub_idx_ph_plan') }}</option>
                         @foreach($plans as $plan)
-                            <option value="{{ $plan->id }}">{{ $plan->name }} â€” {{ $plan->priceFormatted() }}/{{ $plan->billing_cycle }}</option>
+                            <option value="{{ $plan->id }}">{{ $plan->name }} — {{ $plan->priceFormatted() }}/{{ $plan->billing_cycle }}</option>
                         @endforeach
                     </select>
                 </div>

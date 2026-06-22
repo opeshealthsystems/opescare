@@ -5,14 +5,19 @@ namespace App\Http\Controllers\MedicalId;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Facility;
+use App\Models\ImmunizationRecord;
 use App\Models\Invoice;
 use App\Models\Patient;
 use App\Models\QueueTicket;
+use App\Models\ReferralCase;
 use App\Models\SupportTicket;
+use App\Models\VaccinationSchedule;
 use App\Modules\Appointments\Services\AppointmentService;
 use App\Modules\Billing\Services\BillingService;
 use App\Modules\Billing\Services\PaymentService;
+use App\Modules\Immunization\Services\ImmunizationService;
 use App\Modules\Queue\Services\QueueService;
+use App\Modules\Referral\Services\ReferralService;
 use App\Modules\Search\Services\GlobalSearchService;
 use App\Modules\Support\Services\SupportService;
 use App\Services\Portal\PortalContextService;
@@ -42,11 +47,40 @@ class StaffPortalController extends Controller
         $kpis = [
             'todays_appointments' => $apptQuery->count(),
             'in_queue'            => $queueQuery->count(),
-            'pending_referrals'   => DB::table('referral_cases')->where('status', 'draft')->count(),
+            'pending_referrals'   => ReferralCase::query()
+                ->where('status', 'draft')
+                ->when($this->ctx->facilityId(), function ($q) {
+                    $fid = $this->ctx->facilityId();
+                    $q->where(fn ($w) => $w->where('referring_facility_id', $fid)->orWhere('receiving_facility_id', $fid));
+                })
+                ->count(),
             'open_invoices'       => $invoiceQuery->count(),
         ];
 
-        return view('portals.staff.index', compact('kpis'));
+        // Patient verification — the dashboard "Verify Patient" form (GET) resolves
+        // a Health ID, surfaces the patient's identity + verification status, and
+        // logs the access for audit. Previously this form was inert (reloaded the
+        // dashboard without resolving anything).
+        $verification = null;
+        $healthId = trim((string) $request->input('health_id', ''));
+        if ($healthId !== '') {
+            $patient = Patient::where('health_id', $healthId)->first();
+            if ($patient) {
+                $this->ctx->auditPatientAccess(
+                    actionType:   'staff_patient_verification',
+                    resourceType: 'Patient',
+                    resourceId:   $patient->id,
+                    patientId:    $patient->id,
+                );
+            }
+            $verification = [
+                'health_id' => $healthId,
+                'purpose'   => $request->input('purpose'),
+                'patient'   => $patient,
+            ];
+        }
+
+        return view('portals.staff.index', compact('kpis', 'verification'));
     }
 
     // ─── Appointments ─────────────────────────────────────────────
@@ -486,102 +520,189 @@ class StaffPortalController extends Controller
 
     public function referrals(Request $request)
     {
-        return view('portals.staff.referrals.index', [
-            'referrals' => collect([]),
-        ]);
+        $facilityId = $this->ctx->facilityId();
+
+        $referrals = ReferralCase::query()
+            ->when($facilityId, fn ($q) => $q->where(function ($w) use ($facilityId) {
+                $w->where('referring_facility_id', $facilityId)
+                  ->orWhere('receiving_facility_id', $facilityId);
+            }))
+            ->when($request->filled('patient_id'), fn ($q) => $q->where('patient_id', $request->input('patient_id')))
+            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->input('status')))
+            ->when($request->filled('priority'), fn ($q) => $q->where('urgency', $request->input('priority')))
+            ->orderByDesc('created_at')
+            ->limit(100)
+            ->get();
+
+        return view('portals.staff.referrals.index', compact('referrals'));
     }
 
     public function referralsCreate(Request $request)
     {
-        return view('portals.staff.referrals.create');
+        return view('portals.staff.referrals.create', [
+            'facilityId' => $this->ctx->facilityId(),
+        ]);
     }
 
-    public function referralsStore(Request $request)
+    public function referralsStore(Request $request, ReferralService $service)
     {
-        $request->validate([
+        $validated = $request->validate([
             'patient_id'            => 'required|string',
             'urgency'               => 'required|in:routine,urgent,emergency',
             'referring_facility_id' => 'required|string',
+            'receiving_facility_id' => 'nullable|string',
+            'receiving_specialty'   => 'nullable|string|max:120',
             'reason'                => 'required|string|min:10',
+            'clinical_summary'      => 'nullable|string',
         ]);
+        $validated['created_by_id'] = $this->ctx->actorId();
 
-        return redirect()->route('portals.staff.referrals')
-            ->with('success', __('flash.referral_draft_created'));
+        try {
+            $referral = $service->create($validated);
+
+            return redirect()->route('portals.staff.referrals.show', $referral->id)
+                ->with('success', __('flash.referral_draft_created'));
+        } catch (Throwable $e) {
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
+        }
     }
 
     public function referralsShow(Request $request, $id)
     {
-        $referral = (object) [
-            'id'                    => $id,
-            'patient_id'            => 'DEMO-PATIENT-ID',
-            'status'                => 'draft',
-            'priority'              => 'routine',
-            'urgency'               => 'routine',
-            'referring_facility_id' => null,
-            'receiving_facility_id' => null,
-            'specialty'             => null,
-            'reason'                => 'Demo referral',
-            'clinical_summary'      => null,
-            'expires_at'            => null,
-            'created_at'            => now(),
-            'updated_at'            => now(),
-        ];
+        $referral = ReferralCase::with(['patient', 'referringFacility', 'receivingFacility'])
+            ->findOrFail($id);
 
         return view('portals.staff.referrals.show', compact('referral'));
     }
 
-    public function referralsSend(Request $request, $id)
+    public function referralsSend(Request $request, $id, ReferralService $service)
     {
-        return redirect()->route('portals.staff.referrals.show', $id)->with('success', __('flash.referral_sent'));
+        $referral = ReferralCase::findOrFail($id);
+
+        try {
+            $service->send($referral, $this->ctx->actorId());
+
+            return redirect()->route('portals.staff.referrals.show', $id)->with('success', __('flash.referral_sent'));
+        } catch (Throwable $e) {
+            return redirect()->route('portals.staff.referrals.show', $id)->with('error', $e->getMessage());
+        }
     }
 
-    public function referralsAccept(Request $request, $id)
+    public function referralsAccept(Request $request, $id, ReferralService $service)
     {
-        return redirect()->route('portals.staff.referrals.show', $id)->with('success', __('flash.referral_accepted'));
+        $referral = ReferralCase::findOrFail($id);
+
+        try {
+            $service->accept($referral, (string) $this->ctx->actorId());
+
+            return redirect()->route('portals.staff.referrals.show', $id)->with('success', __('flash.referral_accepted'));
+        } catch (Throwable $e) {
+            return redirect()->route('portals.staff.referrals.show', $id)->with('error', $e->getMessage());
+        }
     }
 
-    public function referralsReject(Request $request, $id)
+    public function referralsReject(Request $request, $id, ReferralService $service)
     {
-        return redirect()->route('portals.staff.referrals.show', $id)->with('success', __('flash.referral_rejected'));
+        $referral = ReferralCase::findOrFail($id);
+        $reason   = $request->input('reason') ?: __('flash.referral_rejected');
+
+        try {
+            $service->reject($referral, $reason);
+
+            return redirect()->route('portals.staff.referrals.show', $id)->with('success', __('flash.referral_rejected'));
+        } catch (Throwable $e) {
+            return redirect()->route('portals.staff.referrals.show', $id)->with('error', $e->getMessage());
+        }
     }
 
-    public function referralsComplete(Request $request, $id)
+    public function referralsComplete(Request $request, $id, ReferralService $service)
     {
-        return redirect()->route('portals.staff.referrals.show', $id)->with('success', __('flash.referral_completed'));
+        $referral = ReferralCase::findOrFail($id);
+
+        try {
+            $service->complete($referral, $request->input('feedback'));
+
+            return redirect()->route('portals.staff.referrals.show', $id)->with('success', __('flash.referral_completed'));
+        } catch (Throwable $e) {
+            return redirect()->route('portals.staff.referrals.show', $id)->with('error', $e->getMessage());
+        }
     }
 
-    public function referralsCancel(Request $request, $id)
+    public function referralsCancel(Request $request, $id, ReferralService $service)
     {
-        return redirect()->route('portals.staff.referrals')->with('success', __('flash.referral_cancelled'));
+        $referral = ReferralCase::findOrFail($id);
+        $reason   = $request->input('reason') ?: __('flash.referral_cancelled');
+
+        try {
+            $service->cancel($referral, $reason);
+
+            return redirect()->route('portals.staff.referrals')->with('success', __('flash.referral_cancelled'));
+        } catch (Throwable $e) {
+            return redirect()->route('portals.staff.referrals.show', $id)->with('error', $e->getMessage());
+        }
     }
 
     // ─── Immunizations ────────────────────────────────────────────
 
     public function immunizations(Request $request)
     {
-        return view('portals.staff.immunizations.index', [
-            'records'  => collect([]),
-            'schedule' => collect([]),
-        ]);
+        $facilityId     = $this->ctx->facilityId();
+        $patientId      = trim((string) $request->input('patient_id', ''));
+        $facilityFilter = trim((string) $request->input('facility_id', '')) ?: $facilityId;
+
+        $records = ImmunizationRecord::query()
+            ->where('status', '!=', 'entered_in_error')
+            ->when($facilityFilter, fn ($q) => $q->where('facility_id', $facilityFilter))
+            ->when($patientId !== '', fn ($q) => $q->where('patient_id', $patientId))
+            ->orderByDesc('administered_at')
+            ->limit(100)
+            ->get();
+
+        $schedule = VaccinationSchedule::query()
+            ->whereIn('status', ['due', 'overdue'])
+            ->when(
+                $patientId !== '',
+                fn ($q) => $q->where('patient_id', $patientId),
+                fn ($q) => $q->whereIn('patient_id', $records->pluck('patient_id')->unique()->all())
+            )
+            ->orderBy('due_date')
+            ->limit(100)
+            ->get();
+
+        return view('portals.staff.immunizations.index', compact('records', 'schedule'));
     }
 
     public function immunizationsRecord(Request $request)
     {
-        return view('portals.staff.immunizations.record');
+        return view('portals.staff.immunizations.record', [
+            'facilityId' => $this->ctx->facilityId(),
+        ]);
     }
 
-    public function immunizationsStore(Request $request)
+    public function immunizationsStore(Request $request, ImmunizationService $service)
     {
-        $request->validate([
+        $validated = $request->validate([
             'patient_id'      => 'required|string',
             'facility_id'     => 'required|string',
             'vaccine_code'    => 'required|string',
             'vaccine_name'    => 'required|string',
             'administered_at' => 'required|date',
             'status'          => 'required|in:completed,not_done',
+            'dose_number'     => 'nullable|integer|min:1',
+            'lot_number'      => 'nullable|string|max:100',
+            'route'           => 'nullable|string|max:50',
+            'site'            => 'nullable|string|max:50',
+            'not_done_reason' => 'nullable|string|max:255',
         ]);
+        $validated['administered_by_id'] = $this->ctx->actorId();
 
-        return redirect()->route('portals.staff.immunizations')->with('success', __('flash.immunization_saved'));
+        try {
+            $service->record($validated);
+
+            return redirect()->route('portals.staff.immunizations')->with('success', __('flash.immunization_saved'));
+        } catch (Throwable $e) {
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
+        }
     }
 
     // ─── Global Search ────────────────────────────────────────────

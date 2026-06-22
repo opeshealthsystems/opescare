@@ -38,7 +38,7 @@
         <div>
             <div class="mb-1">
                 <strong>{{ $alertLabel }}</strong>
-                <span class="badge badge-neutral">{{ str_replace('_',' ', $alert->alert_type) }}</span>
+                <span class="badge badge-neutral">@enum($alert->alert_type)</span>
             </div>
             <div>{{ $alert->alert_message }}</div>
             @if($alert->recommendation)

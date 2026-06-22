@@ -42,7 +42,7 @@
                 <div class="form-group">
                     <label class="form-label form-label-required">{{ __('public.developer_portal.col_use_case', [], $l) ?: 'Use case' }}</label>
                     <input type="text" name="use_case" value="{{ old('use_case') }}" required class="form-control"
-                           placeholder="e.g. Hospital Information System integration for patient record sync">
+                           placeholder="{{ __('dev_extra.ph_use_case', [], $l) ?: 'e.g. Hospital Information System integration for patient record sync' }}">
                     @error('use_case') <div class="form-hint">{{ $message }}</div> @enderror
                 </div>
 

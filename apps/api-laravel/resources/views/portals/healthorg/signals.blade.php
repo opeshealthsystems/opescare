@@ -38,14 +38,14 @@
                 @foreach($signals as $signal)
                 <tr>
                     <td data-label="{{ __('healthorg.col_signal') }}">
-                        <span class="td-strong">{{ ucfirst(str_replace('_',' ', $signal->signal_type)) }}{{ $signal->condition_code ? ' · ' . $signal->condition_code : '' }}</span>
+                        <span class="td-strong">@enum($signal->signal_type){{ $signal->condition_code ? ' · ' . $signal->condition_code : '' }}</span>
                         @if($signal->increase_percentage)<div class="td-muted">+{{ rtrim(rtrim((string) $signal->increase_percentage, '0'), '.') }}% {{ __('healthorg.vs_baseline') }}</div>@endif
                     </td>
                     <td data-label="{{ __('healthorg.col_severity') }}">
-                        <span class="badge badge-{{ match($signal->severity ?? '') { 'critical' => 'danger', 'high' => 'warning', default => 'neutral' } }}">{{ ucfirst($signal->severity ?? '—') }}</span>
+                        <span class="badge badge-{{ match($signal->severity ?? '') { 'critical' => 'danger', 'high' => 'warning', default => 'neutral' } }}">@enum($signal->severity, 'severity')</span>
                     </td>
                     <td data-label="{{ __('healthorg.field_status') }}">
-                        <span class="badge badge-{{ match($signal->status ?? '') { 'confirmed','escalated' => 'danger', 'reviewed' => 'warning', 'resolved' => 'success', 'dismissed' => 'neutral', default => 'primary' } }}">{{ ucfirst(str_replace('_',' ', $signal->status ?? '—')) }}</span>
+                        <span class="badge badge-{{ match($signal->status ?? '') { 'confirmed','escalated' => 'danger', 'reviewed' => 'warning', 'resolved' => 'success', 'dismissed' => 'neutral', default => 'primary' } }}">@enum($signal->status)</span>
                     </td>
                     <td data-label="{{ __('healthorg.col_detected') }}"><span class="td-muted">{{ $signal->detected_at?->isoFormat('lll') ?? $signal->created_at?->isoFormat('lll') ?? '—' }}</span></td>
                     <td class="row-actions">

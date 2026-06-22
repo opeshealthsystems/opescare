@@ -73,10 +73,10 @@
                         </span>
                     </td>
                     <td data-label="{{ __('public.portal.col_severity', [], $l) ?: 'Severity' }}">
-                        <span class="badge {{ $sevCls }}">{{ ucfirst($allergy->severity ?? 'unknown') }}</span>
+                        <span class="badge {{ $sevCls }}">@enum($allergy->severity ?? 'unknown', 'severity')</span>
                     </td>
                     <td data-label="{{ __('public.portal.col_status', [], $l) ?: 'Status' }}">
-                        <span class="badge {{ $allergy->status === 'active' ? 'badge-success' : 'badge-neutral' }}">{{ ucfirst($allergy->status ?? 'active') }}</span>
+                        <span class="badge {{ $allergy->status === 'active' ? 'badge-success' : 'badge-neutral' }}">@enum($allergy->status ?? 'active')</span>
                     </td>
                     <td data-label="{{ __('public.portal.col_recorded', [], $l) ?: 'Recorded' }}">
                         <span class="td-muted">{{ $allergy->created_at?->format('d M Y') ?? '—' }}</span>

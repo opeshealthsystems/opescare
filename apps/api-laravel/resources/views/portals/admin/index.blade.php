@@ -1,6 +1,6 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 
-@section('title', __('public.admin_governance.page_meta_title', [], app()->getLocale()) ?: 'Admin Governance Portal â€” OpesCare')
+@section('title', __('public.admin_governance.page_meta_title', [], app()->getLocale()) ?: 'Admin Governance Portal — OpesCare')
 
 @section('breadcrumb_home', __('public.admin_governance.breadcrumb_home', [], app()->getLocale()) ?: 'Admin Portal')
 @section('breadcrumb_home_url', route('portals.admin'))
@@ -28,34 +28,34 @@
 <div class="stat-grid mb-6" style="--cols:4">
   <a href="{{ route('portals.admin.facilities.index') }}" class="stat-card">
     <div class="stat-card__icon"><i data-lucide="hospital"></i></div>
-    <div class="stat-card__value">{{ $platformStats['facilities'] ?? 'â€”' }}</div>
+    <div class="stat-card__value">{{ $platformStats['facilities'] ?? '—' }}</div>
     <div class="stat-card__label">{{ __('public.admin_governance.stat_total_facilities', [], app()->getLocale()) ?: 'Total Facilities' }}</div>
   </a>
   <a href="{{ route('portals.admin.organizations.index') }}" class="stat-card">
     <div class="stat-card__icon"><i data-lucide="building-2"></i></div>
-    <div class="stat-card__value">{{ $platformStats['organizations'] ?? 'â€”' }}</div>
+    <div class="stat-card__value">{{ $platformStats['organizations'] ?? '—' }}</div>
     <div class="stat-card__label">{{ __('public.admin_governance.stat_organizations', [], app()->getLocale()) ?: 'Organizations' }}</div>
   </a>
   <a href="{{ route('portals.admin.subscription') }}" class="stat-card">
     <div class="stat-card__icon"><i data-lucide="credit-card"></i></div>
-    <div class="stat-card__value">{{ $platformStats['active_subscriptions'] ?? 'â€”' }}</div>
+    <div class="stat-card__value">{{ $platformStats['active_subscriptions'] ?? '—' }}</div>
     <div class="stat-card__label">{{ __('public.admin_governance.stat_active_subscriptions', [], app()->getLocale()) ?: 'Active Subscriptions' }}</div>
   </a>
   <a href="{{ route('portals.admin.support.index') }}" class="stat-card">
     <div class="stat-card__icon"><i data-lucide="life-buoy"></i></div>
-    <div class="stat-card__value">{{ $platformStats['open_tickets'] ?? 'â€”' }}</div>
+    <div class="stat-card__value">{{ $platformStats['open_tickets'] ?? '—' }}</div>
     <div class="stat-card__label">{{ __('public.admin_governance.stat_open_tickets', [], app()->getLocale()) ?: 'Open Support Tickets' }}</div>
   </a>
 </div>
 <div class="stat-grid mb-6" style="--cols:3">
   <a href="{{ route('portals.admin.users.index') }}" class="stat-card">
     <div class="stat-card__icon"><i data-lucide="users"></i></div>
-    <div class="stat-card__value">{{ $platformStats['total_users'] ?? 'â€”' }}</div>
+    <div class="stat-card__value">{{ $platformStats['total_users'] ?? '—' }}</div>
     <div class="stat-card__label">{{ __('public.admin_governance.stat_total_users', [], app()->getLocale()) ?: 'Total Users' }}</div>
   </a>
   <a href="{{ route('portals.admin.onboarding') }}" class="stat-card">
     <div class="stat-card__icon"><i data-lucide="rocket"></i></div>
-    <div class="stat-card__value">{{ $platformStats['pending_onboarding'] ?? 'â€”' }}</div>
+    <div class="stat-card__value">{{ $platformStats['pending_onboarding'] ?? '—' }}</div>
     <div class="stat-card__label">{{ __('public.admin_governance.stat_pending_onboarding', [], app()->getLocale()) ?: 'Pending Onboardings' }}</div>
   </a>
   <a href="{{ route('portals.admin.financial.index') }}" class="stat-card">
@@ -101,36 +101,6 @@
     </div>
 </div>
 
-@if(isset($facility) && $facility)
-<!-- Clinical Register Quick Links (visible to hospital_admin / clinic_admin) -->
-<div class="panel mb-6">
-    <div class="panel-header">
-        <h3 class="panel-title"><i data-lucide="stethoscope"></i> {{ __('public.admin_governance.section_clinical_register', [], app()->getLocale()) ?: 'Clinical Register' }}</h3>
-    </div>
-    <div class="panel-body row-actions-inline">
-        <a href="{{ route('portals.admin.clinical.prescriptions') }}" class="btn btn-secondary">
-            <i data-lucide="clipboard-list"></i>
-            {{ __('public.admin_governance.btn_prescription_register', [], app()->getLocale()) ?: 'Prescription Register' }}
-        </a>
-        <a href="{{ route('portals.admin.clinical.lab_orders') }}" class="btn btn-secondary">
-            <i data-lucide="microscope"></i>
-            {{ __('public.admin_governance.btn_lab_orders_register', [], app()->getLocale()) ?: 'Lab Orders Register' }}
-        </a>
-        <a href="{{ route('portals.staff.analytics') }}" class="btn btn-secondary">
-            <i data-lucide="bar-chart-2"></i>
-            {{ __('public.admin_governance.btn_analytics', [], app()->getLocale()) ?: 'Analytics' }}
-        </a>
-        <a href="{{ route('portals.staff.wards') }}" class="btn btn-secondary">
-            <i data-lucide="bed"></i>
-            {{ __('public.admin_governance.btn_wards', [], app()->getLocale()) ?: 'Wards & Admissions' }}
-        </a>
-        <a href="{{ route('portals.staff.billing') }}" class="btn btn-secondary">
-            <i data-lucide="receipt"></i>
-            {{ __('public.admin_governance.btn_billing', [], app()->getLocale()) ?: 'Billing' }}
-        </a>
-    </div>
-</div>
-@endif
 
 <!-- Partner Governance -->
 <div class="panel mb-6" id="partners">
@@ -155,7 +125,7 @@
                 <tr>
                     <td colspan="5" class="td-muted empty-cell">
                         <i data-lucide="loader" class="spin"></i>
-                        {{ __('public.admin_governance.loading_partners', [], app()->getLocale()) ?: 'Loading partnersâ€¦' }}
+                        {{ __('public.admin_governance.loading_partners', [], app()->getLocale()) ?: 'Loading partners…' }}
                     </td>
                 </tr>
             </tbody>
@@ -185,7 +155,7 @@
                 <tr>
                     <td colspan="4" class="td-muted empty-cell">
                         <i data-lucide="loader" class="spin"></i>
-                        {{ __('public.admin_governance.loading_cases', [], app()->getLocale()) ?: 'Loading pending casesâ€¦' }}
+                        {{ __('public.admin_governance.loading_cases', [], app()->getLocale()) ?: 'Loading pending cases…' }}
                     </td>
                 </tr>
             </tbody>
@@ -227,7 +197,7 @@
                         <span class="td-mono">{{ $log->health_id ?? __('public.admin_governance.lbl_unknown', [], app()->getLocale()) ?: 'Unknown' }}</span>
                     </td>
                     <td data-label="{{ __('public.admin_governance.col_actor', [], app()->getLocale()) ?: 'Actor' }}">
-                        <span class="td-muted">{{ $log->actor_type ?? 'â€”' }}</span>
+                        <span class="td-muted">{{ $log->actor_type ?? '—' }}</span>
                         @if(!empty($log->ip_address))
                         <div class="td-muted code-muted">{{ $log->ip_address }}</div>
                         @endif
@@ -291,7 +261,7 @@
 
         <div class="form-group mb-4">
             <label class="form-label" for="review-reason">{{ __('public.admin_governance.lbl_reviewer_notes', [], app()->getLocale()) ?: 'Reviewer Notes (Optional)' }}</label>
-            <textarea id="review-reason" rows="2" class="form-control" placeholder="{{ __('public.admin_governance.lbl_reviewer_notes_ph', [], app()->getLocale()) ?: 'e.g. Verified via National IDâ€¦' }}"></textarea>
+            <textarea id="review-reason" rows="2" class="form-control" placeholder="{{ __('public.admin_governance.lbl_reviewer_notes_ph', [], app()->getLocale()) ?: 'e.g. Verified via National ID…' }}"></textarea>
         </div>
 
         <div class="modal__footer">
@@ -325,7 +295,7 @@ var _ag = {
     alertErrSuspending:@json(__('public.admin_governance.js_alert_error_suspending', [], app()->getLocale()) ?: 'Error suspending partner.'),
     alertErrResolve:   @json(__('public.admin_governance.js_alert_error_resolve',    [], app()->getLocale()) ?: 'An error occurred while resolving the case.'),
     alertNetworkError: @json(__('public.admin_governance.js_alert_network_error',    [], app()->getLocale()) ?: 'Network error. Please try again.'),
-    lblProcessing:     @json(__('public.admin_governance.lbl_processing',        [], app()->getLocale()) ?: 'Processingâ€¦'),
+    lblProcessing:     @json(__('public.admin_governance.lbl_processing',        [], app()->getLocale()) ?: 'Processing…'),
     col_match_score:      @json(__('public.admin_governance.col_match_score',      [], app()->getLocale()) ?: 'Match Score'),
     col_primary_patient:  @json(__('public.admin_governance.col_primary_patient',  [], app()->getLocale()) ?: 'Primary Patient'),
     col_secondary_patient:@json(__('public.admin_governance.col_secondary_patient',[], app()->getLocale()) ?: 'Secondary Patient'),

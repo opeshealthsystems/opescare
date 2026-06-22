@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Clinical Alert History — ' . ($patient->full_name ?? $patient->name ?? 'Patient'))
+@section('title', __('staff_analytics.cdss_title_patient', ['name' => $patient->full_name ?? $patient->name ?? 'Patient'], app()->getLocale()) ?: 'Clinical Alert History — ' . ($patient->full_name ?? $patient->name ?? 'Patient'))
 @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
 
 @section('content')
@@ -45,10 +45,10 @@
                     @forelse($alerts as $alert)
                         <tr>
                             <td data-label="{{ __('public.staff_portal.cdss_patient_col_severity') }}">
-                                <span class="badge badge-{{ $alert->severityColor() }}">{{ ucfirst($alert->severity) }}</span>
+                                <span class="badge badge-{{ $alert->severityColor() }}">@enum($alert->severity, 'severity')</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.cdss_patient_col_type') }}">
-                                <span class="badge badge-neutral">{{ str_replace('_',' ', $alert->alert_type) }}</span>
+                                <span class="badge badge-neutral">@enum($alert->alert_type)</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.cdss_patient_col_message') }}">
                                 {{ Str::limit($alert->alert_message, 120) }}

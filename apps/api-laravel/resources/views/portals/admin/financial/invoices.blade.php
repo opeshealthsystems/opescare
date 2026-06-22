@@ -1,7 +1,7 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', __('public.adm_fin_inv_title'))
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin')
+@section('breadcrumb_home', __('admin_extra.breadcrumb_admin', [], app()->getLocale()) ?: 'Admin')
 @section('breadcrumb_home_url', route('portals.admin'))
 @section('breadcrumb_section', __('public.adm_fin_inv_breadcrumb'))
 @section('content')
@@ -46,20 +46,20 @@
         <i data-lucide="calendar"></i>
         <input type="date" name="to_date" value="{{ request('to_date') }}" aria-label="{{ __('public.aria_to_date') }}">
     </label>
-    <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> Filter</button>
-    <a href="{{ route('portals.admin.financial.invoices') }}" class="btn btn-ghost btn-sm">Reset</a>
+    <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> {{ __('admin_extra.btn_filter', [], app()->getLocale()) ?: 'Filter' }}</button>
+    <a href="{{ route('portals.admin.financial.invoices') }}" class="btn btn-ghost btn-sm">{{ __('admin_extra.btn_reset', [], app()->getLocale()) ?: 'Reset' }}</a>
 </form>
 
 <div class="panel">
-    <div class="panel-header"><h3 class="panel-title"><i data-lucide="file-text"></i> {{ $invoices->total() }} invoices</h3></div>
+    <div class="panel-header"><h3 class="panel-title"><i data-lucide="file-text"></i> {{ __('admin_extra.count_invoices', ['n' => $invoices->total()], app()->getLocale()) ?: $invoices->total().' invoices' }}</h3></div>
     <div class="table-wrapper"><table class="data-table"><thead><tr>
         <th>{{ __('public.adm_fin_inv_col_invoice') }}</th><th>{{ __('public.adm_fin_inv_col_patient') }}</th><th>{{ __('public.adm_fin_inv_col_facility') }}</th><th>{{ __('public.adm_fin_inv_col_subtotal') }}</th><th>{{ __('public.adm_fin_inv_col_paid') }}</th><th>{{ __('public.adm_fin_inv_col_balance') }}</th><th>{{ __('public.adm_fin_inv_col_status') }}</th><th>{{ __('public.adm_fin_inv_col_issued') }}</th><th class="row-actions">{{ __('public.adm_fin_inv_col_actions') }}</th>
     </tr></thead><tbody>
     @forelse($invoices as $inv)
     <tr>
         <td data-label="{{ __('public.adm_fin_inv_col_invoice') }}"><span class="mono">{{ $inv->invoice_number }}</span></td>
-        <td data-label="{{ __('public.adm_fin_inv_col_patient') }}">{{ $inv->patient?->first_name.' '.$inv->patient?->last_name ?? 'â€”' }}<br><span class="td-muted">{{ $inv->patient?->health_id }}</span></td>
-        <td data-label="{{ __('public.adm_fin_inv_col_facility') }}">{{ $inv->facility?->name ?? 'â€”' }}</td>
+        <td data-label="{{ __('public.adm_fin_inv_col_patient') }}">{{ $inv->patient?->first_name.' '.$inv->patient?->last_name ?? '—' }}<br><span class="td-muted">{{ $inv->patient?->health_id }}</span></td>
+        <td data-label="{{ __('public.adm_fin_inv_col_facility') }}">{{ $inv->facility?->name ?? '—' }}</td>
         <td data-label="{{ __('public.adm_fin_inv_col_subtotal') }}">{{ number_format($inv->subtotal_amount,0,'.',',') }}</td>
         <td data-label="{{ __('public.adm_fin_inv_col_paid') }}">{{ number_format($inv->paid_amount ?? 0,0,'.',',') }}</td>
         <td data-label="{{ __('public.adm_fin_inv_col_balance') }}">{{ number_format($inv->balance_amount ?? 0,0,'.',',') }}</td>
@@ -70,7 +70,7 @@
             @elseif($inv->status==='overdue')<span class="badge badge-danger">{{ __('public.adm_fin_inv_badge_overdue') }}</span>
             @else<span class="badge badge-warning">{{ ucfirst($inv->status) }}</span>@endif
         </td>
-        <td data-label="{{ __('public.adm_fin_inv_col_issued') }}">{{ $inv->issued_at?->format('d M Y') ?? 'â€”' }}</td>
+        <td data-label="{{ __('public.adm_fin_inv_col_issued') }}">{{ $inv->issued_at?->format('d M Y') ?? '—' }}</td>
         <td class="row-actions" data-label="{{ __('public.adm_fin_inv_col_actions') }}">
             <div class="row-actions-inline">
                 @if(in_array($inv->status,['draft','unpaid']))
@@ -117,7 +117,8 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">{{ __('public.adm_fin_inv_lbl_gateway') }}</label>
-                        <select name="method" class="form-control">@foreach(['cash'=>'Cash','mtn_momo'=>'MTN MoMo','orange_money'=>'Orange Money','card'=>'Card','insurance'=>'Insurance','bank_transfer'=>'Bank Transfer'] as $k=>$l)<option value="{{ $k }}">{{ $l }}</option>@endforeach</select>
+                        @php $methodLabels=['cash'=>__('admin_extra.opt_cash', [], app()->getLocale()) ?: 'Cash','mtn_momo'=>'MTN MoMo','orange_money'=>'Orange Money','card'=>__('admin_extra.opt_card', [], app()->getLocale()) ?: 'Card','insurance'=>__('admin_extra.opt_insurance', [], app()->getLocale()) ?: 'Insurance','bank_transfer'=>__('admin_extra.opt_bank_transfer', [], app()->getLocale()) ?: 'Bank Transfer']; @endphp
+                        <select name="method" class="form-control">@foreach($methodLabels as $k=>$l)<option value="{{ $k }}">{{ $l }}</option>@endforeach</select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">{{ __('public.adm_fin_inv_lbl_payer_phone') }}</label>

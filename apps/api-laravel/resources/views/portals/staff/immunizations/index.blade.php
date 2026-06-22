@@ -1,6 +1,6 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 
-@section('title', __('public.stf_immun_title') . ' â€” OpesCare Staff Portal')
+@section('title', __('public.stf_immun_title') . ' — OpesCare Staff Portal')
 
 @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
@@ -68,7 +68,7 @@
                         @foreach($records as $record)
                         <tr>
                             <td data-label="{{ __('public.stf_immun_col_vaccine') }}">
-                                <span class="td-strong">{{ $record->vaccine_name ?? 'â€”' }}</span>
+                                <span class="td-strong">{{ $record->vaccine_name ?? '—' }}</span>
                                 @if(!empty($record->vaccine_code))
                                 <div class="td-muted">{{ $record->vaccine_code }}</div>
                                 @endif
@@ -78,7 +78,7 @@
                             </td>
                             <td data-label="{{ __('public.stf_immun_col_date_given') }}">
                                 <span class="td-muted">
-                                    {{ $record->administered_at ? \Carbon\Carbon::parse($record->administered_at)->format('d M Y') : 'â€”' }}
+                                    {{ $record->administered_at ? \Carbon\Carbon::parse($record->administered_at)->format('d M Y') : '—' }}
                                 </span>
                             </td>
                             <td data-label="{{ __('public.stf_immun_col_dose') }}">
@@ -93,7 +93,7 @@
                                         default      => 'badge-warning',
                                     };
                                 @endphp
-                                <span class="badge {{ $stCls }}">{{ ucfirst($record->status ?? 'completed') }}</span>
+                                <span class="badge {{ $stCls }}">@enum($record->status ?? 'completed')</span>
                             </td>
                         </tr>
                         @endforeach
@@ -134,15 +134,15 @@
                         @foreach($schedule as $item)
                         <tr>
                             <td data-label="{{ __('public.stf_immun_col_vaccine') }}">
-                                <span class="td-strong">{{ $item->vaccine_name ?? 'â€”' }}</span>
-                                <div class="td-muted">Dose {{ $item->dose_number ?? '1' }}</div>
+                                <span class="td-strong">{{ $item->vaccine_name ?? '—' }}</span>
+                                <div class="td-muted">{{ __('staff_clinical.lbl_dose_n', ['n' => $item->dose_number ?? '1'], app()->getLocale()) ?: ('Dose ' . ($item->dose_number ?? '1')) }}</div>
                             </td>
                             <td data-label="{{ __('public.stf_immun_col_patient') }}">
                                 <span class="td-mono">{{ $item->patient_id }}</span>
                             </td>
                             <td data-label="{{ __('public.stf_immun_col_due_date') }}">
                                 <span class="td-muted">
-                                    {{ $item->scheduled_date ? \Carbon\Carbon::parse($item->scheduled_date)->format('d M Y') : 'â€”' }}
+                                    {{ $item->due_date ? \Carbon\Carbon::parse($item->due_date)->format('d M Y') : '—' }}
                                 </span>
                             </td>
                             <td data-label="{{ __('public.stf_immun_col_status') }}">
@@ -153,7 +153,7 @@
                                         default   => 'badge-neutral',
                                     };
                                 @endphp
-                                <span class="badge {{ $stCls }}">{{ ucfirst($item->status ?? 'due') }}</span>
+                                <span class="badge {{ $stCls }}">@enum($item->status ?? 'due')</span>
                             </td>
                         </tr>
                         @endforeach

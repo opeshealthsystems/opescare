@@ -26,7 +26,7 @@
                 <div>
                     <div class="health-id-meta-label">{{ __('public.portal.status', [], app()->getLocale()) ?: 'Status' }}</div>
                     <div class="health-id-meta-value">
-                        {{ ucfirst(($patient->verification_status instanceof \BackedEnum ? $patient->verification_status->value : $patient->verification_status) ?? 'Active') }}
+                        @enum(($patient->verification_status instanceof \BackedEnum ? $patient->verification_status->value : $patient->verification_status) ?? 'Active', 'verification')
                     </div>
                 </div>
                 <div>
@@ -157,10 +157,10 @@
       <tbody>
       @foreach($upcomingAppointments->take(3) as $appt)
       <tr>
-        <td data-label="Date">{{ $appt->appointment_date?->format('d M Y, H:i') ?? '—' }}</td>
-        <td data-label="Doctor">{{ $appt->doctor?->user?->name ?? '—' }}</td>
+        <td data-label="Date">{{ $appt->scheduled_at?->format('d M Y, H:i') ?? '—' }}</td>
+        <td data-label="Doctor">{{ $appt->provider?->name ?? '—' }}</td>
         <td data-label="Facility">{{ $appt->facility?->name ?? '—' }}</td>
-        <td data-label="Type"><span class="badge badge-info">{{ ucfirst($appt->type ?? 'consultation') }}</span></td>
+        <td data-label="Type"><span class="badge badge-info">@enum($appt->appointment_type ?? 'consultation')</span></td>
       </tr>
       @endforeach
       </tbody>

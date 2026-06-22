@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Financial Analytics')
+@section('title', __('staff_analytics.title_financial', [], app()->getLocale()) ?: 'Financial Analytics')
 @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
 
 @section('content')
@@ -67,7 +67,7 @@
                             <tr>
                                 <td data-label="{{ __('public.stf_analytics_fin_col_mode') }}">
                                     <span class="badge badge--info">
-                                        {{ ucfirst(str_replace('_', ' ', $row->payment_mode ?? 'Unknown')) }}
+                                        @enum($row->payment_mode ?? 'Unknown')
                                     </span>
                                 </td>
                                 <td data-label="{{ __('public.stf_analytics_fin_col_txns') }}">{{ number_format($row->cnt) }}</td>

@@ -55,6 +55,14 @@
         <div class="stat-card__label">{{ __('public.healthorg_portal.stat_submitted_reports', [], app()->getLocale()) ?: 'Submitted Reports' }}</div>
         <div class="stat-card__value">{{ $stats['reports_sent'] ?? 0 }}</div>
     </a>
+    <a href="{{ route('portals.healthorg.outreach') }}" class="stat-card stat-card--info">
+        <div class="stat-card__label">{{ __('public.healthorg_portal.stat_outreach', [], app()->getLocale()) ?: 'Active Outreach' }}</div>
+        <div class="stat-card__value">{{ $stats['outreach'] ?? 0 }}</div>
+    </a>
+    <a href="{{ route('portals.healthorg.signals') }}" class="stat-card stat-card--danger">
+        <div class="stat-card__label">{{ __('public.healthorg_portal.stat_signals_open', [], app()->getLocale()) ?: 'Open Signals' }}</div>
+        <div class="stat-card__value">{{ $stats['signals_open'] ?? 0 }}</div>
+    </a>
 </div>
 
 {{-- Quick Actions --}}

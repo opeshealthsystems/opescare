@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', __('public.stf_supply_items_title') . ' — Supply Chain')
+@section('title', __('public.stf_supply_items_title') . (__('staff_inv.title_suffix', [], app()->getLocale()) ?: ' — Supply Chain'))
 @section('sidebar') @include('portals.staff.supply_chain._sidebar') @endsection
 
 @section('content')
@@ -71,7 +71,7 @@
                                 @if($item->track_expiry)
                                     <span class="badge badge-success">{{ __('public.stf_supply_items_badge_yes') }}</span>
                                 @else
-                                    <span class="td-muted">No</span>
+                                    <span class="td-muted">{{ __('staff_inv.badge_no', [], app()->getLocale()) ?: 'No' }}</span>
                                 @endif
                             </td>
                             <td data-label="{{ __('public.stf_supply_items_col_status') }}"><span class="badge badge--{{ $item->status === 'active' ? 'success' : 'warning' }}">{{ $item->status }}</span></td>

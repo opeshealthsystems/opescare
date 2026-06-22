@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Blood Bank Inventory')
+@section('title', __('staff_inv.title_blood', [], app()->getLocale()) ?: 'Blood Bank Inventory')
 
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
@@ -20,7 +20,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Clinical</div>
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
         <i data-lucide="calendar-check-2"></i>
         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
@@ -39,7 +39,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">HR & Staff</div>
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_hr', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
         <i data-lucide="users"></i>
         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
@@ -58,7 +58,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Inventory</div>
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
         <i data-lucide="pill"></i>
         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
@@ -69,14 +69,14 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Supply Chain</div>
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
         <i data-lucide="package"></i>
-        <span>Supply Chain</span>
+        <span>{{ __('staff_inv.nav_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Operations</div>
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>
         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
@@ -106,7 +106,7 @@
 
 @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Blood Bank')
+@section('breadcrumb_section', __('staff_inv.breadcrumb_blood', [], app()->getLocale()) ?: 'Blood Bank')
 
 @section('content')
 
@@ -162,7 +162,7 @@
     <select name="component" class="filter-select">
         <option value="">{{ __('public.stf_inv_blood_all_components') }}</option>
         @foreach(['whole_blood','packed_red_cells','fresh_frozen_plasma','platelets'] as $c)
-            <option value="{{ $c }}" {{ request('component') === $c ? 'selected' : '' }}>{{ ucwords(str_replace('_',' ',$c)) }}</option>
+            <option value="{{ $c }}" {{ request('component') === $c ? 'selected' : '' }}>@enum($c, 'blood_component')</option>
         @endforeach
     </select>
     <button type="submit" class="btn btn-primary btn-sm">
@@ -203,7 +203,7 @@
                                 <span class="td-strong">{{ $item->blood_group }}</span>
                             </td>
                             <td data-label="{{ __('public.stf_inv_blood_col_component') }}">
-                                <span class="badge badge-neutral">{{ ucwords(str_replace('_',' ',$item->component)) }}</span>
+                                <span class="badge badge-neutral">@enum($item->component)</span>
                             </td>
                             <td data-label="{{ __('public.stf_inv_blood_col_units') }}">
                                 <span class="badge {{ $qtyBadge }}">{{ $item->available_units }}</span> {{ __('public.stf_inv_blood_units_label') }}
@@ -268,7 +268,7 @@
                         <label class="form-label">{{ __('public.stf_inv_blood_lbl_component') }}</label>
                         <select name="component" class="form-control" required>
                             @foreach(['whole_blood','packed_red_cells','fresh_frozen_plasma','platelets'] as $c)
-                                <option value="{{ $c }}">{{ ucwords(str_replace('_',' ',$c)) }}</option>
+                                <option value="{{ $c }}">@enum($c, 'blood_component')</option>
                             @endforeach
                         </select>
                     </div>
@@ -349,12 +349,12 @@
 
     function openAdjustModal(id, group, component, direction) {
         document.getElementById('adjust-label').textContent = group + ' · ' + component.replace(/_/g,' ');
-        document.getElementById('adjust-title').textContent = direction === 'add' ? 'Add Units' : 'Use Units';
+        document.getElementById('adjust-title').textContent = direction === 'add' ? '{{ __('staff_inv.js_add_units', [], app()->getLocale()) ?: 'Add Units' }}' : '{{ __('staff_inv.js_use_units', [], app()->getLocale()) ?: 'Use Units' }}';
         document.getElementById('adjust-direction').value = direction;
         document.getElementById('adjust-form').action = bloodBase + '/' + id + '/adjust';
         var btn = document.getElementById('adjust-btn');
         btn.className = direction === 'add' ? 'btn btn-primary btn-sm' : 'btn btn-warning btn-sm';
-        btn.textContent = direction === 'add' ? 'Add' : 'Use';
+        btn.textContent = direction === 'add' ? '{{ __('staff_inv.js_add', [], app()->getLocale()) ?: 'Add' }}' : '{{ __('staff_inv.js_use', [], app()->getLocale()) ?: 'Use' }}';
         document.getElementById('adjust-modal').removeAttribute('hidden');
     }
     function closeAdjustModal() { document.getElementById('adjust-modal').setAttribute('hidden',''); }

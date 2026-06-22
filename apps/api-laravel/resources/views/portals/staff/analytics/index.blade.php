@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Analytics Dashboard')
+@section('title', __('staff_analytics.title_dashboard', [], app()->getLocale()) ?: 'Analytics Dashboard')
 
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
@@ -145,7 +145,7 @@
     <div class="stat-card stat-card--primary">
         <div class="stat-card__head"><i data-lucide="stethoscope"></i> <span class="stat-card__label">{{ __('public.stf_analytics_kpi_visits') }}</span></div>
         <div class="stat-card__value">{{ number_format($visits['total']) }}</div>
-        <div class="stat-card__hint">{{ $visits['completed'] }} done · {{ $visits['active'] }} active</div>
+        <div class="stat-card__hint">{{ __('staff_analytics.visits_hint', ['done' => $visits['completed'], 'active' => $visits['active']], app()->getLocale()) ?: $visits['completed'] . ' done · ' . $visits['active'] . ' active' }}</div>
     </div>
 
     {{-- Appointments --}}
@@ -166,9 +166,9 @@
         <div class="stat-card__head"><i data-lucide="trending-up"></i> <span class="stat-card__label">{{ __('public.stf_analytics_kpi_collected') }}</span></div>
         <div class="stat-card__value">{{ number_format($revenue['total_collected'], 0) }}</div>
         <div class="stat-card__hint">
-            of {{ number_format($revenue['total_invoiced'], 0) }} invoiced
+            {{ __('staff_analytics.revenue_of_invoiced', ['amount' => number_format($revenue['total_invoiced'], 0)], app()->getLocale()) ?: 'of ' . number_format($revenue['total_invoiced'], 0) . ' invoiced' }}
             @if($revenue['collection_rate'] !== null)
-                · {{ $revenue['collection_rate'] }}%
+                · {{ __('staff_analytics.revenue_rate_suffix', ['rate' => $revenue['collection_rate']], app()->getLocale()) ?: $revenue['collection_rate'] . '%' }}
             @endif
         </div>
     </div>
@@ -177,14 +177,14 @@
     <div class="stat-card {{ $revenue['total_outstanding'] > 0 ? 'stat-card--warning' : 'stat-card--success' }}">
         <div class="stat-card__head"><i data-lucide="clock"></i> <span class="stat-card__label">{{ __('public.stf_analytics_kpi_outstanding') }}</span></div>
         <div class="stat-card__value">{{ number_format($revenue['total_outstanding'], 0) }}</div>
-        <div class="stat-card__hint">{{ $revenue['overdue_count'] }} overdue invoices</div>
+        <div class="stat-card__hint">{{ __('staff_analytics.overdue_invoices', ['count' => $revenue['overdue_count']], app()->getLocale()) ?: $revenue['overdue_count'] . ' overdue invoices' }}</div>
     </div>
 
     {{-- New Patients --}}
     <div class="stat-card stat-card--primary">
         <div class="stat-card__head"><i data-lucide="user-plus"></i> <span class="stat-card__label">{{ __('public.stf_analytics_kpi_new_patients') }}</span></div>
         <div class="stat-card__value">{{ number_format($patients['new_in_period']) }}</div>
-        <div class="stat-card__hint">{{ number_format($patients['total_registered']) }} total registered</div>
+        <div class="stat-card__hint">{{ __('staff_analytics.total_registered', ['count' => number_format($patients['total_registered'])], app()->getLocale()) ?: number_format($patients['total_registered']) . ' total registered' }}</div>
     </div>
 
     {{-- Staff on Leave --}}
@@ -192,9 +192,9 @@
         <div class="stat-card__head"><i data-lucide="plane-takeoff"></i> <span class="stat-card__label">{{ __('public.stf_analytics_kpi_staff') }}</span></div>
         <div class="stat-card__value">{{ number_format($staff['active']) }}</div>
         <div class="stat-card__hint">
-            active of {{ $staff['total'] }}
+            {{ __('staff_analytics.staff_active_of', ['total' => $staff['total']], app()->getLocale()) ?: 'active of ' . $staff['total'] }}
             @if($staff['on_leave'] > 0)
-                · {{ $staff['on_leave'] }} on leave
+                · {{ __('staff_analytics.staff_on_leave', ['count' => $staff['on_leave']], app()->getLocale()) ?: $staff['on_leave'] . ' on leave' }}
             @endif
         </div>
     </div>
@@ -301,7 +301,7 @@
                 @foreach($visits['by_type'] as $type => $count)
                 @php $pct = $maxType > 0 ? round($count / $maxType * 100) : 0; @endphp
                 <div class="breakdown__row">
-                    <span class="breakdown__label">{{ ucwords(str_replace('_',' ',$type)) }}</span>
+                    <span class="breakdown__label">@enum($type)</span>
                     <div class="breakdown__track"><div class="breakdown__fill" style="width:{{ $pct }}%;"></div></div>
                     <span class="breakdown__value">{{ $count }}</span>
                 </div>
@@ -333,7 +333,7 @@
                 @foreach($staff['by_category'] as $cat => $count)
                 @php $pct = $totalByCategory > 0 ? round($count / $totalByCategory * 100) : 0; @endphp
                 <div class="breakdown__row">
-                    <span class="breakdown__label">{{ ucfirst($cat) }}</span>
+                    <span class="breakdown__label">@enum($cat)</span>
                     <div class="breakdown__track"><div class="breakdown__fill" style="width:{{ $pct }}%;"></div></div>
                     <span class="breakdown__value">{{ $count }}</span>
                 </div>

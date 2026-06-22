@@ -69,7 +69,7 @@
         <span class="section-head">
             <h3 class="panel-title">{{ $ward->name }}</h3>
             <span class="badge badge-neutral badge-sm">{{ \App\Models\Ward::wardTypes()[$ward->ward_type] ?? $ward->ward_type }}</span>
-            @if($ward->floor)<span class="td-muted">Floor {{ $ward->floor }}</span>@endif
+            @if($ward->floor)<span class="td-muted">{{ __('staff_clinical.lbl_floor_n', ['n' => $ward->floor], $l) ?: ('Floor ' . $ward->floor) }}</span>@endif
         </span>
         <span class="section-head">
             <span class="td-muted">{{ $occupied }}/{{ $total }} {{ __('public.stf_wards_idx_occupied_label') }}</span>
@@ -88,14 +88,14 @@
                 };
                 $patient = $bed->activeAdmission?->patient;
             @endphp
-            <div title="{{ $bed->bed_number }} — {{ ucfirst($bed->status) }}{{ $patient ? ' — '.$patient->health_id : '' }}"
+            <div title="{{ $bed->bed_number }} — @enum($bed->status){{ $patient ? ' — '.$patient->health_id : '' }}"
                  style="background:{{ $bedColor['bg'] }};border:1px solid {{ $bedColor['border'] }};border-radius:6px;
                         padding:.3rem .55rem;min-width:50px;text-align:center;cursor:default;">
                 <div class="bed-label" style="color:{{ $bedColor['text'] }};">{{ $bed->bed_number }}</div>
                 @if($patient)
                     <div class="bed-caption text-muted">{{ $patient->health_id }}</div>
                 @else
-                    <div class="bed-status" style="color:{{ $bedColor['text'] }};">{{ ucfirst($bed->status) }}</div>
+                    <div class="bed-status" style="color:{{ $bedColor['text'] }};">@enum($bed->status)</div>
                 @endif
                 @if($bed->has_oxygen)
                     <div class="bed-o2">O₂</div>
@@ -124,7 +124,7 @@
             <div class="modal__body">
                 <div class="form-group">
                     <label class="form-label form-label-required">{{ __('public.staff_wards.field_ward_name', [], $l) ?: 'Ward Name' }}</label>
-                    <input type="text" name="name" class="form-control" required maxlength="100" placeholder="e.g. General Ward A">
+                    <input type="text" name="name" class="form-control" required maxlength="100" placeholder="{{ __('staff_clinical.ph_ward_name', [], $l) ?: 'e.g. General Ward A' }}">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -143,11 +143,11 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">{{ __('public.staff_wards.field_floor', [], $l) ?: 'Floor' }}</label>
-                        <input type="text" name="floor" class="form-control" maxlength="20" placeholder="e.g. 2">
+                        <input type="text" name="floor" class="form-control" maxlength="20" placeholder="{{ __('staff_clinical.ph_floor', [], $l) ?: 'e.g. 2' }}">
                     </div>
                     <div class="form-group">
                         <label class="form-label">{{ __('public.staff_wards.field_building', [], $l) ?: 'Building' }}</label>
-                        <input type="text" name="building" class="form-control" maxlength="50" placeholder="e.g. Block A">
+                        <input type="text" name="building" class="form-control" maxlength="50" placeholder="{{ __('staff_clinical.ph_building', [], $l) ?: 'e.g. Block A' }}">
                     </div>
                 </div>
             </div>

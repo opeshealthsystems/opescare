@@ -99,7 +99,7 @@
 </div>
 <p class="page-subtitle mb-4">
     {{ __('public.staff_portal.lbl_patient', [], $l) ?: 'Patient' }}: <strong class="mono">{{ $visit->patient?->health_id ?? $visit->patient_id }}</strong>
-    &nbsp;·&nbsp; {{ __('public.staff_portal.col_status', [], $l) ?: 'Status' }}: <span class="badge badge-primary">{{ ucwords(str_replace('_',' ',$visit->status)) }}</span>
+    &nbsp;·&nbsp; {{ __('public.staff_portal.col_status', [], $l) ?: 'Status' }}: <span class="badge badge-primary">@enum($visit->status)</span>
 </p>
 
 @if(session('error'))
@@ -173,7 +173,7 @@
                 @php $triage = $visit->triageRecords->sortByDesc('created_at')->first(); @endphp
                 <table class="kv-table">
                     <tr><td class="kv-strong">{{ __('public.staff_portal.lbl_complaint', [], $l) ?: 'Complaint' }}</td><td>{{ $triage->presenting_complaint ?? '--' }}</td></tr>
-                    <tr><td class="kv-strong">{{ __('public.staff_portal.col_acuity', [], $l) ?: 'Acuity' }}</td><td>{{ ucwords(str_replace('_',' ',$triage->acuity_score ?? '--')) }}</td></tr>
+                    <tr><td class="kv-strong">{{ __('public.staff_portal.col_acuity', [], $l) ?: 'Acuity' }}</td><td>@enum($triage->acuity_score ?? '--')</td></tr>
                     <tr><td class="kv-strong">{{ __('public.staff_portal.lbl_pain', [], $l) ?: 'Pain' }}</td><td>{{ $triage->pain_score !== null ? $triage->pain_score . '/10' : '--' }}</td></tr>
                     @if($triage->vitalSigns->isNotEmpty())
                         @php $v = $triage->vitalSigns->first(); @endphp
@@ -205,7 +205,7 @@
                         <tr>
                             <td data-label="{{ __('public.staff_portal.col_date', [], $l) ?: 'Date' }}">{{ \Carbon\Carbon::parse($note->created_at)->format('M d, Y H:i') }}</td>
                             <td data-label="{{ __('public.staff_portal.col_status', [], $l) ?: 'Status' }}">
-                                <span class="badge {{ $note->status === 'signed' ? 'badge-success' : 'badge-neutral' }}">{{ ucwords($note->status) }}</span>
+                                <span class="badge {{ $note->status === 'signed' ? 'badge-success' : 'badge-neutral' }}">@enum($note->status)</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_summary', [], $l) ?: 'Summary' }}" class="td-muted">{{ Str::limit($note->history_of_present_illness ?? '', 120) }}</td>
                         </tr>

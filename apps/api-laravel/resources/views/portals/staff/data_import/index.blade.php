@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Data Import')
+@section('title', __('staff_data.title_import', [], app()->getLocale()) ?: 'Data Import')
 
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">{{ __('public.staff_portal.cdss_sidebar_role') }}</div>
@@ -80,9 +80,9 @@
 </div>
 @endsection
 
-@section('breadcrumb_home', 'Staff Portal')
+@section('breadcrumb_home', __('staff_data.bc_home', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Data Import')
+@section('breadcrumb_section', __('staff_data.bc_section', [], app()->getLocale()) ?: 'Data Import')
 
 @section('content')
 
@@ -108,7 +108,7 @@
     <select name="status" class="filter-select">
         <option value="">{{ __('public.stf_import_all_statuses') }}</option>
         @foreach(['uploaded','mapping_required','preview_ready','validated','validation_failed','approved_for_import','importing','completed','completed_with_errors','failed','rolled_back','cancelled'] as $s)
-            <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ ucwords(str_replace('_',' ',$s)) }}</option>
+            <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>@enum($s)</option>
         @endforeach
     </select>
     <select name="import_type" class="filter-select">
@@ -169,7 +169,7 @@
                                 <span class="badge badge-neutral">{{ $importTypes[$job->import_type]['label'] ?? $job->import_type }}</span>
                             </td>
                             <td data-label="{{ __('public.stf_import_col_status') }}">
-                                <span class="badge {{ $statusBadge }}">{{ ucwords(str_replace('_',' ',$job->status)) }}</span>
+                                <span class="badge {{ $statusBadge }}">@enum($job->status)</span>
                             </td>
                             <td data-label="{{ __('public.stf_import_col_rows') }}">
                                 @if($job->total_rows > 0)
@@ -209,7 +209,7 @@
                                     {{-- Cancel --}}
                                     @if($job->canBeCancelled())
                                         <form method="POST" action="{{ route('portals.staff.data_import.cancel', $job->id) }}" class="inline-form">@csrf
-                                            <button type="submit" class="btn btn-ghost btn-xs" onclick="return confirm('Cancel this import?')">{{ __('public.stf_import_cancel') }}</button>
+                                            <button type="submit" class="btn btn-ghost btn-xs" onclick="return confirm('{{ __('staff_data.confirm_cancel', [], app()->getLocale()) ?: 'Cancel this import?' }}')">{{ __('public.stf_import_cancel') }}</button>
                                         </form>
                                     @endif
                                 </div>

@@ -93,8 +93,6 @@
                                 'open'        => 'badge-primary',
                                 default       => 'badge-neutral',
                             };
-                            $priorityLabel = ucfirst($ticket->priority ?? 'normal');
-                            $statusLabel   = ucwords(str_replace('_', ' ', $ticket->status ?? 'open'));
                         @endphp
                         <tr>
                             <td data-label="{{ __('public.staff_portal.col_ticket_no', [], app()->getLocale()) ?: 'Ticket #' }}">
@@ -106,10 +104,10 @@
                                 {{ $ticket->subject ?? '--' }}
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_priority', [], app()->getLocale()) ?: 'Priority' }}">
-                                <span class="badge {{ $priorityBadge }}">{{ $priorityLabel }}</span>
+                                <span class="badge {{ $priorityBadge }}">@enum($ticket->priority ?? 'normal', 'priority')</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_status', [], app()->getLocale()) ?: 'Status' }}">
-                                <span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span>
+                                <span class="badge {{ $statusBadge }}">@enum($ticket->status ?? 'open')</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_created', [], app()->getLocale()) ?: 'Created' }}">
                                 {{ \Carbon\Carbon::parse($ticket->created_at)->format('M d, Y') }}

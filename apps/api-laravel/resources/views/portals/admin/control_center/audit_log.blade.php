@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', __('public.adm_cc_audit_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', __('public.adm_cc_audit_breadcrumb_home'))
@@ -41,18 +41,18 @@
                             @if($log->resource_type)
                                 <span class="badge badge-neutral badge-sm">{{ $log->resource_type }}</span>
                             @else
-                                <span class="td-muted">â€”</span>
+                                <span class="td-muted">—</span>
                             @endif
                         </td>
                         <td data-label="{{ __('public.adm_cc_audit_col_resource_id') }}" class="td-muted">
                             @if($log->resource_id)
                                 <span class="code-muted">{{ Str::limit($log->resource_id, 12) }}</span>
                             @else
-                                â€”
+                                —
                             @endif
                         </td>
                         <td data-label="{{ __('public.adm_cc_audit_col_actor') }}">{{ $log->actor_id }}</td>
-                        <td data-label="{{ __('public.adm_cc_audit_col_ip') }}" class="td-muted">{{ $log->ip_address ?? 'â€”' }}</td>
+                        <td data-label="{{ __('public.adm_cc_audit_col_ip') }}" class="td-muted">{{ $log->ip_address ?? '—' }}</td>
                         <td data-label="{{ __('public.adm_cc_audit_col_when') }}" class="td-muted">
                             {{ \Carbon\Carbon::parse($log->occurred_at)->format('M d, Y H:i') }}
                             <div class="code-muted">{{ \Carbon\Carbon::parse($log->occurred_at)->diffForHumans() }}</div>

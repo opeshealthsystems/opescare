@@ -64,7 +64,7 @@
                     <td data-label="{{ __('public.portal.col_condition', [], $l) ?: 'Condition' }}"><span class="td-strong">{{ $condition->display_name ?? $condition->code ?? '—' }}</span></td>
                     <td data-label="{{ __('public.portal.col_code', [], $l) ?: 'Code' }}"><span class="td-mono">{{ $condition->code ?? '—' }}</span></td>
                     <td data-label="{{ __('public.portal.col_status', [], $l) ?: 'Status' }}">
-                        <span class="badge {{ $condition->status === 'chronic' ? 'badge-teal' : 'badge-primary' }}">{{ ucfirst($condition->status) }}</span>
+                        <span class="badge {{ $condition->status === 'chronic' ? 'badge-teal' : 'badge-primary' }}">@enum($condition->status)</span>
                     </td>
                     <td data-label="{{ __('public.portal.col_recorded', [], $l) ?: 'Recorded' }}"><span class="td-muted">{{ $condition->created_at?->format('d M Y') ?? '—' }}</span></td>
                 </tr>

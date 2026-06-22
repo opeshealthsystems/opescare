@@ -255,7 +255,7 @@
             @if($patient->sex)
             <span class="meta-item">
                 <span class="meta-label">{{ __('public.portal.id_card_sex') }}</span>
-                <span class="meta-value">{{ ucfirst($patient->sex) }}</span>
+                <span class="meta-value">@enum($patient->sex)</span>
             </span>
             @endif
             <span class="meta-item">

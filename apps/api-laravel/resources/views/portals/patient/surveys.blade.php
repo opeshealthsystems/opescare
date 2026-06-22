@@ -73,7 +73,7 @@
                     <td data-label="{{ __('public.pat_survey_col_facility', [], $l) }}"><span class="td-muted">{{ $survey->facility?->name ?? '—' }}</span></td>
                     <td data-label="{{ __('public.pat_survey_col_sent', [], $l) }}"><span class="td-muted">{{ $survey->sent_at?->isoFormat('LL') ?? '—' }}</span></td>
                     <td data-label="{{ __('public.pat_survey_col_status', [], $l) }}">
-                        <span class="badge {{ $statusBadge }}">{{ ucfirst(str_replace('_', ' ', $survey->status ?? 'sent')) }}</span>
+                        <span class="badge {{ $statusBadge }}">@enum($survey->status ?? 'sent')</span>
                     </td>
                 </tr>
                 @endforeach

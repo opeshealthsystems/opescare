@@ -1,5 +1,5 @@
 <svg viewBox="0 0 960 980" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
-  <title>OpesCare platform architecture — 46 modules in 7 domains</title>
+  <title>OpesCare platform architecture — 45 modules in 7 domains</title>
   <style>
     .band   { fill:#f8fafc; stroke:#e2e8f0; stroke-width:1; }
     .jbar   { fill:#0F4C81; }
@@ -16,7 +16,7 @@
   </style>
   <rect x="0" y="0" width="960" height="980" fill="#ffffff"/>
   <text x="40" y="34" class="h1">OpesCare — Platform Module Architecture</text>
-  <text x="40" y="55" class="sub">46 domain modules · national digital health-ID &amp; interoperability platform (Laravel 13 / PHP 8.3 / Postgres)</text>
+  <text x="40" y="55" class="sub">45 domain modules · national digital health-ID &amp; interoperability platform (Laravel 13 / PHP 8.3 / Postgres)</text>
   <text x="22" y="240" class="spine" transform="rotate(-90 22 240)">PATIENT JOURNEY</text>
   <text x="22" y="800" class="xcut" transform="rotate(-90 22 800)">CROSS-CUTTING</text>
   <g>
@@ -64,10 +64,10 @@
   <g>
     <rect class="band" x="40" y="758" width="880" height="118" rx="10"/>
     <rect class="pbar" x="40" y="758" width="6" height="118" rx="3"/>
-    <text x="62" y="788" class="dtitle">Platform, Trust &amp; Growth <tspan class="cntp">· 11</tspan></text>
+    <text x="62" y="788" class="dtitle">Platform, Trust &amp; Growth <tspan class="cntp">· 10</tspan></text>
     <text x="62" y="808" class="drole">Security, governance, analytics, resilience, expansion</text>
     <text x="62" y="836" class="mods">Governance · SecurityOperations · Analytics · Admin · FileStorage · Offline · OpesCareLite</text>
-    <text x="62" y="858" class="mods">Legal · FacilityReadiness · CountryExpansion · Academy</text>
+    <text x="62" y="858" class="mods">Legal · FacilityReadiness · CountryExpansion</text>
   </g>
   <text x="40" y="906" class="sub">Top 5 bands follow the patient through the system; bottom 2 bands serve every band above them.</text>
 </svg>

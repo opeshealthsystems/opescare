@@ -64,8 +64,6 @@ class EnsurePortalAccess
             'implementation_lead', 'training_support',
             // Partner governance
             'partner_admin', 'partner_reviewer', 'partner_compliance', 'partner_technical',
-            // Academy administration
-            'academy_admin',
         ],
         'portals/developer' => [
             'developer', 'developer_org_admin', 'api_partner', 'api_technical',

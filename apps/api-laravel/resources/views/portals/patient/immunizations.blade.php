@@ -61,7 +61,7 @@
                     <td data-label="{{ __('public.portal.col_dose', [], $l) ?: 'Dose' }}"><span class="td-muted">{{ $imm->dose_number ?? '—' }}</span></td>
                     <td data-label="{{ __('public.portal.col_administered', [], $l) ?: 'Administered' }}"><span class="td-muted">{{ $imm->administered_at?->format('d M Y') ?? '—' }}</span></td>
                     <td data-label="{{ __('public.portal.col_status', [], $l) ?: 'Status' }}">
-                        <span class="badge badge-success">{{ ucfirst($imm->status ?? 'completed') }}</span>
+                        <span class="badge badge-success">@enum($imm->status ?? 'completed')</span>
                     </td>
                 </tr>
                 @endforeach

@@ -36,7 +36,7 @@
 @if($devices->isEmpty())
     <div class="lite-alert lite-alert--info">
         <i data-lucide="monitor-smartphone"></i>
-        <span>No Lite devices registered yet. Devices register via the API endpoint
+        <span>{{ __('lite_chrome.devices_empty', [], $l) ?: 'No Lite devices registered yet. Devices register via the API endpoint' }}
         <code class="lite-code">POST /api/v1/lite/register-device</code>.</span>
     </div>
 @else
@@ -60,22 +60,22 @@
                             <div class="lite-td-strong">{{ $dev->device_name }}</div>
                             <div class="lite-mono">{{ substr($dev->id, 0, 8) }}…</div>
                         </td>
-                        <td>{{ ucfirst($dev->platform ?? 'web') }}</td>
-                        <td><span class="lite-badge lite-badge--{{ $dev->statusColor() }}">{{ ucfirst($dev->status) }}</span></td>
-                        <td>{{ $dev->entitlements->where('is_enabled', true)->count() }} modules</td>
-                        <td>{{ $dev->last_seen_at ? $dev->last_seen_at->diffForHumans() : 'Never' }}</td>
+                        <td>@enum($dev->platform ?? 'web', 'platform')</td>
+                        <td><span class="lite-badge lite-badge--{{ $dev->statusColor() }}">@enum($dev->status)</span></td>
+                        <td>{{ $dev->entitlements->where('is_enabled', true)->count() }} {{ __('lite_chrome.devices_modules', [], $l) ?: 'modules' }}</td>
+                        <td>{{ $dev->last_seen_at ? $dev->last_seen_at->diffForHumans() : (__('lite_chrome.devices_never', [], $l) ?: 'Never') }}</td>
                         <td>
                             <div class="lite-row lite-row--end">
                                 @if($dev->status === 'pending')
-                                    <form method="POST" action="{{ route('portals.lite.devices.activate', $dev) }}" onsubmit="return confirm('Activate this device?')">
+                                    <form method="POST" action="{{ route('portals.lite.devices.activate', $dev) }}" onsubmit="return confirm('{{ __('lite_chrome.devices_confirm_activate', [], $l) ?: 'Activate this device?' }}')">
                                         @csrf
                                         <button type="submit" class="lite-btn lite-btn--success lite-btn--xs">{{ __('public.lite_portal.btn_activate', [], $l) ?: 'Activate' }}</button>
                                     </form>
                                 @endif
                                 @if(!in_array($dev->status, ['revoked', 'lost']))
-                                    <form method="POST" action="{{ route('portals.lite.devices.revoke', $dev) }}" onsubmit="return confirm('Revoke this device? This cannot be undone.')">
+                                    <form method="POST" action="{{ route('portals.lite.devices.revoke', $dev) }}" onsubmit="return confirm('{{ __('lite_chrome.devices_confirm_revoke', [], $l) ?: 'Revoke this device? This cannot be undone.' }}')">
                                         @csrf
-                                        <input type="hidden" name="reason" value="Revoked via Lite portal.">
+                                        <input type="hidden" name="reason" value="{{ __('lite_chrome.devices_revoke_reason', [], $l) ?: 'Revoked via Lite portal.' }}">
                                         <button type="submit" class="lite-btn lite-btn--danger lite-btn--xs">{{ __('public.lite_portal.btn_revoke', [], $l) ?: 'Revoke' }}</button>
                                     </form>
                                 @endif

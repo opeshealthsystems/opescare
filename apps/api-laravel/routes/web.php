@@ -660,16 +660,6 @@ Route::get('/share/document/{token}', function ($token) {
     }
 })->name('document.share.view');
 
-/*
-|--------------------------------------------------------------------------
-| OpesCare Academy Web Routes — DISABLED (dormant, uncomment to re-enable)
-|--------------------------------------------------------------------------
-*/
-// Route::get('/verify/certificate/{token}', [\App\Http\Controllers\Api\V1\Academy\AcademyController::class, 'verifyPublic'])->name('academy.certificate.verify');
-// Route::middleware(['web', 'auth', 'platform.admin'])->group(function () {
-//     Route::get('/academy/dashboard', [\App\Http\Controllers\Api\V1\Academy\AcademyController::class, 'learnerDashboard'])->name('academy.dashboard');
-//     Route::get('/admin/academy/readiness/{facilityId}', [\App\Http\Controllers\Api\V1\Academy\AcademyAdminController::class, 'readinessDashboard'])->name('academy.admin.readiness');
-// });
 
 /*
 |--------------------------------------------------------------------------

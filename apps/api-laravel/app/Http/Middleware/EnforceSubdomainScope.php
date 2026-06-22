@@ -29,7 +29,6 @@ class EnforceSubdomainScope
         'fhir'          => ['fhir/'],
         'mobile-api'    => ['mobile/', 'provider-mobile/'],
         'lite'          => ['portals/lite', 'api/v1/lite', 'v1/lite'],
-        'academy'       => ['v1/academy', 'v1/admin/academy', 'academy/', 'verify/certificate'],
         'developer'     => ['portals/developer', 'signup/developer'],
         'docs'          => ['docs/'],
         'caremap'       => ['care-map', 'v1/care-map'],

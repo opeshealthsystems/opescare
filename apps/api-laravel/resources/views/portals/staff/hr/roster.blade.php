@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Duty Roster')
+@section('title', __('staff_hr.title_roster', [], app()->getLocale()) ?: 'Duty Roster')
 
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
@@ -9,7 +9,7 @@
 
 @section('sidebar_nav')
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Overview</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
     <a href="{{ route('portals.staff') }}" class="sidebar-link">
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
@@ -20,7 +20,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Clinical</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
         <i data-lucide="calendar-check-2"></i>
         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
@@ -35,11 +35,11 @@
     </a>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
         <i data-lucide="brain-circuit"></i>
-        <span>Clinical Alerts</span>
+        <span>{{ __('staff_hr.nav_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">HR & Staff</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_hr', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
         <i data-lucide="users"></i>
         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
@@ -58,7 +58,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Inventory</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
         <i data-lucide="pill"></i>
         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
@@ -69,14 +69,14 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Supply Chain</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
         <i data-lucide="package"></i>
-        <span>Supply Chain</span>
+        <span>{{ __('staff_hr.nav_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Operations</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>
         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
@@ -137,7 +137,7 @@
     <select name="status" class="form-control">
         <option value="">{{ __('public.stf_hr_roster_all_statuses') }}</option>
         @foreach(['draft','published','archived'] as $s)
-            <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
+            <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>@enum($s)</option>
         @endforeach
     </select>
     @if($departments->isNotEmpty())
@@ -194,7 +194,7 @@
                             </td>
                             <td data-label="{{ __('public.stf_hr_roster_col_assignments') }}">{{ $roster->assignments_count }}</td>
                             <td data-label="{{ __('public.stf_hr_roster_col_status') }}">
-                                <span class="badge {{ $rBadge }}">{{ ucfirst($roster->status) }}</span>
+                                <span class="badge {{ $rBadge }}">@enum($roster->status)</span>
                             </td>
                             <td data-label="{{ __('public.stf_hr_roster_col_published') }}">
                                 {{ $roster->published_at ? \Carbon\Carbon::parse($roster->published_at)->format('M d, Y') : '—' }}
@@ -282,7 +282,7 @@
             <div class="form-group mb-4">
                 <label class="form-label">{{ __('public.stf_hr_roster_lbl_staff') }}</label>
                 <select name="staff_profile_id" class="form-control" required>
-                    <option value="">— Select —</option>
+                    <option value="">{{ __('staff_hr.select_placeholder', [], app()->getLocale()) ?: '— Select —' }}</option>
                     @foreach($staff as $member)
                         <option value="{{ $member->id }}">{{ $member->full_name }} ({{ $member->job_title ?? $member->staff_category }})</option>
                     @endforeach
@@ -291,7 +291,7 @@
             <div class="form-group mb-4">
                 <label class="form-label">{{ __('public.stf_hr_roster_lbl_shift') }}</label>
                 <select name="staff_shift_id" class="form-control" required>
-                    <option value="">— Select —</option>
+                    <option value="">{{ __('staff_hr.select_placeholder', [], app()->getLocale()) ?: '— Select —' }}</option>
                     @foreach($shifts as $shift)
                         <option value="{{ $shift->id }}">{{ $shift->name }} ({{ $shift->start_time }}–{{ $shift->end_time }})</option>
                     @endforeach
@@ -347,7 +347,7 @@
     });
 
     function openAssignModal(rosterId, dept) {
-        document.getElementById('assign-dept-label').textContent = 'Department: ' + dept;
+        document.getElementById('assign-dept-label').textContent = @json(__('staff_hr.js_department_label', ['dept' => '__DEPT__'], app()->getLocale()) ?: 'Department: __DEPT__').replace('__DEPT__', dept);
         document.getElementById('assign-form').action = '{{ url('/portals/staff/hr/roster') }}/' + rosterId + '/assign';
         document.getElementById('assign-modal').classList.add('open');
     }

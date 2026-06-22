@@ -124,7 +124,10 @@ class LitePortalController extends Controller
         ]);
 
         return redirect()->route('portals.lite.lookup', ['q' => $patient->health_id])
-            ->with('success', "Patient {$patient->first_name} {$patient->last_name} registered. Health ID: {$patient->health_id}");
+            ->with('success', __('lite_chrome.flash_patient_registered', [
+                'name'      => trim("{$patient->first_name} {$patient->last_name}"),
+                'health_id' => $patient->health_id,
+            ]));
     }
 
     /**
@@ -232,7 +235,7 @@ class LitePortalController extends Controller
 
         $this->liteService->activateDevice($device);
 
-        return back()->with('success', "Device '{$device->device_name}' activated.");
+        return back()->with('success', __('lite_chrome.flash_device_activated', ['name' => $device->device_name]));
     }
 
     /**
@@ -247,7 +250,7 @@ class LitePortalController extends Controller
         $reason = $request->input('reason', 'Revoked by administrator.');
         $this->liteService->revokeDevice($device, $reason);
 
-        return back()->with('success', "Device '{$device->device_name}' revoked.");
+        return back()->with('success', __('lite_chrome.flash_device_revoked', ['name' => $device->device_name]));
     }
 
     /**

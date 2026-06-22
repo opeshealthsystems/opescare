@@ -84,7 +84,6 @@
                                 'served'  => 'badge-success',
                                 default   => 'badge-neutral',
                             };
-                            $statusLabel = ucfirst($entry->status ?? 'unknown');
                         @endphp
                         <tr>
                             <td data-label="{{ __('public.staff_portal.col_position', [], app()->getLocale()) ?: '#' }}">
@@ -110,7 +109,7 @@
                                 @endif
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_status', [], app()->getLocale()) ?: 'Status' }}">
-                                <span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span>
+                                <span class="badge {{ $statusBadge }}">@enum($entry->status ?? 'unknown')</span>
                             </td>
                         </tr>
                         @endforeach

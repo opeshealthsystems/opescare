@@ -61,7 +61,7 @@
                     <td data-label="{{ __('healthorg.field_report_type') }}"><span class="td-strong">{{ $report->reportType?->name ?? '—' }}</span></td>
                     <td data-label="{{ __('healthorg.col_period') }}"><span class="td-muted">{{ $report->reporting_period_start?->isoFormat('ll') }} → {{ $report->reporting_period_end?->isoFormat('ll') }}</span></td>
                     <td data-label="{{ __('healthorg.field_status') }}">
-                        <span class="badge badge-{{ match($report->status) { 'submitted','approved' => 'success', 'draft' => 'warning', 'rejected' => 'danger', default => 'neutral' } }}">{{ ucfirst($report->status) }}</span>
+                        <span class="badge badge-{{ match($report->status) { 'submitted','approved' => 'success', 'draft' => 'warning', 'rejected' => 'danger', default => 'neutral' } }}">@enum($report->status)</span>
                     </td>
                     <td data-label="{{ __('healthorg.col_created') }}"><span class="td-muted">{{ $report->created_at?->isoFormat('ll') }}</span></td>
                     <td class="row-actions">

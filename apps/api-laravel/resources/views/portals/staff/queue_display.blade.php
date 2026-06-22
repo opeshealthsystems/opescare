@@ -293,7 +293,7 @@
     {{-- Queue grid --}}
     @if($allQueued->isNotEmpty())
     <div class="queue-section">
-        <div class="queue-section-title">{{ __('public.stf_queue_waiting') }} — {{ $waiting->count() }} patient(s)</div>
+        <div class="queue-section-title">{{ __('public.stf_queue_waiting') }} — {{ __('staff_core.queue_waiting_count', ['count' => $waiting->count()], app()->getLocale()) ?: $waiting->count() . ' patient(s)' }}</div>
         <div class="queue-grid">
             @foreach($allQueued as $ticket)
             @php
@@ -311,14 +311,14 @@
             @endphp
             <div class="ticket {{ $statusClass }}">
                 <div class="ticket-number">{{ $ticket['queue_number'] }}</div>
-                <div class="ticket-name">{{ $ticket['masked_patient_name'] ?? 'Patient' }}</div>
+                <div class="ticket-name">{{ $ticket['masked_patient_name'] ?? (__('staff_core.ticket_patient_fallback', [], app()->getLocale()) ?: 'Patient') }}</div>
                 <div class="ticket-badge {{ $badgeClass }}">
                     @if(($ticket['status'] ?? '') === 'calling')
                         <span class="pulse">●</span>
                     @else
                         <span>●</span>
                     @endif
-                    {{ ucfirst($ticket['status'] ?? 'waiting') }}
+                    @enum($ticket['status'] ?? 'waiting')
                 </div>
                 @if(!empty($ticket['wait_minutes']))
                 <div class="ticket-wait">~{{ $ticket['wait_minutes'] }} {{ __('public.stf_queue_min_wait') }}</div>

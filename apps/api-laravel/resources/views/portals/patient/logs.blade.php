@@ -1,6 +1,6 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 
-@section('title', __('public.medical_id.access_logs', [], app()->getLocale()) . ' â€” OpesCare Patient Portal')
+@section('title', __('public.medical_id.access_logs', [], app()->getLocale()) . ' — OpesCare Patient Portal')
 
 @section('breadcrumb_home', __('public.portal.my_portal', [], app()->getLocale()) ?: 'My Portal')
 @section('breadcrumb_home_url', route('portals.patient'))
@@ -76,7 +76,7 @@
                             </span>
                         </td>
                         <td data-label="{{ __('public.portal.purpose', [], app()->getLocale()) ?: 'Purpose' }}">
-                            <span class="td-muted">{{ ucfirst(str_replace('_', ' ', $log->purpose ?? 'â€”')) }}</span>
+                            <span class="td-muted">@enum($log->purpose ?? '—')</span>
                         </td>
                         <td data-label="{{ __('public.portal.result', [], app()->getLocale()) ?: 'Result' }}">
                             @if(($log->result ?? '') === 'success')
@@ -86,7 +86,7 @@
                             @endif
                         </td>
                         <td data-label="{{ __('public.portal.details', [], app()->getLocale()) ?: 'Details' }}">
-                            <span class="td-mono">{{ $log->ip_address ?? 'â€”' }}</span>
+                            <span class="td-mono">{{ $log->ip_address ?? '—' }}</span>
                         </td>
                     </tr>
                     @endforeach

@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Import — Map Columns')
+@section('title', __('staff_data.title_map', [], app()->getLocale()) ?: 'Import — Map Columns')
 
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">{{ __('public.staff_portal.cdss_sidebar_role') }}</div>
@@ -22,9 +22,9 @@
         <i data-lucide="package"></i> {{ __('public.portal.nav_supply') }}</a>
 @endsection
 
-@section('breadcrumb_home', 'Staff Portal')
+@section('breadcrumb_home', __('staff_data.bc_home', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Data Import')
+@section('breadcrumb_section', __('staff_data.bc_section', [], app()->getLocale()) ?: 'Data Import')
 
 @section('content')
 
@@ -54,7 +54,7 @@
                     <label class="form-label">{{ __('public.stf_import_load_saved') }}</label>
                     <div class="row-actions-inline">
                         <select id="saved-mapping-picker" class="form-control">
-                            <option value="">— select —</option>
+                            <option value="">{{ __('staff_data.select_placeholder', [], app()->getLocale()) ?: '— select —' }}</option>
                             @foreach($saved as $sm)
                                 <option value="{{ htmlspecialchars(json_encode($sm['mapping']), ENT_QUOTES) }}">{{ $sm['name'] }}</option>
                             @endforeach

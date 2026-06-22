@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', __('public.adm_sub_inv_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', 'Admin')
@@ -67,7 +67,7 @@
                 @forelse($invoices as $inv)
                     <tr>
                         <td data-label="{{ __('public.adm_sub_inv_col_invoice_num') }}"><span class="mono">{{ $inv->invoice_number }}</span></td>
-                        <td data-label="{{ __('public.adm_sub_inv_col_org') }}">{{ $inv->subscription?->organization_name ?? 'â€”' }}</td>
+                        <td data-label="{{ __('public.adm_sub_inv_col_org') }}">{{ $inv->subscription?->organization_name ?? '—' }}</td>
                         <td data-label="{{ __('public.adm_sub_inv_col_invoice_date') }}">{{ $inv->invoice_date->format('d M Y') }}</td>
                         <td data-label="{{ __('public.adm_sub_inv_col_due_date') }}">
                             @if($inv->isOverdue())

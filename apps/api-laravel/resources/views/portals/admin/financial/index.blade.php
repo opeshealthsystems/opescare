@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', __('public.adm_fin_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', 'Admin')
@@ -134,14 +134,14 @@
             @php $icons=['mtn_momo'=>'smartphone','orange_money'=>'smartphone','cash'=>'banknote','card'=>'credit-card','insurance'=>'hospital','wallet'=>'wallet']; @endphp
             <tr>
                 <td data-label="{{ __('public.adm_fin_col_reference') }}"><span class="mono">{{ $p->payment_reference }}</span></td>
-                <td data-label="{{ __('public.adm_fin_col_patient') }}">{{ $p->patient?->first_name.' '.$p->patient?->last_name ?? 'â€”' }}</td>
+                <td data-label="{{ __('public.adm_fin_col_patient') }}">{{ $p->patient?->first_name.' '.$p->patient?->last_name ?? '—' }}</td>
                 <td data-label="{{ __('public.adm_fin_col_gateway') }}">
                     <span class="cell-with-icon">
                         <i data-lucide="{{ $icons[$p->gateway??$p->method] ?? 'credit-card' }}"></i>
-                        <span>{{ ucwords(str_replace('_',' ',$p->gateway??$p->method??'â€”')) }}</span>
+                        <span>{{ ucwords(str_replace('_',' ',$p->gateway??$p->method??'—')) }}</span>
                     </span>
                 </td>
-                <td data-label="{{ __('public.adm_fin_col_service') }}">{{ ucwords(str_replace('_',' ',$p->service_type??'â€”')) }}</td>
+                <td data-label="{{ __('public.adm_fin_col_service') }}">{{ ucwords(str_replace('_',' ',$p->service_type??'—')) }}</td>
                 <td data-label="{{ __('public.adm_fin_col_amount') }}"><strong>{{ number_format($p->amount,0,'.',',') }}</strong></td>
                 <td data-label="{{ __('public.adm_fin_col_status') }}">@if(in_array($p->status,['successful','completed']))<span class="badge badge-success">{{ __('public.adm_fin_badge_ok') }}</span>@elseif($p->status==='pending')<span class="badge badge-warning">{{ __('public.adm_fin_badge_pending') }}</span>@else<span class="badge badge-danger">{{ ucfirst($p->status) }}</span>@endif</td>
                 <td data-label="{{ __('public.adm_fin_col_when') }}">{{ $p->created_at?->format('d M H:i') }}</td>

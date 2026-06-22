@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Drug Interactions — CDSS')
+@section('title', __('staff_analytics.cdss_title_ddi', [], app()->getLocale()) ?: 'Drug Interactions — CDSS')
 @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
 
 @section('content')
@@ -53,7 +53,7 @@
                                     'major'           => 'danger',
                                     'moderate'        => 'warning',
                                     default           => 'info',
-                                } }}">{{ ucfirst($rule->severity) }}</span>
+                                } }}">@enum($rule->severity, 'severity')</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.cdss_ddi_col_interaction') }}">
                                 {{ Str::limit($rule->interaction_description, 100) }}

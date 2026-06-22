@@ -25,7 +25,7 @@
 </div>
 @endif
 
-<form id="billingForm" method="POST" action="{{ route('portals.staff.billing.create') }}">
+<form id="billingForm" method="POST" action="{{ route('portals.staff.billing.store') }}">
     @csrf
     @if($patient)
         <input type="hidden" name="patient_id" value="{{ $patient->id }}">
@@ -47,8 +47,8 @@
                 <tbody id="lineItems">
                     <tr id="row-0">
                         <td><input type="text" name="items[0][description]" class="lite-input lite-input--cell" placeholder="{{ __('public.lite_portal.billing_ph_service', [], $l) ?: 'Service…' }}"></td>
-                        <td class="lite-col-narrow"><input type="number" name="items[0][qty]" class="lite-input lite-input--cell" value="1" min="1" onchange="calcTotal()"></td>
-                        <td class="lite-col-amt"><input type="number" name="items[0][amount]" class="lite-input lite-input--cell" placeholder="0" step="1" onchange="calcTotal()"></td>
+                        <td class="lite-col-narrow"><input type="number" name="items[0][quantity]" class="lite-input lite-input--cell" value="1" min="1" onchange="calcTotal()"></td>
+                        <td class="lite-col-amt"><input type="number" name="items[0][unit_price]" class="lite-input lite-input--cell" placeholder="0" step="1" onchange="calcTotal()"></td>
                         <td class="lite-col-x">—</td>
                     </tr>
                 </tbody>
@@ -101,8 +101,8 @@ function addLineItem() {
     tr.id = 'row-' + i;
     tr.innerHTML = `
         <td><input type="text" name="items[${i}][description]" class="lite-input lite-input--cell" placeholder="${phService}"></td>
-        <td class="lite-col-narrow"><input type="number" name="items[${i}][qty]" class="lite-input lite-input--cell" value="1" min="1" onchange="calcTotal()"></td>
-        <td class="lite-col-amt"><input type="number" name="items[${i}][amount]" class="lite-input lite-input--cell" placeholder="0" step="1" onchange="calcTotal()"></td>
+        <td class="lite-col-narrow"><input type="number" name="items[${i}][quantity]" class="lite-input lite-input--cell" value="1" min="1" onchange="calcTotal()"></td>
+        <td class="lite-col-amt"><input type="number" name="items[${i}][unit_price]" class="lite-input lite-input--cell" placeholder="0" step="1" onchange="calcTotal()"></td>
         <td class="lite-col-x">
             <button type="button" onclick="this.closest('tr').remove();calcTotal()" class="lite-btn--icon"><i data-lucide="x"></i></button>
         </td>`;
@@ -113,8 +113,8 @@ function addLineItem() {
 function calcTotal() {
     let total = 0;
     document.querySelectorAll('#lineItems tr').forEach(tr => {
-        const qty = parseFloat(tr.querySelector('input[name*="[qty]"]')?.value || 1);
-        const amt = parseFloat(tr.querySelector('input[name*="[amount]"]')?.value || 0);
+        const qty = parseFloat(tr.querySelector('input[name*="[quantity]"]')?.value || 1);
+        const amt = parseFloat(tr.querySelector('input[name*="[unit_price]"]')?.value || 0);
         if (!isNaN(qty) && !isNaN(amt)) total += qty * amt;
     });
     document.getElementById('totalAmt').textContent = total.toLocaleString('fr-FR');

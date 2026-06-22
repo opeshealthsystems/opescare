@@ -32,7 +32,7 @@
     <div class="panel-header">
         <h3 class="panel-title"><i data-lucide="badge-check"></i> {{ __('public.pat_sub_current_plan') }}</h3>
         @if($active)
-            <span class="badge badge-{{ $active->statusColor() }}">{{ ucfirst($active->status) }}</span>
+            <span class="badge badge-{{ $active->statusColor() }}">@enum($active->status)</span>
         @endif
     </div>
     <div class="panel-body">
@@ -198,7 +198,7 @@
                             <td>{{ $invoice->invoice_number }}</td>
                             <td>{{ $invoice->invoice_date?->isoFormat('LL') }}</td>
                             <td>{{ $invoice->currency }} {{ number_format($invoice->total_kobo / 100, 0) }}</td>
-                            <td><span class="badge">{{ ucfirst($invoice->status) }}</span></td>
+                            <td><span class="badge">@enum($invoice->status)</span></td>
                         </tr>
                     @endforeach
                 </tbody>

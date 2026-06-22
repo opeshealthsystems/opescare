@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Leave Management')
+@section('title', __('staff_hr.title_leave', [], app()->getLocale()) ?: 'Leave Management')
 
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
@@ -9,7 +9,7 @@
 
 @section('sidebar_nav')
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Overview</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
     <a href="{{ route('portals.staff') }}" class="sidebar-link">
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
@@ -20,7 +20,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Clinical</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
         <i data-lucide="calendar-check-2"></i>
         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
@@ -35,11 +35,11 @@
     </a>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
         <i data-lucide="brain-circuit"></i>
-        <span>Clinical Alerts</span>
+        <span>{{ __('staff_hr.nav_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">HR & Staff</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_hr', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
         <i data-lucide="users"></i>
         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
@@ -58,7 +58,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Inventory</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
         <i data-lucide="pill"></i>
         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
@@ -69,14 +69,14 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Supply Chain</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
         <i data-lucide="package"></i>
-        <span>Supply Chain</span>
+        <span>{{ __('staff_hr.nav_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Operations</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>
         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
@@ -137,13 +137,13 @@
     <select name="status" class="form-control">
         <option value="">{{ __('public.stf_hr_leave_all_statuses') }}</option>
         @foreach(['pending','approved','rejected','withdrawn','cancelled'] as $s)
-            <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
+            <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>@enum($s)</option>
         @endforeach
     </select>
     <select name="leave_type" class="form-control">
         <option value="">{{ __('public.stf_hr_leave_all_types') }}</option>
         @foreach(['annual','sick','emergency','maternity','paternity','study','unpaid'] as $t)
-            <option value="{{ $t }}" {{ request('leave_type') === $t ? 'selected' : '' }}>{{ ucfirst($t) }}</option>
+            <option value="{{ $t }}" {{ request('leave_type') === $t ? 'selected' : '' }}>@enum($t, 'leave_type')</option>
         @endforeach
     </select>
     <button type="submit" class="btn btn-primary btn-sm">
@@ -192,7 +192,7 @@
                                 <strong class="td-strong">{{ $req->staffProfile?->full_name ?? '—' }}</strong>
                             </td>
                             <td data-label="{{ __('public.stf_hr_leave_col_type') }}">
-                                <span class="badge badge-neutral">{{ ucfirst($req->leave_type) }}</span>
+                                <span class="badge badge-neutral">@enum($req->leave_type)</span>
                             </td>
                             <td data-label="{{ __('public.stf_hr_leave_col_period') }}">
                                 {{ \Carbon\Carbon::parse($req->start_date)->format('M d') }} –
@@ -200,7 +200,7 @@
                             </td>
                             <td data-label="{{ __('public.stf_hr_leave_col_days') }}">{{ $req->days_requested ?? '—' }}</td>
                             <td data-label="{{ __('public.stf_hr_leave_col_status') }}">
-                                <span class="badge {{ $lBadge }}">{{ ucfirst($req->status) }}</span>
+                                <span class="badge {{ $lBadge }}">@enum($req->status)</span>
                             </td>
                             <td data-label="{{ __('public.stf_hr_leave_col_reviewed_by') }}">
                                 <span class="td-muted">{{ $req->reviewed_by ?? '—' }}</span>
@@ -248,7 +248,7 @@
             <div class="form-group mb-4">
                 <label class="form-label">{{ __('public.stf_hr_leave_lbl_staff') }}</label>
                 <select name="staff_profile_id" class="form-control" required>
-                    <option value="">— Select —</option>
+                    <option value="">{{ __('staff_hr.select_placeholder', [], app()->getLocale()) ?: '— Select —' }}</option>
                     @foreach($staff as $member)
                         <option value="{{ $member->id }}">{{ $member->full_name }} ({{ $member->job_title ?? $member->staff_category }})</option>
                     @endforeach
@@ -258,7 +258,7 @@
                 <label class="form-label">{{ __('public.stf_hr_leave_lbl_type') }}</label>
                 <select name="leave_type" class="form-control" required>
                     @foreach(['annual','sick','emergency','maternity','paternity','study','unpaid'] as $t)
-                        <option value="{{ $t }}">{{ ucfirst($t) }}</option>
+                        <option value="{{ $t }}">@enum($t, 'leave_type')</option>
                     @endforeach
                 </select>
             </div>
@@ -340,10 +340,10 @@
     function openReviewModal(requestId, action) {
         var base = '{{ url('/portals/staff/hr/leave') }}';
         document.getElementById('review-form').action = base + '/' + requestId + '/' + action;
-        document.getElementById('review-modal-title').textContent = action === 'approve' ? 'Approve Leave' : 'Reject Leave';
+        document.getElementById('review-modal-title').textContent = action === 'approve' ? @json(__('staff_hr.js_approve_leave', [], app()->getLocale()) ?: 'Approve Leave') : @json(__('staff_hr.js_reject_leave', [], app()->getLocale()) ?: 'Reject Leave');
         var btn = document.getElementById('review-submit-btn');
         btn.className = action === 'approve' ? 'btn btn-success btn-sm' : 'btn btn-danger btn-sm';
-        btn.textContent = action === 'approve' ? 'Approve' : 'Reject';
+        btn.textContent = action === 'approve' ? @json(__('staff_hr.js_approve', [], app()->getLocale()) ?: 'Approve') : @json(__('staff_hr.js_reject', [], app()->getLocale()) ?: 'Reject');
         document.getElementById('review-modal').classList.add('open');
     }
     function closeReviewModal() { document.getElementById('review-modal').classList.remove('open'); }

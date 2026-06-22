@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', __('public.adm_patients_idx_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', 'Admin')
@@ -56,7 +56,7 @@
                 <tr>
                     <td data-label="{{ __('public.adm_patients_idx_col_health_id') }}"><span class="td-mono">{{ $patient->health_id }}</span></td>
                     <td data-label="{{ __('public.adm_patients_idx_col_name') }}"><span class="td-strong">{{ $patient->first_name }} {{ $patient->last_name }}</span></td>
-                    <td data-label="{{ __('public.adm_patients_idx_col_dob') }}" class="td-muted">{{ $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)->format('d M Y') : 'â€”' }}</td>
+                    <td data-label="{{ __('public.adm_patients_idx_col_dob') }}" class="td-muted">{{ $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)->format('d M Y') : '—' }}</td>
                     <td data-label="{{ __('public.adm_patients_idx_col_sex') }}">{{ ucfirst($patient->sex??'') }}</td>
                     <td data-label="{{ __('public.adm_patients_idx_col_identity') }}">
                         @if($ist==='verified')<span class="badge badge-success">{{ __('public.adm_patients_idx_badge_verified') }}</span>

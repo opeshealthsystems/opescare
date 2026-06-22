@@ -41,6 +41,13 @@ class AppServiceProvider extends ServiceProvider
                 : false;
         });
 
+        // @enum($model->status) / @enum($x->severity, 'severity') — render a DB
+        // enum value through lang/{locale}/enums.php with a graceful title-case
+        // fallback. Keeps status/severity badges bilingual instead of raw English.
+        \Illuminate\Support\Facades\Blade::directive('enum', function (string $expression) {
+            return "<?php echo e(\App\Support\Enums::label({$expression})); ?>";
+        });
+
         // Clinical module routes (Group 3 + wired modules) — loaded here to
         // avoid touching the sealed routes/api.php file.
         Route::middleware('api')

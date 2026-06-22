@@ -78,7 +78,7 @@
                     };
                 @endphp
                 <li style="display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;">
-                    <span class="badge {{ $goalBadge }}">{{ ucfirst(str_replace('_', ' ', $goal->status ?? 'pending')) }}</span>
+                    <span class="badge {{ $goalBadge }}">@enum($goal->status ?? 'pending')</span>
                     <span class="td-strong">{{ $goal->goal_text ?: '—' }}</span>
                     @if($goal->target_date)
                         <span class="td-muted">· {{ __('public.pat_careplan_target', [], $l) }}: {{ $goal->target_date->isoFormat('LL') }}</span>
@@ -114,7 +114,7 @@
                             <td data-label="{{ __('public.pat_careplan_frequency', [], $l) }}"><span class="td-muted">{{ $iv->frequency ?? '—' }}</span></td>
                             <td data-label="{{ __('public.pat_careplan_responsible', [], $l) }}"><span class="td-muted">{{ $iv->responsible_party ?? '—' }}</span></td>
                             <td data-label="{{ __('public.pat_referral_col_status', [], $l) }}">
-                                <span class="badge">{{ ucfirst(str_replace('_', ' ', $iv->status ?? 'active')) }}</span>
+                                <span class="badge">@enum($iv->status ?? 'active')</span>
                             </td>
                         </tr>
                         @endforeach

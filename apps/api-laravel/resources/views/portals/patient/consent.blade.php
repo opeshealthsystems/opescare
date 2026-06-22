@@ -46,7 +46,7 @@
     <div class="panel-body">
         <div class="flex-between" style="align-items:flex-start;gap:var(--p-space-4);">
             <div style="flex:1;">
-                <div class="td-strong">{{ $req->requestingFacility?->name ?? 'Unknown Facility' }}</div>
+                <div class="td-strong">{{ $req->requestingFacility?->name ?? __('public.portal.unknown_facility', [], $l) ?: 'Unknown Facility' }}</div>
                 <div class="text-muted mb-3">{{ $req->purpose ?? __('public.portal.lbl_access_request', [], $l) ?: 'Access request' }}</div>
                 <div class="gap-2" style="display:flex;flex-wrap:wrap;">
                     @foreach(($req->requested_scope ?? []) as $scope)
@@ -71,7 +71,7 @@
                     <button type="submit" class="btn btn-secondary btn-sm"><i data-lucide="x"></i> {{ __('public.portal.btn_deny', [], $l) ?: 'Deny' }}</button>
                 </form>
                 @else
-                <span class="badge {{ $req->status === 'approved' ? 'badge-success' : 'badge-neutral' }}">{{ ucfirst($req->status) }}</span>
+                <span class="badge {{ $req->status === 'approved' ? 'badge-success' : 'badge-neutral' }}">@enum($req->status)</span>
                 @if($req->status === 'approved')
                 <button type="button" class="btn btn-danger btn-sm" onclick="opOpenModal('revoke-consent-{{ $req->id }}')">
                     <i data-lucide="shield-off"></i> {{ __('public.portal.btn_revoke_access', [], $l) ?: 'Revoke access' }}

@@ -16,8 +16,8 @@
         <div>
             <h2 class="entity-head__title">{{ $client->name ?? __('public.developer_portal.lbl_unnamed_app', [], $l) ?: 'Unnamed App' }}</h2>
             <div class="entity-head__sub">
-                <span class="badge {{ ($client->environment ?? 'sandbox') === 'production' ? 'badge-success' : 'badge-info' }}">{{ ucfirst($client->environment ?? 'sandbox') }}</span>
-                <span class="badge {{ ($client->status ?? 'active') === 'active' ? 'badge-success' : 'badge-neutral' }}">{{ ucfirst($client->status ?? 'active') }}</span>
+                <span class="badge {{ ($client->environment ?? 'sandbox') === 'production' ? 'badge-success' : 'badge-info' }}">@enum($client->environment ?? 'sandbox', 'environment')</span>
+                <span class="badge {{ ($client->status ?? 'active') === 'active' ? 'badge-success' : 'badge-neutral' }}">@enum($client->status ?? 'active')</span>
             </div>
         </div>
     </div>
@@ -65,7 +65,7 @@
                     <table class="kv-table">
                         <tr><th>{{ __('public.developer_portal.lbl_client_id', [], $l) ?: 'Client ID' }}</th><td><span class="code-token" data-copy="{{ $client->client_id }}">{{ $client->client_id }}</span></td></tr>
                         <tr><th>{{ __('public.developer_portal.lbl_secret', [], $l) ?: 'Secret' }}</th><td class="td-muted mono">{{ __('public.developer_portal.lbl_secret_masked', [], $l) ?: '•••••••••••••••• (shown once at creation)' }}</td></tr>
-                        <tr><th>{{ __('public.developer_portal.lbl_environment', [], $l) ?: 'Environment' }}</th><td>{{ ucfirst($client->environment ?? 'sandbox') }}</td></tr>
+                        <tr><th>{{ __('public.developer_portal.lbl_environment', [], $l) ?: 'Environment' }}</th><td>@enum($client->environment ?? 'sandbox', 'environment')</td></tr>
                         <tr><th>{{ __('public.developer_portal.lbl_scopes', [], $l) ?: 'Scopes' }}</th><td>
                             @foreach(json_decode($client->scopes ?? '[]', true) ?? [] as $scope)
                             <span class="code-token">{{ $scope }}</span>
@@ -85,12 +85,12 @@
                         @if($certification->badge)
                         <div class="entity-head__icon"><i data-lucide="{{ $certification->badge->levelIcon() }}" style="color:{{ $certification->badge->levelColor() }};"></i></div>
                         <div>
-                            <div class="td-strong">{{ ucfirst($certification->badge->certification_level) }} certified</div>
+                            <div class="td-strong">@enum($certification->badge->certification_level, 'level') certified</div>
                             <div class="mono">{{ $certification->badge->badge_code }}</div>
                         </div>
                         @else
                         <div>
-                            <span class="{{ $certification->statusBadgeClass() }}">{{ ucfirst(str_replace('_',' ',$certification->status)) }}</span>
+                            <span class="{{ $certification->statusBadgeClass() }}">@enum($certification->status)</span>
                             <div class="td-muted">{{ __('public.developer_portal.lbl_cert_in_progress', [], $l) ?: 'Certification in progress' }}</div>
                         </div>
                         @endif
@@ -173,7 +173,7 @@ document.addEventListener('click', function(e){
     var t = e.target.closest('.code-token[data-copy]');
     if(!t) return;
     navigator.clipboard && navigator.clipboard.writeText(t.getAttribute('data-copy'));
-    var prev = t.textContent; t.textContent = 'Copied'; setTimeout(function(){ t.textContent = prev; }, 1200);
+    var prev = t.textContent; t.textContent = @json(__('dev_extra.copied', [], $l) ?: 'Copied'); setTimeout(function(){ t.textContent = prev; }, 1200);
 });
 </script>
 @endsection

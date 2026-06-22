@@ -47,12 +47,12 @@
                         <span class="td-strong">{{ $task->title }}</span>
                         @if($task->description)<div class="td-muted">{{ \Illuminate\Support\Str::limit($task->description, 100) }}</div>@endif
                     </td>
-                    <td data-label="{{ __('tasks.col_type') }}"><span class="badge badge-neutral">{{ ucfirst(str_replace('_', ' ', $task->task_type)) }}</span></td>
+                    <td data-label="{{ __('tasks.col_type') }}"><span class="badge badge-neutral">@enum($task->task_type)</span></td>
                     <td data-label="{{ __('tasks.col_due') }}"><span class="td-muted">{{ $task->due_at ? \Illuminate\Support\Carbon::parse($task->due_at)->isoFormat('lll') : '—' }}</span></td>
                     <td data-label="{{ __('tasks.col_status') }}">
                         @php $sc = ['escalated'=>'danger','acknowledged'=>'info','completed'=>'success'][$task->status] ?? 'warning'; @endphp
-                        <span class="badge badge-{{ $sc }}">{{ ucfirst(str_replace('_', ' ', $task->status)) }}</span>
-                        @if(($task->priority ?? 'normal') !== 'normal')<span class="badge badge-warning">{{ ucfirst($task->priority) }}</span>@endif
+                        <span class="badge badge-{{ $sc }}">@enum($task->status)</span>
+                        @if(($task->priority ?? 'normal') !== 'normal')<span class="badge badge-warning">@enum($task->priority, 'priority')</span>@endif
                     </td>
                     <td class="row-actions" style="display:flex;gap:.4rem;flex-wrap:wrap;">
                         @if($task->status !== 'acknowledged')

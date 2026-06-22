@@ -110,11 +110,11 @@
                                 {{ $pa->submitted_at ? \Carbon\Carbon::parse($pa->submitted_at)->format('M d, Y') : '--' }}
                             </td>
                             <td data-label="{{ __('public.insurance_portal.preauths_col_status', [], $l) ?: 'Status' }}">
-                                <span class="badge {{ $statusBadge }}">{{ ucwords(str_replace('_',' ',$pa->status)) }}</span>
+                                <span class="badge {{ $statusBadge }}">@enum($pa->status)</span>
                             </td>
                             <td data-label="{{ __('public.insurance_portal.preauths_col_decision', [], $l) ?: 'Decision' }}">
                                 @if($decision)
-                                    <span class="td-strong">{{ ucwords($decision->decision) }}</span>
+                                    <span class="td-strong">@enum($decision->decision, 'decision')</span>
                                     @if($decision->approved_amount)
                                         <div class="td-muted">{{ number_format($decision->approved_amount, 2) }}</div>
                                     @endif

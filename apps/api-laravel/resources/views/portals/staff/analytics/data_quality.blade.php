@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Data Quality Analytics')
+@section('title', __('staff_analytics.title_data_quality', [], app()->getLocale()) ?: 'Data Quality Analytics')
 @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
 
 @section('content')
@@ -69,7 +69,7 @@
                                         'pending'   => 'warning',
                                         'processing'=> 'info',
                                         default     => 'default',
-                                    } }}">{{ ucfirst($status) }}</span>
+                                    } }}">@enum($status)</span>
                                 </td>
                                 <td data-label="{{ __('public.stf_analytics_dq_col_batches') }}" class="td-strong">{{ number_format($row->cnt) }}</td>
                                 <td data-label="{{ __('public.stf_analytics_dq_col_records') }}" class="td-muted">{{ number_format($row->records ?? 0) }}</td>
@@ -92,7 +92,7 @@
                 @if(!empty($alertsByType))
                     @foreach($alertsByType as $type => $cnt)
                         <div class="list-row">
-                            <span class="list-row__main">{{ ucwords(str_replace('_',' ', $type)) }}</span>
+                            <span class="list-row__main">@enum($type)</span>
                             <span class="list-row__value">{{ number_format($cnt) }}</span>
                         </div>
                     @endforeach
@@ -136,7 +136,7 @@
                     @foreach($recentImports as $imp)
                         <tr>
                             <td data-label="{{ __('public.stf_analytics_dq_col_batch') }}"><span class="mono">{{ substr($imp->id ?? '', 0, 8) }}…</span></td>
-                            <td data-label="{{ __('public.stf_analytics_dq_col_type') }}">{{ str_replace('_',' ', $imp->import_type ?? '—') }}</td>
+                            <td data-label="{{ __('public.stf_analytics_dq_col_type') }}">@enum($imp->import_type ?? '—')</td>
                             <td data-label="{{ __('public.stf_analytics_dq_col_records') }}">{{ number_format($imp->total_records ?? 0) }}</td>
                             <td data-label="{{ __('public.stf_analytics_dq_col_errors') }}">
                                 <span class="badge {{ ($imp->error_count ?? 0) > 0 ? 'badge-danger' : 'badge-success' }}">{{ $imp->error_count ?? 0 }}</span>
@@ -147,7 +147,7 @@
                                     'failed'    => 'danger',
                                     'pending'   => 'warning',
                                     default     => 'default',
-                                } }}">{{ ucfirst($imp->status ?? '—') }}</span>
+                                } }}">@enum($imp->status ?? '—')</span>
                             </td>
                             <td data-label="{{ __('public.stf_analytics_dq_col_date') }}" class="td-muted">
                                 {{ isset($imp->created_at) ? \Carbon\Carbon::parse($imp->created_at)->format('d M Y') : '—' }}

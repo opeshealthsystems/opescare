@@ -29,10 +29,10 @@
                 <tbody>
                     @foreach($conflicts as $c)
                     <tr>
-                        <td class="lite-td-strong">{{ ucwords(str_replace('_', ' ', $c->offlineEvent?->event_type ?? '—')) }}</td>
-                        <td>{{ ucwords(str_replace('_', ' ', $c->conflict_type)) }}</td>
+                        <td class="lite-td-strong">@enum($c->offlineEvent?->event_type)</td>
+                        <td>@enum($c->conflict_type)</td>
                         <td>{{ $c->device?->device_name ?? '—' }}</td>
-                        <td><span class="lite-badge lite-badge--{{ $c->statusColor() }}">{{ ucfirst($c->status) }}</span></td>
+                        <td><span class="lite-badge lite-badge--{{ $c->statusColor() }}">@enum($c->status)</span></td>
                         <td>{{ $c->offlineEvent?->captured_at?->format('d M Y H:i') ?? '—' }}</td>
                         <td>
                             @if($c->isOpen())
@@ -40,7 +40,7 @@
                                 <form method="POST" action="{{ route('portals.lite.conflicts.resolve', $c) }}">
                                     @csrf
                                     <input type="hidden" name="resolution" value="resolved">
-                                    <input type="hidden" name="note" value="Resolved via Lite portal.">
+                                    <input type="hidden" name="note" value="{{ __('lite_chrome.conflicts_resolve_note', [], $l) ?: 'Resolved via Lite portal.' }}">
                                     <button type="submit" class="lite-btn lite-btn--success lite-btn--xs">{{ __('public.lite_portal.conflicts_btn_resolve', [], $l) ?: 'Resolve' }}</button>
                                 </form>
                                 <form method="POST" action="{{ route('portals.lite.conflicts.resolve', $c) }}" onsubmit="return confirm('{{ __('public.lite_portal.conflicts_confirm_dismiss', [], $l) ?: 'Dismiss this conflict?' }}')">

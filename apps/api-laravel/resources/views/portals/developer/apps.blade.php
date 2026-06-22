@@ -61,10 +61,10 @@
                     </td>
                     <td data-label="{{ __('public.developer_portal.col_client_id', [], $l) ?: 'Client ID' }}"><span class="code-token" data-copy="{{ $client->client_id }}">{{ Str::limit($client->client_id, 28) }}</span></td>
                     <td data-label="{{ __('public.developer_portal.col_environment', [], $l) ?: 'Environment' }}">
-                        <span class="badge {{ ($client->environment ?? 'sandbox') === 'production' ? 'badge-success' : 'badge-info' }}">{{ ucfirst($client->environment ?? 'sandbox') }}</span>
+                        <span class="badge {{ ($client->environment ?? 'sandbox') === 'production' ? 'badge-success' : 'badge-info' }}">@enum($client->environment ?? 'sandbox', 'environment')</span>
                     </td>
                     <td data-label="{{ __('public.developer_portal.col_status', [], $l) ?: 'Status' }}">
-                        <span class="badge {{ ($client->status ?? 'active') === 'active' ? 'badge-success' : 'badge-neutral' }}">{{ ucfirst($client->status ?? 'active') }}</span>
+                        <span class="badge {{ ($client->status ?? 'active') === 'active' ? 'badge-success' : 'badge-neutral' }}">@enum($client->status ?? 'active')</span>
                     </td>
                     <td data-label="{{ __('public.developer_portal.col_created', [], $l) ?: 'Created' }}" class="td-muted">{{ $client->created_at->format('d M Y') }}</td>
                     <td class="row-actions" data-label=""><a href="{{ route('portals.developer.apps.show', $client->id) }}" class="btn btn-secondary btn-sm">{{ __('public.developer_portal.lbl_view', [], $l) ?: 'Details' }}</a></td>
@@ -83,7 +83,7 @@ document.addEventListener('click', function(e){
     var t = e.target.closest('.code-token[data-copy]');
     if(!t) return;
     navigator.clipboard && navigator.clipboard.writeText(t.getAttribute('data-copy'));
-    var prev = t.textContent; t.textContent = 'Copied'; setTimeout(function(){ t.textContent = prev; }, 1200);
+    var prev = t.textContent; t.textContent = @json(__('dev_extra.copied', [], $l) ?: 'Copied'); setTimeout(function(){ t.textContent = prev; }, 1200);
 });
 </script>
 @endsection

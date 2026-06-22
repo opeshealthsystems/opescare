@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', $document->title)
 @section('sidebar') @include('portals.admin.control_center._sidebar') @endsection
 
@@ -53,18 +53,18 @@
                         </td>
                         <td data-label="{{ __('public.adm_legal_show_col_reaccept') }}">
                             @if($ver->requires_reacceptance)
-                                <span class="badge badge-danger badge-sm">Yes</span>
+                                <span class="badge badge-danger badge-sm">{{ __('admin_extra.yes', [], app()->getLocale()) ?: 'Yes' }}</span>
                             @else
-                                <span class="td-muted">No</span>
+                                <span class="td-muted">{{ __('admin_extra.no', [], app()->getLocale()) ?: 'No' }}</span>
                             @endif
                         </td>
                         <td data-label="{{ __('public.adm_legal_show_col_published') }}" class="td-muted">
-                            {{ $ver->published_at?->format('d M Y H:i') ?? 'â€”' }}
+                            {{ $ver->published_at?->format('d M Y H:i') ?? '—' }}
                         </td>
                         <td data-label="{{ __('public.adm_legal_show_col_effective') }}" class="td-muted">
-                            {{ $ver->effective_at?->format('d M Y') ?? 'â€”' }}
+                            {{ $ver->effective_at?->format('d M Y') ?? '—' }}
                         </td>
-                        <td data-label="{{ __('public.adm_legal_show_col_change_summary') }}">{{ $ver->change_summary ?: 'â€”' }}</td>
+                        <td data-label="{{ __('public.adm_legal_show_col_change_summary') }}">{{ $ver->change_summary ?: '—' }}</td>
                     </tr>
                 @empty
                     <tr><td colspan="6" class="td-muted empty-cell">{{ __('public.adm_legal_show_empty_versions') }}</td></tr>
@@ -97,7 +97,7 @@
 <div id="publishModal" class="modal-fixed">
     <div class="modal-fixed__panel">
         <div class="modal-fixed__head">
-            <h3 class="modal-fixed__title">{{ __('public.adm_legal_show_modal_title') }} â€” {{ $document->title }}</h3>
+            <h3 class="modal-fixed__title">{{ __('public.adm_legal_show_modal_title') }} — {{ $document->title }}</h3>
             <button type="button" class="icon-btn" aria-label="{{ __('public.aria_close') }}" onclick="opCloseModal('publishModal')"><i data-lucide="x"></i></button>
         </div>
         <form method="POST" action="{{ route('portals.admin.legal.publish_version', $document) }}">
@@ -114,11 +114,11 @@
             </div>
             <div class="form-group mb-3">
                 <label class="form-label">{{ __('public.adm_legal_show_modal_summary_label') }}</label>
-                <input type="text" name="change_summary" class="form-control" placeholder="What changed in this version?">
+                <input type="text" name="change_summary" class="form-control" placeholder="{{ __('admin_extra.ph_change_summary', [], app()->getLocale()) ?: 'What changed in this version?' }}">
             </div>
             <div class="form-group mb-3">
                 <label class="form-label form-label-required">{{ __('public.adm_legal_show_modal_content_label') }}</label>
-                <textarea name="content_html" rows="12" class="form-control mono" required placeholder="<h1>Terms of Use</h1><p>...</p>"></textarea>
+                <textarea name="content_html" rows="12" class="form-control mono" required placeholder="<h1>{{ __('admin_extra.legal_terms_of_use', [], app()->getLocale()) ?: 'Terms of Use' }}</h1><p>...</p>"></textarea>
             </div>
             <div class="form-group mb-4">
                 <label class="form-check">

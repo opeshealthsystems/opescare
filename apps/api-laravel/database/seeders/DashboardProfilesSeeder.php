@@ -421,29 +421,6 @@ class DashboardProfilesSeeder extends Seeder
                 'description'   => 'Bulk data import, mapping, and validation',
             ],
 
-            // ── Academy / Certification ───────────────────────────────────────
-            [
-                'key'           => 'academy_learner',
-                'name'          => 'Academy Learner Dashboard',
-                'portal_prefix' => 'admin',
-                'landing_route' => 'academy.dashboard',
-                'description'   => 'Course learning and certification tracking',
-            ],
-            [
-                'key'           => 'academy_instructor',
-                'name'          => 'Academy Instructor Dashboard',
-                'portal_prefix' => 'admin',
-                'landing_route' => 'portals.admin',
-                'description'   => 'Course delivery and learner progress management',
-            ],
-            [
-                'key'           => 'academy_admin',
-                'name'          => 'Academy Admin Dashboard',
-                'portal_prefix' => 'admin',
-                'landing_route' => 'portals.admin',
-                'description'   => 'Academy programme and certification administration',
-            ],
-
             // ── Partner Governance ────────────────────────────────────────────
             [
                 'key'           => 'partner_admin',

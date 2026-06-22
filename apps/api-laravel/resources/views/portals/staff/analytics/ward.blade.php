@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Ward & Bed Analytics')
+@section('title', __('staff_analytics.title_ward', [], app()->getLocale()) ?: 'Ward & Bed Analytics')
 @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
 
 @section('content')

@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 @section('title', __('public.stf_files_upload_title'))
-@section('breadcrumb_home', 'Staff Portal')
+@section('breadcrumb_home', __('staff_data.bc_home', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
 @section('breadcrumb_section', __('public.stf_files_upload_title'))
 
@@ -29,7 +29,7 @@
                     <label class="form-label form-label-required">{{ __('public.stf_files_lbl_resource_type') }}</label>
                     <select name="resource_type" class="form-control" required>
                         @foreach(['patient','visit','triage_record','clinical_note','invoice','support_ticket'] as $rt)
-                            <option value="{{ $rt }}" {{ $resourceType === $rt ? 'selected' : '' }}>{{ ucwords(str_replace('_',' ',$rt)) }}</option>
+                            <option value="{{ $rt }}" {{ $resourceType === $rt ? 'selected' : '' }}>@enum($rt, 'resource_type')</option>
                         @endforeach
                     </select>
                 </div>
@@ -47,7 +47,7 @@
                     <div class="empty-state-icon"><i data-lucide="upload-cloud"></i></div>
                     <div class="td-strong">{{ __('public.stf_files_click_browse') }}</div>
                     <div id="file-name" class="td-muted">
-                        Max {{ $maxSizeMb }} MB · PDF, Images, Word, Excel, CSV
+                        {{ __('staff_data.files_size_hint', ['max' => $maxSizeMb], app()->getLocale()) ?: 'Max '.$maxSizeMb.' MB · PDF, Images, Word, Excel, CSV' }}
                     </div>
                 </div>
                 <input type="file" id="file-input" name="file" required class="sr-only"

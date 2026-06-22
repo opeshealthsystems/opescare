@@ -94,19 +94,19 @@
                         </td>
                         <td data-label="{{ __('public.stf_ref_index_col_priority') }}">
                             @php
-                                $prCls = match($referral->priority ?? 'routine') {
+                                $prCls = match($referral->urgency ?? 'routine') {
                                     'emergency' => 'badge-critical',
                                     'urgent'    => 'badge-danger',
                                     default     => 'badge-neutral',
                                 };
                             @endphp
-                            <span class="badge {{ $prCls }}">{{ ucfirst($referral->priority ?? 'routine') }}</span>
+                            <span class="badge {{ $prCls }}">@enum($referral->urgency ?? 'routine', 'urgency')</span>
                         </td>
                         <td data-label="{{ __('public.stf_ref_index_col_facility') }}">
                             <span class="td-muted">{{ $referral->referring_facility_id ?? '—' }}</span>
                         </td>
                         <td data-label="{{ __('public.stf_ref_index_col_specialty') }}">
-                            <span class="td-muted">{{ $referral->specialty ?? '—' }}</span>
+                            <span class="td-muted">{{ $referral->receiving_specialty ?? '—' }}</span>
                         </td>
                         <td data-label="{{ __('public.stf_ref_index_col_status') }}">
                             @php
@@ -120,7 +120,7 @@
                                     default     => 'badge-warning',
                                 };
                             @endphp
-                            <span class="badge {{ $stCls }}">{{ ucfirst($referral->status ?? 'draft') }}</span>
+                            <span class="badge {{ $stCls }}">@enum($referral->status ?? 'draft')</span>
                         </td>
                         <td data-label="{{ __('public.stf_ref_index_col_created') }}">
                             <span class="td-muted">{{ $referral->created_at?->format('d M Y') ?? '—' }}</span>

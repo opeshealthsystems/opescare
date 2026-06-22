@@ -35,18 +35,18 @@
                 <tbody>
                 @foreach($deliveries as $log)
                 <tr>
-                    <td data-label="Event" class="mono">{{ Str::limit($log->event_id, 20) }}</td>
-                    <td data-label="Type" class="mono">{{ $log->event_type }}</td>
-                    <td data-label="Attempts">{{ $log->attempts ?? $log->retry_count ?? 0 }}</td>
-                    <td data-label="HTTP">
+                    <td data-label="{{ __('dev_extra.dl_event', [], $l) ?: 'Event' }}" class="mono">{{ Str::limit($log->event_id, 20) }}</td>
+                    <td data-label="{{ __('dev_extra.dl_type', [], $l) ?: 'Type' }}" class="mono">{{ $log->event_type }}</td>
+                    <td data-label="{{ __('dev_extra.dl_attempts', [], $l) ?: 'Attempts' }}">{{ $log->attempts ?? $log->retry_count ?? 0 }}</td>
+                    <td data-label="{{ __('dev_extra.dl_http', [], $l) ?: 'HTTP' }}">
                         @if($log->http_status_code)
                         <span class="badge {{ $log->http_status_code >= 200 && $log->http_status_code < 300 ? 'badge-success' : 'badge-danger' }}">{{ $log->http_status_code }}</span>
                         @else
                         <span class="td-muted">—</span>
                         @endif
                     </td>
-                    <td data-label="Status"><span class="{{ $log->statusBadgeClass() }}">{{ ucfirst($log->status) }}</span></td>
-                    <td data-label="Delivered at" class="td-muted">{{ $log->delivered_at?->format('d M Y H:i') ?? '—' }}</td>
+                    <td data-label="{{ __('dev_extra.dl_status', [], $l) ?: 'Status' }}"><span class="{{ $log->statusBadgeClass() }}">@enum($log->status)</span></td>
+                    <td data-label="{{ __('dev_extra.dl_delivered_at', [], $l) ?: 'Delivered at' }}" class="td-muted">{{ $log->delivered_at?->format('d M Y H:i') ?? '—' }}</td>
                 </tr>
                 @endforeach
                 </tbody>

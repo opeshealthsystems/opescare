@@ -98,7 +98,6 @@
                                 'checked_in' => 'badge-teal',
                                 default      => 'badge-neutral',
                             };
-                            $statusLabel = ucwords(str_replace('_', ' ', $appointment->status ?? 'Unknown'));
                         @endphp
                         <tr>
                             <td data-label="{{ __('public.staff_portal.col_datetime', [], app()->getLocale()) ?: 'Date / Time' }}">
@@ -111,13 +110,13 @@
                                 {{ $appointment->provider_name ?? $appointment->provider_id ?? '--' }}
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_type', [], app()->getLocale()) ?: 'Type' }}">
-                                <span class="badge badge-primary">{{ ucwords(str_replace('_', ' ', $appointment->appointment_type ?? 'General')) }}</span>
+                                <span class="badge badge-primary">@enum($appointment->appointment_type ?? 'General')</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_facility', [], app()->getLocale()) ?: 'Facility' }}">
                                 {{ $appointment->facility_name ?? $appointment->facility_id ?? '--' }}
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_status', [], app()->getLocale()) ?: 'Status' }}">
-                                <span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span>
+                                <span class="badge {{ $statusBadge }}">@enum($appointment->status ?? 'Unknown')</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.col_actions', [], app()->getLocale()) ?: 'Actions' }}">
                                 <a href="{{ route('portals.staff.appointments') }}?view={{ $appointment->id ?? $appointment->uuid ?? '' }}" class="btn btn-ghost btn-sm">

@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Queue Analytics')
+@section('title', __('staff_analytics.title_queue', [], app()->getLocale()) ?: 'Queue Analytics')
 
 @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
 
@@ -60,7 +60,7 @@
                                     'completed' => 'success',
                                     'cancelled' => 'danger',
                                     default     => 'default',
-                                } }}">{{ ucfirst($status) }}</span></td>
+                                } }}">@enum($status)</span></td>
                                 <td data-label="{{ __('public.stf_analytics_queue_col_count') }}" class="td-strong">{{ number_format($count) }}</td>
                                 <td data-label="{{ __('public.stf_analytics_queue_col_share') }}" class="td-muted">
                                     {{ $totalQueued > 0 ? round($count / $totalQueued * 100, 1) : 0 }}%

@@ -69,7 +69,7 @@
                     <td data-label="{{ __('healthorg.field_when') }}"><span class="td-muted">{{ $e->scheduled_at?->isoFormat('lll') ?? '—' }}</span></td>
                     <td data-label="{{ __('healthorg.field_status') }}">
                         @php $sc = ['completed'=>'success','in_progress'=>'primary','cancelled'=>'danger'][$e->status] ?? 'neutral'; @endphp
-                        <span class="badge badge-{{ $sc }}">{{ ucfirst(str_replace('_',' ',$e->status)) }}</span>
+                        <span class="badge badge-{{ $sc }}">@enum($e->status)</span>
                         @if($e->people_reached !== null)<div class="td-muted">{{ $e->people_reached }} {{ __('healthorg.reached') }}</div>@endif
                     </td>
                     <td class="row-actions">

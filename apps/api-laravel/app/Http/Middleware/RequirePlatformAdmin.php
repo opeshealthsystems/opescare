@@ -28,14 +28,13 @@ class RequirePlatformAdmin
     private const PLATFORM_ROLES = [
         'super_admin', 'platform_admin', 'system_admin', 'product_admin',
         'legal_admin', 'country_admin', 'regional_admin',
-        // Compliance / security / support / partner / academy are platform-company
+        // Compliance / security / support / partner are platform-company
         // functions (not facility staff) and legitimately use the platform console.
         'privacy_officer', 'data_protection_officer', 'security_officer',
         'compliance_officer', 'audit_reviewer', 'emergency_access_reviewer',
         'support_agent', 'support_manager', 'customer_success',
         'implementation_lead', 'training_support',
         'partner_admin', 'partner_reviewer', 'partner_compliance', 'partner_technical',
-        'academy_admin',
     ];
 
     /**
@@ -64,7 +63,6 @@ class RequirePlatformAdmin
         'admin/organizations',
         'admin/roles',
         'admin/care-map',
-        'admin/academy',
     ];
 
     public function handle(Request $request, Closure $next): Response

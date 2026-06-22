@@ -1,7 +1,7 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', __('public.adm_sup_idx_title'))
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin')
+@section('breadcrumb_home', __('admin_extra.breadcrumb_admin', [], app()->getLocale()) ?: 'Admin')
 @section('breadcrumb_home_url', route('portals.admin'))
 @section('breadcrumb_section', __('public.adm_sup_idx_breadcrumb_section'))
 @section('content')
@@ -71,15 +71,15 @@
                 $prioBadge=match($ticket->priority??'medium'){'urgent'=>'badge-danger','high'=>'badge-warning','medium'=>'badge-primary','low'=>'badge-neutral',default=>'badge-neutral'};
                 @endphp
                 <tr>
-                    <td data-label="Ticket #"><span class="td-muted td-strong">#{{ $ticket->ticket_number ?? $ticket->id }}</span></td>
-                    <td data-label="Subject"><a href="{{ route('portals.admin.support.show', $ticket) }}" class="td-strong">{{ Str::limit($ticket->subject, 55) }}</a></td>
-                    <td data-label="Category"><span class="badge badge-neutral">{{ ucfirst($ticket->category ?? 'General') }}</span></td>
-                    <td data-label="Priority"><span class="badge {{ $prioBadge }}">{{ ucfirst($ticket->priority ?? 'Medium') }}</span></td>
-                    <td data-label="Status"><span class="badge {{ $statusBadge }}">{{ ucfirst($ticket->status ?? 'Open') }}</span></td>
-                    <td data-label="Assignee">{{ $ticket->assignee?->name ?? 'â€”' }}</td>
-                    <td data-label="Created">{{ $ticket->created_at?->format('d M Y') }}</td>
-                    <td class="row-actions" data-label="Actions">
-                        <a href="{{ route('portals.admin.support.show', $ticket) }}" class="icon-btn" aria-label="{{ __('public.aria_view_ticket') }}" title="View"><i data-lucide="eye"></i></a>
+                    <td data-label="{{ __('admin_extra.sup_col_ticket', [], app()->getLocale()) ?: 'Ticket #' }}"><span class="td-muted td-strong">#{{ $ticket->ticket_number ?? $ticket->id }}</span></td>
+                    <td data-label="{{ __('admin_extra.sup_col_subject', [], app()->getLocale()) ?: 'Subject' }}"><a href="{{ route('portals.admin.support.show', $ticket) }}" class="td-strong">{{ Str::limit($ticket->subject, 55) }}</a></td>
+                    <td data-label="{{ __('admin_extra.sup_col_category', [], app()->getLocale()) ?: 'Category' }}"><span class="badge badge-neutral">{{ ucfirst($ticket->category ?? (__('admin_extra.sup_fallback_general', [], app()->getLocale()) ?: 'General')) }}</span></td>
+                    <td data-label="{{ __('admin_extra.sup_col_priority', [], app()->getLocale()) ?: 'Priority' }}"><span class="badge {{ $prioBadge }}">{{ ucfirst($ticket->priority ?? (__('admin_extra.sup_fallback_medium', [], app()->getLocale()) ?: 'Medium')) }}</span></td>
+                    <td data-label="{{ __('admin_extra.sup_col_status', [], app()->getLocale()) ?: 'Status' }}"><span class="badge {{ $statusBadge }}">{{ ucfirst($ticket->status ?? (__('admin_extra.sup_fallback_open', [], app()->getLocale()) ?: 'Open')) }}</span></td>
+                    <td data-label="{{ __('admin_extra.sup_col_assignee', [], app()->getLocale()) ?: 'Assignee' }}">{{ $ticket->assignee?->name ?? '—' }}</td>
+                    <td data-label="{{ __('admin_extra.sup_col_created', [], app()->getLocale()) ?: 'Created' }}">{{ $ticket->created_at?->format('d M Y') }}</td>
+                    <td class="row-actions" data-label="{{ __('admin_extra.sup_col_actions', [], app()->getLocale()) ?: 'Actions' }}">
+                        <a href="{{ route('portals.admin.support.show', $ticket) }}" class="icon-btn" aria-label="{{ __('public.aria_view_ticket') }}" title="{{ __('admin_extra.title_view', [], app()->getLocale()) ?: 'View' }}"><i data-lucide="eye"></i></a>
                         @if(!in_array($ticket->status??'',['closed','resolved']))
                         <button type="button" class="btn btn-danger btn-sm" title="{{ __('public.aria_close') }}" onclick="opOpenModal('close-{{ $ticket->id }}')"><i data-lucide="x-circle"></i></button>
                         @endif

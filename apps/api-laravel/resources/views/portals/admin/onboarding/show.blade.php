@@ -1,5 +1,5 @@
-﻿@extends('layouts.portal')
-@section('title', $facility->name . ' â€” ' . __('public.adm_onboard_show_title_suffix'))
+@extends('layouts.portal')
+@section('title', $facility->name . ' — ' . __('public.adm_onboard_show_title_suffix'))
 @section('sidebar') @include('portals.admin.control_center._sidebar') @endsection
 
 @section('content')

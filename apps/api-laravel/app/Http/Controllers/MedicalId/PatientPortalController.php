@@ -159,9 +159,21 @@ class PatientPortalController extends Controller
             ];
         }
 
+        $upcomingAppointments = $patient
+            ? Appointment::where('patient_id', $patient->id)
+                ->whereIn('status', ['scheduled', 'confirmed', 'rescheduled'])
+                ->whereNotNull('scheduled_at')
+                ->where('scheduled_at', '>=', now())
+                ->with(['facility:id,name', 'provider:id,first_name,last_name,name'])
+                ->orderBy('scheduled_at')
+                ->limit(5)
+                ->get()
+            : collect();
+
         return view('portals.patient.index', compact(
             'patient', 'qrToken', 'staticQrDataUri',
-            'criticalAllergies', 'activeAllergies', 'activeConditions', 'onboarding'
+            'criticalAllergies', 'activeAllergies', 'activeConditions', 'onboarding',
+            'upcomingAppointments'
         ));
     }
 

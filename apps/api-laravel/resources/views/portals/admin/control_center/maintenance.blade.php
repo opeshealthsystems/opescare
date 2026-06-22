@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', __('public.adm_cc_mnt_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', __('public.adm_cc_mnt_breadcrumb_home'))
@@ -86,7 +86,7 @@
                                 <span class="badge badge-neutral badge-sm">{{ __('public.adm_cc_mnt_badge_blocked') }}</span>
                             @endif
                         </td>
-                        <td data-label="Created By" class="td-muted">{{ $win->created_by ?? 'â€”' }}</td>
+                        <td data-label="Created By" class="td-muted">{{ $win->created_by ?? '—' }}</td>
                         <td class="row-actions">
                             <form method="POST" action="{{ route('portals.admin.cc.maintenance.toggle', $win->id) }}" class="inline-form">
                                 @csrf

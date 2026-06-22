@@ -12,6 +12,20 @@ use Illuminate\Http\Request;
 
 class PharmacyPortalController extends Controller
 {
+    /**
+     * INN / keyword list for identifying controlled substances. OpesCare has no
+     * dedicated drug-schedule column yet, so the controlled-substances register
+     * matches these standard controlled-drug names (opioids, benzodiazepines,
+     * barbiturates, stimulants) against the medicine / generic name.
+     */
+    public const CONTROLLED_KEYWORDS = [
+        'morphine', 'pethidine', 'fentanyl', 'codeine', 'tramadol', 'oxycodone',
+        'hydromorphone', 'methadone', 'buprenorphine', 'pentazocine', 'nalbuphine',
+        'tapentadol', 'diazepam', 'lorazepam', 'midazolam', 'clonazepam', 'alprazolam',
+        'bromazepam', 'phenobarbital', 'pentobarbital', 'secobarbital', 'ketamine',
+        'pregabalin', 'zolpidem', 'amphetamine', 'methylphenidate',
+    ];
+
     private function facilityId(): ?string
     {
         return session('active_facility_id')
@@ -129,7 +143,14 @@ class PharmacyPortalController extends Controller
         }
 
         if ($status = $req->input('stock_status')) {
-            $q->where('stock_status', $status);
+            // "expired" is tracked on the is_expired boolean, not the stock_status
+            // enum (in_stock / low_stock / out_of_stock) — special-case it so the
+            // dashboard "Expired" stat card links to a filter that actually matches.
+            if ($status === 'expired') {
+                $q->where('is_expired', true);
+            } else {
+                $q->where('stock_status', $status);
+            }
         }
 
         $drugs = $q->orderBy('medicine_name')->paginate(30)->withQueryString();
@@ -145,15 +166,29 @@ class PharmacyPortalController extends Controller
     {
         $facilityId = $this->facilityId();
 
+        $keywords = self::CONTROLLED_KEYWORDS;
+
         $controlled = PharmacyInventory::where('facility_id', $facilityId)
             ->where('is_recalled', false)
+            ->where(function ($q) use ($keywords) {
+                foreach ($keywords as $kw) {
+                    $q->orWhere('generic_name', 'like', "%{$kw}%")
+                      ->orWhere('medicine_name', 'like', "%{$kw}%");
+                }
+            })
             ->orderBy('medicine_name')
             ->limit(100)
             ->get();
 
         $recentRx = Prescription::with(['patient', 'items'])
             ->where('facility_id', $facilityId)
-            ->whereHas('items')
+            ->whereHas('items', function ($q) use ($keywords) {
+                $q->where(function ($iq) use ($keywords) {
+                    foreach ($keywords as $kw) {
+                        $iq->orWhere('drug_name', 'like', "%{$kw}%");
+                    }
+                });
+            })
             ->orderByDesc('dispensed_at')
             ->limit(20)
             ->get();

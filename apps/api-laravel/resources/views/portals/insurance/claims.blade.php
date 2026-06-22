@@ -114,7 +114,7 @@
                                 {{ $claim->submitted_at ? \Carbon\Carbon::parse($claim->submitted_at)->format('M d, Y') : '--' }}
                             </td>
                             <td data-label="{{ __('public.insurance_portal.claims_col_status', [], $l) ?: 'Status' }}">
-                                <span class="badge {{ $statusBadge }}">{{ ucwords(str_replace('_',' ',$claim->status)) }}</span>
+                                <span class="badge {{ $statusBadge }}">@enum($claim->status)</span>
                             </td>
                             <td data-label="{{ __('public.insurance_portal.claims_col_actions', [], $l) ?: 'Actions' }}" class="row-actions">
                                 @if($claim->isDraft())

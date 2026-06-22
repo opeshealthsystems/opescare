@@ -100,7 +100,7 @@
                                 @endif
                             </td>
                             <td data-label="{{ __('public.stf_tele_index_col_scheduled') }}">{{ $c->scheduled_at ? $c->scheduled_at->format('d M Y H:i') : '—' }}</td>
-                            <td data-label="{{ __('public.stf_tele_index_col_platform') }}">{{ ucfirst($c->platform ?? 'own') }}</td>
+                            <td data-label="{{ __('public.stf_tele_index_col_platform') }}">@enum($c->platform ?? 'own', 'platform')</td>
                             <td data-label="{{ __('public.stf_tele_index_col_status') }}"><span class="badge {{ $tcBadge }}">{{ $c->status }}</span></td>
                             <td class="row-actions" data-label="{{ __('public.stf_tele_index_col_actions') }}">
                                 <a href="{{ route('portals.staff.telemedicine.show', $c->id) }}" class="btn btn-ghost btn-sm">{{ __('public.stf_tele_index_btn_view') }}</a>

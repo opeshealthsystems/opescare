@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 @section('title', __('public.stf_files_title'))
-@section('breadcrumb_home', 'Staff Portal')
+@section('breadcrumb_home', __('staff_data.bc_home', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
 @section('breadcrumb_section', __('public.stf_files_title'))
 
@@ -26,7 +26,7 @@
 <form method="GET" action="{{ route('portals.staff.files.index') }}" class="filter-bar">
     <select name="resource_type" class="filter-select">
         @foreach(['patient','visit','triage_record','clinical_note','invoice','support_ticket'] as $rt)
-            <option value="{{ $rt }}" {{ $resourceType === $rt ? 'selected' : '' }}>{{ ucwords(str_replace('_',' ',$rt)) }}</option>
+            <option value="{{ $rt }}" {{ $resourceType === $rt ? 'selected' : '' }}>@enum($rt, 'resource_type')</option>
         @endforeach
     </select>
     <label class="filter-search">
@@ -42,7 +42,7 @@
     <div class="panel-header">
         <h3 class="panel-title">
             <i data-lucide="paperclip"></i>
-            {{ __('public.stf_files_attachments_for') }} {{ ucwords(str_replace('_',' ',$resourceType)) }}
+            {{ __('public.stf_files_attachments_for') }} @enum($resourceType, 'resource_type')
         </h3>
         <span class="badge badge-neutral">{{ $attachments->count() }}</span>
     </div>
@@ -83,7 +83,7 @@
                                 <i data-lucide="download"></i> {{ __('public.stf_files_download') }}
                             </a>
                             <form method="POST" action="{{ route('portals.staff.files.destroy', $att->id) }}" class="inline-form"
-                                  onsubmit="return confirm('Remove this attachment?');">
+                                  onsubmit="return confirm('{{ __('staff_data.files_confirm_remove', [], app()->getLocale()) ?: 'Remove this attachment?' }}');">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-xs">
                                     <i data-lucide="trash-2"></i>
@@ -102,7 +102,7 @@
 <div class="panel mb-6">
     <div class="panel-body">
         <div class="empty-state">
-            <p>{{ __('public.stf_files_no_attachments') }} {{ str_replace('_',' ',$resourceType) }}.</p>
+            <p>{{ __('public.stf_files_no_attachments') }} @enum($resourceType, 'resource_type').</p>
         </div>
     </div>
 </div>
@@ -115,7 +115,7 @@
             <i data-lucide="folder-open"></i>
             {{ __('public.stf_files_all_facility') }}
         </h3>
-        <span class="badge badge-neutral">{{ $assets->total() }} total</span>
+        <span class="badge badge-neutral">{{ __('staff_data.files_total_suffix', ['n' => $assets->total()], app()->getLocale()) ?: $assets->total().' total' }}</span>
     </div>
     <div class="panel-body panel-body--flush">
         @if($assets->isEmpty())

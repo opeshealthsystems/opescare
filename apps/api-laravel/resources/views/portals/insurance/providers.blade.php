@@ -68,7 +68,7 @@
                         <span class="badge badge-neutral">{{ $provider->code }}</span>
                     @endif
                     <span class="badge {{ $provider->status === 'active' ? 'badge-success' : 'badge-neutral' }}">
-                        {{ ucwords($provider->status) }}
+                        @enum($provider->status)
                     </span>
                 </h2>
                 @if($provider->contact_email || $provider->contact_phone)
@@ -103,7 +103,7 @@
                             <tr>
                                 <td data-label="{{ __('public.insurance_portal.providers_col_plan_name', [], $l) ?: 'Plan Name' }}"><span class="td-strong">{{ $plan->name }}</span></td>
                                 <td data-label="{{ __('public.insurance_portal.providers_col_code', [], $l) ?: 'Code' }}"><span class="td-mono">{{ $plan->plan_code ?? '--' }}</span></td>
-                                <td data-label="{{ __('public.insurance_portal.providers_col_type', [], $l) ?: 'Type' }}">{{ ucwords($plan->plan_type ?? '--') }}</td>
+                                <td data-label="{{ __('public.insurance_portal.providers_col_type', [], $l) ?: 'Type' }}">@enum($plan->plan_type ?? '--')</td>
                                 <td data-label="{{ __('public.insurance_portal.providers_col_preauth', [], $l) ?: 'Pre-auth Required' }}">
                                     <span class="badge {{ $plan->requires_preauthorization ? 'badge-warning' : 'badge-neutral' }}">
                                         {{ $plan->requires_preauthorization ? __('public.insurance_portal.providers_lbl_yes', [], $l) : __('public.insurance_portal.providers_lbl_no', [], $l) }}
@@ -115,7 +115,7 @@
                                     </span>
                                 </td>
                                 <td data-label="{{ __('public.insurance_portal.providers_col_copay', [], $l) ?: 'Copay %' }}">{{ $plan->copay_percentage ? $plan->copay_percentage . '%' : '--' }}</td>
-                                <td data-label="{{ __('public.insurance_portal.providers_col_status', [], $l) ?: 'Status' }}"><span class="badge badge-success">{{ ucwords($plan->status) }}</span></td>
+                                <td data-label="{{ __('public.insurance_portal.providers_col_status', [], $l) ?: 'Status' }}"><span class="badge badge-success">@enum($plan->status)</span></td>
                             </tr>
                             @endforeach
                         </tbody>

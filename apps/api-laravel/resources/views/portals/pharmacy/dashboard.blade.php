@@ -81,7 +81,7 @@
                         <span class="td-strong">{{ $rx->patient?->full_name ?? '—' }}</span>
                         <div class="td-muted">{{ $rx->items()->count() }} {{ __('public.pharmacy_portal.lbl_items', [], app()->getLocale()) ?: 'item(s)' }} &middot; {{ $rx->created_at?->diffForHumans() }}</div>
                     </td>
-                    <td data-label="{{ __('public.portal.col_status', [], app()->getLocale()) ?: 'Status' }}"><span class="badge badge-{{ $rx->statusColor() }}">{{ ucfirst(str_replace('_', ' ', $rx->status)) }}</span></td>
+                    <td data-label="{{ __('public.portal.col_status', [], app()->getLocale()) ?: 'Status' }}"><span class="badge badge-{{ $rx->statusColor() }}">@enum($rx->status)</span></td>
                     <td class="row-actions" data-label="">
                         <form method="POST" action="{{ route('portals.pharmacy.dispense', $rx->id) }}" class="inline-form">@csrf
                             <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('{{ __('public.pharmacy_portal.confirm_dispense', [], app()->getLocale()) ?: 'Mark as dispensed?' }}')">
@@ -124,7 +124,7 @@
                     </td>
                     <td data-label="{{ __('public.portal.col_status', [], app()->getLocale()) ?: 'Status' }}">
                         <span class="badge badge-{{ $drug->is_expired ? 'danger' : ($drug->stock_status === 'out_of_stock' ? 'danger' : 'warning') }}">
-                            {{ $drug->is_expired ? (__('public.pharmacy_portal.lbl_expired', [], app()->getLocale()) ?: 'Expired') : ucfirst(str_replace('_', ' ', $drug->stock_status)) }}
+                            @if($drug->is_expired){{ __('public.pharmacy_portal.lbl_expired', [], app()->getLocale()) ?: 'Expired' }}@else@enum($drug->stock_status, 'stock_status')@endif
                         </span>
                     </td>
                 </tr>

@@ -75,25 +75,25 @@
             <tbody>
                 @forelse($agents as $agent)
                     <tr>
-                        <td data-label="Agent Name">
+                        <td data-label="{{ __('admin_extra.bridge_col_agent_name', [], app()->getLocale()) ?: 'Agent Name' }}">
                             <div class="td-strong">{{ $agent->name }}</div>
                             @if($agent->hostname)<div class="td-muted">{{ $agent->hostname }}</div>@endif
                             @if($agent->notes)<div class="td-muted">{{ Str::limit($agent->notes, 45) }}</div>@endif
                         </td>
-                        <td data-label="Key Prefix"><span class="code-token">{{ $agent->displayKey() }}</span></td>
-                        <td data-label="Status">
+                        <td data-label="{{ __('admin_extra.bridge_col_key_prefix', [], app()->getLocale()) ?: 'Key Prefix' }}"><span class="code-token">{{ $agent->displayKey() }}</span></td>
+                        <td data-label="{{ __('admin_extra.bridge_col_status', [], app()->getLocale()) ?: 'Status' }}">
                             <span class="badge badge-{{ $agent->status === 'active' ? 'success' : ($agent->status === 'suspended' ? 'danger' : 'warning') }}">{{ $agent->status }}</span>
                         </td>
-                        <td data-label="Version">{{ $agent->version ?: '—' }}</td>
-                        <td data-label="Last Seen">
+                        <td data-label="{{ __('admin_extra.bridge_col_version', [], app()->getLocale()) ?: 'Version' }}">{{ $agent->version ?: '—' }}</td>
+                        <td data-label="{{ __('admin_extra.bridge_col_last_seen', [], app()->getLocale()) ?: 'Last Seen' }}">
                             {{ $agent->last_seen_at ? $agent->last_seen_at->diffForHumans() : '—' }}
                             @if($agent->ip_address)<div class="td-muted">{{ $agent->ip_address }}</div>@endif
                         </td>
-                        <td data-label="Last Sync">{{ $agent->last_sync_at ? $agent->last_sync_at->diffForHumans() : '—' }}</td>
-                        <td data-label="Batches">
-                            <a href="{{ route('portals.admin.bridge.batches', $agent->id) }}" class="btn btn-secondary btn-sm">{{ $agent->sync_batches_count }} batches</a>
+                        <td data-label="{{ __('admin_extra.bridge_col_last_sync', [], app()->getLocale()) ?: 'Last Sync' }}">{{ $agent->last_sync_at ? $agent->last_sync_at->diffForHumans() : '—' }}</td>
+                        <td data-label="{{ __('admin_extra.bridge_col_batches', [], app()->getLocale()) ?: 'Batches' }}">
+                            <a href="{{ route('portals.admin.bridge.batches', $agent->id) }}" class="btn btn-secondary btn-sm">{{ __('admin_extra.count_batches', ['n' => $agent->sync_batches_count], app()->getLocale()) ?: $agent->sync_batches_count.' batches' }}</a>
                         </td>
-                        <td class="row-actions" data-label="Actions">
+                        <td class="row-actions" data-label="{{ __('admin_extra.bridge_col_actions', [], app()->getLocale()) ?: 'Actions' }}">
                             <button type="button" class="btn btn-{{ $agent->status === 'active' ? 'warning' : 'success' }} btn-sm" onclick="opOpenModal('toggle-{{ $agent->id }}')">
                                 {{ $agent->status === 'active' ? __('public.adm_bridge_btn_suspend') : __('public.adm_bridge_btn_reactivate') }}
                             </button>
@@ -115,15 +115,15 @@
         <div class="field-grid">
             <div class="stat-card">
                 <code class="code-token">POST /api/v1/bridge/sync</code>
-                <p class="td-muted">Post a batch of records. Supports ehr_records, appointments, pharmacy_stock, blood_stock.</p>
+                <p class="td-muted">{{ __('admin_extra.bridge_api_desc_sync', [], app()->getLocale()) ?: 'Post a batch of records. Supports ehr_records, appointments, pharmacy_stock, blood_stock.' }}</p>
             </div>
             <div class="stat-card">
                 <code class="code-token">POST /api/v1/bridge/heartbeat</code>
-                <p class="td-muted">Announce agent version, hostname, and capabilities. Updates last-seen timestamp.</p>
+                <p class="td-muted">{{ __('admin_extra.bridge_api_desc_heartbeat', [], app()->getLocale()) ?: 'Announce agent version, hostname, and capabilities. Updates last-seen timestamp.' }}</p>
             </div>
             <div class="stat-card">
                 <code class="code-token">GET /api/v1/bridge/status</code>
-                <p class="td-muted">Query recent batch results and sync health for this agent.</p>
+                <p class="td-muted">{{ __('admin_extra.bridge_api_desc_status', [], app()->getLocale()) ?: 'Query recent batch results and sync health for this agent.' }}</p>
             </div>
         </div>
         <p class="td-muted mt-6">{{ __('public.adm_bridge_api_header_note') }} <code class="code-token">X-Bridge-Agent-Key: &lt;raw_key&gt;</code></p>
@@ -134,7 +134,7 @@
 @foreach($agents as $agent)
 <div id="toggle-{{ $agent->id }}" class="modal-backdrop mt-6" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="toggle-{{ $agent->id }}-title">
-        <h3 class="modal__title" id="toggle-{{ $agent->id }}-title"><i data-lucide="cable"></i> {{ $agent->status === 'active' ? __('public.adm_bridge_btn_suspend') : __('public.adm_bridge_btn_reactivate') }} agent</h3>
+        <h3 class="modal__title" id="toggle-{{ $agent->id }}-title"><i data-lucide="cable"></i> {{ $agent->status === 'active' ? __('public.adm_bridge_btn_suspend') : __('public.adm_bridge_btn_reactivate') }} {{ __('admin_extra.bridge_agent', [], app()->getLocale()) ?: 'agent' }}</h3>
         <form method="POST" action="{{ route('portals.admin.bridge.toggle', $agent->id) }}">
             @csrf
             <div class="modal__body"><p>{{ $agent->status === 'active' ? __('public.adm_bridge_btn_suspend') : __('public.adm_bridge_btn_reactivate') }} <strong>{{ $agent->name }}</strong>?</p></div>

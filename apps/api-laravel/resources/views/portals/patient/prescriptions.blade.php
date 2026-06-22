@@ -59,7 +59,7 @@
                     'success' => 'badge-success', 'info' => 'badge-info', default => 'badge-neutral'
                 };
             @endphp
-            <span class="badge {{ $stCls }}">{{ ucfirst($rx->status) }}</span>
+            <span class="badge {{ $stCls }}">@enum($rx->status)</span>
             @if(in_array($rx->status, ['dispensed', 'active', 'partial']))
             <button type="button" class="btn btn-secondary btn-sm" onclick="opOpenModal('refill-rx-{{ $rx->id }}')">
                 <i data-lucide="refresh-cw"></i> {{ __('public.portal.btn_request_refill', [], $l) ?: 'Request Refill' }}
@@ -87,7 +87,7 @@
                     <td data-label="{{ __('public.portal.col_frequency', [], $l) ?: 'Frequency' }}">{{ $item->frequency }}</td>
                     <td data-label="{{ __('public.portal.col_duration', [], $l) ?: 'Duration' }}">{{ $item->duration_days ? $item->duration_days . ' ' . (__('public.portal.lbl_days', [], $l) ?: 'days') : '—' }}</td>
                     <td data-label="{{ __('public.portal.col_status', [], $l) ?: 'Status' }}">
-                        <span class="badge {{ $item->isDispensed() ? 'badge-success' : 'badge-neutral' }}">{{ ucfirst($item->status) }}</span>
+                        <span class="badge {{ $item->isDispensed() ? 'badge-success' : 'badge-neutral' }}">@enum($item->status)</span>
                     </td>
                 </tr>
                 @endforeach

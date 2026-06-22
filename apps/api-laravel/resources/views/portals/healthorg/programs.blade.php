@@ -67,7 +67,7 @@
                     <td data-label="{{ __('healthorg.field_type') }}">@if($p->program_type)<span class="badge badge-neutral">{{ __('healthorg.ptype_' . $p->program_type, [], $l) }}</span>@else — @endif</td>
                     <td data-label="{{ __('healthorg.col_period') }}"><span class="td-muted">{{ $p->start_date?->isoFormat('ll') ?? '—' }} → {{ $p->end_date?->isoFormat('ll') ?? '…' }}</span></td>
                     <td data-label="{{ __('healthorg.col_outreach') }}"><span class="badge badge-primary">{{ $p->outreach_events_count }}</span></td>
-                    <td data-label="{{ __('healthorg.field_status') }}"><span class="badge badge-{{ $p->status === 'active' ? 'success' : 'neutral' }}">{{ ucfirst($p->status) }}</span></td>
+                    <td data-label="{{ __('healthorg.field_status') }}"><span class="badge badge-{{ $p->status === 'active' ? 'success' : 'neutral' }}">@enum($p->status)</span></td>
                 </tr>
                 @empty
                 <tr><td colspan="5" class="td-muted empty-cell">{{ __('healthorg.no_programs') }}</td></tr>

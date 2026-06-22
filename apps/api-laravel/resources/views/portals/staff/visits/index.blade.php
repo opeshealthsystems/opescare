@@ -208,10 +208,10 @@
                                 <span class="mono">{{ $visit->patient?->health_id ?? $visit->patient_id }}</span>
                             </td>
                             <td data-label="{{ __('public.stf_visits_col_type_hdr') }}">
-                                <span class="badge badge-neutral">{{ ucwords($visit->visit_type ?? '--') }}</span>
+                                <span class="badge badge-neutral">@enum($visit->visit_type ?? '--')</span>
                             </td>
                             <td data-label="{{ __('public.stf_visits_col_status_hdr') }}">
-                                <span class="badge {{ $statusBadge }}">{{ ucwords(str_replace('_', ' ', $visit->status)) }}</span>
+                                <span class="badge {{ $statusBadge }}">@enum($visit->status)</span>
                             </td>
                             <td data-label="{{ __('public.stf_visits_col_started_hdr') }}">
                                 {{ \Carbon\Carbon::parse($visit->started_at)->format('M d, H:i') }}

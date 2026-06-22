@@ -53,15 +53,15 @@
     <select name="status" class="filter-select" onchange="this.form.submit()">
         <option value="">{{ __('public.staff_portal.clin_lab_filter_all_status') }}</option>
         <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>{{ __('public.staff_portal.clin_lab_chip_pending') }}</option>
-        <option value="collected" {{ request('status') === 'collected' ? 'selected' : '' }}>Collected</option>
+        <option value="collected" {{ request('status') === 'collected' ? 'selected' : '' }}>{{ __('staff_data.opt_collected', [], app()->getLocale()) ?: 'Collected' }}</option>
         <option value="processing" {{ request('status') === 'processing' ? 'selected' : '' }}>{{ __('public.staff_portal.clin_lab_chip_processing') }}</option>
-        <option value="resulted" {{ request('status') === 'resulted' ? 'selected' : '' }}>Resulted</option>
-        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+        <option value="resulted" {{ request('status') === 'resulted' ? 'selected' : '' }}>{{ __('staff_data.opt_resulted', [], app()->getLocale()) ?: 'Resulted' }}</option>
+        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>{{ __('staff_data.opt_cancelled', [], app()->getLocale()) ?: 'Cancelled' }}</option>
     </select>
     <select name="urgency" class="filter-select" onchange="this.form.submit()">
         <option value="">{{ __('public.staff_portal.clin_lab_filter_all_urg') }}</option>
-        <option value="urgent" {{ request('urgency') === 'urgent' ? 'selected' : '' }}>Urgent</option>
-        <option value="routine" {{ request('urgency') === 'routine' ? 'selected' : '' }}>Routine</option>
+        <option value="urgent" {{ request('urgency') === 'urgent' ? 'selected' : '' }}>{{ __('staff_data.opt_urgent', [], app()->getLocale()) ?: 'Urgent' }}</option>
+        <option value="routine" {{ request('urgency') === 'routine' ? 'selected' : '' }}>{{ __('staff_data.opt_routine', [], app()->getLocale()) ?: 'Routine' }}</option>
     </select>
     <input type="text" name="search" class="filter-search" placeholder="{{ __('public.staff_portal.clin_lab_ph_search') }}" value="{{ request('search') }}">
     <button type="submit" class="btn btn-primary btn-sm">{{ __('public.staff_portal.clin_lab_btn_filter') }}</button>
@@ -108,12 +108,12 @@
                         </td>
                         <td data-label="{{ __('public.staff_portal.clin_lab_col_urgency') }}">
                             <span class="badge {{ $order->urgency === 'urgent' ? 'badge-danger' : 'badge-neutral' }}">
-                                {{ ucfirst($order->urgency ?? 'routine') }}
+                                @enum($order->urgency ?? 'routine', 'urgency')
                             </span>
                         </td>
                         <td data-label="{{ __('public.staff_portal.clin_lab_col_ordered') }}" class="td-muted">{{ $order->ordered_at?->format('d M H:i') ?? $order->created_at?->format('d M') }}</td>
                         <td data-label="{{ __('public.staff_portal.clin_lab_col_status') }}">
-                            <span class="badge badge-{{ $orderBadge }}">{{ ucfirst($order->status) }}</span>
+                            <span class="badge badge-{{ $orderBadge }}">@enum($order->status)</span>
                         </td>
                         <td data-label="{{ __('public.staff_portal.clin_lab_col_resulted') }}" class="td-muted">{{ $order->resulted_at?->format('d M Y H:i') ?? '—' }}</td>
                     </tr>

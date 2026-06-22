@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Pharmacy Inventory')
+@section('title', __('staff_inv.title_pharmacy', [], app()->getLocale()) ?: 'Pharmacy Inventory')
 
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
@@ -9,7 +9,7 @@
 
 @section('sidebar_nav')
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Overview</div>
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
     <a href="{{ route('portals.staff') }}" class="sidebar-link">
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
@@ -20,7 +20,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Clinical</div>
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
         <i data-lucide="calendar-check-2"></i>
         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
@@ -35,11 +35,11 @@
     </a>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
         <i data-lucide="brain-circuit"></i>
-        <span>Clinical Alerts</span>
+        <span>{{ __('staff_inv.nav_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">HR & Staff</div>
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_hr', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
         <i data-lucide="users"></i>
         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
@@ -58,7 +58,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Inventory</div>
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link active">
         <i data-lucide="pill"></i>
         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
@@ -69,14 +69,14 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Supply Chain</div>
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
         <i data-lucide="package"></i>
-        <span>Supply Chain</span>
+        <span>{{ __('staff_inv.nav_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Operations</div>
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>
         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
@@ -106,7 +106,7 @@
 
 @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
 @section('breadcrumb_home_url', route('portals.staff'))
-@section('breadcrumb_section', 'Pharmacy Inventory')
+@section('breadcrumb_section', __('staff_inv.breadcrumb_pharmacy', [], app()->getLocale()) ?: 'Pharmacy Inventory')
 
 @section('content')
 
@@ -160,7 +160,7 @@
     <select name="stock_status" class="filter-select">
         <option value="">{{ __('public.stf_inv_pharm_all_statuses') }}</option>
         @foreach(['in_stock','low_stock','out_of_stock'] as $s)
-            <option value="{{ $s }}" {{ request('stock_status') === $s ? 'selected' : '' }}>{{ ucwords(str_replace('_',' ',$s)) }}</option>
+            <option value="{{ $s }}" {{ request('stock_status') === $s ? 'selected' : '' }}>@enum($s, 'stock_status')</option>
         @endforeach
     </select>
     @if($forms->isNotEmpty())
@@ -172,7 +172,7 @@
     </select>
     @endif
     <select name="is_expired" class="filter-select">
-        <option value="">All</option>
+        <option value="">{{ __('staff_inv.filter_all', [], app()->getLocale()) ?: 'All' }}</option>
         <option value="1" {{ request('is_expired') === '1' ? 'selected' : '' }}>{{ __('public.stf_inv_pharm_expired_only') }}</option>
         <option value="0" {{ request('is_expired') === '0' ? 'selected' : '' }}>{{ __('public.stf_inv_pharm_not_expired') }}</option>
     </select>
@@ -227,7 +227,7 @@
                             <td data-label="{{ __('public.stf_inv_pharm_col_form') }}">{{ $item->form }} · {{ $item->strength }}</td>
                             <td data-label="{{ __('public.stf_inv_pharm_col_qty') }}"><span class="td-strong">{{ number_format($item->available_quantity) }}</span></td>
                             <td data-label="{{ __('public.stf_inv_pharm_col_status') }}">
-                                <span class="badge {{ $sBadge }}">{{ ucwords(str_replace('_',' ',$item->stock_status)) }}</span>
+                                <span class="badge {{ $sBadge }}">@enum($item->stock_status, 'stock_status')</span>
                             </td>
                             <td data-label="{{ __('public.stf_inv_pharm_col_flags') }}">
                                 @if($item->is_expired)   <span class="badge badge-danger badge-sm">{{ __('public.stf_inv_pharm_flag_expired') }}</span> @endif
@@ -261,7 +261,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-ghost btn-xs"
-                                            onclick="return confirm('Remove {{ addslashes($item->medicine_name) }} from inventory?')">
+                                            onclick="return confirm('{{ addslashes(__('staff_inv.js_confirm_remove', ['name' => $item->medicine_name], app()->getLocale()) ?: 'Remove '.$item->medicine_name.' from inventory?') }}')">
                                             <i data-lucide="trash-2"></i>
                                         </button>
                                     </form>
@@ -296,11 +296,11 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">{{ __('public.stf_inv_pharm_lbl_form') }}</label>
-                        <input type="text" name="form" class="form-control" required maxlength="80" placeholder="e.g. Tablet, Syrup, Injection">
+                        <input type="text" name="form" class="form-control" required maxlength="80" placeholder="{{ __('staff_inv.ph_form', [], app()->getLocale()) ?: 'e.g. Tablet, Syrup, Injection' }}">
                     </div>
                     <div class="form-group">
                         <label class="form-label">{{ __('public.stf_inv_pharm_lbl_strength') }}</label>
-                        <input type="text" name="strength" class="form-control" required maxlength="80" placeholder="e.g. 500mg, 250mg/5ml">
+                        <input type="text" name="strength" class="form-control" required maxlength="80" placeholder="{{ __('staff_inv.ph_strength', [], app()->getLocale()) ?: 'e.g. 500mg, 250mg/5ml' }}">
                     </div>
                 </div>
                 <div class="form-group">

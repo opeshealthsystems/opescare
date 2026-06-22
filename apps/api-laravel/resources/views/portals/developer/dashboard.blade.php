@@ -79,10 +79,10 @@
                             <div class="mono">{{ Str::limit($client->client_id, 20) }}</div>
                         </td>
                         <td data-label="{{ __('public.developer_portal.col_environment', [], app()->getLocale()) ?: 'Environment' }}">
-                            <span class="badge {{ $client->environment === 'production' ? 'badge-success' : 'badge-info' }}">{{ ucfirst($client->environment ?? 'sandbox') }}</span>
+                            <span class="badge {{ $client->environment === 'production' ? 'badge-success' : 'badge-info' }}">@enum($client->environment ?? 'sandbox', 'environment')</span>
                         </td>
                         <td data-label="{{ __('public.portal.col_status', [], app()->getLocale()) ?: 'Status' }}">
-                            <span class="badge {{ ($client->status ?? 'active') === 'active' ? 'badge-success' : 'badge-neutral' }}">{{ ucfirst($client->status ?? 'active') }}</span>
+                            <span class="badge {{ ($client->status ?? 'active') === 'active' ? 'badge-success' : 'badge-neutral' }}">@enum($client->status ?? 'active')</span>
                         </td>
                         <td class="row-actions" data-label="">
                             <a href="{{ route('portals.developer.apps.show', $client->id) }}" class="icon-btn" aria-label="{{ __('public.developer_portal.lbl_view_app', [], app()->getLocale()) ?: 'View app' }}" title="{{ __('public.developer_portal.lbl_view', [], app()->getLocale()) ?: 'View' }}"><i data-lucide="eye"></i></a>
@@ -117,7 +117,7 @@
                     @foreach($productionRequests as $req)
                     <tr>
                         <td data-label="{{ __('public.developer_portal.col_use_case', [], app()->getLocale()) ?: 'Use case' }}">{{ Str::limit($req->use_case, 40) }}</td>
-                        <td data-label="{{ __('public.portal.col_status', [], app()->getLocale()) ?: 'Status' }}"><span class="{{ $req->statusBadgeClass() }}">{{ ucfirst(str_replace('_',' ',$req->status)) }}</span></td>
+                        <td data-label="{{ __('public.portal.col_status', [], app()->getLocale()) ?: 'Status' }}"><span class="{{ $req->statusBadgeClass() }}">@enum($req->status)</span></td>
                         <td data-label="{{ __('public.portal.col_date', [], app()->getLocale()) ?: 'Date' }}" class="td-muted">{{ $req->created_at->format('d M Y') }}</td>
                     </tr>
                     @endforeach

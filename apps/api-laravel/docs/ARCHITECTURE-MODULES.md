@@ -1,10 +1,10 @@
 # OpesCare — Module Architecture Guide
 
-OpesCare is a national digital health-ID and interoperability platform (Laravel 13 / PHP 8.3 / PostgreSQL, queue on Redis + Horizon). Its domain logic lives in **46 modules** under `app/Modules/`, each a self-contained set of Models + Services, surfaced through web portals (`/portals/*`) and a versioned API (`/api/v1/*`, `/api/mobile/*`).
+OpesCare is a national digital health-ID and interoperability platform (Laravel 13 / PHP 8.3 / PostgreSQL, queue on Redis + Horizon). Its domain logic lives in **45 modules** under `app/Modules/`, each a self-contained set of Models + Services, surfaced through web portals (`/portals/*`) and a versioned API (`/api/v1/*`, `/api/mobile/*`).
 
-This guide groups the 46 into **7 domains**. The first five form the **patient journey**; the last two are **cross-cutting** layers that every domain above depends on.
+This guide groups the 45 into **7 domains**. The first five form the **patient journey**; the last two are **cross-cutting** layers that every domain above depends on.
 
-![OpesCare module architecture — 46 modules in 7 domains](assets/opescare-architecture.svg)
+![OpesCare module architecture — 45 modules in 7 domains](assets/opescare-architecture.svg)
 
 ```mermaid
 flowchart TB
@@ -421,12 +421,6 @@ flowchart LR
 - **Services:** `CountryExpansionService`.
 - **Main flow:** country launch initiated → compliance checklist → approved → country activated with its config.
 
-### Academy
-- **Purpose:** Training courses, quizzes, simulations, competency gating and certification.
-- **Importance:** Staff competency is a clinical-safety control; certificates can gate who may perform what.
-- **Services:** `CourseService`, `EnrollmentService`, `QuizService`, `SimulationService`, `CompetencyGateService`, `CertificateService`, `CertificateVerificationService`, `AcademyReportingService`.
-- **Main flow:** enrol → learn → quiz/simulation → competency gate passed → certificate issued + verifiable.
-
 ---
 
 ## How the layers fit together (one example)
@@ -471,7 +465,7 @@ sequenceDiagram
 | Commerce & Coverage | Billing, Insurance, Subscription, Referral | 4 |
 | Population & Interoperability | PublicHealth, Connect, Fhir, CareMap, Partners, ResearchAccess | 6 |
 | Engagement & Communication | Notifications, Messaging, Broadcasts, Communications, Tasks, Support | 6 |
-| Platform, Trust & Growth | Governance, SecurityOperations, Analytics, Admin, FileStorage, Offline, OpesCareLite, Legal, FacilityReadiness, CountryExpansion, Academy | 11 |
-| **Total** | | **46** |
+| Platform, Trust & Growth | Governance, SecurityOperations, Analytics, Admin, FileStorage, Offline, OpesCareLite, Legal, FacilityReadiness, CountryExpansion | 10 |
+| **Total** | | **45** |
 
 *Generated from the live `app/Modules/` tree (models + services per module). The Mermaid diagrams render on GitHub and in most Markdown viewers; the inline SVG system map is in the architecture overview.*

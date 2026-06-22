@@ -60,7 +60,7 @@
                         <td data-label="{{ __('billing.facility') }}"><span class="td-muted">{{ $inv->facility?->name ?? '—' }}</span></td>
                         <td data-label="{{ __('billing.total') }}">XAF {{ number_format((float) $inv->patient_responsibility_amount, 0) }}</td>
                         <td data-label="{{ __('billing.balance') }}"><strong>XAF {{ number_format($due, 0) }}</strong></td>
-                        <td data-label="{{ __('billing.status') }}"><span class="badge {{ $stCls }}">{{ ucfirst($inv->status) }}</span></td>
+                        <td data-label="{{ __('billing.status') }}"><span class="badge {{ $stCls }}">@enum($inv->status)</span></td>
                         <td class="row-actions">
                             @if($due > 0)
                             <a href="{{ route('portals.patient.billing.pay', $inv->id) }}" class="btn btn-primary btn-sm">

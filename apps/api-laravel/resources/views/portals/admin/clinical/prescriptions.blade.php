@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 
 @section('title', __('public.adm_clin_rx_title'))
 
@@ -88,7 +88,7 @@
                 @forelse($prescriptions as $rx)
                 <tr>
                     <td data-label="{{ __('public.adm_clin_rx_col_patient') }}">
-                        <div class="td-strong">{{ $rx->patient?->full_name ?? 'â€”' }}</div>
+                        <div class="td-strong">{{ $rx->patient?->full_name ?? '—' }}</div>
                         <div class="td-muted">{{ $rx->patient?->health_id ?? '' }}</div>
                     </td>
                     <td data-label="{{ __('public.adm_clin_rx_col_items') }}">{{ $rx->items->count() }} item(s)</td>
@@ -97,11 +97,11 @@
                         @if($rx->expires_at)
                             <span class="{{ $rx->expires_at->isPast() ? 'text-danger' : '' }}">{{ $rx->expires_at->format('d M Y') }}</span>
                         @else
-                            <span class="td-muted">â€”</span>
+                            <span class="td-muted">—</span>
                         @endif
                     </td>
                     <td data-label="{{ __('public.adm_clin_rx_col_status') }}"><span class="badge badge-{{ $rx->statusColor() }}">{{ ucfirst(str_replace('_', ' ', $rx->status)) }}</span></td>
-                    <td data-label="{{ __('public.adm_clin_rx_col_dispensed_at') }}">{{ $rx->dispensed_at?->format('d M Y H:i') ?? 'â€”' }}</td>
+                    <td data-label="{{ __('public.adm_clin_rx_col_dispensed_at') }}">{{ $rx->dispensed_at?->format('d M Y H:i') ?? '—' }}</td>
                 </tr>
                 @empty
                 <tr><td colspan="6" class="td-muted empty-cell">{{ __('public.adm_clin_rx_empty') }}</td></tr>

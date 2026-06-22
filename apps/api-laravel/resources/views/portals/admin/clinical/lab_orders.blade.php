@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 
 @section('title', __('public.adm_clin_lab_title'))
 
@@ -90,16 +90,16 @@
                         @if($order->test_code)<div class="td-muted">{{ $order->test_code }}</div>@endif
                     </td>
                     <td data-label="{{ __('public.adm_clin_lab_col_patient') }}">
-                        <div class="td-strong">{{ $order->patient?->full_name ?? 'â€”' }}</div>
+                        <div class="td-strong">{{ $order->patient?->full_name ?? '—' }}</div>
                         <div class="td-muted">{{ $order->patient?->health_id ?? '' }}</div>
                     </td>
                     <td data-label="{{ __('public.adm_clin_lab_col_urgency') }}">
                         <span class="badge {{ $order->urgency === 'urgent' ? 'badge-danger' : 'badge-neutral' }}">{{ ucfirst($order->urgency ?? 'routine') }}</span>
                     </td>
                     <td data-label="{{ __('public.adm_clin_lab_col_ordered') }}">{{ $order->ordered_at?->format('d M Y H:i') ?? $order->created_at?->format('d M Y') }}</td>
-                    <td data-label="{{ __('public.adm_clin_lab_col_collected') }}">{{ $order->collected_at?->format('d M Y H:i') ?? 'â€”' }}</td>
+                    <td data-label="{{ __('public.adm_clin_lab_col_collected') }}">{{ $order->collected_at?->format('d M Y H:i') ?? '—' }}</td>
                     <td data-label="{{ __('public.adm_clin_lab_col_status') }}"><span class="badge badge-{{ $order->statusColor() }}">{{ ucfirst($order->status) }}</span></td>
-                    <td data-label="{{ __('public.adm_clin_lab_col_resulted') }}">{{ $order->resulted_at?->format('d M Y H:i') ?? 'â€”' }}</td>
+                    <td data-label="{{ __('public.adm_clin_lab_col_resulted') }}">{{ $order->resulted_at?->format('d M Y H:i') ?? '—' }}</td>
                 </tr>
                 @empty
                 <tr><td colspan="7" class="td-muted empty-cell">{{ __('public.adm_clin_lab_empty') }}</td></tr>

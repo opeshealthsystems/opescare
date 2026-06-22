@@ -11,7 +11,7 @@
     <div>
         <h1 class="lite-page-title">{{ __('public.lite_portal.offline_title_prefix', [], $l) ?: 'Offline events —' }} {{ $device->device_name }}</h1>
         <p class="lite-page-sub">
-            <span class="lite-badge lite-badge--{{ $device->statusColor() }}">{{ ucfirst($device->status) }}</span>
+            <span class="lite-badge lite-badge--{{ $device->statusColor() }}">@enum($device->status)</span>
             <span class="lite-sub-id">{{ substr($device->id, 0, 8) }}…</span>
         </p>
     </div>
@@ -37,7 +37,7 @@
                 <tbody>
                     @foreach($events as $ev)
                     <tr>
-                        <td class="lite-td-strong">{{ ucwords(str_replace('_', ' ', $ev->event_type)) }}</td>
+                        <td class="lite-td-strong">@enum($ev->event_type)</td>
                         <td>
                             <span class="lite-badge lite-badge--{{ match($ev->status) {
                                 'applied'    => 'success',
@@ -46,7 +46,7 @@
                                 'conflict'   => 'danger',
                                 'rejected'   => 'danger',
                                 default      => 'default',
-                            } }}">{{ ucfirst($ev->status) }}</span>
+                            } }}">@enum($ev->status)</span>
                         </td>
                         <td>{{ $ev->captured_at?->format('d M H:i') ?? '—' }}</td>
                         <td>{{ $ev->received_at?->format('d M H:i') ?? '—' }}</td>

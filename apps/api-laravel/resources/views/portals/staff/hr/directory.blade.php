@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Staff Directory')
+@section('title', __('staff_hr.title_directory', [], app()->getLocale()) ?: 'Staff Directory')
 
 @section('sidebar_role_badge')
 <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
@@ -9,7 +9,7 @@
 
 @section('sidebar_nav')
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Overview</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
     <a href="{{ route('portals.staff') }}" class="sidebar-link">
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
@@ -20,7 +20,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Clinical</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
         <i data-lucide="calendar-check-2"></i>
         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
@@ -35,11 +35,11 @@
     </a>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
         <i data-lucide="brain-circuit"></i>
-        <span>Clinical Alerts</span>
+        <span>{{ __('staff_hr.nav_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">HR & Staff</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_hr', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link active">
         <i data-lucide="users"></i>
         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
@@ -58,7 +58,7 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Inventory</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
         <i data-lucide="pill"></i>
         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
@@ -69,14 +69,14 @@
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Supply Chain</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
         <i data-lucide="package"></i>
-        <span>Supply Chain</span>
+        <span>{{ __('staff_hr.nav_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Operations</div>
+    <div class="sidebar-nav-label">{{ __('staff_hr.nav_lbl_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>
         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
@@ -137,13 +137,13 @@
     <select name="status" class="form-control">
         <option value="">{{ __('public.stf_hr_dir_all_statuses') }}</option>
         @foreach(['active','inactive','on_leave','suspended','terminated'] as $s)
-            <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ ucwords(str_replace('_',' ',$s)) }}</option>
+            <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>@enum($s)</option>
         @endforeach
     </select>
     <select name="staff_category" class="form-control">
         <option value="">{{ __('public.stf_hr_dir_all_categories') }}</option>
         @foreach(['clinical','administrative','support','management'] as $c)
-            <option value="{{ $c }}" {{ request('staff_category') === $c ? 'selected' : '' }}>{{ ucfirst($c) }}</option>
+            <option value="{{ $c }}" {{ request('staff_category') === $c ? 'selected' : '' }}>@enum($c, 'staff_category')</option>
         @endforeach
     </select>
     @if($departments->isNotEmpty())
@@ -209,14 +209,14 @@
                                 <span class="mono">{{ $member->employee_number ?? '—' }}</span>
                             </td>
                             <td data-label="{{ __('public.stf_hr_dir_col_category') }}">
-                                <span class="badge badge-neutral">{{ ucfirst($member->staff_category) }}</span>
+                                <span class="badge badge-neutral">@enum($member->staff_category)</span>
                             </td>
                             <td data-label="{{ __('public.stf_hr_dir_col_department') }}">{{ $member->department ?? '—' }}</td>
                             <td data-label="{{ __('public.stf_hr_dir_col_type') }}">
-                                <span class="badge badge-neutral">{{ ucwords(str_replace('_',' ',$member->employment_type)) }}</span>
+                                <span class="badge badge-neutral">@enum($member->employment_type)</span>
                             </td>
                             <td data-label="{{ __('public.stf_hr_dir_col_status') }}">
-                                <span class="badge {{ $statusBadge }}">{{ ucwords(str_replace('_',' ',$member->status)) }}</span>
+                                <span class="badge {{ $statusBadge }}">@enum($member->status)</span>
                             </td>
                             <td data-label="{{ __('public.stf_hr_dir_col_licenses') }}">
                                 @if($member->licenses->isNotEmpty())
@@ -296,19 +296,19 @@
                 <div class="form-group">
                     <label class="form-label">{{ __('public.stf_hr_dir_lbl_staff_category') }}</label>
                     <select name="staff_category" class="form-control" required>
-                        <option value="clinical">Clinical</option>
-                        <option value="administrative">Administrative</option>
-                        <option value="support">Support</option>
-                        <option value="management">Management</option>
+                        <option value="clinical">{{ __('staff_hr.cat_clinical', [], app()->getLocale()) ?: 'Clinical' }}</option>
+                        <option value="administrative">{{ __('staff_hr.cat_administrative', [], app()->getLocale()) ?: 'Administrative' }}</option>
+                        <option value="support">{{ __('staff_hr.cat_support', [], app()->getLocale()) ?: 'Support' }}</option>
+                        <option value="management">{{ __('staff_hr.cat_management', [], app()->getLocale()) ?: 'Management' }}</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label class="form-label">{{ __('public.stf_hr_dir_lbl_employment_type') }}</label>
                     <select name="employment_type" class="form-control" required>
-                        <option value="full_time">Full Time</option>
-                        <option value="part_time">Part Time</option>
-                        <option value="contract">Contract</option>
-                        <option value="locum">Locum</option>
+                        <option value="full_time">{{ __('staff_hr.emp_full_time', [], app()->getLocale()) ?: 'Full Time' }}</option>
+                        <option value="part_time">{{ __('staff_hr.emp_part_time', [], app()->getLocale()) ?: 'Part Time' }}</option>
+                        <option value="contract">{{ __('staff_hr.emp_contract', [], app()->getLocale()) ?: 'Contract' }}</option>
+                        <option value="locum">{{ __('staff_hr.emp_locum', [], app()->getLocale()) ?: 'Locum' }}</option>
                     </select>
                 </div>
             </div>
@@ -344,7 +344,7 @@
             @csrf
             <div class="form-group mb-4">
                 <label class="form-label">{{ __('public.stf_hr_dir_lbl_profession') }}</label>
-                <input type="text" name="profession" class="form-control" required placeholder="e.g. Doctor, Nurse, Pharmacist">
+                <input type="text" name="profession" class="form-control" required placeholder="{{ __('staff_hr.ph_profession', [], app()->getLocale()) ?: 'e.g. Doctor, Nurse, Pharmacist' }}">
             </div>
             <div class="form-group mb-4">
                 <label class="form-label">{{ __('public.stf_hr_dir_lbl_license_number') }}</label>
@@ -352,7 +352,7 @@
             </div>
             <div class="form-group mb-4">
                 <label class="form-label">{{ __('public.stf_hr_dir_lbl_issuing_body') }}</label>
-                <input type="text" name="issuing_body" class="form-control" required maxlength="200" placeholder="e.g. Medical Council of Cameroon">
+                <input type="text" name="issuing_body" class="form-control" required maxlength="200" placeholder="{{ __('staff_hr.ph_issuing_body', [], app()->getLocale()) ?: 'e.g. Medical Council of Cameroon' }}">
             </div>
             <div class="form-row mb-4">
                 <div class="form-group">

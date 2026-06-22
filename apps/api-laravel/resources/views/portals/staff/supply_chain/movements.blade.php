@@ -77,7 +77,7 @@
                                     };
                                 @endphp
                                 <span class="badge badge--{{ $typeColor }} badge-sm">
-                                    {{ str_replace('_',' ', $mv->movement_type) }}
+                                    @enum($mv->movement_type)
                                 </span>
                             </td>
                             <td data-label="{{ __('public.stf_supply_mov_col_qty') }}">
@@ -90,7 +90,7 @@
                             </td>
                             <td data-label="{{ __('public.stf_supply_mov_col_reference') }}" class="td-muted">
                                 @if($mv->reference_type)
-                                    {{ ucfirst(str_replace('_',' ',$mv->reference_type)) }}
+                                    @enum($mv->reference_type)
                                 @else
                                     —
                                 @endif

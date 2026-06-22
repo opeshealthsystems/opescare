@@ -1,7 +1,7 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', __('public.adm_fin_rbs_title'))
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin')
+@section('breadcrumb_home', __('admin_extra.breadcrumb_admin', [], app()->getLocale()) ?: 'Admin')
 @section('breadcrumb_home_url', route('portals.admin'))
 @section('breadcrumb_section', __('public.adm_fin_rbs_title'))
 @section('content')
@@ -29,7 +29,7 @@
         <i data-lucide="calendar"></i>
         <input type="date" name="to_date" value="{{ $to->format('Y-m-d') }}" aria-label="{{ __('public.aria_to_date') }}">
     </label>
-    <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> Apply</button>
+    <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> {{ __('admin_extra.btn_apply', [], app()->getLocale()) ?: 'Apply' }}</button>
 </form>
 
 @php
@@ -41,7 +41,7 @@
     <div class="stat-card">
         <div class="stat-card__label">{{ __('public.adm_fin_rbs_kpi_grand') }}</div>
         <div class="stat-card__value">{{ number_format($grandTotal,0,'.',',') }} XAF</div>
-        <div class="stat-card__hint">Period: {{ $from->format('d M Y') }} â€“ {{ $to->format('d M Y') }}</div>
+        <div class="stat-card__hint">{{ __('admin_extra.rbs_period', [], app()->getLocale()) ?: 'Period:' }} {{ $from->format('d M Y') }} – {{ $to->format('d M Y') }}</div>
     </div>
 </div>
 

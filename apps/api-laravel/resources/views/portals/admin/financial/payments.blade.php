@@ -1,7 +1,7 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', __('public.adm_fin_pay_title'))
 @include('portals.admin.control_center._sidebar')
-@section('breadcrumb_home', 'Admin')
+@section('breadcrumb_home', __('admin_extra.breadcrumb_admin', [], app()->getLocale()) ?: 'Admin')
 @section('breadcrumb_home_url', route('portals.admin'))
 @section('breadcrumb_section', __('public.adm_fin_pay_breadcrumb'))
 @section('content')
@@ -27,17 +27,19 @@
 <form method="GET" action="{{ route('portals.admin.financial.payments') }}" class="filter-bar">
     <label class="filter-search">
         <i data-lucide="search"></i>
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="Reference or phone..." aria-label="{{ __('public.aria_search') }}">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('admin_extra.pay_ph_reference', [], app()->getLocale()) ?: 'Reference or phone...' }}" aria-label="{{ __('public.aria_search') }}">
     </label>
     <select name="gateway" class="filter-select" aria-label="{{ __('public.aria_gateway') }}">
         <option value="">{{ __('public.adm_fin_pay_opt_all_gateways') }}</option>
-        @foreach(['mtn_momo'=>'MTN MoMo','orange_money'=>'Orange Money','cash'=>'Cash','card'=>'Card','insurance'=>'Insurance','bank_transfer'=>'Bank Transfer','wallet'=>'Wallet'] as $k=>$l)
+        @php $gatewayLabels=['mtn_momo'=>'MTN MoMo','orange_money'=>'Orange Money','cash'=>__('admin_extra.opt_cash', [], app()->getLocale()) ?: 'Cash','card'=>__('admin_extra.opt_card', [], app()->getLocale()) ?: 'Card','insurance'=>__('admin_extra.opt_insurance', [], app()->getLocale()) ?: 'Insurance','bank_transfer'=>__('admin_extra.opt_bank_transfer', [], app()->getLocale()) ?: 'Bank Transfer','wallet'=>__('admin_extra.opt_wallet', [], app()->getLocale()) ?: 'Wallet']; @endphp
+        @foreach($gatewayLabels as $k=>$l)
         <option value="{{ $k }}" {{ request('gateway')===$k?'selected':'' }}>{{ $l }}</option>
         @endforeach
     </select>
     <select name="status" class="filter-select" aria-label="{{ __('public.aria_status') }}">
         <option value="">{{ __('public.adm_fin_pay_opt_all_statuses') }}</option>
-        @foreach(['successful'=>'Successful','pending'=>'Pending','failed'=>'Failed','refunded'=>'Refunded','completed'=>'Completed'] as $k=>$l)
+        @php $statusLabels=['successful'=>__('admin_extra.opt_successful', [], app()->getLocale()) ?: 'Successful','pending'=>__('admin_extra.opt_pending', [], app()->getLocale()) ?: 'Pending','failed'=>__('admin_extra.opt_failed', [], app()->getLocale()) ?: 'Failed','refunded'=>__('admin_extra.opt_refunded', [], app()->getLocale()) ?: 'Refunded','completed'=>__('admin_extra.opt_completed', [], app()->getLocale()) ?: 'Completed']; @endphp
+        @foreach($statusLabels as $k=>$l)
         <option value="{{ $k }}" {{ request('status')===$k?'selected':'' }}>{{ $l }}</option>
         @endforeach
     </select>
@@ -65,14 +67,14 @@
         <i data-lucide="calendar"></i>
         <input type="date" name="to_date" value="{{ request('to_date') }}" aria-label="{{ __('public.aria_to_date') }}">
     </label>
-    <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> Filter</button>
-    <a href="{{ route('portals.admin.financial.payments') }}" class="btn btn-ghost btn-sm">Reset</a>
+    <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="filter"></i> {{ __('admin_extra.btn_filter', [], app()->getLocale()) ?: 'Filter' }}</button>
+    <a href="{{ route('portals.admin.financial.payments') }}" class="btn btn-ghost btn-sm">{{ __('admin_extra.btn_reset', [], app()->getLocale()) ?: 'Reset' }}</a>
 </form>
 
 <div class="panel mb-6">
     <div class="panel-body summary-bar">
-        <span class="td-muted">{{ $summaryCount }} transactions</span>
-        <span class="kv-strong">{{ __('public.adm_fin_pay_lbl_collected') }} {{ number_format($summaryTotal,0,'.',',') }} XAF (filtered)</span>
+        <span class="td-muted">{{ __('admin_extra.count_transactions', ['n' => $summaryCount], app()->getLocale()) ?: $summaryCount.' transactions' }}</span>
+        <span class="kv-strong">{{ __('public.adm_fin_pay_lbl_collected') }} {{ number_format($summaryTotal,0,'.',',') }} XAF {{ __('admin_extra.pay_filtered', [], app()->getLocale()) ?: '(filtered)' }}</span>
     </div>
 </div>
 
@@ -109,21 +111,21 @@
                 @elseif($p->payer_name)
                     {{ $p->payer_name }}
                 @else
-                    <span class="td-muted">â€”</span>
+                    <span class="td-muted">—</span>
                 @endif
             </td>
-            <td data-label="{{ __('public.adm_fin_pay_col_phone') }}"><span class="mono">{{ $p->payer_phone ?? 'â€”' }}</span></td>
+            <td data-label="{{ __('public.adm_fin_pay_col_phone') }}"><span class="mono">{{ $p->payer_phone ?? '—' }}</span></td>
             <td data-label="{{ __('public.adm_fin_pay_col_gateway') }}">
                 <span class="cell-with-icon" title="{{ $gw }}">
                     <i data-lucide="{{ $icons[$gw] ?? 'credit-card' }}"></i>
                     <span>{{ ucwords(str_replace('_',' ',$gw)) }}</span>
                 </span>
             </td>
-            <td data-label="{{ __('public.adm_fin_pay_col_gw_txn') }}"><span class="mono" title="{{ $p->gateway_transaction_id }}">{{ $p->gateway_transaction_id ?? 'â€”' }}</span></td>
-            <td data-label="{{ __('public.adm_fin_pay_col_service') }}">{{ ucwords(str_replace('_',' ',$p->service_type??'â€”')) }}</td>
+            <td data-label="{{ __('public.adm_fin_pay_col_gw_txn') }}"><span class="mono" title="{{ $p->gateway_transaction_id }}">{{ $p->gateway_transaction_id ?? '—' }}</span></td>
+            <td data-label="{{ __('public.adm_fin_pay_col_service') }}">{{ ucwords(str_replace('_',' ',$p->service_type??'—')) }}</td>
             <td data-label="{{ __('public.adm_fin_pay_col_amount') }}"><strong>{{ number_format($p->amount,0,'.',',') }}</strong>
                 @if($p->refunded_amount > 0)
-                <div class="td-muted">-{{ number_format($p->refunded_amount,0,'.',',') }} refund</div>
+                <div class="td-muted">-{{ number_format($p->refunded_amount,0,'.',',') }} {{ __('admin_extra.pay_refund', [], app()->getLocale()) ?: 'refund' }}</div>
                 @endif
             </td>
             <td data-label="{{ __('public.adm_fin_pay_col_status') }}">
@@ -133,15 +135,15 @@
                 @else<span class="badge badge-neutral">{{ ucfirst($p->status) }}</span>@endif
             </td>
             <td data-label="{{ __('public.adm_fin_pay_col_device') }}">
-                <span class="cell-with-icon"><i data-lucide="{{ $di[$p->device_type??''] ?? 'monitor' }}"></i> {{ strtoupper($p->device_type ?? 'â€”') }}</span>
+                <span class="cell-with-icon"><i data-lucide="{{ $di[$p->device_type??''] ?? 'monitor' }}"></i> {{ strtoupper($p->device_type ?? '—') }}</span>
             </td>
-            <td data-label="{{ __('public.adm_fin_pay_col_facility') }}">{{ $p->facility?->name ?? 'â€”' }}</td>
-            <td data-label="{{ __('public.adm_fin_pay_col_cashier') }}">{{ $p->cashier?->name ?? 'â€”' }}</td>
+            <td data-label="{{ __('public.adm_fin_pay_col_facility') }}">{{ $p->facility?->name ?? '—' }}</td>
+            <td data-label="{{ __('public.adm_fin_pay_col_cashier') }}">{{ $p->cashier?->name ?? '—' }}</td>
             <td data-label="{{ __('public.adm_fin_pay_col_datetime') }}">
                 {{ $p->created_at?->format('d M Y') }}<br>
                 <span class="td-muted">{{ $p->created_at?->format('H:i:s') }}</span>
             </td>
-            <td class="row-actions" data-label="Actions"><a href="{{ route('portals.admin.financial.payment.detail',$p->id) }}" class="btn btn-ghost btn-sm">{{ __('public.adm_fin_btn_details') }}</a></td>
+            <td class="row-actions" data-label="{{ __('admin_extra.col_actions', [], app()->getLocale()) ?: 'Actions' }}"><a href="{{ route('portals.admin.financial.payment.detail',$p->id) }}" class="btn btn-ghost btn-sm">{{ __('public.adm_fin_btn_details') }}</a></td>
         </tr>
         @empty
         <tr><td colspan="13" class="td-muted empty-cell">{{ __('public.adm_fin_pay_empty') }}</td></tr>

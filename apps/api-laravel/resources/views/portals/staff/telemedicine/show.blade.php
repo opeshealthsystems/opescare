@@ -59,7 +59,7 @@
                     </td>
                 </tr>
                 <tr><td class="kv-strong">{{ __('public.stf_tele_show_kv_scheduled_at') }}</td><td>{{ $consultation->scheduled_at ? $consultation->scheduled_at->format('d M Y H:i') : '—' }}</td></tr>
-                <tr><td class="kv-strong">{{ __('public.stf_tele_show_kv_platform') }}</td><td>{{ ucfirst($consultation->platform ?? 'own') }}</td></tr>
+                <tr><td class="kv-strong">{{ __('public.stf_tele_show_kv_platform') }}</td><td>@enum($consultation->platform ?? 'own', 'platform')</td></tr>
                 <tr><td class="kv-strong">{{ __('public.stf_tele_show_kv_duration') }}</td><td>{{ $consultation->durationMinutes() ? $consultation->durationMinutes() . ' min' : '—' }}</td></tr>
             </table>
         </div>
@@ -141,7 +141,7 @@
         @foreach($consultation->notes as $note)
         <div class="mb-4">
             <div class="mb-1">
-                <strong>{{ ucfirst($note->note_type) }}</strong>
+                <strong>@enum($note->note_type)</strong>
                 @if($note->is_signed)
                     <span class="badge badge-success">{{ __('public.stf_tele_show_badge_signed') }}</span>
                 @endif

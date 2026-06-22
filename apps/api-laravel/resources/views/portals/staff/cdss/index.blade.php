@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Clinical Decision Support — Alerts')
+@section('title', __('staff_analytics.cdss_title_alerts', [], app()->getLocale()) ?: 'Clinical Decision Support — Alerts')
 @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
 
 @section('content')
@@ -85,11 +85,11 @@
                                     @else
                                         <i data-lucide="info"></i>
                                     @endif
-                                    {{ ucfirst($alert->severity) }}
+                                    @enum($alert->severity, 'severity')
                                 </span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.cdss_col_type') }}">
-                                <span class="badge badge-neutral">{{ str_replace('_', ' ', $alert->alert_type) }}</span>
+                                <span class="badge badge-neutral">@enum($alert->alert_type)</span>
                             </td>
                             <td data-label="{{ __('public.staff_portal.cdss_col_patient') }}">
                                 @if($alert->patient)

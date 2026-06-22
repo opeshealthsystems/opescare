@@ -50,7 +50,6 @@ class StaffAccountsSeeder extends Seeder
     private const PW_DEVELOPER= 'D3v3l0p@r#OC26';
     private const PW_SUPPORT  = 'Supp0rt@OC#2026';
     private const PW_SECURITY = 'S3cur1ty@OC#26';
-    private const PW_ACADEMY  = 'Acad3my@OC#2026';
     private const PW_PARTNER  = 'P@rtn3r@OC#2026';
     private const PW_PLATFORM = 'Pl@tAdm1n#OC26';
 
@@ -165,12 +164,6 @@ class StaffAccountsSeeder extends Seeder
         ['00000000-0000-0000-0000-920000000075', 'reconciliation@opescare.com',       'Reconciliation Officer Ibrahima D.', self::PW_SECURITY,  'reconciliation_officer',self::HOSPITAL],
         ['00000000-0000-0000-0000-920000000076', 'data.import@opescare.com',          'Data Import Officer Coumba Fall',    self::PW_SECURITY,  'data_import_officer',   self::HOSPITAL],
         ['00000000-0000-0000-0000-920000000077', 'data.quality@opescare.com',         'Data Quality Reviewer Ramata T.',    self::PW_SECURITY,  'data_quality_reviewer', self::HOSPITAL],
-
-        // ── Academy & Certification ───────────────────────────────────────────
-        ['00000000-0000-0000-0000-920000000078', 'academy.learner@opescare.com',      'Academy Learner Aminata Diallo',     self::PW_ACADEMY,   'academy_learner',       null],
-        ['00000000-0000-0000-0000-920000000079', 'academy.instructor@opescare.com',   'Academy Instructor Dr. Coumba Koné', self::PW_ACADEMY,   'academy_instructor',    null],
-        ['00000000-0000-0000-0000-920000000080', 'academy.admin@opescare.com',        'Academy Admin Penda Sarr',           self::PW_ACADEMY,   'academy_admin',         null],
-        ['00000000-0000-0000-0000-920000000081', 'cert.reviewer@opescare.com',        'Certification Reviewer Thierno Bah', self::PW_ACADEMY,   'certification_reviewer',null],
 
         // ── Partner Governance ────────────────────────────────────────────────
         ['00000000-0000-0000-0000-920000000082', 'partner.admin@opescare.com',        'Partner Admin Mody Diallo',          self::PW_PARTNER,   'partner_admin',         null],

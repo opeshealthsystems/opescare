@@ -52,7 +52,7 @@
                 @endif
             </div>
             <div class="text-sm text-muted mb-4">
-                {{ ucfirst(str_replace('_', ' ', $link->relationship)) }} &middot;
+                @enum($link->relationship) &middot;
                 {{ $link->access_level === 'full' ? (__('public.portal.lbl_full_access', [], $l) ?: 'Full access') : (__('public.portal.lbl_read_only', [], $l) ?: 'Read only') }}
             </div>
             @if($link->isExpiredByAge())
@@ -86,7 +86,7 @@
     <div class="panel mb-4">
         <div class="panel-body">
             <p class="mb-3">
-                <strong>{{ $cl->guardianUser?->name ?? $cl->guardianUser?->email ?? 'Unknown guardian' }}</strong>
+                <strong>{{ $cl->guardianUser?->name ?? $cl->guardianUser?->email ?? __('public.portal.unknown_guardian', [], $l) ?: 'Unknown guardian' }}</strong>
                 {{ __('public.portal.guardian_access_desc', [], $l) ?: 'has guardian access to your records. This access will expire on' }}
                 <strong>{{ $cl->age_transition_expires_at->format('M d, Y') }}</strong>
                 {{ __('public.portal.guardian_approve_suffix', [], $l) ?: 'unless you approve continued access.' }}

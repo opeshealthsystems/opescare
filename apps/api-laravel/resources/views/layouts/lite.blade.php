@@ -344,36 +344,36 @@
         </div>
         <a href="{{ route('portals.lite.dashboard') }}"
            class="lite-sidenav__link {{ request()->routeIs('portals.lite.dashboard') ? 'active' : '' }}">
-            <i data-lucide="layout-dashboard"></i> Dashboard
+            <i data-lucide="layout-dashboard"></i> {{ __('lite_chrome.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}
         </a>
         <a href="{{ route('portals.lite.lookup') }}"
            class="lite-sidenav__link {{ request()->routeIs('portals.lite.lookup') ? 'active' : '' }}">
-            <i data-lucide="search"></i> Health ID Lookup
+            <i data-lucide="search"></i> {{ __('lite_chrome.nav_lookup', [], app()->getLocale()) ?: 'Health ID Lookup' }}
         </a>
         <a href="{{ route('portals.lite.checkin') }}"
            class="lite-sidenav__link {{ request()->routeIs('portals.lite.checkin') ? 'active' : '' }}">
-            <i data-lucide="log-in"></i> Check-In
+            <i data-lucide="log-in"></i> {{ __('lite_chrome.nav_checkin', [], app()->getLocale()) ?: 'Check-In' }}
         </a>
         <a href="{{ route('portals.lite.consultation') }}"
            class="lite-sidenav__link {{ request()->routeIs('portals.lite.consultation') ? 'active' : '' }}">
-            <i data-lucide="stethoscope"></i> Consultation
+            <i data-lucide="stethoscope"></i> {{ __('lite_chrome.nav_consultation', [], app()->getLocale()) ?: 'Consultation' }}
         </a>
         <a href="{{ route('portals.lite.billing') }}"
            class="lite-sidenav__link {{ request()->routeIs('portals.lite.billing') ? 'active' : '' }}">
-            <i data-lucide="receipt"></i> Billing
+            <i data-lucide="receipt"></i> {{ __('lite_chrome.nav_billing', [], app()->getLocale()) ?: 'Billing' }}
         </a>
-        <div class="lite-sidenav__section">Admin</div>
+        <div class="lite-sidenav__section">{{ __('lite_chrome.nav_admin', [], app()->getLocale()) ?: 'Admin' }}</div>
         <a href="{{ route('portals.lite.devices') }}"
            class="lite-sidenav__link {{ request()->routeIs('portals.lite.devices') ? 'active' : '' }}">
-            <i data-lucide="monitor-smartphone"></i> Devices
+            <i data-lucide="monitor-smartphone"></i> {{ __('lite_chrome.nav_devices', [], app()->getLocale()) ?: 'Devices' }}
         </a>
         <a href="{{ route('portals.lite.conflicts') }}"
            class="lite-sidenav__link {{ request()->routeIs('portals.lite.conflicts') ? 'active' : '' }}">
-            <i data-lucide="git-merge"></i> Conflicts
+            <i data-lucide="git-merge"></i> {{ __('lite_chrome.nav_conflicts', [], app()->getLocale()) ?: 'Conflicts' }}
         </a>
         <div class="lite-sidenav__footer">
             <a href="{{ route('portals.staff') }}" class="lite-sidenav__link lite-footer-link">
-                <i data-lucide="arrow-left"></i> Full Portal
+                <i data-lucide="arrow-left"></i> {{ __('lite_chrome.nav_full_portal', [], app()->getLocale()) ?: 'Full Portal' }}
             </a>
         </div>
     </nav>
@@ -392,9 +392,11 @@
         </header>
 
         {{-- Online/offline status bar --}}
-        <div class="lite-status-bar online" id="lite-status-bar">
+        <div class="lite-status-bar online" id="lite-status-bar"
+             data-online-text="{{ __('lite_chrome.status_online', [], app()->getLocale()) ?: 'Online — Synced' }}"
+             data-offline-text="{{ __('lite_chrome.status_offline', [], app()->getLocale()) ?: 'Offline — Changes will sync when reconnected' }}">
             <span class="lite-status-dot"></span>
-            <span id="lite-status-text">Online — Synced</span>
+            <span id="lite-status-text">{{ __('lite_chrome.status_online', [], app()->getLocale()) ?: 'Online — Synced' }}</span>
         </div>
 
         @if(session('success'))
@@ -423,23 +425,23 @@
     <nav class="lite-bottomnav">
         <a href="{{ route('portals.lite.dashboard') }}"
            class="lite-bottomnav__item {{ request()->routeIs('portals.lite.dashboard') ? 'active' : '' }}">
-            <i data-lucide="layout-dashboard"></i>Home
+            <i data-lucide="layout-dashboard"></i>{{ __('lite_chrome.bottom_home', [], app()->getLocale()) ?: 'Home' }}
         </a>
         <a href="{{ route('portals.lite.lookup') }}"
            class="lite-bottomnav__item {{ request()->routeIs('portals.lite.lookup') ? 'active' : '' }}">
-            <i data-lucide="search"></i>Lookup
+            <i data-lucide="search"></i>{{ __('lite_chrome.bottom_lookup', [], app()->getLocale()) ?: 'Lookup' }}
         </a>
         <a href="{{ route('portals.lite.checkin') }}"
            class="lite-bottomnav__item {{ request()->routeIs('portals.lite.checkin') ? 'active' : '' }}">
-            <i data-lucide="log-in"></i>Check-In
+            <i data-lucide="log-in"></i>{{ __('lite_chrome.bottom_checkin', [], app()->getLocale()) ?: 'Check-In' }}
         </a>
         <a href="{{ route('portals.lite.consultation') }}"
            class="lite-bottomnav__item {{ request()->routeIs('portals.lite.consultation') ? 'active' : '' }}">
-            <i data-lucide="stethoscope"></i>Consult
+            <i data-lucide="stethoscope"></i>{{ __('lite_chrome.bottom_consult', [], app()->getLocale()) ?: 'Consult' }}
         </a>
         <a href="{{ route('portals.lite.devices') }}"
            class="lite-bottomnav__item {{ request()->routeIs('portals.lite.*') && !request()->routeIs('portals.lite.dashboard') && !request()->routeIs('portals.lite.lookup') && !request()->routeIs('portals.lite.checkin') && !request()->routeIs('portals.lite.consultation') && !request()->routeIs('portals.lite.billing') ? 'active' : '' }}">
-            <i data-lucide="monitor-smartphone"></i>Admin
+            <i data-lucide="monitor-smartphone"></i>{{ __('lite_chrome.bottom_admin', [], app()->getLocale()) ?: 'Admin' }}
         </a>
     </nav>
 
@@ -460,10 +462,10 @@ function updateOnlineStatus() {
     const text = document.getElementById('lite-status-text');
     if (navigator.onLine) {
         bar.className  = 'lite-status-bar online';
-        text.textContent = 'Online — Synced';
+        text.textContent = bar.dataset.onlineText;
     } else {
         bar.className  = 'lite-status-bar';
-        text.textContent = 'Offline — Changes will sync when reconnected';
+        text.textContent = bar.dataset.offlineText;
     }
 }
 window.addEventListener('online',  updateOnlineStatus);

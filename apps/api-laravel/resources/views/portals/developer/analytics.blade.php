@@ -108,7 +108,7 @@
                         <div class="mono">{{ $client->client_id }}</div>
                     </td>
                     <td data-label="{{ __('public.portal.col_status', [], $l) ?: 'Status' }}">
-                        <span class="badge badge-{{ $client->status === 'active' ? 'success' : ($client->status === 'pending' ? 'warning' : 'neutral') }}">{{ ucfirst($client->status) }}</span>
+                        <span class="badge badge-{{ $client->status === 'active' ? 'success' : ($client->status === 'pending' ? 'warning' : 'neutral') }}">@enum($client->status)</span>
                     </td>
                 </tr>
                 @endforeach

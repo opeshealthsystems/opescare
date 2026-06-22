@@ -143,12 +143,6 @@ class RolesSeeder extends Seeder
         ['data_import_officer',  'data_quality',            'data_import',          'Data Import Officer'],
         ['data_quality_reviewer','data_quality',            'data_steward',         'Data Quality Reviewer'],
 
-        // Academy / Certification
-        ['academy_learner',      'academy_certification',   'academy_learner',      'Academy Learner'],
-        ['academy_instructor',   'academy_certification',   'academy_instructor',   'Academy Instructor / Trainer'],
-        ['academy_admin',        'academy_certification',   'academy_admin',        'Academy Admin'],
-        ['certification_reviewer','academy_certification',  'academy_admin',        'Certification Reviewer'],
-
         // Partner Governance
         ['partner_admin',        'partner_governance',      'partner_admin',        'Partner Admin'],
         ['partner_reviewer',     'partner_governance',      'partner_review',       'Partner Reviewer'],

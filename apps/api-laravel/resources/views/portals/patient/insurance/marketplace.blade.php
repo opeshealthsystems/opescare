@@ -69,7 +69,7 @@
                     <td data-label="{{ __('public.portal.insurance_col_status', [], $l) ?: 'Status' }}">
                         @php $s = $policy->status; @endphp
                         <span class="badge {{ $s === 'active' ? 'badge-success' : ($s === 'pending' ? 'badge-warning' : 'badge-neutral') }}">
-                            {{ ucfirst($s) }}
+                            @enum($s)
                         </span>
                     </td>
                 </tr>

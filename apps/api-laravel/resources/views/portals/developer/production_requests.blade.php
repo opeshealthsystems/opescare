@@ -54,7 +54,7 @@
                         <div class="mono">{{ Str::limit($req->integration_client_id, 24) }}</div>
                         @endif
                     </td>
-                    <td data-label="{{ __('public.developer_portal.col_scopes', [], $l) ?: 'Scopes' }}" class="td-muted">{{ count((array)$req->requested_scopes) }} scopes</td>
+                    <td data-label="{{ __('public.developer_portal.col_scopes', [], $l) ?: 'Scopes' }}" class="td-muted">{{ count((array)$req->requested_scopes) }} {{ __('dev_extra.scopes_suffix', [], $l) ?: 'scopes' }}</td>
                     <td data-label="{{ __('public.developer_portal.col_patient_data', [], $l) ?: 'Patient data' }}">
                         @if($req->handles_patient_data)
                         <span class="badge badge-warning">{{ __('public.developer_portal.lbl_yes', [], $l) ?: 'Yes' }}</span>
@@ -62,7 +62,7 @@
                         <span class="badge badge-neutral">{{ __('public.developer_portal.lbl_no', [], $l) ?: 'No' }}</span>
                         @endif
                     </td>
-                    <td data-label="{{ __('public.developer_portal.col_status', [], $l) ?: 'Status' }}"><span class="{{ $req->statusBadgeClass() }}">{{ ucfirst(str_replace('_',' ',$req->status)) }}</span></td>
+                    <td data-label="{{ __('public.developer_portal.col_status', [], $l) ?: 'Status' }}"><span class="{{ $req->statusBadgeClass() }}">@enum($req->status)</span></td>
                     <td data-label="{{ __('public.developer_portal.col_submitted', [], $l) ?: 'Submitted' }}" class="td-muted">{{ $req->created_at->format('d M Y') }}</td>
                     <td data-label="{{ __('public.developer_portal.col_reviewed', [], $l) ?: 'Reviewed' }}" class="td-muted">
                         {{ $req->reviewed_at?->format('d M Y') ?? '—' }}

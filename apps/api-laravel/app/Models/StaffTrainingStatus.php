@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * StaffTrainingStatus — Module 15 (Staff / HR / Shift Management)
  *
  * Tracks required training and certification completion per staff member.
- * Links to OpesCare Academy certifications where applicable.
+ * Links to external OPES Academy certifications where applicable.
  * Missing required training can block go-live or permissions.
  */
 class StaffTrainingStatus extends Model

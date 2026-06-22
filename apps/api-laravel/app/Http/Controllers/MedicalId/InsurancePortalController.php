@@ -46,6 +46,7 @@ class InsurancePortalController extends Controller
             'open_claims'  => InsuranceClaim::whereNotIn('status', ['paid', 'rejected', 'cancelled'])->count(),
             'pending_auth' => PreauthorizationRequest::whereNotIn('status', ['approved', 'rejected', 'cancelled'])->count(),
             'paid_claims'  => InsuranceClaim::where('status', 'paid')->count(),
+            'total_claim_value' => (float) InsuranceClaim::sum('claimed_amount'),
         ];
 
         $recentClaims = InsuranceClaim::with('patient')

@@ -42,7 +42,7 @@
                         <td data-label="{{ __('public.pharmacy_portal.col_qty', [], $l) ?: 'Qty' }}" class="td-strong">{{ $drug->available_quantity }}</td>
                         <td data-label="{{ __('public.pharmacy_portal.col_status', [], $l) ?: 'Status' }}">
                             <span class="badge badge-{{ match($drug->stock_status) { 'in_stock' => 'success', 'low_stock' => 'warning', 'out_of_stock' => 'danger', default => 'neutral' } }}">
-                                {{ ucfirst(str_replace('_', ' ', $drug->stock_status)) }}
+                                @enum($drug->stock_status, 'stock_status')
                             </span>
                         </td>
                     </tr>

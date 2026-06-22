@@ -1,7 +1,7 @@
 @php $l = app()->getLocale(); @endphp
 <div class="sidebar-role-badge" style="background:rgba(55,48,163,.3);border-color:rgba(55,48,163,.5);color:#A5B4FC;">
     <i data-lucide="shield-plus" style="width:.75rem;height:.75rem;display:inline;vertical-align:middle;margin-right:4px;"></i>
-    {{ __('portal.insurance_admin_role', [], $l) ?: 'Insurance Admin' }}
+    {{ __('public.portal.insurance_admin_role', [], $l) ?: 'Insurance Admin' }}
 </div>
 <div style="margin-bottom:var(--p-space-3);"></div>
 <div class="sidebar-nav-section">
