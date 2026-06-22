@@ -4,6 +4,8 @@ OpesCare is a national digital health-ID and interoperability platform (Laravel 
 
 This guide groups the 46 into **7 domains**. The first five form the **patient journey**; the last two are **cross-cutting** layers that every domain above depends on.
 
+![OpesCare module architecture — 46 modules in 7 domains](assets/opescare-architecture.svg)
+
 ```mermaid
 flowchart TB
   subgraph Journey["Patient journey"]
