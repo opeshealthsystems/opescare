@@ -95,18 +95,20 @@ the recorded baseline.
 A `FooResource::make($m)` return does not match the pattern, so converting an
 endpoint cleanly removes it from the count.
 
-**Current baseline: 220** (measured 2026-06-23, after the Encounter slice).
+**Current baseline: 219** (measured 2026-06-23, after the Encounter slice, with
+FHIR excluded — see below).
 
 ## 4. Migration backlog
 
-220 raw-variable serialization sites remain across **68 controllers**. Convert
+219 raw-variable serialization sites remain across **68 controllers**. Convert
 high-stakes external surfaces first (mobile + Connect partner-facing, then
 clinical writes), then the long tail. After each batch, run the ratchet test and
 lower the baseline.
 
 > **FHIR is exempt.** `Api/Fhir/FhirController` serializes to the HL7 FHIR R4
 > wire format (its own external contract / CapabilityStatement), not the
-> proprietary OpesCare envelope. It is out of scope for this layer.
+> proprietary OpesCare envelope. The ratchet scan **skips the `Fhir/`
+> directory**, so it is excluded from both the baseline and these tiers.
 
 ### Tier 1 — highest-volume / partner- & mobile-facing (do first)
 

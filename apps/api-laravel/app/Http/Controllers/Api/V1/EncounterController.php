@@ -166,22 +166,4 @@ class EncounterController extends Controller
 
         return response()->json(['message' => __('api.diagnosis_recorded'), 'data' => DiagnosisResource::make($diagnosis)], 201);
     }
-
-    // ── Private helpers ───────────────────────────────────────────────────
-
-    private function serializeNote(ClinicalNote $note): array
-    {
-        return [
-            'id'                           => $note->id,
-            'visit_id'                     => $note->visit_id,
-            'provider_id'                  => $note->provider_id,
-            'status'                       => $note->status,
-            'history_of_present_illness'   => $note->history_of_present_illness,
-            'examination_findings'         => $note->examination_findings,
-            'treatment_plan'               => $note->treatment_plan,
-            'signed_at'                    => $note->signed_at?->toISOString(),
-            'amends_note_id'               => $note->amends_note_id ?? null,
-            'created_at'                   => $note->created_at?->toISOString(),
-        ];
-    }
 }

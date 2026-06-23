@@ -22,6 +22,31 @@ class ProductionSafetyServiceProvider extends ServiceProvider
         $this->checkMailer();
         $this->checkQueueDriver();
         $this->checkLogLevel();
+        $this->checkOAuthIssuer();
+    }
+
+    /**
+     * The OAuth discovery document (/.well-known/oauth-authorization-server)
+     * advertises the issuer + token/introspection/jwks URLs to partners. If the
+     * issuer falls back to a localhost / non-HTTPS APP_URL, those published URLs
+     * are wrong. Log loudly (non-fatal) so the misconfig surfaces without
+     * blocking app boot over a discovery-doc setting.
+     */
+    private function checkOAuthIssuer(): void
+    {
+        $issuer = (string) (config('services.opescare_oauth.issuer') ?: config('app.url'));
+
+        if ($issuer === ''
+            || str_contains($issuer, 'localhost')
+            || str_contains($issuer, '127.0.0.1')
+            || str_starts_with($issuer, 'http://')
+        ) {
+            Log::critical('production_safety_check_failed', [
+                'check'   => 'OPESCARE_OAUTH_ISSUER',
+                'message' => "OAuth discovery issuer resolves to '{$issuer}'. /.well-known/oauth-authorization-server would publish non-HTTPS or localhost endpoints to partners.",
+                'action'  => 'Set OPESCARE_OAUTH_ISSUER=https://api.opescare.com (or your public API host).',
+            ]);
+        }
     }
 
     private function checkAppDebug(): void

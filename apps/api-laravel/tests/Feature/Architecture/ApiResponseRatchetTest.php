@@ -26,14 +26,18 @@ use Tests\TestCase;
  *
  * When you legitimately reduce the count, set BASELINE to the new (lower)
  * number printed in the failure message. Never raise it.
+ *
+ * NOTE: the scan is a heuristic (single/double-quoted "data" key, or a bare
+ * `->json($var)`), not an exhaustive guarantee — e.g. `->json($x->toArray())`
+ * or compact() can slip through. It stops the common regression, not every one.
  */
 class ApiResponseRatchetTest extends TestCase
 {
     /**
-     * Measured 2026-06-23 after converting EncounterController to Resources.
-     * This number must only ever go DOWN.
+     * Measured 2026-06-23 after converting EncounterController to Resources
+     * (FHIR excluded — see the scan loop). This number must only ever go DOWN.
      */
-    private const BASELINE = 220;
+    private const BASELINE = 219;
 
     public function test_raw_model_api_responses_do_not_exceed_baseline(): void
     {
@@ -52,10 +56,17 @@ class ApiResponseRatchetTest extends TestCase
                 continue;
             }
 
+            // FHIR is exempt: Api/Fhir/* serializes the HL7 FHIR wire format
+            // (arrays), not Eloquent models — out of scope for this layer.
+            if (str_contains(str_replace('\\', '/', $file->getPathname()), '/Fhir/')) {
+                continue;
+            }
+
             $src = file_get_contents($file->getPathname());
 
-            // 'data' => $var   (var is the whole value: followed by , ] or ) )
-            $n  = preg_match_all('/\'data\'\s*=>\s*\$[a-zA-Z_][a-zA-Z0-9_]*\s*[,\]\)]/', $src);
+            // ['"]data['"] => $var  (single- OR double-quoted key; var is the whole
+            // value: followed by , ] or ) ). Heuristic — see the class docblock.
+            $n  = preg_match_all('/[\'"]data[\'"]\s*=>\s*\$[a-zA-Z_][a-zA-Z0-9_]*\s*[,\]\)]/', $src);
             // ->json($var ...) / ->json($var)
             $n += preg_match_all('/->json\(\s*\$[a-zA-Z_][a-zA-Z0-9_]*\s*[,\)]/', $src);
 

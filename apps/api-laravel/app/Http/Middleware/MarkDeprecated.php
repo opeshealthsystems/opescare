@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Usage (per route):
  *   ->middleware('api.deprecated:2026-12-31')
- *   ->middleware('api.deprecated:2026-12-31,https://docs.opescare.health/changelog')
+ *   ->middleware('api.deprecated:2026-12-31,https://docs.opescare.com/changelog')
  *
  * No v1 routes are deprecated today — this is the mechanism that lets a v1
  * endpoint be retired safely once a v2 exists, giving partners machine-readable
@@ -28,9 +28,14 @@ class MarkDeprecated
 
         if ($sunset !== null) {
             try {
+                // Normalise to UTC before formatting: RFC 7231's literal "GMT"
+                // suffix must match the actual instant regardless of app.timezone
+                // or whether the caller passed a time component.
                 $response->headers->set(
                     'Sunset',
-                    (new \DateTimeImmutable($sunset))->format(\DateTimeInterface::RFC7231)
+                    (new \DateTimeImmutable($sunset, new \DateTimeZone('UTC')))
+                        ->setTimezone(new \DateTimeZone('UTC'))
+                        ->format(\DateTimeInterface::RFC7231)
                 );
             } catch (\Throwable) {
                 // Malformed sunset date — skip the header rather than 500.

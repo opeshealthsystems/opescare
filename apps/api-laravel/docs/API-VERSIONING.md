@@ -9,8 +9,8 @@ The API is versioned in the **URL path**: every endpoint lives under a major
 version prefix.
 
 ```
-https://api.opescare.health/api/v1/...
-https://api.opescare.health/api/fhir/R4/...
+https://api.opescare.com/api/v1/...
+https://api.opescare.com/api/fhir/R4/...
 ```
 
 - **Major version** (`v1`, future `v2`) appears in the path. A new major version
@@ -63,7 +63,7 @@ When an endpoint or major version must be retired:
    **RFC 8594** headers (applied via the `api.deprecated` middleware):
    - `Deprecation: true`
    - `Sunset: <retirement date>` (HTTP-date)
-   - `Link: <changelog-url>; rel="deprecation"`
+   - `Link: <changelog-url>; rel="deprecation"; type="text/html"`
 3. The deprecation and the sunset date are published in `/docs/changelog`.
 4. **Minimum notice: 180 days** between deprecation and sunset for any endpoint
    that handles patient data. After the sunset date the endpoint may return

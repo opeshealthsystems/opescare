@@ -106,7 +106,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type'   => 'Bearer',
-            'expires_in'   => 3600,
+            'expires_in'   => (int) config('services.opescare_jwt.ttl', 3600),
             'scope'        => implode(' ', $scopes),
         ]);
     }

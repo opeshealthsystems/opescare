@@ -33,6 +33,11 @@ library can verify the signature **offline** without calling OpesCare:
 The `kid` is the RFC 7638 thumbprint of the public key — stable across
 deployments, and it changes only if the signing key is rotated.
 
+> **Note on `aud`:** the server's own verification is lenient for backward
+> compatibility — a token with **no** `aud` claim is accepted (a pre-migration
+> grace period), while every newly issued token carries `aud == "opescare-api"`.
+> New clients should still validate `aud` strictly.
+
 ## 3. Introspection (RFC 7662)
 
 For callers that prefer the server to validate (e.g. to also catch
@@ -85,7 +90,14 @@ Per RFC 7662 §2.2 the endpoint never reveals *why* a token is inactive, and per
 `ui_locales_supported: ["en","fr"]`.
 
 `issuer` is derived from `OPESCARE_OAUTH_ISSUER` (falling back to `APP_URL`).
-Set `OPESCARE_OAUTH_ISSUER=https://api.opescare.com` in production.
+
+> **Deploy prerequisite.** `OPESCARE_OAUTH_ISSUER` is unset by default, so the
+> issuer falls back to `APP_URL` — which is `http://localhost` in local/dev. You
+> **must** set `OPESCARE_OAUTH_ISSUER=https://api.opescare.com` (your public API
+> host) in staging/production, or the discovery document will advertise
+> localhost/non-HTTPS endpoints to partners. `ProductionSafetyServiceProvider`
+> logs a `critical` warning when a production boot resolves the issuer to a
+> localhost / non-HTTPS value.
 
 ## 5. Documented deviations (honest scope)
 
@@ -106,6 +118,12 @@ deliberate deviations:
    `response_types_supported` is empty. Interactive
    `authorization_code` + PKCE / SMART-on-FHIR is out of scope until third-party
    apps need to act on a *patient's* behalf.
+4. **Two scope vocabularies.** `scopes_supported` advertises the coarse OAuth
+   token scopes (`patients`, `subscriptions`, `system`, `labs`, `prescriptions`).
+   Per-record authorization uses a separate, finer **consent-grant** model
+   (`patients:read`, `patients:write`, `labs:write`, …) enforced by the
+   `consent.grant:*` middleware. The two are intentionally distinct; a token's
+   actual scopes come from its `IntegrationClient` registration.
 
 ## 6. Key rotation
 

@@ -10,8 +10,9 @@ info:
     **Paths are absolute and exact.** Every path in this document is the real,
     registered route (verified by an automated contract test —
     `tests/Feature/Architecture/OpenApiContractTest.php` — which fails CI if any
-    documented path does not resolve to a live route). The `servers` URL is the
-    bare host; paths include the full `/api/v1/...` prefix.
+    documented path + method does not resolve to a live route; it checks path and
+    method existence, not request/response schemas or security). The `servers`
+    URL is the bare host; paths include the full `/api/v1/...` prefix.
 
     **Coverage.** This is a *verified subset* of the platform's ~590 API routes:
     the OAuth/discovery surface, clinical encounter writes, B2B record push, and
@@ -21,7 +22,7 @@ info:
     **Authentication:**
     - `client_credentials` → RS256 Bearer JWT (1 hour TTL) for Connect data routes
     - B2B header auth → `X-Client-ID` + `X-Client-Secret` (clinical encounter + introspection)
-    - Bridge Agent → `X-Bridge-Agent-ID` + `X-Bridge-Agent-Key`
+    - Bridge Agent → `X-Bridge-Agent-Key`
 
     **Token verification:** Access tokens are RS256 JWTs. Fetch the public key
     from `/.well-known/jwks.json` (the token header `kid` selects the key) and
@@ -73,16 +74,11 @@ components:
       in: header
       name: X-Client-Secret
       description: B2B integration client secret (verified server-side, Argon2id).
-    BridgeAgentId:
-      type: apiKey
-      in: header
-      name: X-Bridge-Agent-ID
-      description: Bridge Agent identifier. Send together with X-Bridge-Agent-Key.
     BridgeAgentKey:
       type: apiKey
       in: header
       name: X-Bridge-Agent-Key
-      description: Bridge Agent key, verified server-side against its SHA-256 hash.
+      description: Bridge Agent key, verified server-side against its hash. No separate id header is required.
 
   schemas:
     Error:
@@ -371,10 +367,10 @@ paths:
           application/json:
             schema:
               type: object
-              required: [token]
               properties:
                 token:
                   type: string
+                  description: The access token to introspect. A missing or empty token returns { active: false }.
       responses:
         '200':
           description: Introspection result
@@ -825,8 +821,7 @@ paths:
       tags: [Bridge]
       summary: Submit a sync batch
       security:
-        - BridgeAgentId: []
-          BridgeAgentKey: []
+        - BridgeAgentKey: []
       requestBody:
         required: true
         content:
@@ -886,8 +881,7 @@ paths:
       tags: [Bridge]
       summary: Agent heartbeat
       security:
-        - BridgeAgentId: []
-          BridgeAgentKey: []
+        - BridgeAgentKey: []
       requestBody:
         required: false
         content:
@@ -929,8 +923,7 @@ paths:
       tags: [Bridge]
       summary: Agent status and recent batches
       security:
-        - BridgeAgentId: []
-          BridgeAgentKey: []
+        - BridgeAgentKey: []
       responses:
         '200':
           description: Agent status
