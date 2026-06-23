@@ -3,6 +3,14 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ActionTaskResource;
+use App\Http\Resources\BroadcastResource;
+use App\Http\Resources\EscalationChainResource;
+use App\Http\Resources\MessageResource;
+use App\Http\Resources\MessageThreadResource;
+use App\Http\Resources\NotificationDeliveryResource;
+use App\Http\Resources\NotificationEventResource;
+use App\Http\Resources\NotificationTemplateResource;
 use App\Modules\Broadcasts\Models\Broadcast;
 use App\Modules\Broadcasts\Services\BroadcastService;
 use App\Modules\Messaging\Models\Message;
@@ -72,7 +80,7 @@ class CommunicationController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        return response()->json($notifications);
+        return response()->json(NotificationEventResource::collection($notifications));
     }
 
     /**
@@ -198,12 +206,12 @@ class CommunicationController extends Controller
             )
             ->get();
 
-        return response()->json($tasks);
+        return response()->json(ActionTaskResource::collection($tasks));
     }
 
     public function getTask(string $id): JsonResponse
     {
-        return response()->json(ActionTask::findOrFail($id));
+        return response()->json(ActionTaskResource::make(ActionTask::findOrFail($id)));
     }
 
     /**
@@ -255,7 +263,7 @@ class CommunicationController extends Controller
 
     public function getAdminTemplates(): JsonResponse
     {
-        return response()->json(NotificationTemplate::all());
+        return response()->json(NotificationTemplateResource::collection(NotificationTemplate::all()));
     }
 
     public function createAdminTemplate(Request $request): JsonResponse
@@ -265,14 +273,14 @@ class CommunicationController extends Controller
             'version'         => 1,
             'approval_status' => 'draft',
         ]));
-        return response()->json($template, 201);
+        return response()->json(NotificationTemplateResource::make($template), 201);
     }
 
     public function updateAdminTemplate(Request $request, string $id): JsonResponse
     {
         $template = NotificationTemplate::findOrFail($id);
         $template->update($request->all());
-        return response()->json($template);
+        return response()->json(NotificationTemplateResource::make($template));
     }
 
     public function submitTemplateReview(string $id): JsonResponse
@@ -309,7 +317,7 @@ class CommunicationController extends Controller
 
     public function getAdminDeliveries(): JsonResponse
     {
-        return response()->json(NotificationDelivery::all());
+        return response()->json(NotificationDeliveryResource::collection(NotificationDelivery::all()));
     }
 
     public function retryDelivery(string $id): JsonResponse
@@ -327,7 +335,7 @@ class CommunicationController extends Controller
 
     public function getEscalationChains(): JsonResponse
     {
-        return response()->json(EscalationChain::all());
+        return response()->json(EscalationChainResource::collection(EscalationChain::all()));
     }
 
     public function createEscalationChain(Request $request): JsonResponse
@@ -339,14 +347,14 @@ class CommunicationController extends Controller
             'steps_json' => json_encode($request->input('steps')),
             'active'     => true,
         ]);
-        return response()->json($chain, 201);
+        return response()->json(EscalationChainResource::make($chain), 201);
     }
 
     public function updateEscalationChain(Request $request, string $id): JsonResponse
     {
         $chain = EscalationChain::findOrFail($id);
         $chain->update($request->all());
-        return response()->json($chain);
+        return response()->json(EscalationChainResource::make($chain));
     }
 
     public function activateEscalationChain(string $id): JsonResponse
@@ -377,7 +385,7 @@ class CommunicationController extends Controller
             $q->where('user_id', $userId)
         )->get();
 
-        return response()->json($threads);
+        return response()->json(MessageThreadResource::collection($threads));
     }
 
     /**
@@ -397,7 +405,7 @@ class CommunicationController extends Controller
                 $validated['role'],
                 $request->except(['user_id', 'role'])
             );
-            return response()->json($thread, 201);
+            return response()->json(MessageThreadResource::make($thread), 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
@@ -444,7 +452,7 @@ class CommunicationController extends Controller
                 $userId,
                 $validated['body']
             );
-            return response()->json($message, 201);
+            return response()->json(MessageResource::make($message), 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
@@ -491,7 +499,7 @@ class CommunicationController extends Controller
         $message->edited_at = now();
         $message->save();
         $message->body = $validated['body']; // return plaintext in response
-        return response()->json($message);
+        return response()->json(MessageResource::make($message));
     }
 
     public function deleteMessageForMe(Request $request, string $id): JsonResponse
@@ -588,7 +596,7 @@ class CommunicationController extends Controller
 
         $broadcast = $this->broadcastService->create($validated, $validated['created_by']);
 
-        return response()->json(['message' => __('api.broadcast_draft_created'), 'data' => $broadcast], 201);
+        return response()->json(['message' => __('api.broadcast_draft_created'), 'data' => BroadcastResource::make($broadcast)], 201);
     }
 
     /**
@@ -618,7 +626,7 @@ class CommunicationController extends Controller
             return response()->json(['message' => $e->getMessage()], 422);
         }
 
-        return response()->json(['message' => __('api.broadcast_updated'), 'data' => $updated]);
+        return response()->json(['message' => __('api.broadcast_updated'), 'data' => BroadcastResource::make($updated)]);
     }
 
     /**
@@ -635,7 +643,7 @@ class CommunicationController extends Controller
             return response()->json(['message' => $e->getMessage()], 422);
         }
 
-        return response()->json(['message' => __('api.broadcast_published'), 'data' => $published]);
+        return response()->json(['message' => __('api.broadcast_published'), 'data' => BroadcastResource::make($published)]);
     }
 
     /**
@@ -651,7 +659,7 @@ class CommunicationController extends Controller
             return response()->json(['message' => $e->getMessage()], 422);
         }
 
-        return response()->json(['message' => __('api.broadcast_cancelled'), 'data' => $cancelled]);
+        return response()->json(['message' => __('api.broadcast_cancelled'), 'data' => BroadcastResource::make($cancelled)]);
     }
 
     /**

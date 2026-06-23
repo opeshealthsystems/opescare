@@ -34,10 +34,11 @@ use Tests\TestCase;
 class ApiResponseRatchetTest extends TestCase
 {
     /**
-     * Measured 2026-06-23 after converting EncounterController to Resources
-     * (FHIR excluded — see the scan loop). This number must only ever go DOWN.
+     * Ratchets DOWN as controllers adopt API Resources (FHIR excluded — see the
+     * scan loop). 219 after the EncounterController slice; 205 after Tier-1
+     * CommunicationController. This number must only ever go DOWN.
      */
-    private const BASELINE = 219;
+    private const BASELINE = 205;
 
     public function test_raw_model_api_responses_do_not_exceed_baseline(): void
     {
