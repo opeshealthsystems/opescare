@@ -30,6 +30,14 @@ Route::prefix('docs')->name('docs.')->group(function () {
     Route::get('/changelog',     [DocsController::class, 'changelog'])->name('changelog');
 });
 
+// ── OAuth 2.0 / OIDC discovery (public, no auth, cacheable) ─────────────────
+// RFC 7517 JWKS + RFC 8414 server metadata at the domain root, so third parties
+// can verify Connect RS256 tokens and discover endpoints. See docs/API-OAUTH.md.
+Route::get('/.well-known/jwks.json', [\App\Http\Controllers\WellKnownController::class, 'jwks'])
+    ->name('well-known.jwks');
+Route::get('/.well-known/oauth-authorization-server', [\App\Http\Controllers\WellKnownController::class, 'authorizationServerMetadata'])
+    ->name('well-known.oauth-metadata');
+
 // Root / Landing
 Route::get('/', [PublicPageController::class, 'index'])->name('public.landing');
 Route::get('/home2', [PublicPageController::class, 'home2'])->name('public.home2');

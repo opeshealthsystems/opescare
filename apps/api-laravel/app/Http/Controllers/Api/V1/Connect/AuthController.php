@@ -111,6 +111,52 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * RFC 7662 OAuth 2.0 Token Introspection for Connect RS256 JWTs.
+     *
+     * POST /api/v1/connect/auth/introspect
+     * Auth: X-Client-ID + X-Client-Secret (VerifyIntegrationClient) — the
+     *       introspection endpoint is itself protected, per RFC 7662 §2.1.
+     * Body: { token: <jwt> }
+     *
+     * Returns { active: true, ...claims } for a valid, unexpired, non-revoked
+     * Connect token; { active: false } for anything else. Per RFC 7662 §2.2 the
+     * endpoint never reveals WHY a token is inactive (no signature/expiry/
+     * revocation distinction leaks to the caller).
+     */
+    public function introspect(Request $request)
+    {
+        $token = (string) $request->input('token', '');
+
+        if ($token === '') {
+            return response()->json(['active' => false]);
+        }
+
+        try {
+            $claims = $this->jwt->verify($token);
+        } catch (\Throwable $e) {
+            // Malformed / bad signature / expired / revoked → inactive, no detail.
+            return response()->json(['active' => false]);
+        }
+
+        $scopes = $claims['scopes'] ?? null;
+
+        return response()->json([
+            'active'      => true,
+            'token_type'  => 'Bearer',
+            'scope'       => is_array($scopes) ? implode(' ', $scopes) : (string) ($claims['scope'] ?? ''),
+            'client_id'   => $claims['client_id'] ?? null,
+            'sub'         => $claims['sub'] ?? null,
+            'aud'         => $claims['aud'] ?? null,
+            'iss'         => $claims['iss'] ?? null,
+            'exp'         => $claims['exp'] ?? null,
+            'iat'         => $claims['iat'] ?? null,
+            'jti'         => $claims['jti'] ?? null,
+            'facility_id' => $claims['facility_id'] ?? null,
+            'environment' => $claims['environment'] ?? null,
+        ]);
+    }
+
     public function createWidgetSession(Request $request)
     {
         AuditLogger::log($request, 'widget_session_created', 'widget_session', null);

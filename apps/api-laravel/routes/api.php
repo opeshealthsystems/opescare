@@ -132,6 +132,11 @@ Route::prefix('v1/connect')->group(function () {
     Route::post('/auth/token', [\App\Http\Controllers\Api\V1\Connect\AuthController::class, 'issueToken'])
         ->middleware('throttle:verify');
 
+    // RFC 7662 token introspection — the endpoint is itself client-authenticated
+    // (X-Client-ID / X-Client-Secret). Returns { active: bool, ...claims }.
+    Route::post('/auth/introspect', [\App\Http\Controllers\Api\V1\Connect\AuthController::class, 'introspect'])
+        ->middleware(['verify.integration.client', 'throttle:verify']);
+
     // Authenticated B2B routes group — Bearer JWT (RS256) + per-client rate limit 200 req/min
     Route::middleware(['auth.bearer', 'throttle.client:200,1'])->group(function () {
         

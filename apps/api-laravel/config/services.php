@@ -115,4 +115,11 @@ return [
         'ttl' => (int) env('OPESCARE_JWT_TTL', 3600),
     ],
 
+    // OAuth 2.0 Authorization Server Metadata (RFC 8414). `issuer` is the public
+    // API base URL advertised in /.well-known/oauth-authorization-server; falls
+    // back to APP_URL when unset. The JWT `iss` claim remains "opescare-connect".
+    'opescare_oauth' => [
+        'issuer' => env('OPESCARE_OAUTH_ISSUER'),
+    ],
+
 ];

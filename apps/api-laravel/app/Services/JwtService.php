@@ -29,6 +29,9 @@ class JwtService
     /** Cache key prefix for revoked JTIs. */
     private const CACHE_PREFIX = 'jti_revoked:';
 
+    /** Memoized public JWK (kty/use/alg/kid/n/e) — derived once per request. */
+    private ?array $jwkCache = null;
+
     // ── Issue ─────────────────────────────────────────────────────────────────
 
     /**
@@ -46,6 +49,7 @@ class JwtService
         $header = $this->base64UrlEncode(json_encode([
             'alg' => self::ALGORITHM,
             'typ' => 'JWT',
+            'kid' => $this->keyId(),
         ]));
 
         $payload = $this->base64UrlEncode(json_encode(array_merge([
@@ -200,6 +204,56 @@ class JwtService
         }
 
         return false;
+    }
+
+    // ── Public key publication (JWKS / RFC 7517, RFC 7638) ─────────────────────
+
+    /**
+     * The active signing key as a JWK (RFC 7517). Public key material only —
+     * the private key is never exposed. Memoized for the request.
+     */
+    public function publicJwk(): array
+    {
+        if ($this->jwkCache !== null) {
+            return $this->jwkCache;
+        }
+
+        $details = openssl_pkey_get_details($this->publicKey());
+        if ($details === false || ! isset($details['rsa']['n'], $details['rsa']['e'])) {
+            throw new \RuntimeException('Unable to derive JWK from the JWT public key.');
+        }
+
+        $n = $this->base64UrlEncode($details['rsa']['n']);
+        $e = $this->base64UrlEncode($details['rsa']['e']);
+
+        // RFC 7638 thumbprint over the canonical {"e","kty","n"} member set —
+        // a stable, deterministic key id that rotates only when the key rotates.
+        $kid = $this->base64UrlEncode(hash('sha256', json_encode([
+            'e'   => $e,
+            'kty' => 'RSA',
+            'n'   => $n,
+        ], JSON_UNESCAPED_SLASHES), true));
+
+        return $this->jwkCache = [
+            'kty' => 'RSA',
+            'use' => 'sig',
+            'alg' => self::ALGORITHM,
+            'kid' => $kid,
+            'n'   => $n,
+            'e'   => $e,
+        ];
+    }
+
+    /** Stable key id (RFC 7638 thumbprint) embedded in each JWT header `kid`. */
+    public function keyId(): string
+    {
+        return $this->publicJwk()['kid'];
+    }
+
+    /** The JWK Set (RFC 7517) served at /.well-known/jwks.json. */
+    public function jwks(): array
+    {
+        return ['keys' => [$this->publicJwk()]];
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
