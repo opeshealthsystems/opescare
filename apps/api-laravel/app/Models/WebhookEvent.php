@@ -21,6 +21,7 @@ class WebhookEvent extends Model
 
     protected $fillable = [
         'event_type',
+        'schema_version',  // payload contract version — see docs/API-VERSIONING.md
         'payload',
         'signature',    // HMAC of payload for consumer verification
         'is_sensitive',

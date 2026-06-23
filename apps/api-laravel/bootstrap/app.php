@@ -37,6 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\DemoDataScope::class,
             \App\Http\Middleware\AddSecurityHeaders::class,
             \App\Http\Middleware\LogApiUsage::class,
+            \App\Http\Middleware\ApiVersionHeaders::class,
         ]);
         $middleware->append(\App\Http\Middleware\DatabaseHealthMiddleware::class);
 
@@ -59,6 +60,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'verify.integration.client' => \App\Http\Middleware\VerifyIntegrationClient::class,
             'module'                    => \App\Http\Middleware\EnforceModuleEntitlement::class,
             'patient.feature'           => \App\Http\Middleware\EnsurePatientFeature::class,
+            'api.deprecated'            => \App\Http\Middleware\MarkDeprecated::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -24,6 +24,9 @@ use App\Models\WebhookSubscription;
  */
 class WebhookService
 {
+    /** Webhook payload contract version — see docs/API-VERSIONING.md. */
+    public const SCHEMA_VERSION = 'v1';
+
     /**
      * Dispatch an event to matching webhook subscriptions.
      *
@@ -40,16 +43,18 @@ class WebhookService
         ?string $clientId   = null,
     ): WebhookEvent {
         $payload = [
-            'event_type'  => $eventType,
-            'occurred_at' => now()->toIso8601String(),
-            'resource'    => $resourceData,
+            'event_type'     => $eventType,
+            'schema_version' => self::SCHEMA_VERSION,
+            'occurred_at'    => now()->toIso8601String(),
+            'resource'       => $resourceData,
         ];
 
         $event = WebhookEvent::create([
-            'event_type'  => $eventType,
-            'payload'     => $payload,
-            'facility_id' => $facilityId,
-            'client_id'   => $clientId,
+            'event_type'     => $eventType,
+            'schema_version' => self::SCHEMA_VERSION,
+            'payload'        => $payload,
+            'facility_id'    => $facilityId,
+            'client_id'      => $clientId,
         ]);
 
         $payload['event_id'] = $event->id;

@@ -69,6 +69,7 @@ class SendWebhookJob implements ShouldQueue
                 'X-OpesCare-Signature'     => 't=' . $timestamp . ',v1=' . $signature,
                 'X-OpesCare-Timestamp'     => (string) $timestamp,
                 'X-OpesCare-Event-Id'      => $this->payload['event_id'],
+                'X-OpesCare-Webhook-Version'  => $this->payload['schema_version'] ?? 'v1',
                 'X-OpesCare-Delivery-Attempt' => (string) $log->attempts,
             ])->timeout(10)->post($subscription->callback_url, $this->payload);
 
