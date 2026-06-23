@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\LegalDocumentResource;
+use App\Http\Resources\LegalDocumentVersionResource;
+use App\Http\Resources\PartnerAgreementAcceptanceResource;
+use App\Http\Resources\UserLegalAcceptanceResource;
 use App\Models\LegalDocument;
 use App\Models\LegalDocumentVersion;
 use App\Modules\Legal\Services\LegalDocumentService;
@@ -85,7 +89,7 @@ class LegalDocumentController extends Controller
             $validated['user_agent'] ?? $request->userAgent()
         );
 
-        return response()->json(['message' => __('api.acceptance_recorded'), 'data' => $acceptance], 201);
+        return response()->json(['message' => __('api.acceptance_recorded'), 'data' => UserLegalAcceptanceResource::make($acceptance)], 201);
     }
 
     /**
@@ -112,7 +116,7 @@ class LegalDocumentController extends Controller
             $validated['expires_at'] ?? null
         );
 
-        return response()->json(['message' => __('api.partner_acceptance_recorded'), 'data' => $acceptance], 201);
+        return response()->json(['message' => __('api.partner_acceptance_recorded'), 'data' => PartnerAgreementAcceptanceResource::make($acceptance)], 201);
     }
 
     // ── Admin ─────────────────────────────────────────────────────────────
@@ -138,7 +142,7 @@ class LegalDocumentController extends Controller
             $validated['lang'] ?? 'en'
         );
 
-        return response()->json(['message' => __('api.document_ensured'), 'data' => $doc], 201);
+        return response()->json(['message' => __('api.document_ensured'), 'data' => LegalDocumentResource::make($doc)], 201);
     }
 
     /**
@@ -168,7 +172,7 @@ class LegalDocumentController extends Controller
 
         return response()->json([
             'message' => __('api.version_published', ['version' => $validated['version'], 'slug' => $document->slug]),
-            'data'    => $version,
+            'data'    => LegalDocumentVersionResource::make($version),
         ], 201);
     }
 

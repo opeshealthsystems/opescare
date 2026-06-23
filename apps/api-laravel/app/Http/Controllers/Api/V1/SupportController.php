@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\KnowledgeBaseArticleResource;
+use App\Http\Resources\TicketMessageResource;
 use App\Models\KnowledgeBaseArticle;
 use App\Models\SupportTicket;
 use App\Modules\Support\Services\KnowledgeBaseService;
@@ -62,7 +64,7 @@ class SupportController extends Controller
 
         $message = $service->addMessage($ticket, $validated, $validated['actor_id'] ?? null);
 
-        return response()->json(['data' => $message], 201);
+        return response()->json(['data' => TicketMessageResource::make($message)], 201);
     }
 
     public function assign(SupportTicket $ticket, Request $request, SupportService $service): JsonResponse
@@ -140,7 +142,7 @@ class SupportController extends Controller
 
         return response()->json([
             'count' => $articles->count(),
-            'data'  => $articles,
+            'data'  => KnowledgeBaseArticleResource::collection($articles),
         ]);
     }
 
@@ -156,7 +158,7 @@ class SupportController extends Controller
 
         $updated = $kb->publish($article->id, $validated['published_by']);
 
-        return response()->json(['message' => __('api.article_published'), 'data' => $updated]);
+        return response()->json(['message' => __('api.article_published'), 'data' => KnowledgeBaseArticleResource::make($updated)]);
     }
 
     /**
@@ -166,7 +168,7 @@ class SupportController extends Controller
     {
         $updated = $kb->unpublish($article->id);
 
-        return response()->json(['message' => __('api.article_unpublished'), 'data' => $updated]);
+        return response()->json(['message' => __('api.article_unpublished'), 'data' => KnowledgeBaseArticleResource::make($updated)]);
     }
 
     public function publishArticle(Request $request, SupportService $service): JsonResponse
