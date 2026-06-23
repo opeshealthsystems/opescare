@@ -95,15 +95,25 @@ the recorded baseline.
 A `FooResource::make($m)` return does not match the pattern, so converting an
 endpoint cleanly removes it from the count.
 
-**Current baseline: 219** (measured 2026-06-23, after the Encounter slice, with
-FHIR excluded — see below).
+**Current baseline: 197** (FHIR excluded). Progress: 219 → 205 (Communication)
+→ 197 (Legal + Support). The 40 Tier-1 resources already exist under
+`app/Http/Resources/`.
 
 ## 4. Migration backlog
 
-219 raw-variable serialization sites remain across **68 controllers**. Convert
-high-stakes external surfaces first (mobile + Connect partner-facing, then
-clinical writes), then the long tail. After each batch, run the ratchet test and
-lower the baseline.
+197 heuristic sites remain across the controllers. Convert high-stakes external
+surfaces first (mobile + Connect partner-facing, then clinical writes), then the
+long tail. After each batch, run the ratchet test and lower the baseline.
+
+> **The count is a heuristic, not a leak list.** A meaningful share of the 197
+> are NOT raw-model leaks — they are **service-returned arrays / DTOs** that the
+> regex matches but which must be left as-is (e.g. `CarePlanController`,
+> `ControlledSubstanceController` return `$this->service->...()` results guarded
+> by `is_array($x) ? $x['id'] : $x->id` — converting them to `Resource::make()`
+> would break when the service returns an array). **Per-site judgment is
+> required**: convert only confirmed Eloquent models/collections; skip
+> service-DTOs, manual `serialize*()` helpers, and relation-loaded returns whose
+> base resource would drop the relation (e.g. `CommunicationController::getThread`).
 
 > **FHIR is exempt.** `Api/Fhir/FhirController` serializes to the HL7 FHIR R4
 > wire format (its own external contract / CapabilityStatement), not the
