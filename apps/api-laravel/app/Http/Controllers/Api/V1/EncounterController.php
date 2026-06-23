@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AllergyResource;
+use App\Http\Resources\ClinicalNoteResource;
+use App\Http\Resources\DiagnosisResource;
 use App\Models\ClinicalNote;
 use App\Modules\EncounterManagement\Services\ConsultationService;
 use Illuminate\Http\JsonResponse;
@@ -60,7 +63,7 @@ class EncounterController extends Controller
 
         return response()->json([
             'message' => $note->status === 'signed' ? 'Clinical note signed.' : 'Clinical note saved as draft.',
-            'data'    => $this->serializeNote($note),
+            'data'    => ClinicalNoteResource::make($note),
         ], 201);
     }
 
@@ -69,7 +72,7 @@ class EncounterController extends Controller
      */
     public function showNote(ClinicalNote $note): JsonResponse
     {
-        return response()->json(['data' => $this->serializeNote($note)]);
+        return response()->json(['data' => ClinicalNoteResource::make($note)]);
     }
 
     /**
@@ -105,7 +108,7 @@ class EncounterController extends Controller
 
         return response()->json([
             'message'           => __('api.clinical_note_amended'),
-            'data'              => $this->serializeNote($amended),
+            'data'              => ClinicalNoteResource::make($amended),
             'original_note_id'  => $note->id,
         ], 201);
     }
@@ -129,7 +132,7 @@ class EncounterController extends Controller
 
         $allergy = $this->service->recordAllergy($validated, $validated['actor_id'] ?? null);
 
-        return response()->json(['message' => __('api.allergy_recorded'), 'data' => $allergy], 201);
+        return response()->json(['message' => __('api.allergy_recorded'), 'data' => AllergyResource::make($allergy)], 201);
     }
 
     // ── Diagnoses ─────────────────────────────────────────────────────────
@@ -161,7 +164,7 @@ class EncounterController extends Controller
 
         $diagnosis = $this->service->recordDiagnosis($validated, $validated['actor_id'] ?? null);
 
-        return response()->json(['message' => __('api.diagnosis_recorded'), 'data' => $diagnosis], 201);
+        return response()->json(['message' => __('api.diagnosis_recorded'), 'data' => DiagnosisResource::make($diagnosis)], 201);
     }
 
     // ── Private helpers ───────────────────────────────────────────────────
