@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\OfficialDocumentResource;
 use App\Models\OfficialDocument;
 use App\Models\DocumentTemplate;
 use App\Models\DocumentSignature;
@@ -49,7 +50,7 @@ class DocumentController extends Controller
     public function index(Request $request)
     {
         $documents = OfficialDocument::latest()->get();
-        return response()->json($documents);
+        return response()->json(OfficialDocumentResource::collection($documents));
     }
 
     /**
@@ -164,7 +165,7 @@ class DocumentController extends Controller
             ]));
         }
 
-        return response()->json($document, 201);
+        return response()->json(OfficialDocumentResource::make($document), 201);
     }
 
     /**

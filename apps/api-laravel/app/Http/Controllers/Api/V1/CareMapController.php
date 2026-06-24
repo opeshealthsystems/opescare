@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\CareFacility;
 use App\Models\SavedFacility;
 use App\Models\MedicineReservationRequest;
+use App\Http\Resources\SavedFacilityResource;
 use App\Modules\CareMap\Services\CareMapSearchService;
 use App\Modules\CareMap\Services\FacilityVerificationService;
 use App\Modules\CareMap\Services\FacilityClaimService;
@@ -208,7 +209,7 @@ class CareMapController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $saved
+            'data' => SavedFacilityResource::make($saved)
         ]);
     }
 
