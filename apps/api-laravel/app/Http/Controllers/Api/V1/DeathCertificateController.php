@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DeathRecordResource;
 use App\Models\DeathRecord;
 use App\Services\Documents\DocumentIssuanceService;
 use Illuminate\Http\JsonResponse;
@@ -66,7 +67,7 @@ class DeathCertificateController extends Controller
             ]);
         }
 
-        return response()->json(['data' => $record], 201);
+        return response()->json(['data' => DeathRecordResource::make($record)], 201);
     }
 
     public function certify(Request $request, DeathRecord $record): JsonResponse
@@ -105,7 +106,7 @@ class DeathCertificateController extends Controller
             } catch (\Throwable) {}
         }
 
-        return response()->json(['data' => $record]);
+        return response()->json(['data' => DeathRecordResource::make($record)]);
     }
 
     public function show(Request $request, DeathRecord $record): JsonResponse
@@ -131,6 +132,6 @@ class DeathCertificateController extends Controller
             ->orderByDesc('deceased_at')
             ->get();
 
-        return response()->json(['data' => $records]);
+        return response()->json(['data' => DeathRecordResource::collection($records)]);
     }
 }

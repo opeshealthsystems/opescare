@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DrugFormularyResource;
 use App\Services\Pharmacy\FormularyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,7 +25,7 @@ class DrugFormularyController extends Controller {
             fn ($v) => $v !== null
         );
         $results = $this->service->search($validated['q'], $validated['facility_id'] ?? null, $filters);
-        return response()->json(['data' => $results]);
+        return response()->json(['data' => DrugFormularyResource::collection($results)]);
     }
 
     public function store(Request $request): JsonResponse {
@@ -47,18 +48,18 @@ class DrugFormularyController extends Controller {
             'created_by'          => ['required','uuid','exists:users,id'],
         ]);
         $entry = $this->service->add($validated);
-        return response()->json(['data' => $entry], Response::HTTP_CREATED);
+        return response()->json(['data' => DrugFormularyResource::make($entry)], Response::HTTP_CREATED);
     }
 
     public function toggleAvailability(Request $request, string $id): JsonResponse {
         $validated = $request->validate(['is_available' => ['required','boolean']]);
         $entry = $this->service->toggleAvailability($id, $validated['is_available']);
-        return response()->json(['data' => $entry]);
+        return response()->json(['data' => DrugFormularyResource::make($entry)]);
     }
 
     public function controlled(Request $request): JsonResponse {
         $validated = $request->validate(['facility_id' => ['sometimes','nullable','uuid']]);
         $entries = $this->service->getControlledSubstances($validated['facility_id'] ?? null);
-        return response()->json(['data' => $entries]);
+        return response()->json(['data' => DrugFormularyResource::collection($entries)]);
     }
 }

@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PatientPaymentPlanResource;
 use App\Models\PatientPaymentPlan;
 use App\Services\Billing\PaymentPlanService;
 use Illuminate\Http\JsonResponse;
@@ -85,6 +86,6 @@ class PatientPaymentPlanController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        return response()->json(['data' => $plans]);
+        return response()->json(['data' => PatientPaymentPlanResource::collection($plans)]);
     }
 }

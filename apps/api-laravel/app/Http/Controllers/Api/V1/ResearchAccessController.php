@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ResearchAccessRequestResource;
+use App\Http\Resources\ResearchDataAgreementResource;
 use App\Models\DataAccessCommitteeReview;
 use App\Models\ResearchAccessRequest;
 use App\Models\ResearchDataAgreement;
@@ -173,7 +175,7 @@ class ResearchAccessController extends Controller
 
         return response()->json([
             'message' => __('api.research_request_approved'),
-            'data'    => $researchRequest->fresh(),
+            'data'    => ResearchAccessRequestResource::make($researchRequest->fresh()),
         ]);
     }
 
@@ -195,7 +197,7 @@ class ResearchAccessController extends Controller
 
         return response()->json([
             'message' => __('api.research_request_rejected'),
-            'data'    => $researchRequest->fresh(),
+            'data'    => ResearchAccessRequestResource::make($researchRequest->fresh()),
         ]);
     }
 
@@ -215,7 +217,7 @@ class ResearchAccessController extends Controller
 
         return response()->json([
             'message' => __('api.data_agreement_signed'),
-            'data'    => $agreement->fresh(),
+            'data'    => ResearchDataAgreementResource::make($agreement->fresh()),
         ]);
     }
 

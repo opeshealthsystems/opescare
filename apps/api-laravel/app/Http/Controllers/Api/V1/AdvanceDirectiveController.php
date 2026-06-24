@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AdvanceDirectiveResource;
 use App\Models\AdvanceDirective;
 use App\Services\Clinical\AdvanceDirectiveService;
 use App\Services\Documents\DocumentIssuanceService;
@@ -75,7 +76,7 @@ class AdvanceDirectiveController extends Controller
     public function show(string $patientId, string $id): JsonResponse
     {
         $directive = AdvanceDirective::where('patient_id', $patientId)->findOrFail($id);
-        return response()->json(['data' => $directive]);
+        return response()->json(['data' => AdvanceDirectiveResource::make($directive)]);
     }
 
     /** DELETE /api/v1/patients/{patientId}/advance-directives/{id} — revoke */

@@ -15,6 +15,12 @@ use App\Models\ReportAssignment;
 use App\Models\SubmissionProfile;
 use App\Models\ReportSubmission;
 use App\Models\ExportFile;
+use App\Http\Resources\ReportTypeResource;
+use App\Http\Resources\PublicHealthReportResource;
+use App\Http\Resources\ReportVersionResource;
+use App\Http\Resources\ReportStatusHistoryResource;
+use App\Http\Resources\SubmissionProfileResource;
+use App\Http\Resources\ReportSubmissionResource;
 use App\Modules\PublicHealth\Services\DraftGenerationService;
 use App\Modules\PublicHealth\Services\DataQualityCheckService;
 use App\Modules\PublicHealth\Services\ExportService;
@@ -58,7 +64,7 @@ class PublicHealthController extends Controller
 
     public function getReportTypes()
     {
-        return response()->json(ReportType::where('is_active', true)->get());
+        return response()->json(ReportTypeResource::collection(ReportType::where('is_active', true)->get()));
     }
 
     public function getReports(Request $request)
@@ -68,7 +74,7 @@ class PublicHealthController extends Controller
         if ($status) {
             $query->where('status', $status);
         }
-        return response()->json($query->get());
+        return response()->json(PublicHealthReportResource::collection($query->get()));
     }
 
     public function getReport($id)
@@ -77,7 +83,7 @@ class PublicHealthController extends Controller
         if (!$report) {
             return response()->json(['error' => __('api.report_not_found')], 404);
         }
-        return response()->json($report);
+        return response()->json(PublicHealthReportResource::make($report));
     }
 
     public function generateDrafts(Request $request)
@@ -393,26 +399,26 @@ class PublicHealthController extends Controller
     {
         $report = PublicHealthReport::find($id);
         if (!$report) return response()->json(['error' => __('api.report_not_found')], 404);
-        return response()->json(ReportVersion::where('report_id', $report->id)->get());
+        return response()->json(ReportVersionResource::collection(ReportVersion::where('report_id', $report->id)->get()));
     }
 
     public function getStatusHistory($id)
     {
         $report = PublicHealthReport::find($id);
         if (!$report) return response()->json(['error' => __('api.report_not_found')], 404);
-        return response()->json(ReportStatusHistory::where('report_id', $report->id)->get());
+        return response()->json(ReportStatusHistoryResource::collection(ReportStatusHistory::where('report_id', $report->id)->get()));
     }
 
     public function getReviewQueue()
     {
         $queue = PublicHealthReport::where('status', 'pending_review')->with(['reportType', 'facility'])->get();
-        return response()->json($queue);
+        return response()->json(PublicHealthReportResource::collection($queue));
     }
 
     // Phase 3: Export & Submission APIs
     public function getSubmissionProfiles()
     {
-        return response()->json(SubmissionProfile::all());
+        return response()->json(SubmissionProfileResource::collection(SubmissionProfile::all()));
     }
 
     public function createSubmissionProfile(Request $request)
@@ -427,7 +433,7 @@ class PublicHealthController extends Controller
         ]);
 
         $profile = SubmissionProfile::create($validated);
-        return response()->json($profile, 201);
+        return response()->json(SubmissionProfileResource::make($profile), 201);
     }
 
     public function submitReport($id, Request $request)
@@ -493,7 +499,7 @@ class PublicHealthController extends Controller
 
     public function getSubmissions($id)
     {
-        return response()->json(ReportSubmission::where('report_id', $id)->get());
+        return response()->json(ReportSubmissionResource::collection(ReportSubmission::where('report_id', $id)->get()));
     }
 
     public function getIntegrationStatus()

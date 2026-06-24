@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ConsentGrantResource;
+use App\Http\Resources\ConsentRequestResource;
+use App\Http\Resources\ConsentRevocationResource;
 use App\Modules\ConsentManagement\Services\ConsentManagementService;
 use App\Services\Documents\DocumentIssuanceService;
 use Illuminate\Http\JsonResponse;
@@ -77,7 +80,7 @@ class ConsentManagementController extends Controller
 
         return response()->json([
             'message' => __('api.consent_request_created_pending'),
-            'data'    => $consentRequest,
+            'data'    => ConsentRequestResource::make($consentRequest),
         ], 201);
     }
 
@@ -106,7 +109,7 @@ class ConsentManagementController extends Controller
 
         return response()->json([
             'message' => __('api.consent_granted'),
-            'data'    => $grant,
+            'data'    => ConsentGrantResource::make($grant),
         ], 201);
     }
 
@@ -135,7 +138,7 @@ class ConsentManagementController extends Controller
 
         return response()->json([
             'message' => __('api.consent_revoked'),
-            'data'    => $revocation,
+            'data'    => ConsentRevocationResource::make($revocation),
         ]);
     }
 }

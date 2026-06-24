@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Mobile;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PatientSurveyResource;
 use App\Models\PatientSurvey;
 use App\Services\Patient\SurveyService;
 use Illuminate\Http\JsonResponse;
@@ -23,7 +24,7 @@ class MobileSurveyController extends Controller
             ->with('responses')
             ->get();
 
-        return response()->json(['data' => $surveys]);
+        return response()->json(['data' => PatientSurveyResource::collection($surveys)]);
     }
 
     /** GET /api/mobile/surveys/{id} — survey with questions */
@@ -33,7 +34,7 @@ class MobileSurveyController extends Controller
         $template = $this->service->getTemplate($survey->template_key);
 
         return response()->json([
-            'data'     => $survey,
+            'data'     => PatientSurveyResource::make($survey),
             'template' => $template,
         ]);
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\LabPathReportResource;
 use App\Models\LabPathReport;
 use App\Services\Documents\DocumentIssuanceService;
 use Illuminate\Http\JsonResponse;
@@ -65,7 +66,7 @@ class LabPathController extends Controller
             );
         } catch (\Throwable) {}
 
-        return response()->json(['data' => $report], 201);
+        return response()->json(['data' => LabPathReportResource::make($report)], 201);
     }
 
     public function show(Request $request, LabPathReport $report): JsonResponse
@@ -74,7 +75,7 @@ class LabPathController extends Controller
         if (!$facilityId || $report->facility_id !== $facilityId) {
             return response()->json(['message' => __('api.forbidden')], 403);
         }
-        return response()->json(['data' => $report]);
+        return response()->json(['data' => LabPathReportResource::make($report)]);
     }
 
     public function index(Request $request): JsonResponse
@@ -94,7 +95,7 @@ class LabPathController extends Controller
             $query->where('patient_id', $request->query('patient_id'));
         }
 
-        return response()->json(['data' => $query->get()]);
+        return response()->json(['data' => LabPathReportResource::collection($query->get())]);
     }
 
     public function finalize(Request $request, LabPathReport $report): JsonResponse
@@ -105,6 +106,6 @@ class LabPathController extends Controller
         }
 
         $report->update(['status' => 'final']);
-        return response()->json(['data' => $report]);
+        return response()->json(['data' => LabPathReportResource::make($report)]);
     }
 }

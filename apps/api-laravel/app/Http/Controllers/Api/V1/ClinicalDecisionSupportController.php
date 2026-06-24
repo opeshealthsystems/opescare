@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AlertOverrideResource;
 use App\Models\ClinicalAlert;
 use App\Modules\ClinicalDecisionSupport\Services\AlertOverrideService;
 use App\Modules\ClinicalDecisionSupport\Services\ClinicalDecisionSupportService;
@@ -256,7 +257,7 @@ class ClinicalDecisionSupportController extends Controller
             'message'         => $override->is_high_risk_override
                 ? 'High-risk override recorded — flagged for QA review.'
                 : 'Override recorded.',
-            'data'            => $override,
+            'data'            => AlertOverrideResource::make($override),
         ], 201);
     }
 
@@ -269,7 +270,7 @@ class ClinicalDecisionSupportController extends Controller
         $overrides = $this->overrides->getHighRiskOverridesPendingReview();
         return response()->json([
             'count' => $overrides->count(),
-            'data'  => $overrides,
+            'data'  => AlertOverrideResource::collection($overrides),
         ]);
     }
 
@@ -289,7 +290,7 @@ class ClinicalDecisionSupportController extends Controller
             return response()->json(['message' => __('api.override_not_found')], 404);
         }
 
-        return response()->json(['message' => __('api.override_qa_reviewed'), 'data' => $override]);
+        return response()->json(['message' => __('api.override_qa_reviewed'), 'data' => AlertOverrideResource::make($override)]);
     }
 
     // ── Private helpers ───────────────────────────────────────────────────

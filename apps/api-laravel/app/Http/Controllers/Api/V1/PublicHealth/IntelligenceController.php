@@ -9,6 +9,7 @@ use App\Models\PublicHealthSignal;
 use App\Models\SignalReview;
 use App\Models\PublicHealthBaseline;
 use App\Modules\PublicHealth\Services\SignalDetectionService;
+use App\Http\Resources\PublicHealthSignalResource;
 
 class IntelligenceController extends Controller
 {
@@ -19,7 +20,7 @@ class IntelligenceController extends Controller
         if ($status) {
             $query->where('status', $status);
         }
-        return response()->json($query->get());
+        return response()->json(PublicHealthSignalResource::collection($query->get()));
     }
 
     public function getSignal($id)
@@ -28,7 +29,7 @@ class IntelligenceController extends Controller
         if (!$signal) {
             return response()->json(['error' => __('api.signal_not_found')], 404);
         }
-        return response()->json($signal);
+        return response()->json(PublicHealthSignalResource::make($signal));
     }
 
     public function triggerDetection(Request $request)
@@ -53,7 +54,7 @@ class IntelligenceController extends Controller
             return response()->json([
                 'status'  => 'signal_detected',
                 'message' => __('api.spike_alert_triggered'),
-                'signal'  => $signal
+                'signal'  => PublicHealthSignalResource::make($signal)
             ], 201);
         }
 
@@ -134,7 +135,7 @@ class IntelligenceController extends Controller
     {
         // Positivity trend summaries
         $signals = PublicHealthSignal::where('signal_type', 'lab_positivity_spike')->get();
-        return response()->json($signals);
+        return response()->json(PublicHealthSignalResource::collection($signals));
     }
 
     public function getShortages()
@@ -144,6 +145,6 @@ class IntelligenceController extends Controller
             'medicine_stock_out_cluster',
             'blood_shortage_cluster'
         ])->get();
-        return response()->json($shortages);
+        return response()->json(PublicHealthSignalResource::collection($shortages));
     }
 }
