@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Mobile;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ConsentRequestResource;
+use App\Http\Resources\DataExportRequestResource;
 use App\Models\AccessLog;
 use App\Models\ConsentRequest;
 use App\Models\CorrectionRequest;
@@ -46,7 +48,7 @@ class MobileGovernanceController extends Controller
             ->latest()
             ->get();
 
-        return response()->json($requests, 200);
+        return response()->json(ConsentRequestResource::collection($requests), 200);
     }
 
     public function approveConsent(Request $request, $id)
@@ -177,7 +179,7 @@ class MobileGovernanceController extends Controller
             ->latest()
             ->get();
 
-        return response()->json($requests, 200);
+        return response()->json(DataExportRequestResource::collection($requests), 200);
     }
 
     public function downloadExport(Request $request, $id)

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AutopsyReportResource;
+use App\Http\Resources\MortuaryRecordResource;
 use App\Models\AutopsyReport;
 use App\Models\MortuaryRecord;
 use App\Services\Documents\DocumentIssuanceService;
@@ -91,7 +93,7 @@ class MortuaryController extends Controller
             );
         } catch (\Throwable) {}
 
-        return response()->json(['data' => $record], 201);
+        return response()->json(['data' => MortuaryRecordResource::make($record)], 201);
     }
 
     /**
@@ -146,7 +148,7 @@ class MortuaryController extends Controller
             $validated['pathologist_id'],
         );
 
-        return response()->json(['data' => $autopsy], 201);
+        return response()->json(['data' => AutopsyReportResource::make($autopsy)], 201);
     }
 
     /**
@@ -205,7 +207,7 @@ class MortuaryController extends Controller
             );
         } catch (\Throwable) {}
 
-        return response()->json(['data' => $record]);
+        return response()->json(['data' => MortuaryRecordResource::make($record)]);
     }
 
     /**
@@ -250,7 +252,7 @@ class MortuaryController extends Controller
             );
         } catch (\Throwable) {}
 
-        return response()->json(['data' => $record]);
+        return response()->json(['data' => MortuaryRecordResource::make($record)]);
     }
 
     /**
@@ -295,7 +297,7 @@ class MortuaryController extends Controller
             );
         } catch (\Throwable) {}
 
-        return response()->json(['data' => $record]);
+        return response()->json(['data' => MortuaryRecordResource::make($record)]);
     }
 
     /**
@@ -331,7 +333,7 @@ class MortuaryController extends Controller
             $validated['identified_by'],
         );
 
-        return response()->json(['data' => $record]);
+        return response()->json(['data' => MortuaryRecordResource::make($record)]);
     }
 
     /**
@@ -349,7 +351,7 @@ class MortuaryController extends Controller
             ->orderByDesc('admission_date')
             ->get();
 
-        return response()->json(['data' => $records]);
+        return response()->json(['data' => MortuaryRecordResource::collection($records)]);
     }
 
     /**
