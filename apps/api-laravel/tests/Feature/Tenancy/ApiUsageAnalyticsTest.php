@@ -63,9 +63,13 @@ class ApiUsageAnalyticsTest extends TestCase
         ]);
 
         $service = new ApiUsageAnalyticsService();
+        // logged_at defaults to the DB CURRENT_TIMESTAMP (UTC), which can land on
+        // a different calendar date than the app clock near midnight. Use a window
+        // wide enough that the just-inserted rows can never fall outside it,
+        // regardless of the UTC/local boundary.
         $summary = $service->getSummaryForPeriod(
-            now()->subDay()->toDateString(),
-            now()->toDateString()
+            now()->subDays(2)->toDateString(),
+            now()->addDay()->toDateString()
         );
 
         $clientA = collect($summary)->firstWhere('integration_client_id', 'CLIENT-A');
