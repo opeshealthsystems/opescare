@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\HivCounsellingSessionResource;
 use App\Models\HivCounsellingSession;
 use App\Services\Documents\DocumentIssuanceService;
 use Illuminate\Http\JsonResponse;
@@ -51,7 +52,7 @@ class HivCounsellingController extends Controller
             // Non-fatal
         }
 
-        return response()->json(['data' => $record], 201);
+        return response()->json(['data' => HivCounsellingSessionResource::make($record)], 201);
     }
 
     public function index(Request $request): JsonResponse
@@ -66,6 +67,6 @@ class HivCounsellingController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        return response()->json(['data' => $records]);
+        return response()->json(['data' => HivCounsellingSessionResource::collection($records)]);
     }
 }

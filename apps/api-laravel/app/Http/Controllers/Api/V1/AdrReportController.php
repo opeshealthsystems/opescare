@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AdrReportResource;
 use App\Models\AdrReport;
 use App\Services\Documents\DocumentIssuanceService;
 use Illuminate\Http\JsonResponse;
@@ -62,7 +63,7 @@ class AdrReportController extends Controller
             );
         } catch (\Throwable) {}
 
-        return response()->json(['data' => $report], 201);
+        return response()->json(['data' => AdrReportResource::make($report)], 201);
     }
 
     public function show(Request $request, AdrReport $report): JsonResponse
@@ -71,7 +72,7 @@ class AdrReportController extends Controller
         if (!$facilityId || $report->facility_id !== $facilityId) {
             return response()->json(['message' => __('api.forbidden')], 403);
         }
-        return response()->json(['data' => $report]);
+        return response()->json(['data' => AdrReportResource::make($report)]);
     }
 
     public function index(Request $request): JsonResponse
@@ -88,6 +89,6 @@ class AdrReportController extends Controller
             $query->where('patient_id', $request->query('patient_id'));
         }
 
-        return response()->json(['data' => $query->get()]);
+        return response()->json(['data' => AdrReportResource::collection($query->get())]);
     }
 }

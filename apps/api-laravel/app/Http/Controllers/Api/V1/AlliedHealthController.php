@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AlliedHealthAssessmentResource;
 use App\Models\AlliedHealthAssessment;
 use App\Services\Documents\DocumentIssuanceService;
 use Illuminate\Http\JsonResponse;
@@ -70,7 +71,7 @@ class AlliedHealthController extends Controller
             );
         } catch (\Throwable) {}
 
-        return response()->json(['data' => $assessment], 201);
+        return response()->json(['data' => AlliedHealthAssessmentResource::make($assessment)], 201);
     }
 
     public function show(Request $request, AlliedHealthAssessment $assessment): JsonResponse
@@ -79,7 +80,7 @@ class AlliedHealthController extends Controller
         if (!$facilityId || $assessment->facility_id !== $facilityId) {
             return response()->json(['message' => __('api.forbidden')], 403);
         }
-        return response()->json(['data' => $assessment]);
+        return response()->json(['data' => AlliedHealthAssessmentResource::make($assessment)]);
     }
 
     public function index(Request $request): JsonResponse
@@ -99,6 +100,6 @@ class AlliedHealthController extends Controller
             $query->where('patient_id', $request->query('patient_id'));
         }
 
-        return response()->json(['data' => $query->get()]);
+        return response()->json(['data' => AlliedHealthAssessmentResource::collection($query->get())]);
     }
 }

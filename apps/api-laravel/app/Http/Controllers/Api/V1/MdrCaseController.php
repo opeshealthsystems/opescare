@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MdrCaseResource;
 use App\Models\MdrCase;
 use App\Services\Documents\DocumentIssuanceService;
 use Illuminate\Http\JsonResponse;
@@ -49,7 +50,7 @@ class MdrCaseController extends Controller
             // Non-fatal
         }
 
-        return response()->json(['data' => $record], 201);
+        return response()->json(['data' => MdrCaseResource::make($record)], 201);
     }
 
     public function index(Request $request): JsonResponse

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MetricSnapshotResource;
 use App\Modules\Analytics\Services\OperationalAnalyticsService;
 use App\Modules\Analytics\Services\ProductAnalyticsService;
 use App\Modules\Analytics\Services\ReportExportService;
@@ -179,7 +180,7 @@ class AnalyticsController extends Controller
 
         return response()->json([
             'facility_id' => $facilityId,
-            'data'        => $snapshots,
+            'data'        => MetricSnapshotResource::collection($snapshots),
         ]);
     }
 

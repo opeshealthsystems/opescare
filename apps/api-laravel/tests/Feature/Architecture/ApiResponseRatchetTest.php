@@ -38,10 +38,10 @@ class ApiResponseRatchetTest extends TestCase
      * scan loop). 219 after the EncounterController slice; 205 after Communication;
      * 197 after Legal + Support; 191 after CareMap + Document + PenTest; 182
      * after Mortuary + MobileGovernance; 172 after the Admin controllers
-     * (completes Tier-1); 146 after the Tier-2 batch (11 controllers). This
-     * number must only ever go DOWN.
+     * (completes Tier-1); 146 after the Tier-2 batch (11 controllers); 117
+     * after the Tier-3 batch (17 controllers). This number must only ever go DOWN.
      */
-    private const BASELINE = 146;
+    private const BASELINE = 117;
 
     public function test_raw_model_api_responses_do_not_exceed_baseline(): void
     {

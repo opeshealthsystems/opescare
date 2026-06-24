@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\NursingRecordResource;
 use App\Models\NursingRecord;
 use App\Services\Documents\DocumentIssuanceService;
 use Illuminate\Http\JsonResponse;
@@ -68,7 +69,7 @@ class NursingRecordController extends Controller
             );
         } catch (\Throwable) {}
 
-        return response()->json(['data' => $record], 201);
+        return response()->json(['data' => NursingRecordResource::make($record)], 201);
     }
 
     public function show(Request $request, NursingRecord $record): JsonResponse
@@ -77,7 +78,7 @@ class NursingRecordController extends Controller
         if (!$facilityId || $record->facility_id !== $facilityId) {
             return response()->json(['message' => __('api.forbidden')], 403);
         }
-        return response()->json(['data' => $record]);
+        return response()->json(['data' => NursingRecordResource::make($record)]);
     }
 
     public function index(Request $request): JsonResponse
@@ -97,6 +98,6 @@ class NursingRecordController extends Controller
             $query->where('patient_id', $request->query('patient_id'));
         }
 
-        return response()->json(['data' => $query->get()]);
+        return response()->json(['data' => NursingRecordResource::collection($query->get())]);
     }
 }

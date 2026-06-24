@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PalliativeCarePlanResource;
 use App\Models\PalliativeCarePlan;
 use App\Services\Documents\DocumentIssuanceService;
 use Illuminate\Http\JsonResponse;
@@ -51,7 +52,7 @@ class PalliativeCareController extends Controller
             // Non-fatal
         }
 
-        return response()->json(['data' => $record], 201);
+        return response()->json(['data' => PalliativeCarePlanResource::make($record)], 201);
     }
 
     public function index(Request $request): JsonResponse

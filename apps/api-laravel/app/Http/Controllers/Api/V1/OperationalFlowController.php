@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DrugInteractionAlertResource;
 use App\Models\Visit;
 use App\Modules\OperationalFlow\Services\MedicationReconciliationService;
 use App\Modules\OperationalFlow\Services\PatientJourneyService;
@@ -283,7 +284,7 @@ class OperationalFlowController extends Controller
 
         return response()->json([
             'message' => __('api.drug_interaction_acknowledged'),
-            'data'    => $alert,
+            'data'    => DrugInteractionAlertResource::make($alert),
         ]);
     }
 
