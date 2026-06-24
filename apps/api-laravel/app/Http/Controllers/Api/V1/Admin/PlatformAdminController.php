@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MaintenanceWindowResource;
+use App\Http\Resources\ModuleToggleResource;
 use App\Models\MaintenanceWindow;
 use App\Modules\Admin\Services\PlatformAdminService;
 use Illuminate\Http\JsonResponse;
@@ -111,7 +113,7 @@ class PlatformAdminController extends Controller
         }
 
         $state = $toggle->enabled ? 'enabled' : 'disabled';
-        return response()->json(['message' => __('api.module_state', ['key' => $key, 'state' => $state]), 'data' => $toggle]);
+        return response()->json(['message' => __('api.module_state', ['key' => $key, 'state' => $state]), 'data' => ModuleToggleResource::make($toggle)]);
     }
 
     /**
@@ -181,7 +183,7 @@ class PlatformAdminController extends Controller
         }
 
         $state = $window->is_active ? 'activated' : 'deactivated';
-        return response()->json(['message' => __('api.maintenance_window_state', ['state' => $state]), 'data' => $window]);
+        return response()->json(['message' => __('api.maintenance_window_state', ['state' => $state]), 'data' => MaintenanceWindowResource::make($window)]);
     }
 
     // ── System Health & Admin Log ─────────────────────────────────────────

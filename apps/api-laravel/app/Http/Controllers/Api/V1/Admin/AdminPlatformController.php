@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\SystemHealthSnapshotResource;
 use App\Modules\Admin\Services\FeatureFlagService;
 use App\Modules\Admin\Services\SystemHealthService;
 use Illuminate\Http\JsonResponse;
@@ -134,7 +135,7 @@ class AdminPlatformController extends Controller
             ], 404);
         }
 
-        return response()->json(['data' => $snapshot]);
+        return response()->json(['data' => SystemHealthSnapshotResource::make($snapshot)]);
     }
 
     /**
@@ -159,7 +160,7 @@ class AdminPlatformController extends Controller
 
         return response()->json([
             'message' => __('api.system_health_status', ['status' => $snapshot->status]),
-            'data'    => $snapshot,
+            'data'    => SystemHealthSnapshotResource::make($snapshot),
         ], $httpStatus);
     }
 }

@@ -3,6 +3,12 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AccessLogResource;
+use App\Http\Resources\CorrectionRequestResource;
+use App\Http\Resources\CountryPolicyResource;
+use App\Http\Resources\DataExportRequestResource;
+use App\Http\Resources\EmergencyAccessEventResource;
+use App\Http\Resources\SecurityIncidentResource;
 use Illuminate\Http\Request;
 use App\Modules\Governance\Services\EmergencyAccessService;
 use App\Modules\Governance\Services\CorrectionRequestService;
@@ -38,13 +44,13 @@ class AdminGovernanceController extends Controller
     public function listAccessLogs(Request $request)
     {
         $paginated = AccessLog::latest()->paginate(50);
-        return response()->json(['data' => $paginated->items(), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
+        return response()->json(['data' => AccessLogResource::collection($paginated->items()), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
     }
 
     public function listEmergencyAccessReviews(Request $request)
     {
         $paginated = EmergencyAccessEvent::latest()->paginate(50);
-        return response()->json(['data' => $paginated->items(), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
+        return response()->json(['data' => EmergencyAccessEventResource::collection($paginated->items()), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
     }
 
     public function reviewEmergencyAccess(Request $request, $id)
@@ -70,7 +76,7 @@ class AdminGovernanceController extends Controller
     public function listCorrectionRequests(Request $request)
     {
         $paginated = CorrectionRequest::latest()->paginate(50);
-        return response()->json(['data' => $paginated->items(), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
+        return response()->json(['data' => CorrectionRequestResource::collection($paginated->items()), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
     }
 
     public function approveCorrectionRequest(Request $request, $id)
@@ -100,7 +106,7 @@ class AdminGovernanceController extends Controller
     public function listExportRequests(Request $request)
     {
         $paginated = DataExportRequest::latest()->paginate(50);
-        return response()->json(['data' => $paginated->items(), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
+        return response()->json(['data' => DataExportRequestResource::collection($paginated->items()), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
     }
 
     public function approveExportRequest(Request $request, $id)
@@ -129,13 +135,13 @@ class AdminGovernanceController extends Controller
             'rejected_at' => now(),
         ]);
 
-        return response()->json($exp, 200);
+        return response()->json(DataExportRequestResource::make($exp), 200);
     }
 
     public function listSecurityIncidents(Request $request)
     {
         $paginated = SecurityIncident::latest()->paginate(50);
-        return response()->json(['data' => $paginated->items(), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
+        return response()->json(['data' => SecurityIncidentResource::collection($paginated->items()), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
     }
 
     public function createSecurityIncident(Request $request)
@@ -154,7 +160,7 @@ class AdminGovernanceController extends Controller
         $inc->detected_at = Carbon::now();
         $inc->save();
 
-        return response()->json($inc, 201);
+        return response()->json(SecurityIncidentResource::make($inc), 201);
     }
 
     public function containSecurityIncident(Request $request, $id)
@@ -170,7 +176,7 @@ class AdminGovernanceController extends Controller
         $inc->contained_by = $actorId;
         $inc->save();
 
-        return response()->json($inc, 200);
+        return response()->json(SecurityIncidentResource::make($inc), 200);
     }
 
     public function resolveSecurityIncident(Request $request, $id)
@@ -186,13 +192,13 @@ class AdminGovernanceController extends Controller
         $inc->resolved_by = $actorId;
         $inc->save();
 
-        return response()->json($inc, 200);
+        return response()->json(SecurityIncidentResource::make($inc), 200);
     }
 
     public function listCountryPolicies(Request $request)
     {
         $paginated = CountryPolicy::latest()->paginate(50);
-        return response()->json(['data' => $paginated->items(), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
+        return response()->json(['data' => CountryPolicyResource::collection($paginated->items()), 'meta' => ['total' => $paginated->total(), 'per_page' => $paginated->perPage(), 'current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage()]], 200);
     }
 
     public function createCountryPolicy(Request $request)
@@ -213,7 +219,7 @@ class AdminGovernanceController extends Controller
         $policy->status = 'draft';
         $policy->save();
 
-        return response()->json($policy, 201);
+        return response()->json(CountryPolicyResource::make($policy), 201);
     }
 
     public function updateCountryPolicy(Request $request, $id)
@@ -228,7 +234,7 @@ class AdminGovernanceController extends Controller
         $policy = CountryPolicy::findOrFail($id);
         $policy->update($validated);
 
-        return response()->json($policy, 200);
+        return response()->json(CountryPolicyResource::make($policy), 200);
     }
 
     public function publishCountryPolicy(Request $request, $id)
