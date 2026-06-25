@@ -64,6 +64,9 @@ class CheckMaintenanceMode
         'up',                               // Laravel built-in health check
         'api/health',                       // OpesCare health endpoint
         'api/v1/health',
+        'status',                           // Public status page — must be reachable DURING an outage
+        'sla',                              // Public SLA page
+        '.well-known/*',                    // OAuth/JWKS discovery (machine clients verifying tokens)
         'portals/admin/cc/maintenance',     // Admin toggle page (GET)
         'portals/admin/cc/maintenance/*',   // Admin toggle actions (POST)
         'portals/admin/cc',                 // Admin control centre dashboard

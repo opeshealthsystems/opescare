@@ -146,9 +146,26 @@ class PublicPageController extends Controller
         return redirect($back)->with('contact_success', true)->with('success', 'Thank you! Your message has been received. We\'ll be in touch shortly.');
     }
 
-    public function status()
+    public function status(\App\Modules\Admin\Services\SystemHealthService $health)
     {
-        return view('public.status');
+        // Active or upcoming maintenance windows are the public incident feed —
+        // never expose internal SecurityIncident records here.
+        $maintenance = \App\Models\MaintenanceWindow::query()
+            ->where('is_active', true)
+            ->orWhere('starts_at', '>=', now())
+            ->orderByDesc('starts_at')
+            ->limit(5)
+            ->get();
+
+        return view('public.status', [
+            'health'      => $health->currentHealth(),
+            'maintenance' => $maintenance,
+        ]);
+    }
+
+    public function sla()
+    {
+        return view('public.sla');
     }
 
     public function showLogin()

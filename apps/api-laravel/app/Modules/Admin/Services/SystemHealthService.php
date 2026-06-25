@@ -75,4 +75,38 @@ class SystemHealthService
     {
         return SystemHealthSnapshot::latest()->first();
     }
+
+    /**
+     * Live infrastructure health for the PUBLIC status page. Cached briefly so
+     * the unauthenticated endpoint can't hammer the DB/cache on every hit.
+     * Returns the overall status plus per-service-group statuses derived from
+     * real connectivity + queue-depth checks (no hard-coded "operational").
+     *
+     * @return array{status:string, checked_at:\Illuminate\Support\Carbon, components:array<string,string>}
+     */
+    public function currentHealth(): array
+    {
+        return Cache::remember('public_status_health', 30, function (): array {
+            $metrics = $this->gatherMetrics();
+            $dbOk    = (bool) $metrics['db_connected'];
+            $cacheOk = (bool) $metrics['cache_connected'];
+            $queueOk = ($metrics['failed_jobs_count'] ?? 0) <= 100;
+
+            // outage if the primary dependency is down; degraded if a secondary is.
+            $derive = fn (bool $primary, bool $secondary = true): string =>
+                ! $primary ? 'outage' : ($secondary ? 'operational' : 'degraded');
+
+            return [
+                'status'     => $this->deriveStatus($metrics),
+                'checked_at' => now(),
+                'components' => [
+                    'core'         => $derive($dbOk, $cacheOk),
+                    'clinical'     => $derive($dbOk),
+                    'availability' => $derive($dbOk),
+                    'integration'  => $derive($dbOk, $queueOk),
+                    'portal'       => $derive($dbOk, $cacheOk),
+                ],
+            ];
+        });
+    }
 }

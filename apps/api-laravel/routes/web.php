@@ -72,6 +72,7 @@ Route::get('/help', [PublicPageController::class, 'help'])->name('public.help');
 Route::get('/contact', [PublicPageController::class, 'contact'])->name('public.contact');
 Route::post('/contact', [PublicPageController::class, 'contactSubmit'])->name('public.contact.submit');
 Route::get('/status', [PublicPageController::class, 'status'])->name('public.status');
+Route::get('/sla', [PublicPageController::class, 'sla'])->name('public.sla');
 
 // Onboarding / Auth Path Selectors & Tailored Routes
 Route::get('/signup', [PublicPageController::class, 'showRegisterSelector'])->name('register');
