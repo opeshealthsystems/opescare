@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CountryLaunchApprovalResource;
 use App\Models\Country;
 use App\Models\CountryLaunchApproval;
 use App\Modules\CountryExpansion\Services\CountryExpansionService;
@@ -42,7 +43,7 @@ class CountryExpansionController extends Controller
 
         return response()->json([
             'message'  => __('api.launch_process_initiated', ['country' => $country->name]),
-            'data'     => $approval,
+            'data'     => CountryLaunchApprovalResource::make($approval),
         ], 201);
     }
 
@@ -71,7 +72,7 @@ class CountryExpansionController extends Controller
             'country_id'    => $country->id,
             'country_name'  => $country->name,
             'is_approved'   => $isApproved,
-            'approval'      => $approval,
+            'approval'      => CountryLaunchApprovalResource::make($approval),
             'missing_items' => $missing,
             'ready_to_approve' => empty($missing),
         ]);
@@ -134,7 +135,7 @@ class CountryExpansionController extends Controller
 
         return response()->json([
             'message' => __('api.launch_approved', ['country' => $country->name]),
-            'data'    => $approval->fresh(),
+            'data'    => CountryLaunchApprovalResource::make($approval->fresh()),
         ]);
     }
 }

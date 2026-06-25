@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\SyncConflictResource;
 use App\Modules\Offline\Services\ConflictResolutionService;
 use App\Modules\Offline\Services\OfflinePolicyService;
 use Illuminate\Http\JsonResponse;
@@ -96,7 +97,7 @@ class OfflineSyncController extends Controller
             'device_id'        => $deviceId,
             'count'            => $conflicts->count(),
             'safety_notice'    => 'Clinical conflicts must be reviewed by a clinician before resolution.',
-            'conflicts'        => $conflicts,
+            'conflicts'        => SyncConflictResource::collection($conflicts),
         ]);
     }
 
@@ -111,7 +112,7 @@ class OfflineSyncController extends Controller
         return response()->json([
             'count'          => $conflicts->count(),
             'safety_notice'  => 'Clinical conflicts (encounters, prescriptions, lab results, vital signs) require manual_merge strategy. Auto-resolution is not permitted.',
-            'conflicts'      => $conflicts,
+            'conflicts'      => SyncConflictResource::collection($conflicts),
         ]);
     }
 
@@ -147,7 +148,7 @@ class OfflineSyncController extends Controller
 
         return response()->json([
             'message' => __('api.conflict_resolved'),
-            'data'    => $resolved,
+            'data'    => SyncConflictResource::make($resolved),
         ]);
     }
 }
