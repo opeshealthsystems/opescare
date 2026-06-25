@@ -73,7 +73,7 @@
 <h3>Interactive Playground</h3>
 <ul>
     <li>Redoc-powered OpenAPI 3.1 explorer at <a href="{{ route('docs.playground') }}">/docs/playground</a></li>
-    <li>Raw YAML downloadable at <a href="{{ asset('openapi.yaml') }}" target="_blank">/openapi.yaml</a></li>
+    <li>Full machine-readable spec at <a href="{{ asset('openapi.json') }}" target="_blank">/openapi.json</a> (all endpoints)</li>
 </ul>
 
 <div class="docs-page-nav">

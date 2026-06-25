@@ -1,72 +1,66 @@
-# OpenAPI Specification — Convention, Guardrail & Backlog
+# OpenAPI Specification — Generated, Full-Coverage, Self-Syncing
 
-**Status:** Foundation shipped · coverage growing (ratcheted by a contract test)
-**Spec:** [`public/openapi.yaml`](../public/openapi.yaml) (OpenAPI 3.1.0)
+**Status:** Full coverage (all endpoints)
+**Spec:** [`public/openapi.json`](../public/openapi.json) (OpenAPI 3.1.0, generated)
 **Rendered:** ReDoc at `/docs/playground`
+**Generator:** `php artisan opescare:generate-openapi`
 **Related:** [API-VERSIONING.md](API-VERSIONING.md), [API-RESOURCES.md](API-RESOURCES.md), [API-OAUTH.md](API-OAUTH.md)
 
 ---
 
-## 1. Convention
+## 1. How it works
 
-1. **Absolute, exact paths.** The `servers` URL is the bare host
-   (`http://opescare.test`, `https://api.opescare.com`). Every path includes its
-   full real prefix — `/api/v1/...` for the API, `/.well-known/...` for
-   discovery. A documented path string equals the live route URI exactly.
-2. **Only real endpoints.** Never document an aspirational or approximate
-   endpoint. If you can't point to a registered route, it doesn't belong in the
-   spec. (The previous hand-written spec had drifted — wrong base path, SDK
-   paths that didn't resolve — which is exactly what the guardrail now prevents.)
-3. **Schemas grounded in code.** Request bodies mirror the controller's
-   `$request->validate([...])` rules; responses mirror the actual
-   `response()->json(...)` shape (and reuse the resource schemas from
-   [API-RESOURCES.md](API-RESOURCES.md): `ClinicalNote`, `AllergyRecord`,
-   `Diagnosis`).
-4. **Accurate security.** Each operation declares the security scheme its route
-   actually enforces: `BearerAuth` (RS256 JWT), `ClientId`+`ClientSecret`
-   (VerifyIntegrationClient), or `BridgeAgentId`+`BridgeAgentKey`.
+The spec is **generated from the live route table** by
+[`GenerateOpenApi`](../app/Console/Commands/GenerateOpenApi.php), not
+hand-maintained. It currently documents **592 operations across 550 paths —
+100% of the `api/*` and `.well-known/*` surface.**
 
-## 2. Guardrail (contract test)
+For every route it emits: the real path + method, a tag (from the path prefix),
+the security scheme (derived from the route's gathered middleware —
+`VerifyIntegrationClient` → `ClientId`+`ClientSecret`, `auth.bearer` →
+`BearerAuth`, `sdk.token` → `SdkToken`, `bridge.agent` → `BridgeAgentKey`,
+`auth.mobile` → `MobileToken`, admin/session → `SessionAuth`, else public), path
+parameters, a generic request body for writes, and the standard response set
+(success + the shared `Error` envelope for 4xx/5xx).
 
-[`tests/Feature/Architecture/OpenApiContractTest.php`](../tests/Feature/Architecture/OpenApiContractTest.php)
-asserts **every documented (method, path) resolves to a real registered route**
-and fails CI otherwise — no phantom endpoints can be published. It also prints
-honest coverage (documented operations vs total API routes) on each run.
+Because paths come straight from the router, the spec **cannot drift or invent
+an endpoint**. Regenerate after any route change:
 
-## 3. Current coverage
+```bash
+php artisan opescare:generate-openapi   # writes public/openapi.json
+```
 
-**15 verified operations** of ~590 API routes (~2.5%). Documented surfaces:
+## 2. Guardrail (bidirectional, self-syncing)
 
-| Surface | Endpoints |
-|---------|-----------|
-| OAuth | `POST /api/v1/connect/auth/token`, `POST /api/v1/connect/auth/introspect` |
-| Discovery | `GET /.well-known/jwks.json`, `GET /.well-known/oauth-authorization-server` |
-| Encounters | notes (POST), notes/{note} (GET), notes/{note}/amend (POST), allergies (POST), diagnoses (POST) |
-| Records (B2B) | records/encounters, records/lab-results, records/prescriptions (POST) |
-| Bridge | sync (POST), heartbeat (POST), status (GET) |
+[`OpenApiContractTest`](../tests/Feature/Architecture/OpenApiContractTest.php)
+enforces the spec is in sync with the routes **both ways**:
 
-These are the highest-stakes external/partner surfaces. The long tail is the
-**backlog** — documented accurately or not at all.
+- **No phantom** — every documented operation resolves to a real route.
+- **No gaps** — every real `api/`/`.well-known/` route is documented.
 
-## 4. Backlog (next, by external value)
+So adding or removing a route without regenerating **fails CI**, keeping
+coverage at 100% permanently.
 
-1. **SDK** (`/api/v1/sdk/*`) — patients summary/encounters, facilities, stock,
-   appointments, webhooks, token introspection.
-2. **Connect patients & consent** — patients/search, patients/resolve,
-   patients/{health_id}/summary, consents/request, consents/verify,
-   emergency-access/request, medical-ids/verify(-qr).
-3. **Connect inventory / webhooks / reconciliation** — blood & pharmacy stock
-   sync, webhook subscriptions + event replay, reconciliation cases.
-4. **FHIR R4** (`/api/fhir/R4/*`) — generated separately from the
-   CapabilityStatement; cross-link rather than duplicate.
-5. **Mobile / ProviderMobile** — patient- and provider-app endpoints.
+## 3. Curated rich operations (overrides)
 
-## 5. Adding an endpoint to the spec
+Generic stubs are honest but coarse. High-value external operations carry full
+request/response schemas via [`config/openapi.php`](../config/openapi.php):
 
-1. Confirm the route is live: `php artisan route:list | grep <path>`.
-2. Add the path under `paths:` with the **full** URI, correct method, and the
-   security scheme the route enforces.
-3. Ground the request body in the controller's validation rules and the response
-   in its actual JSON shape (reuse `#/components/schemas/*`).
-4. Run `php artisan test --filter=OpenApiContractTest` — it must stay green
-   (proves the path is real) and the coverage number ticks up.
+- `schemas` — extra component schemas (the API resources `ClinicalNote`,
+  `AllergyRecord`, `Diagnosis`, plus the OAuth `TokenResponse`,
+  `IntrospectionResponse`, `Jwk`/`Jwks`, `OAuthServerMetadata`).
+- `overrides` — full operation objects keyed `"METHOD /full/path"` that replace
+  the generated stub. Currently curated: the OAuth token + introspection
+  endpoints, the JWKS + metadata discovery docs, and the five clinical
+  Encounter writes.
+
+To enrich an endpoint: add an entry under `overrides` (and any new `schemas`),
+then regenerate. The contract test still guarantees the path is real.
+
+## 4. Backlog (enrichment, not coverage)
+
+Coverage is complete; what remains is **richer per-endpoint detail**. Priority
+order for adding overrides: Connect records → SDK → Mobile partner → FHIR. The
+response schemas should reference the API resource shapes (see
+[API-RESOURCES.md](API-RESOURCES.md)). Internal admin/staff endpoints can stay
+as generated stubs.

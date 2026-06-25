@@ -22,7 +22,7 @@
 @section('content')
 <div class="redoc-wrap">
     <redoc
-        spec-url='{{ asset("openapi.yaml") }}'
+        spec-url='{{ asset("openapi.json") }}'
         hide-download-btn="false"
         expand-responses="200,201"
         required-props-first="true"

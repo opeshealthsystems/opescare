@@ -95,5 +95,5 @@ Breaking changes are gated behind the partner-onboarding pipeline:
 ## 6. Where to watch for changes
 
 - `/docs/changelog` — human-readable change log and deprecation notices.
-- `public/openapi.yaml` — the machine-readable OpenAPI 3.1 contract.
+- `public/openapi.json` — the machine-readable OpenAPI 3.1 contract (generated, full-coverage; `php artisan opescare:generate-openapi`).
 - `X-API-Version` response header and webhook `schema_version` — runtime signals.
