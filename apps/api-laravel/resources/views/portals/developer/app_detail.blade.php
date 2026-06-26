@@ -55,6 +55,34 @@
         </div>
     </div>
 
+    {{-- Plan & usage (metered API plan / EnforceApiQuota) --}}
+    @php
+        $quota = $plan?->monthly_request_quota;
+        $pct = $quota ? min(100, (int) round($monthlyUsage / max(1, $quota) * 100)) : null;
+        $barColor = $pct === null ? '#0F4C81' : ($pct >= 90 ? '#ef4444' : ($pct >= 70 ? '#f59e0b' : '#10b981'));
+    @endphp
+    <div class="panel mb-6">
+        <div class="panel-header" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+            <h3 class="panel-title"><i data-lucide="gauge"></i> {{ __('public.developer_portal.panel_plan_usage', [], $l) ?: 'Plan & usage' }}</h3>
+            <a href="{{ route('public.developers.pricing') }}" class="btn btn-ghost" style="font-size:.8125rem;"><i data-lucide="arrow-up-right"></i> {{ __('public.developer_portal.btn_view_plans', [], $l) ?: 'View plans' }}</a>
+        </div>
+        <div class="panel-body">
+            <div style="display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;">
+                <span style="font-size:1.25rem;font-weight:800;color:#0F4C81;">{{ $plan?->name ?? 'Sandbox' }}</span>
+                <span class="td-muted" style="font-size:.8125rem;">· {{ number_format($plan?->rate_limit_per_min ?? 60, 0, ',', ' ') }} {{ __('public.developer_portal.lbl_req_min', [], $l) ?: 'req/min' }} · {{ __('public.developer_portal.lbl_quota_reset', [], $l) ?: 'Resets on the 1st' }}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:.8125rem;color:#475569;margin-bottom:.4rem;">
+                <span>{{ __('public.developer_portal.lbl_this_month_usage', [], $l) ?: 'Requests this month' }}: <strong style="color:#0F2744;">{{ number_format($monthlyUsage, 0, ',', ' ') }}</strong></span>
+                <span>{{ __('public.developer_portal.lbl_quota', [], $l) ?: 'Monthly quota' }}: <strong style="color:#0F2744;">{{ $quota ? number_format($quota, 0, ',', ' ') : (__('public.developer_portal.lbl_unlimited', [], $l) ?: 'Unlimited') }}</strong></span>
+            </div>
+            @if($pct !== null)
+            <div style="height:.5rem;background:#f1f5f9;border-radius:999px;overflow:hidden;">
+                <div style="height:100%;width:{{ $pct }}%;background:{{ $barColor }};border-radius:999px;"></div>
+            </div>
+            @endif
+        </div>
+    </div>
+
     <div class="field-grid mb-6">
 
         {{-- Credentials & Config --}}

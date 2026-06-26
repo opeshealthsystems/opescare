@@ -240,6 +240,10 @@ class DeveloperPortalController extends Controller
             ->latest()
             ->first();
 
+        // Metered plan + current-month usage (api_plans / EnforceApiQuota).
+        $plan         = $client->apiPlan();
+        $monthlyUsage = $client->monthlyUsageCount();
+
         return view('portals.developer.app_detail', compact(
             'developer',
             'client',
@@ -247,7 +251,9 @@ class DeveloperPortalController extends Controller
             'webhooks',
             'usageSummary',
             'usageTrend',
-            'certification'
+            'certification',
+            'plan',
+            'monthlyUsage'
         ));
     }
 
