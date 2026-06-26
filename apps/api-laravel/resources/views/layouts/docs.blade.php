@@ -42,6 +42,7 @@
         <a href="{{ route('docs.changelog') }}">Changelog</a>
         <a href="{{ route('public.developers') }}">Developer Hub</a>
         <a href="{{ asset('openapi.json') }}" target="_blank">OpenAPI Spec</a>
+        <a href="{{ route('public.developers.pricing') }}">API Plans</a>
         <a href="{{ route('public.status') }}">Status</a>
         <a href="{{ route('public.sla') }}">SLA</a>
     </nav>

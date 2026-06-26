@@ -16,6 +16,7 @@ class IntegrationClient extends Model
         'facility_id', 'scopes', 'status', 'environment',
         'name', 'description', 'contact_email', 'created_by',
         'approved_at', 'approved_by', 'last_used_at', 'request_count',
+        'api_plan_key',
     ];
 
     protected $casts = [
@@ -38,6 +39,20 @@ class IntegrationClient extends Model
     public function isActive(): bool
     {
         return $this->status === 'active';
+    }
+
+    /** The metered/billed plan this client is on (defaults to sandbox). */
+    public function apiPlan(): ?ApiPlan
+    {
+        return ApiPlan::forKey($this->api_plan_key ?: 'sandbox');
+    }
+
+    /** Requests this client has made in the current billing month. */
+    public function monthlyUsageCount(): int
+    {
+        return ApiUsageLog::where('integration_client_id', $this->client_id)
+            ->where('logged_at', '>=', now()->startOfMonth())
+            ->count();
     }
 
     public function isPendingApproval(): bool

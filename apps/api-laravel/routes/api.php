@@ -93,7 +93,7 @@ Route::prefix('v1/queues')->middleware(VerifyIntegrationClient::class)->group(fu
 | OpesCare Clinical Encounter API Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('v1/encounters')->middleware(VerifyIntegrationClient::class)->group(function () {
+Route::prefix('v1/encounters')->middleware([VerifyIntegrationClient::class, 'api.quota'])->group(function () {
     Route::post('/notes',                   [\App\Http\Controllers\Api\V1\EncounterController::class, 'saveNote']);
     Route::get('/notes/{note}',             [\App\Http\Controllers\Api\V1\EncounterController::class, 'showNote']);
     Route::post('/notes/{note}/amend',      [\App\Http\Controllers\Api\V1\EncounterController::class, 'amendNote']);
@@ -138,7 +138,8 @@ Route::prefix('v1/connect')->group(function () {
         ->middleware(['verify.integration.client', 'throttle:verify']);
 
     // Authenticated B2B routes group — Bearer JWT (RS256) + per-client rate limit 200 req/min
-    Route::middleware(['auth.bearer', 'throttle.client:200,1'])->group(function () {
+    // + monthly plan quota (EnforceApiQuota; no-op unless on a finite-quota plan).
+    Route::middleware(['auth.bearer', 'throttle.client:200,1', 'api.quota'])->group(function () {
         
         // Widget session
         Route::post('/widget/sessions', [\App\Http\Controllers\Api\V1\Connect\AuthController::class, 'createWidgetSession']);

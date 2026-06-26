@@ -61,6 +61,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'module'                    => \App\Http\Middleware\EnforceModuleEntitlement::class,
             'patient.feature'           => \App\Http\Middleware\EnsurePatientFeature::class,
             'api.deprecated'            => \App\Http\Middleware\MarkDeprecated::class,
+            'api.quota'                 => \App\Http\Middleware\EnforceApiQuota::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

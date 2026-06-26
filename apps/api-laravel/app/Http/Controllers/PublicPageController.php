@@ -168,6 +168,11 @@ class PublicPageController extends Controller
         return view('public.sla');
     }
 
+    public function pricing()
+    {
+        return view('public.api-pricing', ['plans' => \App\Models\ApiPlan::public()]);
+    }
+
     public function showLogin()
     {
         return view('auth.login');
