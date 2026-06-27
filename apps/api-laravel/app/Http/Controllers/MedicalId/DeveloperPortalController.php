@@ -240,9 +240,13 @@ class DeveloperPortalController extends Controller
             ->latest()
             ->first();
 
-        // Metered plan + current-month usage (api_plans / EnforceApiQuota).
+        // Metered plan + current-month usage + recent invoices (billing).
         $plan         = $client->apiPlan();
         $monthlyUsage = $client->monthlyUsageCount();
+        $invoices     = \App\Models\ApiInvoice::where('client_id', $client->client_id)
+            ->orderByDesc('period_start')
+            ->limit(6)
+            ->get();
 
         return view('portals.developer.app_detail', compact(
             'developer',
@@ -253,8 +257,41 @@ class DeveloperPortalController extends Controller
             'usageTrend',
             'certification',
             'plan',
-            'monthlyUsage'
+            'monthlyUsage',
+            'invoices'
         ));
+    }
+
+    /** Pay an outstanding API invoice via MTN MoMo / Orange Money. */
+    public function payInvoice(Request $request, string $clientId, \App\Services\ApiBilling\ApiBillingService $billing)
+    {
+        $developer = $this->currentDeveloper();
+        if (! $developer) {
+            return redirect()->route('portals.developer.dashboard');
+        }
+
+        $client = IntegrationClient::where('id', $clientId)
+            ->where('created_by', $developer->email)
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'invoice_id' => ['required', 'integer'],
+            'provider'   => ['required', 'in:mtn_momo,orange_money'],
+            'phone'      => ['required', 'string', 'max:20'],
+        ]);
+
+        $invoice = \App\Models\ApiInvoice::where('id', $validated['invoice_id'])
+            ->where('client_id', $client->client_id)
+            ->firstOrFail();
+
+        $result = $billing->payInvoice($invoice, $validated['provider'], $validated['phone']);
+
+        return redirect()
+            ->route('portals.developer.apps.show', $client->id)
+            ->with(($result['success'] ?? false) ? 'success' : 'error',
+                ($result['success'] ?? false)
+                    ? __('public.developer_portal.pay_initiated', [], app()->getLocale()) ?: 'Payment request sent — approve it on your phone.'
+                    : (__('public.developer_portal.pay_failed', [], app()->getLocale()) ?: 'Payment could not be initiated. Please try again.'));
     }
 
     /** Rotate an app's client secret — Argon2id hash stored, plaintext shown once. */

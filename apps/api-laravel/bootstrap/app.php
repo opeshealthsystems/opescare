@@ -166,5 +166,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('opescare:notify-expiring-credentials --days=30')
                  ->weeklyOn(1, '08:00')
                  ->withoutOverlapping();
+
+        // Generate API plan invoices from metered usage — 1st of each month at 02:00
+        $schedule->command('opescare:bill-api-usage')
+                 ->monthlyOn(1, '02:00')
+                 ->withoutOverlapping();
     })
     ->create();

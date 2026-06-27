@@ -769,6 +769,7 @@ Route::middleware(['web', 'auth', 'portal.access'])->group(function () {
     Route::post('/portals/developer/apps',                                    [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'storeApp'])->name('portals.developer.apps.store');
     Route::get('/portals/developer/apps/{clientId}',                          [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'showApp'])->name('portals.developer.apps.show');
     Route::post('/portals/developer/apps/{clientId}/rotate-secret',           [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'rotateSecret'])->name('portals.developer.apps.rotate');
+    Route::post('/portals/developer/apps/{clientId}/pay-invoice',             [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'payInvoice'])->name('portals.developer.apps.pay');
     Route::post('/portals/developer/apps/{clientId}/toggle',                  [\App\Http\Controllers\MedicalId\DeveloperPortalController::class, 'toggleApp'])->name('portals.developer.apps.toggle');
 
     // Production Access Requests

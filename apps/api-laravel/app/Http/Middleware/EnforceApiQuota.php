@@ -28,6 +28,15 @@ class EnforceApiQuota
             return $next($request);
         }
 
+        // Dunning: an overdue API invoice blocks access until it is settled.
+        if (\App\Services\ApiBilling\ApiBillingService::clientIsPastDue($clientId)) {
+            return response()->json([
+                'status'     => 'error',
+                'error_code' => 'PAYMENT_REQUIRED',
+                'message'    => 'Your account has an overdue API invoice. Settle it to restore API access.',
+            ], 402, ['Retry-After' => '86400']);
+        }
+
         $client = IntegrationClient::where('client_id', $clientId)->first();
         $plan = ApiPlan::forKey($client?->api_plan_key ?: 'sandbox');
 

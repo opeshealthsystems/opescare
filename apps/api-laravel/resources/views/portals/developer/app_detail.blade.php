@@ -83,6 +83,56 @@
         </div>
     </div>
 
+    {{-- Billing & invoices (ApiBillingService / MoMo + Orange) --}}
+    @php
+        $unpaid = ($invoices ?? collect())->first(fn ($inv) => ! in_array($inv->status, ['paid', 'void'], true));
+        $invStatusStyle = ['issued' => ['#b45309', '#fffbeb'], 'paid' => ['#047857', '#ecfdf5'], 'overdue' => ['#b91c1c', '#fef2f2'], 'void' => ['#64748b', '#f1f5f9']];
+    @endphp
+    <div class="panel mb-6">
+        <div class="panel-header"><h3 class="panel-title"><i data-lucide="receipt"></i> {{ __('public.developer_portal.panel_billing', [], $l) ?: 'Billing & invoices' }}</h3></div>
+        <div class="panel-body">
+            @if(($invoices ?? collect())->isEmpty())
+                <p class="td-muted" style="margin:0;">{{ __('public.developer_portal.lbl_no_invoices', [], $l) ?: 'No invoices yet — usage is metered and billed monthly.' }}</p>
+            @else
+                <table class="kv-table" style="width:100%;">
+                    <thead><tr>
+                        <th>{{ __('public.developer_portal.lbl_invoice', [], $l) ?: 'Invoice' }}</th>
+                        <th>{{ __('public.developer_portal.lbl_period', [], $l) ?: 'Period' }}</th>
+                        <th>{{ __('public.developer_portal.lbl_amount', [], $l) ?: 'Amount' }}</th>
+                        <th>{{ __('public.developer_portal.lbl_status', [], $l) ?: 'Status' }}</th>
+                    </tr></thead>
+                    <tbody>
+                    @foreach($invoices as $inv)
+                        @php $iss = $invStatusStyle[$inv->status] ?? ['#64748b', '#f1f5f9']; @endphp
+                        <tr>
+                            <td class="mono">{{ $inv->number() }}</td>
+                            <td>{{ optional($inv->period_start)->format('M Y') }}</td>
+                            <td><strong>{{ number_format($inv->total_xaf, 0, ',', ' ') }} FCFA</strong></td>
+                            <td><span class="badge" style="color:{{ $iss[0] }};background:{{ $iss[1] }};">{{ __('public.developer_portal.st_' . $inv->status, [], $l) ?: ucfirst($inv->status) }}</span></td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+
+                @if($unpaid)
+                <form method="POST" action="{{ route('portals.developer.apps.pay', $client->id) }}" style="margin-top:1.25rem;border-top:1px solid #f1f5f9;padding-top:1.25rem;">
+                    @csrf
+                    <input type="hidden" name="invoice_id" value="{{ $unpaid->id }}">
+                    <label style="display:block;font-size:.75rem;color:#64748b;margin-bottom:.4rem;">{{ __('public.developer_portal.lbl_pay_invoice', [], $l) ?: 'Pay' }} {{ $unpaid->number() }} · {{ number_format($unpaid->total_xaf, 0, ',', ' ') }} FCFA</label>
+                    <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
+                        <select name="provider" class="form-control" style="max-width:170px;">
+                            <option value="mtn_momo">{{ __('public.developer_portal.opt_mtn', [], $l) ?: 'MTN MoMo' }}</option>
+                            <option value="orange_money">{{ __('public.developer_portal.opt_orange', [], $l) ?: 'Orange Money' }}</option>
+                        </select>
+                        <input type="text" name="phone" class="form-control" placeholder="6XXXXXXXX" style="max-width:170px;" required>
+                        <button type="submit" class="btn btn-primary"><i data-lucide="smartphone"></i> {{ __('public.developer_portal.btn_pay', [], $l) ?: 'Pay now' }}</button>
+                    </div>
+                </form>
+                @endif
+            @endif
+        </div>
+    </div>
+
     <div class="field-grid mb-6">
 
         {{-- Credentials & Config --}}
