@@ -160,7 +160,7 @@ class DataImportController extends Controller
             ExecuteImportJob::dispatch($job->id, $this->demoActorId())->onQueue('imports');
 
             return redirect()->route('portals.staff.data_import.index')
-                ->with('success', "Import approved and queued. {$job->valid_rows} valid records will be processed shortly.");
+                ->with('success', __('flash.import_approved_queued', ['count' => $job->valid_rows]));
         } catch (Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

@@ -10,7 +10,7 @@
         <i data-lucide="id-card"></i>
         <span>{{ __('public.medical_id.health_id', [], $l) ?: 'Health ID' }}</span>
     </a>
-    <a href="{{ route('portals.patient') }}" class="sidebar-link">
+    <a href="{{ route('portals.patient.family') }}" class="sidebar-link">
         <i data-lucide="git-branch"></i>
         <span>{{ __('public.portal.nav_dependents', [], $l) ?: 'Manage Dependents' }}</span>
     </a>
@@ -24,6 +24,10 @@
     <a href="{{ route('portals.patient.logs') }}" class="sidebar-link">
         <i data-lucide="history"></i>
         <span>{{ __('public.portal.nav_access_logs', [], $l) ?: 'Access Logs' }}</span>
+    </a>
+    <a href="{{ route('portals.patient.consent') }}" class="sidebar-link">
+        <i data-lucide="shield-check"></i>
+        <span>{{ __('public.portal.nav_consent', [], $l) ?: 'Consent Requests' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">

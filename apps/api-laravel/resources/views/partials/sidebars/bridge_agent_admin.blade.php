@@ -17,7 +17,7 @@
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_bridge', [], $l) ?: 'Bridge Agents' }}</div>
-    <a href="{{ route('portals.admin.security') }}" class="sidebar-link">
+    <a href="{{ route('portals.admin.bridge') }}" class="sidebar-link">
         <i data-lucide="link-2"></i>
         <span>{{ __('public.portal.nav_bridge', [], $l) ?: 'Bridge Agents' }}</span>
     </a>

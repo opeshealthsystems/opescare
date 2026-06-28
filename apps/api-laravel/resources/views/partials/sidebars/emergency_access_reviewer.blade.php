@@ -13,9 +13,17 @@
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_compliance', [], $l) ?: 'Compliance' }}</div>
+    <a href="{{ route('portals.admin.security.emergency_access') }}" class="sidebar-link">
+        <i data-lucide="alert-triangle"></i>
+        <span>{{ __('public.portal.nav_emergency_access', [], $l) ?: 'Emergency Access' }}</span>
+    </a>
     <a href="{{ route('portals.admin.security') }}" class="sidebar-link">
         <i data-lucide="shield-check"></i>
         <span>{{ __('public.portal.nav_security', [], $l) ?: 'Security' }}</span>
+    </a>
+    <a href="{{ route('portals.admin.security.audit_explorer') }}" class="sidebar-link">
+        <i data-lucide="file-search"></i>
+        <span>{{ __('public.portal.nav_audit_log', [], $l) ?: 'Audit Log' }}</span>
     </a>
     <a href="{{ route('portals.admin.legal') }}" class="sidebar-link">
         <i data-lucide="scale"></i>

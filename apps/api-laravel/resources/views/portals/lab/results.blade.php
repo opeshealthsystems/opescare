@@ -27,7 +27,7 @@
         <i data-lucide="search"></i>
         <input type="text" name="search" placeholder="{{ __('public.lab_portal.ph_search_results', [], $l) ?: 'Parameter or patient…' }}" value="{{ request('search') }}" aria-label="{{ __('public.aria_search_results') }}">
     </label>
-    <select name="flag" class="filter-select" aria-label="Flag" onchange="this.form.submit()">
+    <select name="flag" class="filter-select" aria-label="{{ __('public.aria_flag', [], $l) ?: 'Flag' }}" onchange="this.form.submit()">
         <option value="">{{ __('public.lab_portal.filter_all_flags', [], $l) ?: 'All flags' }}</option>
         <option value="H" {{ request('flag') === 'H' ? 'selected' : '' }}>{{ __('public.lab_portal.filter_flag_h', [], $l) ?: 'High' }}</option>
         <option value="HH" {{ request('flag') === 'HH' ? 'selected' : '' }}>{{ __('public.lab_portal.filter_flag_hh', [], $l) ?: 'Critical high' }}</option>

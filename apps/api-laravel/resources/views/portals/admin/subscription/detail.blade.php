@@ -17,7 +17,7 @@
 <div class="entity-head">
     <div class="entity-head__icon"><i data-lucide="credit-card"></i></div>
     <h2 class="entity-head__title">{{ $subscription->organization_name }}</h2>
-    <span class="badge badge-{{ $badgeMap[$subscription->statusColor()] ?? 'neutral' }}">{{ ucfirst(str_replace('_',' ',$subscription->status)) }}</span>
+    <span class="badge badge-{{ $badgeMap[$subscription->statusColor()] ?? 'neutral' }}">@enum($subscription->status)</span>
     <div class="entity-head__spacer"></div>
     <a href="{{ route('portals.admin.subscription') }}" class="btn btn-secondary"><i data-lucide="arrow-left"></i> {{ __('public.adm_sub_btn_all_subscriptions') }}</a>
     @if(!in_array($subscription->status, ['cancelled','expired']))
@@ -108,7 +108,7 @@
                         <td data-label="{{ __('public.adm_sub_inv_col_date') }}">{{ $inv->invoice_date->format('d M Y') }}</td>
                         <td data-label="{{ __('public.adm_sub_inv_col_due') }}">@if($inv->isOverdue())<span class="badge badge-danger">{{ $inv->due_date->format('d M Y') }}</span>@else{{ $inv->due_date->format('d M Y') }}@endif</td>
                         <td data-label="{{ __('public.adm_sub_inv_col_amount') }}"><strong>{{ $inv->totalFormatted() }}</strong></td>
-                        <td data-label="{{ __('public.adm_sub_inv_col_status') }}"><span class="badge badge-{{ $badgeMap[$inv->statusColor()] ?? 'neutral' }}">{{ ucfirst($inv->status) }}</span></td>
+                        <td data-label="{{ __('public.adm_sub_inv_col_status') }}"><span class="badge badge-{{ $badgeMap[$inv->statusColor()] ?? 'neutral' }}">@enum($inv->status)</span></td>
                         <td class="row-actions" data-label="{{ __('public.adm_sub_inv_col_actions') }}">
                             @if(in_array($inv->status, ['sent','overdue']))
                                 <button type="button" class="btn btn-success btn-sm" onclick="openPayModal('{{ $inv->id }}')">{{ __('public.adm_sub_inv_btn_mark_paid') }}</button>

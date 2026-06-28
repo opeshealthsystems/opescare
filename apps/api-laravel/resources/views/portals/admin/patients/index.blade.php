@@ -27,7 +27,7 @@
     </label>
     <select name="identity_status" class="filter-select" aria-label="{{ __('public.aria_identity_status') }}" onchange="this.form.submit()">
         <option value="">{{ __('public.adm_patients_idx_filter_all') }}</option>
-        @foreach(['provisional','verified','flagged','deceased'] as $s)<option value="{{ $s }}" {{ request('identity_status')===$s?'selected':'' }}>{{ ucfirst($s) }}</option>@endforeach
+        @foreach(['provisional','verified','flagged','deceased'] as $s)<option value="{{ $s }}" {{ request('identity_status')===$s?'selected':'' }}>@enum($s)</option>@endforeach
     </select>
     <button type="submit" class="btn btn-secondary btn-sm"><i data-lucide="filter"></i> {{ __('public.adm_patients_idx_btn_filter') }}</button>
     <a href="{{ route('admin.patients.index') }}" class="btn btn-ghost btn-sm">{{ __('public.adm_patients_idx_btn_reset') }}</a>
@@ -66,6 +66,7 @@
                     </td>
                     <td data-label="{{ __('public.adm_patients_idx_col_created') }}" class="td-muted">{{ $patient->created_at?->format('d M Y') }}</td>
                     <td class="row-actions" data-label="{{ __('public.adm_patients_idx_col_actions') }}">
+                        <a href="{{ route('admin.patients.show', $patient->id) }}" class="icon-btn" aria-label="{{ __('public.aria_view_patient') }}" title="{{ __('admin_extra.title_view', [], app()->getLocale()) ?: 'View' }}"><i data-lucide="eye"></i></a>
                         @if($ist!=='verified')
                         <form method="POST" action="{{ route('admin.patients.activate',$patient->id) }}" class="inline-form">@csrf
                             <button type="submit" class="icon-btn" aria-label="{{ __('public.adm_patients_idx_aria_verify') }}" title="{{ __('public.adm_patients_idx_aria_verify') }}"><i data-lucide="check-circle"></i></button>

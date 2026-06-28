@@ -68,8 +68,8 @@
                 @php $sevBadge = match($inc->severity) { 'critical'=>'badge-danger', 'high'=>'badge-warning', 'medium'=>'badge-primary', default=>'badge-neutral' }; @endphp
                 <tr>
                     <td data-label="{{ __('public.adm_secops_inc_col_type') }}">{{ $inc->incident_type }}</td>
-                    <td data-label="{{ __('public.adm_secops_inc_col_severity') }}"><span class="badge {{ $sevBadge }} badge-sm">{{ ucfirst($inc->severity) }}</span></td>
-                    <td data-label="{{ __('public.adm_secops_inc_col_status') }}"><span class="badge badge-neutral badge-sm">{{ ucfirst($inc->status) }}</span></td>
+                    <td data-label="{{ __('public.adm_secops_inc_col_severity') }}"><span class="badge {{ $sevBadge }} badge-sm">@enum($inc->severity, 'severity')</span></td>
+                    <td data-label="{{ __('public.adm_secops_inc_col_status') }}"><span class="badge badge-neutral badge-sm">@enum($inc->status)</span></td>
                     <td data-label="{{ __('public.adm_secops_index_col_when') }}" class="td-muted">{{ \Carbon\Carbon::parse($inc->detected_at)->diffForHumans() }}</td>
                 </tr>
                 @endforeach

@@ -206,7 +206,7 @@ class SupplyChainController extends Controller
         try {
             $po = $svc->createPurchaseOrder($this->demoFacilityId(), $request->validated(), $this->demoActorId());
             return redirect()->route('portals.staff.supply.purchase_orders')
-                ->with('success', "Purchase Order {$po->po_number} created.");
+                ->with('success', __('flash.purchase_order_created', ['number' => $po->po_number]));
         } catch (Throwable $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }
@@ -220,7 +220,7 @@ class SupplyChainController extends Controller
         try {
             $svc->approvePurchaseOrder($po, $this->demoActorId());
             return redirect()->route('portals.staff.supply.purchase_orders')
-                ->with('success', "PO {$po->po_number} approved.");
+                ->with('success', __('flash.purchase_order_approved', ['number' => $po->po_number]));
         } catch (Throwable $e) {
             return back()->with('error', $e->getMessage());
         }

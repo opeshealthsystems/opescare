@@ -420,7 +420,7 @@
                     }
                 });
                 if (!isValid) {
-                    alert("Please fill in all required fields marked with * before continuing.");
+                    alert(@json(__('public.org_register_js_required_fields', [], app()->getLocale()) ?: 'Please fill in all required fields marked with * before continuing.'));
                     return;
                 }
             }

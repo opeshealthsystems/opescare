@@ -21,7 +21,7 @@
     <div>
         <h2 class="entity-head__title">{{ $facility->name }}</h2>
         <div class="entity-head__sub">
-            <span class="badge badge--{{ $statusColor }} badge-sm">{{ str_replace('_', ' ', ucfirst($readiness->status)) }}</span>
+            <span class="badge badge--{{ $statusColor }} badge-sm">@enum($readiness->status)</span>
             <span class="td-muted text-sm">{{ $completedCount }}/{{ $totalCount }} items completed</span>
         </div>
     </div>

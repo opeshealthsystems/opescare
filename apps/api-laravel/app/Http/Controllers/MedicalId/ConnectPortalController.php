@@ -64,7 +64,7 @@ class ConnectPortalController extends Controller
         try {
             $client = $svc->createClient($request->validated(), $this->demoActorId());
             return redirect()->route('portals.admin.connect.clients')
-                ->with('success', "Client '{$client->name}' created. ID: {$client->client_id}");
+                ->with('success', __('flash.connect_client_created', ['name' => $client->name, 'id' => $client->client_id]));
         } catch (Throwable $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }
@@ -83,7 +83,7 @@ class ConnectPortalController extends Controller
             };
 
             return redirect()->route('portals.admin.connect.clients')
-                ->with('success', "Client {$request->action}d successfully.");
+                ->with('success', __('flash.connect_client_action_done', ['action' => $request->action . 'd']));
         } catch (Throwable $e) {
             return back()->with('error', $e->getMessage());
         }

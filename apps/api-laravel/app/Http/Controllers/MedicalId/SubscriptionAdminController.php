@@ -82,7 +82,7 @@ class SubscriptionAdminController extends Controller
         $plan = SubscriptionPlan::findOrFail($planId);
         $svc->togglePlan($planId, !$plan->is_active, $this->demoActorId());
 
-        return back()->with('success', "Plan " . ($plan->is_active ? 'deactivated' : 'activated') . '.');
+        return back()->with('success', $plan->is_active ? __('flash.plan_deactivated') : __('flash.plan_activated'));
     }
 
     // ── Subscriptions ─────────────────────────────────────────────────────────

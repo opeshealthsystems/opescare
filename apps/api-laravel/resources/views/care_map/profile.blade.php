@@ -932,7 +932,7 @@ function toggleShare(btn) {
 function copyLink() {
   navigator.clipboard.writeText(window.location.href).then(() => {
     const el = document.createElement('div');
-    el.textContent = 'Link copied!';
+    el.textContent = @json(__('public.care_map_js_link_copied', [], app()->getLocale()) ?: 'Link copied!');
     el.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#0F172A;color:#fff;padding:.5rem 1rem;border-radius:.5rem;font-size:.82rem;z-index:9999;font-family:Inter,sans-serif';
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 2200);
@@ -983,12 +983,12 @@ document.getElementById('formReport').addEventListener('submit', async function(
         </div>`;
       setTimeout(() => closeModal('modalReport'), 2800);
     } else {
-      btn.disabled = false; btn.textContent = 'Submit report';
-      alert(json.message ?? 'Something went wrong. Please try again.');
+      btn.disabled = false; btn.textContent = @json(__('public.care_map_js_submit_report', [], app()->getLocale()) ?: 'Submit report');
+      alert(json.message ?? @json(__('public.care_map_js_generic_error', [], app()->getLocale()) ?: 'Something went wrong. Please try again.'));
     }
   } catch {
-    btn.disabled = false; btn.textContent = 'Submit report';
-    alert('Network error. Please check your connection and try again.');
+    btn.disabled = false; btn.textContent = @json(__('public.care_map_js_submit_report', [], app()->getLocale()) ?: 'Submit report');
+    alert(@json(__('public.care_map_js_network_error', [], app()->getLocale()) ?: 'Network error. Please check your connection and try again.'));
   }
 });
 
@@ -1018,12 +1018,12 @@ document.getElementById('formClaim')?.addEventListener('submit', async function(
         </div>`;
       setTimeout(() => closeModal('modalClaim'), 3000);
     } else {
-      btn.disabled = false; btn.textContent = 'Submit claim';
-      alert(json.message ?? 'Something went wrong. Please try again.');
+      btn.disabled = false; btn.textContent = @json(__('public.care_map_js_submit_claim', [], app()->getLocale()) ?: 'Submit claim');
+      alert(json.message ?? @json(__('public.care_map_js_generic_error', [], app()->getLocale()) ?: 'Something went wrong. Please try again.'));
     }
   } catch {
-    btn.disabled = false; btn.textContent = 'Submit claim';
-    alert('Network error. Please check your connection and try again.');
+    btn.disabled = false; btn.textContent = @json(__('public.care_map_js_submit_claim', [], app()->getLocale()) ?: 'Submit claim');
+    alert(@json(__('public.care_map_js_network_error', [], app()->getLocale()) ?: 'Network error. Please check your connection and try again.'));
   }
 });
 @endauth

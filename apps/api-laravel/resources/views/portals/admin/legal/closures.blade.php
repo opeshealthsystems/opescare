@@ -40,7 +40,7 @@
                             @if($req->data_export_requested)<span class="badge badge-primary badge-sm">{{ __('admin_extra.yes', [], app()->getLocale()) ?: 'Yes' }}</span>@else<span class="td-muted">{{ __('admin_extra.no', [], app()->getLocale()) ?: 'No' }}</span>@endif
                         </td>
                         <td data-label="{{ __('public.adm_legal_col_status') }}">
-                            <span class="badge badge--{{ $req->statusColor() }} badge-sm">{{ ucfirst($req->status) }}</span>
+                            <span class="badge badge--{{ $req->statusColor() }} badge-sm">@enum($req->status)</span>
                         </td>
                         <td data-label="{{ __('public.adm_legal_closures_col_requested') }}" class="td-muted">{{ $req->created_at->format('d M Y') }}</td>
                         <td class="row-actions">

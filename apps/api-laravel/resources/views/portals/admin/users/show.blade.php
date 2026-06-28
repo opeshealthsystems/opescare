@@ -17,7 +17,7 @@
     <h2 class="entity-head__title">{{ $user->name }}</h2>
     @if(($user->status??'')==='active')<span class="badge badge-success">{{ __('public.adm_users_show_badge_active') }}</span>
     @elseif(($user->status??'')==='suspended')<span class="badge badge-danger">{{ __('public.adm_users_show_badge_suspended') }}</span>
-    @else<span class="badge badge-warning">{{ ucfirst($user->status??'pending') }}</span>@endif
+    @else<span class="badge badge-warning">@enum($user->status ?? 'pending')</span>@endif
     <div class="entity-head__spacer"></div>
     @if(($user->status??'')==='suspended')
     <form method="POST" action="{{ route('portals.admin.users.activate', $user) }}" class="inline-form">@csrf
@@ -47,7 +47,7 @@
     </div>
     <div class="stat-card">
         <div class="stat-card__label">{{ __('public.adm_users_show_stat_status') }}</div>
-        <div class="stat-card__value">{{ ucfirst($user->status ?? 'pending') }}</div>
+        <div class="stat-card__value">@enum($user->status ?? 'pending')</div>
     </div>
     <div class="stat-card">
         <div class="stat-card__label">{{ __('public.adm_users_show_stat_joined') }}</div>

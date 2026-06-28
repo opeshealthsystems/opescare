@@ -114,7 +114,7 @@
     <div class="nav-card {{ $accent }}">
         <div class="flex-between mb-3">
             <span class="stat-card__label">{{ $def->name }}</span>
-            <span class="badge {{ $snapshot->statusBadgeClass() }} badge-sm">{{ ucfirst($snapshot->status) }}</span>
+            <span class="badge {{ $snapshot->statusBadgeClass() }} badge-sm">@enum($snapshot->status)</span>
         </div>
         <div class="stat-card__value">{{ $snapshot->formattedValue() }}</div>
         @if($snapshot->change_pct !== null)
@@ -185,7 +185,7 @@
                     <td data-label="{{ __('public.adm_kpi_col_date') }}">{{ $exp->requested_at->format('d M Y H:i') }}</td>
                     <td data-label="{{ __('public.adm_kpi_col_type') }}">{{ strtoupper($exp->export_type) }}</td>
                     <td data-label="{{ __('public.adm_kpi_col_period') }}">{{ $exp->period_from->format('d M') }} – {{ $exp->period_to->format('d M Y') }}</td>
-                    <td data-label="{{ __('public.adm_kpi_col_status') }}"><span class="badge badge--{{ $exp->status === 'ready' ? 'success' : ($exp->status === 'failed' ? 'danger' : 'warning') }} badge-sm">{{ ucfirst($exp->status) }}</span></td>
+                    <td data-label="{{ __('public.adm_kpi_col_status') }}"><span class="badge badge--{{ $exp->status === 'ready' ? 'success' : ($exp->status === 'failed' ? 'danger' : 'warning') }} badge-sm">@enum($exp->status)</span></td>
                 </tr>
                 @endforeach
                 </tbody>

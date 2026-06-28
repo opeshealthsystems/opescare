@@ -129,10 +129,10 @@
                 @endif
             </td>
             <td data-label="{{ __('public.adm_fin_pay_col_status') }}">
-                @if(in_array($p->status,['successful','completed']))<span class="badge badge-success">{{ ucfirst($p->status) }}</span>
+                @if(in_array($p->status,['successful','completed']))<span class="badge badge-success">@enum($p->status)</span>
                 @elseif($p->status==='pending')<span class="badge badge-warning">{{ __('public.adm_fin_pay_badge_pending') }}</span>
                 @elseif($p->status==='failed')<span class="badge badge-danger">{{ __('public.adm_fin_pay_badge_failed') }}</span>
-                @else<span class="badge badge-neutral">{{ ucfirst($p->status) }}</span>@endif
+                @else<span class="badge badge-neutral">@enum($p->status)</span>@endif
             </td>
             <td data-label="{{ __('public.adm_fin_pay_col_device') }}">
                 <span class="cell-with-icon"><i data-lucide="{{ $di[$p->device_type??''] ?? 'monitor' }}"></i> {{ strtoupper($p->device_type ?? '—') }}</span>

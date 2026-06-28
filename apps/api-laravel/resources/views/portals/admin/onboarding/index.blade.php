@@ -78,7 +78,7 @@
                             </div>
                         </td>
                         <td data-label="{{ __('public.adm_onboard_idx_col_status') }}">
-                            <span class="badge badge--{{ $statusColor }} badge-sm">{{ str_replace('_', ' ', ucfirst($r->status)) }}</span>
+                            <span class="badge badge--{{ $statusColor }} badge-sm">@enum($r->status)</span>
                         </td>
                         <td data-label="{{ __('public.adm_onboard_idx_col_approved') }}" class="td-muted">{{ $r->approved_at?->format('d M Y') ?? '—' }}</td>
                         <td class="row-actions">

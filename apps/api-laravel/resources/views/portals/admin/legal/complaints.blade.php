@@ -39,7 +39,7 @@
                         </td>
                         <td data-label="{{ __('public.adm_legal_complaints_col_description') }}">{{ \Illuminate\Support\Str::limit($c->description, 80) }}</td>
                         <td data-label="{{ __('public.adm_legal_col_status') }}">
-                            <span class="badge badge--{{ $c->statusColor() }} badge-sm">{{ ucfirst(str_replace('_', ' ', $c->status)) }}</span>
+                            <span class="badge badge--{{ $c->statusColor() }} badge-sm">@enum($c->status)</span>
                         </td>
                         <td data-label="{{ __('public.adm_legal_complaints_col_received') }}" class="td-muted">{{ $c->created_at->format('d M Y') }}</td>
                         <td class="row-actions">

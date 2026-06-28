@@ -51,7 +51,7 @@
                 <tr>
                     <td data-label="Drug Name"><span class="td-strong">{{ $rule->drug_name }}</span></td>
                     <td data-label="Allergen Class">{{ $rule->allergen_class }}</td>
-                    <td data-label="Severity"><span class="badge {{ $sBadge }}">{{ ucfirst($rule->severity) }}</span></td>
+                    <td data-label="Severity"><span class="badge {{ $sBadge }}">@enum($rule->severity, 'severity')</span></td>
                     <td data-label="Reaction Type">{{ $rule->reaction_type }}</td>
                     <td data-label="Created">{{ $rule->created_at->format('d M Y') }}</td>
                     <td class="row-actions" data-label="Actions">
@@ -76,7 +76,7 @@
         <h3 class="modal__title" id="delete-allergy-{{ $rule->id }}-title"><i data-lucide="trash-2"></i> {{ __('public.adm_cdss_modal_delete_allergy_title') }}</h3>
         <form action="{{ route('portals.admin.cdss.destroy-allergy', $rule->id) }}" method="POST">
             @csrf @method('DELETE')
-            <div class="modal__body"><p>Delete this allergy alert rule for <strong>{{ $rule->drug_name }}</strong>?</p></div>
+            <div class="modal__body"><p>{{ __('public.adm_cdss_confirm_delete_allergy') }} <strong>{{ $rule->drug_name }}</strong>?</p></div>
             <div class="modal__footer">
                 <button type="button" class="btn btn-ghost" onclick="opCloseModal('delete-allergy-{{ $rule->id }}')">{{ __('public.adm_cdss_btn_cancel') }}</button>
                 <button type="submit" class="btn btn-danger">{{ __('public.adm_cdss_btn_delete') }}</button>

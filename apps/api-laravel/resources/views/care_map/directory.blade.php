@@ -1351,7 +1351,7 @@ function closeMobileMap() {
 // ── Geolocation ───────────────────────────────────────────────────────────────
 function locateMe() {
   if (!navigator.geolocation) {
-    alert('Geolocation is not supported by your browser.');
+    alert(@json(__('public.care_map_js_geo_unsupported', [], app()->getLocale()) ?: 'Geolocation is not supported by your browser.'));
     return;
   }
   const btn = document.querySelector('.search-locate-btn');
@@ -1381,7 +1381,7 @@ function locateMe() {
     },
     () => {
       if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; }
-      alert('Unable to retrieve your location. Please ensure location permissions are enabled.');
+      alert(@json(__('public.care_map_js_geo_denied', [], app()->getLocale()) ?: 'Unable to retrieve your location. Please ensure location permissions are enabled.'));
     }
   );
 }

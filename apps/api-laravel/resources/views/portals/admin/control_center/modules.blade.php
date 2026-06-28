@@ -94,8 +94,11 @@
 
 @section('scripts')
 <script>
+    var _ag = {
+        modulePrefix: @json(__('public.adm_cc_mod_js_module_prefix')),
+    };
     function openDisableModal(id, label) {
-        document.getElementById('disable-module-name').textContent = 'Module: ' + label;
+        document.getElementById('disable-module-name').textContent = _ag.modulePrefix + label;
         document.getElementById('disable-form').action = '/portals/admin/cc/modules/' + encodeURIComponent(id) + '/toggle';
         document.getElementById('disable-modal').classList.add('open');
     }

@@ -39,7 +39,7 @@
         <span class="plan-tier__price">{{ $plan->priceFormatted() }}<small>/{{ $plan->billing_cycle }}</small></span>
         <div class="summary-bar">
             <span class="badge badge-{{ $plan->is_active ? 'success' : 'neutral' }}">{{ $plan->is_active ? __('public.adm_sub_plans_badge_active') : __('public.adm_sub_plans_badge_inactive') }}</span>
-            @if($plan->is_public)<span class="badge badge-primary">Public</span>@endif
+            @if($plan->is_public)<span class="badge badge-primary">{{ __('public.adm_sub_plans_badge_public') }}</span>@endif
             @if($plan->trial_days > 0)<span class="badge badge-teal">{{ $plan->trial_days }}d trial</span>@endif
         </div>
         <ul class="plan-tier__features">

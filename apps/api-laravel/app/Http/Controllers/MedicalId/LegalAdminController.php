@@ -84,7 +84,7 @@ class LegalAdminController extends Controller
             effectiveAt:          $data['effective_at'] ?? null,
         );
 
-        return back()->with('success', "Version {$data['version']} published as current.");
+        return back()->with('success', __('flash.legal_version_published', ['version' => $data['version']]));
     }
 
     /**
@@ -108,7 +108,7 @@ class LegalAdminController extends Controller
             'created_by'          => $this->demoActorId(),
         ]);
 
-        return back()->with('success', "Legal document '{$data['title']}' created.");
+        return back()->with('success', __('flash.legal_document_created', ['title' => $data['title']]));
     }
 
     // ------------------------------------------------------------------
@@ -140,7 +140,7 @@ class LegalAdminController extends Controller
             'reviewed_at' => now(),
         ]);
 
-        return back()->with('success', "Closure request {$status}.");
+        return back()->with('success', __('flash.closure_request_' . $status));
     }
 
     // ------------------------------------------------------------------

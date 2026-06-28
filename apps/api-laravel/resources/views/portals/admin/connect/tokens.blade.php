@@ -34,10 +34,13 @@
     </div>
 </div>
 <script>
+var _ag = {
+    copyFailed: @json(__('public.adm_connect_tokens_js_copy_failed')),
+};
 function copyToken(){
     navigator.clipboard.writeText(document.getElementById('newTokenVal').textContent.trim())
         .then(()=>{ document.getElementById('copiedMsg').removeAttribute('hidden'); })
-        .catch(()=>{ alert('Copy failed — please select and copy manually.'); });
+        .catch(()=>{ alert(_ag.copyFailed); });
 }
 </script>
 @endif

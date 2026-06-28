@@ -27,7 +27,7 @@
         </div>
     </div>
     <div class="entity-head__spacer"></div>
-    <span class="badge {{ $readiness->can_go_live ? 'badge-success' : 'badge-danger' }}">{{ str_replace('_', ' ', ucfirst($readiness->status)) }}</span>
+    <span class="badge {{ $readiness->can_go_live ? 'badge-success' : 'badge-danger' }}">@enum($readiness->status)</span>
 </div>
 
 {{-- Stepper --}}

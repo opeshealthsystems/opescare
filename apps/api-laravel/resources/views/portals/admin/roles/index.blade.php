@@ -111,12 +111,12 @@
                     <label class="form-label form-label-required">{{ __('public.adm_roles_idx_lbl_portal') }}</label>
                     <select name="portal" class="form-control" required>
                         <option value="">{{ __('public.adm_roles_idx_ph_select_portal') }}</option>
-                        <option value="patient_family">Patient &amp; Family</option>
-                        <option value="clinical">Clinical</option>
-                        <option value="admin">Admin</option>
-                        <option value="finance">Finance</option>
-                        <option value="connect">Connect</option>
-                        <option value="public">Public</option>
+                        <option value="patient_family">{{ __('public.adm_roles_idx_opt_patient_family') }}</option>
+                        <option value="clinical">{{ __('public.adm_roles_idx_opt_clinical') }}</option>
+                        <option value="admin">{{ __('public.adm_roles_idx_opt_admin') }}</option>
+                        <option value="finance">{{ __('public.adm_roles_idx_opt_finance') }}</option>
+                        <option value="connect">{{ __('public.adm_roles_idx_opt_connect') }}</option>
+                        <option value="public">{{ __('public.adm_roles_idx_opt_public') }}</option>
                     </select>
                 </div>
             </div>
@@ -147,12 +147,12 @@
                 <div class="form-group">
                     <label class="form-label form-label-required">{{ __('public.adm_roles_idx_lbl_portal') }}</label>
                     <select name="portal" id="edit-role-portal" class="form-control" required>
-                        <option value="patient_family">Patient &amp; Family</option>
-                        <option value="clinical">Clinical</option>
-                        <option value="admin">Admin</option>
-                        <option value="finance">Finance</option>
-                        <option value="connect">Connect</option>
-                        <option value="public">Public</option>
+                        <option value="patient_family">{{ __('public.adm_roles_idx_opt_patient_family') }}</option>
+                        <option value="clinical">{{ __('public.adm_roles_idx_opt_clinical') }}</option>
+                        <option value="admin">{{ __('public.adm_roles_idx_opt_admin') }}</option>
+                        <option value="finance">{{ __('public.adm_roles_idx_opt_finance') }}</option>
+                        <option value="connect">{{ __('public.adm_roles_idx_opt_connect') }}</option>
+                        <option value="public">{{ __('public.adm_roles_idx_opt_public') }}</option>
                     </select>
                 </div>
             </div>

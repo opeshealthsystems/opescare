@@ -15,7 +15,7 @@
     <div>
         <h2 class="entity-head__title">{{ $certification->integration_name }}</h2>
         <div class="entity-head__sub">
-            <span class="badge {{ $certification->statusBadgeClass() }} badge-sm">{{ ucfirst(str_replace('_', ' ', $certification->status)) }}</span>
+            <span class="badge {{ $certification->statusBadgeClass() }} badge-sm">@enum($certification->status)</span>
             <span class="badge badge--info badge-sm">{{ strtoupper($certification->integration_type) }}</span>
             @if($certification->certification_level)
             <span class="badge {{ $certification->levelBadgeClass() }} badge-sm">{{ ucfirst($certification->certification_level) }}</span>
@@ -72,7 +72,7 @@
                     </div>
                 </div>
                 <form method="POST" action="{{ route('portals.admin.certifications.badge.revoke', $certification->badge) }}"
-                      class="mt-6" onsubmit="return confirm('Revoke this badge?')">
+                      class="mt-6" onsubmit="return confirm({{ Illuminate\Support\Js::from(__('public.adm_cert_show_js_confirm_revoke')) }})">
                     @csrf
                     <div class="form-group mb-3">
                         <input type="text" name="revoke_reason" class="form-control" placeholder="{{ __('public.adm_cert_show_ph_revoke_reason') }}" required>
@@ -90,10 +90,10 @@
                     <div class="form-group mb-3">
                         <label class="form-label">{{ __('public.adm_cert_show_lbl_level') }}</label>
                         <select name="certification_level" class="form-control" required>
-                            <option value="bronze">Bronze</option>
-                            <option value="silver">Silver</option>
-                            <option value="gold">Gold</option>
-                            <option value="platinum">Platinum</option>
+                            <option value="bronze">@enum('bronze', 'level')</option>
+                            <option value="silver">@enum('silver', 'level')</option>
+                            <option value="gold">@enum('gold', 'level')</option>
+                            <option value="platinum">@enum('platinum', 'level')</option>
                         </select>
                     </div>
                     <div class="form-group mb-4">
@@ -179,7 +179,7 @@
                             <span class="badge {{ $run->isPassed() ? 'badge-success' : 'badge-danger' }} badge-sm">{{ $run->passRate() }}%</span>
                             <span class="td-muted code-muted">({{ $run->passed_count }}/{{ $run->total_requirements }})</span>
                         </td>
-                        <td data-label="{{ __('public.adm_cert_show_col_status') }}"><span class="badge {{ $run->statusBadgeClass() }} badge-sm">{{ ucfirst($run->status) }}</span></td>
+                        <td data-label="{{ __('public.adm_cert_show_col_status') }}"><span class="badge {{ $run->statusBadgeClass() }} badge-sm">@enum($run->status)</span></td>
                         <td data-label="{{ __('public.adm_cert_show_col_date') }}" class="td-muted">{{ $run->started_at?->format('d M Y') }}</td>
                     </tr>
                     @endforeach

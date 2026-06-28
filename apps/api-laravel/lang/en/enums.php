@@ -88,6 +88,11 @@ return [
         'waiting'                   => 'Waiting',
         'called'                   => 'Called',
         'in_service'                => 'In Service',
+        'ready'                     => 'Ready',
+        'flagged'                   => 'Flagged',
+        'partial'                   => 'Partial',
+        'overdue'                   => 'Overdue',
+        'unpaid'                    => 'Unpaid',
     ],
 
     'severity' => [

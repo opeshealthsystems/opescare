@@ -143,7 +143,7 @@
                 </td>
                 <td data-label="{{ __('public.adm_fin_col_service') }}">{{ ucwords(str_replace('_',' ',$p->service_type??'—')) }}</td>
                 <td data-label="{{ __('public.adm_fin_col_amount') }}"><strong>{{ number_format($p->amount,0,'.',',') }}</strong></td>
-                <td data-label="{{ __('public.adm_fin_col_status') }}">@if(in_array($p->status,['successful','completed']))<span class="badge badge-success">{{ __('public.adm_fin_badge_ok') }}</span>@elseif($p->status==='pending')<span class="badge badge-warning">{{ __('public.adm_fin_badge_pending') }}</span>@else<span class="badge badge-danger">{{ ucfirst($p->status) }}</span>@endif</td>
+                <td data-label="{{ __('public.adm_fin_col_status') }}">@if(in_array($p->status,['successful','completed']))<span class="badge badge-success">{{ __('public.adm_fin_badge_ok') }}</span>@elseif($p->status==='pending')<span class="badge badge-warning">{{ __('public.adm_fin_badge_pending') }}</span>@else<span class="badge badge-danger">@enum($p->status)</span>@endif</td>
                 <td data-label="{{ __('public.adm_fin_col_when') }}">{{ $p->created_at?->format('d M H:i') }}</td>
                 <td class="row-actions" data-label="Actions"><a href="{{ route('portals.admin.financial.payment.detail',$p->id) }}" class="btn btn-ghost btn-sm">{{ __('public.adm_fin_btn_details') }}</a></td>
             </tr>

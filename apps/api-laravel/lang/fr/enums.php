@@ -86,6 +86,11 @@ return [
         'waiting'                   => 'En attente',
         'called'                    => 'Appelé',
         'in_service'                => 'En service',
+        'ready'                     => 'Prêt',
+        'flagged'                   => 'Signalé',
+        'partial'                   => 'Partiel',
+        'overdue'                   => 'En retard',
+        'unpaid'                    => 'Impayé',
     ],
 
     'severity' => [

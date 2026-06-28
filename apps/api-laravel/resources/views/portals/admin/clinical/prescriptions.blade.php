@@ -100,7 +100,7 @@
                             <span class="td-muted">—</span>
                         @endif
                     </td>
-                    <td data-label="{{ __('public.adm_clin_rx_col_status') }}"><span class="badge badge-{{ $rx->statusColor() }}">{{ ucfirst(str_replace('_', ' ', $rx->status)) }}</span></td>
+                    <td data-label="{{ __('public.adm_clin_rx_col_status') }}"><span class="badge badge-{{ $rx->statusColor() }}">@enum($rx->status)</span></td>
                     <td data-label="{{ __('public.adm_clin_rx_col_dispensed_at') }}">{{ $rx->dispensed_at?->format('d M Y H:i') ?? '—' }}</td>
                 </tr>
                 @empty

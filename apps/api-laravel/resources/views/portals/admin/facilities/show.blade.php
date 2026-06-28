@@ -18,7 +18,7 @@
     @if(($facility->status ?? '') === 'active')<span class="badge badge-success">{{ __('public.adm_fac_badge_active') }}</span>
     @elseif(($facility->status ?? '') === 'suspended')<span class="badge badge-danger">{{ __('public.adm_fac_badge_suspended') }}</span>
     @elseif(($facility->status ?? '') === 'pending_approval')<span class="badge badge-warning">{{ __('public.adm_fac_badge_pending') }}</span>
-    @else<span class="badge badge-neutral">{{ ucfirst($facility->status ?? 'pending') }}</span>@endif
+    @else<span class="badge badge-neutral">@enum($facility->status ?? 'pending')</span>@endif
     <div class="entity-head__spacer"></div>
     <a href="#edit" class="btn btn-secondary"><i data-lucide="pencil"></i> {{ __('public.adm_fac_show_btn_edit') }}</a>
     @if(($facility->status ?? '') === 'pending_approval' || ($facility->status ?? '') === 'suspended')
@@ -42,7 +42,7 @@
     </div>
     <div class="stat-card">
         <div class="stat-card__label">{{ __('public.adm_fac_show_lbl_status') }}</div>
-        <div class="stat-card__value">{{ ucfirst($facility->status ?? 'pending') }}</div>
+        <div class="stat-card__value">@enum($facility->status ?? 'pending')</div>
     </div>
     <div class="stat-card">
         <div class="stat-card__label">{{ __('public.adm_fac_show_lbl_license') }}</div>

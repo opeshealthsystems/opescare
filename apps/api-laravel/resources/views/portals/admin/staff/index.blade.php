@@ -61,9 +61,10 @@
                     <td data-label="{{ __('public.adm_staff_col_status') }}">
                         @if(($s->status??'')==='active')<span class="badge badge-success">{{ __('public.adm_staff_status_active') }}</span>
                         @elseif(($s->status??'')==='suspended')<span class="badge badge-danger">{{ __('public.adm_staff_status_suspended') }}</span>
-                        @else<span class="badge badge-warning">{{ ucfirst($s->status??'inactive') }}</span>@endif
+                        @else<span class="badge badge-warning">@enum($s->status ?? 'inactive')</span>@endif
                     </td>
                     <td class="row-actions" data-label="{{ __('public.adm_staff_col_actions') }}">
+                        <a href="{{ route('admin.staff.show', $s->id) }}" class="icon-btn" aria-label="{{ __('public.aria_view_staff') }}" title="{{ __('admin_extra.title_view', [], app()->getLocale()) ?: 'View' }}"><i data-lucide="eye"></i></a>
                         @if(($s->status??'')!=='active')
                         <form method="POST" action="{{ route('admin.staff.activate',$s->id) }}" class="inline-form">@csrf
                             <button type="submit" class="icon-btn" aria-label="{{ __('public.adm_staff_btn_activate') }}" title="{{ __('public.adm_staff_btn_activate') }}"><i data-lucide="check-circle"></i></button>

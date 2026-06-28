@@ -42,7 +42,7 @@
                     </select></div>
                 <div><label class="form-label" for="priority">{{ __('tasks.priority') }}</label>
                     <select id="priority" name="priority" class="form-control">
-                        @foreach(['normal','low','high','urgent'] as $p)<option value="{{ $p }}" @selected(old('priority')===$p)>{{ ucfirst($p) }}</option>@endforeach
+                        @foreach(['normal','low','high','urgent'] as $p)<option value="{{ $p }}" @selected(old('priority')===$p)>@enum($p, 'priority')</option>@endforeach
                     </select></div>
                 <div><label class="form-label" for="due_at">{{ __('tasks.col_due') }}</label>
                     <input type="datetime-local" id="due_at" name="due_at" class="form-control" value="{{ old('due_at') }}"></div>
@@ -61,7 +61,7 @@
             <select name="status" class="form-control" style="width:auto;" onchange="this.form.submit()">
                 <option value="">{{ __('tasks.all_statuses') }}</option>
                 @foreach(['open','acknowledged','escalated','completed'] as $st)
-                    <option value="{{ $st }}" @selected($status===$st)>{{ ucfirst($st) }}</option>
+                    <option value="{{ $st }}" @selected($status===$st)>@enum($st)</option>
                 @endforeach
             </select>
         </form>
@@ -84,7 +84,7 @@
                     <td data-label="{{ __('tasks.col_due') }}"><span class="td-muted">{{ $task->due_at ? \Illuminate\Support\Carbon::parse($task->due_at)->isoFormat('lll') : '—' }}</span></td>
                     <td data-label="{{ __('tasks.col_status') }}">
                         @php $sc = ['escalated'=>'danger','acknowledged'=>'info','completed'=>'success'][$task->status] ?? 'warning'; @endphp
-                        <span class="badge badge-{{ $sc }}">{{ ucfirst(str_replace('_',' ', $task->status)) }}</span>
+                        <span class="badge badge-{{ $sc }}">@enum($task->status)</span>
                     </td>
                     <td class="row-actions" style="display:flex;gap:.4rem;flex-wrap:wrap;">
                         @if(!in_array($task->status, ['completed','cancelled']))

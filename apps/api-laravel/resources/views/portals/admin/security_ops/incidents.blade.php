@@ -74,8 +74,8 @@
                     @endphp
                     <tr>
                         <td data-label="{{ __('public.adm_secops_inc_col_type') }}" class="td-strong">{{ $inc->incident_type }}</td>
-                        <td data-label="{{ __('public.adm_secops_inc_col_severity') }}"><span class="badge {{ $sevBadge }} badge-sm">{{ ucfirst($inc->severity) }}</span></td>
-                        <td data-label="{{ __('public.adm_secops_inc_col_status') }}"><span class="badge {{ $stBadge }} badge-sm">{{ ucfirst($inc->status) }}</span></td>
+                        <td data-label="{{ __('public.adm_secops_inc_col_severity') }}"><span class="badge {{ $sevBadge }} badge-sm">@enum($inc->severity, 'severity')</span></td>
+                        <td data-label="{{ __('public.adm_secops_inc_col_status') }}"><span class="badge {{ $stBadge }} badge-sm">@enum($inc->status)</span></td>
                         <td data-label="{{ __('public.adm_secops_inc_col_summary') }}">{{ Str::limit($inc->summary, 80) }}</td>
                         <td data-label="{{ __('public.adm_secops_inc_col_detected') }}" class="td-muted">{{ \Carbon\Carbon::parse($inc->detected_at)->format('M d, Y') }}</td>
                         <td data-label="{{ __('public.adm_secops_inc_col_resolved') }}" class="td-muted">

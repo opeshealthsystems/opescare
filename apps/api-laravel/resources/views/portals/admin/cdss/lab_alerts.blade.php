@@ -55,7 +55,7 @@
                     <td data-label="Condition">{{ $rule->condition }}</td>
                     <td data-label="Threshold"><span class="mono td-strong">{{ $rule->threshold_value }}</span></td>
                     <td data-label="Unit">{{ $rule->unit ?? '—' }}</td>
-                    <td data-label="Severity"><span class="badge {{ $sBadge }}">{{ ucfirst($rule->severity) }}</span></td>
+                    <td data-label="Severity"><span class="badge {{ $sBadge }}">@enum($rule->severity, 'severity')</span></td>
                     <td data-label="Message">{{ Str::limit($rule->alert_message, 60) }}</td>
                     <td data-label="Created">{{ $rule->created_at->format('d M Y') }}</td>
                     <td class="row-actions" data-label="Actions">
@@ -80,7 +80,7 @@
         <h3 class="modal__title" id="delete-lab-{{ $rule->id }}-title"><i data-lucide="trash-2"></i> {{ __('public.adm_cdss_modal_delete_lab_title') }}</h3>
         <form action="{{ route('portals.admin.cdss.destroy-lab', $rule->id) }}" method="POST">
             @csrf @method('DELETE')
-            <div class="modal__body"><p>Delete this lab alert rule for <strong>{{ $rule->test_name }}</strong>?</p></div>
+            <div class="modal__body"><p>{{ __('public.adm_cdss_confirm_delete_lab') }} <strong>{{ $rule->test_name }}</strong>?</p></div>
             <div class="modal__footer">
                 <button type="button" class="btn btn-ghost" onclick="opCloseModal('delete-lab-{{ $rule->id }}')">{{ __('public.adm_cdss_btn_cancel') }}</button>
                 <button type="submit" class="btn btn-danger">{{ __('public.adm_cdss_btn_delete') }}</button>
@@ -126,9 +126,9 @@
                         <label class="form-label form-label-required">{{ __('public.adm_cdss_lbl_severity') }}</label>
                         <select name="severity" class="form-control" required>
                             <option value="">{{ __('public.adm_cdss_opt_select') }}</option>
-                            <option value="info">Info</option>
-                            <option value="warning">Warning</option>
-                            <option value="critical">Critical</option>
+                            <option value="info">@enum('info', 'severity')</option>
+                            <option value="warning">@enum('warning', 'severity')</option>
+                            <option value="critical">@enum('critical', 'severity')</option>
                         </select>
                     </div>
                 </div>

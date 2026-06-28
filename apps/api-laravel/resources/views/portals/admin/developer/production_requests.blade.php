@@ -85,7 +85,7 @@
                     @endif
                 </td>
                 <td data-label="{{ __('public.adm_dev_prod_col_status') }}">
-                    <span class="{{ $req->statusBadgeClass() }}">{{ ucfirst(str_replace('_',' ',$req->status)) }}</span>
+                    <span class="{{ $req->statusBadgeClass() }}">@enum($req->status)</span>
                     @if($req->reviewed_at)<div class="td-muted">{{ $req->reviewed_at->format('d M Y') }}</div>@endif
                 </td>
                 <td data-label="{{ __('public.adm_dev_prod_col_submitted') }}">

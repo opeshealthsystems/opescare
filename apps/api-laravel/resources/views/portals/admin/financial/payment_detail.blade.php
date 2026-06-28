@@ -20,7 +20,7 @@
     @if(in_array($payment->status,['successful','completed']))<span class="badge badge-success">{{ __('public.adm_fin_pd_badge_successful') }}</span>
     @elseif($payment->status==='pending')<span class="badge badge-warning">{{ __('public.adm_fin_pd_badge_pending') }}</span>
     @elseif($payment->status==='failed')<span class="badge badge-danger">{{ __('public.adm_fin_pd_badge_failed') }}</span>
-    @else<span class="badge badge-neutral">{{ ucfirst($payment->status) }}</span>@endif
+    @else<span class="badge badge-neutral">@enum($payment->status)</span>@endif
     <div class="entity-head__spacer"></div>
     <a href="{{ route('portals.admin.financial.payments') }}" class="btn btn-secondary"><i data-lucide="arrow-left"></i> {{ __('public.adm_fin_pd_btn_back') }}</a>
 </div>
@@ -77,7 +77,7 @@
             <tr><td>{{ __('public.adm_fin_pd_lbl_net') }}</td><td><strong>{{ number_format(($payment->amount - ($payment->refunded_amount ?? 0)),2) }} {{ $payment->currency ?? 'XAF' }}</strong></td></tr>
             <tr><td>{{ __('public.adm_fin_pd_lbl_service_type') }}</td><td class="kv-strong">{{ ucwords(str_replace('_',' ',$payment->service_type??'—')) }}</td></tr>
             @if($payment->invoice)
-            <tr><td>{{ __('public.adm_fin_pd_lbl_invoice') }}</td><td><span class="mono">{{ $payment->invoice->invoice_number }}</span> <span class="badge badge-{{ $payment->invoice->status==='paid'?'success':'warning' }}">{{ ucfirst($payment->invoice->status) }}</span></td></tr>
+            <tr><td>{{ __('public.adm_fin_pd_lbl_invoice') }}</td><td><span class="mono">{{ $payment->invoice->invoice_number }}</span> <span class="badge badge-{{ $payment->invoice->status==='paid'?'success':'warning' }}">@enum($payment->invoice->status)</span></td></tr>
             @endif
         </table>
     </div>

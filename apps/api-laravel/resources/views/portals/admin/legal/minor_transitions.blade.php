@@ -41,7 +41,7 @@
                             </span>
                         </td>
                         <td data-label="{{ __('public.adm_legal_col_status') }}">
-                            <span class="badge badge--{{ $t->statusColor() }} badge-sm">{{ ucfirst($t->status) }}</span>
+                            <span class="badge badge--{{ $t->statusColor() }} badge-sm">@enum($t->status)</span>
                         </td>
                     </tr>
                 @empty

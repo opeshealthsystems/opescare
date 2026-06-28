@@ -324,7 +324,7 @@ class PatientPortalController extends Controller
             patientId:    $patient->id,
         );
 
-        return back()->with('success', "All {$count} active QR token(s) have been revoked. Your Health ID is still valid — generate a new QR when needed.");
+        return back()->with('success', __('flash.qr_all_tokens_revoked', ['count' => $count]));
     }
 
     /**
@@ -369,10 +369,7 @@ class PatientPortalController extends Controller
             'ip'            => $request->ip(),
         ]);
 
-        return back()->with('success',
-            'Your lost card report has been recorded and all active QR codes have been deactivated. '
-            . 'Your Health ID number (' . $patient->health_id . ') remains valid — generate a new QR code anytime.'
-        );
+        return back()->with('success', __('flash.lost_card_reported', ['health_id' => $patient->health_id]));
     }
 
     /**

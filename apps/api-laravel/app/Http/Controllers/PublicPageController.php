@@ -143,7 +143,7 @@ class PublicPageController extends Controller
 
         // Redirect back to the originating page with success flag
         $back = url()->previous();
-        return redirect($back)->with('contact_success', true)->with('success', 'Thank you! Your message has been received. We\'ll be in touch shortly.');
+        return redirect($back)->with('contact_success', true)->with('success', __('flash.contact_message_received'));
     }
 
     public function status(\App\Modules\Admin\Services\SystemHealthService $health)
@@ -251,15 +251,15 @@ class PublicPageController extends Controller
         if (! $user) {
             $request->session()->forget(['mfa.user_id', 'mfa.remember', 'mfa.setup_required']);
 
-            return redirect()->route('login')->with('error', 'Your secure session expired. Please sign in again.');
+            return redirect()->route('login')->with('error', __('flash.secure_session_expired'));
         }
 
         if (! $user->hasTwoFactorEnabled()) {
-            return back()->with('error', 'Multi-factor authentication setup is required for this role. Contact an administrator to complete enrollment before signing in.');
+            return back()->with('error', __('flash.mfa_setup_required'));
         }
 
         if (! $twoFactor->verify($user->two_factor_secret, $validated['code'])) {
-            return back()->withErrors(['code' => 'The authentication code is invalid.']);
+            return back()->withErrors(['code' => __('flash.auth_code_invalid')]);
         }
 
         Auth::login($user, (bool) $request->session()->get('mfa.remember', false));
@@ -309,7 +309,7 @@ class PublicPageController extends Controller
 
         if ($duplicate) {
             return redirect()->back()->withInput()
-                ->with('error', 'A record matching this identity already exists in our master patient registry. Please contact assistance to recover your existing Health ID.');
+                ->with('error', __('flash.patient_identity_duplicate'));
         }
 
         $patient = DB::transaction(function () use ($data) {
@@ -454,7 +454,7 @@ class PublicPageController extends Controller
 
     public function submitDeveloperRegister(Request $request)
     {
-        return redirect()->route('register.developer')->with('success', 'Your API/developer request has been submitted. Our interoperability panel will review your system scopes.');
+        return redirect()->route('register.developer')->with('success', __('flash.developer_request_submitted'));
     }
 
     public function showStaffInvite($token)
@@ -481,7 +481,7 @@ class PublicPageController extends Controller
 
     public function submitStaffInvite(Request $request, $token)
     {
-        return redirect()->route('login')->with('success', 'Your secure staff account has been activated. You may now sign in.');
+        return redirect()->route('login')->with('success', __('flash.staff_account_activated'));
     }
 
     public function showForgotPassword()
@@ -523,14 +523,14 @@ class PublicPageController extends Controller
             ? app(DashboardProfileService::class)->landingUrlForCurrent()
             : route('portals.patient');
 
-        return redirect($url)->with('success', 'Authentication complete. Welcome to OpesCare.');
+        return redirect($url)->with('success', __('flash.authentication_complete'));
     }
 
     public function resendOtp(Request $request)
     {
         return redirect()
             ->route('otp.verify')
-            ->with('success', 'A new verification code has been requested. Please check your registered contact method.');
+            ->with('success', __('flash.otp_resent'));
     }
 
     public function showPendingApproval()
@@ -585,7 +585,7 @@ class PublicPageController extends Controller
 
         if (!$facilityId) {
             return redirect()->route('select-facility')
-                ->with('error', 'Please select a facility to continue.');
+                ->with('error', __('flash.facility_select_required'));
         }
 
         // ✅ Save the chosen facility to session so RequireFacilityContext passes
@@ -595,6 +595,6 @@ class PublicPageController extends Controller
             ? app(DashboardProfileService::class)->landingUrlForCurrent()
             : route('login');
 
-        return redirect($url)->with('success', 'Active clinical session established.');
+        return redirect($url)->with('success', __('flash.clinical_session_established'));
     }
 }

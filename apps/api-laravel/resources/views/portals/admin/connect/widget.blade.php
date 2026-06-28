@@ -122,6 +122,9 @@
 @section('scripts')
 <script>
 const BASE_URL = '{{ $baseUrl }}';
+var _ag = {
+    copied: @json(__('public.adm_connect_widget_js_copied')),
+};
 
 function regenerate() {
     const type      = document.getElementById('widgetType').value;
@@ -171,7 +174,7 @@ function copyCode(id) {
     navigator.clipboard.writeText(text).then(() => {
         const btn = event.currentTarget;
         const orig = btn.innerHTML;
-        btn.innerHTML = '<i data-lucide="check"></i> Copied!';
+        btn.innerHTML = '<i data-lucide="check"></i> ' + _ag.copied;
         if (typeof lucide !== 'undefined') lucide.createIcons();
         setTimeout(() => { btn.innerHTML = orig; if (typeof lucide !== 'undefined') lucide.createIcons(); }, 2000);
     });

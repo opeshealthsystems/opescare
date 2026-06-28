@@ -218,6 +218,6 @@ class TelemedicineController extends Controller
 
         return redirect()
             ->route('portals.staff.telemedicine.show', $next->teleconsultation_id)
-            ->with('success', "Called patient from waiting room.");
+            ->with('success', __('flash.tele_patient_called'));
     }
 }

@@ -96,9 +96,9 @@
                     <td data-label="{{ __('public.adm_org_idx_col_type') }}">{{ ucfirst($f->type??'') }}</td>
                     <td data-label="{{ __('public.adm_org_idx_col_license') }}" class="td-mono">{{ $f->license_number??'—' }}</td>
                     <td data-label="{{ __('public.adm_org_idx_col_status') }}">
-                        @if($f->status==='active')<span class="badge badge-success">Active</span>
-                        @elseif(in_array($f->status,['suspended','rejected']))<span class="badge badge-danger">{{ ucfirst($f->status) }}</span>
-                        @else<span class="badge badge-warning">{{ ucfirst($f->status??'pending') }}</span>@endif
+                        @if($f->status==='active')<span class="badge badge-success">@enum('active')</span>
+                        @elseif(in_array($f->status,['suspended','rejected']))<span class="badge badge-danger">@enum($f->status)</span>
+                        @else<span class="badge badge-warning">@enum($f->status ?? 'pending')</span>@endif
                     </td>
                     <td data-label="{{ __('public.adm_org_idx_col_since') }}" class="td-muted">{{ $f->created_at?->format('d M Y') }}</td>
                     <td class="row-actions" data-label="{{ __('public.adm_org_idx_col_actions') }}">

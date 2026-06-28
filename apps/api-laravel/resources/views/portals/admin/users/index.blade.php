@@ -64,10 +64,11 @@
                     <td data-label="{{ __('public.adm_users_idx_col_status') }}">
                         @if($user->status==='active')<span class="badge badge-success">{{ __('public.adm_users_idx_badge_active') }}</span>
                         @elseif($user->status==='suspended')<span class="badge badge-danger">{{ __('public.adm_users_idx_badge_suspended') }}</span>
-                        @else<span class="badge badge-warning">{{ ucfirst($user->status) }}</span>@endif
+                        @else<span class="badge badge-warning">@enum($user->status)</span>@endif
                     </td>
                     <td data-label="{{ __('public.adm_users_idx_col_created') }}" class="td-muted">{{ $user->created_at?->format('d M Y') }}</td>
                     <td class="row-actions" data-label="{{ __('public.adm_users_idx_col_actions') }}">
+                        <a href="{{ route('admin.users.show', $user->id) }}" class="icon-btn" aria-label="{{ __('public.aria_view_user') }}" title="{{ __('admin_extra.title_view', [], app()->getLocale()) ?: 'View' }}"><i data-lucide="eye"></i></a>
                         @if($user->status!=='active')
                         <form method="POST" action="{{ route('admin.users.activate',$user->id) }}" class="inline-form">@csrf
                             <button type="submit" class="icon-btn" aria-label="{{ __('public.aria_activate_user') }}" title="{{ __('public.aria_activate') }}"><i data-lucide="check-circle"></i></button>

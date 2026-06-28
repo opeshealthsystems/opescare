@@ -54,7 +54,7 @@
     <select name="status" class="filter-select" aria-label="{{ __('public.aria_status') }}" onchange="this.form.submit()">
         <option value="">{{ __('public.adm_cert_idx_filter_all_statuses') }}</option>
         @foreach($statuses as $s)
-        <option value="{{ $s }}" {{ $status === $s ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $s)) }}</option>
+        <option value="{{ $s }}" {{ $status === $s ? 'selected' : '' }}>@enum($s)</option>
         @endforeach
     </select>
     <select name="type" class="filter-select" aria-label="{{ __('admin_extra.aria_type', [], app()->getLocale()) ?: 'Type' }}" onchange="this.form.submit()">
@@ -100,7 +100,7 @@
                     <td data-label="{{ __('public.adm_cert_idx_col_vendor') }}" class="td-muted">{{ $cert->vendor_name ?? '—' }}</td>
                     <td data-label="{{ __('public.adm_cert_idx_col_status') }}">
                         <span class="badge {{ $cert->statusBadgeClass() }} badge-sm">
-                            {{ ucfirst(str_replace('_', ' ', $cert->status)) }}
+                            @enum($cert->status)
                         </span>
                     </td>
                     <td data-label="{{ __('public.adm_cert_idx_col_level') }}">

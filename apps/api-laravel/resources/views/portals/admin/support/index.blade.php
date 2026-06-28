@@ -26,13 +26,13 @@
     <select name="status" class="filter-select" aria-label="{{ __('public.aria_status') }}">
         <option value="">{{ __('public.adm_sup_idx_filter_all_statuses') }}</option>
         @foreach(['open','pending','resolved','closed'] as $s)
-        <option value="{{ $s }}" @selected(request('status')===$s)>{{ ucfirst($s) }}</option>
+        <option value="{{ $s }}" @selected(request('status')===$s)>@enum($s)</option>
         @endforeach
     </select>
     <select name="priority" class="filter-select" aria-label="{{ __('public.aria_priority') }}">
         <option value="">{{ __('public.adm_sup_idx_filter_all_priorities') }}</option>
         @foreach(['low','medium','high','urgent'] as $p)
-        <option value="{{ $p }}" @selected(request('priority')===$p)>{{ ucfirst($p) }}</option>
+        <option value="{{ $p }}" @selected(request('priority')===$p)>@enum($p, 'priority')</option>
         @endforeach
     </select>
     <select name="category" class="filter-select" aria-label="{{ __('public.aria_category') }}">
@@ -74,8 +74,8 @@
                     <td data-label="{{ __('admin_extra.sup_col_ticket', [], app()->getLocale()) ?: 'Ticket #' }}"><span class="td-muted td-strong">#{{ $ticket->ticket_number ?? $ticket->id }}</span></td>
                     <td data-label="{{ __('admin_extra.sup_col_subject', [], app()->getLocale()) ?: 'Subject' }}"><a href="{{ route('portals.admin.support.show', $ticket) }}" class="td-strong">{{ Str::limit($ticket->subject, 55) }}</a></td>
                     <td data-label="{{ __('admin_extra.sup_col_category', [], app()->getLocale()) ?: 'Category' }}"><span class="badge badge-neutral">{{ ucfirst($ticket->category ?? (__('admin_extra.sup_fallback_general', [], app()->getLocale()) ?: 'General')) }}</span></td>
-                    <td data-label="{{ __('admin_extra.sup_col_priority', [], app()->getLocale()) ?: 'Priority' }}"><span class="badge {{ $prioBadge }}">{{ ucfirst($ticket->priority ?? (__('admin_extra.sup_fallback_medium', [], app()->getLocale()) ?: 'Medium')) }}</span></td>
-                    <td data-label="{{ __('admin_extra.sup_col_status', [], app()->getLocale()) ?: 'Status' }}"><span class="badge {{ $statusBadge }}">{{ ucfirst($ticket->status ?? (__('admin_extra.sup_fallback_open', [], app()->getLocale()) ?: 'Open')) }}</span></td>
+                    <td data-label="{{ __('admin_extra.sup_col_priority', [], app()->getLocale()) ?: 'Priority' }}"><span class="badge {{ $prioBadge }}">@enum($ticket->priority ?? 'medium', 'priority')</span></td>
+                    <td data-label="{{ __('admin_extra.sup_col_status', [], app()->getLocale()) ?: 'Status' }}"><span class="badge {{ $statusBadge }}">@enum($ticket->status ?? 'open')</span></td>
                     <td data-label="{{ __('admin_extra.sup_col_assignee', [], app()->getLocale()) ?: 'Assignee' }}">{{ $ticket->assignee?->name ?? '—' }}</td>
                     <td data-label="{{ __('admin_extra.sup_col_created', [], app()->getLocale()) ?: 'Created' }}">{{ $ticket->created_at?->format('d M Y') }}</td>
                     <td class="row-actions" data-label="{{ __('admin_extra.sup_col_actions', [], app()->getLocale()) ?: 'Actions' }}">

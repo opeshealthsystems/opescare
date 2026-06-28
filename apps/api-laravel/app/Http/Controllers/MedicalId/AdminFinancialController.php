@@ -212,7 +212,7 @@ class AdminFinancialController extends Controller
             return redirect()->back()->with('error', __('flash.invoice_void_only_draft_unpaid'));
         }
         $invoice->update(['status' => 'cancelled']);
-        return redirect()->back()->with('success', "Invoice #{$invoice->invoice_number} voided.");
+        return redirect()->back()->with('success', __('flash.invoice_voided', ['number' => $invoice->invoice_number]));
     }
 
     public function markPaid(Request $request, string $id): RedirectResponse
@@ -251,6 +251,6 @@ class AdminFinancialController extends Controller
         ]);
 
         $invoice->update(['status' => 'paid', 'paid_at' => now()]);
-        return redirect()->back()->with('success', "Invoice #{$invoice->invoice_number} marked as paid.");
+        return redirect()->back()->with('success', __('flash.invoice_marked_paid', ['number' => $invoice->invoice_number]));
     }
 }

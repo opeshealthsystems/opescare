@@ -77,7 +77,7 @@
                             @endif
                         </td>
                         <td data-label="{{ __('public.adm_sub_inv_col_amount') }}"><strong>{{ $inv->totalFormatted() }}</strong></td>
-                        <td data-label="{{ __('public.adm_sub_inv_col_status') }}"><span class="badge badge-{{ $badgeMap[$inv->statusColor()] ?? 'neutral' }}">{{ ucfirst($inv->status) }}</span></td>
+                        <td data-label="{{ __('public.adm_sub_inv_col_status') }}"><span class="badge badge-{{ $badgeMap[$inv->statusColor()] ?? 'neutral' }}">@enum($inv->status)</span></td>
                         <td class="row-actions" data-label="{{ __('public.adm_sub_inv_col_actions') }}">
                             <div class="row-actions-inline">
                                 @if(in_array($inv->status, ['sent','overdue']))

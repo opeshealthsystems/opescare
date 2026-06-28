@@ -39,11 +39,11 @@
     </a>
     <a href="{{ route('portals.staff.prescriptions') }}" class="sidebar-link">
         <i data-lucide="clipboard-list"></i>
-        <span>Prescriptions</span>
+        <span>{{ __('public.portal.nav_prescriptions', [], $l) ?: 'Prescriptions' }}</span>
     </a>
     <a href="{{ route('portals.staff.lab_orders') }}" class="sidebar-link">
         <i data-lucide="microscope"></i>
-        <span>Lab Orders</span>
+        <span>{{ __('public.portal.nav_lab_orders', [], $l) ?: 'Lab Orders' }}</span>
     </a>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link">
         <i data-lucide="brain"></i>

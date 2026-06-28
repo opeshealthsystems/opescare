@@ -52,7 +52,7 @@
                 <tr>
                     <td data-label="Drug A"><span class="td-strong">{{ $rule->drug_a }}</span></td>
                     <td data-label="Drug B"><span class="td-strong">{{ $rule->drug_b }}</span></td>
-                    <td data-label="Severity"><span class="badge {{ $sBadge }}">{{ ucfirst($rule->severity) }}</span></td>
+                    <td data-label="Severity"><span class="badge {{ $sBadge }}">@enum($rule->severity, 'severity')</span></td>
                     <td data-label="Description">{{ Str::limit($rule->description, 80) }}</td>
                     <td data-label="Action Required">{{ Str::limit($rule->action_required, 60) }}</td>
                     <td data-label="Created">{{ $rule->created_at->format('d M Y') }}</td>

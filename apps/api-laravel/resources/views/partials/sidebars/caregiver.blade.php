@@ -14,12 +14,20 @@
         <i data-lucide="calendar-check-2"></i>
         <span>{{ __('public.portal.nav_appointments', [], $l) ?: 'Appointments' }}</span>
     </a>
+    <a href="{{ route('portals.patient.family') }}" class="sidebar-link">
+        <i data-lucide="users"></i>
+        <span>{{ __('public.portal.nav_family', [], $l) ?: 'Family' }}</span>
+    </a>
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_privacy', [], $l) ?: 'Privacy & Access' }}</div>
     <a href="{{ route('portals.patient.logs') }}" class="sidebar-link">
         <i data-lucide="history"></i>
         <span>{{ __('public.portal.nav_access_logs', [], $l) ?: 'Access Logs' }}</span>
+    </a>
+    <a href="{{ route('portals.patient.consent') }}" class="sidebar-link">
+        <i data-lucide="shield-check"></i>
+        <span>{{ __('public.portal.nav_consent', [], $l) ?: 'Consent Requests' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">

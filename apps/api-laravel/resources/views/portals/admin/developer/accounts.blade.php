@@ -78,7 +78,7 @@
                     @endif
                 </td>
                 <td data-label="{{ __('public.adm_dev_acc_col_status') }}">
-                    <span class="{{ $account->statusBadgeClass() }}">{{ ucfirst($account->status) }}</span>
+                    <span class="{{ $account->statusBadgeClass() }}">@enum($account->status)</span>
                     @if($account->status === 'suspended' && $account->suspend_reason)
                     <div class="td-muted">{{ Str::limit($account->suspend_reason, 30) }}</div>
                     @endif

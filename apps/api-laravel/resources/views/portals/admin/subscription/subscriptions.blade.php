@@ -78,7 +78,7 @@
                             @if($sub->plan)<div class="td-muted">{{ ucfirst($sub->plan->billing_cycle) }}</div>@endif
                         </td>
                         <td data-label="{{ __('public.adm_sub_idx_col_status') }}">
-                            <span class="badge badge-{{ $badgeMap[$sub->statusColor()] ?? 'neutral' }}">{{ ucfirst(str_replace('_',' ',$sub->status)) }}</span>
+                            <span class="badge badge-{{ $badgeMap[$sub->statusColor()] ?? 'neutral' }}">@enum($sub->status)</span>
                         </td>
                         <td data-label="{{ __('public.adm_sub_idx_col_period') }}">
                             <div>{{ $sub->current_period_start->format('d M Y') }}</div>

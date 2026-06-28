@@ -5,10 +5,10 @@
 </div>
 <div style="margin-bottom:var(--p-space-3);"></div>
 <div class="sidebar-nav-section">
-    <div class="sidebar-nav-label">Lab Portal</div>
+    <div class="sidebar-nav-label">{{ __('public.portal.nav_lab_portal', [], $l) ?: 'Lab Portal' }}</div>
     <a href="{{ route('portals.lab.dashboard') }}" class="sidebar-link" style="background:rgba(14,165,233,.08);border-left:3px solid #0ea5e9;">
         <i data-lucide="microscope" style="color:#0ea5e9;"></i>
-        <span style="font-weight:700;">My Lab Portal</span>
+        <span style="font-weight:700;">{{ __('public.portal.nav_lab_portal_my', [], $l) ?: 'My Lab Portal' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">

@@ -10,9 +10,47 @@
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], $l) ?: 'Dashboard' }}</span>
     </a>
+    <a href="{{ route('portals.admin.kpi.index') }}" class="sidebar-link">
+        <i data-lucide="trending-up"></i>
+        <span>{{ __('public.portal.nav_kpi', [], $l) ?: 'KPI Dashboard' }}</span>
+    </a>
+    <a href="{{ route('portals.admin.financial.index') }}" class="sidebar-link">
+        <i data-lucide="banknote"></i>
+        <span>{{ __('public.portal.nav_finance', [], $l) ?: 'Finance' }}</span>
+    </a>
+    <a href="{{ route('portals.admin.subscription') }}" class="sidebar-link">
+        <i data-lucide="credit-card"></i>
+        <span>{{ __('public.portal.nav_subscriptions', [], $l) ?: 'Subscriptions' }}</span>
+    </a>
     <a href="{{ route('select-facility') }}" class="sidebar-link">
         <i data-lucide="repeat"></i>
         <span>{{ __('public.portal.nav_switch_facility', [], $l) ?: 'Switch Facility' }}</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.portal.nav_people', [], $l) ?: 'People' }}</div>
+    <a href="{{ route('portals.admin.staff.index') }}" class="sidebar-link">
+        <i data-lucide="stethoscope"></i>
+        <span>{{ __('public.portal.nav_staff', [], $l) ?: 'Staff' }}</span>
+    </a>
+    <a href="{{ route('portals.admin.patients.index') }}" class="sidebar-link">
+        <i data-lucide="heart-pulse"></i>
+        <span>{{ __('public.portal.nav_patients', [], $l) ?: 'Patients' }}</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.portal.nav_operations', [], $l) ?: 'Operations' }}</div>
+    <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+        <i data-lucide="calendar-check-2"></i>
+        <span>{{ __('public.portal.nav_appointments', [], $l) ?: 'Appointments' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.queue') }}" class="sidebar-link">
+        <i data-lucide="list-ordered"></i>
+        <span>{{ __('public.portal.nav_queue', [], $l) ?: 'Patient Queue' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.visits') }}" class="sidebar-link">
+        <i data-lucide="clipboard-list"></i>
+        <span>{{ __('public.portal.nav_visits', [], $l) ?: 'Visits' }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">

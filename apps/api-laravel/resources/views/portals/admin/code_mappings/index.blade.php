@@ -82,7 +82,7 @@
                     <td data-label="{{ __('public.adm_codemap_idx_col_std_display') }}" title="{{ $mapping->standard_display }}">{{ $mapping->standard_display ?? '—' }}</td>
                     <td data-label="{{ __('public.adm_codemap_idx_col_type') }}">{{ $mapping->resource_type }}</td>
                     <td data-label="{{ __('public.adm_codemap_idx_col_confidence') }}">{{ ucfirst($mapping->mapping_confidence) }}</td>
-                    <td data-label="{{ __('public.adm_codemap_idx_col_status') }}"><span class="badge {{ $mapping->statusBadgeClass() }}">{{ ucfirst($mapping->status) }}</span></td>
+                    <td data-label="{{ __('public.adm_codemap_idx_col_status') }}"><span class="badge {{ $mapping->statusBadgeClass() }}">@enum($mapping->status)</span></td>
                     <td class="row-actions" data-label="{{ __('public.adm_codemap_idx_col_actions') }}">
                         @if($mapping->isPending())
                         <form method="POST" action="{{ route('portals.admin.code_mappings.approve', $mapping) }}" class="inline-form">

@@ -31,7 +31,7 @@
     <select name="status" class="filter-select" aria-label="{{ __('public.aria_status') }}">
         <option value="">{{ __('public.adm_fin_inv_opt_all_statuses') }}</option>
         @foreach(['draft','unpaid','paid','partial','cancelled','overdue'] as $s)
-        <option value="{{ $s }}" {{ request('status')===$s?'selected':'' }}>{{ ucfirst($s) }}</option>
+        <option value="{{ $s }}" {{ request('status')===$s?'selected':'' }}>@enum($s)</option>
         @endforeach
     </select>
     <select name="facility_id" class="filter-select" aria-label="{{ __('public.aria_facility') }}">
@@ -68,7 +68,7 @@
             @elseif($inv->status==='partial')<span class="badge badge-warning">{{ __('public.adm_fin_inv_badge_partial') }}</span>
             @elseif($inv->status==='cancelled')<span class="badge badge-neutral">{{ __('public.adm_fin_inv_badge_voided') }}</span>
             @elseif($inv->status==='overdue')<span class="badge badge-danger">{{ __('public.adm_fin_inv_badge_overdue') }}</span>
-            @else<span class="badge badge-warning">{{ ucfirst($inv->status) }}</span>@endif
+            @else<span class="badge badge-warning">@enum($inv->status)</span>@endif
         </td>
         <td data-label="{{ __('public.adm_fin_inv_col_issued') }}">{{ $inv->issued_at?->format('d M Y') ?? '—' }}</td>
         <td class="row-actions" data-label="{{ __('public.adm_fin_inv_col_actions') }}">

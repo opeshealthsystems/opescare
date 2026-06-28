@@ -13,11 +13,11 @@
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_developer_accounts', [], $l) ?: 'Developer' }}</div>
-    <a href="{{ route('portals.admin.security') }}" class="sidebar-link">
+    <a href="{{ route('portals.admin.connect.webhooks') }}" class="sidebar-link">
         <i data-lucide="webhook"></i>
         <span>{{ __('public.portal.nav_webhooks', [], $l) ?: 'Webhooks' }}</span>
     </a>
-    <a href="{{ route('portals.admin.security') }}" class="sidebar-link">
+    <a href="{{ route('portals.admin.connect.clients') }}" class="sidebar-link">
         <i data-lucide="terminal"></i>
         <span>{{ __('public.portal.nav_apps', [], $l) ?: 'My Apps' }}</span>
     </a>

@@ -42,7 +42,7 @@
                     </select></div>
                 <div><label class="form-label" for="priority">{{ __('broadcasts.field_priority') }}</label>
                     <select id="priority" name="priority" class="form-control">
-                        @foreach($priorities as $p)<option value="{{ $p }}" @selected(old('priority')===$p)>{{ ucfirst($p) }}</option>@endforeach
+                        @foreach($priorities as $p)<option value="{{ $p }}" @selected(old('priority')===$p)>@enum($p, 'priority')</option>@endforeach
                     </select></div>
                 <div><label class="form-label" for="language">{{ __('broadcasts.field_language') }}</label>
                     <select id="language" name="language" class="form-control">
@@ -68,7 +68,7 @@
         <h3 class="panel-title"><i data-lucide="radio"></i> {{ __('broadcasts.title') }}</h3>
         <form method="GET"><select name="status" class="form-control" style="width:auto;" onchange="this.form.submit()">
             <option value="">{{ __('broadcasts.all_statuses') }}</option>
-            @foreach(['draft','published','cancelled'] as $st)<option value="{{ $st }}" @selected($status===$st)>{{ ucfirst($st) }}</option>@endforeach
+            @foreach(['draft','published','cancelled'] as $st)<option value="{{ $st }}" @selected($status===$st)>@enum($st)</option>@endforeach
         </select></form>
     </div>
     @if($items->isEmpty())
@@ -85,12 +85,12 @@
                 @foreach($items as $bc)
                 <tr>
                     <td data-label="{{ __('broadcasts.field_title') }}"><span class="td-strong">{{ $bc->title }}</span>
-                        @if(($bc->priority ?? 'normal')!=='normal')<span class="badge badge-warning">{{ ucfirst($bc->priority) }}</span>@endif</td>
+                        @if(($bc->priority ?? 'normal')!=='normal')<span class="badge badge-warning">@enum($bc->priority, 'priority')</span>@endif</td>
                     <td data-label="{{ __('broadcasts.field_audience') }}"><span class="td-muted">{{ __('broadcasts.audience_' . $bc->target_type) }}</span></td>
                     <td data-label="{{ __('broadcasts.field_type') }}"><span class="badge badge-neutral">{{ __('broadcasts.type_' . $bc->broadcast_type) }}</span></td>
                     <td data-label="{{ __('broadcasts.col_status') }}">
                         @php $sc = ['published'=>'success','cancelled'=>'muted','expired'=>'muted'][$bc->status] ?? 'warning'; @endphp
-                        <span class="badge badge-{{ $sc }}">{{ ucfirst($bc->status) }}</span></td>
+                        <span class="badge badge-{{ $sc }}">@enum($bc->status)</span></td>
                     <td data-label="{{ __('broadcasts.col_acks') }}">{{ $bc->requires_acknowledgement ? $bc->acknowledgementCount() : '—' }}</td>
                     <td class="row-actions" style="display:flex;gap:.4rem;">
                         @if($bc->status === 'draft')

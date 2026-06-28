@@ -32,7 +32,7 @@
             <select name="status" class="form-control form-control-sm">
                 <option value="">{{ __('public.adm_appt_opt_all') }}</option>
                 @foreach(['scheduled','confirmed','cancelled','no_show','completed'] as $s)
-                <option value="{{ $s }}" @selected(request('status')===$s)>{{ ucfirst(str_replace('_',' ',$s)) }}</option>
+                <option value="{{ $s }}" @selected(request('status')===$s)>@enum($s)</option>
                 @endforeach
             </select>
         </div>
@@ -85,10 +85,11 @@
                         <div style="font-size:.85rem;">{{ $appointment->scheduled_at?->format('d M Y') ?? '—' }}</div>
                         <div style="font-size:.75rem;color:var(--p-text-muted);">{{ $appointment->scheduled_at?->format('H:i') ?? '' }}</div>
                     </td>
-                    <td><span class="badge {{ $sBadge }}">{{ ucfirst(str_replace('_',' ',$appointment->status??'—')) }}</span></td>
+                    <td><span class="badge {{ $sBadge }}">@enum($appointment->status ?? '—')</span></td>
                     <td style="font-size:.85rem;">{{ $appointment->provider?->full_name ?? '—' }}</td>
                     <td style="text-align:right;">
                         <div style="display:flex;gap:.35rem;justify-content:flex-end;">
+                            <a href="{{ route('portals.admin.appointments.show', $appointment) }}" class="btn btn-ghost btn-xs" aria-label="{{ __('public.aria_view_appointment') }}" title="{{ __('admin_extra.title_view', [], app()->getLocale()) ?: 'View' }}"><i data-lucide="eye"></i></a>
                             @if(!in_array($appointment->status??'',['cancelled','completed']))
                             <button onclick="openCancelModal('{{ $appointment->id }}','{{ route('portals.admin.appointments.cancel',$appointment) }}')" class="btn btn-warning btn-xs"><i data-lucide="ban"></i></button>
                             @endif

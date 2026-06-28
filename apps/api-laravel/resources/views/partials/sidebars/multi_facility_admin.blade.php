@@ -14,6 +14,10 @@
         <i data-lucide="trending-up"></i>
         <span>{{ __('public.portal.nav_kpi', [], $l) ?: 'KPI Dashboard' }}</span>
     </a>
+    <a href="{{ route('select-facility') }}" class="sidebar-link">
+        <i data-lucide="repeat"></i>
+        <span>{{ __('public.portal.nav_switch_facility', [], $l) ?: 'Switch Facility' }}</span>
+    </a>
     <a href="{{ route('portals.admin.onboarding') }}" class="sidebar-link">
         <i data-lucide="play-circle"></i>
         <span>{{ __('public.portal.nav_onboarding', [], $l) ?: 'Onboarding' }}</span>

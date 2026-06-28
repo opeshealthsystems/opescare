@@ -75,7 +75,7 @@
                         @if($f->status==='active')<span class="badge badge-success">{{ __('public.adm_fac_badge_active') }}</span>
                         @elseif($f->status==='suspended')<span class="badge badge-danger">{{ __('public.adm_fac_badge_suspended') }}</span>
                         @elseif($f->status==='pending_approval')<span class="badge badge-warning">{{ __('public.adm_fac_badge_pending') }}</span>
-                        @else<span class="badge badge-neutral">{{ ucfirst($f->status ?? 'pending') }}</span>@endif
+                        @else<span class="badge badge-neutral">@enum($f->status ?? 'pending')</span>@endif
                     </td>
                     <td class="row-actions" data-label="{{ __('public.adm_fac_col_actions') }}">
                         <a href="{{ route('admin.facilities.show', $f->id) }}" class="icon-btn" aria-label="{{ __('public.aria_view_facility') }}" title="{{ __('admin_extra.title_view', [], app()->getLocale()) ?: 'View' }}">

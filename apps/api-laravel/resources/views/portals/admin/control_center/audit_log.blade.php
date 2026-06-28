@@ -106,10 +106,14 @@
 
 @section('scripts')
 <script>
+    var _ag = {
+        diffTitlePrefix: @json(__('public.adm_cc_audit_js_diff_title_prefix')),
+        empty: @json(__('public.adm_cc_audit_js_empty')),
+    };
     function showDiff(before, after, action) {
-        document.getElementById('diff-title').textContent = 'Change diff: ' + action;
-        document.getElementById('diff-before').textContent = before ? JSON.stringify(before, null, 2) : '(empty)';
-        document.getElementById('diff-after').textContent  = after  ? JSON.stringify(after,  null, 2) : '(empty)';
+        document.getElementById('diff-title').textContent = _ag.diffTitlePrefix + action;
+        document.getElementById('diff-before').textContent = before ? JSON.stringify(before, null, 2) : _ag.empty;
+        document.getElementById('diff-after').textContent  = after  ? JSON.stringify(after,  null, 2) : _ag.empty;
         document.getElementById('diff-modal').classList.add('open');
     }
     function closeDiff() { document.getElementById('diff-modal').classList.remove('open'); }

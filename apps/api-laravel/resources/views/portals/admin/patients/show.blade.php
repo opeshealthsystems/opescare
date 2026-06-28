@@ -15,9 +15,9 @@
 <div class="entity-head">
     <div class="entity-head__icon"><i data-lucide="user"></i></div>
     <h2 class="entity-head__title">{{ $patient->first_name ?? '' }} {{ $patient->last_name ?? '' }}</h2>
-    @if(($patient->identity_status??'')==='active')<span class="badge badge-success">Active</span>
-    @elseif(($patient->identity_status??'')==='suspended')<span class="badge badge-danger">Suspended</span>
-    @else<span class="badge badge-warning">{{ ucfirst($patient->identity_status??'provisional') }}</span>@endif
+    @if(($patient->identity_status??'')==='active')<span class="badge badge-success">@enum('active')</span>
+    @elseif(($patient->identity_status??'')==='suspended')<span class="badge badge-danger">@enum('suspended')</span>
+    @else<span class="badge badge-warning">@enum($patient->identity_status ?? 'provisional')</span>@endif
     <div class="entity-head__spacer"></div>
     @if(($patient->identity_status??'')==='active')
     <button type="button" class="btn btn-warning" onclick="opOpenModal('suspend-modal')"><i data-lucide="pause-circle"></i> {{ __('public.adm_patients_show_btn_suspend') }}</button>
@@ -55,7 +55,7 @@
     </div>
     <div class="stat-card">
         <div class="stat-card__label">{{ __('public.adm_patients_show_lbl_status') }}</div>
-        <div class="stat-card__value">{{ ucfirst($patient->identity_status ?? 'provisional') }}</div>
+        <div class="stat-card__value">@enum($patient->identity_status ?? 'provisional')</div>
     </div>
     <div class="stat-card">
         <div class="stat-card__label">{{ __('public.adm_patients_show_lbl_registered') }}</div>

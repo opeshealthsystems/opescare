@@ -23,8 +23,8 @@ $prioBadge=match($ticket->priority??'medium'){'urgent'=>'badge-danger','high'=>'
         <h2 class="entity-head__title">{{ $ticket->subject }}</h2>
         <div class="entity-head__sub">
             <span class="td-muted">#{{ $ticket->ticket_number ?? $ticket->id }}</span>
-            <span class="badge {{ $statusBadge }}">{{ ucfirst($ticket->status ?? 'Open') }}</span>
-            <span class="badge {{ $prioBadge }}">{{ ucfirst($ticket->priority ?? 'Medium') }} {{ __('public.adm_sup_show_priority_label') }}</span>
+            <span class="badge {{ $statusBadge }}">@enum($ticket->status ?? 'open')</span>
+            <span class="badge {{ $prioBadge }}">@enum($ticket->priority ?? 'medium', 'priority') {{ __('public.adm_sup_show_priority_label') }}</span>
         </div>
     </div>
     <div class="entity-head__spacer"></div>
@@ -74,8 +74,8 @@ $prioBadge=match($ticket->priority??'medium'){'urgent'=>'badge-danger','high'=>'
             <div class="panel-header"><h3 class="panel-title"><i data-lucide="info"></i> {{ __('public.adm_sup_show_panel_details') }}</h3></div>
             <div class="panel-body">
                 <table class="kv-table">
-                    <tr><td>{{ __('public.adm_sup_show_kv_status') }}</td><td><span class="badge {{ $statusBadge }}">{{ ucfirst($ticket->status ?? 'Open') }}</span></td></tr>
-                    <tr><td>{{ __('public.adm_sup_show_kv_priority') }}</td><td><span class="badge {{ $prioBadge }}">{{ ucfirst($ticket->priority ?? 'Medium') }}</span></td></tr>
+                    <tr><td>{{ __('public.adm_sup_show_kv_status') }}</td><td><span class="badge {{ $statusBadge }}">@enum($ticket->status ?? 'open')</span></td></tr>
+                    <tr><td>{{ __('public.adm_sup_show_kv_priority') }}</td><td><span class="badge {{ $prioBadge }}">@enum($ticket->priority ?? 'medium', 'priority')</span></td></tr>
                     <tr><td>{{ __('public.adm_sup_show_kv_category') }}</td><td class="kv-strong">{{ ucfirst($ticket->category ?? 'General') }}</td></tr>
                     <tr><td>{{ __('public.adm_sup_show_kv_submitted_by') }}</td><td class="kv-strong">{{ $ticket->submittedBy?->name ?? $ticket->user?->name ?? 'Unknown' }}</td></tr>
                     <tr><td>{{ __('public.adm_sup_show_kv_assignee') }}</td><td class="kv-strong">{{ $ticket->assignee?->name ?? 'Unassigned' }}</td></tr>
