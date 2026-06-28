@@ -38,3 +38,7 @@ apps/mobile-patient/.flutter-plugins-dependencies
 # Secrets and local config
 .env.local
 bridge-agent/config.json
+.gstack/
+
+# Tooling temp / build artifacts (regenerable — never deploy)
+.pdf-tmp/
