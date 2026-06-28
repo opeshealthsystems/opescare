@@ -3,6 +3,21 @@ name: Deploy to Production
 on:
   push:
     branches: [main]
+    # Docs / SDKs / mobile / on-prem agent / tooling never affect the deployed
+    # Laravel API host — skip the production deploy when a push touches ONLY these.
+    # (workflow_dispatch below still allows a manual deploy any time.)
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'sdk/**'
+      - 'widget/**'
+      - 'apps/mobile-patient/**'
+      - 'bridge-agent/**'
+      - '.gstack/**'
+      - '.claude/**'
+      - '.codex/**'
+      - '.agents/**'
+      - '.superpowers/**'
   workflow_dispatch:
     inputs:
       environment:
