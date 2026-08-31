@@ -471,5 +471,48 @@
       "viewPolicies": "View My Policies",
       "errorGeneric": "We couldn't complete your enrollment. Please try again."
     }
+  },
+  "family": {
+    "title": "Family & Caregivers",
+    "subtitle": "Manage the people connected to your health record and invite new family members.",
+    "inviteTitle": "Invite a family member",
+    "invite": "Invite",
+    "close": "Close",
+    "contactLabel": "Email or phone number",
+    "contactPlaceholder": "e.g. jane@example.com or +237 6XX XXX XXX",
+    "contactRequired": "Enter an email or phone number",
+    "relationshipLabel": "Relationship",
+    "relationships": {
+      "parent": "Parent",
+      "grandparent": "Grandparent",
+      "spouse": "Spouse",
+      "sibling": "Sibling",
+      "caregiver": "Caregiver",
+      "legal_guardian": "Legal guardian",
+      "child": "Child",
+      "other": "Other"
+    },
+    "sendInvite": "Send invitation",
+    "invitationSent": "Invitation sent successfully.",
+    "invitationFailed": "Couldn't send the invitation. Please try again.",
+    "pendingInvitations": "Pending invitations",
+    "noPendingInvitations": "No pending invitations.",
+    "expiresOn": "Expires on {{date}}",
+    "linkedMembers": "Linked family members",
+    "noMembers": "No family members linked yet. Invite someone to get started.",
+    "age": "{{age}} yrs",
+    "accessLevels": {
+      "view_only": "View only",
+      "guardian": "Guardian",
+      "full": "Full access"
+    },
+    "cancelInviteTitle": "Cancel invitation?",
+    "cancelInviteBody": "This will cancel the invitation sent to {{contact}}.",
+    "cancelInviteConfirm": "Cancel invitation",
+    "dismiss": "Keep it",
+    "cancelInviteFailed": "Couldn't cancel the invitation. Please try again.",
+    "error": "Error",
+    "loadFailed": "Couldn't load your family information.",
+    "retry": "Retry"
   }
 }

@@ -471,5 +471,48 @@
       "viewPolicies": "Voir mes polices",
       "errorGeneric": "Nous n'avons pas pu finaliser votre souscription. Veuillez réessayer."
     }
+  },
+  "family": {
+    "title": "Famille et aidants",
+    "subtitle": "Gérez les personnes liées à votre dossier de santé et invitez de nouveaux membres de la famille.",
+    "inviteTitle": "Inviter un membre de la famille",
+    "invite": "Inviter",
+    "close": "Fermer",
+    "contactLabel": "E-mail ou numéro de téléphone",
+    "contactPlaceholder": "ex. jane@example.com ou +237 6XX XXX XXX",
+    "contactRequired": "Entrez un e-mail ou un numéro de téléphone",
+    "relationshipLabel": "Lien de parenté",
+    "relationships": {
+      "parent": "Parent",
+      "grandparent": "Grand-parent",
+      "spouse": "Conjoint(e)",
+      "sibling": "Frère/Sœur",
+      "caregiver": "Aidant",
+      "legal_guardian": "Tuteur légal",
+      "child": "Enfant",
+      "other": "Autre"
+    },
+    "sendInvite": "Envoyer l'invitation",
+    "invitationSent": "Invitation envoyée avec succès.",
+    "invitationFailed": "Impossible d'envoyer l'invitation. Veuillez réessayer.",
+    "pendingInvitations": "Invitations en attente",
+    "noPendingInvitations": "Aucune invitation en attente.",
+    "expiresOn": "Expire le {{date}}",
+    "linkedMembers": "Membres de la famille liés",
+    "noMembers": "Aucun membre de la famille lié pour l'instant. Invitez quelqu'un pour commencer.",
+    "age": "{{age}} ans",
+    "accessLevels": {
+      "view_only": "Lecture seule",
+      "guardian": "Tuteur",
+      "full": "Accès complet"
+    },
+    "cancelInviteTitle": "Annuler l'invitation ?",
+    "cancelInviteBody": "Cela annulera l'invitation envoyée à {{contact}}.",
+    "cancelInviteConfirm": "Annuler l'invitation",
+    "dismiss": "Conserver",
+    "cancelInviteFailed": "Impossible d'annuler l'invitation. Veuillez réessayer.",
+    "error": "Erreur",
+    "loadFailed": "Impossible de charger vos informations familiales.",
+    "retry": "Réessayer"
   }
 }
