@@ -41,8 +41,8 @@ export function AppUpdateGate() {
     return (
       <View style={styles.blockingRoot}>
         <View className="w-full max-w-sm items-center">
-          <View className="h-20 w-20 items-center justify-center rounded-full bg-gold-50">
-            <ShieldAlert size={34} color={colors.gold[600]} />
+          <View className="h-20 w-20 items-center justify-center rounded-full bg-brand-50">
+            <ShieldAlert size={34} color={colors.brand[600]} />
           </View>
 
           <Text className="mt-6 text-center text-2xl font-extrabold text-navy-text">
@@ -59,7 +59,7 @@ export function AppUpdateGate() {
             <Pressable
               onPress={openStore}
               className="mt-8 h-14 w-full flex-row items-center justify-center gap-2 rounded-2xl"
-              style={{ backgroundColor: colors.gold[500] }}
+              style={{ backgroundColor: colors.brand[500] }}
             >
               <Download size={18} color={colors.white} />
               <Text className="text-base font-bold text-white">{t('appUpdate.updateNow')}</Text>
@@ -79,8 +79,8 @@ export function AppUpdateGate() {
     <View style={styles.promptRoot} pointerEvents="box-none">
       <View className="rounded-2xl bg-white p-4" style={styles.promptCard}>
         <View className="flex-row items-start">
-          <View className="mr-3 h-11 w-11 items-center justify-center rounded-xl bg-gold-50">
-            <CircleArrowUp size={20} color={colors.gold[600]} />
+          <View className="mr-3 h-11 w-11 items-center justify-center rounded-xl bg-brand-50">
+            <CircleArrowUp size={20} color={colors.brand[600]} />
           </View>
 
           <View className="flex-1">
@@ -93,8 +93,8 @@ export function AppUpdateGate() {
             <View className="mt-3 flex-row items-center gap-4">
               {gate.storeUrl ? (
                 <Pressable onPress={openStore} className="flex-row items-center gap-1.5" hitSlop={6}>
-                  <Download size={15} color={colors.gold[600]} />
-                  <Text className="text-sm font-semibold text-gold-600">
+                  <Download size={15} color={colors.brand[600]} />
+                  <Text className="text-sm font-semibold text-brand-600">
                     {t('appUpdate.updateNow')}
                   </Text>
                 </Pressable>

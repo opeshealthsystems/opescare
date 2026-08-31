@@ -33,7 +33,7 @@ type CardTone = 'live' | 'awaiting' | 'dormant';
  * registered for it), so every gradient card below is styled inline. The
  * colour tuples need `as const` — LinearGradient's `colors` prop is a tuple
  * type, not `string[]`. */
-const LIVE_GRADIENT = [colors.gold[600], colors.gold[500], colors.gold[300]] as const;
+const LIVE_GRADIENT = [colors.brand[600], colors.brand[500], colors.brand[300]] as const;
 const AWAITING_GRADIENT = [colors.navy.text, colors.navy.secondary] as const;
 
 const CARD_STYLE = {
@@ -107,18 +107,18 @@ export default function InsurancePoliciesScreen() {
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel={t('insurance.back')}
-          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+          className="h-11 w-11 items-center justify-center rounded-full border border-brand-300"
         >
-          <ArrowLeft size={18} color={colors.gold[600]} />
+          <ArrowLeft size={18} color={colors.brand[600]} />
         </Pressable>
         <Pressable
           onPress={openMarketplace}
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel={t('insurance.marketplace.title')}
-          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+          className="h-11 w-11 items-center justify-center rounded-full border border-brand-300"
         >
-          <Store size={18} color={colors.gold[600]} />
+          <Store size={18} color={colors.brand[600]} />
         </Pressable>
       </View>
 
@@ -130,7 +130,7 @@ export default function InsurancePoliciesScreen() {
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={() => refetch()}
-            tintColor={colors.gold[500]}
+            tintColor={colors.brand[500]}
           />
         }
       >
@@ -141,7 +141,7 @@ export default function InsurancePoliciesScreen() {
 
         {isLoading ? (
           <View className="mt-20 items-center">
-            <ActivityIndicator color={colors.gold[500]} size="large" />
+            <ActivityIndicator color={colors.brand[500]} size="large" />
           </View>
         ) : isError ? (
           <View className="mt-8 items-center rounded-3xl bg-white p-6">
@@ -159,10 +159,10 @@ export default function InsurancePoliciesScreen() {
             </Text>
             <Pressable
               onPress={() => refetch()}
-              className="mt-5 rounded-full bg-gold-50 px-6 py-3"
+              className="mt-5 rounded-full bg-brand-50 px-6 py-3"
               accessibilityRole="button"
             >
-              <Text className="text-sm font-semibold text-gold-600">{t('insurance.retry')}</Text>
+              <Text className="text-sm font-semibold text-brand-600">{t('insurance.retry')}</Text>
             </Pressable>
           </View>
         ) : policies.length === 0 ? (
@@ -208,10 +208,10 @@ export default function InsurancePoliciesScreen() {
           <Pressable
             onPress={openMarketplace}
             accessibilityRole="button"
-            className="mt-2 flex-row items-center rounded-3xl border border-gold-300 bg-gold-50 p-4"
+            className="mt-2 flex-row items-center rounded-3xl border border-brand-300 bg-brand-50 p-4"
           >
             <View className="h-11 w-11 items-center justify-center rounded-full bg-white">
-              <Store size={18} color={colors.gold[600]} />
+              <Store size={18} color={colors.brand[600]} />
             </View>
             <View className="ml-4 flex-1">
               <Text className="text-sm font-bold text-navy-text">
@@ -221,7 +221,7 @@ export default function InsurancePoliciesScreen() {
                 {t('insurance.browseBody')}
               </Text>
             </View>
-            <ChevronRight size={18} color={colors.gold[600]} />
+            <ChevronRight size={18} color={colors.brand[600]} />
           </Pressable>
         ) : null}
 
@@ -266,8 +266,8 @@ function EmptyState({ onBrowse }: { onBrowse: () => void }) {
   return (
     <View className="mt-8 rounded-3xl bg-white p-6">
       <View className="items-center">
-        <View className="h-16 w-16 items-center justify-center rounded-full bg-gold-50">
-          <ShieldCheck size={30} color={colors.gold[500]} />
+        <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-50">
+          <ShieldCheck size={30} color={colors.brand[500]} />
         </View>
         <Text className="mt-4 text-center text-lg font-extrabold text-navy-text">
           {t('insurance.emptyTitle')}
@@ -281,8 +281,8 @@ function EmptyState({ onBrowse }: { onBrowse: () => void }) {
         <Button label={t('insurance.emptyCta')} onPress={onBrowse} leftIcon={Store} />
       </View>
 
-      <View className="mt-5 flex-row items-start rounded-2xl bg-gold-50 p-4">
-        <ShieldCheck size={16} color={colors.gold[600]} />
+      <View className="mt-5 flex-row items-start rounded-2xl bg-brand-50 p-4">
+        <ShieldCheck size={16} color={colors.brand[600]} />
         <Text className="ml-3 flex-1 text-xs leading-4 text-navy-secondary">
           {t('insurance.emptyNote')}
         </Text>
@@ -307,7 +307,7 @@ function PolicyCard({ policy, language }: { policy: InsurancePolicy; language: s
         style={{
           ...CARD_STYLE,
           marginBottom: 16,
-          shadowColor: tone === 'live' ? colors.gold[700] : colors.navy.text,
+          shadowColor: tone === 'live' ? colors.brand[700] : colors.navy.text,
           shadowOpacity: 0.22,
           shadowRadius: 16,
           shadowOffset: { width: 0, height: 8 },

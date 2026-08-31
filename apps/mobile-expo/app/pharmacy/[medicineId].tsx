@@ -227,10 +227,10 @@ export default function MedicineDetailScreen() {
           <Text className="mt-2 text-sm text-navy-secondary">{t('pharmacy.loadFailed')}</Text>
           <Pressable
             onPress={() => router.replace('/pharmacy')}
-            className="mt-4 rounded-xl border border-gold-500 px-4 py-2"
+            className="mt-4 rounded-xl border border-brand-500 px-4 py-2"
             accessibilityRole="button"
           >
-            <Text className="text-xs font-bold text-gold-600">{t('pharmacy.back')}</Text>
+            <Text className="text-xs font-bold text-brand-600">{t('pharmacy.back')}</Text>
           </Pressable>
         </View>
       </Screen>
@@ -270,7 +270,7 @@ export default function MedicineDetailScreen() {
 
         {medicine.isPending ? (
           <View className="mt-20 items-center">
-            <ActivityIndicator color={colors.gold[500]} />
+            <ActivityIndicator color={colors.brand[500]} />
           </View>
         ) : medicine.isError || !medicine.data ? (
           <View className="mt-10 items-center rounded-2xl border border-cream-300 bg-white px-6 py-8">
@@ -285,17 +285,17 @@ export default function MedicineDetailScreen() {
             </Text>
             <Pressable
               onPress={() => medicine.refetch()}
-              className="mt-4 rounded-xl border border-gold-500 px-4 py-2"
+              className="mt-4 rounded-xl border border-brand-500 px-4 py-2"
               accessibilityRole="button"
             >
-              <Text className="text-xs font-bold text-gold-600">{t('pharmacy.retry')}</Text>
+              <Text className="text-xs font-bold text-brand-600">{t('pharmacy.retry')}</Text>
             </Pressable>
           </View>
         ) : (
           <>
             {/* Medicine hero */}
             <LinearGradient
-              colors={[colors.gold[600], colors.gold[500], colors.gold[300]]}
+              colors={[colors.brand[600], colors.brand[500], colors.brand[300]]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={{ borderRadius: 24, marginTop: 18, padding: 20 }}
@@ -366,10 +366,10 @@ export default function MedicineDetailScreen() {
 
             {/* Existing holds on this medicine */}
             {existingHolds.length > 0 ? (
-              <View className="mt-4 rounded-2xl border border-gold-100 bg-gold-50 p-4">
+              <View className="mt-4 rounded-2xl border border-brand-100 bg-brand-50 p-4">
                 <View className="flex-row items-center">
                   <View className="h-9 w-9 items-center justify-center rounded-full bg-white">
-                    <Ticket size={16} color={colors.gold[600]} />
+                    <Ticket size={16} color={colors.brand[600]} />
                   </View>
                   <Text className="ml-3 flex-1 text-sm font-bold text-navy-text">
                     {t('pharmacy.reservationsTitle')}
@@ -480,12 +480,12 @@ export default function MedicineDetailScreen() {
                         accessibilityRole="button"
                         accessibilityState={{ selected: active }}
                         className={`rounded-xl border px-3 py-2.5 ${
-                          active ? 'border-gold-500 bg-gold-50' : 'border-cream-300 bg-white'
+                          active ? 'border-brand-500 bg-brand-50' : 'border-cream-300 bg-white'
                         }`}
                       >
                         <Text
                           className={`text-xs font-semibold ${
-                            active ? 'text-gold-700' : 'text-navy-secondary'
+                            active ? 'text-brand-700' : 'text-navy-secondary'
                           }`}
                         >
                           {option}
@@ -545,7 +545,7 @@ export default function MedicineDetailScreen() {
                   accessibilityRole="button"
                   accessibilityLabel={t('pharmacy.radiusPickerTitle')}
                 >
-                  <Crosshair size={12} color={colors.gold[600]} />
+                  <Crosshair size={12} color={colors.brand[600]} />
                   <Text className="ml-1.5 text-[10px] font-bold text-navy-secondary">
                     {t('pharmacy.radius', { km: radiusKm })}
                   </Text>
@@ -564,7 +564,7 @@ export default function MedicineDetailScreen() {
 
             {pharmacies.isPending ? (
               <View className="mt-4 items-center">
-                <ActivityIndicator color={colors.gold[500]} />
+                <ActivityIndicator color={colors.brand[500]} />
                 <Text className="mt-2 text-[11px] text-navy-muted">
                   {t('pharmacy.loadingPharmacies')}
                 </Text>
@@ -577,10 +577,10 @@ export default function MedicineDetailScreen() {
                 </Text>
                 <Pressable
                   onPress={() => pharmacies.refetch()}
-                  className="mt-3 rounded-xl border border-gold-500 px-4 py-2"
+                  className="mt-3 rounded-xl border border-brand-500 px-4 py-2"
                   accessibilityRole="button"
                 >
-                  <Text className="text-xs font-bold text-gold-600">{t('pharmacy.retry')}</Text>
+                  <Text className="text-xs font-bold text-brand-600">{t('pharmacy.retry')}</Text>
                 </Pressable>
               </View>
             ) : pharmacyRows.length === 0 ? (
@@ -603,10 +603,10 @@ export default function MedicineDetailScreen() {
                       setRadiusKm(nextRadiusKm);
                       setPharmacyId(null);
                     }}
-                    className="mt-4 rounded-xl border border-gold-500 px-4 py-2"
+                    className="mt-4 rounded-xl border border-brand-500 px-4 py-2"
                     accessibilityRole="button"
                   >
-                    <Text className="text-xs font-bold text-gold-600">
+                    <Text className="text-xs font-bold text-brand-600">
                       {`${t('pharmacy.radiusPickerTitle')}: ${t('pharmacy.radius', { km: nextRadiusKm })}`}
                     </Text>
                   </Pressable>
@@ -652,7 +652,7 @@ export default function MedicineDetailScreen() {
 
               <View className="mt-3 border-t border-cream-200 pt-3">
                 <Text className="text-[11px] text-navy-muted">{t('pharmacy.totalPrice')}</Text>
-                <Text className="mt-1 text-2xl font-extrabold text-gold-600">
+                <Text className="mt-1 text-2xl font-extrabold text-brand-600">
                   {formatXaf(totalPrice) ?? t('pharmacy.priceUnavailable')}
                 </Text>
                 <Text className="mt-1 text-xs text-navy-secondary" numberOfLines={1}>
@@ -670,10 +670,10 @@ export default function MedicineDetailScreen() {
 
             {/* Prescription — this is business logic, not an error */}
             {needsPrescription ? (
-              <View className="mt-4 rounded-2xl border border-gold-100 bg-gold-50 p-4">
+              <View className="mt-4 rounded-2xl border border-brand-100 bg-brand-50 p-4">
                 <View className="flex-row items-start">
                   <View className="h-9 w-9 items-center justify-center rounded-full bg-white">
-                    <FileText size={16} color={colors.gold[600]} />
+                    <FileText size={16} color={colors.brand[600]} />
                   </View>
                   <View className="ml-3 flex-1">
                     <Text className="text-sm font-bold text-navy-text">
@@ -687,16 +687,16 @@ export default function MedicineDetailScreen() {
 
                 <Pressable
                   onPress={() => setPrescriptionListOpen((open) => !open)}
-                  className="mt-3 h-11 flex-row items-center justify-center rounded-xl border border-gold-500 bg-white px-3"
+                  className="mt-3 h-11 flex-row items-center justify-center rounded-xl border border-brand-500 bg-white px-3"
                   accessibilityRole="button"
                   accessibilityState={{ expanded: prescriptionListOpen }}
                 >
                   {prescriptionId ? (
-                    <Check size={15} color={colors.gold[600]} />
+                    <Check size={15} color={colors.brand[600]} />
                   ) : (
-                    <FileText size={15} color={colors.gold[600]} />
+                    <FileText size={15} color={colors.brand[600]} />
                   )}
-                  <Text className="ml-2 text-xs font-bold text-gold-600">
+                  <Text className="ml-2 text-xs font-bold text-brand-600">
                     {prescriptionId
                       ? t('pharmacy.prescriptionAttached')
                       : t('pharmacy.attachPrescription')}
@@ -706,7 +706,7 @@ export default function MedicineDetailScreen() {
                 {prescriptionListOpen ? (
                   prescriptions.isPending ? (
                     <View className="mt-3 items-center">
-                      <ActivityIndicator color={colors.gold[500]} />
+                      <ActivityIndicator color={colors.brand[500]} />
                     </View>
                   ) : (prescriptions.data ?? []).length === 0 ? (
                     <View className="mt-3 items-center rounded-xl border border-cream-300 bg-white px-4 py-5">
@@ -715,10 +715,10 @@ export default function MedicineDetailScreen() {
                       </Text>
                       <Pressable
                         onPress={() => router.push('/prescriptions')}
-                        className="mt-3 rounded-xl border border-gold-500 px-4 py-2"
+                        className="mt-3 rounded-xl border border-brand-500 px-4 py-2"
                         accessibilityRole="button"
                       >
-                        <Text className="text-xs font-bold text-gold-600">
+                        <Text className="text-xs font-bold text-brand-600">
                           {t('pharmacy.openPrescriptions')}
                         </Text>
                       </Pressable>
@@ -761,7 +761,7 @@ export default function MedicineDetailScreen() {
                                   : ''}
                               </Text>
                             </View>
-                            {active ? <Check size={16} color={colors.gold[600]} /> : null}
+                            {active ? <Check size={16} color={colors.brand[600]} /> : null}
                           </Pressable>
                         );
                       })}
@@ -952,16 +952,16 @@ function PharmacyOption({
       accessibilityRole="button"
       accessibilityState={{ selected }}
       className={`rounded-2xl border p-3 ${
-        selected ? 'border-gold-500 bg-gold-50' : 'border-cream-300 bg-white'
+        selected ? 'border-brand-500 bg-brand-50' : 'border-cream-300 bg-white'
       }`}
       style={selected ? undefined : CARD_SHADOW}
     >
       <View className="flex-row items-start">
         <View
           className="h-11 w-11 items-center justify-center rounded-xl"
-          style={{ backgroundColor: selected ? colors.white : colors.gold[50] }}
+          style={{ backgroundColor: selected ? colors.white : colors.brand[50] }}
         >
-          <Store size={18} color={colors.gold[600]} />
+          <Store size={18} color={colors.brand[600]} />
         </View>
 
         <View className="ml-3 flex-1">
@@ -983,8 +983,8 @@ function PharmacyOption({
         <View
           className="h-5 w-5 items-center justify-center rounded-full border"
           style={{
-            borderColor: selected ? colors.gold[500] : colors.cream[300],
-            backgroundColor: selected ? colors.gold[500] : colors.white,
+            borderColor: selected ? colors.brand[500] : colors.cream[300],
+            backgroundColor: selected ? colors.brand[500] : colors.white,
           }}
         >
           {selected ? <Check size={12} color={colors.white} /> : null}
@@ -1013,7 +1013,7 @@ function PharmacyOption({
 
         <View className="flex-row items-center">
           {price ? (
-            <Text className="mr-3 text-xs font-extrabold text-gold-700">{price}</Text>
+            <Text className="mr-3 text-xs font-extrabold text-brand-700">{price}</Text>
           ) : null}
           <Pressable
             onPress={onOpenFacility}
@@ -1021,10 +1021,10 @@ function PharmacyOption({
             accessibilityRole="button"
             className="flex-row items-center"
           >
-            <Text className="text-[11px] font-bold text-gold-600">
+            <Text className="text-[11px] font-bold text-brand-600">
               {t('pharmacy.viewPharmacy')}
             </Text>
-            <ChevronRight size={12} color={colors.gold[600]} />
+            <ChevronRight size={12} color={colors.brand[600]} />
           </Pressable>
         </View>
       </View>

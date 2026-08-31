@@ -156,7 +156,7 @@ export default function OfflineAccessScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: spacing['2xl'], paddingBottom: spacing['4xl'] }}
         refreshControl={
-          <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={colors.gold[500]} />
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={colors.brand[500]} />
         }
       >
         <ScreenHeader
@@ -203,12 +203,12 @@ export default function OfflineAccessScreen() {
                     width: sizing.tile.md,
                     height: sizing.tile.md,
                     borderRadius: radii.tile,
-                    backgroundColor: colors.gold[50],
+                    backgroundColor: colors.brand[50],
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
                 >
-                  <CloudOff color={colors.gold[600]} size={sizing.icon.lg} />
+                  <CloudOff color={colors.brand[600]} size={sizing.icon.lg} />
                 </View>
                 <View style={{ flex: 1, marginLeft: spacing.md }}>
                   <Text
@@ -423,7 +423,7 @@ export default function OfflineAccessScreen() {
                       key={item.id}
                       style={{ marginTop: spacing.md, flexDirection: 'row', alignItems: 'center' }}
                     >
-                      <UploadCloud color={colors.gold[600]} size={sizing.icon.sm} />
+                      <UploadCloud color={colors.brand[600]} size={sizing.icon.sm} />
                       <Text
                         numberOfLines={1}
                         style={{
@@ -548,7 +548,7 @@ function SectionLabel({ text }: { text: string }) {
         fontWeight: typography.weight.bold,
         letterSpacing: typography.tracking.overline,
         textTransform: 'uppercase',
-        color: colors.gold[600],
+        color: colors.brand[600],
       }}
     >
       {text}
@@ -575,7 +575,7 @@ function ModeOption({
       padding="lg"
       onPress={onPress}
       accessibilityLabel={title}
-      style={selected ? { borderColor: colors.gold[500], borderWidth: 1.5 } : undefined}
+      style={selected ? { borderColor: colors.brand[500], borderWidth: 1.5 } : undefined}
     >
       <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
         <View
@@ -583,12 +583,12 @@ function ModeOption({
             width: sizing.tile.md,
             height: sizing.tile.md,
             borderRadius: radii.tile,
-            backgroundColor: selected ? colors.gold[50] : colors.surface.sunken,
+            backgroundColor: selected ? colors.brand[50] : colors.surface.sunken,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Icon color={selected ? colors.gold[600] : colors.navy.secondary} size={sizing.icon.lg} />
+          <Icon color={selected ? colors.brand[600] : colors.navy.secondary} size={sizing.icon.lg} />
         </View>
 
         <View style={{ flex: 1, marginLeft: spacing.md }}>
@@ -622,8 +622,8 @@ function ModeOption({
             height: 22,
             borderRadius: radii.pill,
             borderWidth: 1.5,
-            borderColor: selected ? colors.gold[500] : colors.line.strong,
-            backgroundColor: selected ? colors.gold[500] : 'transparent',
+            borderColor: selected ? colors.brand[500] : colors.line.strong,
+            backgroundColor: selected ? colors.brand[500] : 'transparent',
             alignItems: 'center',
             justifyContent: 'center',
           }}
@@ -714,12 +714,12 @@ function ScopeRow({
           width: sizing.tile.sm,
           height: sizing.tile.sm,
           borderRadius: radii.tile,
-          backgroundColor: colors.gold[50],
+          backgroundColor: colors.brand[50],
           alignItems: 'center',
           justifyContent: 'center',
         }}
       >
-        <Icon color={colors.gold[600]} size={sizing.icon.md} />
+        <Icon color={colors.brand[600]} size={sizing.icon.md} />
       </View>
 
       <View style={{ flex: 1, marginLeft: spacing.md }}>
@@ -751,7 +751,7 @@ function ScopeRow({
             marginLeft: spacing.sm,
             fontSize: typography.size.xs,
             fontWeight: typography.weight.semibold,
-            color: colors.gold[600],
+            color: colors.brand[600],
           }}
         >
           {t('offline.itemsSaved', { count: scope.itemCount })}

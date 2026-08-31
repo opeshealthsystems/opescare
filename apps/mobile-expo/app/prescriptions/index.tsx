@@ -97,7 +97,7 @@ export default function PrescriptionsListScreen() {
               refetch();
               summary.refetch();
             }}
-            tintColor={colors.gold[500]}
+            tintColor={colors.brand[500]}
           />
         }
         ItemSeparatorComponent={() => <View className="h-3" />}
@@ -117,7 +117,7 @@ export default function PrescriptionsListScreen() {
 
               <View className="flex-row items-center">
                 <Text className="text-lg font-extrabold text-navy-text">Opes</Text>
-                <Text className="text-lg font-extrabold text-gold-500">Care</Text>
+                <Text className="text-lg font-extrabold text-brand-500">Care</Text>
               </View>
 
               <Pressable
@@ -126,7 +126,7 @@ export default function PrescriptionsListScreen() {
                 accessibilityLabel={t('prescriptions.findMedicine')}
                 className="h-10 flex-row items-center rounded-xl border border-cream-300 bg-white px-3"
               >
-                <Search size={15} color={colors.gold[600]} />
+                <Search size={15} color={colors.brand[600]} />
                 <Text className="ml-1.5 text-xs font-semibold text-navy-text">
                   {t('prescriptions.findMedicine')}
                 </Text>
@@ -148,7 +148,7 @@ export default function PrescriptionsListScreen() {
             {hasAnyActive ? (
               <View className="mt-5 px-6">
                 <LinearGradient
-                  colors={[colors.gold[600], colors.gold[500], colors.gold[300]]}
+                  colors={[colors.brand[600], colors.brand[500], colors.brand[300]]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   // NativeWind's className→style transform is not registered for
@@ -193,7 +193,7 @@ export default function PrescriptionsListScreen() {
                     accessibilityRole="button"
                     accessibilityState={{ selected: active }}
                     className={`h-10 items-center justify-center rounded-xl border px-4 ${
-                      active ? 'border-gold-500 bg-gold-500' : 'border-cream-300 bg-white'
+                      active ? 'border-brand-500 bg-brand-500' : 'border-cream-300 bg-white'
                     }`}
                   >
                     <Text
@@ -220,7 +220,7 @@ export default function PrescriptionsListScreen() {
         ListEmptyComponent={
           isLoading ? (
             <View className="items-center py-24">
-              <ActivityIndicator color={colors.gold[500]} />
+              <ActivityIndicator color={colors.brand[500]} />
             </View>
           ) : isError ? (
             <ErrorState onRetry={() => refetch()} />
@@ -286,8 +286,8 @@ function PrescriptionCard({
       className="rounded-2xl border border-cream-300 bg-white p-4"
     >
       <View className="flex-row items-start">
-        <View className="h-11 w-11 items-center justify-center rounded-xl bg-gold-50">
-          <Pill size={20} color={colors.gold[600]} />
+        <View className="h-11 w-11 items-center justify-center rounded-xl bg-brand-50">
+          <Pill size={20} color={colors.brand[600]} />
         </View>
 
         <View className="ml-3 flex-1">
@@ -307,7 +307,7 @@ function PrescriptionCard({
       {/* The list endpoint returns a count but never the drug names, so the
           count is what carries the weight here. Names live on the detail screen. */}
       <View className="mt-3 flex-row items-center rounded-xl bg-cream-100 px-3 py-2.5">
-        <Tablets size={16} color={colors.gold[600]} />
+        <Tablets size={16} color={colors.brand[600]} />
         <Text className="ml-2 flex-1 text-sm font-bold text-navy-text">
           {t('prescriptions.medicationCount', { count: prescription.item_count })}
         </Text>
@@ -351,8 +351,8 @@ function FirstRunEmptyState() {
   return (
     <View className="px-6 pt-4">
       <View className="items-center rounded-2xl border border-cream-300 bg-white px-6 py-8">
-        <View className="h-20 w-20 items-center justify-center rounded-full bg-gold-50">
-          <Pill size={30} color={colors.gold[600]} />
+        <View className="h-20 w-20 items-center justify-center rounded-full bg-brand-50">
+          <Pill size={30} color={colors.brand[600]} />
         </View>
         <Text className="mt-5 text-center text-lg font-extrabold text-navy-text">
           {t('prescriptions.emptyTitle')}
@@ -391,7 +391,7 @@ function FirstRunEmptyState() {
       <Pressable
         onPress={() => router.push('/appointments/book')}
         accessibilityRole="button"
-        className="mt-5 flex-row items-center justify-center rounded-2xl bg-gold-500 px-4 py-4"
+        className="mt-5 flex-row items-center justify-center rounded-2xl bg-brand-500 px-4 py-4"
       >
         <Stethoscope size={17} color={colors.white} />
         <Text className="ml-2 text-sm font-bold text-white">
@@ -402,10 +402,10 @@ function FirstRunEmptyState() {
       <Pressable
         onPress={() => router.push('/pharmacy')}
         accessibilityRole="button"
-        className="mt-3 flex-row items-center justify-center rounded-2xl border border-gold-500 px-4 py-4"
+        className="mt-3 flex-row items-center justify-center rounded-2xl border border-brand-500 px-4 py-4"
       >
-        <Search size={17} color={colors.gold[600]} />
-        <Text className="ml-2 text-sm font-bold text-gold-600">
+        <Search size={17} color={colors.brand[600]} />
+        <Text className="ml-2 text-sm font-bold text-brand-600">
           {t('prescriptions.emptyFindMedicine')}
         </Text>
       </Pressable>
@@ -429,7 +429,7 @@ function EmptyStep({
   return (
     <View className={`flex-row items-start px-4 py-4 ${last ? '' : 'border-b border-cream-200'}`}>
       <View className="h-9 w-9 items-center justify-center rounded-xl bg-cream-200">
-        <Icon size={17} color={colors.gold[600]} />
+        <Icon size={17} color={colors.brand[600]} />
       </View>
       <View className="ml-3 flex-1">
         <Text className="text-sm font-bold text-navy-text">
@@ -466,9 +466,9 @@ function FilteredEmptyState({
         <Pressable
           onPress={onShowAll}
           accessibilityRole="button"
-          className="mt-4 rounded-xl border border-gold-500 px-4 py-2"
+          className="mt-4 rounded-xl border border-brand-500 px-4 py-2"
         >
-          <Text className="text-xs font-bold text-gold-600">{t('prescriptions.showAll')}</Text>
+          <Text className="text-xs font-bold text-brand-600">{t('prescriptions.showAll')}</Text>
         </Pressable>
       </View>
     </View>
@@ -493,10 +493,10 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
         <Pressable
           onPress={onRetry}
           accessibilityRole="button"
-          className="mt-4 flex-row items-center rounded-xl border border-gold-500 px-4 py-2"
+          className="mt-4 flex-row items-center rounded-xl border border-brand-500 px-4 py-2"
         >
-          <RotateCcw size={13} color={colors.gold[600]} />
-          <Text className="ml-2 text-xs font-bold text-gold-600">{t('prescriptions.retry')}</Text>
+          <RotateCcw size={13} color={colors.brand[600]} />
+          <Text className="ml-2 text-xs font-bold text-brand-600">{t('prescriptions.retry')}</Text>
         </Pressable>
       </View>
     </View>

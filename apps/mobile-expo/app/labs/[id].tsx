@@ -192,9 +192,9 @@ export default function LabOrderDetailScreen() {
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel={t('labs.back')}
-          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+          className="h-11 w-11 items-center justify-center rounded-full border border-brand-300"
         >
-          <ArrowLeft size={18} color={colors.gold[600]} />
+          <ArrowLeft size={18} color={colors.brand[600]} />
         </Pressable>
         <View className="ml-3 flex-1">
           <Text className="text-2xl font-extrabold text-navy-text">{t('labs.detailTitle')}</Text>
@@ -226,10 +226,10 @@ export default function LabOrderDetailScreen() {
             <Pressable
               onPress={() => refetch()}
               accessibilityRole="button"
-              className="mt-5 flex-row items-center rounded-full border border-gold-300 px-5 py-2.5"
+              className="mt-5 flex-row items-center rounded-full border border-brand-300 px-5 py-2.5"
             >
-              <RotateCcw size={14} color={colors.gold[600]} />
-              <Text className="ml-2 text-sm font-semibold text-gold-600">{t('labs.retry')}</Text>
+              <RotateCcw size={14} color={colors.brand[600]} />
+              <Text className="ml-2 text-sm font-semibold text-brand-600">{t('labs.retry')}</Text>
             </Pressable>
           ) : null}
         </View>
@@ -405,16 +405,16 @@ export default function LabOrderDetailScreen() {
             <Pressable
               onPress={() => router.push({ pathname: '/care-map', params: { type: 'laboratory' } })}
               accessibilityRole="button"
-              className="mt-4 flex-row items-center rounded-2xl border border-gold-300 bg-white p-4"
+              className="mt-4 flex-row items-center rounded-2xl border border-brand-300 bg-white p-4"
             >
-              <View className="h-10 w-10 items-center justify-center rounded-full bg-gold-50">
-                <FlaskConical size={18} color={colors.gold[600]} />
+              <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-50">
+                <FlaskConical size={18} color={colors.brand[600]} />
               </View>
               <View className="ml-3 flex-1">
                 <Text className="text-sm font-bold text-navy-text">{t('labs.findLab')}</Text>
                 <Text className="mt-0.5 text-xs text-navy-secondary">{t('labs.findLabHint')}</Text>
               </View>
-              <ChevronRight size={18} color={colors.gold[600]} />
+              <ChevronRight size={18} color={colors.brand[600]} />
             </Pressable>
           ) : null}
 
@@ -444,7 +444,7 @@ function TimelineCell({
 }) {
   return (
     <View className="flex-1 items-center px-1">
-      <Icon size={16} color={done ? colors.gold[600] : colors.navy.muted} />
+      <Icon size={16} color={done ? colors.brand[600] : colors.navy.muted} />
       <Text className="mt-1.5 text-center text-[10px] font-semibold uppercase tracking-wide text-navy-muted">
         {label}
       </Text>
@@ -475,7 +475,7 @@ function NoteCard({ title, body }: { title: string; body: string }) {
   return (
     <View className="mt-4 rounded-2xl border border-cream-300 bg-white p-4">
       <View className="flex-row items-center">
-        <StickyNote size={15} color={colors.gold[600]} />
+        <StickyNote size={15} color={colors.brand[600]} />
         <Text className="ml-2 text-sm font-bold text-navy-text">{title}</Text>
       </View>
       <Text className="mt-2 text-sm leading-5 text-navy-secondary">{body}</Text>

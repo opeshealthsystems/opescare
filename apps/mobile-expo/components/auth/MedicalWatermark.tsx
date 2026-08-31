@@ -107,7 +107,7 @@ export function MedicalWatermark({ opacity = 0.2 }: { opacity?: number }) {
             key={`thread-${index}`}
             points={points.map(([px, py]) => `${px * width},${py * height}`).join(' ')}
             fill="none"
-            stroke={colors.gold[300]}
+            stroke={colors.brand[300]}
             strokeWidth={1}
           />
         ))}
@@ -117,7 +117,7 @@ export function MedicalWatermark({ opacity = 0.2 }: { opacity?: number }) {
             cx={cx * width}
             cy={cy * height}
             r={r}
-            fill={colors.gold[300]}
+            fill={colors.brand[300]}
           />
         ))}
       </Svg>
@@ -132,7 +132,7 @@ export function MedicalWatermark({ opacity = 0.2 }: { opacity?: number }) {
             transform: rotate ? [{ rotate: `${rotate}deg` }] : undefined,
           }}
         >
-          <Icon size={size} color={colors.gold[300]} strokeWidth={1.25} />
+          <Icon size={size} color={colors.brand[300]} strokeWidth={1.25} />
         </View>
       ))}
     </View>

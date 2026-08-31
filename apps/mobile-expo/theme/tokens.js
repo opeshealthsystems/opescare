@@ -1,9 +1,9 @@
 /**
- * OpesCare design tokens — gold/cream brand.
+ * OpesCare design tokens — blue/cream brand.
  * Plain CommonJS so tailwind.config.js (loaded directly by Node, no TS loader)
  * and the app's TypeScript code can both import the same source of truth.
  *
- * Gold + cream values sampled programmatically from the reference screens in
+ * Cream values sampled programmatically from the reference screens in
  * `Mobile app screens/` via tools/screens-triage/extract_accents.py (HSV hue
  * clustering across onboarding, login, and dashboard references). Text/semantic
  * values are visual-read approximations, refined per-screen by the pixel-diff
@@ -33,19 +33,17 @@ const colors = {
     400: '#DCCDAE', // stronger divider / disabled control fill
     500: '#C4B18B', // muted icon on cream, chart gridlines
   },
-  gold: {
-    50: '#FBF3DF',
-    100: '#F5E4B8',
-    // --- added: the ramp had a 100 -> 300 gap, which forced screens to
-    // approximate mid-gold tints with opacity hacks ---
-    200: '#EBD08A',
-    300: '#D9A73A',
-    400: '#C08F1E', // gradient mid-stop / hover
-    500: '#A6720B', // primary brand accent — sampled
-    600: '#8B600A', // gradient-dark / pressed state — sampled
-    700: '#6E4C08',
-    800: '#5B3E06',
-    900: '#4A3305',
+  brand: {
+    50: '#EAF1F8',
+    100: '#CDDEEE',
+    200: '#A3C2DF',
+    300: '#6E9CC8',
+    400: '#3D77AC', // gradient mid-stop / hover
+    500: '#0F4C81', // primary brand — CLAUDE.md
+    600: '#0C3F6C', // gradient-dark / pressed state
+    700: '#0A3357',
+    800: '#082944',
+    900: '#061E33',
   },
   navy: {
     text: '#1A2338', // headline / primary text
@@ -83,8 +81,8 @@ const colors = {
     card: '#FFFFFF', // default card
     cardMuted: '#FDFBF6', // card on white, or a second-level card
     sunken: '#F7F0E3', // inset wells, search fields, table headers (= cream.200)
-    gold: '#A6720B', // filled brand surface (= gold.500)
-    goldSoft: '#FBF3DF', // gold-tinted surface for icon tiles (= gold.50)
+    brand: '#0F4C81', // filled brand surface (= brand.500)
+    brandSoft: '#EAF1F8', // tinted surface for icon tiles (= brand.50)
     inverse: '#0E1729', // dark Health-ID card (= navy.deep)
     overlay: 'rgba(14, 23, 41, 0.45)', // modal scrim
     scrim: 'rgba(14, 23, 41, 0.08)', // pressed-state wash over a light surface
@@ -95,7 +93,7 @@ const colors = {
     subtle: '#F2EADB',
     default: '#EADFC8', // (= cream.300)
     strong: '#DCCDAE', // (= cream.400)
-    gold: '#D9A73A', // (= gold.300) — focus rings, selected chips
+    brand: '#6E9CC8', // (= brand.300) — focus rings, selected chips
     inverse: 'rgba(255, 255, 255, 0.16)',
   },
 };
@@ -146,7 +144,7 @@ const elevation = {
   },
   /** Hairline lift — chips, inline pills, sticky headers. */
   sm: {
-    shadowColor: colors.gold[900],
+    shadowColor: colors.brand[900],
     shadowOpacity: 0.05,
     shadowRadius: 3,
     shadowOffset: { width: 0, height: 1 },
@@ -154,7 +152,7 @@ const elevation = {
   },
   /** The default card shadow. Soft, wide, barely there. */
   md: {
-    shadowColor: colors.gold[900],
+    shadowColor: colors.brand[900],
     shadowOpacity: 0.07,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 3 },
@@ -162,15 +160,15 @@ const elevation = {
   },
   /** Floating surfaces — bottom tab bar, sheets, the Health ID card. */
   lg: {
-    shadowColor: colors.gold[900],
+    shadowColor: colors.brand[900],
     shadowOpacity: 0.1,
     shadowRadius: 22,
     shadowOffset: { width: 0, height: 10 },
     elevation: 10,
   },
-  /** Coloured glow under a gold CTA. */
-  gold: {
-    shadowColor: colors.gold[600],
+  /** Coloured glow under a brand CTA. */
+  brand: {
+    shadowColor: colors.brand[600],
     shadowOpacity: 0.3,
     shadowRadius: 14,
     shadowOffset: { width: 0, height: 6 },
@@ -188,8 +186,8 @@ const elevation = {
 
 /** Canonical gradient stops. Pass straight to `LinearGradient.colors`. */
 const gradients = {
-  gold: [colors.gold[600], colors.gold[500], colors.gold[300]],
-  goldSoft: [colors.gold[100], colors.gold[50]],
+  brand: [colors.brand[600], colors.brand[500], colors.brand[300]],
+  brandSoft: [colors.brand[100], colors.brand[50]],
   navy: [colors.navy.deep, colors.navy.soft],
   /** The warm page wash — light at the top, settling into the app cream. */
   page: [colors.cream[50], colors.cream[100]],

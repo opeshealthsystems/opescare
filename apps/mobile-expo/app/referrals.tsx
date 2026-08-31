@@ -94,7 +94,7 @@ export default function ReferralsScreen() {
       <Screen className="px-0">
         {header}
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={colors.gold[500]} size="large" />
+          <ActivityIndicator color={colors.brand[500]} size="large" />
         </View>
       </Screen>
     );
@@ -131,7 +131,7 @@ export default function ReferralsScreen() {
             <RefreshControl
               refreshing={isRefetching}
               onRefresh={() => refetch()}
-              tintColor={colors.gold[500]}
+              tintColor={colors.brand[500]}
             />
           }
         >
@@ -194,7 +194,7 @@ export default function ReferralsScreen() {
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={() => refetch()}
-            tintColor={colors.gold[500]}
+            tintColor={colors.brand[500]}
           />
         }
         renderItem={({ item }) => <ReferralCard referral={item} locale={i18n.language} />}

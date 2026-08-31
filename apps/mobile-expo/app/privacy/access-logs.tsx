@@ -191,7 +191,7 @@ export default function AccessLogsScreen() {
     <Screen className="px-0">
       {history.isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={colors.gold[500]} size="large" />
+          <ActivityIndicator color={colors.brand[500]} size="large" />
           <Text className="mt-3 text-[13px] text-navy-muted">{t('privacy.accessLogsLoading')}</Text>
         </View>
       ) : history.isError ? (
@@ -206,10 +206,10 @@ export default function AccessLogsScreen() {
           <Pressable
             onPress={() => history.refetch()}
             accessibilityRole="button"
-            className="mt-5 flex-row items-center rounded-full border border-gold-500 px-5 py-2.5"
+            className="mt-5 flex-row items-center rounded-full border border-brand-500 px-5 py-2.5"
           >
-            <RefreshCw size={14} color={colors.gold[600]} />
-            <Text className="ml-2 text-[13px] font-bold text-gold-600">{t('privacy.retry')}</Text>
+            <RefreshCw size={14} color={colors.brand[600]} />
+            <Text className="ml-2 text-[13px] font-bold text-brand-600">{t('privacy.retry')}</Text>
           </Pressable>
         </View>
       ) : (
@@ -222,7 +222,7 @@ export default function AccessLogsScreen() {
             <RefreshControl
               refreshing={history.isRefetching && !history.isFetchingNextPage}
               onRefresh={() => history.refetch()}
-              tintColor={colors.gold[500]}
+              tintColor={colors.brand[500]}
             />
           }
           ListHeaderComponent={header}
@@ -258,13 +258,13 @@ export default function AccessLogsScreen() {
                   style={CARD_SHADOW}
                 >
                   {history.isFetchingNextPage ? (
-                    <ActivityIndicator size="small" color={colors.gold[600]} />
+                    <ActivityIndicator size="small" color={colors.brand[600]} />
                   ) : (
                     <>
-                      <Text className="text-[13px] font-bold text-gold-600">
+                      <Text className="text-[13px] font-bold text-brand-600">
                         {t('privacy.loadMore')}
                       </Text>
-                      <ChevronDown size={15} color={colors.gold[600]} style={{ marginLeft: 4 }} />
+                      <ChevronDown size={15} color={colors.brand[600]} style={{ marginLeft: 4 }} />
                     </>
                   )}
                 </Pressable>

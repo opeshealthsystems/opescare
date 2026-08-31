@@ -254,7 +254,7 @@ export default function NotificationsScreen() {
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={refetch}
-            tintColor={colors.gold[500]}
+            tintColor={colors.brand[500]}
           />
         }
       >
@@ -392,7 +392,7 @@ export default function NotificationsScreen() {
                       fontWeight: typography.weight.bold,
                       letterSpacing: typography.tracking.overline,
                       textTransform: 'uppercase',
-                      color: colors.gold[600],
+                      color: colors.brand[600],
                     }}
                   >
                     {group.label}
@@ -516,7 +516,7 @@ function NotificationRow({
               borderRadius: radii.pill,
               marginLeft: spacing.sm,
               marginTop: 5,
-              backgroundColor: item.read ? colors.cream[300] : colors.gold[500],
+              backgroundColor: item.read ? colors.cream[300] : colors.brand[500],
             }}
           />
         </View>
@@ -553,12 +553,12 @@ function NotificationRow({
                 style={{
                   fontSize: typography.size.sm,
                   fontWeight: typography.weight.semibold,
-                  color: colors.gold[600],
+                  color: colors.brand[600],
                 }}
               >
                 {actionLabelFor(destination.labelKey)}
               </Text>
-              <ChevronRight color={colors.gold[600]} size={sizing.icon.sm} />
+              <ChevronRight color={colors.brand[600]} size={sizing.icon.sm} />
             </View>
           ) : null}
         </View>

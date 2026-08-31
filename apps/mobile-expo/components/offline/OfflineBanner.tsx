@@ -46,18 +46,18 @@ export function OfflineBanner() {
         style={{
           backgroundColor: colors.semantic.warningSurface,
           borderWidth: 1,
-          borderColor: colors.gold[100],
+          borderColor: colors.brand[100],
         }}
       >
         <CloudOff size={15} color={colors.semantic.warning} />
         <Text
           className="ml-2 flex-1 text-xs font-semibold"
-          style={{ color: colors.gold[700] }}
+          style={{ color: colors.brand[700] }}
           numberOfLines={2}
         >
           {message}
         </Text>
-        <ChevronRight size={15} color={colors.gold[600]} />
+        <ChevronRight size={15} color={colors.brand[600]} />
       </Pressable>
     </View>
   );

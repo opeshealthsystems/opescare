@@ -246,7 +246,7 @@ export default function DocumentsScreen() {
     <Screen className="px-0">
       {library.isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={colors.gold[500]} size="large" />
+          <ActivityIndicator color={colors.brand[500]} size="large" />
           <Text className="mt-3 text-[13px] text-navy-muted">{t('documents.loading')}</Text>
         </View>
       ) : library.isError ? (
@@ -261,10 +261,10 @@ export default function DocumentsScreen() {
           <Pressable
             onPress={() => library.refetch()}
             accessibilityRole="button"
-            className="mt-5 flex-row items-center rounded-full border border-gold-500 px-5 py-2.5"
+            className="mt-5 flex-row items-center rounded-full border border-brand-500 px-5 py-2.5"
           >
-            <RefreshCw size={14} color={colors.gold[600]} />
-            <Text className="ml-2 text-[13px] font-bold text-gold-600">{t('documents.retry')}</Text>
+            <RefreshCw size={14} color={colors.brand[600]} />
+            <Text className="ml-2 text-[13px] font-bold text-brand-600">{t('documents.retry')}</Text>
           </Pressable>
         </View>
       ) : (
@@ -277,7 +277,7 @@ export default function DocumentsScreen() {
             <RefreshControl
               refreshing={library.isRefetching && !library.isFetchingNextPage}
               onRefresh={() => library.refetch()}
-              tintColor={colors.gold[500]}
+              tintColor={colors.brand[500]}
             />
           }
           ListHeaderComponent={header}
@@ -324,13 +324,13 @@ export default function DocumentsScreen() {
                   style={CARD_SHADOW}
                 >
                   {library.isFetchingNextPage ? (
-                    <ActivityIndicator size="small" color={colors.gold[600]} />
+                    <ActivityIndicator size="small" color={colors.brand[600]} />
                   ) : (
                     <>
-                      <Text className="text-[13px] font-bold text-gold-600">
+                      <Text className="text-[13px] font-bold text-brand-600">
                         {t('documents.loadMore')}
                       </Text>
-                      <ChevronDown size={15} color={colors.gold[600]} style={{ marginLeft: 4 }} />
+                      <ChevronDown size={15} color={colors.brand[600]} style={{ marginLeft: 4 }} />
                     </>
                   )}
                 </Pressable>
@@ -338,10 +338,10 @@ export default function DocumentsScreen() {
 
               {/* The reference's closing privacy block — gold tint, padlock,
                   and a real "Manage Access" route into the privacy hub. */}
-              <View className="mt-5 rounded-2xl bg-gold-50 p-4">
+              <View className="mt-5 rounded-2xl bg-brand-50 p-4">
                 <View className="flex-row items-start">
-                  <View className="h-10 w-10 items-center justify-center rounded-full bg-gold-100">
-                    <Lock size={17} color={colors.gold[600]} />
+                  <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-100">
+                    <Lock size={17} color={colors.brand[600]} />
                   </View>
                   <View className="ml-3 flex-1">
                     <Text className="text-[13px] font-bold text-navy-text">
@@ -355,12 +355,12 @@ export default function DocumentsScreen() {
                 <Pressable
                   onPress={() => router.push('/privacy')}
                   accessibilityRole="button"
-                  className="mt-3.5 h-11 flex-row items-center justify-center rounded-xl border border-gold-500"
+                  className="mt-3.5 h-11 flex-row items-center justify-center rounded-xl border border-brand-500"
                 >
-                  <Text className="text-[13px] font-bold text-gold-600">
+                  <Text className="text-[13px] font-bold text-brand-600">
                     {t('documents.manageAccess')}
                   </Text>
-                  <ChevronRight size={15} color={colors.gold[600]} />
+                  <ChevronRight size={15} color={colors.brand[600]} />
                 </Pressable>
               </View>
 
@@ -476,7 +476,7 @@ function DocumentCard({
           onPress={onView}
           disabled={loading}
           accessibilityRole="button"
-          className="mt-3 h-12 flex-row items-center justify-center rounded-xl bg-gold-500"
+          className="mt-3 h-12 flex-row items-center justify-center rounded-xl bg-brand-500"
           style={{ opacity: loading ? 0.7 : 1 }}
         >
           {loading ? (

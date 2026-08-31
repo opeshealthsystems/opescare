@@ -75,9 +75,9 @@ export function statusVisual(status: string): StatusVisual {
       };
     case 'checked_in':
       return {
-        bg: colors.gold[50],
-        fg: colors.gold[600],
-        border: colors.gold[100],
+        bg: colors.brand[50],
+        fg: colors.brand[600],
+        border: colors.brand[100],
         icon: MapPin,
       };
     case 'completed':

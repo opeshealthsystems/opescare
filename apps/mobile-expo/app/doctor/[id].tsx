@@ -162,7 +162,7 @@ export default function DoctorDetailScreen() {
       <Screen className="px-0">
         <ScreenHeader title={t('doctor.title')} onBack={() => router.back()} />
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={colors.gold[500]} size="large" />
+          <ActivityIndicator color={colors.brand[500]} size="large" />
         </View>
       </Screen>
     );
@@ -235,7 +235,7 @@ export default function DoctorDetailScreen() {
           <LinearGradient
             // className does not apply to LinearGradient (no cssInterop is
             // registered for it), so every value here must be inline style.
-            colors={[colors.gold[50], colors.white]}
+            colors={[colors.brand[50], colors.white]}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
             style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 18 }}
@@ -243,7 +243,7 @@ export default function DoctorDetailScreen() {
             <View className="flex-row">
               <View>
                 <LinearGradient
-                  colors={[colors.gold[300], colors.gold[600]]}
+                  colors={[colors.brand[300], colors.brand[600]]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={{
@@ -258,7 +258,7 @@ export default function DoctorDetailScreen() {
                     className="items-center justify-center rounded-full bg-white"
                     style={{ width: 68, height: 68 }}
                   >
-                    <Text className="text-xl font-extrabold text-gold-600">
+                    <Text className="text-xl font-extrabold text-brand-600">
                       {providerInitials(provider.name)}
                     </Text>
                   </View>
@@ -289,13 +289,13 @@ export default function DoctorDetailScreen() {
                   {isVerified ? (
                     <BadgeCheck
                       size={17}
-                      color={colors.gold[600]}
+                      color={colors.brand[600]}
                       style={{ marginLeft: 6, marginTop: 2 }}
                     />
                   ) : null}
                 </View>
                 {provider.job_title ? (
-                  <Text className="mt-0.5 text-sm font-bold text-gold-600">
+                  <Text className="mt-0.5 text-sm font-bold text-brand-600">
                     {provider.job_title}
                   </Text>
                 ) : null}
@@ -411,7 +411,7 @@ export default function DoctorDetailScreen() {
                     {parts.day}
                   </Text>
                   <View className="mt-0.5 flex-row items-center">
-                    <Clock size={12} color={colors.gold[600]} />
+                    <Clock size={12} color={colors.brand[600]} />
                     <Text className="ml-1.5 text-sm font-bold text-navy-text">{parts.time}</Text>
                   </View>
                 </Pressable>
@@ -520,7 +520,7 @@ export default function DoctorDetailScreen() {
             <View className="ml-3 flex-1">
               <Text className="text-sm text-navy-text">{t('doctor.messageSent')}</Text>
               <Pressable onPress={() => router.push('/(tabs)/messages')} className="mt-2">
-                <Text className="text-sm font-bold text-gold-600">{t('doctor.openMessages')}</Text>
+                <Text className="text-sm font-bold text-brand-600">{t('doctor.openMessages')}</Text>
               </Pressable>
             </View>
           </View>

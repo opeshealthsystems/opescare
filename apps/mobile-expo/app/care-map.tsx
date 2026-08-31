@@ -123,8 +123,8 @@ function Chip({
       disabled={disabled}
       className="rounded-full border px-4 py-2"
       style={{
-        borderColor: active ? colors.gold[500] : colors.cream[300],
-        backgroundColor: active ? colors.gold[500] : colors.white,
+        borderColor: active ? colors.brand[500] : colors.cream[300],
+        backgroundColor: active ? colors.brand[500] : colors.white,
         opacity: disabled ? 0.45 : 1,
       }}
     >
@@ -159,13 +159,13 @@ function LocationPrompt({
     return (
       <View
         className="mb-4 flex-row items-start rounded-2xl p-4"
-        style={{ backgroundColor: colors.gold[50] }}
+        style={{ backgroundColor: colors.brand[50] }}
       >
         <View
           className="mr-3 h-10 w-10 items-center justify-center rounded-full"
           style={{ backgroundColor: colors.white }}
         >
-          <LocateFixed size={18} color={colors.gold[600]} />
+          <LocateFixed size={18} color={colors.brand[600]} />
         </View>
         <View className="flex-1">
           <Text className="text-sm font-bold text-navy-text">
@@ -180,10 +180,10 @@ function LocationPrompt({
             <Pressable
               onPress={() => Linking.openSettings().catch(() => {})}
               className="mt-3 flex-row items-center self-start rounded-xl border px-3 py-2"
-              style={{ borderColor: colors.gold[300] }}
+              style={{ borderColor: colors.brand[300] }}
             >
-              <Settings size={13} color={colors.gold[600]} />
-              <Text className="ml-2 text-xs font-semibold text-gold-600">
+              <Settings size={13} color={colors.brand[600]} />
+              <Text className="ml-2 text-xs font-semibold text-brand-600">
                 {t('careMap.locationDenied.action')}
               </Text>
             </Pressable>
@@ -197,7 +197,7 @@ function LocationPrompt({
 
   return (
     <LinearGradient
-      colors={[colors.gold[600], colors.gold[500], colors.gold[300]]}
+      colors={[colors.brand[600], colors.brand[500], colors.brand[300]]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       // NativeWind's className→style transform does not apply to
@@ -206,7 +206,7 @@ function LocationPrompt({
     >
       <View className="flex-row items-start">
         <View className="mr-3 h-11 w-11 items-center justify-center rounded-full bg-white/90">
-          <LocateFixed size={20} color={colors.gold[600]} />
+          <LocateFixed size={20} color={colors.brand[600]} />
         </View>
         <View className="flex-1">
           <Text className="text-base font-extrabold text-white">
@@ -224,11 +224,11 @@ function LocationPrompt({
         style={{ opacity: busy ? 0.7 : 1 }}
       >
         {busy ? (
-          <ActivityIndicator size="small" color={colors.gold[600]} />
+          <ActivityIndicator size="small" color={colors.brand[600]} />
         ) : (
-          <Navigation size={16} color={colors.gold[600]} />
+          <Navigation size={16} color={colors.brand[600]} />
         )}
-        <Text className="ml-2 text-sm font-bold text-gold-600">
+        <Text className="ml-2 text-sm font-bold text-brand-600">
           {busy ? t('careMap.locationCta.working') : t('careMap.locationCta.action')}
         </Text>
       </Pressable>
@@ -265,9 +265,9 @@ function NearestFacilityCard({
       <View className="flex-row items-center">
         <View
           className="mr-3 h-11 w-11 items-center justify-center rounded-2xl"
-          style={{ backgroundColor: colors.gold[50] }}
+          style={{ backgroundColor: colors.brand[50] }}
         >
-          <Icon size={20} color={colors.gold[600]} />
+          <Icon size={20} color={colors.brand[600]} />
         </View>
         <View className="flex-1">
           <Text className="text-[10px] font-bold uppercase tracking-wide text-navy-muted">
@@ -284,7 +284,7 @@ function NearestFacilityCard({
           onPress={onDirections}
           hitSlop={6}
           className="ml-3 h-12 w-12 items-center justify-center rounded-full"
-          style={{ backgroundColor: colors.gold[500] }}
+          style={{ backgroundColor: colors.brand[500] }}
         >
           <Navigation size={18} color={colors.white} />
         </Pressable>
@@ -294,8 +294,8 @@ function NearestFacilityCard({
         className="mt-3 flex-row items-center justify-between pt-3"
         style={{ borderTopWidth: 1, borderTopColor: colors.cream[300] }}
       >
-        <Text className="text-sm font-semibold text-gold-600">{t('careMap.viewDetails')}</Text>
-        <ChevronRight size={16} color={colors.gold[600]} />
+        <Text className="text-sm font-semibold text-brand-600">{t('careMap.viewDetails')}</Text>
+        <ChevronRight size={16} color={colors.brand[600]} />
       </Pressable>
     </View>
   );
@@ -330,9 +330,9 @@ function FacilityCard({
       <Pressable onPress={onOpen} className="flex-row items-start">
         <View
           className="mr-3 h-11 w-11 items-center justify-center rounded-2xl"
-          style={{ backgroundColor: colors.gold[50] }}
+          style={{ backgroundColor: colors.brand[50] }}
         >
-          <Icon size={20} color={colors.gold[600]} />
+          <Icon size={20} color={colors.brand[600]} />
         </View>
         <View className="flex-1">
           <View className="flex-row items-start">
@@ -342,10 +342,10 @@ function FacilityCard({
             {row.distanceKm != null ? (
               <View
                 className="flex-row items-center rounded-full px-2 py-0.5"
-                style={{ backgroundColor: colors.gold[50] }}
+                style={{ backgroundColor: colors.brand[50] }}
               >
-                <Navigation size={10} color={colors.gold[600]} />
-                <Text className="ml-1 text-[11px] font-bold text-gold-600">
+                <Navigation size={10} color={colors.brand[600]} />
+                <Text className="ml-1 text-[11px] font-bold text-brand-600">
                   {formatDistance(row.distanceKm)}
                 </Text>
               </View>
@@ -374,10 +374,10 @@ function FacilityCard({
         <Pressable
           onPress={handleDirections}
           className="flex-1 flex-row items-center justify-center rounded-xl border py-2.5"
-          style={{ borderColor: colors.gold[300] }}
+          style={{ borderColor: colors.brand[300] }}
         >
-          <Navigation size={14} color={colors.gold[600]} />
-          <Text className="ml-2 text-xs font-semibold text-gold-600">
+          <Navigation size={14} color={colors.brand[600]} />
+          <Text className="ml-2 text-xs font-semibold text-brand-600">
             {t('careMap.directions')}
           </Text>
         </Pressable>
@@ -385,7 +385,7 @@ function FacilityCard({
           <Pressable
             onPress={handleCall}
             className="flex-1 flex-row items-center justify-center rounded-xl py-2.5"
-            style={{ backgroundColor: colors.gold[500] }}
+            style={{ backgroundColor: colors.brand[500] }}
           >
             <Phone size={14} color={colors.white} />
             <Text className="ml-2 text-xs font-semibold text-white">{t('careMap.call')}</Text>
@@ -605,15 +605,15 @@ export default function CareMapScreen() {
                   disabled={key === 'distance' && !coords}
                   className="rounded-full px-3 py-1.5"
                   style={{
-                    backgroundColor: sort === key ? colors.gold[50] : colors.white,
+                    backgroundColor: sort === key ? colors.brand[50] : colors.white,
                     borderWidth: 1,
-                    borderColor: sort === key ? colors.gold[300] : colors.cream[300],
+                    borderColor: sort === key ? colors.brand[300] : colors.cream[300],
                     opacity: key === 'distance' && !coords ? 0.4 : 1,
                   }}
                 >
                   <Text
                     className="text-[11px] font-semibold"
-                    style={{ color: sort === key ? colors.gold[600] : colors.navy.secondary }}
+                    style={{ color: sort === key ? colors.brand[600] : colors.navy.secondary }}
                   >
                     {t(`careMap.sort.${key}`)}
                   </Text>
@@ -636,9 +636,9 @@ export default function CareMapScreen() {
         <Pressable
           onPress={() => router.back()}
           hitSlop={8}
-          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+          className="h-11 w-11 items-center justify-center rounded-full border border-brand-300"
         >
-          <ArrowLeft size={18} color={colors.gold[600]} />
+          <ArrowLeft size={18} color={colors.brand[600]} />
         </Pressable>
         <View className="ml-4 flex-1">
           <Text className="text-lg font-extrabold text-navy-text" numberOfLines={1}>
@@ -651,10 +651,10 @@ export default function CareMapScreen() {
         {locationState === 'granted' ? (
           <View
             className="ml-2 flex-row items-center rounded-full px-3 py-1.5"
-            style={{ backgroundColor: colors.gold[50] }}
+            style={{ backgroundColor: colors.brand[50] }}
           >
-            <LocateFixed size={12} color={colors.gold[600]} />
-            <Text className="ml-1 text-[10px] font-bold text-gold-600">
+            <LocateFixed size={12} color={colors.brand[600]} />
+            <Text className="ml-1 text-[10px] font-bold text-brand-600">
               {t('careMap.locationOn')}
             </Text>
           </View>
@@ -725,19 +725,19 @@ export default function CareMapScreen() {
       {/* ── Results ───────────────────────────────────────────────────── */}
       {isInitialLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={colors.gold[500]} />
+          <ActivityIndicator color={colors.brand[500]} />
           <Text className="mt-3 text-xs text-navy-secondary">{t('careMap.loading')}</Text>
         </View>
       ) : directory.isError && rows.length === 0 ? (
         <View className="flex-1 items-center justify-center px-10">
-          <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-gold-50">
-            <MapPinned size={26} color={colors.gold[500]} />
+          <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-brand-50">
+            <MapPinned size={26} color={colors.brand[500]} />
           </View>
           <Text className="text-center text-sm text-navy-secondary">{t('careMap.loadError')}</Text>
           <Pressable
             onPress={() => directory.refetch()}
             className="mt-4 rounded-xl px-5 py-2.5"
-            style={{ backgroundColor: colors.gold[500] }}
+            style={{ backgroundColor: colors.brand[500] }}
           >
             <Text className="text-sm font-semibold text-white">{t('careMap.retry')}</Text>
           </Pressable>
@@ -753,7 +753,7 @@ export default function CareMapScreen() {
             <RefreshControl
               refreshing={directory.isRefetching && !directory.isFetchingNextPage}
               onRefresh={() => directory.refetch()}
-              tintColor={colors.gold[500]}
+              tintColor={colors.brand[500]}
             />
           }
           ListHeaderComponent={listHeader}
@@ -785,8 +785,8 @@ export default function CareMapScreen() {
           }}
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center px-6 pt-16">
-              <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-gold-50">
-                <MapPinned size={26} color={colors.gold[500]} />
+              <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-brand-50">
+                <MapPinned size={26} color={colors.brand[500]} />
               </View>
               <Text className="text-base font-semibold text-navy-text">{t('careMap.empty')}</Text>
               <Text className="mt-1 text-center text-sm text-navy-secondary">
@@ -801,9 +801,9 @@ export default function CareMapScreen() {
                     resetToArea('');
                   }}
                   className="mt-4 rounded-xl border px-5 py-2.5"
-                  style={{ borderColor: colors.gold[300] }}
+                  style={{ borderColor: colors.brand[300] }}
                 >
-                  <Text className="text-sm font-semibold text-gold-600">
+                  <Text className="text-sm font-semibold text-brand-600">
                     {t('careMap.clearFilters')}
                   </Text>
                 </Pressable>
@@ -818,14 +818,14 @@ export default function CareMapScreen() {
                   disabled={directory.isFetchingNextPage}
                   className="mt-2 items-center rounded-xl border py-3"
                   style={{
-                    borderColor: colors.gold[300],
+                    borderColor: colors.brand[300],
                     opacity: directory.isFetchingNextPage ? 0.6 : 1,
                   }}
                 >
                   {directory.isFetchingNextPage ? (
-                    <ActivityIndicator size="small" color={colors.gold[500]} />
+                    <ActivityIndicator size="small" color={colors.brand[500]} />
                   ) : (
-                    <Text className="text-xs font-semibold text-gold-600">
+                    <Text className="text-xs font-semibold text-brand-600">
                       {t('careMap.loadMore')}
                     </Text>
                   )}

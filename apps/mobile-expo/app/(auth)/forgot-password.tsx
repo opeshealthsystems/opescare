@@ -261,9 +261,9 @@ export default function ForgotPasswordScreen() {
             onPress={handleBack}
             hitSlop={8}
             accessibilityRole="button"
-            className="mt-2 h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+            className="mt-2 h-11 w-11 items-center justify-center rounded-full border border-brand-300"
           >
-            <ArrowLeft size={18} color={colors.gold[600]} />
+            <ArrowLeft size={18} color={colors.brand[600]} />
           </Pressable>
         ) : null}
 
@@ -323,7 +323,7 @@ export default function ForgotPasswordScreen() {
               <Text className="mt-2 text-center text-sm leading-5 text-navy-secondary">
                 {t('forgotPassword.codeSubtitle')}
                 {'\n'}
-                <Text className="font-semibold text-gold-600">{trimmedEmail}</Text>
+                <Text className="font-semibold text-brand-600">{trimmedEmail}</Text>
               </Text>
 
               <View className="mt-8">
@@ -336,9 +336,9 @@ export default function ForgotPasswordScreen() {
                       const borderColor = isExpired
                         ? colors.semantic.danger
                         : isActive
-                          ? colors.gold[500]
+                          ? colors.brand[500]
                           : digit
-                            ? colors.gold[300]
+                            ? colors.brand[300]
                             : colors.cream[300];
                       return (
                         <View
@@ -347,7 +347,7 @@ export default function ForgotPasswordScreen() {
                           style={{
                             width: 46,
                             borderColor,
-                            shadowColor: colors.gold[500],
+                            shadowColor: colors.brand[500],
                             shadowOpacity: isActive ? 0.3 : 0,
                             shadowRadius: 6,
                             shadowOffset: { width: 0, height: 0 },
@@ -358,7 +358,7 @@ export default function ForgotPasswordScreen() {
                             <Text className="text-xl font-bold text-navy-text">{digit}</Text>
                           ) : isActive ? (
                             <View
-                              style={{ width: 2, height: 22, backgroundColor: colors.gold[500] }}
+                              style={{ width: 2, height: 22, backgroundColor: colors.brand[500] }}
                             />
                           ) : null}
                         </View>
@@ -386,7 +386,7 @@ export default function ForgotPasswordScreen() {
                 <View className="mt-4 flex-row items-center justify-center">
                   <ShieldCheck
                     size={14}
-                    color={isExpired ? colors.semantic.danger : colors.gold[600]}
+                    color={isExpired ? colors.semantic.danger : colors.brand[600]}
                   />
                   {isExpired ? (
                     <Text className="ml-2 text-xs font-semibold text-danger">
@@ -395,7 +395,7 @@ export default function ForgotPasswordScreen() {
                   ) : (
                     <Text className="ml-2 text-xs text-navy-secondary">
                       {t('forgotPassword.codeExpiresIn')}{' '}
-                      <Text className="font-bold text-gold-600">
+                      <Text className="font-bold text-brand-600">
                         {formatCountdown(expirySeconds, true)}
                       </Text>
                     </Text>
@@ -461,18 +461,18 @@ export default function ForgotPasswordScreen() {
                   onPress={handleResend}
                   disabled={resendCooldown > 0 || resending}
                   accessibilityRole="button"
-                  className="mt-3 h-14 flex-row items-center justify-between rounded-2xl border border-gold-500 bg-transparent px-4"
+                  className="mt-3 h-14 flex-row items-center justify-between rounded-2xl border border-brand-500 bg-transparent px-4"
                   style={{ opacity: resendCooldown > 0 || resending ? 0.6 : 1 }}
                 >
                   {resending ? (
-                    <ActivityIndicator color={colors.gold[600]} size="small" />
+                    <ActivityIndicator color={colors.brand[600]} size="small" />
                   ) : (
                     <>
-                      <Text className="text-base font-semibold text-gold-600">
+                      <Text className="text-base font-semibold text-brand-600">
                         {t('forgotPassword.resendCode')}
                       </Text>
                       {resendCooldown > 0 ? (
-                        <Text className="text-sm font-semibold text-gold-600">
+                        <Text className="text-sm font-semibold text-brand-600">
                           ({formatCountdown(resendCooldown, false)})
                         </Text>
                       ) : null}
@@ -507,17 +507,17 @@ export default function ForgotPasswordScreen() {
 
                 <View className="mt-6 items-center pb-4">
                   <View className="flex-row items-center">
-                    <CircleQuestionMark size={14} color={colors.gold[600]} />
+                    <CircleQuestionMark size={14} color={colors.brand[600]} />
                     <Text className="ml-2 text-xs text-navy-secondary">
                       {t('forgotPassword.helpPrompt')}{' '}
-                      <Text className="font-semibold text-gold-600">
+                      <Text className="font-semibold text-brand-600">
                         {t('forgotPassword.checkSpam')}
                       </Text>
                     </Text>
                   </View>
                   <Text className="mt-2 text-xs text-navy-secondary">
                     {t('forgotPassword.stillTrouble')}{' '}
-                    <Text className="font-semibold text-gold-600">
+                    <Text className="font-semibold text-brand-600">
                       {t('forgotPassword.contactSupport')}
                     </Text>
                   </Text>
@@ -544,8 +544,8 @@ export default function ForgotPasswordScreen() {
               {/* The backend revokes every existing mobile token for the linked
                   patient on a successful reset, so say so rather than letting
                   the patient discover it on another device. */}
-              <View className="mt-6 w-full flex-row items-start rounded-2xl bg-gold-50 p-4">
-                <ShieldCheck size={16} color={colors.gold[600]} />
+              <View className="mt-6 w-full flex-row items-start rounded-2xl bg-brand-50 p-4">
+                <ShieldCheck size={16} color={colors.brand[600]} />
                 <Text className="ml-3 flex-1 text-xs leading-4 text-navy-secondary">
                   {t('forgotPassword.successSecurityNote')}
                 </Text>
@@ -581,7 +581,7 @@ function StepProgress({ step }: { step: 'email' | 'code' }) {
             key={segment}
             className="h-1.5 flex-1 rounded-full"
             style={{
-              backgroundColor: segment <= current ? colors.gold[500] : colors.cream[300],
+              backgroundColor: segment <= current ? colors.brand[500] : colors.cream[300],
             }}
           />
         ))}
@@ -597,8 +597,8 @@ function StepProgress({ step }: { step: 'email' | 'code' }) {
  * language — the honest reason the flow behaves the same for any address. */
 function SecurePrivateCard({ t }: { t: (key: string) => string }) {
   return (
-    <View className="mt-5 flex-row items-start rounded-2xl bg-gold-50 p-4">
-      <ShieldCheck size={16} color={colors.gold[600]} />
+    <View className="mt-5 flex-row items-start rounded-2xl bg-brand-50 p-4">
+      <ShieldCheck size={16} color={colors.brand[600]} />
       <View className="ml-3 flex-1">
         <Text className="text-sm font-semibold text-navy-text">
           {t('forgotPassword.securePrivateTitle')}
@@ -637,7 +637,7 @@ function PasswordStrength({
       : score === 2
         ? colors.semantic.warning
         : score === 3
-          ? colors.gold[500]
+          ? colors.brand[500]
           : colors.semantic.success;
 
   const label =

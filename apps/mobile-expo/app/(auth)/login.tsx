@@ -184,10 +184,10 @@ export default function LoginScreen() {
             accessibilityRole="button"
             accessibilityLabel={t('auth.back')}
             hitSlop={8}
-            className="mt-2 h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+            className="mt-2 h-11 w-11 items-center justify-center rounded-full border border-brand-300"
             style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
           >
-            <ArrowLeft size={18} color={colors.gold[600]} />
+            <ArrowLeft size={18} color={colors.brand[600]} />
           </Pressable>
 
           <View className="items-center pb-2 pt-3">
@@ -242,7 +242,7 @@ export default function LoginScreen() {
                 accessibilityRole="link"
                 hitSlop={8}
               >
-                <Text className="text-sm font-semibold text-gold-500">
+                <Text className="text-sm font-semibold text-brand-500">
                   {t('auth.forgotPassword')}
                 </Text>
               </Pressable>
@@ -276,8 +276,8 @@ export default function LoginScreen() {
                 className="mr-2 h-5 w-5 items-center justify-center rounded"
                 style={{
                   borderWidth: 1.5,
-                  borderColor: colors.gold[500],
-                  backgroundColor: rememberMe ? colors.gold[500] : 'transparent',
+                  borderColor: colors.brand[500],
+                  backgroundColor: rememberMe ? colors.brand[500] : 'transparent',
                 }}
               >
                 {rememberMe ? <Check size={13} color={colors.white} strokeWidth={3} /> : null}
@@ -298,7 +298,7 @@ export default function LoginScreen() {
 
             <View className="my-6 flex-row items-center">
               <View className="h-px flex-1 bg-cream-300" />
-              <Text className="mx-3 text-xs font-bold tracking-widest text-gold-500">
+              <Text className="mx-3 text-xs font-bold tracking-widest text-brand-500">
                 {t('auth.or')}
               </Text>
               <View className="h-px flex-1 bg-cream-300" />
@@ -332,8 +332,8 @@ export default function LoginScreen() {
               onPress={() => router.push('/(auth)/otp')}
             />
 
-            <View className="mt-5 flex-row items-start rounded-2xl bg-gold-50 p-4">
-              <ShieldLock size={16} color={colors.gold[600]} style={{ marginTop: 1 }} />
+            <View className="mt-5 flex-row items-start rounded-2xl bg-brand-50 p-4">
+              <ShieldLock size={16} color={colors.brand[600]} style={{ marginTop: 1 }} />
               <Text className="ml-3 flex-1 text-xs leading-5 text-navy-secondary">
                 {t('auth.encryptionNote')}
               </Text>
@@ -346,8 +346,8 @@ export default function LoginScreen() {
               hitSlop={8}
             >
               <Text className="text-sm text-navy-secondary">{t('auth.noAccount')} </Text>
-              <Text className="text-sm font-semibold text-gold-500">{t('auth.createAccount')}</Text>
-              <ChevronRight size={16} color={colors.gold[500]} style={{ marginLeft: 2 }} />
+              <Text className="text-sm font-semibold text-brand-500">{t('auth.createAccount')}</Text>
+              <ChevronRight size={16} color={colors.brand[500]} style={{ marginLeft: 2 }} />
             </Pressable>
           </View>
         </ScrollView>
@@ -376,7 +376,7 @@ function AlternateSignIn({
   disabled?: boolean;
   onPress?: () => void;
 }) {
-  const glyphColor = disabled ? colors.navy.muted : highlighted ? colors.gold[600] : colors.navy.text;
+  const glyphColor = disabled ? colors.navy.muted : highlighted ? colors.brand[600] : colors.navy.text;
 
   return (
     <Pressable
@@ -387,7 +387,7 @@ function AlternateSignIn({
       accessibilityState={{ disabled: disabled || !onPress }}
       className="h-14 flex-row items-center rounded-2xl border bg-white px-4"
       style={({ pressed }) => ({
-        borderColor: highlighted ? colors.gold[300] : colors.cream[300],
+        borderColor: highlighted ? colors.brand[300] : colors.cream[300],
         backgroundColor: disabled ? colors.cream[50] : colors.white,
         opacity: disabled ? 0.6 : pressed ? 0.75 : 1,
       })}
@@ -403,11 +403,11 @@ function AlternateSignIn({
       {badge ? (
         <View
           className="rounded-full px-3 py-1"
-          style={{ backgroundColor: disabled ? colors.cream[200] : colors.gold[50] }}
+          style={{ backgroundColor: disabled ? colors.cream[200] : colors.brand[50] }}
         >
           <Text
             className="text-[10px] font-semibold"
-            style={{ color: disabled ? colors.navy.muted : colors.gold[600] }}
+            style={{ color: disabled ? colors.navy.muted : colors.brand[600] }}
           >
             {badge}
           </Text>
@@ -440,7 +440,7 @@ function DemoAccountPicker({
         accessibilityRole="button"
         accessibilityState={{ expanded: open }}
         className="flex-row items-center rounded-xl border border-dashed px-3 py-2"
-        style={{ borderColor: colors.gold[300], backgroundColor: 'transparent' }}
+        style={{ borderColor: colors.brand[300], backgroundColor: 'transparent' }}
       >
         <FlaskConical size={13} color={colors.navy.muted} />
         <Text

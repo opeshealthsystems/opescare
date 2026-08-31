@@ -142,9 +142,9 @@ export default function SurveyDetailScreen() {
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel={t('surveys.back')}
-          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+          className="h-11 w-11 items-center justify-center rounded-full border border-brand-300"
         >
-          <ArrowLeft size={18} color={colors.gold[600]} />
+          <ArrowLeft size={18} color={colors.brand[600]} />
         </Pressable>
         <View className="ml-3 flex-1">
           <Text className="text-xl font-extrabold leading-6 text-navy-text" numberOfLines={2}>
@@ -167,10 +167,10 @@ export default function SurveyDetailScreen() {
           <Pressable
             onPress={() => surveyQuery.refetch()}
             accessibilityRole="button"
-            className="mt-5 flex-row items-center rounded-full border border-gold-300 px-5 py-2.5"
+            className="mt-5 flex-row items-center rounded-full border border-brand-300 px-5 py-2.5"
           >
-            <RotateCcw size={14} color={colors.gold[600]} />
-            <Text className="ml-2 text-sm font-semibold text-gold-600">{t('surveys.retry')}</Text>
+            <RotateCcw size={14} color={colors.brand[600]} />
+            <Text className="ml-2 text-sm font-semibold text-brand-600">{t('surveys.retry')}</Text>
           </Pressable>
         </StatusPanel>
       ) : submitted || survey.status === 'completed' ? (
@@ -236,7 +236,7 @@ export default function SurveyDetailScreen() {
               <Text className="text-xs font-semibold text-navy-secondary">
                 {t('surveys.progressLabel', { answered: answeredCount, total: template.length })}
               </Text>
-              <Text className="text-xs font-bold text-gold-600">
+              <Text className="text-xs font-bold text-brand-600">
                 {Math.round((answeredCount / template.length) * 100)}%
               </Text>
             </View>
@@ -245,7 +245,7 @@ export default function SurveyDetailScreen() {
                 className="h-2 rounded-full"
                 style={{
                   width: pct(answeredCount / template.length),
-                  backgroundColor: colors.gold[500],
+                  backgroundColor: colors.brand[500],
                 }}
               />
             </View>
@@ -371,7 +371,7 @@ function QuestionCard({
       style={{ borderColor: missing ? colors.semantic.danger : colors.cream[300] }}
     >
       <View className="flex-row items-center justify-between">
-        <Text className="text-[11px] font-bold uppercase tracking-wide text-gold-600">
+        <Text className="text-[11px] font-bold uppercase tracking-wide text-brand-600">
           {t('surveys.questionOf', { current: index + 1, total })}
         </Text>
         <View className="flex-row items-center" style={{ gap: 6 }}>
@@ -454,8 +454,8 @@ function StarRating({
             >
               <Star
                 size={32}
-                color={active ? colors.gold[500] : colors.cream[300]}
-                fill={active ? colors.gold[500] : 'transparent'}
+                color={active ? colors.brand[500] : colors.cream[300]}
+                fill={active ? colors.brand[500] : 'transparent'}
               />
             </Pressable>
           );
@@ -464,7 +464,7 @@ function StarRating({
       <View className="mt-2 flex-row items-center justify-between">
         <Text className="text-[11px] text-navy-muted">{t('surveys.scaleLow')}</Text>
         {value !== undefined ? (
-          <Text className="text-[11px] font-bold text-gold-600">{`${value} / ${scale}`}</Text>
+          <Text className="text-[11px] font-bold text-brand-600">{`${value} / ${scale}`}</Text>
         ) : null}
         <Text className="text-[11px] text-navy-muted">{t('surveys.scaleHigh')}</Text>
       </View>
@@ -499,8 +499,8 @@ function NumericScale({
               accessibilityState={{ selected }}
               className="h-11 w-11 items-center justify-center rounded-xl border"
               style={{
-                borderColor: selected ? colors.gold[500] : colors.cream[300],
-                backgroundColor: selected ? colors.gold[500] : colors.white,
+                borderColor: selected ? colors.brand[500] : colors.cream[300],
+                backgroundColor: selected ? colors.brand[500] : colors.white,
               }}
             >
               <Text
@@ -540,14 +540,14 @@ function YesNoChoice({
         accessibilityState={{ selected }}
         className="flex-1 flex-row items-center justify-center rounded-2xl border py-3.5"
         style={{
-          borderColor: selected ? colors.gold[500] : colors.cream[300],
-          backgroundColor: selected ? colors.gold[50] : colors.white,
+          borderColor: selected ? colors.brand[500] : colors.cream[300],
+          backgroundColor: selected ? colors.brand[50] : colors.white,
         }}
       >
-        <Icon size={16} color={selected ? colors.gold[600] : colors.navy.muted} />
+        <Icon size={16} color={selected ? colors.brand[600] : colors.navy.muted} />
         <Text
           className="ml-2 text-sm font-semibold"
-          style={{ color: selected ? colors.gold[600] : colors.navy.secondary }}
+          style={{ color: selected ? colors.brand[600] : colors.navy.secondary }}
         >
           {choice ? t('surveys.yes') : t('surveys.no')}
         </Text>

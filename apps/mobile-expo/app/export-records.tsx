@@ -247,8 +247,8 @@ function IncludedRow({
       className="flex-row items-center py-2.5"
       style={!isLast ? { borderBottomWidth: 1, borderBottomColor: colors.cream[200] } : undefined}
     >
-      <View className="h-8 w-8 items-center justify-center rounded-full bg-gold-50">
-        <Icon size={15} color={colors.gold[600]} />
+      <View className="h-8 w-8 items-center justify-center rounded-full bg-brand-50">
+        <Icon size={15} color={colors.brand[600]} />
       </View>
       <Text className="ml-3 flex-1 text-[13px] text-navy-text">{label}</Text>
       <Check size={15} color={colors.semantic.success} />
@@ -281,8 +281,8 @@ function FormatCard({
   return (
     <View className="rounded-2xl bg-white p-4" style={CARD_SHADOW}>
       <View className="flex-row items-start">
-        <View className="h-11 w-11 items-center justify-center rounded-full bg-gold-100">
-          <Icon size={19} color={colors.gold[600]} />
+        <View className="h-11 w-11 items-center justify-center rounded-full bg-brand-100">
+          <Icon size={19} color={colors.brand[600]} />
         </View>
         <View className="ml-3 flex-1">
           <Text className="text-[15px] font-extrabold text-navy-text">{title}</Text>
@@ -298,7 +298,7 @@ function FormatCard({
         onPress={onPress}
         disabled={disabled}
         accessibilityRole="button"
-        className="mt-3.5 h-12 flex-row items-center justify-center rounded-xl bg-gold-500"
+        className="mt-3.5 h-12 flex-row items-center justify-center rounded-xl bg-brand-500"
         style={{ opacity: isBlocked ? 0.5 : 1 }}
       >
         {loading ? (

@@ -174,7 +174,7 @@ export default function PrivacyHubScreen() {
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={refetch}
-            tintColor={colors.gold[500]}
+            tintColor={colors.brand[500]}
           />
         }
       >
@@ -201,7 +201,7 @@ export default function PrivacyHubScreen() {
 
         {isLoading ? (
           <View className="items-center py-16">
-            <ActivityIndicator color={colors.gold[500]} size="large" />
+            <ActivityIndicator color={colors.brand[500]} size="large" />
             <Text className="mt-3 text-[13px] text-navy-muted">{t('privacy.loadingConsent')}</Text>
           </View>
         ) : isError ? (
@@ -216,10 +216,10 @@ export default function PrivacyHubScreen() {
             <Pressable
               onPress={() => refetch()}
               accessibilityRole="button"
-              className="mt-5 flex-row items-center rounded-full border border-gold-500 px-5 py-2.5"
+              className="mt-5 flex-row items-center rounded-full border border-brand-500 px-5 py-2.5"
             >
-              <RefreshCw size={14} color={colors.gold[600]} />
-              <Text className="ml-2 text-[13px] font-bold text-gold-600">{t('privacy.retry')}</Text>
+              <RefreshCw size={14} color={colors.brand[600]} />
+              <Text className="ml-2 text-[13px] font-bold text-brand-600">{t('privacy.retry')}</Text>
             </Pressable>
           </View>
         ) : (
@@ -490,12 +490,12 @@ function ConsentCard({
       className="mb-3 rounded-2xl bg-white p-4"
       style={[
         CARD_SHADOW,
-        highlight ? { borderWidth: 1.5, borderColor: colors.gold[300] } : null,
+        highlight ? { borderWidth: 1.5, borderColor: colors.brand[300] } : null,
       ]}
     >
       <View className="flex-row items-start">
-        <View className="h-11 w-11 items-center justify-center rounded-full bg-gold-100">
-          <Building2 size={19} color={colors.gold[600]} />
+        <View className="h-11 w-11 items-center justify-center rounded-full bg-brand-100">
+          <Building2 size={19} color={colors.brand[600]} />
         </View>
         <View className="ml-3 flex-1">
           <Text className="text-[15px] font-extrabold leading-5 text-navy-text" numberOfLines={2}>

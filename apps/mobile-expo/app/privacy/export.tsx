@@ -260,7 +260,7 @@ function ExportSection() {
       <SectionTitle label={t('privacy.myRequests')} count={requests.length} />
       {requestsQuery.isLoading ? (
         <View className="items-center py-8">
-          <ActivityIndicator color={colors.gold[500]} />
+          <ActivityIndicator color={colors.brand[500]} />
         </View>
       ) : requestsQuery.isError ? (
         <InlineNotice tone="danger" icon={CircleAlert} body={t('privacy.myRequestsError')} />
@@ -292,8 +292,8 @@ function StepRow({ index, label, isLast }: { index: number; label: string; isLas
       className="flex-row items-center py-2.5"
       style={!isLast ? { borderBottomWidth: 1, borderBottomColor: colors.cream[200] } : undefined}
     >
-      <View className="h-6 w-6 items-center justify-center rounded-full bg-gold-100">
-        <Text className="text-[11px] font-extrabold text-gold-600">{index}</Text>
+      <View className="h-6 w-6 items-center justify-center rounded-full bg-brand-100">
+        <Text className="text-[11px] font-extrabold text-brand-600">{index}</Text>
       </View>
       <Text className="ml-3 flex-1 text-[13px] leading-[18px] text-navy-text">{label}</Text>
     </View>
@@ -389,7 +389,7 @@ function ExportRequestCard({
             onPress={onDownload}
             disabled={downloading}
             accessibilityRole="button"
-            className="mt-3 h-12 flex-row items-center justify-center rounded-xl bg-gold-500"
+            className="mt-3 h-12 flex-row items-center justify-center rounded-xl bg-brand-500"
             style={{ opacity: downloading ? 0.7 : 1 }}
           >
             {downloading ? (
@@ -479,9 +479,9 @@ function CorrectionSection() {
           <Pressable
             onPress={resetForm}
             accessibilityRole="button"
-            className="mt-5 rounded-full border border-gold-500 px-5 py-2.5"
+            className="mt-5 rounded-full border border-brand-500 px-5 py-2.5"
           >
-            <Text className="text-[13px] font-bold text-gold-600">
+            <Text className="text-[13px] font-bold text-brand-600">
               {t('privacy.correctionAnother')}
             </Text>
           </Pressable>

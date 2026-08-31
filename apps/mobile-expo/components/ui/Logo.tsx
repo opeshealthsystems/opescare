@@ -34,14 +34,14 @@ export function Logo({ size = 96, markOnly = false }: { size?: number; markOnly?
           width: halo,
           height: halo,
           borderRadius: halo / 2,
-          backgroundColor: colors.gold[50],
+          backgroundColor: colors.brand[50],
           alignItems: 'center',
           justifyContent: 'center',
         }}
       >
         <LinearGradient
           // NativeWind's className does not apply to LinearGradient.
-          colors={[colors.gold[300], colors.gold[500], colors.gold[700]]}
+          colors={[colors.brand[300], colors.brand[500], colors.brand[700]]}
           start={{ x: 0.1, y: 0 }}
           end={{ x: 0.9, y: 1 }}
           style={{
@@ -50,7 +50,7 @@ export function Logo({ size = 96, markOnly = false }: { size?: number; markOnly?
             borderRadius: size / 2,
             alignItems: 'center',
             justifyContent: 'center',
-            ...elevation.gold,
+            ...elevation.brand,
           }}
         >
           <View
@@ -64,10 +64,10 @@ export function Logo({ size = 96, markOnly = false }: { size?: number; markOnly?
               // Hairline that separates the disc from the ring — without it the
               // two golds bleed into each other at small sizes.
               borderWidth: Math.max(1, size * 0.012),
-              borderColor: colors.gold[100],
+              borderColor: colors.brand[100],
             }}
           >
-            <HeartPulse color={colors.gold[500]} size={inner * 0.5} strokeWidth={2.25} />
+            <HeartPulse color={colors.brand[500]} size={inner * 0.5} strokeWidth={2.25} />
           </View>
         </LinearGradient>
       </View>
@@ -92,7 +92,7 @@ export function Logo({ size = 96, markOnly = false }: { size?: number; markOnly?
                 lineHeight: wordmark * 1.15,
                 fontWeight: typography.weight.extrabold,
                 letterSpacing: -wordmark * 0.02,
-                color: colors.gold[500],
+                color: colors.brand[500],
               }}
             >
               Care
@@ -106,7 +106,7 @@ export function Logo({ size = 96, markOnly = false }: { size?: number; markOnly?
               width: size * 0.34,
               height: 2,
               borderRadius: radii.pill,
-              backgroundColor: colors.gold[200],
+              backgroundColor: colors.brand[200],
               marginTop: spacing.sm,
             }}
           />

@@ -47,7 +47,7 @@ function HeroPortrait() {
       <LinearGradient
         // className has no effect on LinearGradient (no cssInterop is
         // registered for it), so every value here must be an inline style.
-        colors={[colors.cream[100], colors.cream[200], colors.gold[100]]}
+        colors={[colors.cream[100], colors.cream[200], colors.brand[100]]}
         start={{ x: 0, y: 0.15 }}
         end={{ x: 0.95, y: 1 }}
         locations={[0, 0.35, 1]}
@@ -61,7 +61,7 @@ function HeroPortrait() {
               height: 176,
               borderRadius: 88,
               borderWidth: 1,
-              borderColor: colors.gold[300],
+              borderColor: colors.brand[300],
               opacity: 0.45,
             }}
           />
@@ -72,17 +72,17 @@ function HeroPortrait() {
               height: 132,
               borderRadius: 66,
               borderWidth: 1,
-              borderColor: colors.gold[300],
+              borderColor: colors.brand[300],
               opacity: 0.65,
             }}
           />
 
           <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-            <Avatar size={50} tint={colors.gold[300]} glyph={20} style={{ marginRight: -12 }} />
-            <Avatar size={40} tint={colors.gold[600]} glyph={17} style={{ zIndex: 3 }} />
+            <Avatar size={50} tint={colors.brand[300]} glyph={20} style={{ marginRight: -12 }} />
+            <Avatar size={40} tint={colors.brand[600]} glyph={17} style={{ zIndex: 3 }} />
             <Avatar
               size={56}
-              tint={colors.gold[500]}
+              tint={colors.brand[500]}
               glyph={22}
               style={{ marginLeft: -12, marginBottom: 12 }}
             />
@@ -140,7 +140,7 @@ function HeroCurve() {
         <Path d="M0 12 C 128 54, 286 58, 400 24 L400 58 L0 58 Z" fill={colors.cream[100]} />
         <Path
           d="M0 12 C 128 54, 286 58, 400 24"
-          stroke={colors.gold[300]}
+          stroke={colors.brand[300]}
           strokeWidth={2.5}
           fill="none"
           strokeLinecap="round"
@@ -168,17 +168,17 @@ function OutlineNavButton({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
-      className="h-14 flex-row items-center rounded-2xl border border-gold-500 px-4"
+      className="h-14 flex-row items-center rounded-2xl border border-brand-500 px-4"
       style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
     >
-      <Icon size={20} color={colors.gold[600]} />
+      <Icon size={20} color={colors.brand[600]} />
       <Text
-        className="flex-1 text-center text-base font-semibold text-gold-600"
+        className="flex-1 text-center text-base font-semibold text-brand-600"
         numberOfLines={1}
       >
         {label}
       </Text>
-      <ChevronRight size={20} color={colors.gold[600]} />
+      <ChevronRight size={20} color={colors.brand[600]} />
     </Pressable>
   );
 }
@@ -238,13 +238,13 @@ export default function WelcomeScreen() {
               {t('auth.welcomeHeadline2')}
             </Text>
             <Text
-              className="font-extrabold text-gold-500"
+              className="font-extrabold text-brand-500"
               style={{ fontSize: 26, lineHeight: 33 }}
             >
               {t('auth.welcomeHeadline3')}
             </Text>
 
-            <View className="my-4 h-1 w-14 rounded-full bg-gold-500" />
+            <View className="my-4 h-1 w-14 rounded-full bg-brand-500" />
 
             <Text
               className="text-navy-secondary"
@@ -267,7 +267,7 @@ export default function WelcomeScreen() {
           />
 
           <View className="mt-6 flex-row items-start justify-center">
-            <ShieldLock size={18} color={colors.gold[600]} style={{ marginTop: 1 }} />
+            <ShieldLock size={18} color={colors.brand[600]} style={{ marginTop: 1 }} />
             <Text
               className="ml-2 text-navy-secondary"
               style={{ fontSize: 12, lineHeight: 18, maxWidth: 250 }}

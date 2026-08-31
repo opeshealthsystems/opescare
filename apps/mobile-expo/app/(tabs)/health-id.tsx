@@ -218,7 +218,7 @@ export default function HealthIdScreen() {
           <RefreshControl
             refreshing={healthId.isRefetching}
             onRefresh={() => healthId.refetch()}
-            tintColor={colors.gold[500]}
+            tintColor={colors.brand[500]}
           />
         }
       >
@@ -247,15 +247,15 @@ export default function HealthIdScreen() {
               accessibilityRole="button"
               onPress={() => healthId.refetch()}
               disabled={healthId.isFetching}
-              className="mt-5 flex-row items-center rounded-full bg-gold-50 px-5 py-3"
+              className="mt-5 flex-row items-center rounded-full bg-brand-50 px-5 py-3"
               style={{ opacity: healthId.isFetching ? 0.6 : 1 }}
             >
               {healthId.isFetching ? (
-                <ActivityIndicator size="small" color={colors.gold[600]} />
+                <ActivityIndicator size="small" color={colors.brand[600]} />
               ) : (
-                <RefreshCw size={15} color={colors.gold[600]} />
+                <RefreshCw size={15} color={colors.brand[600]} />
               )}
-              <Text className="ml-2 text-sm font-bold text-gold-600">{t('healthId.retry')}</Text>
+              <Text className="ml-2 text-sm font-bold text-brand-600">{t('healthId.retry')}</Text>
             </Pressable>
           </View>
         ) : (
@@ -279,7 +279,7 @@ export default function HealthIdScreen() {
             >
               <View
                 className="overflow-hidden rounded-3xl"
-                style={{ borderWidth: 1, borderColor: colors.gold[300] }}
+                style={{ borderWidth: 1, borderColor: colors.brand[300] }}
               >
                 {/* NativeWind's className→style transform does not reach
                     expo-linear-gradient (no cssInterop is registered for it), so
@@ -300,14 +300,14 @@ export default function HealthIdScreen() {
                         style={{
                           backgroundColor: 'rgba(255,255,255,0.10)',
                           borderWidth: 1,
-                          borderColor: colors.gold[300],
+                          borderColor: colors.brand[300],
                         }}
                       >
-                        <ShieldCheck size={20} color={colors.gold[300]} />
+                        <ShieldCheck size={20} color={colors.brand[300]} />
                       </View>
                       <Text
                         className="ml-3 flex-1 text-[11px] font-bold uppercase tracking-widest"
-                        style={{ color: colors.gold[300] }}
+                        style={{ color: colors.brand[300] }}
                       >
                         {t('healthId.cardLabel')}
                       </Text>
@@ -336,7 +336,7 @@ export default function HealthIdScreen() {
                   >
                     {card.health_id}
                   </Text>
-                  <Text className="mt-2 text-[11px] font-semibold" style={{ color: colors.gold[100] }}>
+                  <Text className="mt-2 text-[11px] font-semibold" style={{ color: colors.brand[100] }}>
                     {t('healthId.cardTagline')}
                   </Text>
 
@@ -386,10 +386,10 @@ export default function HealthIdScreen() {
               <Pressable
                 accessibilityRole="button"
                 onPress={() => router.push('/edit-profile')}
-                className="mt-4 flex-row items-center rounded-2xl bg-gold-50 p-4"
+                className="mt-4 flex-row items-center rounded-2xl bg-brand-50 p-4"
               >
                 <View className="h-10 w-10 items-center justify-center rounded-full bg-white">
-                  <Droplet size={18} color={colors.gold[600]} />
+                  <Droplet size={18} color={colors.brand[600]} />
                 </View>
                 <View className="ml-3 flex-1">
                   <Text className="text-sm font-bold text-navy-text">
@@ -399,7 +399,7 @@ export default function HealthIdScreen() {
                     {t('healthId.bloodGroupMissingBody')}
                   </Text>
                 </View>
-                <ChevronRight size={18} color={colors.gold[600]} />
+                <ChevronRight size={18} color={colors.brand[600]} />
               </Pressable>
             ) : null}
 
@@ -454,7 +454,7 @@ export default function HealthIdScreen() {
             >
               {tempQr ? (
                 <View className="mt-5 items-center">
-                  <QrFrame color={colors.gold[300]}>
+                  <QrFrame color={colors.brand[300]}>
                     <QRCode
                       value={tempQr.qr_payload}
                       size={184}
@@ -514,15 +514,15 @@ export default function HealthIdScreen() {
                       accessibilityRole="button"
                       onPress={handleGenerate}
                       disabled={temporaryQr.isPending}
-                      className="flex-row items-center rounded-full border border-gold-300 bg-gold-50 px-4 py-3"
+                      className="flex-row items-center rounded-full border border-brand-300 bg-brand-50 px-4 py-3"
                       style={{ opacity: temporaryQr.isPending ? 0.6 : 1 }}
                     >
                       {temporaryQr.isPending ? (
-                        <ActivityIndicator size="small" color={colors.gold[600]} />
+                        <ActivityIndicator size="small" color={colors.brand[600]} />
                       ) : (
-                        <RefreshCw size={14} color={colors.gold[600]} />
+                        <RefreshCw size={14} color={colors.brand[600]} />
                       )}
-                      <Text className="ml-2 text-xs font-bold text-gold-600">
+                      <Text className="ml-2 text-xs font-bold text-brand-600">
                         {t('healthId.regenerate')}
                       </Text>
                     </Pressable>
@@ -568,9 +568,9 @@ export default function HealthIdScreen() {
             </SectionCard>
 
             {/* ── Trust footer ────────────────────────────────────────────── */}
-            <View className="mb-10 mt-4 rounded-2xl bg-gold-50 p-4">
+            <View className="mb-10 mt-4 rounded-2xl bg-brand-50 p-4">
               <View className="flex-row items-start">
-                <ShieldCheck size={16} color={colors.gold[600]} />
+                <ShieldCheck size={16} color={colors.brand[600]} />
                 <View className="ml-3 flex-1">
                   <Text className="text-sm font-bold text-navy-text">
                     {t('healthId.privacyTitle')}
@@ -583,12 +583,12 @@ export default function HealthIdScreen() {
               <Pressable
                 accessibilityRole="button"
                 onPress={() => router.push('/privacy/access-logs')}
-                className="mt-3 flex-row items-center border-t border-gold-100 pt-3"
+                className="mt-3 flex-row items-center border-t border-brand-100 pt-3"
               >
-                <Text className="flex-1 text-sm font-bold text-gold-600">
+                <Text className="flex-1 text-sm font-bold text-brand-600">
                   {t('healthId.accessLogLink')}
                 </Text>
-                <ChevronRight size={17} color={colors.gold[600]} />
+                <ChevronRight size={17} color={colors.brand[600]} />
               </Pressable>
             </View>
           </>
@@ -625,7 +625,7 @@ export default function HealthIdScreen() {
           {card ? (
             <>
               <View className="mt-8">
-                <QrFrame color={colors.gold[300]} size={40}>
+                <QrFrame color={colors.brand[300]} size={40}>
                   <QRCode
                     value={card.qr_payload}
                     size={252}
@@ -677,7 +677,7 @@ function Rosette() {
             cx={110}
             cy={110}
             r={r}
-            stroke={colors.gold[300]}
+            stroke={colors.brand[300]}
             strokeWidth={1}
             fill="none"
           />
@@ -703,14 +703,14 @@ function CardStat({
   return (
     <View className="flex-1 pr-2">
       <View className="flex-row items-center">
-        <Icon size={12} color={colors.gold[300]} />
+        <Icon size={12} color={colors.brand[300]} />
         <Text className="ml-1.5 text-[10px] font-semibold uppercase tracking-wide text-white/60">
           {label}
         </Text>
       </View>
       <Text
         className="mt-1.5 text-sm font-bold"
-        style={{ color: muted ? colors.gold[100] : colors.white }}
+        style={{ color: muted ? colors.brand[100] : colors.white }}
         numberOfLines={1}
       >
         {value}
@@ -760,8 +760,8 @@ function SectionCard({
   return (
     <View className="mt-4 rounded-3xl bg-white p-5">
       <View className="flex-row items-start">
-        <View className="h-10 w-10 items-center justify-center rounded-full bg-gold-50">
-          <Icon size={18} color={colors.gold[600]} />
+        <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-50">
+          <Icon size={18} color={colors.brand[600]} />
         </View>
         <View className="ml-3 flex-1">
           <View className="flex-row items-center">
@@ -858,7 +858,7 @@ function CardSkeleton({ label }: { label: string }) {
       </Animated.View>
 
       <View className="mt-5 flex-row items-center justify-center">
-        <ActivityIndicator size="small" color={colors.gold[500]} />
+        <ActivityIndicator size="small" color={colors.brand[500]} />
         <Text className="ml-2 text-xs text-navy-secondary">{label}</Text>
       </View>
     </View>

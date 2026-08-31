@@ -102,7 +102,7 @@ const CARD_SHADOW: ViewStyle = {
 
 /** Warmer, deeper lift for the Health ID hero — it should sit above the rest. */
 const HERO_SHADOW: ViewStyle = {
-  shadowColor: colors.gold[900],
+  shadowColor: colors.brand[900],
   shadowOpacity: 0.3,
   shadowRadius: 22,
   shadowOffset: { width: 0, height: 12 },
@@ -214,14 +214,14 @@ export default function HomeScreen() {
         className="flex-1 px-6"
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.gold[500]} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand[500]} />
         }
       >
         {/* ── Header ─────────────────────────────────────────────────────── */}
         <View className="mt-2 flex-row items-center justify-between">
           <View className="flex-1 flex-row items-center pr-3">
             <LinearGradient
-              colors={[colors.gold[300], colors.gold[500], colors.gold[700]]}
+              colors={[colors.brand[300], colors.brand[500], colors.brand[700]]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={{
@@ -238,7 +238,7 @@ export default function HomeScreen() {
             <View className="flex-1">
               <View className="flex-row items-center">
                 <Text className="text-[17px] font-extrabold text-navy-text">Opes</Text>
-                <Text className="text-[17px] font-extrabold text-gold-500">Care</Text>
+                <Text className="text-[17px] font-extrabold text-brand-500">Care</Text>
               </View>
               <Text className="text-[8px] font-medium text-navy-secondary" numberOfLines={1}>
                 {t('auth.tagline')}
@@ -271,10 +271,10 @@ export default function HomeScreen() {
               accessibilityLabel={t('profile.title')}
             >
               <View
-                className="h-10 w-10 items-center justify-center rounded-full bg-gold-100"
-                style={{ borderWidth: 1.5, borderColor: colors.gold[300] }}
+                className="h-10 w-10 items-center justify-center rounded-full bg-brand-100"
+                style={{ borderWidth: 1.5, borderColor: colors.brand[300] }}
               >
-                <Text className="text-[15px] font-extrabold text-gold-600">{initial}</Text>
+                <Text className="text-[15px] font-extrabold text-brand-600">{initial}</Text>
               </View>
             </Pressable>
           </View>
@@ -287,10 +287,10 @@ export default function HomeScreen() {
               {t(greetingKey())}
             </Text>
             <View className="flex-row items-center">
-              <Text className="text-[22px] font-extrabold leading-8 text-gold-500" numberOfLines={1}>
+              <Text className="text-[22px] font-extrabold leading-8 text-brand-500" numberOfLines={1}>
                 {patient?.first_name ?? '—'}
               </Text>
-              <Hand size={21} color={colors.gold[300]} style={{ marginLeft: 8 }} />
+              <Hand size={21} color={colors.brand[300]} style={{ marginLeft: 8 }} />
             </View>
             <Text className="mt-1.5 text-[13px] leading-5 text-navy-secondary">{t('home.subtitle')}</Text>
           </View>
@@ -298,14 +298,14 @@ export default function HomeScreen() {
           {/* Brand medallion — the shield motif from the reference header. */}
           <View
             className="h-[72px] w-[72px] items-center justify-center rounded-full"
-            style={{ backgroundColor: colors.gold[50] }}
+            style={{ backgroundColor: colors.brand[50] }}
           >
             <View
               className="h-[70px] w-[70px] items-center justify-center rounded-full"
-              style={{ borderWidth: 1, borderColor: colors.gold[100] }}
+              style={{ borderWidth: 1, borderColor: colors.brand[100] }}
             >
               <LinearGradient
-                colors={[colors.gold[300], colors.gold[500], colors.gold[700]]}
+                colors={[colors.brand[300], colors.brand[500], colors.brand[700]]}
                 start={{ x: 0.2, y: 0 }}
                 end={{ x: 0.8, y: 1 }}
                 style={{
@@ -324,7 +324,7 @@ export default function HomeScreen() {
 
         {/* ── Health ID hero ─────────────────────────────────────────────── */}
         <LinearGradient
-          colors={[colors.gold[600], colors.gold[500], colors.gold[300]]}
+          colors={[colors.brand[600], colors.brand[500], colors.brand[300]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{
@@ -361,23 +361,14 @@ export default function HomeScreen() {
             }}
           />
 
+          {/* The reference puts a patient photo here. The API exposes none, and
+              a stock face would fabricate identity data — so the slot held a
+              monogram instead. At 375pt that monogram cost 52pt and clipped the
+              Health ID itself to "OC-DEMO-…", while duplicating an initial the
+              patient's own name already carries two lines below. Dropping it
+              gives the credential number the width it needs. */}
           <View className="flex-row items-start justify-between">
-            {/* Monogram, not a photo: the API exposes no patient photo and a
-                stock face would be a fabrication of identity data. */}
-            <View
-              className="items-center justify-center rounded-full"
-              style={{
-                width: 42,
-                height: 42,
-                backgroundColor: 'rgba(255,255,255,0.26)',
-                borderWidth: 1.5,
-                borderColor: 'rgba(255,255,255,0.55)',
-              }}
-            >
-              <Text className="text-[17px] font-extrabold text-white">{initial}</Text>
-            </View>
-
-            <View className="ml-2.5 flex-1">
+            <View className="flex-1">
               {/* letterSpacing 1 across 18 uppercase characters was ~18px of
                   overflow on its own; 0.6 keeps the eyebrow's spaced-caps feel
                   and lets the full label render at 375px. */}
@@ -395,7 +386,6 @@ export default function HomeScreen() {
                 <View className="mt-1 flex-row items-center">
                   <Text
                     className="flex-1 text-[15px] font-extrabold text-white"
-                    style={{ letterSpacing: 0.2 }}
                     numberOfLines={1}
                   >
                     {healthIdValue ?? '—'}
@@ -499,10 +489,13 @@ export default function HomeScreen() {
               </Pressable>
             </View>
           ) : (
-            /* Three inline detail columns + the inline "View ID Card" link,
-               exactly as the reference lays them out. */
-            <View className="flex-row items-end">
-              <View className="flex-1 flex-row">
+            /* Three inline detail columns, as the reference lays them out —
+               but the reference also keeps "View ID Card" on this same line.
+               That mockup is 852px wide; at 375pt a fourth item leaves each
+               column ~44pt and clips the date to "Apr 1…". The link moves to
+               its own line so the three stats get the full width. */
+            <View className="flex-col">
+              <View className="flex-row">
                 <HeroDetail
                   icon={Droplets}
                   label={t('home.healthId.bloodGroup')}
@@ -524,7 +517,7 @@ export default function HomeScreen() {
                 onPress={() => router.push('/(tabs)/health-id')}
                 hitSlop={8}
                 accessibilityRole="button"
-                className="ml-1 flex-row items-center pb-0.5"
+                className="mt-2 flex-row items-center self-end"
                 style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
               >
                 <Text className="text-[12px] font-bold text-white" numberOfLines={1}>
@@ -612,9 +605,9 @@ export default function HomeScreen() {
           <View className="flex-row items-center">
             <View
               className="h-10 w-10 items-center justify-center rounded-2xl"
-              style={{ backgroundColor: colors.gold[100] }}
+              style={{ backgroundColor: colors.brand[100] }}
             >
-              <Target size={19} color={colors.gold[600]} />
+              <Target size={19} color={colors.brand[600]} />
             </View>
             <Text className="ml-3 flex-1 text-[16px] font-extrabold leading-5 text-navy-text">
               {t('home.insights.title')}
@@ -625,7 +618,7 @@ export default function HomeScreen() {
           </Text>
           <View
             className="mt-4 flex-row items-center self-start rounded-2xl px-4 py-2.5"
-            style={{ backgroundColor: colors.gold[500] }}
+            style={{ backgroundColor: colors.brand[500] }}
           >
             <Text className="text-[13px] font-bold text-white">{t('home.insights.cta')}</Text>
             <ChevronRight size={15} color={colors.white} style={{ marginLeft: 3 }} />
@@ -701,8 +694,8 @@ function AppointmentCard({
 
           {appointment.scheduled_at ? (
             <View className="mt-2 flex-row items-center">
-              <Clock size={12} color={colors.gold[600]} />
-              <Text className="ml-1.5 flex-1 text-[12px] font-semibold text-gold-600" numberOfLines={1}>
+              <Clock size={12} color={colors.brand[600]} />
+              <Text className="ml-1.5 flex-1 text-[12px] font-semibold text-brand-600" numberOfLines={1}>
                 {formatTime(appointment.scheduled_at, language)}
               </Text>
             </View>
@@ -731,7 +724,7 @@ function AppointmentCard({
             <Text className="flex-1 pr-1 text-[11px] font-bold text-navy-text" numberOfLines={2}>
               {t('home.appointment.viewDetails')}
             </Text>
-            <ChevronRight size={15} color={colors.gold[600]} />
+            <ChevronRight size={15} color={colors.brand[600]} />
           </Pressable>
         </>
       ) : (
@@ -739,9 +732,9 @@ function AppointmentCard({
         <View className="flex-1 items-center justify-center py-2">
           <View
             className="h-12 w-12 items-center justify-center rounded-full"
-            style={{ backgroundColor: colors.gold[50] }}
+            style={{ backgroundColor: colors.brand[50] }}
           >
-            <CalendarDays size={22} color={colors.gold[500]} />
+            <CalendarDays size={22} color={colors.brand[500]} />
           </View>
           <Text className="mt-2.5 text-center text-[13px] font-extrabold text-navy-text">
             {t('home.appointment.empty')}
@@ -753,7 +746,7 @@ function AppointmentCard({
             onPress={onBook}
             accessibilityRole="button"
             className="mt-3 w-full flex-row items-center justify-center rounded-2xl px-2 py-2.5"
-            style={({ pressed }) => ({ backgroundColor: colors.gold[500], opacity: pressed ? 0.8 : 1 })}
+            style={({ pressed }) => ({ backgroundColor: colors.brand[500], opacity: pressed ? 0.8 : 1 })}
           >
             <CalendarPlus size={13} color={colors.white} />
             <Text className="ml-1.5 flex-shrink text-[11px] font-bold text-white" numberOfLines={2}>
@@ -825,9 +818,9 @@ function VitalsCard({
         <View className="flex-1 items-center justify-center py-2">
           <View
             className="h-12 w-12 items-center justify-center rounded-full"
-            style={{ backgroundColor: colors.gold[50] }}
+            style={{ backgroundColor: colors.brand[50] }}
           >
-            <HeartPulse size={22} color={colors.gold[500]} />
+            <HeartPulse size={22} color={colors.brand[500]} />
           </View>
           <Text className="mt-2.5 text-center text-[13px] font-extrabold text-navy-text">
             {t('home.vitals.empty')}
@@ -943,16 +936,16 @@ function CardHeading({
     <View className="flex-row items-center">
       <View
         className="h-6 w-6 items-center justify-center rounded-lg"
-        style={{ backgroundColor: colors.gold[50] }}
+        style={{ backgroundColor: colors.brand[50] }}
       >
-        <Icon size={13} color={colors.gold[600]} />
+        <Icon size={13} color={colors.brand[600]} />
       </View>
       <Text className="ml-1.5 flex-1 text-[12px] font-extrabold text-navy-text" numberOfLines={1}>
         {title}
       </Text>
       {actionLabel && onAction ? (
         <Pressable onPress={onAction} hitSlop={8} accessibilityRole="button">
-          <Text className="text-[10px] font-bold text-gold-600" numberOfLines={1}>
+          <Text className="text-[10px] font-bold text-brand-600" numberOfLines={1}>
             {actionLabel}
           </Text>
         </Pressable>
@@ -981,8 +974,8 @@ function CardError({
         className="mt-2.5 flex-row items-center rounded-xl px-3 py-1.5"
         style={({ pressed }) => ({ backgroundColor: colors.cream[200], opacity: pressed ? 0.75 : 1 })}
       >
-        <RefreshCw size={11} color={colors.gold[600]} />
-        <Text className="ml-1.5 text-[11px] font-bold text-gold-600">{retryLabel}</Text>
+        <RefreshCw size={11} color={colors.brand[600]} />
+        <Text className="ml-1.5 text-[11px] font-bold text-brand-600">{retryLabel}</Text>
       </Pressable>
     </View>
   );
@@ -1003,8 +996,8 @@ function SectionHeader({
       {actionLabel && onAction ? (
         <Pressable onPress={onAction} hitSlop={8} accessibilityRole="button">
           <View className="flex-row items-center">
-            <Text className="text-[13px] font-bold text-gold-600">{actionLabel}</Text>
-            <ChevronRight size={14} color={colors.gold[600]} style={{ marginLeft: 1 }} />
+            <Text className="text-[13px] font-bold text-brand-600">{actionLabel}</Text>
+            <ChevronRight size={14} color={colors.brand[600]} style={{ marginLeft: 1 }} />
           </View>
         </Pressable>
       ) : null}
@@ -1019,14 +1012,19 @@ function ActionCell({ icon: Icon, label, onPress }: { icon: LucideIcon; label: s
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
-      className="flex-1 items-center px-0.5 py-1"
+      // Five cells across 375pt leave ~65pt each. "Appointment" and
+      // "Prescriptions" are ~62pt at this size, so the 2pt of horizontal
+      // padding was the difference between one clean line and a mid-word
+      // break ("Prescriptio / ns"). The hairline dividers already separate the
+      // cells, so the padding was buying nothing.
+      className="flex-1 items-center py-1"
       style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
     >
       <View
         className="h-9 w-9 items-center justify-center rounded-xl"
-        style={{ backgroundColor: colors.gold[50] }}
+        style={{ backgroundColor: colors.brand[50] }}
       >
-        <Icon size={17} color={colors.gold[600]} />
+        <Icon size={17} color={colors.brand[600]} />
       </View>
       <Text
         className="mt-1.5 text-center text-[9.5px] font-bold text-navy-text"
@@ -1063,7 +1061,7 @@ function DateChip({ value, language }: { value: string; language: string }) {
       className="overflow-hidden rounded-2xl"
       style={{ width: 54, borderWidth: 1, borderColor: colors.cream[300] }}
     >
-      <View className="items-center py-0.5" style={{ backgroundColor: colors.gold[500] }}>
+      <View className="items-center py-0.5" style={{ backgroundColor: colors.brand[500] }}>
         <Text className="text-[9px] font-extrabold uppercase text-white" style={{ letterSpacing: 0.6 }}>
           {formatMonth(value, language)}
         </Text>

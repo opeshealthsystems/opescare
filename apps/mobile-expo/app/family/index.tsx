@@ -251,9 +251,9 @@ export default function FamilyScreen() {
           accessibilityRole="button"
           accessibilityLabel={t('family.back')}
           hitSlop={8}
-          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300 bg-white"
+          className="h-11 w-11 items-center justify-center rounded-full border border-brand-300 bg-white"
         >
-          <ArrowLeft size={18} color={colors.gold[600]} />
+          <ArrowLeft size={18} color={colors.brand[600]} />
         </Pressable>
         <Text className="ml-4 text-xl font-extrabold text-navy-text">{t('family.title')}</Text>
       </View>
@@ -267,7 +267,7 @@ export default function FamilyScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={colors.gold[500]}
+            tintColor={colors.brand[500]}
           />
         }
       >
@@ -275,7 +275,7 @@ export default function FamilyScreen() {
 
         {/* Care-circle summary */}
         <LinearGradient
-          colors={[colors.gold[600], colors.gold[500], colors.gold[300]]}
+          colors={[colors.brand[600], colors.brand[500], colors.brand[300]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{ borderRadius: 24, marginTop: 20, padding: 20 }}
@@ -358,11 +358,11 @@ export default function FamilyScreen() {
         ) : (
           <View className="mt-4 rounded-3xl border border-cream-300 bg-white p-4">
             <View className="flex-row items-start">
-              <View className="h-10 w-10 items-center justify-center rounded-xl bg-gold-50">
+              <View className="h-10 w-10 items-center justify-center rounded-xl bg-brand-50">
                 {mode === 'invite' ? (
-                  <UserPlus size={18} color={colors.gold[600]} />
+                  <UserPlus size={18} color={colors.brand[600]} />
                 ) : (
-                  <Baby size={18} color={colors.gold[600]} />
+                  <Baby size={18} color={colors.brand[600]} />
                 )}
               </View>
               <View className="ml-3 flex-1">
@@ -450,13 +450,13 @@ export default function FamilyScreen() {
                           accessibilityState={{ selected: active }}
                           className="flex-1 items-center rounded-full border px-3 py-2.5"
                           style={{
-                            borderColor: active ? colors.gold[500] : colors.cream[300],
-                            backgroundColor: active ? colors.gold[50] : colors.white,
+                            borderColor: active ? colors.brand[500] : colors.cream[300],
+                            backgroundColor: active ? colors.brand[50] : colors.white,
                           }}
                         >
                           <Text
                             className="text-xs font-semibold"
-                            style={{ color: active ? colors.gold[600] : colors.navy.secondary }}
+                            style={{ color: active ? colors.brand[600] : colors.navy.secondary }}
                           >
                             {t(SEX_LABEL_KEYS[option])}
                           </Text>
@@ -490,9 +490,9 @@ export default function FamilyScreen() {
 
                   <View
                     className="mb-4 flex-row items-start rounded-2xl p-3"
-                    style={{ backgroundColor: colors.gold[50] }}
+                    style={{ backgroundColor: colors.brand[50] }}
                   >
-                    <Baby size={15} color={colors.gold[600]} />
+                    <Baby size={15} color={colors.brand[600]} />
                     <Text className="ml-2 flex-1 text-xs text-navy-secondary">
                       {t('family.registerNotice')}
                     </Text>
@@ -602,8 +602,8 @@ export default function FamilyScreen() {
               className="mb-3 rounded-2xl border border-cream-300 bg-white p-4"
             >
               <View className="flex-row items-center">
-                <View className="h-12 w-12 items-center justify-center rounded-full bg-gold-100">
-                  <Text className="text-sm font-extrabold text-gold-600">
+                <View className="h-12 w-12 items-center justify-center rounded-full bg-brand-100">
+                  <Text className="text-sm font-extrabold text-brand-600">
                     {initialsOf(member.patient?.full_name ?? '?')}
                   </Text>
                 </View>
@@ -634,7 +634,7 @@ export default function FamilyScreen() {
                   <Text className="text-[10px] font-bold uppercase tracking-wide text-navy-muted">
                     {t('family.healthIdLabel')}
                   </Text>
-                  <Text className="ml-2 flex-1 text-xs font-bold text-gold-600" numberOfLines={1}>
+                  <Text className="ml-2 flex-1 text-xs font-bold text-brand-600" numberOfLines={1}>
                     {member.patient.health_id}
                   </Text>
                 </View>
@@ -674,8 +674,8 @@ function ChoiceRow({
       accessibilityLabel={title}
       className="flex-row items-center py-3"
     >
-      <View className="h-11 w-11 items-center justify-center rounded-2xl bg-gold-50">
-        <Icon size={19} color={colors.gold[600]} />
+      <View className="h-11 w-11 items-center justify-center rounded-2xl bg-brand-50">
+        <Icon size={19} color={colors.brand[600]} />
       </View>
       <View className="ml-3 flex-1">
         <Text className="text-sm font-bold text-navy-text">{title}</Text>
@@ -713,13 +713,13 @@ function ChipGroup<T extends string>({
               accessibilityState={{ selected: active }}
               className="rounded-full border px-3 py-2"
               style={{
-                borderColor: active ? colors.gold[500] : colors.cream[300],
-                backgroundColor: active ? colors.gold[50] : colors.white,
+                borderColor: active ? colors.brand[500] : colors.cream[300],
+                backgroundColor: active ? colors.brand[50] : colors.white,
               }}
             >
               <Text
                 className="text-xs font-semibold"
-                style={{ color: active ? colors.gold[600] : colors.navy.secondary }}
+                style={{ color: active ? colors.brand[600] : colors.navy.secondary }}
               >
                 {labelFor(option)}
               </Text>
@@ -782,7 +782,7 @@ function SkeletonRow() {
         <View className="h-3 rounded-full bg-cream-200" style={{ width: '55%' }} />
         <View className="mt-2 h-2.5 rounded-full bg-cream-200" style={{ width: '35%' }} />
       </View>
-      <ActivityIndicator size="small" color={colors.gold[500]} />
+      <ActivityIndicator size="small" color={colors.brand[500]} />
     </View>
   );
 }

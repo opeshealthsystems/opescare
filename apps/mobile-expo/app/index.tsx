@@ -103,7 +103,7 @@ function BackgroundPattern() {
                 transform: rotate ? [{ rotate }] : undefined,
               }}
             >
-              <Icon size={size} color={colors.gold[300]} strokeWidth={1.25} />
+              <Icon size={size} color={colors.brand[300]} strokeWidth={1.25} />
             </View>
           ))
         : null}
@@ -147,7 +147,7 @@ function PulseRing({ delay }: { delay: number }) {
         height: MARK_SIZE,
         borderRadius: MARK_SIZE / 2,
         borderWidth: 2,
-        borderColor: colors.gold[300],
+        borderColor: colors.brand[300],
         opacity: progress.interpolate({ inputRange: [0, 1], outputRange: [0.45, 0] }),
         transform: [
           { scale: progress.interpolate({ inputRange: [0, 1], outputRange: [1, 1.7] }) },
@@ -191,7 +191,7 @@ function LoadingDot({ index }: { index: number }) {
         height: 8,
         borderRadius: 4,
         marginHorizontal: 5,
-        backgroundColor: colors.gold[500],
+        backgroundColor: colors.brand[500],
         opacity: progress.interpolate({ inputRange: [0, 1], outputRange: [0.28, 1] }),
         transform: [
           { scale: progress.interpolate({ inputRange: [0, 1], outputRange: [0.75, 1] }) },

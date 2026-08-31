@@ -92,7 +92,7 @@ export function SectionHeader({
                     fontWeight: typography.weight.bold,
                     letterSpacing: typography.tracking.overline,
                     textTransform: 'uppercase',
-                    color: colors.gold[600],
+                    color: colors.brand[600],
                   }
                 : {
                     flexShrink: 1,
@@ -166,12 +166,12 @@ export function SectionHeader({
               fontSize: typography.size.sm,
               lineHeight: typography.lineHeight.sm,
               fontWeight: typography.weight.semibold,
-              color: colors.gold[600],
+              color: colors.brand[600],
             }}
           >
             {actionLabel}
           </Text>
-          <ChevronRight color={colors.gold[600]} size={sizing.icon.sm} style={{ marginLeft: 2 }} />
+          <ChevronRight color={colors.brand[600]} size={sizing.icon.sm} style={{ marginLeft: 2 }} />
         </Pressable>
       ) : null}
     </View>

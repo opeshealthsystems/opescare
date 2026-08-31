@@ -88,9 +88,9 @@ function InfoRow({
     >
       <View
         className="mr-3 h-9 w-9 items-center justify-center rounded-full"
-        style={{ backgroundColor: colors.gold[50] }}
+        style={{ backgroundColor: colors.brand[50] }}
       >
-        <Icon size={16} color={colors.gold[600]} />
+        <Icon size={16} color={colors.brand[600]} />
       </View>
       <View className="flex-1">
         <Text className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: colors.navy.muted }}>
@@ -317,9 +317,9 @@ export default function AppointmentDetailScreen() {
         hitSlop={8}
         accessibilityRole="button"
         className="h-11 w-11 items-center justify-center rounded-full"
-        style={{ borderWidth: 1, borderColor: colors.gold[300] }}
+        style={{ borderWidth: 1, borderColor: colors.brand[300] }}
       >
-        <ArrowLeft size={18} color={colors.gold[600]} />
+        <ArrowLeft size={18} color={colors.brand[600]} />
       </Pressable>
       <Text className="ml-4 text-lg font-extrabold" style={{ color: colors.navy.text }}>
         {t('appointments.detail.title')}
@@ -332,7 +332,7 @@ export default function AppointmentDetailScreen() {
       <Screen className="px-0">
         {header}
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={colors.gold[500]} />
+          <ActivityIndicator color={colors.brand[500]} />
         </View>
       </Screen>
     );
@@ -360,10 +360,10 @@ export default function AppointmentDetailScreen() {
               onPress={() => refetch()}
               accessibilityRole="button"
               className="mt-5 flex-row items-center rounded-full px-5 py-3"
-              style={{ borderWidth: 1, borderColor: colors.gold[500], gap: 8 }}
+              style={{ borderWidth: 1, borderColor: colors.brand[500], gap: 8 }}
             >
-              <RefreshCw size={15} color={colors.gold[600]} />
-              <Text className="text-sm font-semibold" style={{ color: colors.gold[600] }}>
+              <RefreshCw size={15} color={colors.brand[600]} />
+              <Text className="text-sm font-semibold" style={{ color: colors.brand[600] }}>
                 {t('appointments.retry')}
               </Text>
             </Pressable>
@@ -418,9 +418,9 @@ export default function AppointmentDetailScreen() {
           <View className="mt-4 flex-row items-center">
             <View
               className="h-14 w-14 items-center justify-center rounded-2xl"
-              style={{ backgroundColor: colors.gold[50] }}
+              style={{ backgroundColor: colors.brand[50] }}
             >
-              <TypeIcon size={26} color={colors.gold[600]} />
+              <TypeIcon size={26} color={colors.brand[600]} />
             </View>
             <View className="ml-3.5 flex-1">
               <Text className="text-[22px] font-extrabold" style={{ color: colors.navy.text }}>
@@ -439,9 +439,9 @@ export default function AppointmentDetailScreen() {
           </View>
 
           {/* Date / time band */}
-          <View className="mt-4 rounded-2xl p-4" style={{ backgroundColor: colors.gold[50] }}>
+          <View className="mt-4 rounded-2xl p-4" style={{ backgroundColor: colors.brand[50] }}>
             <View className="flex-row items-center">
-              <CalendarDays size={16} color={colors.gold[600]} />
+              <CalendarDays size={16} color={colors.brand[600]} />
               <Text
                 className="ml-2 flex-1 text-sm font-bold"
                 style={{ color: colors.navy.text }}
@@ -450,7 +450,7 @@ export default function AppointmentDetailScreen() {
               </Text>
             </View>
             <View className="mt-2 flex-row items-center">
-              <Clock size={16} color={colors.gold[600]} />
+              <Clock size={16} color={colors.brand[600]} />
               <Text className="ml-2 text-sm font-semibold" style={{ color: colors.navy.text }}>
                 {time ?? '—'}
               </Text>
@@ -458,9 +458,9 @@ export default function AppointmentDetailScreen() {
                 <>
                   <View
                     className="mx-2.5 h-3 w-px"
-                    style={{ backgroundColor: colors.gold[100] }}
+                    style={{ backgroundColor: colors.brand[100] }}
                   />
-                  <Text className="text-[13px] font-bold" style={{ color: colors.gold[600] }}>
+                  <Text className="text-[13px] font-bold" style={{ color: colors.brand[600] }}>
                     {relative}
                   </Text>
                 </>
@@ -635,10 +635,10 @@ export default function AppointmentDetailScreen() {
             onPress={() => router.push('/appointments/book')}
             accessibilityRole="button"
             className="mt-6 h-14 flex-row items-center justify-center rounded-2xl"
-            style={{ borderWidth: 1.5, borderColor: colors.gold[500], gap: 8 }}
+            style={{ borderWidth: 1.5, borderColor: colors.brand[500], gap: 8 }}
           >
-            <CalendarPlus size={18} color={colors.gold[600]} />
-            <Text className="text-base font-bold" style={{ color: colors.gold[600] }}>
+            <CalendarPlus size={18} color={colors.brand[600]} />
+            <Text className="text-base font-bold" style={{ color: colors.brand[600] }}>
               {t('appointments.detail.bookFollowUp')}
             </Text>
           </Pressable>

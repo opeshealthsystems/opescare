@@ -202,8 +202,8 @@ export default function PermissionsScreen() {
         </View>
 
         <View className="mt-4 items-center">
-          <View className="rounded-full bg-gold-50 px-4 py-1.5">
-            <Text className="text-xs font-bold text-gold-600">{t('permissions.stepBadge')}</Text>
+          <View className="rounded-full bg-brand-50 px-4 py-1.5">
+            <Text className="text-xs font-bold text-brand-600">{t('permissions.stepBadge')}</Text>
           </View>
         </View>
 
@@ -251,8 +251,8 @@ export default function PermissionsScreen() {
           {t('permissions.optionalNote')}
         </Text>
 
-        <View className="mt-5 flex-row items-start rounded-2xl bg-gold-50 p-4">
-          <ShieldCheck size={16} color={colors.gold[600]} />
+        <View className="mt-5 flex-row items-start rounded-2xl bg-brand-50 p-4">
+          <ShieldCheck size={16} color={colors.brand[600]} />
           <Text className="ml-3 flex-1 text-xs leading-4 text-navy-secondary">
             {t('permissions.privacyNote')}
           </Text>
@@ -270,7 +270,7 @@ export default function PermissionsScreen() {
           hitSlop={8}
           className="mt-4 items-center py-3"
         >
-          <Text className="text-sm font-semibold text-gold-500">{t('permissions.skip')}</Text>
+          <Text className="text-sm font-semibold text-brand-500">{t('permissions.skip')}</Text>
         </Pressable>
       </ScrollView>
     </Screen>
@@ -320,7 +320,7 @@ function PermissionRow({
               bg: colors.cream[200],
               fg: colors.navy.muted,
             }
-          : { label: t('permissions.enable'), bg: colors.gold[50], fg: colors.gold[600] };
+          : { label: t('permissions.enable'), bg: colors.brand[50], fg: colors.brand[600] };
 
   return (
     <Pressable
@@ -330,8 +330,8 @@ function PermissionRow({
       accessibilityLabel={actionable ? actionLabel : `${title}. ${badge.label}`}
       className="mb-3 flex-row items-center rounded-2xl border border-cream-300 bg-white px-4 py-4"
     >
-      <View className="h-11 w-11 items-center justify-center rounded-full bg-gold-50">
-        <Icon size={20} color={colors.gold[600]} />
+      <View className="h-11 w-11 items-center justify-center rounded-full bg-brand-50">
+        <Icon size={20} color={colors.brand[600]} />
       </View>
 
       <View className="ml-3 flex-1">

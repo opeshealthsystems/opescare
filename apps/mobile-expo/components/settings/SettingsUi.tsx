@@ -57,7 +57,7 @@ export function ScreenHeader({
           opacity: pressed ? 0.7 : 1,
         })}
       >
-        <ChevronLeft color={colors.gold[600]} size={sizing.icon.lg} />
+        <ChevronLeft color={colors.brand[600]} size={sizing.icon.lg} />
       </Pressable>
 
       <View
@@ -354,12 +354,12 @@ export function ToggleRow({
           width: sizing.tile.sm,
           height: sizing.tile.sm,
           borderRadius: radii.tile,
-          backgroundColor: colors.gold[50],
+          backgroundColor: colors.brand[50],
           alignItems: 'center',
           justifyContent: 'center',
         }}
       >
-        <Icon color={colors.gold[600]} size={sizing.icon.md} />
+        <Icon color={colors.brand[600]} size={sizing.icon.md} />
       </View>
 
       <View style={{ flex: 1, marginLeft: spacing.md }}>
@@ -400,15 +400,15 @@ export function ToggleRow({
 
       <View style={{ marginLeft: spacing.md, minWidth: 52, alignItems: 'flex-end' }}>
         {busy ? (
-          <ActivityIndicator color={colors.gold[500]} />
+          <ActivityIndicator color={colors.brand[500]} />
         ) : (
           <Switch
             value={known ? value : false}
             onValueChange={onChange}
             disabled={isDisabled}
             accessibilityLabel={label}
-            trackColor={{ false: colors.cream[300], true: colors.gold[300] }}
-            thumbColor={known && value ? colors.gold[600] : colors.white}
+            trackColor={{ false: colors.cream[300], true: colors.brand[300] }}
+            thumbColor={known && value ? colors.brand[600] : colors.white}
             ios_backgroundColor={colors.cream[300]}
           />
         )}
@@ -467,7 +467,7 @@ export function SegmentedControl<T extends string>({
               opacity: pressed ? 0.75 : 1,
               ...(active
                 ? {
-                    shadowColor: colors.gold[900],
+                    shadowColor: colors.brand[900],
                     shadowOpacity: 0.06,
                     shadowRadius: 4,
                     shadowOffset: { width: 0, height: 1 },
@@ -478,7 +478,7 @@ export function SegmentedControl<T extends string>({
           >
             {option.icon ? (
               <option.icon
-                color={active ? colors.gold[600] : colors.navy.muted}
+                color={active ? colors.brand[600] : colors.navy.muted}
                 size={sizing.icon.sm}
                 style={{ marginRight: 6 }}
               />
@@ -487,7 +487,7 @@ export function SegmentedControl<T extends string>({
               style={{
                 fontSize: typography.size.sm,
                 fontWeight: typography.weight.semibold,
-                color: active ? colors.gold[600] : colors.navy.secondary,
+                color: active ? colors.brand[600] : colors.navy.secondary,
               }}
             >
               {option.label}
@@ -527,7 +527,7 @@ export function GroupCard({
           fontWeight: typography.weight.bold,
           letterSpacing: typography.tracking.overline,
           textTransform: 'uppercase',
-          color: colors.gold[600],
+          color: colors.brand[600],
         }}
       >
         {label}

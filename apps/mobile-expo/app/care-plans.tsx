@@ -146,7 +146,7 @@ export default function CarePlansScreen() {
       <Screen className="px-0">
         {header}
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={colors.gold[500]} size="large" />
+          <ActivityIndicator color={colors.brand[500]} size="large" />
         </View>
       </Screen>
     );
@@ -294,18 +294,18 @@ export default function CarePlansScreen() {
                 <View className="mt-4">
                   <View className="flex-row items-center justify-between">
                     <View className="flex-row items-center">
-                      <TrendingUp size={13} color={colors.gold[600]} />
+                      <TrendingUp size={13} color={colors.brand[600]} />
                       <Text className="ml-1.5 text-xs font-bold text-navy-text">
                         {t('carePlans.progress')}
                       </Text>
                     </View>
-                    <Text className="text-xs font-bold text-gold-600">
+                    <Text className="text-xs font-bold text-brand-600">
                       {t('carePlans.goalsAchieved', { achieved, total: goals.length })}
                     </Text>
                   </View>
                   <View className="mt-2 h-2 overflow-hidden rounded-full bg-cream-200">
                     <View
-                      className="h-2 rounded-full bg-gold-500"
+                      className="h-2 rounded-full bg-brand-500"
                       style={{ width: `${Math.min(100, Math.max(0, progressPct))}%` }}
                     />
                   </View>
@@ -428,7 +428,7 @@ export default function CarePlansScreen() {
 
                   {detailQuery.isLoading ? (
                     <View className="mt-1 flex-row items-center">
-                      <ActivityIndicator color={colors.gold[500]} size="small" />
+                      <ActivityIndicator color={colors.brand[500]} size="small" />
                       <Text className="ml-2 text-[11px] text-navy-muted">
                         {t('carePlans.refreshing')}
                       </Text>

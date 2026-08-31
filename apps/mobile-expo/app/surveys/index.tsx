@@ -95,9 +95,9 @@ export default function SurveysScreen() {
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel={t('surveys.back')}
-          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+          className="h-11 w-11 items-center justify-center rounded-full border border-brand-300"
         >
-          <ArrowLeft size={18} color={colors.gold[600]} />
+          <ArrowLeft size={18} color={colors.brand[600]} />
         </Pressable>
         <View className="ml-3 flex-1">
           <Text className="text-2xl font-extrabold text-navy-text">{t('surveys.title')}</Text>
@@ -124,7 +124,7 @@ export default function SurveysScreen() {
                 accessibilityState={{ selected: active }}
                 className="flex-row items-center rounded-full px-4 py-2"
                 style={{
-                  backgroundColor: active ? colors.gold[500] : colors.white,
+                  backgroundColor: active ? colors.brand[500] : colors.white,
                   borderWidth: active ? 0 : 1,
                   borderColor: colors.cream[300],
                 }}
@@ -141,7 +141,7 @@ export default function SurveysScreen() {
                   style={{ backgroundColor: active ? colors.white : colors.cream[200] }}
                 >
                   <Text
-                    className={`text-[11px] font-bold ${active ? 'text-gold-600' : 'text-navy-secondary'}`}
+                    className={`text-[11px] font-bold ${active ? 'text-brand-600' : 'text-navy-secondary'}`}
                   >
                     {counts[item]}
                   </Text>
@@ -171,7 +171,7 @@ export default function SurveysScreen() {
             <RefreshControl
               refreshing={isFetching && !isLoading}
               onRefresh={refetch}
-              tintColor={colors.gold[500]}
+              tintColor={colors.brand[500]}
             />
           }
           ListEmptyComponent={
@@ -226,7 +226,7 @@ function SurveyCard({ survey, t, onPress }: { survey: Survey; t: TFunction; onPr
     ? { surface: colors.semantic.successSurface, icon: colors.semantic.success, Icon: CheckCircle2 }
     : expired
       ? { surface: colors.cream[200], icon: colors.navy.muted, Icon: TimerOff }
-      : { surface: colors.gold[50], icon: colors.gold[600], Icon: ClipboardList };
+      : { surface: colors.brand[50], icon: colors.brand[600], Icon: ClipboardList };
 
   const statusPill = completed
     ? { label: t('surveys.statusCompleted'), surface: colors.semantic.successSurface, text: 'text-success' }
@@ -285,10 +285,10 @@ function SurveyCard({ survey, t, onPress }: { survey: Survey; t: TFunction; onPr
 
       <View className="mt-3 border-t border-cream-200 pt-3">
         <View className="flex-row items-center justify-end">
-          <Text className={`text-sm font-bold ${expired ? 'text-navy-muted' : 'text-gold-600'}`}>
+          <Text className={`text-sm font-bold ${expired ? 'text-navy-muted' : 'text-brand-600'}`}>
             {completed ? t('surveys.viewResponses') : expired ? t('surveys.viewDetails') : t('surveys.takeSurvey')}
           </Text>
-          <ChevronRight size={16} color={expired ? colors.navy.muted : colors.gold[600]} />
+          <ChevronRight size={16} color={expired ? colors.navy.muted : colors.brand[600]} />
         </View>
       </View>
     </Pressable>
@@ -339,10 +339,10 @@ function ErrorState({ t, onRetry }: { t: TFunction; onRetry: () => void }) {
       <Pressable
         onPress={onRetry}
         accessibilityRole="button"
-        className="mt-5 flex-row items-center rounded-full border border-gold-300 px-5 py-2.5"
+        className="mt-5 flex-row items-center rounded-full border border-brand-300 px-5 py-2.5"
       >
-        <RotateCcw size={14} color={colors.gold[600]} />
-        <Text className="ml-2 text-sm font-semibold text-gold-600">{t('surveys.retry')}</Text>
+        <RotateCcw size={14} color={colors.brand[600]} />
+        <Text className="ml-2 text-sm font-semibold text-brand-600">{t('surveys.retry')}</Text>
       </Pressable>
     </View>
   );
@@ -358,9 +358,9 @@ function EmptyState({ t, onOpenAppointments }: { t: TFunction; onOpenAppointment
       showsVerticalScrollIndicator={false}
     >
       <View className="items-center pt-4">
-        <View className="h-20 w-20 items-center justify-center rounded-full bg-gold-50">
-          <View className="h-14 w-14 items-center justify-center rounded-full bg-gold-100">
-            <CheckCircle2 size={26} color={colors.gold[600]} />
+        <View className="h-20 w-20 items-center justify-center rounded-full bg-brand-50">
+          <View className="h-14 w-14 items-center justify-center rounded-full bg-brand-100">
+            <CheckCircle2 size={26} color={colors.brand[600]} />
           </View>
         </View>
         <Text className="mt-4 text-center text-lg font-extrabold text-navy-text">{t('surveys.emptyTitle')}</Text>
@@ -369,7 +369,7 @@ function EmptyState({ t, onOpenAppointments }: { t: TFunction; onOpenAppointment
 
       <View className="mt-6 rounded-2xl border border-cream-300 bg-white p-4">
         <View className="flex-row items-center">
-          <MessageSquareQuote size={16} color={colors.gold[600]} />
+          <MessageSquareQuote size={16} color={colors.brand[600]} />
           <Text className="ml-2 text-sm font-bold text-navy-text">{t('surveys.whyTitle')}</Text>
         </View>
         <Text className="mt-2 text-xs leading-4 text-navy-secondary">{t('surveys.whyBody')}</Text>

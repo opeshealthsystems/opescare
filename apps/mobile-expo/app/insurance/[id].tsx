@@ -45,7 +45,7 @@ const PAYMENT_OPTIONS = [
 
 type PaymentOptionId = (typeof PAYMENT_OPTIONS)[number]['id'];
 
-const PREMIUM_GRADIENT = [colors.gold[600], colors.gold[500], colors.gold[300]] as const;
+const PREMIUM_GRADIENT = [colors.brand[600], colors.brand[500], colors.brand[300]] as const;
 
 /** See marketplace.tsx — same locale-aware grouping, duplicated deliberately so
  * each insurance screen stays self-contained (no shared file is owned here). */
@@ -194,9 +194,9 @@ export default function InsurancePlanDetailScreen() {
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel={t('insurance.back')}
-            className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+            className="h-11 w-11 items-center justify-center rounded-full border border-brand-300"
           >
-            <ArrowLeft size={18} color={colors.gold[600]} />
+            <ArrowLeft size={18} color={colors.brand[600]} />
           </Pressable>
           <Text className="ml-4 flex-1 text-lg font-bold text-navy-text" numberOfLines={1}>
             {stage === 'review' ? t('insurance.purchase.reviewTitle') : t('insurance.plan.title')}
@@ -213,7 +213,7 @@ export default function InsurancePlanDetailScreen() {
         />
       ) : isLoading ? (
         <View className="mt-20 items-center">
-          <ActivityIndicator color={colors.gold[500]} size="large" />
+          <ActivityIndicator color={colors.brand[500]} size="large" />
         </View>
       ) : isError || !plan ? (
         <View className="mt-8 px-6">
@@ -232,10 +232,10 @@ export default function InsurancePlanDetailScreen() {
             </Text>
             <Pressable
               onPress={() => refetch()}
-              className="mt-5 rounded-full bg-gold-50 px-6 py-3"
+              className="mt-5 rounded-full bg-brand-50 px-6 py-3"
               accessibilityRole="button"
             >
-              <Text className="text-sm font-semibold text-gold-600">{t('insurance.retry')}</Text>
+              <Text className="text-sm font-semibold text-brand-600">{t('insurance.retry')}</Text>
             </Pressable>
           </View>
         </View>
@@ -312,7 +312,7 @@ function DetailView({
     >
       <View className="mt-4">
         {plan.provider?.name ? (
-          <Text className="text-[10px] font-bold uppercase tracking-widest text-gold-600">
+          <Text className="text-[10px] font-bold uppercase tracking-widest text-brand-600">
             {plan.provider.name}
           </Text>
         ) : null}
@@ -340,7 +340,7 @@ function DetailView({
           padding: 20,
           marginTop: 20,
           overflow: 'hidden',
-          shadowColor: colors.gold[700],
+          shadowColor: colors.brand[700],
           shadowOpacity: 0.22,
           shadowRadius: 16,
           shadowOffset: { width: 0, height: 8 },
@@ -412,8 +412,8 @@ function DetailView({
               key={`${service}-${index}`}
               className={`flex-row items-center ${index > 0 ? 'mt-3.5' : ''}`}
             >
-              <View className="h-6 w-6 items-center justify-center rounded-full bg-gold-50">
-                <Check size={13} color={colors.gold[600]} />
+              <View className="h-6 w-6 items-center justify-center rounded-full bg-brand-50">
+                <Check size={13} color={colors.brand[600]} />
               </View>
               <Text className="ml-3 flex-1 text-sm text-navy-text">{service}</Text>
             </View>
@@ -554,12 +554,12 @@ function ContactAction({
       }}
       accessibilityRole="button"
       accessibilityLabel={`${label} ${value}`}
-      className="mr-2 flex-1 flex-row items-center rounded-2xl border border-gold-300 bg-gold-50 px-3 py-3"
+      className="mr-2 flex-1 flex-row items-center rounded-2xl border border-brand-300 bg-brand-50 px-3 py-3"
     >
-      <Icon size={15} color={colors.gold[600]} />
+      <Icon size={15} color={colors.brand[600]} />
       <View className="ml-2.5 flex-1">
         <Text className="text-[10px] text-navy-muted">{label}</Text>
-        <Text className="text-xs font-semibold text-gold-600" numberOfLines={1}>
+        <Text className="text-xs font-semibold text-brand-600" numberOfLines={1}>
           {value}
         </Text>
       </View>
@@ -645,7 +645,7 @@ function ReviewView({
           </Text>
           {monthlyPremium ? (
             <View className="flex-row items-baseline">
-              <Text className="text-xl font-extrabold text-gold-600">{monthlyPremium}</Text>
+              <Text className="text-xl font-extrabold text-brand-600">{monthlyPremium}</Text>
               <Text className="ml-1 text-xs text-navy-muted">
                 {t('insurance.purchase.perMonth')}
               </Text>
@@ -702,8 +702,8 @@ function ReviewView({
         <NextStep index={3} text={t('insurance.purchase.step3')} last />
       </View>
 
-      <View className="mt-4 flex-row items-start rounded-2xl bg-gold-50 p-4">
-        <Wallet size={16} color={colors.gold[600]} />
+      <View className="mt-4 flex-row items-start rounded-2xl bg-brand-50 p-4">
+        <Wallet size={16} color={colors.brand[600]} />
         <Text className="ml-3 flex-1 text-xs leading-4 text-navy-secondary">
           {t('insurance.purchase.paymentNote')}
         </Text>
@@ -760,12 +760,12 @@ function ReviewView({
             accessibilityState={{ checked: acknowledged, disabled: submitting }}
             className="mt-6 flex-row items-start rounded-2xl border bg-white p-4"
             style={{
-              borderColor: acknowledged ? colors.gold[500] : colors.cream[300],
+              borderColor: acknowledged ? colors.brand[500] : colors.cream[300],
               borderWidth: acknowledged ? 2 : 1,
             }}
           >
             {acknowledged ? (
-              <SquareCheckBig size={20} color={colors.gold[500]} />
+              <SquareCheckBig size={20} color={colors.brand[500]} />
             ) : (
               <Square size={20} color={colors.navy.muted} />
             )}
@@ -838,17 +838,17 @@ function PaymentOptionRow({
       className="mb-3 flex-row items-center justify-between rounded-2xl bg-white p-4"
       style={{
         borderWidth: selected ? 2 : 1,
-        borderColor: selected ? colors.gold[500] : colors.cream[300],
+        borderColor: selected ? colors.brand[500] : colors.cream[300],
       }}
     >
       <View className="flex-1 flex-row items-center">
-        <View className="h-9 w-9 items-center justify-center rounded-full bg-gold-50">
-          <Wallet size={16} color={colors.gold[600]} />
+        <View className="h-9 w-9 items-center justify-center rounded-full bg-brand-50">
+          <Wallet size={16} color={colors.brand[600]} />
         </View>
         <Text className="ml-3 flex-1 text-sm font-semibold text-navy-text">{label}</Text>
       </View>
       {selected ? (
-        <CheckCircle2 size={20} color={colors.gold[500]} />
+        <CheckCircle2 size={20} color={colors.brand[500]} />
       ) : (
         <Circle size={20} color={colors.cream[300]} />
       )}
@@ -859,8 +859,8 @@ function PaymentOptionRow({
 function NextStep({ index, text, last }: { index: number; text: string; last?: boolean }) {
   return (
     <View className={`flex-row items-start ${last ? '' : 'mb-4'}`}>
-      <View className="h-6 w-6 items-center justify-center rounded-full bg-gold-50">
-        <Text className="text-[11px] font-extrabold text-gold-600">{index}</Text>
+      <View className="h-6 w-6 items-center justify-center rounded-full bg-brand-50">
+        <Text className="text-[11px] font-extrabold text-brand-600">{index}</Text>
       </View>
       <Text className="ml-3 flex-1 text-xs leading-4 text-navy-secondary">{text}</Text>
     </View>
@@ -893,8 +893,8 @@ function SuccessView({
     >
       <View className="rounded-3xl bg-white p-6">
         <View className="items-center">
-          <View className="h-20 w-20 items-center justify-center rounded-full bg-gold-50">
-            <BadgeCheck size={38} color={colors.gold[500]} />
+          <View className="h-20 w-20 items-center justify-center rounded-full bg-brand-50">
+            <BadgeCheck size={38} color={colors.brand[500]} />
           </View>
           <Text className="mt-5 text-center text-xl font-extrabold text-navy-text">
             {t('insurance.purchase.successTitle')}
@@ -930,8 +930,8 @@ function SuccessView({
         </View>
       </View>
 
-      <View className="mt-5 flex-row items-start rounded-2xl bg-gold-50 p-4">
-        <ShieldCheck size={16} color={colors.gold[600]} />
+      <View className="mt-5 flex-row items-start rounded-2xl bg-brand-50 p-4">
+        <ShieldCheck size={16} color={colors.brand[600]} />
         <Text className="ml-3 flex-1 text-xs leading-4 text-navy-secondary">
           {t('insurance.purchase.successNote')}
         </Text>

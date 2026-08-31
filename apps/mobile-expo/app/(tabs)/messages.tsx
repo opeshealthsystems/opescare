@@ -155,7 +155,7 @@ export default function MessagesScreen() {
           accessibilityLabel={t('messages.newConversation')}
         >
           <LinearGradient
-            colors={[colors.gold[600], colors.gold[500], colors.gold[300]]}
+            colors={[colors.brand[600], colors.brand[500], colors.brand[300]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             // className does not reach LinearGradient (no cssInterop) — inline only.
@@ -224,9 +224,9 @@ export default function MessagesScreen() {
           <Pressable
             onPress={() => threadsQuery.refetch()}
             className="rounded-full border px-5 py-2.5"
-            style={{ borderColor: colors.gold[500] }}
+            style={{ borderColor: colors.brand[500] }}
           >
-            <Text className="text-sm font-semibold text-gold-600">{t('messages.retry')}</Text>
+            <Text className="text-sm font-semibold text-brand-600">{t('messages.retry')}</Text>
           </Pressable>
         </View>
       ) : hasThreads ? (
@@ -239,7 +239,7 @@ export default function MessagesScreen() {
             <RefreshControl
               refreshing={threadsQuery.isRefetching}
               onRefresh={() => threadsQuery.refetch()}
-              tintColor={colors.gold[500]}
+              tintColor={colors.brand[500]}
             />
           }
           renderItem={({ item }) => (
@@ -251,8 +251,8 @@ export default function MessagesScreen() {
             // the common one — it deserves reassurance, not a search hint.
             unreadOnly && !search.trim() ? (
               <View className="items-center px-4 pt-10">
-                <View className="mb-4 h-14 w-14 items-center justify-center rounded-full bg-gold-50">
-                  <Check size={22} color={colors.gold[600]} />
+                <View className="mb-4 h-14 w-14 items-center justify-center rounded-full bg-brand-50">
+                  <Check size={22} color={colors.brand[600]} />
                 </View>
                 <Text className="mb-1 text-center text-base font-bold text-navy-text">
                   {t('messages.caughtUpTitle')}
@@ -278,9 +278,9 @@ export default function MessagesScreen() {
         />
       ) : (
         <View className="flex-1 items-center justify-center px-8">
-          <View className="mb-5 h-20 w-20 items-center justify-center rounded-full bg-gold-50">
-            <View className="h-14 w-14 items-center justify-center rounded-full bg-gold-100">
-              <MessageCircle size={26} color={colors.gold[600]} />
+          <View className="mb-5 h-20 w-20 items-center justify-center rounded-full bg-brand-50">
+            <View className="h-14 w-14 items-center justify-center rounded-full bg-brand-100">
+              <MessageCircle size={26} color={colors.brand[600]} />
             </View>
           </View>
           <Text className="mb-2 text-center text-lg font-bold text-navy-text">
@@ -329,7 +329,7 @@ function VideoVisitsCard({ onPress }: { onPress: () => void }) {
       className="mx-6 mb-4"
     >
       <LinearGradient
-        colors={[colors.gold[600], colors.gold[500]]}
+        colors={[colors.brand[600], colors.brand[500]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         // Inline style: NativeWind's className never reaches LinearGradient.
@@ -371,8 +371,8 @@ function FilterChip({
       accessibilityState={{ selected: active }}
       className="flex-row items-center rounded-full border px-4 py-2"
       style={{
-        borderColor: active ? colors.gold[500] : colors.cream[300],
-        backgroundColor: active ? colors.gold[500] : colors.white,
+        borderColor: active ? colors.brand[500] : colors.cream[300],
+        backgroundColor: active ? colors.brand[500] : colors.white,
       }}
     >
       <Text
@@ -433,20 +433,20 @@ function ThreadRow({ item, onPress }: { item: MessageThreadSummary; onPress: () 
       accessibilityRole="button"
       className="mb-3 flex-row items-center rounded-2xl p-4"
       style={{
-        backgroundColor: unread ? colors.gold[50] : colors.white,
+        backgroundColor: unread ? colors.brand[50] : colors.white,
         borderWidth: 1,
-        borderColor: unread ? colors.gold[100] : colors.white,
+        borderColor: unread ? colors.brand[100] : colors.white,
       }}
     >
       <View
         className="h-[52px] w-[52px] items-center justify-center rounded-full"
         style={{
-          backgroundColor: unread ? colors.gold[100] : colors.cream[200],
+          backgroundColor: unread ? colors.brand[100] : colors.cream[200],
           borderWidth: 2,
-          borderColor: unread ? colors.gold[500] : colors.cream[300],
+          borderColor: unread ? colors.brand[500] : colors.cream[300],
         }}
       >
-        <Text className="text-sm font-extrabold" style={{ color: colors.gold[700] }}>
+        <Text className="text-sm font-extrabold" style={{ color: colors.brand[700] }}>
           {initialsFor(item.title)}
         </Text>
       </View>
@@ -462,7 +462,7 @@ function ThreadRow({ item, onPress }: { item: MessageThreadSummary; onPress: () 
           {stamp ? (
             <Text
               className="ml-2 text-[10px] font-semibold"
-              style={{ color: unread ? colors.gold[600] : colors.navy.muted }}
+              style={{ color: unread ? colors.brand[600] : colors.navy.muted }}
             >
               {formatStamp(stamp, i18n.language, t)}
             </Text>
@@ -479,7 +479,7 @@ function ThreadRow({ item, onPress }: { item: MessageThreadSummary; onPress: () 
           {unread ? (
             <View
               className="ml-2 h-2.5 w-2.5 rounded-full"
-              style={{ backgroundColor: colors.gold[500] }}
+              style={{ backgroundColor: colors.brand[500] }}
               accessibilityLabel={t('messages.unreadLabel')}
             />
           ) : null}
@@ -555,9 +555,9 @@ function ConversationView({ threadId, onBack }: { threadId: number; onBack: () =
           accessibilityRole="button"
           accessibilityLabel={t('messages.back')}
           className="h-11 w-11 items-center justify-center rounded-full border"
-          style={{ borderColor: colors.gold[300] }}
+          style={{ borderColor: colors.brand[300] }}
         >
-          <ArrowLeft size={18} color={colors.gold[600]} />
+          <ArrowLeft size={18} color={colors.brand[600]} />
         </Pressable>
         <View className="ml-3 flex-1">
           <Text className="text-base font-extrabold text-navy-text" numberOfLines={1}>
@@ -576,9 +576,9 @@ function ConversationView({ threadId, onBack }: { threadId: number; onBack: () =
           accessibilityRole="button"
           accessibilityLabel={t('messages.videoVisits')}
           className="h-11 w-11 items-center justify-center rounded-full"
-          style={{ backgroundColor: colors.gold[50], borderWidth: 1, borderColor: colors.gold[100] }}
+          style={{ backgroundColor: colors.brand[50], borderWidth: 1, borderColor: colors.brand[100] }}
         >
-          <Video size={18} color={colors.gold[600]} />
+          <Video size={18} color={colors.brand[600]} />
         </Pressable>
       </View>
 
@@ -594,7 +594,7 @@ function ConversationView({ threadId, onBack }: { threadId: number; onBack: () =
 
       {threadQuery.isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={colors.gold[500]} />
+          <ActivityIndicator color={colors.brand[500]} />
         </View>
       ) : threadQuery.isError ? (
         <View className="flex-1 items-center justify-center px-8">
@@ -604,9 +604,9 @@ function ConversationView({ threadId, onBack }: { threadId: number; onBack: () =
           <Pressable
             onPress={() => threadQuery.refetch()}
             className="rounded-full border px-5 py-2.5"
-            style={{ borderColor: colors.gold[500] }}
+            style={{ borderColor: colors.brand[500] }}
           >
-            <Text className="text-sm font-semibold text-gold-600">{t('messages.retry')}</Text>
+            <Text className="text-sm font-semibold text-brand-600">{t('messages.retry')}</Text>
           </Pressable>
         </View>
       ) : (
@@ -700,7 +700,7 @@ function ConversationView({ threadId, onBack }: { threadId: number; onBack: () =
                 accessibilityLabel={t('messages.composeSend')}
                 className="h-12 w-12 items-center justify-center rounded-full"
                 style={{
-                  backgroundColor: colors.gold[500],
+                  backgroundColor: colors.brand[500],
                   opacity: !replyBody.trim() || sendMessage.isPending ? 0.45 : 1,
                 }}
               >
@@ -770,9 +770,9 @@ function MessageRow({
           {isClusterTail ? (
             <View
               className="h-7 w-7 items-center justify-center rounded-full"
-              style={{ backgroundColor: colors.gold[100] }}
+              style={{ backgroundColor: colors.brand[100] }}
             >
-              <Text className="text-[10px] font-extrabold" style={{ color: colors.gold[700] }}>
+              <Text className="text-[10px] font-extrabold" style={{ color: colors.brand[700] }}>
                 {initialsFor(threadTitle)}
               </Text>
             </View>
@@ -839,7 +839,7 @@ function TextBubble({
     <View
       className="px-4 py-2.5"
       style={{
-        backgroundColor: mine ? colors.gold[500] : colors.white,
+        backgroundColor: mine ? colors.brand[500] : colors.white,
         borderWidth: mine ? 0 : 1,
         borderColor: colors.cream[300],
         borderTopLeftRadius: !mine && grouped ? tail : round,
@@ -884,7 +884,7 @@ function PendingBubble({ body }: { body: string }) {
       <View
         className="max-w-[80%] px-4 py-2.5"
         style={{
-          backgroundColor: colors.gold[500],
+          backgroundColor: colors.brand[500],
           opacity: 0.55,
           borderTopLeftRadius: 18,
           borderTopRightRadius: 18,
@@ -939,9 +939,9 @@ function CardShell({
       >
         <View
           className="h-8 w-8 items-center justify-center rounded-lg"
-          style={{ backgroundColor: colors.gold[50] }}
+          style={{ backgroundColor: colors.brand[50] }}
         >
-          <Icon size={16} color={colors.gold[600]} />
+          <Icon size={16} color={colors.brand[600]} />
         </View>
         <Text className="ml-2.5 flex-1 text-xs font-extrabold text-navy-text" numberOfLines={1}>
           {title}
@@ -992,9 +992,9 @@ function AttachmentMessage({
             >
               <View
                 className="h-9 w-9 items-center justify-center rounded-lg"
-                style={{ backgroundColor: colors.gold[50] }}
+                style={{ backgroundColor: colors.brand[50] }}
               >
-                <FileText size={16} color={colors.gold[600]} />
+                <FileText size={16} color={colors.brand[600]} />
               </View>
               <View className="ml-3 flex-1">
                 <Text className="text-xs font-bold text-navy-text" numberOfLines={1}>
@@ -1074,10 +1074,10 @@ function StructuredMessage({
           onPress={() => router.push(route)}
           accessibilityRole="button"
           className="mx-4 mb-3 mt-3 flex-row items-center justify-center rounded-xl py-2.5"
-          style={{ backgroundColor: colors.gold[50], borderWidth: 1, borderColor: colors.gold[100] }}
+          style={{ backgroundColor: colors.brand[50], borderWidth: 1, borderColor: colors.brand[100] }}
         >
-          <Text className="text-xs font-bold text-gold-600">{t('messages.cardOpen')}</Text>
-          <ChevronRight size={14} color={colors.gold[600]} />
+          <Text className="text-xs font-bold text-brand-600">{t('messages.cardOpen')}</Text>
+          <ChevronRight size={14} color={colors.brand[600]} />
         </Pressable>
       ) : (
         <View className="pb-1" />
@@ -1163,7 +1163,7 @@ function ComposeSheet({
           <Text className="mb-2 text-sm font-bold text-navy-text">{t('messages.composeAbout')}</Text>
           {loading ? (
             <View className="py-6">
-              <ActivityIndicator color={colors.gold[500]} />
+              <ActivityIndicator color={colors.brand[500]} />
             </View>
           ) : appointments.length === 0 ? (
             <View
@@ -1186,15 +1186,15 @@ function ComposeSheet({
                     accessibilityState={{ selected }}
                     className="mb-2 flex-row items-center rounded-2xl border px-3 py-3"
                     style={{
-                      borderColor: selected ? colors.gold[500] : colors.cream[300],
-                      backgroundColor: selected ? colors.gold[50] : colors.white,
+                      borderColor: selected ? colors.brand[500] : colors.cream[300],
+                      backgroundColor: selected ? colors.brand[50] : colors.white,
                     }}
                   >
                     <View
                       className="h-10 w-10 items-center justify-center rounded-full"
-                      style={{ backgroundColor: selected ? colors.gold[100] : colors.cream[200] }}
+                      style={{ backgroundColor: selected ? colors.brand[100] : colors.cream[200] }}
                     >
-                      <Text className="text-[11px] font-extrabold" style={{ color: colors.gold[700] }}>
+                      <Text className="text-[11px] font-extrabold" style={{ color: colors.brand[700] }}>
                         {initialsFor(appointment.provider_name)}
                       </Text>
                     </View>
@@ -1216,8 +1216,8 @@ function ComposeSheet({
                     <View
                       className="h-5 w-5 items-center justify-center rounded-full border"
                       style={{
-                        borderColor: selected ? colors.gold[500] : colors.cream[300],
-                        backgroundColor: selected ? colors.gold[500] : 'transparent',
+                        borderColor: selected ? colors.brand[500] : colors.cream[300],
+                        backgroundColor: selected ? colors.brand[500] : 'transparent',
                       }}
                     >
                       {selected ? <Check size={12} color={colors.white} /> : null}

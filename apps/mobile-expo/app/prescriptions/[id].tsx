@@ -97,7 +97,7 @@ export default function PrescriptionDetailScreen() {
 
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={colors.gold[500]} />
+          <ActivityIndicator color={colors.brand[500]} />
         </View>
       ) : isError || !prescription ? (
         <View className="flex-1 px-6 pt-6">
@@ -115,10 +115,10 @@ export default function PrescriptionDetailScreen() {
               <Pressable
                 onPress={() => refetch()}
                 accessibilityRole="button"
-                className="mt-4 flex-row items-center rounded-xl border border-gold-500 px-4 py-2"
+                className="mt-4 flex-row items-center rounded-xl border border-brand-500 px-4 py-2"
               >
-                <RotateCcw size={13} color={colors.gold[600]} />
-                <Text className="ml-2 text-xs font-bold text-gold-600">
+                <RotateCcw size={13} color={colors.brand[600]} />
+                <Text className="ml-2 text-xs font-bold text-brand-600">
                   {t('prescriptions.retry')}
                 </Text>
               </Pressable>
@@ -135,8 +135,8 @@ export default function PrescriptionDetailScreen() {
               mobile API returns — there is no prescriber name to show. */}
           <View className="mt-4 rounded-2xl border border-cream-300 bg-white p-5">
             <View className="flex-row items-start">
-              <View className="h-12 w-12 items-center justify-center rounded-2xl bg-gold-50">
-                <Pill size={22} color={colors.gold[600]} />
+              <View className="h-12 w-12 items-center justify-center rounded-2xl bg-brand-50">
+                <Pill size={22} color={colors.brand[600]} />
               </View>
               <View className="ml-3 flex-1">
                 <Text className="text-[11px] font-semibold uppercase tracking-wide text-navy-muted">
@@ -217,7 +217,7 @@ export default function PrescriptionDetailScreen() {
 
           {/* Medications */}
           <View className="mb-3 mt-7 flex-row items-center">
-            <Tablets size={18} color={colors.gold[600]} />
+            <Tablets size={18} color={colors.brand[600]} />
             <Text className="ml-2 flex-1 text-base font-extrabold text-navy-text">
               {t('prescriptions.medications')}
             </Text>
@@ -247,7 +247,7 @@ export default function PrescriptionDetailScreen() {
           {prescription.notes ? (
             <View className="mt-4 rounded-2xl border border-cream-300 bg-white p-4">
               <View className="flex-row items-center">
-                <NotebookPen size={16} color={colors.gold[600]} />
+                <NotebookPen size={16} color={colors.brand[600]} />
                 <Text className="ml-2 text-sm font-bold text-navy-text">
                   {t('prescriptions.notes')}
                 </Text>
@@ -260,9 +260,9 @@ export default function PrescriptionDetailScreen() {
 
           {/* "Important" callout — carried over from the reference verbatim in
               intent: this is the one message that must survive any redesign. */}
-          <View className="mt-4 flex-row rounded-2xl border border-gold-100 bg-gold-50 p-4">
+          <View className="mt-4 flex-row rounded-2xl border border-brand-100 bg-brand-50 p-4">
             <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-white">
-              <ShieldCheck size={18} color={colors.gold[600]} />
+              <ShieldCheck size={18} color={colors.brand[600]} />
             </View>
             <View className="flex-1">
               <Text className="text-sm font-bold text-navy-text">
@@ -321,7 +321,7 @@ function MedicationCard({
     <View className="rounded-2xl border border-cream-300 bg-white p-4">
       {/* Name + dispense state */}
       <View className="flex-row items-start">
-        <View className="h-7 w-7 items-center justify-center rounded-lg bg-gold-500">
+        <View className="h-7 w-7 items-center justify-center rounded-lg bg-brand-500">
           <Text className="text-xs font-extrabold text-white">{index}</Text>
         </View>
         <View className="ml-3 flex-1">
@@ -352,8 +352,8 @@ function MedicationCard({
       </View>
 
       {/* The safety-critical block. Deliberately the loudest thing on the card. */}
-      <View className="mt-3.5 overflow-hidden rounded-2xl border border-gold-100 bg-gold-50 px-4">
-        <Text className="pb-1 pt-3.5 text-[11px] font-bold uppercase tracking-wide text-gold-700">
+      <View className="mt-3.5 overflow-hidden rounded-2xl border border-brand-100 bg-brand-50 px-4">
+        <Text className="pb-1 pt-3.5 text-[11px] font-bold uppercase tracking-wide text-brand-700">
           {t('prescriptions.howToTake')}
         </Text>
         <DosageRow label={t('prescriptions.dose')} value={item.dose} emphasis />
@@ -410,7 +410,7 @@ function DosageRow({
 
   return (
     <View
-      className={`flex-row items-center py-3 ${last ? '' : 'border-b border-gold-100'}`}
+      className={`flex-row items-center py-3 ${last ? '' : 'border-b border-brand-100'}`}
     >
       <Text className="w-24 text-[11px] font-semibold uppercase tracking-wide text-navy-muted">
         {label}
@@ -471,22 +471,22 @@ function FindNearbyRow({ drugName }: { drugName: string }) {
         }
       }}
       accessibilityRole="button"
-      className="mt-3.5 flex-row items-center rounded-xl border border-gold-500 px-3 py-3"
+      className="mt-3.5 flex-row items-center rounded-xl border border-brand-500 px-3 py-3"
     >
-      <View className="h-8 w-8 items-center justify-center rounded-lg bg-gold-50">
+      <View className="h-8 w-8 items-center justify-center rounded-lg bg-brand-50">
         {medicine ? (
-          <Store size={16} color={colors.gold[600]} />
+          <Store size={16} color={colors.brand[600]} />
         ) : (
-          <Search size={16} color={colors.gold[600]} />
+          <Search size={16} color={colors.brand[600]} />
         )}
       </View>
       <View className="ml-2.5 flex-1">
-        <Text className="text-xs font-bold text-gold-600">{t('prescriptions.findNearby')}</Text>
+        <Text className="text-xs font-bold text-brand-600">{t('prescriptions.findNearby')}</Text>
         <Text className="mt-0.5 text-[11px] text-navy-secondary" numberOfLines={1}>
           {isPending ? t('prescriptions.nearbyChecking') : hint}
         </Text>
       </View>
-      <ChevronRight size={16} color={colors.gold[600]} />
+      <ChevronRight size={16} color={colors.brand[600]} />
     </Pressable>
   );
 }

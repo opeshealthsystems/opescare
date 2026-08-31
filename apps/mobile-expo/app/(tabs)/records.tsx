@@ -74,7 +74,7 @@ interface FeedGroup {
 const FEED_META: Record<FeedType, { icon: LucideIcon; color: string; surface: string }> = {
   visit: { icon: Stethoscope, color: colors.navy.secondary, surface: colors.cream[200] },
   lab_result: { icon: FlaskConical, color: colors.semantic.info, surface: colors.semantic.infoSurface },
-  prescription: { icon: Pill, color: colors.gold[600], surface: colors.gold[50] },
+  prescription: { icon: Pill, color: colors.brand[600], surface: colors.brand[50] },
   allergy: { icon: AlertTriangle, color: colors.semantic.danger, surface: colors.semantic.dangerSurface },
   condition: { icon: Activity, color: colors.semantic.warning, surface: colors.semantic.warningSurface },
   immunization: { icon: Syringe, color: colors.semantic.success, surface: colors.semantic.successSurface },
@@ -295,7 +295,7 @@ export default function RecordsScreen() {
         className="flex-1 px-6"
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={refetchAll} tintColor={colors.gold[500]} />
+          <RefreshControl refreshing={isRefreshing} onRefresh={refetchAll} tintColor={colors.brand[500]} />
         }
       >
         {/* Header — title block with the export affordance on the right, the
@@ -311,10 +311,10 @@ export default function RecordsScreen() {
             accessibilityLabel={t('records.exportA11y')}
             hitSlop={6}
             className="flex-row items-center rounded-full border px-4 py-2.5"
-            style={{ borderColor: colors.gold[300], backgroundColor: colors.gold[50] }}
+            style={{ borderColor: colors.brand[300], backgroundColor: colors.brand[50] }}
           >
-            <Download size={14} color={colors.gold[600]} />
-            <Text className="ml-2 text-xs font-bold text-gold-600">{t('records.export')}</Text>
+            <Download size={14} color={colors.brand[600]} />
+            <Text className="ml-2 text-xs font-bold text-brand-600">{t('records.export')}</Text>
           </Pressable>
         </View>
 
@@ -362,7 +362,7 @@ export default function RecordsScreen() {
               />
               <Stat
                 icon={NotebookPen}
-                color={colors.gold[600]}
+                color={colors.brand[600]}
                 label={t('records.summary.events')}
                 value={
                   isLoading
@@ -389,8 +389,8 @@ export default function RecordsScreen() {
           />
           <BrowseTile
             icon={Pill}
-            color={colors.gold[600]}
-            surface={colors.gold[50]}
+            color={colors.brand[600]}
+            surface={colors.brand[50]}
             label={t('records.browse.prescriptions')}
             onPress={() => router.push('/prescriptions')}
           />
@@ -417,8 +417,8 @@ export default function RecordsScreen() {
                 accessibilityRole="button"
                 className="mt-3 flex-row items-center self-start"
               >
-                <RotateCcw size={13} color={colors.gold[600]} />
-                <Text className="ml-1.5 text-xs font-bold text-gold-600">{t('records.partial.retry')}</Text>
+                <RotateCcw size={13} color={colors.brand[600]} />
+                <Text className="ml-1.5 text-xs font-bold text-brand-600">{t('records.partial.retry')}</Text>
               </Pressable>
             </View>
           </View>
@@ -616,8 +616,8 @@ function FilterChip({
       accessibilityState={{ selected: active }}
       className="flex-row items-center rounded-full border px-4 py-2"
       style={{
-        borderColor: active ? colors.gold[500] : colors.cream[300],
-        backgroundColor: active ? colors.gold[500] : colors.white,
+        borderColor: active ? colors.brand[500] : colors.cream[300],
+        backgroundColor: active ? colors.brand[500] : colors.white,
       }}
     >
       <Text className="text-xs font-semibold" style={{ color: active ? colors.white : colors.navy.secondary }}>
@@ -625,7 +625,7 @@ function FilterChip({
       </Text>
       <View
         className="ml-2 rounded-full px-1.5 py-0.5"
-        style={{ backgroundColor: active ? colors.gold[600] : colors.cream[200] }}
+        style={{ backgroundColor: active ? colors.brand[600] : colors.cream[200] }}
       >
         <Text
           className="text-[10px] font-bold"
@@ -698,8 +698,8 @@ function FeedRow({
           className="mt-3 flex-row items-center justify-end border-t pt-3"
           style={{ borderTopColor: colors.cream[200] }}
         >
-          <Text className="text-xs font-bold text-gold-600">{item.actionLabel}</Text>
-          <ChevronRight size={14} color={colors.gold[600]} />
+          <Text className="text-xs font-bold text-brand-600">{item.actionLabel}</Text>
+          <ChevronRight size={14} color={colors.brand[600]} />
         </View>
       ) : null}
     </>
@@ -856,9 +856,9 @@ function EmptyState({
       <View className="items-center rounded-2xl bg-white px-6 py-8">
         <View
           className="h-16 w-16 items-center justify-center rounded-full"
-          style={{ backgroundColor: colors.gold[50] }}
+          style={{ backgroundColor: colors.brand[50] }}
         >
-          <NotebookPen size={26} color={colors.gold[500]} />
+          <NotebookPen size={26} color={colors.brand[500]} />
         </View>
         <Text className="mt-4 text-center text-lg font-extrabold text-navy-text">
           {t('records.empty.title')}
@@ -880,9 +880,9 @@ function EmptyState({
               <View className="w-9 items-center">
                 <View
                   className="h-9 w-9 items-center justify-center rounded-full"
-                  style={{ backgroundColor: colors.gold[50] }}
+                  style={{ backgroundColor: colors.brand[50] }}
                 >
-                  <Icon size={16} color={colors.gold[600]} />
+                  <Icon size={16} color={colors.brand[600]} />
                 </View>
                 {last ? null : (
                   <View className="my-1 w-px flex-1" style={{ backgroundColor: colors.cream[300] }} />
@@ -902,7 +902,7 @@ function EmptyState({
           onPress={onFindCare}
           accessibilityRole="button"
           className="flex-1 flex-row items-center justify-center rounded-full py-3.5"
-          style={{ backgroundColor: colors.gold[500] }}
+          style={{ backgroundColor: colors.brand[500] }}
         >
           <MapPin size={15} color={colors.white} />
           <Text className="ml-2 text-xs font-bold text-white" numberOfLines={1}>
@@ -913,10 +913,10 @@ function EmptyState({
           onPress={onBook}
           accessibilityRole="button"
           className="flex-1 flex-row items-center justify-center rounded-full border py-3.5"
-          style={{ borderColor: colors.gold[300], backgroundColor: colors.white }}
+          style={{ borderColor: colors.brand[300], backgroundColor: colors.white }}
         >
-          <Calendar size={15} color={colors.gold[600]} />
-          <Text className="ml-2 text-xs font-bold text-gold-600" numberOfLines={1}>
+          <Calendar size={15} color={colors.brand[600]} />
+          <Text className="ml-2 text-xs font-bold text-brand-600" numberOfLines={1}>
             {t('records.empty.bookVisit')}
           </Text>
         </Pressable>
@@ -951,9 +951,9 @@ function FilteredEmptyState({
         onPress={onReset}
         accessibilityRole="button"
         className="mt-4 rounded-full border px-5 py-2.5"
-        style={{ borderColor: colors.gold[300] }}
+        style={{ borderColor: colors.brand[300] }}
       >
-        <Text className="text-xs font-bold text-gold-600">{reset}</Text>
+        <Text className="text-xs font-bold text-brand-600">{reset}</Text>
       </Pressable>
     </View>
   );

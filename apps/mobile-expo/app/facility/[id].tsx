@@ -93,7 +93,7 @@ function ContactRow({
 }) {
   const body = (
     <View className="flex-row items-center py-3">
-      <Icon size={16} color={colors.gold[600]} />
+      <Icon size={16} color={colors.brand[600]} />
       <View className="ml-3 flex-1">
         <Text className="text-xs text-navy-muted">{label}</Text>
         <Text className="mt-0.5 text-sm font-semibold text-navy-text">{value}</Text>
@@ -116,9 +116,9 @@ function ProviderRow({
     <Pressable onPress={onPress} className="mb-3 flex-row items-center rounded-2xl bg-white p-4">
       <View
         className="h-12 w-12 items-center justify-center rounded-full"
-        style={{ backgroundColor: colors.gold[50] }}
+        style={{ backgroundColor: colors.brand[50] }}
       >
-        <Text className="text-sm font-extrabold text-gold-600">
+        <Text className="text-sm font-extrabold text-brand-600">
           {providerInitials(provider.name)}
         </Text>
       </View>
@@ -229,9 +229,9 @@ export default function FacilityDetailScreen() {
         <Pressable
           onPress={() => router.back()}
           hitSlop={8}
-          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+          className="h-11 w-11 items-center justify-center rounded-full border border-brand-300"
         >
-          <ArrowLeft size={18} color={colors.gold[600]} />
+          <ArrowLeft size={18} color={colors.brand[600]} />
         </Pressable>
         <Text className="ml-4 flex-1 text-lg font-extrabold text-navy-text" numberOfLines={1}>
           {facility?.facility_name ?? t('facility.title')}
@@ -240,18 +240,18 @@ export default function FacilityDetailScreen() {
 
       {facilityQuery.isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={colors.gold[500]} />
+          <ActivityIndicator color={colors.brand[500]} />
         </View>
       ) : facilityQuery.isError || !facility ? (
         <View className="flex-1 items-center justify-center px-10">
-          <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-gold-50">
-            <TriangleAlert size={26} color={colors.gold[500]} />
+          <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-brand-50">
+            <TriangleAlert size={26} color={colors.brand[500]} />
           </View>
           <Text className="text-center text-sm text-navy-secondary">{t('facility.loadError')}</Text>
           <Pressable
             onPress={() => facilityQuery.refetch()}
             className="mt-4 rounded-xl px-5 py-2.5"
-            style={{ backgroundColor: colors.gold[500] }}
+            style={{ backgroundColor: colors.brand[500] }}
           >
             <Text className="text-sm font-semibold text-white">{t('facility.retry')}</Text>
           </Pressable>
@@ -263,11 +263,11 @@ export default function FacilityDetailScreen() {
             <View className="flex-row items-start">
               <View
                 className="mr-3 h-12 w-12 items-center justify-center rounded-2xl"
-                style={{ backgroundColor: colors.gold[50] }}
+                style={{ backgroundColor: colors.brand[50] }}
               >
                 {(() => {
                   const Icon = iconForFacilityType(facility.facility_type);
-                  return <Icon size={22} color={colors.gold[600]} />;
+                  return <Icon size={22} color={colors.brand[600]} />;
                 })()}
               </View>
               <View className="flex-1">
@@ -303,7 +303,7 @@ export default function FacilityDetailScreen() {
                 <Pressable
                   onPress={callFacility}
                   className="flex-1 flex-row items-center justify-center rounded-2xl py-3"
-                  style={{ backgroundColor: colors.gold[500] }}
+                  style={{ backgroundColor: colors.brand[500] }}
                 >
                   <Phone size={15} color={colors.white} />
                   <Text className="ml-2 text-sm font-semibold text-white">
@@ -315,10 +315,10 @@ export default function FacilityDetailScreen() {
                 <Pressable
                   onPress={() => openUrl(mapsUrl)}
                   className="flex-1 flex-row items-center justify-center rounded-2xl border py-3"
-                  style={{ borderColor: colors.gold[300] }}
+                  style={{ borderColor: colors.brand[300] }}
                 >
-                  <Navigation size={15} color={colors.gold[600]} />
-                  <Text className="ml-2 text-sm font-semibold text-gold-600">
+                  <Navigation size={15} color={colors.brand[600]} />
+                  <Text className="ml-2 text-sm font-semibold text-brand-600">
                     {t('facility.getDirections')}
                   </Text>
                 </Pressable>
@@ -331,7 +331,7 @@ export default function FacilityDetailScreen() {
           <View className="rounded-2xl bg-white p-4">
             {slotsQuery.isLoading ? (
               <View className="flex-row items-center py-1">
-                <ActivityIndicator size="small" color={colors.gold[500]} />
+                <ActivityIndicator size="small" color={colors.brand[500]} />
                 <Text className="ml-3 text-sm text-navy-secondary">
                   {t('facility.booking.checking')}
                 </Text>
@@ -360,10 +360,10 @@ export default function FacilityDetailScreen() {
                   <Pressable
                     onPress={callFacility}
                     className="mt-3 flex-row items-center justify-center rounded-xl border py-2.5"
-                    style={{ borderColor: colors.gold[300] }}
+                    style={{ borderColor: colors.brand[300] }}
                   >
-                    <Phone size={14} color={colors.gold[600]} />
-                    <Text className="ml-2 text-xs font-semibold text-gold-600">
+                    <Phone size={14} color={colors.brand[600]} />
+                    <Text className="ml-2 text-xs font-semibold text-brand-600">
                       {t('facility.booking.callInstead')}
                     </Text>
                   </Pressable>
@@ -385,10 +385,10 @@ export default function FacilityDetailScreen() {
                 <Pressable
                   onPress={goToBooking}
                   className="mt-3 flex-row items-center justify-center rounded-xl border py-2.5"
-                  style={{ borderColor: colors.gold[300] }}
+                  style={{ borderColor: colors.brand[300] }}
                 >
-                  <CalendarPlus size={14} color={colors.gold[600]} />
-                  <Text className="ml-2 text-xs font-semibold text-gold-600">
+                  <CalendarPlus size={14} color={colors.brand[600]} />
+                  <Text className="ml-2 text-xs font-semibold text-brand-600">
                     {t('facility.booking.checkDates')}
                   </Text>
                 </Pressable>
@@ -443,12 +443,12 @@ export default function FacilityDetailScreen() {
               <Text className="text-sm font-bold text-navy-text">{t('facility.doctorsTitle')}</Text>
               <Text className="text-xs text-navy-muted">{t('facility.doctorsSubtitle')}</Text>
             </View>
-            <Stethoscope size={18} color={colors.gold[600]} />
+            <Stethoscope size={18} color={colors.brand[600]} />
           </View>
 
           {providersQuery.isLoading ? (
             <View className="items-center py-6">
-              <ActivityIndicator color={colors.gold[500]} />
+              <ActivityIndicator color={colors.brand[500]} />
             </View>
           ) : providersQuery.isError ? (
             <View className="rounded-2xl bg-white p-4">
@@ -519,7 +519,7 @@ export default function FacilityDetailScreen() {
                       <View className="flex-row items-center">
                         <Clock
                           size={14}
-                          color={isToday ? colors.gold[600] : colors.navy.muted}
+                          color={isToday ? colors.brand[600] : colors.navy.muted}
                         />
                         <Text
                           className={`ml-2 text-sm ${isToday ? 'font-bold text-navy-text' : 'text-navy-secondary'}`}
@@ -529,9 +529,9 @@ export default function FacilityDetailScreen() {
                         {isToday ? (
                           <View
                             className="ml-2 rounded-full px-2 py-0.5"
-                            style={{ backgroundColor: colors.gold[50] }}
+                            style={{ backgroundColor: colors.brand[50] }}
                           >
-                            <Text className="text-[9px] font-bold uppercase text-gold-600">
+                            <Text className="text-[9px] font-bold uppercase text-brand-600">
                               {t('facility.todayLabel')}
                             </Text>
                           </View>

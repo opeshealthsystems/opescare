@@ -41,9 +41,9 @@ export function ScreenHeader({
         onPress={onBack}
         hitSlop={8}
         accessibilityRole="button"
-        className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+        className="h-11 w-11 items-center justify-center rounded-full border border-brand-300"
       >
-        <ArrowLeft size={18} color={colors.gold[600]} />
+        <ArrowLeft size={18} color={colors.brand[600]} />
       </Pressable>
       <View className="ml-4 flex-1">
         <Text className="text-xl font-extrabold text-navy-text" numberOfLines={1}>
@@ -56,8 +56,8 @@ export function ScreenHeader({
         ) : null}
       </View>
       {TrailingIcon ? (
-        <View className="ml-3 h-11 w-11 items-center justify-center rounded-full bg-gold-50">
-          <TrailingIcon size={19} color={colors.gold[600]} />
+        <View className="ml-3 h-11 w-11 items-center justify-center rounded-full bg-brand-50">
+          <TrailingIcon size={19} color={colors.brand[600]} />
         </View>
       ) : null}
     </View>
@@ -87,7 +87,7 @@ export function IconTile({
   size?: number;
 }) {
   const palette =
-    tone === 'gold' ? { bg: colors.gold[50], fg: colors.gold[600] } : TONE[tone];
+    tone === 'gold' ? { bg: colors.brand[50], fg: colors.brand[600] } : TONE[tone];
   return (
     <View
       className="items-center justify-center rounded-xl"
@@ -149,9 +149,9 @@ export function ExplainerSteps({
           <View className="items-center" style={{ width: 30 }}>
             <View
               className="h-7 w-7 items-center justify-center rounded-full"
-              style={{ backgroundColor: colors.gold[50] }}
+              style={{ backgroundColor: colors.brand[50] }}
             >
-              <Text className="text-[11px] font-extrabold text-gold-600">{index + 1}</Text>
+              <Text className="text-[11px] font-extrabold text-brand-600">{index + 1}</Text>
             </View>
             {index < steps.length - 1 ? (
               <View
@@ -212,7 +212,7 @@ export function StateHeading({
   tone?: Tone | 'gold';
 }) {
   const palette =
-    tone === 'gold' ? { bg: colors.gold[50], fg: colors.gold[600] } : TONE[tone];
+    tone === 'gold' ? { bg: colors.brand[50], fg: colors.brand[600] } : TONE[tone];
   return (
     <View className="items-center">
       <View
@@ -242,10 +242,10 @@ export function GhostButton({
       onPress={onPress}
       accessibilityRole="button"
       className="flex-row items-center justify-center rounded-2xl border px-5 py-3.5"
-      style={{ borderColor: colors.gold[500] }}
+      style={{ borderColor: colors.brand[500] }}
     >
-      <Icon size={16} color={colors.gold[600]} />
-      <Text className="ml-2 text-sm font-bold text-gold-600">{label}</Text>
+      <Icon size={16} color={colors.brand[600]} />
+      <Text className="ml-2 text-sm font-bold text-brand-600">{label}</Text>
     </Pressable>
   );
 }

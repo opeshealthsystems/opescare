@@ -66,7 +66,7 @@ function BookingBanner({ onPress }: { onPress: () => void }) {
         className="h-12 w-12 items-center justify-center rounded-full"
         style={{ backgroundColor: colors.white }}
       >
-        <CalendarPlus size={22} color={colors.gold[500]} />
+        <CalendarPlus size={22} color={colors.brand[500]} />
       </View>
       <View className="ml-3 flex-1">
         <Text className="text-[15px] font-bold" style={{ color: colors.white }}>
@@ -80,7 +80,7 @@ function BookingBanner({ onPress }: { onPress: () => void }) {
         {/* LinearGradient has no cssInterop registered — className is a no-op on
             it, so every style here has to be inline. */}
         <LinearGradient
-          colors={[colors.gold[500], colors.gold[300]]}
+          colors={[colors.brand[500], colors.brand[300]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{
@@ -140,7 +140,7 @@ function SegmentedControl({
             {counts[value] > 0 ? (
               <View
                 className="rounded-full px-1.5"
-                style={{ backgroundColor: active ? colors.gold[500] : colors.cream[200] }}
+                style={{ backgroundColor: active ? colors.brand[500] : colors.cream[200] }}
               >
                 <Text
                   className="text-[10px] font-bold"
@@ -181,7 +181,7 @@ function DateTile({ iso, locale }: { iso: string | null; locale: string }) {
       className="w-[52px] overflow-hidden rounded-xl"
       style={{ borderWidth: 1, borderColor: colors.cream[300] }}
     >
-      <View className="items-center py-1" style={{ backgroundColor: colors.gold[500] }}>
+      <View className="items-center py-1" style={{ backgroundColor: colors.brand[500] }}>
         <Text className="text-[10px] font-bold tracking-wide" style={{ color: colors.white }}>
           {tile.month}
         </Text>
@@ -223,9 +223,9 @@ function AppointmentRow({
 
       <View
         className="ml-3 h-11 w-11 items-center justify-center rounded-full"
-        style={{ backgroundColor: colors.gold[50] }}
+        style={{ backgroundColor: colors.brand[50] }}
       >
-        <TypeIcon size={19} color={colors.gold[600]} />
+        <TypeIcon size={19} color={colors.brand[600]} />
       </View>
 
       <View className="ml-3 flex-1">
@@ -250,7 +250,7 @@ function AppointmentRow({
             {item.reason ? (
               <Text
                 className="mt-0.5 text-xs font-semibold"
-                style={{ color: colors.gold[600] }}
+                style={{ color: colors.brand[600] }}
                 numberOfLines={1}
               >
                 {item.reason}
@@ -292,7 +292,7 @@ function AppointmentRow({
         </View>
 
         {relative ? (
-          <Text className="mt-1 text-[11px] font-semibold" style={{ color: colors.gold[600] }}>
+          <Text className="mt-1 text-[11px] font-semibold" style={{ color: colors.brand[600] }}>
             {relative}
           </Text>
         ) : null}
@@ -321,9 +321,9 @@ function EmptyState({ scope, onBook }: { scope: AppointmentBoardScope; onBook: (
     <View className="items-center px-8 py-14">
       <View
         className="h-20 w-20 items-center justify-center rounded-full"
-        style={{ backgroundColor: colors.gold[50] }}
+        style={{ backgroundColor: colors.brand[50] }}
       >
-        <Icon size={30} color={colors.gold[500]} />
+        <Icon size={30} color={colors.brand[500]} />
       </View>
       <Text
         className="mt-5 text-center text-base font-bold"
@@ -340,7 +340,7 @@ function EmptyState({ scope, onBook }: { scope: AppointmentBoardScope; onBook: (
       {upcoming ? (
         <Pressable onPress={onBook} accessibilityRole="button" className="mt-5">
           <LinearGradient
-            colors={[colors.gold[600], colors.gold[500], colors.gold[300]]}
+            colors={[colors.brand[600], colors.brand[500], colors.brand[300]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={{
@@ -383,10 +383,10 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
         onPress={onRetry}
         accessibilityRole="button"
         className="mt-5 flex-row items-center rounded-full px-5 py-3"
-        style={{ borderWidth: 1, borderColor: colors.gold[500], gap: 8 }}
+        style={{ borderWidth: 1, borderColor: colors.brand[500], gap: 8 }}
       >
-        <RefreshCw size={15} color={colors.gold[600]} />
-        <Text className="text-sm font-semibold" style={{ color: colors.gold[600] }}>
+        <RefreshCw size={15} color={colors.brand[600]} />
+        <Text className="text-sm font-semibold" style={{ color: colors.brand[600] }}>
           {t('appointments.retry')}
         </Text>
       </Pressable>
@@ -418,9 +418,9 @@ export default function AppointmentsListScreen() {
           hitSlop={8}
           accessibilityRole="button"
           className="h-11 w-11 items-center justify-center rounded-full"
-          style={{ borderWidth: 1, borderColor: colors.gold[300] }}
+          style={{ borderWidth: 1, borderColor: colors.brand[300] }}
         >
-          <ArrowLeft size={18} color={colors.gold[600]} />
+          <ArrowLeft size={18} color={colors.brand[600]} />
         </Pressable>
       </View>
 
@@ -432,7 +432,7 @@ export default function AppointmentsListScreen() {
           <RefreshControl
             refreshing={board.isFetching}
             onRefresh={board.refetch}
-            tintColor={colors.gold[500]}
+            tintColor={colors.brand[500]}
           />
         }
       >
@@ -453,7 +453,7 @@ export default function AppointmentsListScreen() {
         >
           {board.isLoading ? (
             <View className="items-center py-16">
-              <ActivityIndicator color={colors.gold[500]} />
+              <ActivityIndicator color={colors.brand[500]} />
             </View>
           ) : segment.isError ? (
             <ErrorState onRetry={board.refetch} />
@@ -477,13 +477,13 @@ export default function AppointmentsListScreen() {
 
         <View
           className="mt-4 flex-row items-center rounded-3xl p-4"
-          style={{ backgroundColor: colors.gold[50] }}
+          style={{ backgroundColor: colors.brand[50] }}
         >
           <View
             className="h-11 w-11 items-center justify-center rounded-full"
             style={{ backgroundColor: colors.white }}
           >
-            <ShieldPlus size={20} color={colors.gold[600]} />
+            <ShieldPlus size={20} color={colors.brand[600]} />
           </View>
           <View className="ml-3 flex-1">
             <Text className="text-sm font-bold" style={{ color: colors.navy.text }}>

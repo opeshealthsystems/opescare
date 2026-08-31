@@ -53,7 +53,7 @@ export function TextField({
   const borderColor = error
     ? colors.semantic.danger
     : focused
-      ? colors.gold[500]
+      ? colors.brand[500]
       : colors.cream[300];
 
   // Derive the handler types from TextInputProps — RN 0.86 narrowed these to
@@ -89,7 +89,7 @@ export function TextField({
                 fontSize: typography.size.sm,
                 lineHeight: typography.lineHeight.sm,
                 fontWeight: typography.weight.bold,
-                color: colors.gold[500],
+                color: colors.brand[500],
               }}
             >
               *
@@ -106,7 +106,7 @@ export function TextField({
           borderWidth: focused || error ? 1.5 : 1,
           backgroundColor: isDisabled ? colors.cream[100] : colors.surface.card,
           // A soft ring instead of a hard glow — matches the reference inputs.
-          shadowColor: error ? colors.semantic.danger : colors.gold[500],
+          shadowColor: error ? colors.semantic.danger : colors.brand[500],
           shadowOpacity: focused || error ? 0.16 : 0,
           shadowRadius: 8,
           shadowOffset: { width: 0, height: 0 },
@@ -116,7 +116,7 @@ export function TextField({
         {Icon ? (
           <Icon
             size={sizing.icon.md}
-            color={error ? colors.semantic.danger : focused ? colors.gold[500] : colors.navy.muted}
+            color={error ? colors.semantic.danger : focused ? colors.brand[500] : colors.navy.muted}
             style={{ marginRight: spacing.sm }}
           />
         ) : null}
@@ -145,7 +145,7 @@ export function TextField({
             {hidden ? (
               <EyeOff size={sizing.icon.md} color={colors.navy.muted} />
             ) : (
-              <Eye size={sizing.icon.md} color={colors.gold[500]} />
+              <Eye size={sizing.icon.md} color={colors.brand[500]} />
             )}
           </Pressable>
         ) : null}

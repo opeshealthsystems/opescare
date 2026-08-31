@@ -342,14 +342,14 @@ export default function SignupScreen() {
               hitSlop={8}
               accessibilityRole="button"
               accessibilityLabel={step === 1 ? t('signup.back') : t('signup.backToStep')}
-              className="h-11 w-11 items-center justify-center rounded-full border border-gold-300 bg-white"
+              className="h-11 w-11 items-center justify-center rounded-full border border-brand-300 bg-white"
             >
-              <ArrowLeft size={18} color={colors.gold[600]} />
+              <ArrowLeft size={18} color={colors.brand[600]} />
             </Pressable>
 
-            <View className="flex-row items-center rounded-full border border-gold-300 bg-gold-50 px-3 py-2">
-              <ShieldCheck size={14} color={colors.gold[600]} />
-              <Text className="ml-1.5 text-[11px] font-bold text-gold-600">
+            <View className="flex-row items-center rounded-full border border-brand-300 bg-brand-50 px-3 py-2">
+              <ShieldCheck size={14} color={colors.brand[600]} />
+              <Text className="ml-1.5 text-[11px] font-bold text-brand-600">
                 {t('signup.secureBadge')}
               </Text>
             </View>
@@ -369,7 +369,7 @@ export default function SignupScreen() {
           <StepRail step={step} onSelectStep={goToStep} />
 
           {conflictMessage ? (
-            <View className="mt-6 rounded-2xl border border-warning bg-gold-50 p-4">
+            <View className="mt-6 rounded-2xl border border-warning bg-brand-50 p-4">
               <View className="flex-row items-start">
                 <TriangleAlert size={18} color={colors.semantic.warning} />
                 <View className="ml-3 flex-1">
@@ -384,9 +384,9 @@ export default function SignupScreen() {
               </View>
               <Pressable
                 onPress={() => router.replace('/(auth)/login')}
-                className="mt-3 h-11 items-center justify-center rounded-xl border border-gold-500 bg-white"
+                className="mt-3 h-11 items-center justify-center rounded-xl border border-brand-500 bg-white"
               >
-                <Text className="text-sm font-bold text-gold-600">
+                <Text className="text-sm font-bold text-brand-600">
                   {t('signup.signInInstead')}
                 </Text>
               </Pressable>
@@ -407,8 +407,8 @@ export default function SignupScreen() {
               onboarding reference. */}
           <View className="mt-6 rounded-3xl border border-cream-300 bg-white p-5">
             <View className="mb-5 flex-row items-start">
-              <View className="h-11 w-11 items-center justify-center rounded-full bg-gold-50">
-                <StepIcon size={20} color={colors.gold[600]} />
+              <View className="h-11 w-11 items-center justify-center rounded-full bg-brand-50">
+                <StepIcon size={20} color={colors.brand[600]} />
               </View>
               <View className="ml-3 flex-1">
                 <Text className="text-base font-bold text-navy-text">
@@ -630,13 +630,13 @@ export default function SignupScreen() {
             <View className="mt-6 flex-row items-center justify-center">
               <Text className="text-sm text-navy-secondary">{t('signup.alreadyHaveAccount')} </Text>
               <Pressable onPress={() => router.replace('/(auth)/login')} hitSlop={8}>
-                <Text className="text-sm font-bold text-gold-500">{t('auth.signIn')}</Text>
+                <Text className="text-sm font-bold text-brand-500">{t('auth.signIn')}</Text>
               </Pressable>
             </View>
           ) : null}
 
-          <View className="mt-6 flex-row items-start rounded-2xl bg-gold-50 p-4">
-            <ShieldCheck size={16} color={colors.gold[600]} />
+          <View className="mt-6 flex-row items-start rounded-2xl bg-brand-50 p-4">
+            <ShieldCheck size={16} color={colors.brand[600]} />
             <Text className="ml-3 flex-1 text-xs leading-4 text-navy-secondary">
               {t('auth.securityNote')}
             </Text>
@@ -668,9 +668,9 @@ function StepRail({
           const done = value < step;
           const active = value === step;
           const Icon = STEP_ICONS[value];
-          const circleBg = done || active ? colors.gold[500] : colors.cream[200];
+          const circleBg = done || active ? colors.brand[500] : colors.cream[200];
           const labelColor = active
-            ? colors.gold[600]
+            ? colors.brand[600]
             : done
               ? colors.navy.secondary
               : colors.navy.muted;
@@ -684,7 +684,7 @@ function StepRail({
                     height: 2,
                     marginTop: 21,
                     borderRadius: 1,
-                    backgroundColor: done || active ? colors.gold[300] : colors.cream[300],
+                    backgroundColor: done || active ? colors.brand[300] : colors.cream[300],
                   }}
                 />
               ) : null}
@@ -703,7 +703,7 @@ function StepRail({
                   style={{
                     backgroundColor: circleBg,
                     borderWidth: active ? 3 : 1,
-                    borderColor: active ? colors.gold[100] : colors.cream[300],
+                    borderColor: active ? colors.brand[100] : colors.cream[300],
                   }}
                 >
                   {done ? (
@@ -768,8 +768,8 @@ function DobField({
             </>
           ) : (
             <>
-              <CircleCheck size={12} color={colors.gold[600]} />
-              <Text className="ml-2 text-xs font-semibold text-gold-600">
+              <CircleCheck size={12} color={colors.brand[600]} />
+              <Text className="ml-2 text-xs font-semibold text-brand-600">
                 {t('signup.dobAge', { age })}
               </Text>
             </>
@@ -815,22 +815,22 @@ function SexPicker({
               style={{
                 width: '47%',
                 borderColor: selected
-                  ? colors.gold[500]
+                  ? colors.brand[500]
                   : error
                     ? colors.semantic.danger
                     : colors.cream[300],
-                backgroundColor: selected ? colors.gold[50] : colors.white,
+                backgroundColor: selected ? colors.brand[50] : colors.white,
               }}
             >
-              <OptionIcon size={16} color={selected ? colors.gold[600] : colors.navy.muted} />
+              <OptionIcon size={16} color={selected ? colors.brand[600] : colors.navy.muted} />
               <Text
                 numberOfLines={1}
                 className="ml-2 flex-1 text-xs font-semibold"
-                style={{ color: selected ? colors.gold[600] : colors.navy.text }}
+                style={{ color: selected ? colors.brand[600] : colors.navy.text }}
               >
                 {t(opt.labelKey)}
               </Text>
-              {selected ? <Check size={14} color={colors.gold[600]} /> : null}
+              {selected ? <Check size={14} color={colors.brand[600]} /> : null}
             </Pressable>
           );
         })}
@@ -853,7 +853,7 @@ function PasswordStrengthCard({ checks, touched }: { checks: PasswordChecks; tou
       : score === 2
         ? { color: colors.semantic.warning, labelKey: 'signup.strengthFair' }
         : score === 3
-          ? { color: colors.gold[500], labelKey: 'signup.strengthGood' }
+          ? { color: colors.brand[500], labelKey: 'signup.strengthGood' }
           : { color: colors.semantic.success, labelKey: 'signup.strengthStrong' };
 
   const rows: { key: keyof PasswordChecks; labelKey: string; required: boolean }[] = [
@@ -890,7 +890,7 @@ function PasswordStrengthCard({ checks, touched }: { checks: PasswordChecks; tou
           return (
             <View key={row.key} className="flex-row items-center">
               {met ? (
-                <CircleCheck size={14} color={colors.gold[600]} />
+                <CircleCheck size={14} color={colors.brand[600]} />
               ) : (
                 <Circle size={14} color={colors.navy.muted} />
               )}
@@ -950,13 +950,13 @@ function RelationshipField({
                 onPress={() => onChange(label)}
                 className="rounded-full border px-3 py-2"
                 style={{
-                  borderColor: selected ? colors.gold[500] : colors.cream[300],
-                  backgroundColor: selected ? colors.gold[50] : colors.white,
+                  borderColor: selected ? colors.brand[500] : colors.cream[300],
+                  backgroundColor: selected ? colors.brand[50] : colors.white,
                 }}
               >
                 <Text
                   className="text-xs font-semibold"
-                  style={{ color: selected ? colors.gold[600] : colors.navy.secondary }}
+                  style={{ color: selected ? colors.brand[600] : colors.navy.secondary }}
                 >
                   {label}
                 </Text>

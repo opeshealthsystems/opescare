@@ -35,10 +35,10 @@ const PALETTES: Record<Tone, TonePalette> = {
     onSolid: colors.white,
   },
   gold: {
-    fg: colors.gold[600],
-    surface: colors.gold[50],
-    border: colors.gold[100],
-    solid: colors.gold[500],
+    fg: colors.brand[600],
+    surface: colors.brand[50],
+    border: colors.brand[100],
+    solid: colors.brand[500],
     onSolid: colors.white,
   },
   success: {
@@ -51,7 +51,7 @@ const PALETTES: Record<Tone, TonePalette> = {
   warning: {
     fg: colors.semantic.warning,
     surface: colors.semantic.warningSurface,
-    border: colors.gold[100],
+    border: colors.brand[100],
     solid: colors.semantic.warning,
     onSolid: colors.white,
   },

@@ -43,7 +43,7 @@ export function toneColors(tone: Tone): ToneColors {
       return { surface: colors.cream[200], ink: colors.navy.secondary };
     case 'brand':
     default:
-      return { surface: colors.gold[50], ink: colors.gold[600] };
+      return { surface: colors.brand[50], ink: colors.brand[600] };
   }
 }
 
@@ -75,16 +75,16 @@ export function RightsHeader({
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel={title}
-          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+          className="h-11 w-11 items-center justify-center rounded-full border border-brand-300"
         >
-          <ArrowLeft size={18} color={colors.gold[600]} />
+          <ArrowLeft size={18} color={colors.brand[600]} />
         </Pressable>
         <Text className="ml-3 flex-1 text-[22px] font-extrabold leading-7 text-navy-text">
           {title}
         </Text>
         {Icon ? (
-          <View className="h-11 w-11 items-center justify-center rounded-full bg-gold-50">
-            <Icon size={20} color={colors.gold[600]} />
+          <View className="h-11 w-11 items-center justify-center rounded-full bg-brand-50">
+            <Icon size={20} color={colors.brand[600]} />
           </View>
         ) : null}
       </View>
@@ -222,8 +222,8 @@ export function ChoiceChip({
       accessibilityState={{ selected }}
       className="rounded-full border px-4 py-2"
       style={{
-        borderColor: selected ? colors.gold[500] : colors.cream[300],
-        backgroundColor: selected ? colors.gold[500] : colors.white,
+        borderColor: selected ? colors.brand[500] : colors.cream[300],
+        backgroundColor: selected ? colors.brand[500] : colors.white,
       }}
     >
       <Text
@@ -250,8 +250,8 @@ export function SectionTitle({
       <View className="flex-row items-center">
         <Text className="text-[15px] font-extrabold text-navy-text">{label}</Text>
         {typeof count === 'number' && count > 0 ? (
-          <View className="ml-2 rounded-full bg-gold-100 px-2 py-0.5">
-            <Text className="text-[11px] font-bold text-gold-600">{count}</Text>
+          <View className="ml-2 rounded-full bg-brand-100 px-2 py-0.5">
+            <Text className="text-[11px] font-bold text-brand-600">{count}</Text>
           </View>
         ) : null}
       </View>
@@ -298,10 +298,10 @@ export function EmptyState({
         <Pressable
           onPress={onAction}
           accessibilityRole="button"
-          className="mt-5 flex-row items-center rounded-full border border-gold-500 px-5 py-2.5"
+          className="mt-5 flex-row items-center rounded-full border border-brand-500 px-5 py-2.5"
         >
-          <Text className="text-[13px] font-bold text-gold-600">{actionLabel}</Text>
-          <ChevronRight size={15} color={colors.gold[600]} />
+          <Text className="text-[13px] font-bold text-brand-600">{actionLabel}</Text>
+          <ChevronRight size={15} color={colors.brand[600]} />
         </Pressable>
       ) : null}
     </View>
@@ -327,8 +327,8 @@ export function NavRow({
       className="flex-row items-center rounded-2xl bg-white p-4"
       style={CARD_SHADOW}
     >
-      <View className="h-11 w-11 items-center justify-center rounded-full bg-gold-100">
-        <Icon size={18} color={colors.gold[600]} />
+      <View className="h-11 w-11 items-center justify-center rounded-full bg-brand-100">
+        <Icon size={18} color={colors.brand[600]} />
       </View>
       <View className="ml-3 flex-1">
         <Text className="text-[14px] font-bold text-navy-text">{title}</Text>

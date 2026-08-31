@@ -209,9 +209,9 @@ export default function EditProfileScreen() {
             accessibilityRole="button"
             accessibilityLabel={t('editProfile.back')}
             hitSlop={8}
-            className="h-11 w-11 items-center justify-center rounded-full border border-gold-300 bg-white"
+            className="h-11 w-11 items-center justify-center rounded-full border border-brand-300 bg-white"
           >
-            <ArrowLeft size={18} color={colors.gold[600]} />
+            <ArrowLeft size={18} color={colors.brand[600]} />
           </Pressable>
           <Text className="ml-4 text-xl font-extrabold text-navy-text">
             {t('editProfile.title')}
@@ -221,8 +221,8 @@ export default function EditProfileScreen() {
 
         {/* Identity anchor — who this form is editing */}
         <View className="mt-5 flex-row items-center rounded-2xl border border-cream-300 bg-white p-4">
-          <View className="h-12 w-12 items-center justify-center rounded-full bg-gold-100">
-            <Text className="text-base font-extrabold text-gold-600">{initials}</Text>
+          <View className="h-12 w-12 items-center justify-center rounded-full bg-brand-100">
+            <Text className="text-base font-extrabold text-brand-600">{initials}</Text>
           </View>
           <View className="ml-3 flex-1">
             <Text className="text-sm font-bold text-navy-text" numberOfLines={1}>
@@ -269,13 +269,13 @@ export default function EditProfileScreen() {
                   accessibilityState={{ selected: active }}
                   className="flex-1 items-center rounded-full border px-3 py-2.5"
                   style={{
-                    borderColor: active ? colors.gold[500] : colors.cream[300],
-                    backgroundColor: active ? colors.gold[50] : colors.white,
+                    borderColor: active ? colors.brand[500] : colors.cream[300],
+                    backgroundColor: active ? colors.brand[50] : colors.white,
                   }}
                 >
                   <Text
                     className="text-xs font-semibold"
-                    style={{ color: active ? colors.gold[600] : colors.navy.secondary }}
+                    style={{ color: active ? colors.brand[600] : colors.navy.secondary }}
                   >
                     {t(`editProfile.sex${option.charAt(0).toUpperCase()}${option.slice(1)}`)}
                   </Text>
@@ -302,13 +302,13 @@ export default function EditProfileScreen() {
                   accessibilityState={{ selected: active }}
                   className="rounded-full border px-4 py-2"
                   style={{
-                    borderColor: active ? colors.gold[500] : colors.cream[300],
-                    backgroundColor: active ? colors.gold[50] : colors.white,
+                    borderColor: active ? colors.brand[500] : colors.cream[300],
+                    backgroundColor: active ? colors.brand[50] : colors.white,
                   }}
                 >
                   <Text
                     className="text-xs font-bold"
-                    style={{ color: active ? colors.gold[600] : colors.navy.secondary }}
+                    style={{ color: active ? colors.brand[600] : colors.navy.secondary }}
                   >
                     {option}
                   </Text>
@@ -504,8 +504,8 @@ function SectionCard({
   return (
     <View className="mt-4 rounded-3xl border border-cream-300 bg-white p-4">
       <View className="mb-4 flex-row items-start">
-        <View className="h-10 w-10 items-center justify-center rounded-xl bg-gold-50">
-          <Icon size={18} color={colors.gold[600]} />
+        <View className="h-10 w-10 items-center justify-center rounded-xl bg-brand-50">
+          <Icon size={18} color={colors.brand[600]} />
         </View>
         <View className="ml-3 flex-1">
           <View className="flex-row items-center justify-between">

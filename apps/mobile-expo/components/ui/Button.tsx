@@ -27,7 +27,7 @@ interface ButtonProps {
  * Use this when: it is the action the screen exists for. One `primary` per
  * view; everything else is `outline`, a `Chip`, or a `SectionHeader` action.
  *
- * The gradient carries a warm gold glow (`elevation.gold`) and presses down;
+ * The gradient carries a warm gold glow (`elevation.brand`) and presses down;
  * disabled swaps to a flat cream fill rather than a washed-out gradient, so a
  * blocked CTA reads as blocked instead of half-rendered. */
 export function Button({
@@ -50,21 +50,21 @@ export function Button({
         accessibilityRole="button"
         accessibilityState={{ disabled: isDisabled, busy: loading }}
         accessibilityLabel={label}
-        className="h-14 flex-row items-center justify-center rounded-2xl border border-gold-500 bg-transparent px-4"
+        className="h-14 flex-row items-center justify-center rounded-2xl border border-brand-500 bg-transparent px-4"
         style={({ pressed }) => [
           {
             // 1.5px reads as a deliberate outline at @3x; 1px disappears.
             borderWidth: 1.5,
-            borderColor: isDisabled ? colors.line.strong : colors.gold[500],
+            borderColor: isDisabled ? colors.line.strong : colors.brand[500],
             // The references never leave an outline button fully transparent on
             // cream — there is always a faint warm fill behind the label.
-            backgroundColor: pressed ? colors.gold[50] : colors.surface.card,
+            backgroundColor: pressed ? colors.brand[50] : colors.surface.card,
           },
           isDisabled ? { opacity: 0.55 } : elevation.sm,
         ]}
       >
         {loading ? (
-          <ActivityIndicator color={colors.gold[600]} size="small" style={{ marginRight: spacing.sm }} />
+          <ActivityIndicator color={colors.brand[600]} size="small" style={{ marginRight: spacing.sm }} />
         ) : null}
         <Text
           numberOfLines={1}
@@ -73,7 +73,7 @@ export function Button({
             lineHeight: typography.lineHeight.md,
             fontWeight: typography.weight.bold,
             letterSpacing: typography.tracking.wide,
-            color: isDisabled ? colors.navy.muted : colors.gold[600],
+            color: isDisabled ? colors.navy.muted : colors.brand[600],
           }}
         >
           {label}
@@ -91,13 +91,13 @@ export function Button({
       accessibilityLabel={label}
       style={({ pressed }) => [
         { borderRadius: radii.lg },
-        isDisabled ? { opacity: 0.6 } : elevation.gold,
+        isDisabled ? { opacity: 0.6 } : elevation.brand,
         pressed && !isDisabled ? { transform: [{ scale: 0.985 }], shadowOpacity: 0.16 } : null,
       ]}
     >
       <LinearGradient
         // Disabled gets a flat cream fill; a faded gradient looks like a bug.
-        colors={isDisabled ? [colors.cream[300], colors.cream[300]] : gradients.gold}
+        colors={isDisabled ? [colors.cream[300], colors.cream[300]] : gradients.brand}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={{
@@ -131,9 +131,9 @@ export function Button({
             }}
           >
             {loading ? (
-              <ActivityIndicator color={colors.gold[600]} size="small" />
+              <ActivityIndicator color={colors.brand[600]} size="small" />
             ) : (
-              <LeftIcon color={isDisabled ? colors.navy.muted : colors.gold[600]} size={sizing.icon.md} />
+              <LeftIcon color={isDisabled ? colors.navy.muted : colors.brand[600]} size={sizing.icon.md} />
             )}
           </View>
         ) : (

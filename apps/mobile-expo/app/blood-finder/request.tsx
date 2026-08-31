@@ -95,7 +95,7 @@ function urgencyTone(value: BloodUrgencyValue): UrgencyTone {
         solid: false,
       };
     default:
-      return { accent: colors.gold[500], surface: colors.gold[50], solid: false };
+      return { accent: colors.brand[500], surface: colors.brand[50], solid: false };
   }
 }
 
@@ -219,9 +219,9 @@ export default function BloodRequestScreen() {
           <Pressable
             onPress={() => router.replace('/blood-finder')}
             accessibilityRole="button"
-            className="mt-4 rounded-xl border border-gold-500 px-4 py-2"
+            className="mt-4 rounded-xl border border-brand-500 px-4 py-2"
           >
-            <Text className="text-xs font-bold text-gold-600">
+            <Text className="text-xs font-bold text-brand-600">
               {t('bloodFinder.request.backToSearch')}
             </Text>
           </Pressable>
@@ -291,9 +291,9 @@ export default function BloodRequestScreen() {
             <Pressable
               onPress={() => search.refetch()}
               accessibilityRole="button"
-              className="mt-3 rounded-xl border border-gold-500 px-4 py-2"
+              className="mt-3 rounded-xl border border-brand-500 px-4 py-2"
             >
-              <Text className="text-xs font-bold text-gold-600">{t('bloodFinder.retry')}</Text>
+              <Text className="text-xs font-bold text-brand-600">{t('bloodFinder.retry')}</Text>
             </Pressable>
           </View>
         ) : !facility ? (
@@ -313,9 +313,9 @@ export default function BloodRequestScreen() {
           />
         ) : (
           <>
-            <View className="mt-5 flex-row rounded-2xl border border-gold-100 bg-cream-200 p-4">
+            <View className="mt-5 flex-row rounded-2xl border border-brand-100 bg-cream-200 p-4">
               <View className="h-16 w-16 items-center justify-center rounded-2xl bg-white">
-                <FacilityIcon size={24} color={colors.gold[600]} />
+                <FacilityIcon size={24} color={colors.brand[600]} />
               </View>
               <View className="ml-4 flex-1">
                 <View className="flex-row items-start">
@@ -351,11 +351,11 @@ export default function BloodRequestScreen() {
                 onPress={() => dial(phone)}
                 disabled={!phone}
                 accessibilityRole="button"
-                className="h-11 flex-1 flex-row items-center justify-center rounded-xl border border-gold-500 bg-white"
+                className="h-11 flex-1 flex-row items-center justify-center rounded-xl border border-brand-500 bg-white"
                 style={{ opacity: phone ? 1 : 0.45 }}
               >
-                <Phone size={14} color={colors.gold[600]} />
-                <Text className="ml-2 text-xs font-bold text-gold-600">
+                <Phone size={14} color={colors.brand[600]} />
+                <Text className="ml-2 text-xs font-bold text-brand-600">
                   {phone ? t('bloodFinder.callShort') : t('bloodFinder.noPhone')}
                 </Text>
               </Pressable>
@@ -486,7 +486,7 @@ export default function BloodRequestScreen() {
               {t('bloodFinder.request.contactPhone')}
             </Text>
             <View className="mt-3 h-14 flex-row items-center rounded-2xl border border-cream-300 bg-white px-4">
-              <Phone size={16} color={colors.gold[600]} />
+              <Phone size={16} color={colors.brand[600]} />
               <TextInput
                 value={contactPhone}
                 onChangeText={setContactPhone}
@@ -823,7 +823,7 @@ function SuccessPanel({
   return (
     <View className="mt-5 overflow-hidden rounded-2xl border border-cream-300 bg-white">
       <LinearGradient
-        colors={[colors.gold[600], colors.gold[500], colors.gold[300]]}
+        colors={[colors.brand[600], colors.brand[500], colors.brand[300]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={{ paddingHorizontal: 20, paddingVertical: 20, alignItems: 'center' }}
@@ -868,8 +868,8 @@ function SuccessPanel({
             t('bloodFinder.request.next3'),
           ].map((line, index) => (
             <View key={index} className="flex-row">
-              <View className="mt-0.5 h-5 w-5 items-center justify-center rounded-full bg-gold-50">
-                <Text className="text-[10px] font-extrabold text-gold-700">{index + 1}</Text>
+              <View className="mt-0.5 h-5 w-5 items-center justify-center rounded-full bg-brand-50">
+                <Text className="text-[10px] font-extrabold text-brand-700">{index + 1}</Text>
               </View>
               <Text className="ml-3 flex-1 text-[11px] leading-4 text-navy-secondary">{line}</Text>
             </View>
@@ -881,10 +881,10 @@ function SuccessPanel({
             <Pressable
               onPress={onCall}
               accessibilityRole="button"
-              className="h-11 flex-row items-center justify-center rounded-xl border border-gold-500"
+              className="h-11 flex-row items-center justify-center rounded-xl border border-brand-500"
             >
-              <Phone size={14} color={colors.gold[600]} />
-              <Text className="ml-2 text-xs font-bold text-gold-600">
+              <Phone size={14} color={colors.brand[600]} />
+              <Text className="ml-2 text-xs font-bold text-brand-600">
                 {t('bloodFinder.call')}
               </Text>
             </Pressable>
@@ -903,7 +903,7 @@ function SuccessPanel({
           ) : null}
           <Pressable onPress={onBack} accessibilityRole="button">
             <LinearGradient
-              colors={[colors.gold[600], colors.gold[500], colors.gold[300]]}
+              colors={[colors.brand[600], colors.brand[500], colors.brand[300]]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={{
@@ -923,7 +923,7 @@ function SuccessPanel({
         </View>
 
         <View className="mt-4 flex-row items-center">
-          <ShieldCheck size={13} color={colors.gold[600]} />
+          <ShieldCheck size={13} color={colors.brand[600]} />
           <Text className="ml-2 flex-1 text-[10px] leading-4 text-navy-muted">
             {t('bloodFinder.safetyBody')}
           </Text>

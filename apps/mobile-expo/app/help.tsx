@@ -235,7 +235,7 @@ export default function HelpScreen() {
               ticketsQuery.refetch();
               contactQuery.refetch();
             }}
-            tintColor={colors.gold[500]}
+            tintColor={colors.brand[500]}
           />
         }
       >
@@ -253,12 +253,12 @@ export default function HelpScreen() {
                 width: sizing.tile.md,
                 height: sizing.tile.md,
                 borderRadius: radii.tile,
-                backgroundColor: colors.gold[50],
+                backgroundColor: colors.brand[50],
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <Headset color={colors.gold[600]} size={sizing.icon.lg} />
+              <Headset color={colors.brand[600]} size={sizing.icon.lg} />
             </View>
             <View style={{ flex: 1, marginLeft: spacing.md }}>
               <Text
@@ -286,7 +286,7 @@ export default function HelpScreen() {
 
           <View style={{ marginTop: spacing.lg, gap: spacing.md }}>
             {contactQuery.isLoading ? (
-              <ActivityIndicator color={colors.gold[500]} />
+              <ActivityIndicator color={colors.brand[500]} />
             ) : (
               <>
                 {email ? (
@@ -570,7 +570,7 @@ function SectionLabel({ text }: { text: string }) {
         fontWeight: typography.weight.bold,
         letterSpacing: typography.tracking.overline,
         textTransform: 'uppercase',
-        color: colors.gold[600],
+        color: colors.brand[600],
       }}
     >
       {text}
@@ -735,7 +735,7 @@ function FaqRow({
           {question}
         </Text>
         {open ? (
-          <ChevronUp color={colors.gold[600]} size={sizing.icon.lg} />
+          <ChevronUp color={colors.brand[600]} size={sizing.icon.lg} />
         ) : (
           <ChevronDown color={colors.navy.muted} size={sizing.icon.lg} />
         )}
@@ -767,12 +767,12 @@ function FaqRow({
               style={{
                 fontSize: typography.size.sm,
                 fontWeight: typography.weight.semibold,
-                color: colors.gold[600],
+                color: colors.brand[600],
               }}
             >
               {linkLabel}
             </Text>
-            <ChevronRight color={colors.gold[600]} size={sizing.icon.sm} />
+            <ChevronRight color={colors.brand[600]} size={sizing.icon.sm} />
           </Pressable>
         </View>
       ) : null}
@@ -862,7 +862,7 @@ function TicketDetailModal({
 
             {ticketQuery.isLoading ? (
               <View style={{ paddingVertical: spacing['3xl'], alignItems: 'center' }}>
-                <ActivityIndicator color={colors.gold[500]} />
+                <ActivityIndicator color={colors.brand[500]} />
               </View>
             ) : !ticket ? (
               <EmptyState
@@ -964,7 +964,7 @@ function TicketDetailModal({
                           borderRadius: radii.lg,
                           borderBottomRightRadius: message.is_mine ? radii.xs : radii.lg,
                           borderBottomLeftRadius: message.is_mine ? radii.lg : radii.xs,
-                          backgroundColor: message.is_mine ? colors.gold[500] : colors.surface.card,
+                          backgroundColor: message.is_mine ? colors.brand[500] : colors.surface.card,
                           borderWidth: message.is_mine ? 0 : 1,
                           borderColor: colors.line.subtle,
                         }}
@@ -982,7 +982,7 @@ function TicketDetailModal({
                           style={{
                             marginTop: 2,
                             fontSize: 11,
-                            color: message.is_mine ? colors.gold[50] : colors.navy.muted,
+                            color: message.is_mine ? colors.brand[50] : colors.navy.muted,
                           }}
                         >
                           {formatDate(message.created_at, locale)}
@@ -1033,7 +1033,7 @@ function TicketDetailModal({
                       width: sizing.control.md,
                       height: sizing.control.md,
                       borderRadius: radii.pill,
-                      backgroundColor: colors.gold[500],
+                      backgroundColor: colors.brand[500],
                       alignItems: 'center',
                       justifyContent: 'center',
                       opacity: !reply.trim() || sendMessage.isPending ? 0.5 : 1,

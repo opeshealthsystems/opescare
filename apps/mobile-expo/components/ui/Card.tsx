@@ -94,7 +94,7 @@ export function Card({
       borderWidth: 1,
       borderColor: colors.line.subtle,
     },
-    gold: { ...elevation.gold },
+    gold: { ...elevation.brand },
     inverse: { backgroundColor: colors.surface.inverse, ...elevation.navy },
   };
 
@@ -103,7 +103,7 @@ export function Card({
       // NativeWind does not register cssInterop for LinearGradient, so
       // `className` silently no-ops on it — inline style only.
       <LinearGradient
-        colors={gradients.gold}
+        colors={gradients.brand}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={{ borderRadius: radii.card, padding: pad }}

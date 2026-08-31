@@ -97,9 +97,9 @@ export default function TelemedicineScreen() {
           accessibilityRole="button"
           accessibilityLabel={t('telemedicine.backToVisits')}
           className="h-11 w-11 items-center justify-center rounded-full border"
-          style={{ borderColor: colors.gold[300] }}
+          style={{ borderColor: colors.brand[300] }}
         >
-          <ArrowLeft size={18} color={colors.gold[600]} />
+          <ArrowLeft size={18} color={colors.brand[600]} />
         </Pressable>
         <View className="ml-3 flex-1">
           <Text className="text-2xl font-extrabold text-navy-text">{t('telemedicine.title')}</Text>
@@ -125,7 +125,7 @@ export default function TelemedicineScreen() {
 
       {listQuery.isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={colors.gold[500]} />
+          <ActivityIndicator color={colors.brand[500]} />
         </View>
       ) : listQuery.isError ? (
         <View className="flex-1 items-center justify-center px-8">
@@ -138,9 +138,9 @@ export default function TelemedicineScreen() {
           <Pressable
             onPress={() => listQuery.refetch()}
             className="rounded-full border px-5 py-2.5"
-            style={{ borderColor: colors.gold[500] }}
+            style={{ borderColor: colors.brand[500] }}
           >
-            <Text className="text-sm font-semibold text-gold-600">{t('telemedicine.retry')}</Text>
+            <Text className="text-sm font-semibold text-brand-600">{t('telemedicine.retry')}</Text>
           </Pressable>
         </View>
       ) : consultations.length > 0 ? (
@@ -152,7 +152,7 @@ export default function TelemedicineScreen() {
             <RefreshControl
               refreshing={listQuery.isRefetching}
               onRefresh={() => listQuery.refetch()}
-              tintColor={colors.gold[500]}
+              tintColor={colors.brand[500]}
             />
           }
           renderItem={({ item }) => (
@@ -168,7 +168,7 @@ export default function TelemedicineScreen() {
             <RefreshControl
               refreshing={listQuery.isRefetching}
               onRefresh={() => listQuery.refetch()}
-              tintColor={colors.gold[500]}
+              tintColor={colors.brand[500]}
             />
           }
         >
@@ -204,11 +204,11 @@ function NoUpcomingVisits({ onRefresh, refreshing }: { onRefresh: () => void; re
       contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.gold[500]} />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand[500]} />
       }
     >
       <LinearGradient
-        colors={[colors.gold[600], colors.gold[500]]}
+        colors={[colors.brand[600], colors.brand[500]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         // Inline style: className has no effect on LinearGradient (no cssInterop).
@@ -317,9 +317,9 @@ function HowStep({
       <View className="items-center" style={{ width: 36 }}>
         <View
           className="h-9 w-9 items-center justify-center rounded-full"
-          style={{ backgroundColor: colors.gold[50], borderWidth: 1, borderColor: colors.gold[100] }}
+          style={{ backgroundColor: colors.brand[50], borderWidth: 1, borderColor: colors.brand[100] }}
         >
-          <Icon size={16} color={colors.gold[600]} />
+          <Icon size={16} color={colors.brand[600]} />
         </View>
         {!last ? (
           <View className="my-1 w-0.5 flex-1" style={{ backgroundColor: colors.cream[300] }} />
@@ -329,7 +329,7 @@ function HowStep({
         <View className="flex-row items-center">
           <View
             className="mr-2 h-4 w-4 items-center justify-center rounded-full"
-            style={{ backgroundColor: colors.gold[500] }}
+            style={{ backgroundColor: colors.brand[500] }}
           >
             <Text className="text-[9px] font-extrabold text-white">{index}</Text>
           </View>
@@ -348,7 +348,7 @@ function SegButton({ label, active, onPress }: { label: string; active: boolean;
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
       className="flex-1 items-center rounded-xl py-2.5"
-      style={{ backgroundColor: active ? colors.gold[500] : 'transparent' }}
+      style={{ backgroundColor: active ? colors.brand[500] : 'transparent' }}
     >
       <Text
         className="text-sm font-bold"
@@ -369,9 +369,9 @@ function ConsultationRow({ item, onPress }: { item: TeleconsultationSummary; onP
       <View className="flex-row items-center">
         <View
           className="h-12 w-12 items-center justify-center rounded-full"
-          style={{ backgroundColor: colors.gold[50], borderWidth: 1.5, borderColor: colors.gold[100] }}
+          style={{ backgroundColor: colors.brand[50], borderWidth: 1.5, borderColor: colors.brand[100] }}
         >
-          <Text className="text-xs font-extrabold" style={{ color: colors.gold[700] }}>
+          <Text className="text-xs font-extrabold" style={{ color: colors.brand[700] }}>
             {initialsFor(name)}
           </Text>
         </View>
@@ -470,7 +470,7 @@ function ConsultationDetail({ id, onBack }: { id: string; onBack: () => void }) 
   if (detailQuery.isLoading) {
     return (
       <Screen className="items-center justify-center">
-        <ActivityIndicator color={colors.gold[500]} />
+        <ActivityIndicator color={colors.brand[500]} />
       </Screen>
     );
   }
@@ -487,9 +487,9 @@ function ConsultationDetail({ id, onBack }: { id: string; onBack: () => void }) 
         <Pressable
           onPress={onBack}
           className="rounded-full border px-5 py-2.5"
-          style={{ borderColor: colors.gold[500] }}
+          style={{ borderColor: colors.brand[500] }}
         >
-          <Text className="text-sm font-semibold text-gold-600">{t('telemedicine.backToVisits')}</Text>
+          <Text className="text-sm font-semibold text-brand-600">{t('telemedicine.backToVisits')}</Text>
         </Pressable>
       </Screen>
     );
@@ -509,9 +509,9 @@ function ConsultationDetail({ id, onBack }: { id: string; onBack: () => void }) 
           accessibilityRole="button"
           accessibilityLabel={t('telemedicine.backToVisits')}
           className="h-11 w-11 items-center justify-center rounded-full border"
-          style={{ borderColor: colors.gold[300] }}
+          style={{ borderColor: colors.brand[300] }}
         >
-          <ArrowLeft size={18} color={colors.gold[600]} />
+          <ArrowLeft size={18} color={colors.brand[600]} />
         </Pressable>
         <Text className="ml-3 flex-1 text-lg font-extrabold text-navy-text" numberOfLines={1}>
           {providerLabel}
@@ -527,9 +527,9 @@ function ConsultationDetail({ id, onBack }: { id: string; onBack: () => void }) 
         <View className="flex-row items-center rounded-2xl bg-white p-4">
           <View
             className="h-14 w-14 items-center justify-center rounded-full"
-            style={{ backgroundColor: colors.gold[50], borderWidth: 1.5, borderColor: colors.gold[100] }}
+            style={{ backgroundColor: colors.brand[50], borderWidth: 1.5, borderColor: colors.brand[100] }}
           >
-            <Text className="text-sm font-extrabold" style={{ color: colors.gold[700] }}>
+            <Text className="text-sm font-extrabold" style={{ color: colors.brand[700] }}>
               {initialsFor(providerLabel)}
             </Text>
           </View>
@@ -646,7 +646,7 @@ function ConsultationDetail({ id, onBack }: { id: string; onBack: () => void }) 
             {!consented ? (
               <View className="mb-3 rounded-2xl bg-white p-4">
                 <View className="mb-2 flex-row items-center">
-                  <ShieldCheck size={16} color={colors.gold[600]} />
+                  <ShieldCheck size={16} color={colors.brand[600]} />
                   <Text className="ml-2 text-sm font-extrabold text-navy-text">
                     {t('telemedicine.consentTitle')}
                   </Text>
@@ -777,7 +777,7 @@ function CallControl({
           backgroundColor: danger
             ? colors.semantic.danger
             : active
-              ? colors.gold[500]
+              ? colors.brand[500]
               : 'rgba(255,255,255,0.15)',
         }}
       >
@@ -838,9 +838,9 @@ function QuickTile({
     <Pressable onPress={onPress} accessibilityRole="button" className="flex-1 rounded-2xl bg-white p-3">
       <View
         className="mb-2 h-9 w-9 items-center justify-center rounded-full"
-        style={{ backgroundColor: colors.gold[50] }}
+        style={{ backgroundColor: colors.brand[50] }}
       >
-        <Icon size={16} color={colors.gold[600]} />
+        <Icon size={16} color={colors.brand[600]} />
       </View>
       <Text className="text-[11px] font-extrabold text-navy-text">{label}</Text>
       <Text className="mt-0.5 text-[10px] leading-3 text-navy-muted" numberOfLines={2}>

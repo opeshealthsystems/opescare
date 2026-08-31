@@ -189,7 +189,7 @@ export default function ProfileScreen() {
           <Text className="text-2xl font-extrabold text-navy-text">{t('profile.title')}</Text>
         </View>
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={colors.gold[500]} />
+          <ActivityIndicator color={colors.brand[500]} />
           <Text className="mt-3 text-sm text-navy-secondary">{t('profile.loading')}</Text>
         </View>
       </Screen>
@@ -210,10 +210,10 @@ export default function ProfileScreen() {
             accessibilityRole="button"
             accessibilityLabel={t('profile.editProfileAction')}
             hitSlop={6}
-            className="flex-row items-center rounded-full border border-gold-300 bg-white px-3 py-2"
+            className="flex-row items-center rounded-full border border-brand-300 bg-white px-3 py-2"
           >
-            <Pencil size={14} color={colors.gold[600]} />
-            <Text className="ml-1.5 text-xs font-bold text-gold-600">
+            <Pencil size={14} color={colors.brand[600]} />
+            <Text className="ml-1.5 text-xs font-bold text-brand-600">
               {t('profile.editProfileAction')}
             </Text>
           </Pressable>
@@ -224,7 +224,7 @@ export default function ProfileScreen() {
           <View className="flex-row items-center">
             <View>
               <LinearGradient
-                colors={[colors.gold[300], colors.gold[500], colors.gold[700]]}
+                colors={[colors.brand[300], colors.brand[500], colors.brand[700]]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={{
@@ -239,7 +239,7 @@ export default function ProfileScreen() {
                   className="items-center justify-center rounded-full bg-cream-50"
                   style={{ width: 74, height: 74 }}
                 >
-                  <Text className="text-2xl font-extrabold text-gold-600">{initials}</Text>
+                  <Text className="text-2xl font-extrabold text-brand-600">{initials}</Text>
                 </View>
               </LinearGradient>
               {isVerified ? (
@@ -309,13 +309,13 @@ export default function ProfileScreen() {
             className="mt-4 flex-row items-center rounded-2xl bg-cream-100 p-3"
           >
             <View className="h-12 w-12 items-center justify-center rounded-2xl bg-white">
-              <QrCode size={21} color={colors.gold[600]} />
+              <QrCode size={21} color={colors.brand[600]} />
             </View>
             <View className="ml-3 flex-1">
               <Text className="text-[10px] font-bold uppercase tracking-wide text-navy-muted">
                 {t('profile.healthId')}
               </Text>
-              <Text className="mt-0.5 text-base font-extrabold text-gold-600" numberOfLines={1}>
+              <Text className="mt-0.5 text-base font-extrabold text-brand-600" numberOfLines={1}>
                 {patient.health_id || '—'}
               </Text>
               <Text className="mt-0.5 text-[11px] text-navy-secondary">
@@ -371,9 +371,9 @@ export default function ProfileScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={t('profile.editProfileAction')}
                 hitSlop={8}
-                className="h-9 w-9 items-center justify-center rounded-full bg-gold-50"
+                className="h-9 w-9 items-center justify-center rounded-full bg-brand-50"
               >
-                <Pencil size={15} color={colors.gold[600]} />
+                <Pencil size={15} color={colors.brand[600]} />
               </Pressable>
             </View>
           ) : (
@@ -381,9 +381,9 @@ export default function ProfileScreen() {
               onPress={() => router.push('/edit-profile')}
               accessibilityRole="button"
               accessibilityLabel={t('profile.addEmergencyContact')}
-              className="mt-1 flex-row items-center rounded-2xl border border-dashed border-gold-300 bg-gold-50 p-3"
+              className="mt-1 flex-row items-center rounded-2xl border border-dashed border-brand-300 bg-brand-50 p-3"
             >
-              <PhoneCall size={17} color={colors.gold[600]} />
+              <PhoneCall size={17} color={colors.brand[600]} />
               <View className="ml-3 flex-1">
                 <Text className="text-sm font-bold text-navy-text">
                   {t('profile.addEmergencyContact')}
@@ -392,7 +392,7 @@ export default function ProfileScreen() {
                   {t('profile.addEmergencyContactHint')}
                 </Text>
               </View>
-              <ChevronRight size={18} color={colors.gold[600]} />
+              <ChevronRight size={18} color={colors.brand[600]} />
             </Pressable>
           )}
         </View>
@@ -451,19 +451,19 @@ export default function ProfileScreen() {
           onPress={() => router.push('/privacy')}
           accessibilityRole="button"
           accessibilityLabel={t('profile.privacyTitle')}
-          className="mt-5 flex-row items-start rounded-2xl bg-gold-50 p-4"
+          className="mt-5 flex-row items-start rounded-2xl bg-brand-50 p-4"
         >
-          <ShieldCheck size={17} color={colors.gold[600]} />
+          <ShieldCheck size={17} color={colors.brand[600]} />
           <View className="ml-3 flex-1">
             <Text className="text-sm font-semibold text-navy-text">
               {t('profile.privacyTitle')}
             </Text>
             <Text className="mt-1 text-xs text-navy-secondary">{t('profile.privacyBody')}</Text>
             <View className="mt-2 flex-row items-center">
-              <Text className="text-xs font-bold text-gold-600">
+              <Text className="text-xs font-bold text-brand-600">
                 {t('profile.privacyLearnMore')}
               </Text>
-              <ChevronRight size={14} color={colors.gold[600]} />
+              <ChevronRight size={14} color={colors.brand[600]} />
             </View>
           </View>
         </Pressable>
@@ -517,8 +517,8 @@ function MenuCard({ items }: { items: MenuItem[] }) {
             accessibilityLabel={item.label}
             className="flex-row items-center px-4 py-3.5"
           >
-            <View className="h-10 w-10 items-center justify-center rounded-xl bg-gold-50">
-              <item.icon size={18} color={colors.gold[600]} />
+            <View className="h-10 w-10 items-center justify-center rounded-xl bg-brand-50">
+              <item.icon size={18} color={colors.brand[600]} />
             </View>
             <View className="ml-3 flex-1">
               <Text className="text-sm font-bold text-navy-text">{item.label}</Text>
@@ -594,8 +594,8 @@ function StatTile({
       className="flex-1 rounded-2xl border border-cream-300 bg-white p-4"
     >
       <View className="flex-row items-center justify-between">
-        <View className="h-9 w-9 items-center justify-center rounded-xl bg-gold-50">
-          <Icon size={16} color={colors.gold[600]} />
+        <View className="h-9 w-9 items-center justify-center rounded-xl bg-brand-50">
+          <Icon size={16} color={colors.brand[600]} />
         </View>
         <ChevronRight size={16} color={colors.navy.muted} />
       </View>

@@ -331,7 +331,7 @@ export default function BloodFinderScreen() {
 
           <View className="flex-row items-center">
             <LinearGradient
-              colors={[colors.gold[300], colors.gold[500], colors.gold[700]]}
+              colors={[colors.brand[300], colors.brand[500], colors.brand[700]]}
               style={{
                 width: 28,
                 height: 28,
@@ -344,7 +344,7 @@ export default function BloodFinderScreen() {
               <Droplets color={colors.cream[50]} size={14} />
             </LinearGradient>
             <Text className="text-lg font-extrabold text-navy-text">Opes</Text>
-            <Text className="text-lg font-extrabold text-gold-500">Care</Text>
+            <Text className="text-lg font-extrabold text-brand-500">Care</Text>
           </View>
 
           <Pressable
@@ -355,9 +355,9 @@ export default function BloodFinderScreen() {
             accessibilityLabel={t('bloodFinder.useMyLocation')}
           >
             {locating ? (
-              <ActivityIndicator size="small" color={colors.gold[600]} />
+              <ActivityIndicator size="small" color={colors.brand[600]} />
             ) : (
-              <LocateFixed size={15} color={colors.gold[600]} />
+              <LocateFixed size={15} color={colors.brand[600]} />
             )}
             <Text className="ml-1.5 text-xs font-semibold text-navy-text">
               {locating ? t('bloodFinder.locating') : t('bloodFinder.myLocation')}
@@ -441,10 +441,10 @@ export default function BloodFinderScreen() {
             <Pressable
               onPress={() => setBloodGroup(ownGroup.value)}
               accessibilityRole="button"
-              className="flex-row items-center rounded-xl border border-gold-500 bg-gold-50 px-3 py-1.5"
+              className="flex-row items-center rounded-xl border border-brand-500 bg-brand-50 px-3 py-1.5"
             >
-              <Droplet size={12} color={colors.gold[600]} />
-              <Text className="ml-1.5 text-[11px] font-bold text-gold-700">
+              <Droplet size={12} color={colors.brand[600]} />
+              <Text className="ml-1.5 text-[11px] font-bold text-brand-700">
                 {t('bloodFinder.yourGroup', { group: ownGroup.label })}
               </Text>
             </Pressable>
@@ -521,14 +521,14 @@ export default function BloodFinderScreen() {
                 onPress={() => setComponentType(value)}
                 accessibilityRole="button"
                 className={`h-11 flex-row items-center rounded-2xl border px-4 ${
-                  active ? 'border-gold-500 bg-gold-50' : 'border-cream-300 bg-white'
+                  active ? 'border-brand-500 bg-brand-50' : 'border-cream-300 bg-white'
                 }`}
                 style={active ? { borderWidth: 2 } : undefined}
               >
-                <Icon size={15} color={active ? colors.gold[600] : colors.navy.secondary} />
+                <Icon size={15} color={active ? colors.brand[600] : colors.navy.secondary} />
                 <Text
                   className={`ml-2 text-xs font-bold ${
-                    active ? 'text-gold-700' : 'text-navy-secondary'
+                    active ? 'text-brand-700' : 'text-navy-secondary'
                   }`}
                 >
                   {t(`bloodFinder.components.${value}`)}
@@ -609,8 +609,8 @@ export default function BloodFinderScreen() {
         {/* ── Results ──────────────────────────────────────────────────────── */}
         {!bloodGroup ? (
           <View className="mt-7 items-center rounded-2xl border border-cream-300 bg-white px-6 py-9">
-            <View className="h-12 w-12 items-center justify-center rounded-full bg-gold-50">
-              <Droplets size={22} color={colors.gold[600]} />
+            <View className="h-12 w-12 items-center justify-center rounded-full bg-brand-50">
+              <Droplets size={22} color={colors.brand[600]} />
             </View>
             <Text className="mt-3 text-center text-sm font-bold text-navy-text">
               {t('bloodFinder.chooseGroupTitle')}
@@ -639,7 +639,7 @@ export default function BloodFinderScreen() {
             {/* A filter box only earns its space once there is a list to filter. */}
             {rows.length > 3 || debouncedTerm ? (
               <View className="mt-3 h-12 flex-row items-center rounded-2xl border border-cream-300 bg-white px-4">
-                <Search size={16} color={colors.gold[600]} />
+                <Search size={16} color={colors.brand[600]} />
                 <TextInput
                   value={term}
                   onChangeText={setTerm}
@@ -732,9 +732,9 @@ export default function BloodFinderScreen() {
         ) : null}
 
         {/* Safety notice */}
-        <View className="mt-7 flex-row rounded-2xl border border-gold-100 bg-gold-50 p-4">
+        <View className="mt-7 flex-row rounded-2xl border border-brand-100 bg-brand-50 p-4">
           <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-white">
-            <ShieldCheck size={18} color={colors.gold[600]} />
+            <ShieldCheck size={18} color={colors.brand[600]} />
           </View>
           <View className="flex-1">
             <Text className="text-sm font-bold text-navy-text">
@@ -786,7 +786,7 @@ function GroupTile({
         // className does not reach LinearGradient (no cssInterop registered),
         // so every bit of its layout has to be inline style.
         <LinearGradient
-          colors={[colors.gold[600], colors.gold[500], colors.gold[300]]}
+          colors={[colors.brand[600], colors.brand[500], colors.brand[300]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{
@@ -849,8 +849,8 @@ function BloodBankCard({
   return (
     <View className="rounded-2xl border border-cream-300 bg-white p-4">
       <View className="flex-row">
-        <View className="h-14 w-14 items-center justify-center rounded-2xl bg-gold-50">
-          <FacilityIcon size={22} color={colors.gold[600]} />
+        <View className="h-14 w-14 items-center justify-center rounded-2xl bg-brand-50">
+          <FacilityIcon size={22} color={colors.brand[600]} />
         </View>
 
         <View className="ml-3 flex-1">
@@ -913,11 +913,11 @@ function BloodBankCard({
           disabled={!phone}
           accessibilityRole="button"
           accessibilityLabel={t('bloodFinder.call')}
-          className="h-11 flex-1 flex-row items-center justify-center rounded-xl border border-gold-500 bg-white"
+          className="h-11 flex-1 flex-row items-center justify-center rounded-xl border border-brand-500 bg-white"
           style={{ opacity: phone ? 1 : 0.45 }}
         >
-          <Phone size={14} color={colors.gold[600]} />
-          <Text className="ml-2 text-xs font-bold text-gold-600">
+          <Phone size={14} color={colors.brand[600]} />
+          <Text className="ml-2 text-xs font-bold text-brand-600">
             {phone ? t('bloodFinder.callShort') : t('bloodFinder.noPhone')}
           </Text>
         </Pressable>
@@ -929,7 +929,7 @@ function BloodBankCard({
           accessibilityLabel={t('bloodFinder.requestUnits')}
         >
           <LinearGradient
-            colors={[colors.gold[600], colors.gold[500], colors.gold[300]]}
+            colors={[colors.brand[600], colors.brand[500], colors.brand[300]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={{
@@ -1062,12 +1062,12 @@ function NoStockPanel({
                     onPress={() => onPickGroup(option.value)}
                     accessibilityRole="button"
                     className={`flex-row items-center rounded-xl border px-3 py-2 ${
-                      has ? 'border-gold-500 bg-gold-50' : 'border-cream-300 bg-white'
+                      has ? 'border-brand-500 bg-brand-50' : 'border-cream-300 bg-white'
                     }`}
                   >
                     <Text
                       className={`text-xs font-extrabold ${
-                        has ? 'text-gold-700' : 'text-navy-secondary'
+                        has ? 'text-brand-700' : 'text-navy-secondary'
                       }`}
                     >
                       {option.label}
@@ -1092,7 +1092,7 @@ function NoStockPanel({
           <View className="mt-5 rounded-2xl bg-cream-200 p-4">
             {nationwidePending ? (
               <View className="flex-row items-center">
-                <ActivityIndicator size="small" color={colors.gold[600]} />
+                <ActivityIndicator size="small" color={colors.brand[600]} />
                 <Text className="ml-3 text-[11px] text-navy-secondary">
                   {t('bloodFinder.empty.checking')}
                 </Text>
@@ -1151,8 +1151,8 @@ function ActionRow({
       accessibilityRole="button"
       className="h-12 flex-row items-center rounded-xl border border-cream-300 bg-white px-3"
     >
-      <View className="h-8 w-8 items-center justify-center rounded-lg bg-gold-50">
-        <Icon size={15} color={colors.gold[600]} />
+      <View className="h-8 w-8 items-center justify-center rounded-lg bg-brand-50">
+        <Icon size={15} color={colors.brand[600]} />
       </View>
       <Text className="ml-3 flex-1 text-xs font-bold text-navy-text">{label}</Text>
       <ChevronRight size={15} color={colors.navy.muted} />
@@ -1245,10 +1245,10 @@ function OpenRequestCard({
           <Pressable
             onPress={() => dial(request.facility?.phone)}
             accessibilityRole="button"
-            className="h-10 flex-1 flex-row items-center justify-center rounded-xl border border-gold-500"
+            className="h-10 flex-1 flex-row items-center justify-center rounded-xl border border-brand-500"
           >
-            <Phone size={13} color={colors.gold[600]} />
-            <Text className="ml-2 text-xs font-bold text-gold-600">
+            <Phone size={13} color={colors.brand[600]} />
+            <Text className="ml-2 text-xs font-bold text-brand-600">
               {t('bloodFinder.callShort')}
             </Text>
           </Pressable>
@@ -1310,13 +1310,13 @@ function FilterChip({
       onPress={onPress}
       accessibilityRole="button"
       className={`h-11 flex-1 flex-row items-center rounded-2xl border px-3 ${
-        active ? 'border-gold-500 bg-gold-50' : 'border-cream-300 bg-white'
+        active ? 'border-brand-500 bg-brand-50' : 'border-cream-300 bg-white'
       }`}
     >
-      <Icon size={14} color={active ? colors.gold[600] : colors.navy.secondary} />
+      <Icon size={14} color={active ? colors.brand[600] : colors.navy.secondary} />
       <Text
         className={`ml-1.5 flex-1 text-xs font-semibold ${
-          active ? 'text-gold-700' : 'text-navy-text'
+          active ? 'text-brand-700' : 'text-navy-text'
         }`}
         numberOfLines={1}
       >
@@ -1350,10 +1350,10 @@ function OptionRow({
       accessibilityRole="button"
       className="flex-row items-center justify-between border-b border-cream-200 px-4 py-3"
     >
-      <Text className={`text-sm ${selected ? 'font-bold text-gold-700' : 'text-navy-text'}`}>
+      <Text className={`text-sm ${selected ? 'font-bold text-brand-700' : 'text-navy-text'}`}>
         {label}
       </Text>
-      {selected ? <View className="h-2 w-2 rounded-full bg-gold-500" /> : null}
+      {selected ? <View className="h-2 w-2 rounded-full bg-brand-500" /> : null}
     </Pressable>
   );
 }
@@ -1374,9 +1374,9 @@ function ErrorPanel({
       <Pressable
         onPress={onRetry}
         accessibilityRole="button"
-        className="mt-3 rounded-xl border border-gold-500 px-4 py-2"
+        className="mt-3 rounded-xl border border-brand-500 px-4 py-2"
       >
-        <Text className="text-xs font-bold text-gold-600">{actionLabel}</Text>
+        <Text className="text-xs font-bold text-brand-600">{actionLabel}</Text>
       </Pressable>
     </View>
   );

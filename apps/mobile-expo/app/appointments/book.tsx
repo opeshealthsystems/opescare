@@ -265,9 +265,9 @@ function WizardHeader({
       <Pressable
         onPress={onBack}
         hitSlop={8}
-        className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+        className="h-11 w-11 items-center justify-center rounded-full border border-brand-300"
       >
-        <ArrowLeft size={18} color={colors.gold[600]} />
+        <ArrowLeft size={18} color={colors.brand[600]} />
       </Pressable>
       <View className="ml-4 flex-1">
         <Text className="text-lg font-extrabold text-navy-text" numberOfLines={1}>
@@ -297,13 +297,13 @@ function ProgressRail({ step, labels }: { step: Step; labels: string[] }) {
             <View
               className="h-1.5 rounded-full"
               style={{
-                backgroundColor: done || active ? colors.gold[500] : colors.cream[300],
+                backgroundColor: done || active ? colors.brand[500] : colors.cream[300],
               }}
             />
             <Text
               className="mt-1.5 text-[10px] font-semibold"
               numberOfLines={1}
-              style={{ color: active ? colors.gold[600] : colors.navy.muted }}
+              style={{ color: active ? colors.brand[600] : colors.navy.muted }}
             >
               {labels[index]}
             </Text>
@@ -330,20 +330,20 @@ function Chip({
       onPress={onPress}
       className="flex-row items-center rounded-full border px-4 py-2"
       style={{
-        borderColor: active ? colors.gold[500] : colors.cream[300],
-        backgroundColor: active ? colors.gold[50] : colors.white,
+        borderColor: active ? colors.brand[500] : colors.cream[300],
+        backgroundColor: active ? colors.brand[50] : colors.white,
       }}
     >
       {Icon ? (
         <Icon
           size={13}
-          color={active ? colors.gold[600] : colors.navy.muted}
+          color={active ? colors.brand[600] : colors.navy.muted}
           style={{ marginRight: 6 }}
         />
       ) : null}
       <Text
         className="text-xs font-semibold"
-        style={{ color: active ? colors.gold[600] : colors.navy.secondary }}
+        style={{ color: active ? colors.brand[600] : colors.navy.secondary }}
       >
         {label}
       </Text>
@@ -431,18 +431,18 @@ function FacilityCard({
     <Pressable
       onPress={onPress}
       className="mb-3 rounded-2xl border bg-white p-4"
-      style={{ borderColor: bookable ? colors.gold[300] : colors.cream[300] }}
+      style={{ borderColor: bookable ? colors.brand[300] : colors.cream[300] }}
     >
       <View className="flex-row items-start">
         <View
           className="mr-3 h-11 w-11 items-center justify-center rounded-full"
           style={{
-            backgroundColor: bookable ? colors.semantic.successSurface : colors.gold[50],
+            backgroundColor: bookable ? colors.semantic.successSurface : colors.brand[50],
           }}
         >
           <Building2
             size={20}
-            color={bookable ? colors.semantic.success : colors.gold[600]}
+            color={bookable ? colors.semantic.success : colors.brand[600]}
           />
         </View>
         <View className="flex-1">
@@ -474,10 +474,10 @@ function FacilityCard({
             hours, and the clinicians who practise there) without leaving the
             booking flow's back stack. */}
         <Pressable onPress={onViewDetails} hitSlop={8} className="flex-row items-center">
-          <Text className="text-xs font-semibold text-gold-600">
+          <Text className="text-xs font-semibold text-brand-600">
             {t('appointments.book.viewFacility')}
           </Text>
-          <ChevronRight size={14} color={colors.gold[600]} />
+          <ChevronRight size={14} color={colors.brand[600]} />
         </Pressable>
         <View className="flex-row items-center">
           <Text className="text-xs font-bold text-navy-text">
@@ -515,7 +515,7 @@ function EmptyState({
       ? colors.semantic.danger
       : tone === 'warning'
         ? colors.semantic.warning
-        : colors.gold[600];
+        : colors.brand[600];
   return (
     <View className="items-center rounded-2xl bg-white px-5 py-8">
       <View
@@ -546,10 +546,10 @@ function SecondaryAction({
     <Pressable
       onPress={onPress}
       className="mb-2 flex-row items-center justify-center rounded-2xl border py-3"
-      style={{ borderColor: colors.gold[300] }}
+      style={{ borderColor: colors.brand[300] }}
     >
-      <Icon size={16} color={colors.gold[600]} />
-      <Text className="ml-2 text-sm font-semibold text-gold-600">{label}</Text>
+      <Icon size={16} color={colors.brand[600]} />
+      <Text className="ml-2 text-sm font-semibold text-brand-600">{label}</Text>
     </Pressable>
   );
 }
@@ -574,7 +574,7 @@ function SummaryRow({
       className="flex-row items-start py-3"
       style={first ? undefined : { borderTopWidth: 1, borderTopColor: colors.cream[300] }}
     >
-      <Icon size={16} color={colors.gold[600]} style={{ marginTop: 2 }} />
+      <Icon size={16} color={colors.brand[600]} style={{ marginTop: 2 }} />
       <View className="ml-3 flex-1">
         <Text className="text-xs text-navy-muted">{label}</Text>
         <Text className="mt-0.5 text-sm font-semibold text-navy-text">{value}</Text>
@@ -603,8 +603,8 @@ function ChosenFacilityCard({
   return (
     <View className="mb-4 rounded-2xl border bg-white p-4" style={{ borderColor: colors.cream[300] }}>
       <View className="flex-row items-start">
-        <View className="mr-3 h-11 w-11 items-center justify-center rounded-full bg-gold-50">
-          <Building2 size={20} color={colors.gold[600]} />
+        <View className="mr-3 h-11 w-11 items-center justify-center rounded-full bg-brand-50">
+          <Building2 size={20} color={colors.brand[600]} />
         </View>
         <View className="flex-1">
           <Text className="text-base font-bold text-navy-text" numberOfLines={2}>
@@ -623,7 +623,7 @@ function ChosenFacilityCard({
           </View>
         </View>
         <Pressable onPress={onChangeFacility} hitSlop={8}>
-          <Text className="text-xs font-semibold text-gold-600">
+          <Text className="text-xs font-semibold text-brand-600">
             {t('appointments.book.changeFacility')}
           </Text>
         </Pressable>
@@ -636,10 +636,10 @@ function ChosenFacilityCard({
         className="mt-3 flex-row items-center pt-3"
         style={{ borderTopWidth: 1, borderTopColor: colors.cream[300] }}
       >
-        <Text className="text-xs font-semibold text-gold-600">
+        <Text className="text-xs font-semibold text-brand-600">
           {t('appointments.book.viewFacility')}
         </Text>
-        <ChevronRight size={14} color={colors.gold[600]} />
+        <ChevronRight size={14} color={colors.brand[600]} />
       </Pressable>
     </View>
   );
@@ -941,7 +941,7 @@ export default function BookAppointmentScreen() {
             </EmptyState>
           ) : (
             <>
-              <ActivityIndicator color={colors.gold[500]} />
+              <ActivityIndicator color={colors.brand[500]} />
               <Text className="mt-3 text-xs text-navy-muted">
                 {t('appointments.book.openingFacility')}
               </Text>
@@ -1003,7 +1003,7 @@ export default function BookAppointmentScreen() {
 
           {facilitiesQuery.isPending ? (
             <View className="flex-1 items-center justify-center">
-              <ActivityIndicator color={colors.gold[500]} />
+              <ActivityIndicator color={colors.brand[500]} />
             </View>
           ) : facilitiesQuery.isError ? (
             <EmptyState
@@ -1051,8 +1051,8 @@ export default function BookAppointmentScreen() {
                           setAppliedSearch('');
                         }}
                       >
-                        <X size={12} color={colors.gold[600]} />
-                        <Text className="ml-1 text-xs font-semibold text-gold-600">
+                        <X size={12} color={colors.brand[600]} />
+                        <Text className="ml-1 text-xs font-semibold text-brand-600">
                           {t('appointments.book.clearSearch')}
                         </Text>
                       </Pressable>
@@ -1073,7 +1073,7 @@ export default function BookAppointmentScreen() {
               ListFooterComponent={
                 facilitiesQuery.isFetchingNextPage ? (
                   <View className="items-center py-4">
-                    <ActivityIndicator color={colors.gold[500]} />
+                    <ActivityIndicator color={colors.brand[500]} />
                   </View>
                 ) : facilitiesQuery.hasNextPage ? (
                   <Pressable
@@ -1081,7 +1081,7 @@ export default function BookAppointmentScreen() {
                     className="items-center rounded-2xl border py-3"
                     style={{ borderColor: colors.cream[300] }}
                   >
-                    <Text className="text-sm font-semibold text-gold-600">
+                    <Text className="text-sm font-semibold text-brand-600">
                       {t('appointments.book.loadMore')}
                     </Text>
                   </Pressable>
@@ -1129,7 +1129,7 @@ export default function BookAppointmentScreen() {
 
           {providersQuery.isPending ? (
             <View className="items-center py-10">
-              <ActivityIndicator color={colors.gold[500]} />
+              <ActivityIndicator color={colors.brand[500]} />
             </View>
           ) : facilityIsUnlinked ? (
             /* The directory listing has no linked operational facility, so it
@@ -1180,11 +1180,11 @@ export default function BookAppointmentScreen() {
                 onPress={() => handleSelectProvider(null)}
                 className="mb-3 flex-row items-center rounded-2xl border bg-white p-4"
                 style={{
-                  borderColor: selectedProviderId === null ? colors.gold[500] : colors.cream[300],
+                  borderColor: selectedProviderId === null ? colors.brand[500] : colors.cream[300],
                 }}
               >
-                <View className="mr-3 h-11 w-11 items-center justify-center rounded-full bg-gold-50">
-                  <Users size={20} color={colors.gold[600]} />
+                <View className="mr-3 h-11 w-11 items-center justify-center rounded-full bg-brand-50">
+                  <Users size={20} color={colors.brand[600]} />
                 </View>
                 <View className="flex-1">
                   <Text className="text-base font-bold text-navy-text">
@@ -1246,11 +1246,11 @@ export default function BookAppointmentScreen() {
                         key={provider.id}
                         onPress={() => handleSelectProvider(provider.id)}
                         className="mb-3 rounded-2xl border bg-white p-4"
-                        style={{ borderColor: active ? colors.gold[500] : colors.cream[300] }}
+                        style={{ borderColor: active ? colors.brand[500] : colors.cream[300] }}
                       >
                         <View className="flex-row items-center">
-                          <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-gold-50">
-                            <Text className="text-sm font-extrabold text-gold-600">
+                          <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-brand-50">
+                            <Text className="text-sm font-extrabold text-brand-600">
                               {providerInitials(provider.name)}
                             </Text>
                           </View>
@@ -1290,10 +1290,10 @@ export default function BookAppointmentScreen() {
                             onPress={() => router.push(`/doctor/${provider.id}`)}
                             className="flex-row items-center"
                           >
-                            <Text className="text-xs font-semibold text-gold-600">
+                            <Text className="text-xs font-semibold text-brand-600">
                               {t('appointments.book.viewDoctorProfile')}
                             </Text>
-                            <ChevronRight size={14} color={colors.gold[600]} />
+                            <ChevronRight size={14} color={colors.brand[600]} />
                           </Pressable>
                           <View className="flex-row items-center">
                             <Text className="text-xs font-bold text-navy-text">
@@ -1330,7 +1330,7 @@ export default function BookAppointmentScreen() {
                 className="mt-3 flex-row items-center pt-3"
                 style={{ borderTopWidth: 1, borderTopColor: colors.cream[300] }}
               >
-                <Stethoscope size={14} color={colors.gold[600]} />
+                <Stethoscope size={14} color={colors.brand[600]} />
                 <Text
                   className="ml-2 flex-1 text-xs font-semibold text-navy-secondary"
                   numberOfLines={1}
@@ -1342,7 +1342,7 @@ export default function BookAppointmentScreen() {
                     : t('appointments.book.anyDoctor')}
                 </Text>
                 <Pressable onPress={() => setStep('doctor')} hitSlop={8}>
-                  <Text className="text-xs font-semibold text-gold-600">
+                  <Text className="text-xs font-semibold text-brand-600">
                     {t('appointments.book.changeDoctor')}
                   </Text>
                 </Pressable>
@@ -1381,8 +1381,8 @@ export default function BookAppointmentScreen() {
                     className="items-center rounded-2xl border px-3 py-3"
                     style={{
                       minWidth: 58,
-                      backgroundColor: active ? colors.gold[500] : colors.white,
-                      borderColor: active ? colors.gold[500] : colors.cream[300],
+                      backgroundColor: active ? colors.brand[500] : colors.white,
+                      borderColor: active ? colors.brand[500] : colors.cream[300],
                     }}
                   >
                     <Text
@@ -1418,7 +1418,7 @@ export default function BookAppointmentScreen() {
 
             {slotsQuery.isPending ? (
               <View className="items-center py-10">
-                <ActivityIndicator color={colors.gold[500]} />
+                <ActivityIndicator color={colors.brand[500]} />
               </View>
             ) : slotsQuery.isError ? (
               <EmptyState
@@ -1513,7 +1513,7 @@ export default function BookAppointmentScreen() {
                   <View className="mb-2 flex-row items-center">
                     {(() => {
                       const PeriodIcon = PERIOD_META[group.period].icon;
-                      return <PeriodIcon size={14} color={colors.gold[600]} />;
+                      return <PeriodIcon size={14} color={colors.brand[600]} />;
                     })()}
                     <Text className="ml-2 flex-1 text-xs font-bold uppercase text-navy-secondary">
                       {t(`appointments.book.${PERIOD_META[group.period].key}`)}
@@ -1532,8 +1532,8 @@ export default function BookAppointmentScreen() {
                           onPress={() => setSelectedSlot(slot)}
                           className="items-center rounded-xl border px-4 py-2.5"
                           style={{
-                            borderColor: active ? colors.gold[500] : colors.cream[300],
-                            backgroundColor: active ? colors.gold[500] : colors.white,
+                            borderColor: active ? colors.brand[500] : colors.cream[300],
+                            backgroundColor: active ? colors.brand[500] : colors.white,
                             minWidth: 88,
                           }}
                         >
@@ -1740,10 +1740,10 @@ export default function BookAppointmentScreen() {
                     }}
                     className="mt-2 flex-row items-center"
                   >
-                    <Text className="text-xs font-bold text-gold-600">
+                    <Text className="text-xs font-bold text-brand-600">
                       {t('appointments.book.pickAnotherTime')}
                     </Text>
-                    <ChevronRight size={13} color={colors.gold[600]} />
+                    <ChevronRight size={13} color={colors.brand[600]} />
                   </Pressable>
                 ) : null}
               </View>
@@ -1809,8 +1809,8 @@ export default function BookAppointmentScreen() {
               style={{ borderColor: colors.cream[300] }}
             >
               <View className="flex-row items-center">
-                <View className="mr-3 h-14 w-14 items-center justify-center rounded-full bg-gold-50">
-                  <Text className="text-base font-extrabold text-gold-600">
+                <View className="mr-3 h-14 w-14 items-center justify-center rounded-full bg-brand-50">
+                  <Text className="text-base font-extrabold text-brand-600">
                     {providerInitials(selectedProvider.name)}
                   </Text>
                 </View>
@@ -1824,7 +1824,7 @@ export default function BookAppointmentScreen() {
                     ) : null}
                   </View>
                   {selectedProvider.job_title ? (
-                    <Text className="mt-0.5 text-xs font-semibold text-gold-600">
+                    <Text className="mt-0.5 text-xs font-semibold text-brand-600">
                       {selectedProvider.job_title}
                     </Text>
                   ) : null}
@@ -1836,9 +1836,9 @@ export default function BookAppointmentScreen() {
                   hitSlop={8}
                   onPress={() => router.push(`/doctor/${selectedProvider.id}`)}
                   className="ml-2 rounded-full border px-3 py-1.5"
-                  style={{ borderColor: colors.gold[300] }}
+                  style={{ borderColor: colors.brand[300] }}
                 >
-                  <Text className="text-xs font-semibold text-gold-600">
+                  <Text className="text-xs font-semibold text-brand-600">
                     {t('appointments.book.viewDoctorProfile')}
                   </Text>
                 </Pressable>
@@ -1893,10 +1893,10 @@ export default function BookAppointmentScreen() {
                     onPress={handleGetDirections}
                     hitSlop={8}
                     className="ml-2 flex-row items-center rounded-full border px-3 py-1.5"
-                    style={{ borderColor: colors.gold[300] }}
+                    style={{ borderColor: colors.brand[300] }}
                   >
-                    <Navigation size={12} color={colors.gold[600]} />
-                    <Text className="ml-1 text-xs font-semibold text-gold-600">
+                    <Navigation size={12} color={colors.brand[600]} />
+                    <Text className="ml-1 text-xs font-semibold text-brand-600">
                       {t('appointments.book.getDirections')}
                     </Text>
                   </Pressable>
@@ -1987,7 +1987,7 @@ export default function BookAppointmentScreen() {
             onPress={() => router.replace('/appointments')}
             className="mt-4 items-center"
           >
-            <Text className="text-sm font-semibold text-gold-600">
+            <Text className="text-sm font-semibold text-brand-600">
               {t('appointments.book.viewAppointments')}
             </Text>
           </Pressable>

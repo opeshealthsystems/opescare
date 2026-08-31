@@ -124,9 +124,9 @@ export default function LabsListScreen() {
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel={t('labs.back')}
-          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+          className="h-11 w-11 items-center justify-center rounded-full border border-brand-300"
         >
-          <ArrowLeft size={18} color={colors.gold[600]} />
+          <ArrowLeft size={18} color={colors.brand[600]} />
         </Pressable>
         <View className="ml-3 flex-1">
           <Text className="text-2xl font-extrabold text-navy-text">{t('labs.title')}</Text>
@@ -136,10 +136,10 @@ export default function LabsListScreen() {
           onPress={openDirectory}
           hitSlop={6}
           accessibilityRole="button"
-          className="ml-2 h-11 flex-row items-center rounded-full border border-gold-300 px-3"
+          className="ml-2 h-11 flex-row items-center rounded-full border border-brand-300 px-3"
         >
-          <MapPin size={14} color={colors.gold[600]} />
-          <Text className="ml-1.5 text-xs font-bold text-gold-600">{t('labs.findLabShort')}</Text>
+          <MapPin size={14} color={colors.brand[600]} />
+          <Text className="ml-1.5 text-xs font-bold text-brand-600">{t('labs.findLabShort')}</Text>
         </Pressable>
       </View>
 
@@ -159,7 +159,7 @@ export default function LabsListScreen() {
               accessibilityState={{ selected: active }}
               className="flex-row items-center rounded-full px-4 py-2"
               style={{
-                backgroundColor: active ? colors.gold[500] : colors.white,
+                backgroundColor: active ? colors.brand[500] : colors.white,
                 borderWidth: active ? 0 : 1,
                 borderColor: colors.cream[300],
               }}
@@ -178,7 +178,7 @@ export default function LabsListScreen() {
                   className="ml-2 min-w-[22px] items-center rounded-full px-1.5 py-0.5"
                   style={{ backgroundColor: colors.white }}
                 >
-                  <Text className="text-[11px] font-bold text-gold-600">{total}</Text>
+                  <Text className="text-[11px] font-bold text-brand-600">{total}</Text>
                 </View>
               ) : null}
             </Pressable>
@@ -203,7 +203,7 @@ export default function LabsListScreen() {
             <RefreshControl
               refreshing={isFetching && !isLoading && !isFetchingNextPage}
               onRefresh={refetch}
-              tintColor={colors.gold[500]}
+              tintColor={colors.brand[500]}
             />
           }
           ListHeaderComponent={
@@ -226,13 +226,13 @@ export default function LabsListScreen() {
                   onPress={() => fetchNextPage()}
                   disabled={isFetchingNextPage}
                   accessibilityRole="button"
-                  className="flex-row items-center justify-center rounded-2xl border border-gold-300 py-3"
+                  className="flex-row items-center justify-center rounded-2xl border border-brand-300 py-3"
                   style={{ opacity: isFetchingNextPage ? 0.6 : 1 }}
                 >
-                  <Text className="mr-1.5 text-sm font-bold text-gold-600">
+                  <Text className="mr-1.5 text-sm font-bold text-brand-600">
                     {isFetchingNextPage ? t('labs.loadingMore') : t('labs.loadMore')}
                   </Text>
-                  <ChevronDown size={16} color={colors.gold[600]} />
+                  <ChevronDown size={16} color={colors.brand[600]} />
                 </Pressable>
               ) : null}
               <View
@@ -323,10 +323,10 @@ function OrderCard({ order, t, onPress }: { order: LabOrderSummary; t: TFunction
 
       <View className="mt-3 border-t border-cream-200 pt-3">
         <View className="flex-row items-center justify-end">
-          <Text className="text-sm font-bold text-gold-600">
+          <Text className="text-sm font-bold text-brand-600">
             {order.status === 'resulted' ? t('labs.viewFullReport') : t('labs.viewOrder')}
           </Text>
-          <ChevronRight size={16} color={colors.gold[600]} />
+          <ChevronRight size={16} color={colors.brand[600]} />
         </View>
       </View>
     </Pressable>
@@ -380,10 +380,10 @@ function ErrorState({ t, onRetry }: { t: TFunction; onRetry: () => void }) {
       <Pressable
         onPress={onRetry}
         accessibilityRole="button"
-        className="mt-5 flex-row items-center rounded-full border border-gold-300 px-5 py-2.5"
+        className="mt-5 flex-row items-center rounded-full border border-brand-300 px-5 py-2.5"
       >
-        <RotateCcw size={14} color={colors.gold[600]} />
-        <Text className="ml-2 text-sm font-semibold text-gold-600">{t('labs.retry')}</Text>
+        <RotateCcw size={14} color={colors.brand[600]} />
+        <Text className="ml-2 text-sm font-semibold text-brand-600">{t('labs.retry')}</Text>
       </Pressable>
     </View>
   );
@@ -417,9 +417,9 @@ function EmptyState({
       showsVerticalScrollIndicator={false}
     >
       <View className="items-center pt-4">
-        <View className="h-20 w-20 items-center justify-center rounded-full bg-gold-50">
-          <View className="h-14 w-14 items-center justify-center rounded-full bg-gold-100">
-            <FlaskConical size={26} color={colors.gold[600]} />
+        <View className="h-20 w-20 items-center justify-center rounded-full bg-brand-50">
+          <View className="h-14 w-14 items-center justify-center rounded-full bg-brand-100">
+            <FlaskConical size={26} color={colors.brand[600]} />
           </View>
         </View>
         <Text className="mt-4 text-center text-lg font-extrabold text-navy-text">{t('labs.emptyTitle')}</Text>
@@ -431,8 +431,8 @@ function EmptyState({
         <View className="mt-3" style={{ gap: 14 }}>
           {steps.map((step, index) => (
             <View key={step.title} className="flex-row items-start">
-              <View className="h-9 w-9 items-center justify-center rounded-full bg-gold-50">
-                <step.icon size={16} color={colors.gold[600]} />
+              <View className="h-9 w-9 items-center justify-center rounded-full bg-brand-50">
+                <step.icon size={16} color={colors.brand[600]} />
               </View>
               <View className="ml-3 flex-1">
                 <Text className="text-sm font-semibold text-navy-text">

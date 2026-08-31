@@ -174,9 +174,9 @@ export default function SettingsScreen() {
                   width: sizing.avatar.lg,
                   height: sizing.avatar.lg,
                   borderRadius: radii.pill,
-                  backgroundColor: colors.gold[50],
+                  backgroundColor: colors.brand[50],
                   borderWidth: 1,
-                  borderColor: colors.gold[100],
+                  borderColor: colors.brand[100],
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
@@ -185,7 +185,7 @@ export default function SettingsScreen() {
                   style={{
                     fontSize: typography.size.xl,
                     fontWeight: typography.weight.extrabold,
-                    color: colors.gold[600],
+                    color: colors.brand[600],
                   }}
                 >
                   {initials}
@@ -281,7 +281,7 @@ export default function SettingsScreen() {
                   fontWeight: typography.weight.bold,
                   letterSpacing: typography.tracking.overline,
                   textTransform: 'uppercase',
-                  color: colors.gold[600],
+                  color: colors.brand[600],
                 }}
               >
                 {t('settings.group.language')}
@@ -293,12 +293,12 @@ export default function SettingsScreen() {
                       width: sizing.tile.sm,
                       height: sizing.tile.sm,
                       borderRadius: radii.tile,
-                      backgroundColor: colors.gold[50],
+                      backgroundColor: colors.brand[50],
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
-                    <Globe color={colors.gold[600]} size={sizing.icon.md} />
+                    <Globe color={colors.brand[600]} size={sizing.icon.md} />
                   </View>
                   <View style={{ flex: 1, marginLeft: spacing.md }}>
                     <Text

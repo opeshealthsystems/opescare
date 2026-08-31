@@ -251,9 +251,9 @@ export default function OtpScreen() {
           accessibilityLabel={
             step === 'otp' ? t('auth.changePhoneNumber') : t('auth.otpBackToSignIn')
           }
-          className="mt-2 h-11 w-11 items-center justify-center rounded-full border border-gold-300 bg-white"
+          className="mt-2 h-11 w-11 items-center justify-center rounded-full border border-brand-300 bg-white"
         >
-          <ArrowLeft size={18} color={colors.gold[600]} />
+          <ArrowLeft size={18} color={colors.brand[600]} />
         </Pressable>
 
         <View className="items-center pb-2 pt-3">
@@ -314,7 +314,7 @@ export default function OtpScreen() {
               {t('auth.otpSubtitle')}
             </Text>
             {pendingPhone ? (
-              <Text className="mt-1 text-center text-base font-bold text-gold-600">
+              <Text className="mt-1 text-center text-base font-bold text-brand-600">
                 {pendingPhone}
               </Text>
             ) : null}
@@ -334,9 +334,9 @@ export default function OtpScreen() {
                       : isExpired
                         ? colors.cream[300]
                         : isActive
-                          ? colors.gold[500]
+                          ? colors.brand[500]
                           : digit
-                            ? colors.gold[300]
+                            ? colors.brand[300]
                             : colors.cream[300];
 
                     return (
@@ -349,7 +349,7 @@ export default function OtpScreen() {
                           borderWidth: isActive || digit ? 2 : 1.5,
                           borderColor,
                           backgroundColor: isExpired ? colors.cream[200] : colors.white,
-                          shadowColor: colors.gold[500],
+                          shadowColor: colors.brand[500],
                           shadowOpacity: isActive ? 0.28 : 0,
                           shadowRadius: 8,
                           shadowOffset: { width: 0, height: 0 },
@@ -364,7 +364,7 @@ export default function OtpScreen() {
                               width: 2,
                               height: 24,
                               borderRadius: 1,
-                              backgroundColor: colors.gold[500],
+                              backgroundColor: colors.brand[500],
                               opacity: caretOpacity,
                             }}
                           />
@@ -411,7 +411,7 @@ export default function OtpScreen() {
               <View className="mt-4 flex-row items-center justify-center">
                 <ShieldCheck
                   size={14}
-                  color={isExpired ? colors.semantic.danger : colors.gold[600]}
+                  color={isExpired ? colors.semantic.danger : colors.brand[600]}
                 />
                 {isExpired ? (
                   <Text className="ml-2 text-xs font-semibold text-danger">
@@ -420,7 +420,7 @@ export default function OtpScreen() {
                 ) : (
                   <Text className="ml-2 text-xs text-navy-secondary">
                     {t('auth.codeExpiresIn')}{' '}
-                    <Text className="font-bold text-gold-600">
+                    <Text className="font-bold text-brand-600">
                       {formatCountdown(expirySeconds, true)}
                     </Text>
                   </Text>
@@ -440,8 +440,8 @@ export default function OtpScreen() {
                 </View>
               ) : null}
               {resendSent && !storeError ? (
-                <View className="mt-4 flex-row items-start rounded-2xl bg-gold-50 p-3">
-                  <CircleCheck size={16} color={colors.gold[600]} />
+                <View className="mt-4 flex-row items-start rounded-2xl bg-brand-50 p-3">
+                  <CircleCheck size={16} color={colors.brand[600]} />
                   <Text className="ml-2 flex-1 text-xs leading-4 text-navy-secondary">
                     {t('auth.otpResendSent')}
                   </Text>
@@ -463,22 +463,22 @@ export default function OtpScreen() {
                 disabled={!canResend}
                 accessibilityRole="button"
                 accessibilityState={{ disabled: !canResend }}
-                className="mt-3 h-14 flex-row items-center rounded-2xl border border-gold-500 bg-transparent px-4"
+                className="mt-3 h-14 flex-row items-center rounded-2xl border border-brand-500 bg-transparent px-4"
                 style={{ opacity: canResend ? 1 : 0.55 }}
               >
                 {resending ? (
                   <View className="flex-1 items-center">
-                    <ActivityIndicator color={colors.gold[600]} size="small" />
+                    <ActivityIndicator color={colors.brand[600]} size="small" />
                   </View>
                 ) : (
                   <>
-                    <RefreshCw size={16} color={colors.gold[600]} />
-                    <Text className="flex-1 text-center text-base font-bold text-gold-600">
+                    <RefreshCw size={16} color={colors.brand[600]} />
+                    <Text className="flex-1 text-center text-base font-bold text-brand-600">
                       {t('auth.resendCode')}
                     </Text>
                     <View style={{ minWidth: 44, alignItems: 'flex-end' }}>
                       {resendCooldown > 0 ? (
-                        <Text className="text-sm font-bold text-gold-600">
+                        <Text className="text-sm font-bold text-brand-600">
                           ({formatCountdown(resendCooldown, false)})
                         </Text>
                       ) : null}
@@ -489,7 +489,7 @@ export default function OtpScreen() {
 
               <View className="my-6 flex-row items-center">
                 <View className="h-px flex-1 bg-cream-300" />
-                <Text className="mx-3 text-xs font-bold tracking-widest text-gold-500">
+                <Text className="mx-3 text-xs font-bold tracking-widest text-brand-500">
                   {t('auth.or')}
                 </Text>
                 <View className="h-px flex-1 bg-cream-300" />
@@ -507,8 +507,8 @@ export default function OtpScreen() {
                 <ChevronRight size={18} color={colors.navy.muted} />
               </Pressable>
 
-              <View className="mt-5 flex-row items-start rounded-2xl bg-gold-50 p-4">
-                <ShieldCheck size={16} color={colors.gold[600]} />
+              <View className="mt-5 flex-row items-start rounded-2xl bg-brand-50 p-4">
+                <ShieldCheck size={16} color={colors.brand[600]} />
                 <View className="ml-3 flex-1">
                   <Text className="text-sm font-bold text-navy-text">
                     {t('auth.securePrivateTitle')}
@@ -521,10 +521,10 @@ export default function OtpScreen() {
 
               <View className="mt-6 items-center">
                 <View className="flex-row items-center">
-                  <CircleQuestionMark size={14} color={colors.gold[600]} />
+                  <CircleQuestionMark size={14} color={colors.brand[600]} />
                   <Text className="ml-2 text-xs text-navy-secondary">
                     {t('auth.otpHelpPrompt')}{' '}
-                    <Text className="font-semibold text-gold-600">{t('auth.otpHelpTip')}</Text>
+                    <Text className="font-semibold text-brand-600">{t('auth.otpHelpTip')}</Text>
                   </Text>
                 </View>
 
@@ -539,10 +539,10 @@ export default function OtpScreen() {
                   accessibilityRole="button"
                   className="mt-3 flex-row items-center"
                 >
-                  <LogIn size={14} color={colors.gold[600]} />
+                  <LogIn size={14} color={colors.brand[600]} />
                   <Text className="ml-2 text-xs text-navy-secondary">
                     {t('auth.otpStillTrouble')}{' '}
-                    <Text className="font-bold text-gold-600">{t('auth.otpTryAnotherWay')}</Text>
+                    <Text className="font-bold text-brand-600">{t('auth.otpTryAnotherWay')}</Text>
                   </Text>
                 </Pressable>
               </View>

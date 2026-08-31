@@ -76,18 +76,18 @@ export default function InsuranceMarketplaceScreen() {
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel={t('insurance.back')}
-          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+          className="h-11 w-11 items-center justify-center rounded-full border border-brand-300"
         >
-          <ArrowLeft size={18} color={colors.gold[600]} />
+          <ArrowLeft size={18} color={colors.brand[600]} />
         </Pressable>
         <Pressable
           onPress={() => router.push('/insurance')}
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel={t('insurance.title')}
-          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+          className="h-11 w-11 items-center justify-center rounded-full border border-brand-300"
         >
-          <ShieldCheck size={18} color={colors.gold[600]} />
+          <ShieldCheck size={18} color={colors.brand[600]} />
         </Pressable>
       </View>
 
@@ -99,7 +99,7 @@ export default function InsuranceMarketplaceScreen() {
           <RefreshControl
             refreshing={marketplace.isRefetching}
             onRefresh={() => marketplace.refetch()}
-            tintColor={colors.gold[500]}
+            tintColor={colors.brand[500]}
           />
         }
       >
@@ -134,16 +134,16 @@ export default function InsuranceMarketplaceScreen() {
             </Text>
             <Pressable
               onPress={() => marketplace.refetch()}
-              className="mt-5 rounded-full bg-gold-50 px-6 py-3"
+              className="mt-5 rounded-full bg-brand-50 px-6 py-3"
               accessibilityRole="button"
             >
-              <Text className="text-sm font-semibold text-gold-600">{t('insurance.retry')}</Text>
+              <Text className="text-sm font-semibold text-brand-600">{t('insurance.retry')}</Text>
             </Pressable>
           </View>
         ) : providers.length === 0 ? (
           <View className="mt-8 items-center rounded-3xl bg-white p-6">
-            <View className="h-16 w-16 items-center justify-center rounded-full bg-gold-50">
-              <Store size={30} color={colors.gold[500]} />
+            <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-50">
+              <Store size={30} color={colors.brand[500]} />
             </View>
             <Text className="mt-4 text-center text-base font-bold text-navy-text">
               {t('insurance.marketplace.empty')}
@@ -154,8 +154,8 @@ export default function InsuranceMarketplaceScreen() {
           </View>
         ) : (
           <>
-            <View className="mt-4 flex-row items-center rounded-2xl bg-gold-50 px-4 py-3">
-              <Wallet size={15} color={colors.gold[600]} />
+            <View className="mt-4 flex-row items-center rounded-2xl bg-brand-50 px-4 py-3">
+              <Wallet size={15} color={colors.brand[600]} />
               <Text className="ml-2.5 flex-1 text-xs text-navy-secondary">
                 {t('insurance.currencyNote')}
               </Text>
@@ -198,8 +198,8 @@ function ProviderSection({
   return (
     <View className="mb-7">
       <View className="mb-4 flex-row items-center">
-        <View className="h-11 w-11 items-center justify-center rounded-full bg-gold-100">
-          <Building2 size={18} color={colors.gold[600]} />
+        <View className="h-11 w-11 items-center justify-center rounded-full bg-brand-100">
+          <Building2 size={18} color={colors.brand[600]} />
         </View>
         <View className="ml-3 flex-1">
           <Text className="text-base font-extrabold text-navy-text" numberOfLines={2}>
@@ -294,7 +294,7 @@ function PlanCard({
           </Text>
           {monthly ? (
             <View className="mt-1 flex-row items-baseline">
-              <Text className="text-xl font-extrabold text-gold-600">{monthly}</Text>
+              <Text className="text-xl font-extrabold text-brand-600">{monthly}</Text>
               <Text className="ml-1 text-xs text-navy-muted">
                 {t('insurance.marketplace.perMonth')}
               </Text>

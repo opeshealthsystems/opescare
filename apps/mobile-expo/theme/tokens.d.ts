@@ -14,7 +14,7 @@ export interface ElevationStyle {
 
 export const colors: {
   cream: { 50: string; 100: string; 200: string; 300: string; 400: string; 500: string };
-  gold: {
+  brand: {
     50: string;
     100: string;
     200: string;
@@ -47,13 +47,13 @@ export const colors: {
     card: string;
     cardMuted: string;
     sunken: string;
-    gold: string;
-    goldSoft: string;
+    brand: string;
+    brandSoft: string;
     inverse: string;
     overlay: string;
     scrim: string;
   };
-  line: { subtle: string; default: string; strong: string; gold: string; inverse: string };
+  line: { subtle: string; default: string; strong: string; brand: string; inverse: string };
 };
 
 export const spacing: Record<
@@ -80,11 +80,11 @@ export const typography: {
   tracking: Record<'tight' | 'normal' | 'wide' | 'overline', number>;
 };
 
-export const elevation: Record<'none' | 'sm' | 'md' | 'lg' | 'gold' | 'navy', ElevationStyle>;
+export const elevation: Record<'none' | 'sm' | 'md' | 'lg' | 'brand' | 'navy', ElevationStyle>;
 
 export const gradients: {
-  gold: readonly [string, string, string];
-  goldSoft: readonly [string, string];
+  brand: readonly [string, string, string];
+  brandSoft: readonly [string, string];
   navy: readonly [string, string];
   page: readonly [string, string];
   shimmer: readonly [string, string, string];

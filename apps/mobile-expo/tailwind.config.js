@@ -21,7 +21,7 @@ module.exports = {
     extend: {
       colors: {
         cream: colors.cream,
-        gold: colors.gold,
+        gold: colors.brand,
         navy: colors.navy,
         success: colors.semantic.success,
         danger: colors.semantic.danger,
@@ -37,7 +37,7 @@ module.exports = {
         'neutral-surface': colors.semantic.neutralSurface,
         /** `bg-surface-card`, `bg-surface-sunken`, `bg-surface-inverse`, … */
         surface: colors.surface,
-        /** `border-line-default`, `border-line-gold`, … */
+        /** `border-line-default`, `border-line-brand`, … */
         line: colors.line,
       },
       borderRadius: radii,
