@@ -330,6 +330,7 @@
     "empty": "No documents yet",
     "emptyBody": "Official documents issued by your care facilities will appear here.",
     "loadError": "We couldn't load your documents. Pull down to try again.",
+    "retry": "Try Again",
     "issuedOn": "Issued {{date}}",
     "referenceNumber": "Ref. {{number}}",
     "view": "View",

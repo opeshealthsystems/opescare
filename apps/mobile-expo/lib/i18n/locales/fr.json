@@ -330,6 +330,7 @@
     "empty": "Aucun document pour l'instant",
     "emptyBody": "Les documents officiels délivrés par vos établissements de soins apparaîtront ici.",
     "loadError": "Impossible de charger vos documents. Tirez vers le bas pour réessayer.",
+    "retry": "Réessayer",
     "issuedOn": "Délivré le {{date}}",
     "referenceNumber": "Réf. {{number}}",
     "view": "Voir",

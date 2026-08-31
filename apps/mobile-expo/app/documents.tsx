@@ -84,6 +84,12 @@ export default function DocumentsScreen() {
       ) : documents.isError ? (
         <View className="flex-1 items-center justify-center px-10">
           <Text className="text-center text-sm text-danger">{t('documents.loadError')}</Text>
+          <Pressable
+            onPress={() => documents.refetch()}
+            className="mt-4 rounded-full border border-gold-500 px-5 py-2"
+          >
+            <Text className="text-sm font-semibold text-gold-600">{t('documents.retry')}</Text>
+          </Pressable>
         </View>
       ) : (
         <FlatList
