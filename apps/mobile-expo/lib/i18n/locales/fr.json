@@ -1310,5 +1310,16 @@
       "REQUEST_NOT_FOUND": "Cette demande est introuvable.",
       "generic": "La demande n'a pas pu être envoyée. Veuillez réessayer."
     }
+  },
+  "appUpdate": {
+    "blockedTitle": "Mise à jour requise",
+    "blockedBody": "Cette version d'OpesCare n'est plus prise en charge. Veuillez la mettre à jour pour continuer à consulter votre dossier de santé.",
+    "availableTitle": "Une nouvelle version est disponible",
+    "availableBody": "Mettez à jour OpesCare pour bénéficier des dernières fonctionnalités et correctifs de sécurité.",
+    "latestVersion": "Dernière version : {{version}}",
+    "updateNow": "Mettre à jour",
+    "notNow": "Plus tard",
+    "dismiss": "Ignorer",
+    "storeUnavailable": "Veuillez mettre à jour OpesCare depuis votre magasin d'applications pour continuer."
   }
 }

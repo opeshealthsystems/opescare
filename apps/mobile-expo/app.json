@@ -10,10 +10,12 @@
     "backgroundColor": "#FDF8F0",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.opescare.patient"
+      "bundleIdentifier": "com.opescare.patient",
+      "buildNumber": "1"
     },
     "android": {
       "package": "com.opescare.patient",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#FDF8F0",
         "foregroundImage": "./assets/android-icon-foreground.png",

@@ -1310,5 +1310,16 @@
       "REQUEST_NOT_FOUND": "This request could not be found.",
       "generic": "The request could not be completed. Please try again."
     }
+  },
+  "appUpdate": {
+    "blockedTitle": "Update required",
+    "blockedBody": "This version of OpesCare is no longer supported. Please update to keep using your health record.",
+    "availableTitle": "A new version is available",
+    "availableBody": "Update OpesCare to get the latest features and security fixes.",
+    "latestVersion": "Latest version: {{version}}",
+    "updateNow": "Update now",
+    "notNow": "Not now",
+    "dismiss": "Dismiss",
+    "storeUnavailable": "Please update OpesCare from your app store to continue."
   }
 }

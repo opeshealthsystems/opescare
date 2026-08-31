@@ -7,6 +7,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useAuthStore } from '../lib/store/auth';
+import { AppUpdateGate } from '../components/AppUpdateGate';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -39,6 +40,10 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <StatusBar style="dark" />
         <Stack screenOptions={{ headerShown: false }} />
+        {/* Startup version gate (GET /mobile/app-config). Rendered after the
+            Stack so the blocking variant paints over every route, pre-auth
+            included. Fails open — see lib/api/appConfigQueries.ts. */}
+        <AppUpdateGate />
       </QueryClientProvider>
     </SafeAreaProvider>
   );
