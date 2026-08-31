@@ -31,5 +31,82 @@
     "verify": "Vérifier",
     "invalidEmail": "Entrez un e-mail ou identifiant santé valide",
     "invalidPassword": "Le mot de passe est requis"
+  },
+  "carePlans": {
+    "title": "Plans de soins",
+    "subtitle": "Vos plans de traitement, objectifs et interventions en cours.",
+    "loadError": "Impossible de charger vos plans de soins.",
+    "retry": "Réessayer",
+    "emptyTitle": "Aucun plan de soins actif",
+    "emptyBody": "Votre équipe soignante n'a pas encore créé de plan de soins pour vous. Il apparaîtra ici dès qu'il sera ajouté.",
+    "ongoing": "En cours",
+    "goalsCount_one": "{{count}} objectif",
+    "goalsCount_other": "{{count}} objectifs",
+    "interventionsCount_one": "{{count}} intervention",
+    "interventionsCount_other": "{{count}} interventions",
+    "goals": "Objectifs",
+    "interventions": "Interventions",
+    "progress": "Progression",
+    "target": "Échéance",
+    "noGoals": "Aucun objectif enregistré pour le moment.",
+    "noInterventions": "Aucune intervention enregistrée pour le moment.",
+    "status": {
+      "active": "Actif",
+      "completed": "Terminé",
+      "on_hold": "En pause",
+      "cancelled": "Annulé"
+    },
+    "goalStatus": {
+      "pending": "En attente",
+      "in_progress": "En cours",
+      "achieved": "Atteint",
+      "abandoned": "Abandonné"
+    },
+    "interventionStatus": {
+      "active": "Active",
+      "completed": "Terminée",
+      "discontinued": "Interrompue"
+    },
+    "interventionType": {
+      "medication": "Médicament",
+      "exercise": "Exercice",
+      "diet": "Alimentation",
+      "monitoring": "Surveillance",
+      "referral": "Référence",
+      "education": "Éducation",
+      "other": "Autre"
+    }
+  },
+  "surveys": {
+    "title": "Enquêtes",
+    "listSubtitle": "Partagez votre avis pour nous aider à améliorer vos soins.",
+    "loadError": "Impossible de charger vos enquêtes.",
+    "retry": "Réessayer",
+    "emptyTitle": "Vous êtes à jour",
+    "emptyBody": "Aucune enquête n'attend votre avis pour le moment.",
+    "sentOn": "Envoyée le {{date}}",
+    "expiresOn": "Expire le {{date}}",
+    "takeSurvey": "Répondre à l'enquête",
+    "templates": {
+      "post_visit": "Enquête post-consultation",
+      "discharge": "Enquête de sortie",
+      "telemedicine": "Enquête de téléconsultation",
+      "general": "Avis général"
+    },
+    "questionOf": "Question {{current}} sur {{total}}",
+    "yes": "Oui",
+    "no": "Non",
+    "commentsPlaceholder": "Saisissez votre réponse ici (facultatif)",
+    "requiredError": "Veuillez répondre à toutes les questions obligatoires avant de soumettre.",
+    "submitError": "Impossible d'envoyer votre enquête. Veuillez réessayer.",
+    "submit": "Soumettre l'enquête",
+    "completedTitle": "Merci pour votre avis",
+    "completedBody": "Vous avez complété cette enquête le {{date}}.",
+    "expiredTitle": "Cette enquête a expiré",
+    "expiredBody": "Le délai de réponse à cette enquête est terminé.",
+    "submittedTitle": "Enquête envoyée",
+    "submittedBody": "Merci — votre avis nous aide à améliorer les soins pour chaque patient.",
+    "done": "Terminé",
+    "backToSurveys": "Retour aux enquêtes"
   }
 }
