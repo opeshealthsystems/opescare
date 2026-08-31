@@ -1,173 +1,504 @@
 import { useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, ChevronRight, Pill, RotateCcw } from 'lucide-react-native';
+import {
+  ChevronLeft,
+  ChevronRight,
+  CircleAlert,
+  Hourglass,
+  Pill,
+  RotateCcw,
+  ScrollText,
+  Search,
+  Stethoscope,
+  Store,
+  Tablets,
+  type LucideIcon,
+} from 'lucide-react-native';
 import { Screen } from '../../components/ui/Screen';
 import { colors } from '../../theme/tokens';
 import { usePrescriptions, type PrescriptionSummary } from '../../lib/api/queries';
+import { useActivePrescriptionSummary } from '../../lib/api/prescriptionQueries';
+import {
+  EXPIRY_WARNING_WINDOW_DAYS,
+  StatusPill,
+  daysUntil,
+  formatDate,
+  referenceCode,
+  statusLabelKey,
+} from '../../components/prescriptions/status';
 
-const STATUS_FILTERS = ['all', 'active', 'dispensed', 'partially_dispensed', 'expired', 'cancelled'] as const;
+/**
+ * Prescriptions — the medications a care team has issued to this patient.
+ *
+ * Read-only by design: the mobile API exposes only GET index + GET show
+ * (routes/api.php:269-270), so this screen surfaces no refill or renewal
+ * action. The one refill route in the codebase is a session-authenticated web
+ * portal route (`POST /portals/patient/prescriptions/{id}/refill`) and is not
+ * reachable from a bearer-token client.
+ *
+ * Structure follows the reference set: the page-title / filter-row / grouped-row
+ * rhythm of the Access History reference, and the Rx + dosage vocabulary of the
+ * e-prescription reference. Both references are green-branded; per the design
+ * spec that palette is superseded by gold/cream, so the layout is matched and
+ * every colour comes from theme/tokens.
+ *
+ * The demo patient has no prescriptions, so the empty state is the state most
+ * users meet first: it explains how a prescription reaches this screen rather
+ * than reading as a failure, and both of its actions lead somewhere real.
+ */
+
+const STATUS_FILTERS = [
+  'all',
+  'active',
+  'dispensed',
+  'partially_dispensed',
+  'expired',
+  'cancelled',
+] as const;
 type StatusFilter = (typeof STATUS_FILTERS)[number];
 
-function statusLabelKey(status: string): string {
-  switch (status) {
-    case 'active':
-      return 'prescriptions.statusActive';
-    case 'dispensed':
-      return 'prescriptions.statusDispensed';
-    case 'partially_dispensed':
-      return 'prescriptions.statusPartiallyDispensed';
-    case 'expired':
-      return 'prescriptions.statusExpired';
-    case 'cancelled':
-      return 'prescriptions.statusCancelled';
-    default:
-      return 'prescriptions.statusActive';
-  }
-}
-
-function statusStyles(statusColor: PrescriptionSummary['status_color']): { text: string; surface: string } {
-  switch (statusColor) {
-    case 'success':
-      return { text: 'text-success', surface: colors.semantic.successSurface };
-    case 'info':
-      return { text: 'text-info', surface: colors.semantic.infoSurface };
-    case 'warning':
-      return { text: 'text-warning', surface: colors.semantic.warningSurface };
-    default:
-      return { text: 'text-navy-muted', surface: colors.cream[200] };
-  }
-}
-
-function formatDate(iso: string | null): string | null {
-  if (!iso) return null;
-  return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-}
-
-/** Read-only list of the patient's prescriptions, distinct from pharmacy/medicine
- * search — this is what a care team has prescribed, filterable by status. */
 export default function PrescriptionsListScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
+  const locale = i18n.language;
   const [filter, setFilter] = useState<StatusFilter>('all');
+
   const { data, isLoading, isError, isFetching, refetch } = usePrescriptions(
     filter === 'all' ? undefined : filter,
   );
+  const summary = useActivePrescriptionSummary();
+
   const prescriptions = data?.data ?? [];
+  const total = data?.pagination?.total ?? prescriptions.length;
+  const hasAnyActive = (summary.data?.prescriptionCount ?? 0) > 0;
 
   return (
     <Screen className="px-0">
-      <View className="flex-row items-center px-6 pt-2">
-        <Pressable
-          onPress={() => router.back()}
-          hitSlop={8}
-          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
-        >
-          <ArrowLeft size={18} color={colors.gold[600]} />
-        </Pressable>
+      <FlatList
+        data={prescriptions}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isFetching && !isLoading}
+            onRefresh={() => {
+              refetch();
+              summary.refetch();
+            }}
+            tintColor={colors.gold[500]}
+          />
+        }
+        ItemSeparatorComponent={() => <View className="h-3" />}
+        ListHeaderComponent={
+          <View>
+            {/* Top bar — back chip, wordmark, Medicine Finder shortcut. */}
+            <View className="flex-row items-center justify-between px-6 pt-2">
+              <Pressable
+                onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/home'))}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel={t('prescriptions.back')}
+                className="h-10 w-10 items-center justify-center rounded-xl border border-cream-300 bg-white"
+              >
+                <ChevronLeft size={20} color={colors.navy.text} />
+              </Pressable>
+
+              <View className="flex-row items-center">
+                <Text className="text-lg font-extrabold text-navy-text">Opes</Text>
+                <Text className="text-lg font-extrabold text-gold-500">Care</Text>
+              </View>
+
+              <Pressable
+                onPress={() => router.push('/pharmacy')}
+                accessibilityRole="button"
+                accessibilityLabel={t('prescriptions.findMedicine')}
+                className="h-10 flex-row items-center rounded-xl border border-cream-300 bg-white px-3"
+              >
+                <Search size={15} color={colors.gold[600]} />
+                <Text className="ml-1.5 text-xs font-semibold text-navy-text">
+                  {t('prescriptions.findMedicine')}
+                </Text>
+              </Pressable>
+            </View>
+
+            {/* Title */}
+            <View className="px-6">
+              <Text className="mt-6 text-3xl font-extrabold text-navy-text">
+                {t('prescriptions.title')}
+              </Text>
+              <Text className="mt-1 text-sm text-navy-secondary">
+                {t('prescriptions.subtitle')}
+              </Text>
+            </View>
+
+            {/* Active-medication summary. Rendered only once there is something
+                to count — an all-zero strip would be noise above an empty list. */}
+            {hasAnyActive ? (
+              <View className="mt-5 px-6">
+                <LinearGradient
+                  colors={[colors.gold[600], colors.gold[500], colors.gold[300]]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  // NativeWind's className→style transform is not registered for
+                  // expo-linear-gradient, so styling here has to stay inline.
+                  style={{
+                    borderRadius: 20,
+                    paddingVertical: 18,
+                    paddingHorizontal: 20,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
+                >
+                  <SummaryStat
+                    value={summary.data?.prescriptionCount ?? 0}
+                    label={t('prescriptions.summaryActive')}
+                  />
+                  <View className="mx-4 h-10 w-px bg-white/30" />
+                  <SummaryStat
+                    value={summary.data?.medicationCount ?? 0}
+                    label={t('prescriptions.summaryMedications')}
+                  />
+                  <View className="h-11 w-11 items-center justify-center rounded-full bg-white/20">
+                    <Tablets size={20} color={colors.white} />
+                  </View>
+                </LinearGradient>
+              </View>
+            ) : null}
+
+            {/* Status filters */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="mt-5"
+              contentContainerStyle={{ gap: 8, paddingHorizontal: 24 }}
+            >
+              {STATUS_FILTERS.map((option) => {
+                const active = option === filter;
+                return (
+                  <Pressable
+                    key={option}
+                    onPress={() => setFilter(option)}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: active }}
+                    className={`h-10 items-center justify-center rounded-xl border px-4 ${
+                      active ? 'border-gold-500 bg-gold-500' : 'border-cream-300 bg-white'
+                    }`}
+                  >
+                    <Text
+                      className={`text-xs font-bold ${
+                        active ? 'text-white' : 'text-navy-secondary'
+                      }`}
+                    >
+                      {option === 'all' ? t('prescriptions.filterAll') : t(statusLabelKey(option))}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+
+            {!isLoading && !isError && prescriptions.length > 0 ? (
+              <Text className="mb-3 mt-5 px-6 text-xs font-semibold uppercase tracking-wide text-navy-muted">
+                {t('prescriptions.resultCount', { count: total })}
+              </Text>
+            ) : (
+              <View className="h-5" />
+            )}
+          </View>
+        }
+        ListEmptyComponent={
+          isLoading ? (
+            <View className="items-center py-24">
+              <ActivityIndicator color={colors.gold[500]} />
+            </View>
+          ) : isError ? (
+            <ErrorState onRetry={() => refetch()} />
+          ) : filter === 'all' ? (
+            <FirstRunEmptyState />
+          ) : (
+            <FilteredEmptyState
+              statusLabel={t(statusLabelKey(filter))}
+              onShowAll={() => setFilter('all')}
+            />
+          )
+        }
+        renderItem={({ item }) => (
+          <View className="px-6">
+            <PrescriptionCard
+              prescription={item}
+              locale={locale}
+              onPress={() => router.push(`/prescriptions/${item.id}`)}
+            />
+          </View>
+        )}
+      />
+    </Screen>
+  );
+}
+
+/* -- Pieces ---------------------------------------------------------------- */
+
+function SummaryStat({ value, label }: { value: number; label: string }) {
+  return (
+    <View className="flex-1">
+      <Text className="text-3xl font-extrabold text-white">{value}</Text>
+      <Text className="mt-0.5 text-[11px] font-semibold text-white/90">{label}</Text>
+    </View>
+  );
+}
+
+function PrescriptionCard({
+  prescription,
+  locale,
+  onPress,
+}: {
+  prescription: PrescriptionSummary;
+  locale: string;
+  onPress: () => void;
+}) {
+  const { t } = useTranslation();
+  const prescribedOn = formatDate(prescription.prescribed_at, locale);
+  const remaining = daysUntil(prescription.expires_at);
+  const isOpen = prescription.status === 'active' || prescription.status === 'partially_dispensed';
+
+  // An expiry is only worth a callout while the prescription can still be
+  // filled, and only inside the window where the date changes what you'd do.
+  const expiryDays =
+    isOpen && remaining !== null && remaining >= 0 && remaining <= EXPIRY_WARNING_WINDOW_DAYS
+      ? remaining
+      : null;
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      className="rounded-2xl border border-cream-300 bg-white p-4"
+    >
+      <View className="flex-row items-start">
+        <View className="h-11 w-11 items-center justify-center rounded-xl bg-gold-50">
+          <Pill size={20} color={colors.gold[600]} />
+        </View>
+
         <View className="ml-3 flex-1">
-          <Text className="text-xl font-extrabold text-navy-text">{t('prescriptions.title')}</Text>
-          <Text className="text-xs text-navy-secondary">{t('prescriptions.subtitle')}</Text>
+          <Text className="text-base font-bold text-navy-text" numberOfLines={2}>
+            {prescription.facility_name ?? t('prescriptions.unknownFacility')}
+          </Text>
+          <Text className="mt-0.5 text-[11px] text-navy-muted">
+            {t('prescriptions.reference', { code: referenceCode(prescription.id) })}
+          </Text>
+        </View>
+
+        <View className="ml-2">
+          <StatusPill status={prescription.status} statusColor={prescription.status_color} />
         </View>
       </View>
 
-      <FlatList
-        data={STATUS_FILTERS}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(s) => s}
-        contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 16, gap: 8 }}
-        renderItem={({ item }) => {
-          const active = item === filter;
-          return (
-            <Pressable
-              onPress={() => setFilter(item)}
-              className="rounded-full px-4 py-2"
-              style={{
-                backgroundColor: active ? colors.gold[500] : colors.white,
-                borderWidth: active ? 0 : 1,
-                borderColor: colors.cream[300],
-              }}
-            >
-              <Text
-                className={active ? 'text-sm font-semibold text-white' : 'text-sm font-semibold text-navy-secondary'}
-              >
-                {item === 'all' ? t('prescriptions.filterAll') : t(statusLabelKey(item))}
-              </Text>
-            </Pressable>
-          );
-        }}
-      />
+      {/* The list endpoint returns a count but never the drug names, so the
+          count is what carries the weight here. Names live on the detail screen. */}
+      <View className="mt-3 flex-row items-center rounded-xl bg-cream-100 px-3 py-2.5">
+        <Tablets size={16} color={colors.gold[600]} />
+        <Text className="ml-2 flex-1 text-sm font-bold text-navy-text">
+          {t('prescriptions.medicationCount', { count: prescription.item_count })}
+        </Text>
+        <ChevronRight size={16} color={colors.navy.muted} />
+      </View>
 
-      {isLoading ? (
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={colors.gold[500]} />
-        </View>
-      ) : isError ? (
-        <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-center text-sm text-navy-secondary">{t('prescriptions.loadError')}</Text>
-          <Pressable
-            onPress={() => refetch()}
-            className="mt-4 flex-row items-center rounded-full border border-gold-300 px-4 py-2"
+      <View className="mt-3 flex-row items-center justify-between border-t border-cream-200 pt-3">
+        <Text className="flex-1 pr-2 text-[11px] text-navy-secondary" numberOfLines={1}>
+          {prescribedOn
+            ? t('prescriptions.prescribedOn', { date: prescribedOn })
+            : t('prescriptions.dateUnknown')}
+        </Text>
+
+        {expiryDays !== null ? (
+          <View
+            className="flex-row items-center rounded-lg px-2 py-1"
+            style={{ backgroundColor: colors.semantic.warningSurface }}
           >
-            <RotateCcw size={14} color={colors.gold[600]} />
-            <Text className="ml-2 text-sm font-semibold text-gold-600">{t('prescriptions.retry')}</Text>
-          </Pressable>
-        </View>
-      ) : prescriptions.length === 0 ? (
-        <View className="flex-1 items-center justify-center px-10">
-          <View className="h-16 w-16 items-center justify-center rounded-full bg-gold-100">
-            <Pill size={26} color={colors.gold[500]} />
+            <Hourglass size={11} color={colors.semantic.warning} />
+            <Text className="ml-1 text-[10px] font-bold" style={{ color: colors.semantic.warning }}>
+              {expiryDays === 0
+                ? t('prescriptions.expiresToday')
+                : t('prescriptions.expiresInDays', { count: expiryDays })}
+            </Text>
           </View>
-          <Text className="mt-4 text-center text-base font-bold text-navy-text">
-            {t('prescriptions.emptyTitle')}
-          </Text>
-          <Text className="mt-1 text-center text-sm text-navy-secondary">{t('prescriptions.emptyBody')}</Text>
+        ) : null}
+      </View>
+    </Pressable>
+  );
+}
+
+/**
+ * The state the demo patient — and anyone not yet prescribed anything — sees.
+ * It explains the mechanism instead of apologising, and both actions are real
+ * routes: `app/appointments/book.tsx` and `app/pharmacy.tsx`.
+ */
+function FirstRunEmptyState() {
+  const { t } = useTranslation();
+  const router = useRouter();
+
+  return (
+    <View className="px-6 pt-4">
+      <View className="items-center rounded-2xl border border-cream-300 bg-white px-6 py-8">
+        <View className="h-20 w-20 items-center justify-center rounded-full bg-gold-50">
+          <Pill size={30} color={colors.gold[600]} />
         </View>
-      ) : (
-        <FlatList
-          data={prescriptions}
-          keyExtractor={(p) => p.id}
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32, gap: 12 }}
-          refreshControl={
-            <RefreshControl refreshing={isFetching && !isLoading} onRefresh={refetch} tintColor={colors.gold[500]} />
-          }
-          renderItem={({ item }) => {
-            const sc = statusStyles(item.status_color);
-            const prescribedDate = formatDate(item.prescribed_at);
-            return (
-              <Pressable onPress={() => router.push(`/prescriptions/${item.id}`)} className="rounded-2xl bg-white p-4">
-                <View className="flex-row items-start justify-between">
-                  <View className="flex-1 flex-row items-start">
-                    <View className="h-10 w-10 items-center justify-center rounded-full bg-gold-100">
-                      <Pill size={18} color={colors.gold[600]} />
-                    </View>
-                    <View className="ml-3 flex-1">
-                      <Text className="text-base font-bold text-navy-text" numberOfLines={1}>
-                        {item.facility_name ?? t('prescriptions.title')}
-                      </Text>
-                      {prescribedDate ? (
-                        <Text className="mt-0.5 text-xs text-navy-muted">
-                          {t('prescriptions.prescribedOn', { date: prescribedDate })}
-                        </Text>
-                      ) : null}
-                      <Text className="mt-1 text-xs text-navy-secondary">
-                        {t('prescriptions.medicationCount', { count: item.item_count })}
-                      </Text>
-                    </View>
-                  </View>
-                  <ChevronRight size={18} color={colors.navy.muted} />
-                </View>
-                <View className="mt-3 self-start rounded-full px-3 py-1" style={{ backgroundColor: sc.surface }}>
-                  <Text className={`text-xs font-semibold ${sc.text}`}>{t(statusLabelKey(item.status))}</Text>
-                </View>
-              </Pressable>
-            );
-          }}
+        <Text className="mt-5 text-center text-lg font-extrabold text-navy-text">
+          {t('prescriptions.emptyTitle')}
+        </Text>
+        <Text className="mt-2 text-center text-sm leading-5 text-navy-secondary">
+          {t('prescriptions.emptyBody')}
+        </Text>
+      </View>
+
+      <Text className="mb-3 mt-6 text-xs font-semibold uppercase tracking-wide text-navy-muted">
+        {t('prescriptions.emptyHowTitle')}
+      </Text>
+
+      <View className="overflow-hidden rounded-2xl border border-cream-300 bg-white">
+        <EmptyStep
+          index={1}
+          icon={Stethoscope}
+          title={t('prescriptions.emptyStep1Title')}
+          body={t('prescriptions.emptyStep1Body')}
         />
-      )}
-    </Screen>
+        <EmptyStep
+          index={2}
+          icon={ScrollText}
+          title={t('prescriptions.emptyStep2Title')}
+          body={t('prescriptions.emptyStep2Body')}
+        />
+        <EmptyStep
+          index={3}
+          icon={Store}
+          title={t('prescriptions.emptyStep3Title')}
+          body={t('prescriptions.emptyStep3Body')}
+          last
+        />
+      </View>
+
+      <Pressable
+        onPress={() => router.push('/appointments/book')}
+        accessibilityRole="button"
+        className="mt-5 flex-row items-center justify-center rounded-2xl bg-gold-500 px-4 py-4"
+      >
+        <Stethoscope size={17} color={colors.white} />
+        <Text className="ml-2 text-sm font-bold text-white">
+          {t('prescriptions.emptyBookAppointment')}
+        </Text>
+      </Pressable>
+
+      <Pressable
+        onPress={() => router.push('/pharmacy')}
+        accessibilityRole="button"
+        className="mt-3 flex-row items-center justify-center rounded-2xl border border-gold-500 px-4 py-4"
+      >
+        <Search size={17} color={colors.gold[600]} />
+        <Text className="ml-2 text-sm font-bold text-gold-600">
+          {t('prescriptions.emptyFindMedicine')}
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
+
+function EmptyStep({
+  index,
+  icon: Icon,
+  title,
+  body,
+  last,
+}: {
+  index: number;
+  icon: LucideIcon;
+  title: string;
+  body: string;
+  last?: boolean;
+}) {
+  return (
+    <View className={`flex-row items-start px-4 py-4 ${last ? '' : 'border-b border-cream-200'}`}>
+      <View className="h-9 w-9 items-center justify-center rounded-xl bg-cream-200">
+        <Icon size={17} color={colors.gold[600]} />
+      </View>
+      <View className="ml-3 flex-1">
+        <Text className="text-sm font-bold text-navy-text">
+          {index}. {title}
+        </Text>
+        <Text className="mt-1 text-xs leading-4 text-navy-secondary">{body}</Text>
+      </View>
+    </View>
+  );
+}
+
+/** A filter that matched nothing — a far lighter message than a first run. */
+function FilteredEmptyState({
+  statusLabel,
+  onShowAll,
+}: {
+  statusLabel: string;
+  onShowAll: () => void;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <View className="px-6 pt-2">
+      <View className="items-center rounded-2xl border border-cream-300 bg-white px-6 py-10">
+        <View className="h-14 w-14 items-center justify-center rounded-full bg-cream-200">
+          <Pill size={22} color={colors.navy.muted} />
+        </View>
+        <Text className="mt-4 text-center text-base font-bold text-navy-text">
+          {t('prescriptions.emptyFilterTitle', { status: statusLabel })}
+        </Text>
+        <Text className="mt-1.5 text-center text-sm text-navy-secondary">
+          {t('prescriptions.emptyFilterBody')}
+        </Text>
+        <Pressable
+          onPress={onShowAll}
+          accessibilityRole="button"
+          className="mt-4 rounded-xl border border-gold-500 px-4 py-2"
+        >
+          <Text className="text-xs font-bold text-gold-600">{t('prescriptions.showAll')}</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+function ErrorState({ onRetry }: { onRetry: () => void }) {
+  const { t } = useTranslation();
+
+  return (
+    <View className="px-6 pt-2">
+      <View className="items-center rounded-2xl border border-cream-300 bg-white px-6 py-10">
+        <View
+          className="h-14 w-14 items-center justify-center rounded-full"
+          style={{ backgroundColor: colors.semantic.dangerSurface }}
+        >
+          <CircleAlert size={22} color={colors.semantic.danger} />
+        </View>
+        <Text className="mt-4 text-center text-sm text-navy-secondary">
+          {t('prescriptions.loadError')}
+        </Text>
+        <Pressable
+          onPress={onRetry}
+          accessibilityRole="button"
+          className="mt-4 flex-row items-center rounded-xl border border-gold-500 px-4 py-2"
+        >
+          <RotateCcw size={13} color={colors.gold[600]} />
+          <Text className="ml-2 text-xs font-bold text-gold-600">{t('prescriptions.retry')}</Text>
+        </Pressable>
+      </View>
+    </View>
   );
 }
