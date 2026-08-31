@@ -280,7 +280,8 @@
     "privacyTitle": "Your data is private and secure",
     "privacyBody": "We use industry-leading encryption to protect your information and follow global health data privacy standards.",
     "notProvided": "Not provided",
-    "downloadRecords": "Download My Records"
+    "downloadRecords": "Download My Records",
+    "helpSupport": "Help & Support"
   },
   "settings": {
     "title": "Settings",
@@ -1078,5 +1079,71 @@
     "continue": "Continue",
     "skip": "Skip for now",
     "pushRegisterError": "Notifications are on, but we couldn't finish set up. You can retry from Settings."
+  },
+  "help": {
+    "title": "Help & Support",
+    "subtitle": "We're here to help. Reach our team or track a request.",
+    "quickLinks": "Quick Links",
+    "quickLink": {
+      "healthId": "Health ID",
+      "appointments": "Appointments",
+      "records": "Health Records",
+      "privacy": "Security & Privacy",
+      "family": "Dependents"
+    },
+    "contact": {
+      "title": "Contact Us",
+      "body": "Choose the way that works best for you.",
+      "email": "Email Support",
+      "emailBody": "We typically respond within 24 hours.",
+      "phone": "Call Support",
+      "phoneBody": "Speak with a support representative.",
+      "unavailable": "No direct contact channel is configured yet — use \"Submit a Request\" below and our team will reach you."
+    },
+    "requestForm": {
+      "title": "Submit a Request",
+      "body": "Can't find what you need? Tell us what's wrong and our team will get back to you.",
+      "category": "Category",
+      "subject": "Subject",
+      "subjectPlaceholder": "Briefly describe the issue",
+      "description": "Description",
+      "descriptionPlaceholder": "Give us as much detail as you can.",
+      "submit": "Submit Request",
+      "submitError": "Couldn't submit your request. Please try again.",
+      "submitted": "Request submitted — we'll follow up soon."
+    },
+    "category": {
+      "technical_issue": "Technical Issue",
+      "appointment_issue": "Appointments",
+      "billing_question": "Billing",
+      "account_access": "Account Access",
+      "medical_records": "Medical Records",
+      "prescription_pharmacy": "Prescriptions & Pharmacy",
+      "other": "Other"
+    },
+    "myRequests": {
+      "title": "My Support Requests",
+      "body": "Track your support requests and their status.",
+      "empty": "You haven't submitted any requests yet.",
+      "loadError": "Couldn't load your support requests.",
+      "retry": "Retry"
+    },
+    "status": {
+      "open": "Open",
+      "assigned": "In Progress",
+      "escalated": "Escalated",
+      "resolved": "Resolved"
+    },
+    "detail": {
+      "description": "Description",
+      "conversation": "Conversation",
+      "replyPlaceholder": "Write a reply…",
+      "resolutionNote": "Resolution note",
+      "empty": "No messages yet."
+    },
+    "emergency": {
+      "title": "Medical Emergency?",
+      "body": "If you are experiencing a medical emergency, call your local emergency services immediately — do not wait for a support reply."
+    }
   }
 }

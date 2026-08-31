@@ -11,6 +11,7 @@ import {
   Download,
   Droplet,
   FileText,
+  HelpCircle,
   LogOut,
   Mail,
   MessageCircle,
@@ -94,6 +95,11 @@ export default function ProfileScreen() {
       icon: SettingsIcon,
       label: t('profile.settings'),
       onPress: () => router.push('/settings'),
+    },
+    {
+      icon: HelpCircle,
+      label: t('profile.helpSupport'),
+      onPress: () => router.push('/help'),
     },
   ];
 
