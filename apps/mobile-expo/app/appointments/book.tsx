@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Linking, Platform, Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import {
@@ -8,8 +8,11 @@ import {
   Calendar,
   CheckCircle2,
   Clock,
+  Info,
   MapPin,
+  Navigation,
   Search,
+  Share2,
 } from 'lucide-react-native';
 import { Screen } from '../../components/ui/Screen';
 import { Button } from '../../components/ui/Button';
@@ -75,6 +78,23 @@ function formatFullDateTime(iso: string, locale: string) {
   const day = date.toLocaleDateString(localeTag, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   const time = date.toLocaleTimeString(localeTag, { hour: '2-digit', minute: '2-digit' });
   return `${day}, ${time}`;
+}
+
+/** Deep-link to a maps app for directions, same pattern as care-map.tsx. */
+function directionsUrl(facility: CareFacilitySummary): string | null {
+  const label = encodeURIComponent(facility.facility_name);
+  if (facility.latitude != null && facility.longitude != null) {
+    const { latitude: lat, longitude: lng } = facility;
+    return (
+      Platform.select({
+        ios: `maps:0,0?q=${label}@${lat},${lng}`,
+        android: `geo:${lat},${lng}?q=${lat},${lng}(${label})`,
+        default: `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`,
+      }) ?? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+    );
+  }
+  const address = [facility.address, facility.city, facility.region].filter(Boolean).join(', ');
+  return address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}` : null;
 }
 
 function StepHeader({ title, onBack }: { title: string; onBack: () => void }) {
@@ -198,6 +218,30 @@ export default function BookAppointmentScreen() {
         },
       },
     );
+  };
+
+  const handleGetDirections = () => {
+    if (!selectedFacility) return;
+    const url = directionsUrl(selectedFacility);
+    if (url) Linking.openURL(url).catch(() => {});
+  };
+
+  const handleShareAppointment = async () => {
+    if (!bookedAppointment) return;
+    try {
+      await Share.share({
+        message: t('appointments.book.shareMessage', {
+          type: bookedAppointment.appointment_type,
+          facility: bookedAppointment.facility_name ?? selectedFacility?.facility_name ?? '',
+          datetime: bookedAppointment.scheduled_at
+            ? formatFullDateTime(bookedAppointment.scheduled_at, i18n.language)
+            : '',
+          id: bookedAppointment.id.slice(0, 8).toUpperCase(),
+        }),
+      });
+    } catch {
+      // Share sheet dismissed/cancelled — nothing to surface.
+    }
   };
 
   return (
@@ -496,6 +540,19 @@ export default function BookAppointmentScreen() {
                   {bookedAppointment.facility_name ?? selectedFacility?.facility_name}
                 </Text>
               </View>
+              {selectedFacility && directionsUrl(selectedFacility) ? (
+                <Pressable
+                  onPress={handleGetDirections}
+                  hitSlop={8}
+                  className="ml-2 flex-row items-center rounded-full border px-3 py-1.5"
+                  style={{ borderColor: colors.gold[300] }}
+                >
+                  <Navigation size={12} color={colors.gold[600]} />
+                  <Text className="ml-1 text-xs font-semibold text-gold-600">
+                    {t('appointments.book.getDirections')}
+                  </Text>
+                </Pressable>
+              ) : null}
             </View>
             <View
               className="flex-row items-start py-2"
@@ -538,6 +595,37 @@ export default function BookAppointmentScreen() {
                 </View>
               </View>
             ) : null}
+          </View>
+
+          <View
+            className="mt-4 flex-row items-start rounded-2xl p-4"
+            style={{ backgroundColor: colors.semantic.infoSurface }}
+          >
+            <Info size={18} color={colors.semantic.info} />
+            <View className="ml-3 flex-1">
+              <Text className="text-sm font-bold text-navy-text">
+                {t('appointments.book.whatToExpectTitle')}
+              </Text>
+              <Text className="mt-1 text-xs text-navy-secondary">
+                {t('appointments.book.whatToExpectArrive')}
+              </Text>
+              <Text className="mt-1 text-xs text-navy-secondary">
+                {t('appointments.book.whatToExpectBring')}
+              </Text>
+            </View>
+          </View>
+
+          <View className="mt-5">
+            <Pressable
+              onPress={handleShareAppointment}
+              className="flex-row items-center justify-center rounded-2xl border py-3"
+              style={{ borderColor: colors.cream[300] }}
+            >
+              <Share2 size={16} color={colors.gold[600]} />
+              <Text className="ml-2 text-sm font-semibold text-navy-text">
+                {t('appointments.book.shareAppointment')}
+              </Text>
+            </Pressable>
           </View>
 
           <View className="mt-6">

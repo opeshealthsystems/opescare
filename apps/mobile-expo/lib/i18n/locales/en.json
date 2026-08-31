@@ -214,7 +214,13 @@
       "done": "Done",
       "back": "Back",
       "next": "Next",
-      "noSlotSelected": "Select a time slot to continue"
+      "noSlotSelected": "Select a time slot to continue",
+      "whatToExpectTitle": "What to Expect",
+      "whatToExpectArrive": "Please arrive 15 minutes before your scheduled time.",
+      "whatToExpectBring": "Bring any relevant medical records or test results.",
+      "getDirections": "Get Directions",
+      "shareAppointment": "Share Appointment",
+      "shareMessage": "{{type}} at {{facility}} on {{datetime}}. Booking ID: {{id}}."
     }
   },
   "healthId": {
