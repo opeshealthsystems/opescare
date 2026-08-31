@@ -72,6 +72,10 @@ export const endpoints = {
   revokeConsent: (id: string) => `/mobile/consents/${id}/revoke`,
   accessLogs: '/mobile/access-logs',
 
+  dataExportRequests: '/mobile/data-export-requests',
+  downloadDataExport: (id: string) => `/mobile/data-exports/${id}/download`,
+  correctionRequests: '/mobile/correction-requests',
+
   // Not yet implemented on the backend — added in Phase 2 (see design spec §3, §6).
   pharmacyNearby: '/mobile/pharmacy/nearby',
   medicineSearch: '/mobile/pharmacy/medicines',

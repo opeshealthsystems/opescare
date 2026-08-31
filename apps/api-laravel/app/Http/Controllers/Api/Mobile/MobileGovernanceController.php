@@ -45,6 +45,7 @@ class MobileGovernanceController extends Controller
         }
 
         $requests = ConsentRequest::where('patient_id', $patientId)
+            ->with(['requestingFacility:id,name,type', 'grant'])
             ->latest()
             ->get();
 
@@ -106,6 +107,7 @@ class MobileGovernanceController extends Controller
         }
 
         $logs = AccessLog::where('patient_id', $patientId)
+            ->with('facility:id,name,type')
             ->latest()
             ->paginate(50);
 
@@ -191,12 +193,12 @@ class MobileGovernanceController extends Controller
         }
 
         try {
-            $exp = $this->exportService->downloadExport($id, $userId);
+            $export = $this->exportService->downloadExport($id, $userId);
 
             return response()->json([
-                'status'    => 'downloaded',
-                'file_path' => $exp->file_path,
-                'message'   => __('api.file_downloaded'),
+                'status'   => 'downloaded',
+                'export'   => $export,
+                'message'  => __('api.file_downloaded'),
             ], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 403);
