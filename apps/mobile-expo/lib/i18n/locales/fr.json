@@ -108,6 +108,8 @@
       "healthRecords": "Mon dossier santé",
       "healthCheck": "Bilan de santé",
       "prescriptions": "Ordonnances",
+      "findMedicine": "Trouver un médicament",
+      "findBlood": "Trouver du sang",
       "viewAllServices": "Tous les services"
     },
     "healthId": {

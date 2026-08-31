@@ -9,6 +9,7 @@ import {
   ChevronRight,
   ClipboardPlus,
   Clock,
+  Droplets,
   Hand,
   HeartPulse,
   LayoutGrid,
@@ -18,6 +19,7 @@ import {
   QrCode,
   ShieldCheck,
   Sparkles,
+  Store,
   type LucideIcon,
 } from 'lucide-react-native';
 import { Screen } from '../../components/ui/Screen';
@@ -102,33 +104,49 @@ export default function HomeScreen() {
         </View>
 
         {/* Quick actions */}
-        <View className="mt-6 flex-row items-start rounded-2xl bg-white p-4">
-          <QuickAction
-            icon={Calendar}
-            label={t('home.quickActions.bookAppointment')}
-            onPress={() => router.push('/appointments')}
-          />
-          <QuickAction
-            icon={ClipboardPlus}
-            label={t('home.quickActions.healthRecords')}
-            onPress={() => router.push('/(tabs)/records')}
-          />
-          <QuickAction
-            icon={HeartPulse}
-            label={t('home.quickActions.healthCheck')}
-            onPress={() => router.push('/(tabs)/records')}
-          />
-          <QuickAction
-            icon={Pill}
-            label={t('home.quickActions.prescriptions')}
-            onPress={() => router.push('/prescriptions')}
-          />
-          <QuickAction
-            icon={LayoutGrid}
-            label={t('home.quickActions.viewAllServices')}
-            onPress={() => router.push('/(tabs)/records')}
-          />
-        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="-mx-6 mt-6 px-6"
+        >
+          <View className="flex-row items-start rounded-2xl bg-white p-4">
+            <QuickAction
+              icon={Calendar}
+              label={t('home.quickActions.bookAppointment')}
+              onPress={() => router.push('/appointments')}
+            />
+            <QuickAction
+              icon={ClipboardPlus}
+              label={t('home.quickActions.healthRecords')}
+              onPress={() => router.push('/(tabs)/records')}
+            />
+            <QuickAction
+              icon={HeartPulse}
+              label={t('home.quickActions.healthCheck')}
+              onPress={() => router.push('/(tabs)/records')}
+            />
+            <QuickAction
+              icon={Pill}
+              label={t('home.quickActions.prescriptions')}
+              onPress={() => router.push('/prescriptions')}
+            />
+            <QuickAction
+              icon={Store}
+              label={t('home.quickActions.findMedicine')}
+              onPress={() => router.push('/pharmacy')}
+            />
+            <QuickAction
+              icon={Droplets}
+              label={t('home.quickActions.findBlood')}
+              onPress={() => router.push('/blood-finder')}
+            />
+            <QuickAction
+              icon={LayoutGrid}
+              label={t('home.quickActions.viewAllServices')}
+              onPress={() => router.push('/(tabs)/records')}
+            />
+          </View>
+        </ScrollView>
 
         {/* Health ID card */}
         <LinearGradient

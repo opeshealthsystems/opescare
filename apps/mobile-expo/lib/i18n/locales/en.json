@@ -108,6 +108,8 @@
       "healthRecords": "My Health Records",
       "healthCheck": "Health Check",
       "prescriptions": "Prescriptions",
+      "findMedicine": "Find Medicine",
+      "findBlood": "Find Blood",
       "viewAllServices": "View All Services"
     },
     "healthId": {
