@@ -23,8 +23,10 @@ import {
   type LucideIcon,
 } from 'lucide-react-native';
 import { Screen } from '../../components/ui/Screen';
+import { UnreadBadge } from '../../components/ui/UnreadBadge';
 import { useAuthStore } from '../../lib/store/auth';
 import { useHealthIdCard, useUpcomingAppointments } from '../../lib/api/queries';
+import { useUnreadNotificationCount } from '../../lib/api/appConfigQueries';
 import { colors } from '../../theme/tokens';
 
 export default function HomeScreen() {
@@ -34,6 +36,12 @@ export default function HomeScreen() {
   const healthId = useHealthIdCard();
   const appointments = useUpcomingAppointments();
   const nextAppointment = appointments.data?.data?.[0];
+  // Lightweight count endpoint, not the heavy list. Resolves to 0 (no badge)
+  // while loading or on error; the existing mark-read mutations invalidate the
+  // ['notifications'] key prefix, which refreshes this immediately. Gated on
+  // auth so it can never fire a pre-auth 401 into the refresh interceptor.
+  const authStatus = useAuthStore((s) => s.status);
+  const unreadCount = useUnreadNotificationCount(authStatus === 'authenticated');
 
   const initial = patient?.first_name?.[0]?.toUpperCase() ?? '?';
   const statusValue = (healthId.data?.status ?? patient?.status ?? '').toLowerCase();
@@ -74,8 +82,19 @@ export default function HomeScreen() {
           </View>
 
           <View className="flex-row items-center gap-4">
-            <Pressable onPress={() => router.push('/notifications')} hitSlop={8}>
-              <Bell size={20} color={colors.navy.text} />
+            <Pressable
+              onPress={() => router.push('/notifications')}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel={t('notifications.title')}
+            >
+              <View>
+                <Bell size={20} color={colors.navy.text} />
+                {/* Count renders as its own accessible text node; the button
+                    above carries the "Notification Center" label. No new
+                    notifications.* i18n key needed. */}
+                <UnreadBadge count={unreadCount} />
+              </View>
             </Pressable>
             <Pressable onPress={() => router.push('/(tabs)/profile')} hitSlop={4}>
               <View className="h-9 w-9 items-center justify-center rounded-full bg-gold-100">
