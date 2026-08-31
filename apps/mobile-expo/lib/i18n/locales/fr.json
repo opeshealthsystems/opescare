@@ -1152,5 +1152,96 @@
       "title": "Urgence médicale ?",
       "body": "En cas d'urgence médicale, appelez immédiatement les services d'urgence locaux — n'attendez pas une réponse du support."
     }
+  },
+  "bloodFinder": {
+    "title": "Recherche de sang",
+    "subtitle": "Trouvez les poches de sang signalées disponibles près de vous et réservez-les.",
+    "back": "Retour",
+    "myLocation": "Ma position",
+    "changeLocation": "Changer de position",
+    "filterPlaceholder": "Filtrer par établissement ou ville",
+    "clear": "Effacer",
+    "bloodGroup": "Groupe sanguin",
+    "component": "Composant",
+    "radius": "{{km}} km",
+    "components": {
+      "whole_blood": "Sang total",
+      "red_cells": "Globules rouges",
+      "platelets": "Plaquettes",
+      "plasma": "Plasma"
+    },
+    "urgencies": {
+      "routine": "Courant",
+      "urgent": "Urgent",
+      "emergency": "Urgence vitale"
+    },
+    "statuses": {
+      "pending": "En attente de la banque de sang",
+      "confirmed": "Confirmée",
+      "ready": "Prête à être retirée",
+      "fulfilled": "Retirée",
+      "rejected": "Refusée",
+      "cancelled": "Annulée",
+      "expired": "Expirée"
+    },
+    "freshness": {
+      "fresh": "Mis à jour aujourd'hui",
+      "recent": "Mis à jour récemment",
+      "stale": "Pas mis à jour récemment"
+    },
+    "chooseGroupTitle": "Choisissez un groupe sanguin",
+    "chooseGroupBody": "Sélectionnez le groupe et le composant dont vous avez besoin pour voir les établissements qui les signalent disponibles.",
+    "facilityCount_one": "{{count}} établissement signale ce groupe",
+    "facilityCount_other": "{{count}} établissements signalent ce groupe",
+    "nearbyBanks_one": "{{count}} établissement à proximité",
+    "nearbyBanks_other": "{{count}} établissements à proximité",
+    "sortByDistance": "Les plus proches d'abord",
+    "distanceKm": "à {{km}} km",
+    "distanceUnknown": "Distance indisponible",
+    "unitsRange": "{{range}} poches signalées",
+    "unitsUnknown": "Poches non renseignées",
+    "requestUnits": "Demander des poches",
+    "call": "Appeler l'établissement",
+    "getDirections": "Itinéraire",
+    "noResults": "Aucun établissement dans un rayon de {{km}} km ne signale ce groupe actuellement.",
+    "noResultsHint": "Essayez un rayon plus large, un autre composant ou un groupe compatible.",
+    "loadFailed": "Impossible de charger la disponibilité du sang.",
+    "retry": "Réessayer",
+    "compatibleTitle": "Compatible avec {{group}}",
+    "compatibleBody": "Un patient de groupe {{group}} peut généralement recevoir : {{groups}}. Votre clinicien décide de ce qui est réellement transfusé.",
+    "safetyTitle": "La disponibilité change vite",
+    "safetyBody": "Les stocks sont déclarés par chaque établissement et peuvent changer en quelques minutes. Appelez avant de vous déplacer et ne retardez jamais une prise en charge urgente pour chercher ici.",
+    "myRequests": "Mes demandes",
+    "myRequestsEmpty": "Vous n'avez encore aucune demande de sang.",
+    "reference": "Référence {{reference}}",
+    "request": {
+      "title": "Demander des poches de sang",
+      "subtitle": "Cette demande réserve votre place au comptoir. Aucun paiement n'est prélevé et aucune poche n'est délivrée tant que l'établissement n'a pas confirmé.",
+      "facility": "Établissement",
+      "noFacility": "Aucun établissement sélectionné.",
+      "quantity": "Poches",
+      "urgency": "Dans quel délai en avez-vous besoin ?",
+      "contactPhone": "Téléphone de contact",
+      "contactPhonePlaceholder": "+237 6XX XXX XXX",
+      "note": "Note pour la banque de sang",
+      "notePlaceholder": "Ce que l'établissement doit savoir (facultatif)",
+      "submit": "Envoyer la demande",
+      "cancel": "Annuler la demande",
+      "successTitle": "Demande envoyée",
+      "successBody": "Présentez la référence {{reference}} à {{facility}}. L'établissement confirmera avant votre déplacement.",
+      "cancelledTitle": "Demande annulée",
+      "cancelledBody": "Votre demande a été retirée. L'établissement en conserve la trace.",
+      "paymentNote": "OpesCare ne prélève aucun paiement pour le sang. Tout frais est réglé directement avec l'établissement.",
+      "clinicalNote": "Le sang est délivré par l'établissement après ses propres contrôles — cette demande n'est ni un test de compatibilité ni une validation clinique."
+    },
+    "errors": {
+      "BLOOD_NOT_AVAILABLE": "Cet établissement ne signale plus ce groupe sanguin comme disponible.",
+      "TOO_MANY_OPEN_REQUESTS": "Vous avez déjà atteint le nombre maximal de demandes de sang en cours.",
+      "REQUEST_ALREADY_OPEN": "Vous avez déjà une demande en cours pour ce groupe dans cet établissement.",
+      "REQUEST_NOT_CANCELLABLE": "Cette demande ne peut plus être annulée.",
+      "FACILITY_NOT_FOUND": "Cet établissement n'est plus référencé.",
+      "REQUEST_NOT_FOUND": "Cette demande est introuvable.",
+      "generic": "La demande n'a pas pu être envoyée. Veuillez réessayer."
+    }
   }
 }

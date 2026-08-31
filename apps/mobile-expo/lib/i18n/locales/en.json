@@ -1152,5 +1152,96 @@
       "title": "Medical Emergency?",
       "body": "If you are experiencing a medical emergency, call your local emergency services immediately — do not wait for a support reply."
     }
+  },
+  "bloodFinder": {
+    "title": "Blood Finder",
+    "subtitle": "Find blood units reported available near you, and reserve them.",
+    "back": "Back",
+    "myLocation": "My Location",
+    "changeLocation": "Change location",
+    "filterPlaceholder": "Filter by facility or city",
+    "clear": "Clear",
+    "bloodGroup": "Blood group",
+    "component": "Component",
+    "radius": "{{km}} km",
+    "components": {
+      "whole_blood": "Whole Blood",
+      "red_cells": "Red Cells",
+      "platelets": "Platelets",
+      "plasma": "Plasma"
+    },
+    "urgencies": {
+      "routine": "Routine",
+      "urgent": "Urgent",
+      "emergency": "Emergency"
+    },
+    "statuses": {
+      "pending": "Awaiting blood bank",
+      "confirmed": "Confirmed",
+      "ready": "Ready for collection",
+      "fulfilled": "Collected",
+      "rejected": "Declined",
+      "cancelled": "Cancelled",
+      "expired": "Expired"
+    },
+    "freshness": {
+      "fresh": "Updated today",
+      "recent": "Updated recently",
+      "stale": "Not updated recently"
+    },
+    "chooseGroupTitle": "Choose a blood group",
+    "chooseGroupBody": "Pick the group and component you need to see which facilities report them as available.",
+    "facilityCount_one": "{{count}} facility reports this group",
+    "facilityCount_other": "{{count}} facilities report this group",
+    "nearbyBanks_one": "{{count}} facility nearby",
+    "nearbyBanks_other": "{{count}} facilities nearby",
+    "sortByDistance": "Nearest first",
+    "distanceKm": "{{km}} km away",
+    "distanceUnknown": "Distance unavailable",
+    "unitsRange": "{{range}} units reported",
+    "unitsUnknown": "Units not reported",
+    "requestUnits": "Request Units",
+    "call": "Call facility",
+    "getDirections": "Get Directions",
+    "noResults": "No facility within {{km}} km reports this blood type right now.",
+    "noResultsHint": "Try a wider radius, another component, or a compatible group.",
+    "loadFailed": "Couldn't load blood availability.",
+    "retry": "Try Again",
+    "compatibleTitle": "Compatible with {{group}}",
+    "compatibleBody": "A patient with {{group}} can usually receive: {{groups}}. Your clinician decides what is actually transfused.",
+    "safetyTitle": "Availability changes quickly",
+    "safetyBody": "Blood stock is reported by each facility and can change within minutes. Call before travelling, and never delay emergency care to search here.",
+    "myRequests": "My Requests",
+    "myRequestsEmpty": "You have no blood requests yet.",
+    "reference": "Reference {{reference}}",
+    "request": {
+      "title": "Request Blood Units",
+      "subtitle": "This reserves your place at the counter. No payment is taken and no unit is issued until the facility confirms.",
+      "facility": "Facility",
+      "noFacility": "No facility selected.",
+      "quantity": "Units",
+      "urgency": "How soon do you need it?",
+      "contactPhone": "Contact phone",
+      "contactPhonePlaceholder": "+237 6XX XXX XXX",
+      "note": "Note for the blood bank",
+      "notePlaceholder": "Anything the facility should know (optional)",
+      "submit": "Send Request",
+      "cancel": "Cancel Request",
+      "successTitle": "Request sent",
+      "successBody": "Show reference {{reference}} at {{facility}}. They will confirm before you travel.",
+      "cancelledTitle": "Request cancelled",
+      "cancelledBody": "Your request has been withdrawn. The facility keeps a record of it.",
+      "paymentNote": "OpesCare takes no payment for blood. Any fee is settled with the facility directly.",
+      "clinicalNote": "Blood is issued by the facility after its own checks — this request is not a cross-match or a clinical approval."
+    },
+    "errors": {
+      "BLOOD_NOT_AVAILABLE": "This facility is no longer reporting that blood type as available.",
+      "TOO_MANY_OPEN_REQUESTS": "You already have the maximum number of open blood requests.",
+      "REQUEST_ALREADY_OPEN": "You already have an open request for this blood type at this facility.",
+      "REQUEST_NOT_CANCELLABLE": "This request can no longer be cancelled.",
+      "FACILITY_NOT_FOUND": "This facility is no longer listed.",
+      "REQUEST_NOT_FOUND": "This request could not be found.",
+      "generic": "The request could not be completed. Please try again."
+    }
   }
 }
