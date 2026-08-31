@@ -3,15 +3,23 @@
 namespace App\Http\Controllers\Api\Mobile;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OpesCareNotificationMail;
 use App\Models\Patient;
 use App\Models\PatientAccessToken;
 use App\Models\PatientOtpCode;
+use App\Models\Role;
+use App\Models\User;
 use App\Modules\Notifications\Services\SmsNotificationService;
+use App\Modules\Subscription\Services\ReferralRewardService;
+use App\Services\Identity\HealthIdGeneratorService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class MobileAuthController extends Controller
@@ -179,6 +187,163 @@ class MobileAuthController extends Controller
             'expires_in'   => 2592000,
             'patient_id'   => $patient->id,
         ], 200);
+    }
+
+    /**
+     * Patient self-registration — native equivalent of the web
+     * `/signup/patient` form (PublicPageController::submitPatientRegister),
+     * exposed as JSON for the mobile app. Creates the Patient (provisional /
+     * unverified — identity is confirmed in person at a facility, same as
+     * web signup) and a linked portal User, then issues a mobile access
+     * token directly so the app can sign the patient in without a second
+     * login round-trip.
+     *
+     * POST /mobile/auth/register
+     * Body: { first_name, last_name, dob, sex, phone, email?, password,
+     *         password_confirmation, emergency_name, emergency_relationship,
+     *         emergency_phone, country?, ref? }
+     */
+    public function register(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'first_name'             => 'required|string|max:100',
+            'last_name'              => 'required|string|max:100',
+            'dob'                    => 'required|date|before:today',
+            'sex'                    => 'required|in:male,female,other,unknown',
+            'phone'                  => 'required|string|max:30',
+            'email'                  => 'nullable|email|max:180|unique:users,email',
+            'country'                => 'nullable|string|max:80',
+            'emergency_name'         => 'required|string|max:120',
+            'emergency_relationship' => 'required|string|max:80',
+            'emergency_phone'        => 'required|string|max:30',
+            'password'               => 'required|string|min:8|confirmed',
+        ]);
+
+        // phone_number is stored encrypted (see Patient::setPhoneNumberAttribute), so
+        // uniqueness can't be checked via a `unique:patients,phone_number` validation
+        // rule — it has to go through the keyed-hash lookup like every other phone match.
+        if (Patient::findByPhone($data['phone'])) {
+            return response()->json(['message' => __('api.phone_already_registered')], 409);
+        }
+
+        // Duplicate name+dob check (not a hard block on the web form either — surfaces
+        // as a conflict so the app can point the patient at existing-Health-ID recovery
+        // instead of silently creating a second identity for the same person).
+        //
+        // date_of_birth is stored via Laravel's encrypter (random IV per value, see
+        // Patient::getDateOfBirthAttribute), so a raw `where('date_of_birth', ...)`
+        // comparison against ciphertext can never match — narrow by name in SQL, then
+        // decrypt each same-name candidate's DOB in PHP to compare.
+        $duplicate = Patient::where('first_name', $data['first_name'])
+            ->where('last_name', $data['last_name'])
+            ->get()
+            ->contains(fn (Patient $candidate) => $candidate->date_of_birth?->toDateString() === $data['dob']);
+
+        if ($duplicate) {
+            return response()->json(['message' => __('flash.patient_identity_duplicate')], 409);
+        }
+
+        $countryCode = strtoupper(substr($data['country'] ?? 'CM', 0, 2));
+
+        [$patient, $rawToken] = DB::transaction(function () use ($data, $countryCode) {
+            $healthIdSvc = app(HealthIdGeneratorService::class);
+
+            // Atomic generate+insert: the callback runs inside the retry loop, so a
+            // Health ID collision (UniqueConstraintViolationException) is retried with
+            // a fresh candidate rather than racing a separate exists()-then-create().
+            $patient = $healthIdSvc->generate($countryCode, function (string $healthId) use ($data, $countryCode) {
+                return Patient::create([
+                    'health_id'           => $healthId,
+                    'first_name'          => $data['first_name'],
+                    'last_name'           => $data['last_name'],
+                    'date_of_birth'       => $data['dob'],
+                    'sex'                 => $data['sex'],
+                    'phone_number'        => $data['phone'],
+                    'email'               => $data['email'] ?? null,
+                    'country_code'        => $countryCode,
+                    'emergency_contact'   => json_encode([
+                        'name'         => $data['emergency_name'],
+                        'relationship' => $data['emergency_relationship'],
+                        'phone'        => $data['emergency_phone'],
+                    ]),
+                    'identity_status'     => 'provisional',
+                    'verification_status' => 'unverified',
+                ]);
+            });
+
+            // Create the linked portal user (same credentials work in the web portal).
+            $role  = Role::where('name', 'patient')->first();
+            $email = $data['email'] ?? ($data['phone'] . '@patients.opescare.local');
+
+            $user = User::create([
+                'name'       => $data['first_name'] . ' ' . $data['last_name'],
+                'email'      => $email,
+                'password'   => Hash::make($data['password']),
+                'patient_id' => $patient->id,
+                'status'     => 'pending',
+            ]);
+
+            if ($role) {
+                $user->role_id = $role->id;
+                $user->save();
+            }
+
+            // Issue a 30-day mobile access token so the app can sign the patient
+            // straight in — same token shape as loginWithCredentials()/verifyOtp().
+            $rawToken = 'pat_' . Str::random(40);
+            PatientAccessToken::create([
+                'patient_id'   => $patient->id,
+                'token_hash'   => Hash::make($rawToken),
+                'token_prefix' => substr($rawToken, 0, 12),
+                'expires_at'   => Carbon::now()->addDays(30),
+            ]);
+
+            return [$patient, $rawToken];
+        });
+
+        // "Refer & Earn" capture — MUST NEVER break signup. Wrapped so any failure
+        // (bad code, missing plan, DB error) is logged and swallowed; the new
+        // patient still completes registration successfully. Mirrors
+        // PublicPageController::submitPatientRegister.
+        $refCode = trim((string) $request->input('ref', ''));
+        if ($refCode !== '') {
+            try {
+                $rewards = app(ReferralRewardService::class);
+                $invite  = $rewards->recordSignup($patient, $refCode);
+                if ($invite !== null) {
+                    $rewards->grantRewards($invite);
+                }
+            } catch (\Throwable $e) {
+                Log::error('referral_signup_capture_failed', [
+                    'patient_id' => $patient->id,
+                    'error'      => $e->getMessage(),
+                ]);
+            }
+        }
+
+        // Welcome email — best-effort, never blocks the response the app is waiting on.
+        if ($patient->email) {
+            try {
+                Mail::to($patient->email)->queue(new OpesCareNotificationMail(
+                    mailSubject: 'Welcome to OpesCare — Your Health ID is ready',
+                    bodyText: "Hello {$patient->first_name},\n\nYour OpesCare account has been created.\nYour Health ID: {$patient->health_id}\n\nPlease visit a registered facility to complete identity verification.\n\nOpesCare Team",
+                ));
+            } catch (\Throwable $e) {
+                Log::warning('registration_welcome_email_failed', [
+                    'patient_id' => $patient->id,
+                    'error'      => $e->getMessage(),
+                ]);
+            }
+        }
+
+        return response()->json([
+            'status'       => 'authenticated',
+            'access_token' => $rawToken,
+            'token_type'   => 'Bearer',
+            'expires_in'   => 2592000,
+            'patient_id'   => $patient->id,
+            'health_id'    => $patient->health_id,
+        ], 201);
     }
 
     /**

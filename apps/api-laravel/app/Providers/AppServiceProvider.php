@@ -63,6 +63,10 @@ class AppServiceProvider extends ServiceProvider
         Route::middleware('api')
             ->group(base_path('routes/mobile_telehealth.php'));
 
+        // Mobile patient self-registration route — same rationale as above.
+        Route::middleware('api')
+            ->group(base_path('routes/mobile_registration.php'));
+
         RateLimiter::for('verify', function (Request $request) {
             return Limit::perMinute(30)->by($request->ip());
         });

@@ -7,6 +7,7 @@ return [
     'otp_resent'                    => 'OTP renvoyÃ© Ã  votre numÃ©ro de tÃ©lÃ©phone enregistrÃ©.',
     'otp_invalid'                   => 'OTP invalide ou expirÃ©.',
     'invalid_email_or_password'     => 'Adresse e-mail ou mot de passe invalide.',
+    'phone_already_registered'      => 'Un compte avec ce numéro de téléphone existe déjà.',
     'no_token_provided'             => 'Aucun token fourni.',
     'token_too_old'                 => 'Token invalide ou trop ancien pour Ãªtre rafraÃ®chi.',
     'unauthenticated'               => 'Non authentifiÃ©.',

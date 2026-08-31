@@ -10,6 +10,8 @@ import type {
   OfficialDocumentDetail,
   PaginatedAppointments,
   PaginatedDocuments,
+  RegisterPatientPayload,
+  RegisterPatientResponse,
   TemporaryQrCode,
   TimelineResponse,
 } from './types';
@@ -1383,5 +1385,20 @@ export function usePrescriptionsForReservation(enabled = true) {
           params: { limit: 20 },
         })
       ).data.data,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Registration — POST /mobile/auth/register (app/(auth)/signup.tsx). Kept
+// additive-only per FILE OWNERSHIP; the auth store itself isn't touched —
+// the screen stores the returned token + flips auth status directly via
+// useAuthStore.getState()/.setState(), same as tokenStorage is already used
+// outside the store in lib/api/client.ts.
+// ---------------------------------------------------------------------------
+
+export function useRegisterPatient() {
+  return useMutation({
+    mutationFn: async (payload: RegisterPatientPayload) =>
+      (await apiClient.post<RegisterPatientResponse>(endpoints.register, payload)).data,
   });
 }

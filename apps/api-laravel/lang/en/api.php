@@ -8,6 +8,7 @@ return [
     'otp_resent'                    => 'OTP resent to your registered phone number.',
     'otp_invalid'                   => 'Invalid or expired OTP.',
     'invalid_email_or_password'     => 'Invalid email or password.',
+    'phone_already_registered'      => 'An account with this phone number already exists.',
     'no_token_provided'             => 'No token provided.',
     'token_too_old'                 => 'Token invalid or too old to refresh.',
     'unauthenticated'               => 'Unauthenticated.',

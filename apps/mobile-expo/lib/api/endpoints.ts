@@ -10,6 +10,7 @@ export const API_BASE_URL =
 export const endpoints = {
   loginEmail: '/mobile/auth/login-email',
   loginPhone: '/mobile/auth/login',
+  register: '/mobile/auth/register',
   verifyOtp: '/mobile/auth/otp/verify',
   resendOtp: '/mobile/auth/otp/resend',
   refresh: '/mobile/auth/refresh',
