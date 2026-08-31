@@ -153,7 +153,6 @@
       "healthRecords": "My Records",
       "labResults": "Lab Results",
       "prescriptions": "Prescriptions",
-      "findMedicine": "Find Medicine",
       "findBlood": "Find Blood",
       "viewAllServices": "All services"
     },
@@ -164,11 +163,39 @@
       "showQr": "Show QR",
       "bloodGroup": "Blood Group",
       "allergies": "Allergies",
-      "conditions": "Conditions",
       "dateOfBirth": "Date of Birth",
       "none": "None",
       "viewCard": "View ID Card",
+      "copy": "Copy Health ID",
+      "copied": "Copied",
+      "copyFailed": "Couldn't copy your Health ID.",
       "loadError": "We couldn't load your Health ID."
+    },
+    "vitals": {
+      "title": "Health Vitals",
+      "seeAll": "See all",
+      "showLess": "Show less",
+      "heartRate": "Heart Rate",
+      "bloodPressure": "Blood Pressure",
+      "bloodSugar": "Blood Sugar",
+      "oxygenSaturation": "SpO₂",
+      "temperature": "Temperature",
+      "respiratoryRate": "Breathing Rate",
+      "updatedToday": "Last updated: Today, {{time}}",
+      "updatedYesterday": "Last updated: Yesterday, {{time}}",
+      "updatedDaysAgo": "Last updated {{days}} days ago",
+      "updatedOn": "Last updated {{date}}",
+      "staleNote": "Old reading — ask your clinic for a new one.",
+      "status": {
+        "low": "Low",
+        "high": "High",
+        "critical": "Needs review",
+        "abnormal": "Abnormal",
+        "unknown": "Not classified"
+      },
+      "empty": "No readings yet",
+      "emptyBody": "Vitals measured at a clinic show up here.",
+      "loadError": "We couldn't load your vitals."
     },
     "appointment": {
       "title": "Upcoming Appointment",

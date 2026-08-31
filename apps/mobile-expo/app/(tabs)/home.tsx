@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -11,20 +11,24 @@ import {
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as Clipboard from 'expo-clipboard';
 import QRCode from 'react-native-qrcode-svg';
 import {
-  Activity,
   BadgeCheck,
   Bell,
   Cake,
   CalendarDays,
   CalendarPlus,
+  Check,
   ChevronRight,
   CircleAlert,
   Clock,
+  Copy,
+  Droplet,
   Droplets,
   FlaskConical,
   FolderHeart,
+  Gauge,
   Hand,
   HeartPulse,
   Hourglass,
@@ -33,36 +37,58 @@ import {
   QrCode,
   RefreshCw,
   ShieldCheck,
-  Store,
   Target,
+  Thermometer,
   TriangleAlert,
+  Wind,
   type LucideIcon,
 } from 'lucide-react-native';
 import { Screen } from '../../components/ui/Screen';
+import { Skeleton } from '../../components/ui/Skeleton';
 import { UnreadBadge } from '../../components/ui/UnreadBadge';
 import { useAuthStore } from '../../lib/store/auth';
 import { useHealthIdCard, useUpcomingAppointments } from '../../lib/api/queries';
 import { useUnreadNotificationCount } from '../../lib/api/appConfigQueries';
+import {
+  isOutOfRange,
+  readingAge,
+  useLatestVitals,
+  type VitalKey,
+  type VitalMeasure,
+  type VitalStatus,
+} from '../../lib/api/vitalsQueries';
 import { colors } from '../../theme/tokens';
 
 /**
  * Home — the daily landing surface.
  *
- * Layout follows the dashboard references in `Mobile app screens/`
- * (a_clean_mobile_app_home_dashboard_ui_screenshot,
- * a_full_screen_mobile_app_dashboard_ui_screenshot and
- * a_clean_high_end_smartphone_ui_mockup_app_dashb): a greeting block, a rich
- * gold Health ID hero carrying a REAL scannable QR, a deliberate 3x2 grid of
- * quick actions, the next appointment, and a care-plan promo.
+ * Structure follows `Mobile app screens/a_clean_mobile_app_home_dashboard_ui_screenshot.png`:
+ * greeting block, gold Health ID hero with a real scannable QR and three
+ * inline detail columns, ONE quick-action card holding five actions separated
+ * by hairlines, then Upcoming Appointment and Health Vitals side by side, and
+ * the care-plan promo.
  *
- * Every value on this screen is real: `useHealthIdCard` (health id, blood
- * type, dob, status, qr_payload), the auth store's `patient` (allergy and
- * condition counts) and `useUpcomingAppointments`. The demo patient has no
- * appointments and no allergies, so the empty/`None` states below are the
- * ones actually rendered — they are designed to look intentional.
+ * Everything on screen is real data: `useHealthIdCard` (health id, blood type,
+ * dob, status, qr_payload), the auth store's `patient` (allergy count),
+ * `useUpcomingAppointments` and `useLatestVitals`
+ * (GET /mobile/vitals/latest — see lib/api/vitalsQueries.ts). Nothing is
+ * placeholder; the demo patient's genuinely empty sections render deliberate
+ * empty states.
+ *
+ * Deliberate departures from the reference, and why:
+ *   - No hamburger at top-left. There is no drawer, and no menu route exists
+ *     under `app/`; a control that opens nothing is worse than no control.
+ *   - The Health ID avatar is a monogram, not a photo. There is no
+ *     photo-upload endpoint, so a stock face would be a fabrication.
+ *   - The reference's "Health Check" quick action has no screen. Its slot is
+ *     Lab Results (`/labs`), which exists.
+ *   - Inside the narrow Vitals column each reading is label-over-value rather
+ *     than the reference's single line. French labels ("Fréq. respiratoire")
+ *     do not fit beside a value in ~150pt, and truncating a clinical label is
+ *     not an acceptable trade.
  *
  * NativeWind note: `className` is inert on `LinearGradient` (no cssInterop is
- * registered for it), so every gradient here is styled with inline `style`.
+ * registered), so every gradient here is styled with inline `style`.
  */
 
 /** Soft elevation shared by every white card, so the surfaces read as one set. */
@@ -91,22 +117,37 @@ interface QuickActionSpec {
 }
 
 /**
- * Six real destinations, every one a file under `app/`:
+ * Five real destinations in one row, matching the reference's single
+ * quick-action card. Every route is a file under `app/`:
  * appointments/book.tsx, (tabs)/records.tsx, labs/index.tsx,
- * prescriptions/index.tsx, pharmacy.tsx, blood-finder.tsx.
+ * prescriptions/index.tsx, blood-finder.tsx.
  *
- * "Health Check" from the earlier revision is gone: no health-check /
- * health-score screen exists, and it pointed at Records like two other tiles.
- * The reference's second slot is "Lab Results", which is a real screen.
+ * The reference's third slot, "Health Check", has no screen anywhere in the
+ * app — Lab Results takes it. The fifth, "View All Services", is Find Blood
+ * here: `/blood-finder` has NO other entry point in the whole app, whereas
+ * "all services" (`/care-map`) is still reachable from this section's header
+ * action and from the Records tab.
  */
 const QUICK_ACTIONS: QuickActionSpec[] = [
   { key: 'book', icon: CalendarPlus, labelKey: 'home.quickActions.bookAppointment', route: '/appointments/book' },
   { key: 'records', icon: FolderHeart, labelKey: 'home.quickActions.healthRecords', route: '/(tabs)/records' },
   { key: 'labs', icon: FlaskConical, labelKey: 'home.quickActions.labResults', route: '/labs' },
   { key: 'prescriptions', icon: Pill, labelKey: 'home.quickActions.prescriptions', route: '/prescriptions' },
-  { key: 'medicine', icon: Store, labelKey: 'home.quickActions.findMedicine', route: '/pharmacy' },
   { key: 'blood', icon: Droplets, labelKey: 'home.quickActions.findBlood', route: '/blood-finder' },
 ];
+
+/** Icon + label for each measure the vitals endpoint can return. */
+const VITAL_META: Record<VitalKey, { icon: LucideIcon; labelKey: string }> = {
+  heart_rate: { icon: HeartPulse, labelKey: 'home.vitals.heartRate' },
+  blood_pressure: { icon: Gauge, labelKey: 'home.vitals.bloodPressure' },
+  blood_sugar: { icon: Droplet, labelKey: 'home.vitals.bloodSugar' },
+  oxygen_saturation: { icon: Wind, labelKey: 'home.vitals.oxygenSaturation' },
+  temperature: { icon: Thermometer, labelKey: 'home.vitals.temperature' },
+  respiratory_rate: { icon: Wind, labelKey: 'home.vitals.respiratoryRate' },
+};
+
+/** How many readings the card shows before "See all" expands it in place. */
+const VITALS_COLLAPSED_COUNT = 4;
 
 export default function HomeScreen() {
   const { t, i18n } = useTranslation();
@@ -114,6 +155,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const healthId = useHealthIdCard();
   const appointments = useUpcomingAppointments();
+  const vitals = useLatestVitals();
   const nextAppointment = appointments.data?.data?.[0];
   // Lightweight count endpoint, not the heavy list. Resolves to 0 (no badge)
   // while loading or on error; the existing mark-read mutations invalidate the
@@ -126,17 +168,45 @@ export default function HomeScreen() {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await Promise.all([healthId.refetch(), appointments.refetch()]);
+      await Promise.all([healthId.refetch(), appointments.refetch(), vitals.refetch()]);
     } finally {
       setRefreshing(false);
     }
-  }, [healthId, appointments]);
+  }, [healthId, appointments, vitals]);
 
   const initial = patient?.first_name?.[0]?.toUpperCase() ?? '?';
   const statusValue = (healthId.data?.status ?? patient?.status ?? '').toLowerCase();
   const isVerified = statusValue === 'verified' || statusValue === 'active';
   const qrPayload = healthId.data?.qr_payload;
   const displayName = healthId.data?.display_name ?? patient?.display_name ?? '';
+  const healthIdValue = healthId.data?.health_id ?? patient?.health_id ?? null;
+
+  // ── Copy the Health ID ──────────────────────────────────────────────────
+  // The reference puts a copy control beside the number. It writes the REAL
+  // id via expo-clipboard and reports the outcome for two seconds; there is no
+  // silent success, and a failure says so rather than pretending it worked.
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle');
+  const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (copyTimer.current) clearTimeout(copyTimer.current);
+    },
+    [],
+  );
+
+  const onCopyHealthId = useCallback(async () => {
+    if (!healthIdValue) return;
+    let next: 'copied' | 'failed' = 'copied';
+    try {
+      await Clipboard.setStringAsync(healthIdValue);
+    } catch {
+      next = 'failed';
+    }
+    setCopyState(next);
+    if (copyTimer.current) clearTimeout(copyTimer.current);
+    copyTimer.current = setTimeout(() => setCopyState('idle'), 2000);
+  }, [healthIdValue]);
 
   return (
     <Screen className="px-0">
@@ -260,7 +330,7 @@ export default function HomeScreen() {
           style={{
             borderRadius: 24,
             marginTop: 24,
-            padding: 20,
+            padding: 18,
             overflow: 'hidden',
             ...HERO_SHADOW,
           }}
@@ -292,7 +362,22 @@ export default function HomeScreen() {
           />
 
           <View className="flex-row items-start justify-between">
-            <View className="flex-1 pr-3">
+            {/* Monogram, not a photo: the API exposes no patient photo and a
+                stock face would be a fabrication of identity data. */}
+            <View
+              className="items-center justify-center rounded-full"
+              style={{
+                width: 42,
+                height: 42,
+                backgroundColor: 'rgba(255,255,255,0.26)',
+                borderWidth: 1.5,
+                borderColor: 'rgba(255,255,255,0.55)',
+              }}
+            >
+              <Text className="text-[17px] font-extrabold text-white">{initial}</Text>
+            </View>
+
+            <View className="ml-2.5 flex-1">
               <Text
                 className="text-[10px] font-bold uppercase text-white/80"
                 style={{ letterSpacing: 1 }}
@@ -301,36 +386,67 @@ export default function HomeScreen() {
                 {t('home.healthId.title')}
               </Text>
 
+              {healthId.isLoading ? (
+                <ActivityIndicator color={colors.white} style={{ marginTop: 8, alignSelf: 'flex-start' }} />
+              ) : (
+                <View className="mt-1 flex-row items-center">
+                  <Text
+                    className="flex-1 text-[15px] font-extrabold text-white"
+                    style={{ letterSpacing: 0.2 }}
+                    numberOfLines={1}
+                  >
+                    {healthIdValue ?? '—'}
+                  </Text>
+                  {healthIdValue ? (
+                    <Pressable
+                      onPress={onCopyHealthId}
+                      hitSlop={10}
+                      accessibilityRole="button"
+                      accessibilityLabel={t('home.healthId.copy')}
+                      className="ml-1.5 items-center justify-center rounded-lg"
+                      style={({ pressed }) => ({
+                        width: 24,
+                        height: 24,
+                        backgroundColor: 'rgba(255,255,255,0.22)',
+                        opacity: pressed ? 0.7 : 1,
+                      })}
+                    >
+                      {copyState === 'copied' ? (
+                        <Check size={13} color={colors.white} />
+                      ) : (
+                        <Copy size={13} color={colors.white} />
+                      )}
+                    </Pressable>
+                  ) : null}
+                </View>
+              )}
+
               {displayName ? (
-                <Text className="mt-1.5 text-[16px] font-extrabold text-white" numberOfLines={1}>
+                <Text className="mt-0.5 text-[11px] font-medium text-white/85" numberOfLines={1}>
                   {displayName}
                 </Text>
               ) : null}
 
-              {healthId.isLoading ? (
-                <ActivityIndicator color={colors.white} style={{ marginTop: 8, alignSelf: 'flex-start' }} />
-              ) : (
-                <Text
-                  className="mt-0.5 text-[15px] font-bold text-white/95"
-                  style={{ letterSpacing: 0.2 }}
-                  numberOfLines={1}
+              <View className="mt-2 flex-row items-center">
+                <View
+                  className="flex-row items-center self-start rounded-full px-2 py-0.5"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.24)' }}
                 >
-                  {healthId.data?.health_id ?? patient?.health_id ?? '—'}
-                </Text>
-              )}
+                  {isVerified ? (
+                    <BadgeCheck size={12} color={colors.white} />
+                  ) : (
+                    <Hourglass size={11} color={colors.white} />
+                  )}
+                  <Text className="ml-1 text-[10px] font-bold text-white" numberOfLines={1}>
+                    {t(isVerified ? 'home.healthId.verified' : 'home.healthId.pending')}
+                  </Text>
+                </View>
 
-              <View
-                className="mt-3 flex-row items-center self-start rounded-full px-2.5 py-1"
-                style={{ backgroundColor: 'rgba(255,255,255,0.24)' }}
-              >
-                {isVerified ? (
-                  <BadgeCheck size={13} color={colors.white} />
-                ) : (
-                  <Hourglass size={12} color={colors.white} />
-                )}
-                <Text className="ml-1.5 text-[11px] font-bold text-white">
-                  {t(isVerified ? 'home.healthId.verified' : 'home.healthId.pending')}
-                </Text>
+                {copyState !== 'idle' ? (
+                  <Text className="ml-2 flex-1 text-[10px] font-semibold text-white/90" numberOfLines={1}>
+                    {t(copyState === 'copied' ? 'home.healthId.copied' : 'home.healthId.copyFailed')}
+                  </Text>
+                ) : null}
               </View>
             </View>
 
@@ -339,32 +455,26 @@ export default function HomeScreen() {
               onPress={() => router.push('/(tabs)/health-id')}
               accessibilityRole="button"
               accessibilityLabel={t('home.healthId.showQr')}
+              className="ml-2"
             >
-              <View className="items-center rounded-2xl bg-white px-2 pb-1.5 pt-2" style={{ width: 78 }}>
-                <View className="items-center justify-center" style={{ height: 60, width: 60 }}>
+              <View className="items-center rounded-2xl bg-white p-1.5" style={{ width: 66 }}>
+                <View className="items-center justify-center" style={{ height: 54, width: 54 }}>
                   {qrPayload ? (
                     <QRCode
                       value={qrPayload}
-                      size={60}
+                      size={54}
                       color={colors.navy.text}
                       backgroundColor={colors.white}
                     />
                   ) : (
-                    <QrCode size={32} color={colors.navy.muted} />
+                    <QrCode size={28} color={colors.navy.muted} />
                   )}
                 </View>
-                <Text
-                  className="mt-1 text-[8px] font-bold uppercase text-navy-secondary"
-                  style={{ letterSpacing: 0.5 }}
-                  numberOfLines={1}
-                >
-                  {t('home.healthId.showQr')}
-                </Text>
               </View>
             </Pressable>
           </View>
 
-          <View className="my-4 h-px" style={{ backgroundColor: 'rgba(255,255,255,0.28)' }} />
+          <View className="my-3.5 h-px" style={{ backgroundColor: 'rgba(255,255,255,0.28)' }} />
 
           {healthId.isError ? (
             <View className="flex-row items-center justify-between">
@@ -386,39 +496,41 @@ export default function HomeScreen() {
               </Pressable>
             </View>
           ) : (
-            <View className="flex-row flex-wrap">
-              <HeroStat
-                icon={Droplets}
-                label={t('home.healthId.bloodGroup')}
-                value={healthId.data?.blood_type ?? patient?.blood_group ?? '—'}
-              />
-              <HeroStat
-                icon={TriangleAlert}
-                label={t('home.healthId.allergies')}
-                value={formatCount(patient?.allergies_count, t)}
-              />
-              <HeroStat
-                icon={Cake}
-                label={t('home.healthId.dateOfBirth')}
-                value={formatDate(healthId.data?.dob ?? patient?.dob, i18n.language)}
-              />
-              <HeroStat
-                icon={Activity}
-                label={t('home.healthId.conditions')}
-                value={formatCount(patient?.conditions_count, t)}
-              />
+            /* Three inline detail columns + the inline "View ID Card" link,
+               exactly as the reference lays them out. */
+            <View className="flex-row items-end">
+              <View className="flex-1 flex-row">
+                <HeroDetail
+                  icon={Droplets}
+                  label={t('home.healthId.bloodGroup')}
+                  value={healthId.data?.blood_type ?? patient?.blood_group ?? '—'}
+                />
+                <HeroDetail
+                  icon={TriangleAlert}
+                  label={t('home.healthId.allergies')}
+                  value={formatCount(patient?.allergies_count, t)}
+                />
+                <HeroDetail
+                  icon={Cake}
+                  label={t('home.healthId.dateOfBirth')}
+                  value={formatDate(healthId.data?.dob ?? patient?.dob, i18n.language)}
+                />
+              </View>
+
+              <Pressable
+                onPress={() => router.push('/(tabs)/health-id')}
+                hitSlop={8}
+                accessibilityRole="button"
+                className="ml-1 flex-row items-center pb-0.5"
+                style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+              >
+                <Text className="text-[12px] font-bold text-white" numberOfLines={1}>
+                  {t('home.healthId.viewCard')}
+                </Text>
+                <ChevronRight size={14} color={colors.white} style={{ marginLeft: 1 }} />
+              </Pressable>
             </View>
           )}
-
-          <Pressable
-            onPress={() => router.push('/(tabs)/health-id')}
-            accessibilityRole="button"
-            className="mt-4 flex-row items-center justify-center rounded-2xl py-3"
-            style={{ backgroundColor: 'rgba(255,255,255,0.22)' }}
-          >
-            <Text className="text-[13px] font-bold text-white">{t('home.healthId.viewCard')}</Text>
-            <ChevronRight size={16} color={colors.white} style={{ marginLeft: 2 }} />
-          </Pressable>
         </LinearGradient>
 
         {/* ── Quick actions ──────────────────────────────────────────────── */}
@@ -427,125 +539,41 @@ export default function HomeScreen() {
           actionLabel={t('home.quickActions.viewAllServices')}
           onAction={() => router.push('/care-map')}
         />
-        <View className="flex-row flex-wrap justify-between">
-          {QUICK_ACTIONS.map((action) => (
-            <ActionTile
-              key={action.key}
-              icon={action.icon}
-              label={t(action.labelKey)}
-              onPress={() => router.push(action.route)}
-            />
+
+        {/* ONE card, five actions, hairline dividers — as in the reference. */}
+        <View
+          className="flex-row overflow-hidden rounded-3xl bg-white py-3.5"
+          style={{ borderWidth: 1, borderColor: colors.cream[300], ...CARD_SHADOW }}
+        >
+          {QUICK_ACTIONS.map((action, index) => (
+            <View key={action.key} className="flex-1 flex-row">
+              {index > 0 ? (
+                <View className="my-0.5 w-px" style={{ backgroundColor: colors.line.subtle }} />
+              ) : null}
+              <ActionCell
+                icon={action.icon}
+                label={t(action.labelKey)}
+                onPress={() => router.push(action.route)}
+              />
+            </View>
           ))}
         </View>
 
-        {/* ── Next appointment ───────────────────────────────────────────── */}
-        <SectionHeader
-          title={t('home.appointment.title')}
-          actionLabel={t('home.appointment.viewAll')}
-          onAction={() => router.push('/appointments')}
-        />
-
-        <View
-          className="rounded-3xl bg-white p-5"
-          style={{ borderWidth: 1, borderColor: colors.cream[300], ...CARD_SHADOW }}
-        >
-          {appointments.isLoading ? (
-            <View className="items-center py-6">
-              <ActivityIndicator color={colors.gold[500]} />
-            </View>
-          ) : appointments.isError ? (
-            <View className="items-center py-4">
-              <CircleAlert size={22} color={colors.semantic.danger} />
-              <Text className="mt-2 text-center text-[13px] text-navy-secondary">
-                {t('home.appointment.loadError')}
-              </Text>
-              <Pressable
-                onPress={() => appointments.refetch()}
-                accessibilityRole="button"
-                className="mt-3 flex-row items-center rounded-xl px-4 py-2"
-                style={{ backgroundColor: colors.cream[200] }}
-              >
-                <RefreshCw size={13} color={colors.gold[600]} />
-                <Text className="ml-2 text-[13px] font-bold text-gold-600">{t('home.retry')}</Text>
-              </Pressable>
-            </View>
-          ) : nextAppointment ? (
-            <>
-              <View className="flex-row items-start">
-                {nextAppointment.scheduled_at ? (
-                  <DateChip value={nextAppointment.scheduled_at} language={i18n.language} />
-                ) : null}
-
-                <View className="flex-1 pl-4">
-                  <Text className="text-[16px] font-extrabold text-navy-text" numberOfLines={2}>
-                    {nextAppointment.provider_name ?? nextAppointment.appointment_type}
-                  </Text>
-                  {nextAppointment.provider_name ? (
-                    <Text className="mt-0.5 text-[12px] text-navy-muted" numberOfLines={1}>
-                      {nextAppointment.appointment_type}
-                    </Text>
-                  ) : null}
-
-                  {nextAppointment.scheduled_at ? (
-                    <View className="mt-2 flex-row items-center">
-                      <Clock size={13} color={colors.gold[600]} />
-                      <Text className="ml-1.5 text-[13px] font-semibold text-gold-600">
-                        {formatTime(nextAppointment.scheduled_at, i18n.language)}
-                      </Text>
-                    </View>
-                  ) : null}
-
-                  {nextAppointment.facility_name ? (
-                    <View className="mt-1 flex-row items-center">
-                      <MapPin size={13} color={colors.navy.muted} />
-                      <Text className="ml-1.5 flex-1 text-[13px] text-navy-secondary" numberOfLines={1}>
-                        {nextAppointment.facility_name}
-                      </Text>
-                    </View>
-                  ) : null}
-                </View>
-              </View>
-
-              <Pressable
-                onPress={() => router.push(`/appointments/${nextAppointment.id}`)}
-                accessibilityRole="button"
-                className="mt-4 flex-row items-center justify-between rounded-2xl px-4 py-3"
-                style={{ backgroundColor: colors.cream[100] }}
-              >
-                <Text className="text-[13px] font-bold text-navy-text">
-                  {t('home.appointment.viewDetails')}
-                </Text>
-                <ChevronRight size={16} color={colors.gold[600]} />
-              </Pressable>
-            </>
-          ) : (
-            /* Deliberate empty state — this is what the demo patient sees. */
-            <View className="items-center px-2 py-3">
-              <View
-                className="h-16 w-16 items-center justify-center rounded-full"
-                style={{ backgroundColor: colors.gold[50] }}
-              >
-                <CalendarDays size={26} color={colors.gold[500]} />
-              </View>
-              <Text className="mt-3.5 text-[16px] font-extrabold text-navy-text">
-                {t('home.appointment.empty')}
-              </Text>
-              <Text className="mt-1.5 text-center text-[13px] leading-5 text-navy-secondary">
-                {t('home.appointment.emptyBody')}
-              </Text>
-              <Pressable
-                onPress={() => router.push('/appointments/book')}
-                accessibilityRole="button"
-                className="mt-4 w-full flex-row items-center justify-center rounded-2xl py-3.5"
-                style={{ backgroundColor: colors.gold[500] }}
-              >
-                <CalendarPlus size={16} color={colors.white} />
-                <Text className="ml-2 text-[14px] font-bold text-white">
-                  {t('home.appointment.emptyCta')}
-                </Text>
-              </Pressable>
-            </View>
-          )}
+        {/* ── Appointment + Vitals, side by side (reference arrangement) ─── */}
+        <View className="mt-7 flex-row items-stretch" style={{ gap: 12 }}>
+          <View style={{ flex: 1.08 }}>
+            <AppointmentCard
+              query={appointments}
+              appointment={nextAppointment}
+              language={i18n.language}
+              t={t}
+              onOpen={(id) => router.push(`/appointments/${id}`)}
+              onBook={() => router.push('/appointments/book')}
+            />
+          </View>
+          <View style={{ flex: 1 }}>
+            <VitalsCard query={vitals} language={i18n.language} t={t} />
+          </View>
         </View>
 
         {/* ── Care-plan promo ────────────────────────────────────────────── */}
@@ -601,7 +629,355 @@ export default function HomeScreen() {
   );
 }
 
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+
+type Translate = (key: string, options?: Record<string, unknown>) => string;
+
+/**
+ * Upcoming appointment, laid out for the narrow left column: the calendar
+ * chip sits above the details rather than beside them, so a provider name has
+ * the card's full width instead of ~70pt.
+ */
+function AppointmentCard({
+  query,
+  appointment,
+  language,
+  t,
+  onOpen,
+  onBook,
+}: {
+  query: { isLoading: boolean; isError: boolean; refetch: () => unknown };
+  appointment:
+    | {
+        id: string;
+        scheduled_at?: string | null;
+        provider_name?: string | null;
+        appointment_type?: string | null;
+        facility_name?: string | null;
+      }
+    | undefined;
+  language: string;
+  t: Translate;
+  onOpen: (id: string) => void;
+  onBook: () => void;
+}) {
+  return (
+    <ColumnCard>
+      <CardHeading icon={CalendarDays} title={t('home.appointment.title')} />
+
+      {query.isLoading ? (
+        <View className="py-6">
+          <Skeleton height={44} radius={12} />
+          <Skeleton height={12} radius={6} style={{ marginTop: 12 }} />
+          <Skeleton height={12} radius={6} width="70%" style={{ marginTop: 6 }} />
+        </View>
+      ) : query.isError ? (
+        <CardError message={t('home.appointment.loadError')} retryLabel={t('home.retry')} onRetry={query.refetch} />
+      ) : appointment ? (
+        <>
+          {appointment.scheduled_at ? (
+            <View className="mt-3 flex-row">
+              <DateChip value={appointment.scheduled_at} language={language} />
+            </View>
+          ) : null}
+
+          <Text className="mt-2.5 text-[14px] font-extrabold leading-[18px] text-navy-text" numberOfLines={2}>
+            {appointment.provider_name ?? appointment.appointment_type ?? '—'}
+          </Text>
+          {appointment.provider_name && appointment.appointment_type ? (
+            <Text className="mt-0.5 text-[11px] text-navy-muted" numberOfLines={1}>
+              {appointment.appointment_type}
+            </Text>
+          ) : null}
+
+          {appointment.scheduled_at ? (
+            <View className="mt-2 flex-row items-center">
+              <Clock size={12} color={colors.gold[600]} />
+              <Text className="ml-1.5 flex-1 text-[12px] font-semibold text-gold-600" numberOfLines={1}>
+                {formatTime(appointment.scheduled_at, language)}
+              </Text>
+            </View>
+          ) : null}
+
+          {appointment.facility_name ? (
+            <View className="mt-1 flex-row items-center">
+              <MapPin size={12} color={colors.navy.muted} />
+              <Text className="ml-1.5 flex-1 text-[12px] text-navy-secondary" numberOfLines={2}>
+                {appointment.facility_name}
+              </Text>
+            </View>
+          ) : null}
+
+          <View className="flex-1" />
+
+          <Pressable
+            onPress={() => onOpen(appointment.id)}
+            accessibilityRole="button"
+            className="mt-3 flex-row items-center justify-between rounded-2xl px-3 py-2.5"
+            style={({ pressed }) => ({
+              backgroundColor: colors.cream[100],
+              opacity: pressed ? 0.75 : 1,
+            })}
+          >
+            <Text className="flex-1 pr-1 text-[11px] font-bold text-navy-text" numberOfLines={2}>
+              {t('home.appointment.viewDetails')}
+            </Text>
+            <ChevronRight size={15} color={colors.gold[600]} />
+          </Pressable>
+        </>
+      ) : (
+        /* Deliberate empty state — this is what the demo patient sees. */
+        <View className="flex-1 items-center justify-center py-2">
+          <View
+            className="h-12 w-12 items-center justify-center rounded-full"
+            style={{ backgroundColor: colors.gold[50] }}
+          >
+            <CalendarDays size={22} color={colors.gold[500]} />
+          </View>
+          <Text className="mt-2.5 text-center text-[13px] font-extrabold text-navy-text">
+            {t('home.appointment.empty')}
+          </Text>
+          <Text className="mt-1 text-center text-[11px] leading-4 text-navy-secondary" numberOfLines={3}>
+            {t('home.appointment.emptyBody')}
+          </Text>
+          <Pressable
+            onPress={onBook}
+            accessibilityRole="button"
+            className="mt-3 w-full flex-row items-center justify-center rounded-2xl px-2 py-2.5"
+            style={({ pressed }) => ({ backgroundColor: colors.gold[500], opacity: pressed ? 0.8 : 1 })}
+          >
+            <CalendarPlus size={13} color={colors.white} />
+            <Text className="ml-1.5 flex-shrink text-[11px] font-bold text-white" numberOfLines={2}>
+              {t('home.appointment.emptyCta')}
+            </Text>
+          </Pressable>
+        </View>
+      )}
+    </ColumnCard>
+  );
+}
+
+/**
+ * Health Vitals.
+ *
+ * Three things this card refuses to do, because a vital shown wrongly is a
+ * clinical hazard rather than a cosmetic bug:
+ *   - It never renders a measure the API did not return. No zeros, no dashes
+ *     standing in for a reading that was never taken.
+ *   - It always states the reading's age. A month-old blood pressure is
+ *     labelled as such and carries an explicit warning.
+ *   - Out-of-range values are coloured from `colors.semantic.*` and carry the
+ *     status in words as well, so the signal survives a colour-blind reader.
+ */
+function VitalsCard({
+  query,
+  language,
+  t,
+}: {
+  query: {
+    data: { measures: VitalMeasure[]; recorded_at: string | null } | undefined;
+    isLoading: boolean;
+    isError: boolean;
+    refetch: () => unknown;
+  };
+  language: string;
+  t: Translate;
+}) {
+  const [expanded, setExpanded] = useState(false);
+
+  const measures = query.data?.measures ?? [];
+  const visible = expanded ? measures : measures.slice(0, VITALS_COLLAPSED_COUNT);
+  const canExpand = measures.length > VITALS_COLLAPSED_COUNT;
+  const age = readingAge(query.data?.recorded_at);
+
+  return (
+    <ColumnCard>
+      <CardHeading
+        icon={HeartPulse}
+        title={t('home.vitals.title')}
+        /* "See all" expands in place: there is no vitals screen to send the
+           patient to, and a link that goes nowhere useful is worse than none. */
+        actionLabel={canExpand ? t(expanded ? 'home.vitals.showLess' : 'home.vitals.seeAll') : undefined}
+        onAction={canExpand ? () => setExpanded((v) => !v) : undefined}
+      />
+
+      {query.isLoading ? (
+        <View className="mt-3">
+          {[0, 1, 2, 3].map((row) => (
+            <View key={row} className="mb-3">
+              <Skeleton height={9} radius={5} width="62%" />
+              <Skeleton height={12} radius={6} width="44%" style={{ marginTop: 5 }} />
+            </View>
+          ))}
+        </View>
+      ) : query.isError ? (
+        <CardError message={t('home.vitals.loadError')} retryLabel={t('home.retry')} onRetry={query.refetch} />
+      ) : measures.length === 0 ? (
+        <View className="flex-1 items-center justify-center py-2">
+          <View
+            className="h-12 w-12 items-center justify-center rounded-full"
+            style={{ backgroundColor: colors.gold[50] }}
+          >
+            <HeartPulse size={22} color={colors.gold[500]} />
+          </View>
+          <Text className="mt-2.5 text-center text-[13px] font-extrabold text-navy-text">
+            {t('home.vitals.empty')}
+          </Text>
+          <Text className="mt-1 text-center text-[11px] leading-4 text-navy-secondary" numberOfLines={3}>
+            {t('home.vitals.emptyBody')}
+          </Text>
+        </View>
+      ) : (
+        <>
+          <View className="mt-2.5">
+            {visible.map((measure) => (
+              <VitalRow key={measure.key} measure={measure} t={t} />
+            ))}
+          </View>
+
+          <View className="flex-1" />
+
+          <View className="mt-2 h-px" style={{ backgroundColor: colors.line.subtle }} />
+          <Text className="mt-2 text-[10px] leading-[13px] text-navy-muted" numberOfLines={2}>
+            {formatUpdated(query.data?.recorded_at ?? null, language, t)}
+          </Text>
+          {age.freshness === 'stale' ? (
+            <Text
+              className="mt-1 text-[10px] font-semibold leading-[13px]"
+              style={{ color: colors.semantic.warning }}
+              numberOfLines={2}
+            >
+              {t('home.vitals.staleNote')}
+            </Text>
+          ) : null}
+        </>
+      )}
+    </ColumnCard>
+  );
+}
+
+/** One reading: label above value, so a long French label keeps full width. */
+function VitalRow({ measure, t }: { measure: VitalMeasure; t: Translate }) {
+  const meta = VITAL_META[measure.key];
+  const Icon = meta?.icon ?? HeartPulse;
+  const tone = statusTone(measure.status);
+  const flagged = isOutOfRange(measure.status);
+
+  return (
+    <View className="mb-2.5 flex-row items-start">
+      <View
+        className="mt-0.5 h-[18px] w-[18px] items-center justify-center rounded-md"
+        style={{ backgroundColor: tone.surface }}
+      >
+        <Icon size={11} color={tone.color} />
+      </View>
+      <View className="ml-1.5 flex-1">
+        <Text className="text-[10px] leading-[13px] text-navy-secondary" numberOfLines={1}>
+          {meta ? t(meta.labelKey) : measure.key}
+        </Text>
+        <View className="mt-0.5 flex-row items-baseline">
+          <Text
+            className="text-[13px] font-extrabold leading-4"
+            style={{ color: tone.color }}
+            numberOfLines={1}
+          >
+            {measure.value}
+          </Text>
+          {measure.unit ? (
+            <Text className="ml-1 text-[9px] font-semibold text-navy-muted" numberOfLines={1}>
+              {measure.unit}
+            </Text>
+          ) : null}
+        </View>
+        {/* The status in words as well as in colour — never colour alone. */}
+        {flagged || measure.status === 'unknown' ? (
+          <Text
+            className="mt-0.5 text-[9px] font-bold uppercase leading-[11px]"
+            style={{ color: tone.color, letterSpacing: 0.3 }}
+            numberOfLines={1}
+          >
+            {t(`home.vitals.status.${measure.status}`)}
+          </Text>
+        ) : null}
+      </View>
+    </View>
+  );
+}
+
 /* ── Pieces ──────────────────────────────────────────────────────────────── */
+
+/** The white card shell shared by the two side-by-side columns. */
+function ColumnCard({ children }: { children: React.ReactNode }) {
+  return (
+    <View
+      className="flex-1 rounded-3xl bg-white p-3.5"
+      style={{ borderWidth: 1, borderColor: colors.cream[300], ...CARD_SHADOW }}
+    >
+      {children}
+    </View>
+  );
+}
+
+/** Icon tile + title (+ optional right-hand action) inside a column card. */
+function CardHeading({
+  icon: Icon,
+  title,
+  actionLabel,
+  onAction,
+}: {
+  icon: LucideIcon;
+  title: string;
+  actionLabel?: string;
+  onAction?: () => void;
+}) {
+  return (
+    <View className="flex-row items-center">
+      <View
+        className="h-6 w-6 items-center justify-center rounded-lg"
+        style={{ backgroundColor: colors.gold[50] }}
+      >
+        <Icon size={13} color={colors.gold[600]} />
+      </View>
+      <Text className="ml-1.5 flex-1 text-[12px] font-extrabold text-navy-text" numberOfLines={1}>
+        {title}
+      </Text>
+      {actionLabel && onAction ? (
+        <Pressable onPress={onAction} hitSlop={8} accessibilityRole="button">
+          <Text className="text-[10px] font-bold text-gold-600" numberOfLines={1}>
+            {actionLabel}
+          </Text>
+        </Pressable>
+      ) : null}
+    </View>
+  );
+}
+
+/** Shared failure state for both column cards. */
+function CardError({
+  message,
+  retryLabel,
+  onRetry,
+}: {
+  message: string;
+  retryLabel: string;
+  onRetry: () => unknown;
+}) {
+  return (
+    <View className="flex-1 items-center justify-center py-3">
+      <CircleAlert size={20} color={colors.semantic.danger} />
+      <Text className="mt-2 text-center text-[11px] leading-4 text-navy-secondary">{message}</Text>
+      <Pressable
+        onPress={() => onRetry()}
+        accessibilityRole="button"
+        className="mt-2.5 flex-row items-center rounded-xl px-3 py-1.5"
+        style={({ pressed }) => ({ backgroundColor: colors.cream[200], opacity: pressed ? 0.75 : 1 })}
+      >
+        <RefreshCw size={11} color={colors.gold[600]} />
+        <Text className="ml-1.5 text-[11px] font-bold text-gold-600">{retryLabel}</Text>
+      </Pressable>
+    </View>
+  );
+}
 
 function SectionHeader({
   title,
@@ -627,31 +1003,25 @@ function SectionHeader({
   );
 }
 
-/** One quick-action tile. Three per row, two rows — deliberate, not a strip. */
-function ActionTile({ icon: Icon, label, onPress }: { icon: LucideIcon; label: string; onPress: () => void }) {
+/** One of the five cells in the single quick-action card. */
+function ActionCell({ icon: Icon, label, onPress }: { icon: LucideIcon; label: string; onPress: () => void }) {
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
-      className="mb-3 items-center rounded-2xl bg-white px-2 py-4"
-      style={({ pressed }) => ({
-        width: '31.5%',
-        borderWidth: 1,
-        borderColor: colors.cream[300],
-        opacity: pressed ? 0.75 : 1,
-        ...CARD_SHADOW,
-      })}
+      className="flex-1 items-center px-0.5 py-1"
+      style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
     >
       <View
-        className="h-11 w-11 items-center justify-center rounded-2xl"
+        className="h-9 w-9 items-center justify-center rounded-xl"
         style={{ backgroundColor: colors.gold[50] }}
       >
-        <Icon size={20} color={colors.gold[600]} />
+        <Icon size={17} color={colors.gold[600]} />
       </View>
       <Text
-        className="mt-2.5 text-center text-[11px] font-bold text-navy-text"
-        style={{ lineHeight: 14 }}
+        className="mt-1.5 text-center text-[9.5px] font-bold text-navy-text"
+        style={{ lineHeight: 12 }}
         numberOfLines={2}
       >
         {label}
@@ -660,30 +1030,19 @@ function ActionTile({ icon: Icon, label, onPress }: { icon: LucideIcon; label: s
   );
 }
 
-/** Icon + label + value cell on the gold hero. Two per row. */
-/** One cell of the Health ID card's 2x2 detail grid.
- *
- * The icon disc and gutter used to consume 40px of a ~112px half-cell, which
- * clipped a full date ("Apr 14, 1992" needs 79px but had 72px). The disc and
- * gutter are trimmed rather than the value's type size — this is credential
- * data, so legibility wins over decoration. */
-function HeroStat({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
+/** One of the Health ID hero's three inline detail columns. */
+function HeroDetail({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
   return (
-    <View className="mb-1 w-1/2 flex-row items-center pr-1 pt-2">
-      <View
-        className="h-7 w-7 items-center justify-center"
-        style={{ backgroundColor: 'rgba(255,255,255,0.22)', borderRadius: 10 }}
-      >
-        <Icon size={14} color={colors.white} />
-      </View>
-      <View className="ml-1.5 flex-1">
-        <Text className="text-[10px] font-medium text-white/75" numberOfLines={1}>
+    <View className="flex-1 pr-1.5">
+      <View className="flex-row items-center">
+        <Icon size={10} color="rgba(255,255,255,0.8)" />
+        <Text className="ml-1 flex-1 text-[9px] font-medium text-white/75" numberOfLines={2}>
           {label}
         </Text>
-        <Text className="text-[13px] font-extrabold text-white" numberOfLines={1}>
-          {value}
-        </Text>
       </View>
+      <Text className="mt-0.5 text-[12px] font-extrabold text-white" numberOfLines={1}>
+        {value}
+      </Text>
     </View>
   );
 }
@@ -693,23 +1052,45 @@ function DateChip({ value, language }: { value: string; language: string }) {
   return (
     <View
       className="overflow-hidden rounded-2xl"
-      style={{ width: 62, borderWidth: 1, borderColor: colors.cream[300] }}
+      style={{ width: 54, borderWidth: 1, borderColor: colors.cream[300] }}
     >
-      <View className="items-center py-1" style={{ backgroundColor: colors.gold[500] }}>
-        <Text className="text-[10px] font-extrabold uppercase text-white" style={{ letterSpacing: 0.6 }}>
+      <View className="items-center py-0.5" style={{ backgroundColor: colors.gold[500] }}>
+        <Text className="text-[9px] font-extrabold uppercase text-white" style={{ letterSpacing: 0.6 }}>
           {formatMonth(value, language)}
         </Text>
       </View>
-      <View className="items-center py-1.5" style={{ backgroundColor: colors.cream[50] }}>
-        <Text className="text-[20px] font-extrabold leading-6 text-navy-text">
+      <View className="items-center py-1" style={{ backgroundColor: colors.cream[50] }}>
+        <Text className="text-[18px] font-extrabold leading-[22px] text-navy-text">
           {formatDayNumber(value, language)}
         </Text>
-        <Text className="text-[10px] font-semibold uppercase text-navy-muted">
+        <Text className="text-[9px] font-semibold uppercase text-navy-muted">
           {formatWeekday(value, language)}
         </Text>
       </View>
     </View>
   );
+}
+
+/* ── Clinical presentation ───────────────────────────────────────────────── */
+
+/**
+ * Colour for an advisory status, from `colors.semantic.*` only.
+ * `critical` is danger, anything else out of range is warning, `unknown` is
+ * deliberately neutral — the API declined to classify, so neither does the UI.
+ */
+function statusTone(status: VitalStatus): { color: string; surface: string } {
+  switch (status) {
+    case 'normal':
+      return { color: colors.semantic.success, surface: colors.semantic.successSurface };
+    case 'critical':
+      return { color: colors.semantic.danger, surface: colors.semantic.dangerSurface };
+    case 'low':
+    case 'high':
+    case 'abnormal':
+      return { color: colors.semantic.warning, surface: colors.semantic.warningSurface };
+    default:
+      return { color: colors.semantic.neutral, surface: colors.semantic.neutralSurface };
+  }
 }
 
 /* ── Formatting ──────────────────────────────────────────────────────────── */
@@ -723,10 +1104,32 @@ function greetingKey(): string {
 }
 
 /** `0` is a real, reassuring answer ("None") — not a missing value. */
-function formatCount(count: number | null | undefined, t: (key: string) => string): string {
+function formatCount(count: number | null | undefined, t: Translate): string {
   if (count == null) return '—';
   if (count === 0) return t('home.healthId.none');
   return String(count);
+}
+
+/**
+ * "Last updated: Today, 7:30 AM" only while that is true; otherwise the label
+ * degrades to yesterday, an explicit day count, or a full date.
+ */
+function formatUpdated(recordedAt: string | null, language: string, t: Translate): string {
+  const age = readingAge(recordedAt);
+  if (!recordedAt || age.freshness === 'unknown' || age.days === null) {
+    return t('home.vitals.updatedOn', { date: '—' });
+  }
+
+  if (age.freshness === 'today') {
+    return t('home.vitals.updatedToday', { time: formatTime(recordedAt, language) });
+  }
+  if (age.days === 1) {
+    return t('home.vitals.updatedYesterday', { time: formatTime(recordedAt, language) });
+  }
+  if (age.freshness === 'recent') {
+    return t('home.vitals.updatedDaysAgo', { days: age.days });
+  }
+  return t('home.vitals.updatedOn', { date: formatDate(recordedAt, language) });
 }
 
 function localeTag(language: string): string {
