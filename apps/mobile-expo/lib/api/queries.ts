@@ -1,7 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from './client';
 import { endpoints } from './endpoints';
-import type { Appointment, HealthIdCard, PaginatedAppointments, TemporaryQrCode } from './types';
+import type {
+  Appointment,
+  HealthIdCard,
+  OfficialDocumentDetail,
+  PaginatedAppointments,
+  PaginatedDocuments,
+  TemporaryQrCode,
+} from './types';
 
 export function useHealthIdCard() {
   return useQuery({
