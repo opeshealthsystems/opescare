@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import {
@@ -17,7 +17,14 @@ import { Button } from '../../components/ui/Button';
 import { TextField } from '../../components/ui/TextField';
 import { Logo } from '../../components/ui/Logo';
 import { useAuthStore } from '../../lib/store/auth';
+import { API_BASE_URL } from '../../lib/api/endpoints';
 import { colors } from '../../theme/tokens';
+
+/** The mobile API base is `<web-root>/api`; self-service account flows that
+ * aren't built natively yet (password reset, registration) live as real
+ * pages on that same web root, so we open them in the system browser rather
+ * than leaving their links dead. */
+const WEB_BASE_URL = API_BASE_URL.replace(/\/api\/?$/, '');
 
 export default function LoginScreen() {
   const { t } = useTranslation();
@@ -87,7 +94,9 @@ export default function LoginScreen() {
 
           <View className="mb-2 flex-row items-center justify-between">
             <Text className="text-sm font-semibold text-navy-text">{t('auth.password')}</Text>
-            <Text className="text-sm font-semibold text-gold-500">{t('auth.forgotPassword')}</Text>
+            <Pressable onPress={() => Linking.openURL(`${WEB_BASE_URL}/forgot-password`)} hitSlop={8}>
+              <Text className="text-sm font-semibold text-gold-500">{t('auth.forgotPassword')}</Text>
+            </Pressable>
           </View>
           <TextField
             placeholder={t('auth.passwordPlaceholder')}
@@ -147,11 +156,15 @@ export default function LoginScreen() {
             </Text>
           </View>
 
-          <View className="mt-6 flex-row items-center justify-center pb-4">
+          <Pressable
+            onPress={() => Linking.openURL(`${WEB_BASE_URL}/signup`)}
+            className="mt-6 flex-row items-center justify-center pb-4"
+            hitSlop={8}
+          >
             <Text className="text-sm text-navy-secondary">{t('auth.noAccount')} </Text>
             <Text className="text-sm font-semibold text-gold-500">{t('auth.createAccount')}</Text>
             <ChevronRight size={16} color={colors.gold[500]} style={{ marginLeft: 2 }} />
-          </View>
+          </Pressable>
         </View>
       </ScrollView>
     </Screen>
@@ -175,7 +188,9 @@ function SocialButton({
       className="h-14 flex-row items-center rounded-2xl border border-cream-300 bg-white px-4"
     >
       <Icon size={18} color={colors.navy.text} />
-      <Text className="ml-3 flex-1 text-sm font-semibold text-navy-text">{label}</Text>
+      <Text className="ml-3 flex-1 text-sm font-semibold text-navy-text" numberOfLines={1}>
+        {label}
+      </Text>
       {badge ? (
         <View className="rounded-full bg-gold-50 px-3 py-1">
           <Text className="text-[10px] font-semibold text-gold-600">{badge}</Text>
