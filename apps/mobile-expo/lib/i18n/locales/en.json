@@ -229,5 +229,40 @@
     "privacyTitle": "Your data is private and secure",
     "privacyBody": "We use industry-leading encryption to protect your information and follow global health data privacy standards.",
     "notProvided": "Not provided"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your language, notifications, and this device.",
+    "loadError": "We couldn't load your settings. Please try again.",
+    "retry": "Retry",
+    "language": {
+      "title": "Language",
+      "body": "Choose the language used across OpesCare.",
+      "en": "English",
+      "fr": "Français"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "body": "Choose what you'd like to be notified about.",
+      "appointments": "Appointments",
+      "appointmentsBody": "Reminders and updates about your appointments.",
+      "labResults": "Lab Results",
+      "labResultsBody": "Alerts when new lab results are available.",
+      "prescriptions": "Prescriptions",
+      "prescriptionsBody": "Updates on new or renewed prescriptions.",
+      "billing": "Billing",
+      "billingBody": "Invoices, payments, and billing reminders.",
+      "consentRequests": "Consent Requests",
+      "consentRequestsBody": "When a facility requests access to your record.",
+      "updateError": "Couldn't update this preference. Please try again."
+    },
+    "device": {
+      "title": "This Device",
+      "body": "Manage push notifications for this device.",
+      "pushLabel": "Push Notifications",
+      "pushBody": "Get real-time alerts on this device.",
+      "registerError": "Couldn't enable push notifications. Please try again.",
+      "revokeError": "Couldn't disable push notifications. Please try again."
+    }
   }
 }

@@ -229,5 +229,40 @@
     "privacyTitle": "Vos données sont privées et sécurisées",
     "privacyBody": "Nous utilisons un chiffrement de pointe pour protéger vos informations et respectons les normes mondiales de confidentialité des données de santé.",
     "notProvided": "Non renseigné"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "subtitle": "Gérez votre langue, vos notifications et cet appareil.",
+    "loadError": "Impossible de charger vos paramètres. Veuillez réessayer.",
+    "retry": "Réessayer",
+    "language": {
+      "title": "Langue",
+      "body": "Choisissez la langue utilisée dans OpesCare.",
+      "en": "English",
+      "fr": "Français"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "body": "Choisissez ce dont vous souhaitez être notifié.",
+      "appointments": "Rendez-vous",
+      "appointmentsBody": "Rappels et mises à jour de vos rendez-vous.",
+      "labResults": "Résultats de laboratoire",
+      "labResultsBody": "Alertes lorsque de nouveaux résultats sont disponibles.",
+      "prescriptions": "Ordonnances",
+      "prescriptionsBody": "Mises à jour sur les ordonnances nouvelles ou renouvelées.",
+      "billing": "Facturation",
+      "billingBody": "Factures, paiements et rappels de facturation.",
+      "consentRequests": "Demandes de consentement",
+      "consentRequestsBody": "Lorsqu'un établissement demande l'accès à votre dossier.",
+      "updateError": "Impossible de mettre à jour cette préférence. Veuillez réessayer."
+    },
+    "device": {
+      "title": "Cet appareil",
+      "body": "Gérez les notifications push pour cet appareil.",
+      "pushLabel": "Notifications push",
+      "pushBody": "Recevez des alertes en temps réel sur cet appareil.",
+      "registerError": "Impossible d'activer les notifications push. Veuillez réessayer.",
+      "revokeError": "Impossible de désactiver les notifications push. Veuillez réessayer."
+    }
   }
 }
