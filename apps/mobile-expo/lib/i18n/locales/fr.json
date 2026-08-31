@@ -224,6 +224,7 @@
     "healthIdCard": "Identifiant santé et code QR",
     "recordsTimeline": "Dossiers et historique",
     "messages": "Messages",
+    "downloadRecords": "Télécharger mon dossier",
     "settings": "Paramètres",
     "signOut": "Se déconnecter",
     "privacyTitle": "Vos données sont privées et sécurisées",
@@ -915,5 +916,29 @@
     "empty": "Aucun établissement trouvé",
     "emptyBody": "Essayez une autre recherche ou un autre type d'établissement.",
     "loadMore": "Charger plus"
+  },
+  "exportRecords": {
+    "title": "Exporter le dossier médical",
+    "subtitle": "Obtenez une copie complète de votre dossier OpesCare à conserver, imprimer ou partager avec un prestataire hors réseau.",
+    "includedTitle": "Contenu de l'export",
+    "includedProfile": "Profil et données démographiques",
+    "includedAllergies": "Allergies",
+    "includedDiagnoses": "Diagnostics et affections",
+    "includedMedications": "Médicaments",
+    "includedLabs": "Résultats de laboratoire récents",
+    "includedImmunizations": "Vaccinations",
+    "pdfTitle": "Document PDF",
+    "pdfBody": "Un résumé mis en forme et facile à lire — pratique à imprimer ou à remettre à un nouveau prestataire.",
+    "pdfAction": "Exporter en PDF",
+    "fhirTitle": "Bundle FHIR (JSON)",
+    "fhirBody": "Un bundle FHIR R4 structuré, prêt à être importé dans un autre système de dossiers de santé.",
+    "fhirAction": "Exporter en FHIR",
+    "generating": "Génération de votre export…",
+    "shareTitle": "Dossier médical OpesCare",
+    "successTitle": "Export prêt",
+    "sharingUnavailable": "Le partage n'est pas disponible sur cet appareil. L'export a été enregistré dans le stockage de l'application.",
+    "errorTitle": "Échec de l'export",
+    "errorBody": "Impossible de générer votre export. Veuillez réessayer.",
+    "privacyNote": "Les copies téléchargées ne sont pas chiffrées comme votre dossier dans l'application — conservez-les et partagez-les avec précaution."
   }
 }

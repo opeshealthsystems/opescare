@@ -224,6 +224,7 @@
     "healthIdCard": "Health ID & QR Code",
     "recordsTimeline": "Records & Timeline",
     "messages": "Messages",
+    "downloadRecords": "Download My Records",
     "settings": "Settings",
     "signOut": "Sign Out",
     "privacyTitle": "Your data is private and secure",
@@ -915,5 +916,29 @@
     "empty": "No facilities found",
     "emptyBody": "Try a different search or facility type.",
     "loadMore": "Load More"
+  },
+  "exportRecords": {
+    "title": "Export Medical Records",
+    "subtitle": "Get a copy of your full OpesCare record to keep, print, or share with a provider outside the network.",
+    "includedTitle": "What's included",
+    "includedProfile": "Profile & demographics",
+    "includedAllergies": "Allergies",
+    "includedDiagnoses": "Diagnoses & conditions",
+    "includedMedications": "Medications",
+    "includedLabs": "Recent lab results",
+    "includedImmunizations": "Immunizations",
+    "pdfTitle": "PDF Document",
+    "pdfBody": "A formatted, human-readable summary — easy to print or hand to a new provider.",
+    "pdfAction": "Export as PDF",
+    "fhirTitle": "FHIR Bundle (JSON)",
+    "fhirBody": "A structured FHIR R4 bundle, ready to import into another health record system.",
+    "fhirAction": "Export as FHIR",
+    "generating": "Generating your export…",
+    "shareTitle": "OpesCare medical record",
+    "successTitle": "Export ready",
+    "sharingUnavailable": "Sharing isn't available on this device. The export was saved to app storage instead.",
+    "errorTitle": "Export failed",
+    "errorBody": "We couldn't generate your export. Please try again.",
+    "privacyNote": "Downloaded copies are not encrypted like your in-app record — store and share them carefully."
   }
 }

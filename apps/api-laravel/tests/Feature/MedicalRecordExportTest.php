@@ -7,10 +7,11 @@ use App\Services\Patient\MedicalRecordExportService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
+use Tests\Traits\WithMobileAuth;
 
 class MedicalRecordExportTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithMobileAuth;
 
     private MedicalRecordExportService $service;
 
@@ -86,5 +87,43 @@ class MedicalRecordExportTest extends TestCase
         $deleted = $this->service->cleanupExports(0);
 
         $this->assertGreaterThanOrEqual(2, $deleted);
+    }
+
+    /**
+     * POST /api/mobile/medical-records/export/pdf returns the PDF inline as
+     * base64 (mobile-expo's export-records.tsx decodes + shares it directly —
+     * there is no client-reachable download endpoint for the storage path).
+     */
+    public function test_mobile_export_pdf_endpoint_returns_base64_file(): void
+    {
+        $patient = Patient::factory()->create();
+
+        $response = $this->mobilePostJson($patient, '/api/mobile/medical-records/export/pdf');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['message', 'filename', 'mime_type', 'file_base64']);
+
+        $this->assertSame('application/pdf', $response->json('mime_type'));
+        $this->assertStringEndsWith('.pdf', $response->json('filename'));
+
+        $decoded = base64_decode($response->json('file_base64'), true);
+        $this->assertNotFalse($decoded);
+        $this->assertStringStartsWith('%PDF', $decoded);
+    }
+
+    /**
+     * POST /api/mobile/medical-records/export/fhir returns the FHIR R4
+     * Bundle JSON directly — mobile-expo writes the response body to a
+     * .json file and shares it as-is.
+     */
+    public function test_mobile_export_fhir_endpoint_returns_bundle(): void
+    {
+        $patient = Patient::factory()->create();
+
+        $response = $this->mobilePostJson($patient, '/api/mobile/medical-records/export/fhir');
+
+        $response->assertStatus(200)
+            ->assertJson(['resourceType' => 'Bundle', 'type' => 'collection']);
+        $this->assertArrayHasKey('entry', $response->json());
     }
 }
