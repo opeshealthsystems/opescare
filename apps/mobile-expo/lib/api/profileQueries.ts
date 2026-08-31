@@ -30,7 +30,7 @@ export interface UpdateMyProfileInput {
   first_name?: string;
   last_name?: string;
   blood_group?: string | null;
-  sex?: 'male' | 'female' | 'other' | null;
+  sex?: 'male' | 'female' | null;
   address?: string | null;
   emergency_contact?: EmergencyContact | null;
 }

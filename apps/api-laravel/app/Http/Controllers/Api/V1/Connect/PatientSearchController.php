@@ -177,7 +177,7 @@ class PatientSearchController extends Controller
             'last_name'     => 'required|string|max:100',
             'phone_number'  => 'required|string|max:30',
             'date_of_birth' => 'required|date_format:Y-m-d',
-            'sex'           => 'required|in:male,female,other',
+            'sex'           => 'required|in:male,female',
         ]);
 
         $candidates = $this->mpi->searchCandidates([

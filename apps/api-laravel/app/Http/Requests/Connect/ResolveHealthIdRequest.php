@@ -26,7 +26,7 @@ class ResolveHealthIdRequest extends FormRequest
             'last_name'            => ['nullable', 'string', 'max:100'],
             'date_of_birth'        => ['nullable', 'date_format:Y-m-d'],
             'country_code'         => ['nullable', 'string', 'size:2'],
-            'sex'                  => ['nullable', 'string', 'in:male,female,other,unknown'],
+            'sex'                  => ['nullable', 'string', 'in:male,female'],
             'phone_number'         => ['nullable', 'string', 'max:30'],
             'purpose'              => ['required', 'string', 'max:100'],
             'external_reference'   => ['nullable', 'string', 'max:200'],

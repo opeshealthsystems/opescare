@@ -34,7 +34,7 @@ export interface UpdateProfileInput {
   first_name?: string;
   last_name?: string;
   blood_group?: string | null;
-  sex?: 'male' | 'female' | 'other' | null;
+  sex?: 'male' | 'female' | null;
   address?: string | null;
   emergency_contact?: EmergencyContact;
 }
@@ -627,7 +627,7 @@ export function useCancelFamilyInvitation() {
 export interface RegisterDependentInput {
   full_name: string;
   date_of_birth: string;
-  sex: 'male' | 'female' | 'other';
+  sex: 'male' | 'female';
   relationship: string;
   blood_group?: string;
   phone?: string;

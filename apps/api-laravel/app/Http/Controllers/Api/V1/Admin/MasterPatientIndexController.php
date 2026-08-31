@@ -96,7 +96,7 @@ class MasterPatientIndexController extends Controller
             'last_name'      => ['nullable', 'string'],
             'phone_number'   => ['nullable', 'string'],
             'date_of_birth'  => ['nullable', 'date'],
-            'sex'            => ['nullable', 'string', 'in:male,female,other'],
+            'sex'            => ['nullable', 'string', 'in:male,female'],
         ]);
 
         $results = $this->service->searchCandidates($request->all());

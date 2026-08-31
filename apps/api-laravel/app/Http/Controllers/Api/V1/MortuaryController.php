@@ -30,7 +30,7 @@ class MortuaryController extends Controller
 
         $validated = $request->validate([
             'full_name'           => 'required|string|max:200',
-            'sex'                 => 'nullable|in:male,female,unknown',
+            'sex'                 => 'nullable|in:male,female',
             'approximate_age'     => 'nullable|integer|min:0|max:150',
             'cause_of_death'      => 'nullable|string',
             'death_date'          => 'nullable|date',

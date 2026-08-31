@@ -125,7 +125,7 @@ class ImportValidationService
                     $errors[] = ['field' => 'date_of_birth', 'error_code' => 'invalid_date_format', 'message' => "date_of_birth must be YYYY-MM-DD or DD/MM/YYYY."];
                 }
                 $gender = strtolower($get('gender'));
-                if ($gender !== '' && !in_array($gender, ['male', 'female', 'm', 'f', 'other'])) {
+                if ($gender !== '' && !in_array($gender, ['male', 'female', 'm', 'f'])) {
                     $errors[] = ['field' => 'gender', 'error_code' => 'invalid_value', 'message' => "gender must be male/female/other."];
                 }
                 break;

@@ -45,7 +45,6 @@
                         <option value="">{{ __('public.portal.opt_select', [], $l) ?: '— select —' }}</option>
                         <option value="male" {{ old('sex') === 'male' ? 'selected' : '' }}>{{ __('public.portal.opt_male', [], $l) ?: 'Male' }}</option>
                         <option value="female" {{ old('sex') === 'female' ? 'selected' : '' }}>{{ __('public.portal.opt_female', [], $l) ?: 'Female' }}</option>
-                        <option value="other" {{ old('sex') === 'other' ? 'selected' : '' }}>{{ __('public.portal.opt_other', [], $l) ?: 'Other' }}</option>
                     </select>
                 </div>
             </div>

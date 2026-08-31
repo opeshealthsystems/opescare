@@ -110,7 +110,7 @@ class LitePortalController extends Controller
             'first_name'    => 'required|string|max:100',
             'last_name'     => 'required|string|max:100',
             'date_of_birth' => 'nullable|date',
-            'gender'        => 'nullable|in:male,female,other,unknown',
+            'gender'        => 'nullable|in:male,female',
             'phone'         => 'nullable|string|max:30',
         ]);
 

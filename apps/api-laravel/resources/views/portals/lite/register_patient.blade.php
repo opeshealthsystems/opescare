@@ -42,8 +42,6 @@
                         <option value="">{{ __('public.lite_portal.register_opt_select', [], $l) ?: '— Select —' }}</option>
                         <option value="male"    {{ old('gender') === 'male'    ? 'selected' : '' }}>{{ __('public.lite_portal.register_opt_male', [], $l) ?: 'Male' }}</option>
                         <option value="female"  {{ old('gender') === 'female'  ? 'selected' : '' }}>{{ __('public.lite_portal.register_opt_female', [], $l) ?: 'Female' }}</option>
-                        <option value="other"   {{ old('gender') === 'other'   ? 'selected' : '' }}>{{ __('public.lite_portal.register_opt_other', [], $l) ?: 'Other' }}</option>
-                        <option value="unknown" {{ old('gender') === 'unknown' ? 'selected' : '' }}>{{ __('public.lite_portal.register_opt_unknown', [], $l) ?: 'Unknown' }}</option>
                     </select>
                 </div>
             </div>

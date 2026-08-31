@@ -38,7 +38,7 @@ export interface RegisterPatientPayload {
   first_name: string;
   last_name: string;
   dob: string; // YYYY-MM-DD
-  sex: 'male' | 'female' | 'other' | 'unknown';
+  sex: 'male' | 'female';
   phone: string;
   email?: string;
   emergency_name: string;
