@@ -25,6 +25,34 @@ export interface ApiErrorBody {
   message: string;
 }
 
+/** Body for POST /mobile/auth/register — see app/(auth)/signup.tsx. */
+export interface RegisterPatientPayload {
+  first_name: string;
+  last_name: string;
+  dob: string; // YYYY-MM-DD
+  sex: 'male' | 'female' | 'other' | 'unknown';
+  phone: string;
+  email?: string;
+  emergency_name: string;
+  emergency_relationship: string;
+  emergency_phone: string;
+  password: string;
+  password_confirmation: string;
+}
+
+/** Response from POST /mobile/auth/register — same token shape as login, plus the
+ * freshly generated Health ID. */
+export interface RegisterPatientResponse extends AuthTokenResponse {
+  health_id: string;
+}
+
+/** Shape of a 422 validation failure from the Laravel API — see
+ * bootstrap/app.php's global JSON exception handler. */
+export interface ApiValidationErrorBody {
+  message: string;
+  errors?: Record<string, string[]>;
+}
+
 export interface Appointment {
   id: string;
   appointment_type: string;

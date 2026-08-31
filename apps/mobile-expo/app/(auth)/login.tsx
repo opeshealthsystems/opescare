@@ -147,11 +147,14 @@ export default function LoginScreen() {
             </Text>
           </View>
 
-          <View className="mt-6 flex-row items-center justify-center pb-4">
+          <Pressable
+            onPress={() => router.push('/(auth)/signup')}
+            className="mt-6 flex-row items-center justify-center pb-4"
+          >
             <Text className="text-sm text-navy-secondary">{t('auth.noAccount')} </Text>
             <Text className="text-sm font-semibold text-gold-500">{t('auth.createAccount')}</Text>
             <ChevronRight size={16} color={colors.gold[500]} style={{ marginLeft: 2 }} />
-          </View>
+          </Pressable>
         </View>
       </ScrollView>
     </Screen>
