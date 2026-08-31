@@ -1,176 +1,519 @@
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { useMemo } from 'react';
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, ChevronRight, FileQuestion, ShieldCheck, Store } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import {
+  ArrowLeft,
+  BadgeCheck,
+  ChevronRight,
+  Hourglass,
+  ShieldAlert,
+  ShieldCheck,
+  Store,
+  TriangleAlert,
+} from 'lucide-react-native';
 import { Screen } from '../../components/ui/Screen';
 import { Button } from '../../components/ui/Button';
-import { useInsurancePolicies, type InsurancePolicy, type InsurancePolicyStatus } from '../../lib/api/queries';
+import {
+  useInsurancePolicies,
+  type InsurancePolicy,
+  type InsurancePolicyStatus,
+} from '../../lib/api/queries';
 import { colors } from '../../theme/tokens';
 
-const STATUS_STYLES: Record<InsurancePolicyStatus, { text: string; surface: string }> = {
+/** Credential-card tones. `live` = cover you can actually use today, `awaiting`
+ * = created but not yet activated by the insurer (every self-enrolment starts
+ * here — the mobile purchase endpoint always writes status `pending`), and
+ * `dormant` = expired / cancelled / on hold. The tone drives the whole card
+ * treatment so a patient can tell at a glance whether the card is usable. */
+type CardTone = 'live' | 'awaiting' | 'dormant';
+
+/** `className` does NOT reach expo-linear-gradient (no cssInterop is
+ * registered for it), so every gradient card below is styled inline. The
+ * colour tuples need `as const` — LinearGradient's `colors` prop is a tuple
+ * type, not `string[]`. */
+const LIVE_GRADIENT = [colors.gold[600], colors.gold[500], colors.gold[300]] as const;
+const AWAITING_GRADIENT = [colors.navy.text, colors.navy.secondary] as const;
+
+const CARD_STYLE = {
+  borderRadius: 24,
+  padding: 20,
+  overflow: 'hidden',
+} as const;
+
+/** Status pill colours for the flat (dormant) card variant. */
+const DORMANT_STATUS_STYLES: Record<InsurancePolicyStatus, { text: string; surface: string }> = {
   active: { text: colors.semantic.success, surface: colors.semantic.successSurface },
   pending: { text: colors.semantic.warning, surface: colors.semantic.warningSurface },
-  inactive: { text: colors.navy.secondary, surface: colors.cream[200] },
+  inactive: { text: colors.navy.secondary, surface: colors.cream[300] },
   expired: { text: colors.semantic.danger, surface: colors.semantic.dangerSurface },
   cancelled: { text: colors.semantic.danger, surface: colors.semantic.dangerSurface },
 };
 
-/** "My Insurance" — the patient's existing policies (GET /mobile/insurance),
- * plus an entry point into the marketplace to browse/enroll in new plans. */
+function toneFor(policy: InsurancePolicy): CardTone {
+  if (policy.status === 'active' && !policy.is_expired) return 'live';
+  if (policy.status === 'pending') return 'awaiting';
+  return 'dormant';
+}
+
+function formatDate(value: string | null, language: string): string {
+  if (!value) return '—';
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString(language.startsWith('fr') ? 'fr-FR' : 'en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+/** Whole days from today to `value`; negative once the date has passed. */
+function daysUntil(value: string | null): number | null {
+  if (!value) return null;
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return null;
+  return Math.ceil((date.getTime() - Date.now()) / 86_400_000);
+}
+
+/** "My Coverage" — the patient's own policies (GET /mobile/insurance), rendered
+ * as insurance credentials, plus the way into the marketplace. */
 export default function InsurancePoliciesScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
-  const { data, isLoading, isError, refetch } = useInsurancePolicies();
+  const { data, isLoading, isError, isRefetching, refetch } = useInsurancePolicies();
   const policies = data?.data ?? [];
+
+  const counts = useMemo(() => {
+    let live = 0;
+    let awaiting = 0;
+    let dormant = 0;
+    for (const policy of policies) {
+      const tone = toneFor(policy);
+      if (tone === 'live') live += 1;
+      else if (tone === 'awaiting') awaiting += 1;
+      else dormant += 1;
+    }
+    return { live, awaiting, dormant };
+  }, [policies]);
+
+  const openMarketplace = () => router.push('/insurance/marketplace');
 
   return (
     <Screen className="px-0">
-      <Header
-        onBack={() => router.back()}
-        onBrowse={() => router.push('/insurance/marketplace')}
-        title={t('insurance.title')}
-      />
+      <View className="flex-row items-center justify-between px-6 pt-2">
+        <Pressable
+          onPress={() => router.back()}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={t('insurance.back')}
+          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+        >
+          <ArrowLeft size={18} color={colors.gold[600]} />
+        </Pressable>
+        <Pressable
+          onPress={openMarketplace}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={t('insurance.marketplace.title')}
+          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+        >
+          <Store size={18} color={colors.gold[600]} />
+        </Pressable>
+      </View>
 
-      <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+      <ScrollView
+        className="flex-1 px-6"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={() => refetch()}
+            tintColor={colors.gold[500]}
+          />
+        }
+      >
+        <View className="mt-4">
+          <Text className="text-2xl font-extrabold text-navy-text">{t('insurance.title')}</Text>
+          <Text className="mt-1 text-sm text-navy-secondary">{t('insurance.subtitle')}</Text>
+        </View>
+
         {isLoading ? (
-          <View className="mt-16 items-center">
-            <ActivityIndicator color={colors.gold[500]} />
+          <View className="mt-20 items-center">
+            <ActivityIndicator color={colors.gold[500]} size="large" />
           </View>
         ) : isError ? (
-          <View className="mt-16 items-center px-4">
-            <FileQuestion size={40} color={colors.navy.muted} />
-            <Text className="mt-3 text-center text-sm text-navy-secondary">
+          <View className="mt-8 items-center rounded-3xl bg-white p-6">
+            <View
+              className="h-14 w-14 items-center justify-center rounded-full"
+              style={{ backgroundColor: colors.semantic.dangerSurface }}
+            >
+              <ShieldAlert size={26} color={colors.semantic.danger} />
+            </View>
+            <Text className="mt-4 text-center text-base font-bold text-navy-text">
               {t('insurance.loadError')}
+            </Text>
+            <Text className="mt-2 text-center text-sm text-navy-secondary">
+              {t('insurance.loadErrorBody')}
             </Text>
             <Pressable
               onPress={() => refetch()}
-              className="mt-4 rounded-full bg-gold-50 px-5 py-2"
+              className="mt-5 rounded-full bg-gold-50 px-6 py-3"
+              accessibilityRole="button"
             >
               <Text className="text-sm font-semibold text-gold-600">{t('insurance.retry')}</Text>
             </Pressable>
           </View>
         ) : policies.length === 0 ? (
-          <View className="mt-10 items-center px-2">
-            <View className="h-16 w-16 items-center justify-center rounded-full bg-gold-50">
-              <ShieldCheck size={28} color={colors.gold[500]} />
-            </View>
-            <Text className="mt-4 text-center text-base font-bold text-navy-text">
-              {t('insurance.emptyTitle')}
-            </Text>
-            <Text className="mt-2 text-center text-sm text-navy-secondary">
-              {t('insurance.emptyBody')}
-            </Text>
-            <View className="mt-6 w-full">
-              <Button
-                label={t('insurance.emptyCta')}
-                onPress={() => router.push('/insurance/marketplace')}
-              />
-            </View>
-          </View>
+          <EmptyState onBrowse={openMarketplace} />
         ) : (
           <>
-            <Text className="mb-3 mt-5 text-sm text-navy-secondary">{t('insurance.subtitle')}</Text>
-            {policies.map((policy) => (
-              <PolicyCard key={policy.id} policy={policy} />
-            ))}
-            <Pressable
-              onPress={() => router.push('/insurance/marketplace')}
-              className="mb-4 flex-row items-center justify-between rounded-2xl border border-gold-300 bg-gold-50 p-4"
-            >
-              <View className="flex-1 flex-row items-center">
-                <Store size={18} color={colors.gold[600]} />
-                <Text className="ml-3 flex-1 text-sm font-semibold text-gold-600">
-                  {t('insurance.browseMarketplace')}
-                </Text>
-              </View>
-              <ChevronRight size={18} color={colors.gold[600]} />
-            </Pressable>
+            <View className="mt-5 flex-row flex-wrap">
+              {counts.live > 0 ? (
+                <SummaryChip
+                  label={t('insurance.summary.active')}
+                  value={counts.live}
+                  text={colors.semantic.success}
+                  surface={colors.semantic.successSurface}
+                />
+              ) : null}
+              {counts.awaiting > 0 ? (
+                <SummaryChip
+                  label={t('insurance.summary.pending')}
+                  value={counts.awaiting}
+                  text={colors.semantic.warning}
+                  surface={colors.semantic.warningSurface}
+                />
+              ) : null}
+              {counts.dormant > 0 ? (
+                <SummaryChip
+                  label={t('insurance.summary.dormant')}
+                  value={counts.dormant}
+                  text={colors.navy.secondary}
+                  surface={colors.cream[200]}
+                />
+              ) : null}
+            </View>
+
+            <View className="mt-5">
+              {policies.map((policy) => (
+                <PolicyCard key={policy.id} policy={policy} language={i18n.language} />
+              ))}
+            </View>
           </>
         )}
-        <View className="h-10" />
+
+        {!isLoading && !isError && policies.length > 0 ? (
+          <Pressable
+            onPress={openMarketplace}
+            accessibilityRole="button"
+            className="mt-2 flex-row items-center rounded-3xl border border-gold-300 bg-gold-50 p-4"
+          >
+            <View className="h-11 w-11 items-center justify-center rounded-full bg-white">
+              <Store size={18} color={colors.gold[600]} />
+            </View>
+            <View className="ml-4 flex-1">
+              <Text className="text-sm font-bold text-navy-text">
+                {t('insurance.browseTitle')}
+              </Text>
+              <Text className="mt-0.5 text-xs text-navy-secondary">
+                {t('insurance.browseBody')}
+              </Text>
+            </View>
+            <ChevronRight size={18} color={colors.gold[600]} />
+          </Pressable>
+        ) : null}
+
+        {!isLoading && !isError && policies.length > 0 ? (
+          <Text className="mt-6 text-center text-[11px] text-navy-muted">
+            {t('insurance.privacyNote')}
+          </Text>
+        ) : null}
       </ScrollView>
     </Screen>
   );
 }
 
-function Header({
-  title,
-  onBack,
-  onBrowse,
+function SummaryChip({
+  label,
+  value,
+  text,
+  surface,
 }: {
-  title: string;
-  onBack: () => void;
-  onBrowse: () => void;
+  label: string;
+  value: number;
+  text: string;
+  surface: string;
 }) {
   return (
-    <View className="flex-row items-center justify-between px-6 pt-2">
-      <Pressable
-        onPress={onBack}
-        hitSlop={8}
-        className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
-      >
-        <ArrowLeft size={18} color={colors.gold[600]} />
-      </Pressable>
-      <Text className="text-lg font-bold text-navy-text">{title}</Text>
-      <Pressable
-        onPress={onBrowse}
-        hitSlop={8}
-        className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
-      >
-        <Store size={18} color={colors.gold[600]} />
-      </Pressable>
+    <View
+      className="mb-2 mr-2 flex-row items-center rounded-full px-4 py-2"
+      style={{ backgroundColor: surface }}
+    >
+      <Text className="text-sm font-extrabold" style={{ color: text }}>
+        {value}
+      </Text>
+      <Text className="ml-2 text-xs font-semibold" style={{ color: text }}>
+        {label}
+      </Text>
     </View>
   );
 }
 
-function PolicyCard({ policy }: { policy: InsurancePolicy }) {
+function EmptyState({ onBrowse }: { onBrowse: () => void }) {
   const { t } = useTranslation();
-  const style = STATUS_STYLES[policy.status] ?? STATUS_STYLES.inactive;
+  return (
+    <View className="mt-8 rounded-3xl bg-white p-6">
+      <View className="items-center">
+        <View className="h-16 w-16 items-center justify-center rounded-full bg-gold-50">
+          <ShieldCheck size={30} color={colors.gold[500]} />
+        </View>
+        <Text className="mt-4 text-center text-lg font-extrabold text-navy-text">
+          {t('insurance.emptyTitle')}
+        </Text>
+        <Text className="mt-2 text-center text-sm leading-5 text-navy-secondary">
+          {t('insurance.emptyBody')}
+        </Text>
+      </View>
+
+      <View className="mt-6">
+        <Button label={t('insurance.emptyCta')} onPress={onBrowse} leftIcon={Store} />
+      </View>
+
+      <View className="mt-5 flex-row items-start rounded-2xl bg-gold-50 p-4">
+        <ShieldCheck size={16} color={colors.gold[600]} />
+        <Text className="ml-3 flex-1 text-xs leading-4 text-navy-secondary">
+          {t('insurance.emptyNote')}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+function PolicyCard({ policy, language }: { policy: InsurancePolicy; language: string }) {
+  const tone = toneFor(policy);
+  const dark = tone !== 'dormant';
+  const remaining = daysUntil(policy.expiry_date);
+
+  const body = <PolicyCardBody policy={policy} tone={tone} dark={dark} language={language} remaining={remaining} />;
+
+  if (dark) {
+    return (
+      <LinearGradient
+        colors={tone === 'live' ? LIVE_GRADIENT : AWAITING_GRADIENT}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{
+          ...CARD_STYLE,
+          marginBottom: 16,
+          shadowColor: tone === 'live' ? colors.gold[700] : colors.navy.text,
+          shadowOpacity: 0.22,
+          shadowRadius: 16,
+          shadowOffset: { width: 0, height: 8 },
+          elevation: 4,
+        }}
+      >
+        {body}
+      </LinearGradient>
+    );
+  }
 
   return (
-    <View className="mb-3 rounded-2xl bg-white p-4">
+    <View
+      className="mb-4 border border-cream-300"
+      style={{ ...CARD_STYLE, backgroundColor: colors.cream[200] }}
+    >
+      {body}
+    </View>
+  );
+}
+
+function PolicyCardBody({
+  policy,
+  tone,
+  dark,
+  language,
+  remaining,
+}: {
+  policy: InsurancePolicy;
+  tone: CardTone;
+  dark: boolean;
+  language: string;
+  remaining: number | null;
+}) {
+  const { t } = useTranslation();
+
+  const labelCls = dark ? 'text-white/70' : 'text-navy-muted';
+  const valueCls = dark ? 'text-white' : 'text-navy-text';
+  const dividerCls = dark ? 'bg-white/25' : 'bg-cream-300';
+  const dormantStatus = DORMANT_STATUS_STYLES[policy.status] ?? DORMANT_STATUS_STYLES.inactive;
+
+  const planType = policy.plan?.plan_type;
+  const credentialLabel = policy.member_id ? t('insurance.card.memberId') : t('insurance.card.policyNumber');
+  const credentialValue = policy.member_id ?? policy.policy_number;
+
+  const notice = (() => {
+    if (tone === 'awaiting') {
+      return { icon: Hourglass, text: t('insurance.card.pendingNotice') };
+    }
+    if (tone === 'live' && remaining !== null && remaining <= 60) {
+      return {
+        icon: TriangleAlert,
+        text: t('insurance.card.expiringNotice', {
+          date: formatDate(policy.expiry_date, language),
+        }),
+      };
+    }
+    if (tone === 'dormant') {
+      const key =
+        policy.status === 'cancelled'
+          ? 'insurance.card.cancelledNotice'
+          : policy.status === 'expired' || policy.is_expired
+            ? 'insurance.card.expiredNotice'
+            : 'insurance.card.inactiveNotice';
+      return { icon: ShieldAlert, text: t(key) };
+    }
+    return null;
+  })();
+
+  const NoticeIcon = notice?.icon;
+
+  return (
+    <>
+      {/* Watermark emblem — the credential "seal" seen on the Health ID card. */}
+      <View
+        pointerEvents="none"
+        style={{ position: 'absolute', right: -18, top: -18, opacity: dark ? 0.16 : 0.5 }}
+      >
+        <BadgeCheck size={124} color={dark ? colors.white : colors.cream[300]} />
+      </View>
+
       <View className="flex-row items-start justify-between">
         <View className="flex-1 pr-3">
-          <Text className="text-base font-bold text-navy-text">{policy.plan?.name ?? '—'}</Text>
-          <Text className="mt-1 text-sm text-navy-secondary">
-            {policy.plan?.provider_name ?? '—'}
+          <Text
+            className={`text-[10px] font-bold uppercase tracking-widest ${labelCls}`}
+            numberOfLines={1}
+          >
+            {policy.plan?.provider_name ?? t('insurance.card.label')}
           </Text>
-          <Text className="mt-1 text-xs text-navy-muted">
-            {t(`insurance.relationshipToPrimary.${policy.relationship_to_primary}`, {
-              defaultValue: policy.relationship_to_primary,
-            })}
-            {policy.member_id ? ` • ${t('insurance.memberId')}: ${policy.member_id}` : ''}
+          <Text className={`mt-1.5 text-lg font-extrabold ${valueCls}`} numberOfLines={2}>
+            {policy.plan?.name ?? '—'}
           </Text>
         </View>
-        <View className="rounded-full px-3 py-1" style={{ backgroundColor: style.surface }}>
-          <Text className="text-xs font-semibold" style={{ color: style.text }}>
+
+        <View
+          className="flex-row items-center rounded-full px-3 py-1"
+          style={{ backgroundColor: dark ? 'rgba(255,255,255,0.22)' : dormantStatus.surface }}
+        >
+          {tone === 'live' ? (
+            <ShieldCheck size={12} color={colors.white} />
+          ) : tone === 'awaiting' ? (
+            <Hourglass size={12} color={colors.white} />
+          ) : (
+            <ShieldAlert size={12} color={dormantStatus.text} />
+          )}
+          <Text
+            className="ml-1.5 text-[11px] font-bold"
+            style={{ color: dark ? colors.white : dormantStatus.text }}
+          >
             {t(`insurance.status.${policy.status}`)}
           </Text>
         </View>
       </View>
 
-      <View className="mt-4 h-px bg-cream-300" />
+      {planType ? (
+        <View
+          className="mt-3 self-start rounded-full px-3 py-1"
+          style={{ backgroundColor: dark ? 'rgba(255,255,255,0.18)' : colors.white }}
+        >
+          <Text
+            className="text-[11px] font-semibold"
+            style={{ color: dark ? colors.white : colors.navy.secondary }}
+          >
+            {t(`insurance.planType.${planType}`, { defaultValue: planType })}
+          </Text>
+        </View>
+      ) : null}
+
+      <View className={`mt-5 h-px ${dividerCls}`} />
+
+      <View className="mt-4">
+        <Text className={`text-[10px] font-bold uppercase tracking-widest ${labelCls}`}>
+          {credentialLabel}
+        </Text>
+        <Text className={`mt-1 text-xl font-extrabold tracking-wider ${valueCls}`}>
+          {credentialValue}
+        </Text>
+        {policy.member_id ? (
+          <Text className={`mt-1 text-xs ${labelCls}`}>
+            {t('insurance.card.policyNumber')} {policy.policy_number}
+          </Text>
+        ) : null}
+      </View>
+
+      <View className={`mt-4 h-px ${dividerCls}`} />
 
       <View className="mt-4 flex-row justify-between">
-        <View>
-          <Text className="text-xs text-navy-muted">{t('insurance.policyNumber')}</Text>
-          <Text className="mt-1 text-sm font-semibold text-navy-text">
-            {policy.policy_number}
-          </Text>
-        </View>
-        <View>
-          <Text className="text-xs text-navy-muted">{t('insurance.effectiveDate')}</Text>
-          <Text className="mt-1 text-sm font-semibold text-navy-text">
-            {policy.effective_date ?? '—'}
-          </Text>
-        </View>
-        <View>
-          <Text className="text-xs text-navy-muted">{t('insurance.expiryDate')}</Text>
-          <Text className="mt-1 text-sm font-semibold text-navy-text">
-            {policy.expiry_date ?? '—'}
-          </Text>
-        </View>
+        <CardStat
+          label={t('insurance.card.validFrom')}
+          value={formatDate(policy.effective_date, language)}
+          labelCls={labelCls}
+          valueCls={valueCls}
+        />
+        <CardStat
+          label={t('insurance.card.validUntil')}
+          value={formatDate(policy.expiry_date, language)}
+          labelCls={labelCls}
+          valueCls={valueCls}
+        />
+        <CardStat
+          label={t('insurance.card.holder')}
+          value={t(`insurance.relationshipToPrimary.${policy.relationship_to_primary}`, {
+            defaultValue: policy.relationship_to_primary,
+          })}
+          labelCls={labelCls}
+          valueCls={valueCls}
+        />
       </View>
+
+      {notice && NoticeIcon ? (
+        <View
+          className="mt-5 flex-row items-start rounded-2xl p-3"
+          style={{ backgroundColor: dark ? 'rgba(255,255,255,0.16)' : colors.white }}
+        >
+          <NoticeIcon size={14} color={dark ? colors.white : colors.navy.secondary} />
+          <Text
+            className="ml-2.5 flex-1 text-[11px] leading-4"
+            style={{ color: dark ? colors.white : colors.navy.secondary }}
+          >
+            {notice.text}
+          </Text>
+        </View>
+      ) : null}
+    </>
+  );
+}
+
+function CardStat({
+  label,
+  value,
+  labelCls,
+  valueCls,
+}: {
+  label: string;
+  value: string;
+  labelCls: string;
+  valueCls: string;
+}) {
+  return (
+    <View className="flex-1 pr-2">
+      <Text className={`text-[10px] ${labelCls}`} numberOfLines={1}>
+        {label}
+      </Text>
+      <Text className={`mt-1 text-xs font-bold ${valueCls}`} numberOfLines={1}>
+        {value}
+      </Text>
     </View>
   );
 }
