@@ -1660,3 +1660,182 @@ export function useSendSupportTicketMessage(ticketId: string | null) {
     },
   });
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * Blood Finder
+ * Mirrors the payloads built by MobileBloodController (routes/mobile_blood.php).
+ * Group / component / status values are the backed values of
+ * App\Enums\BloodGroup, App\Enums\BloodComponentType, App\Enums\BloodRequestStatus
+ * and App\Enums\BloodRequestUrgency — keep them in step with those enums.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+export type BloodGroupValue = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
+
+export type BloodComponentValue = 'whole_blood' | 'red_cells' | 'platelets' | 'plasma';
+
+export type BloodUrgencyValue = 'routine' | 'urgent' | 'emergency';
+
+export interface BloodGroupOption {
+  value: BloodGroupValue;
+  label: string;
+  can_receive_from: string[];
+  facility_count: number;
+}
+
+export interface BloodComponentOption {
+  value: BloodComponentValue;
+  label: string;
+  icon: string;
+  facility_count: number;
+}
+
+export interface BloodFinderOptions {
+  blood_groups: BloodGroupOption[];
+  component_types: BloodComponentOption[];
+  urgencies: { value: BloodUrgencyValue; label: string }[];
+  max_units: number;
+}
+
+export interface BloodStockSnapshot {
+  id: string;
+  blood_group: BloodGroupValue;
+  component_type: BloodComponentValue;
+  component_label: string | null;
+  units_range: string | null;
+  /** Facility-reported availability ('available' is all the search returns). */
+  status: string;
+  /** How recently the facility updated the row: fresh | recent | stale. */
+  freshness: string;
+  last_updated_at: string | null;
+}
+
+export interface BloodBankResult {
+  id: string;
+  name: string;
+  facility_type: string;
+  city: string | null;
+  region: string | null;
+  address: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  phone: string | null;
+  emergency_contact: string | null;
+  verification_status: string | null;
+  /** Null when the search ran without an origin (nationwide). */
+  distance_km: number | null;
+  availability: BloodStockSnapshot | null;
+}
+
+export interface BloodRequest {
+  id: string;
+  reference: string;
+  status: string;
+  status_label: string;
+  is_open: boolean;
+  is_cancellable: boolean;
+  blood_group: BloodGroupValue;
+  component_type: BloodComponentValue;
+  component_label: string;
+  quantity: number;
+  urgency: BloodUrgencyValue;
+  contact_phone: string | null;
+  patient_note: string | null;
+  facility_note: string | null;
+  needed_by: string | null;
+  expires_at: string | null;
+  created_at: string | null;
+  facility: {
+    id: string;
+    name: string;
+    city: string | null;
+    address: string | null;
+    phone: string | null;
+  } | null;
+}
+
+export function useBloodOptions() {
+  return useQuery({
+    queryKey: ['blood', 'options'],
+    queryFn: async () =>
+      (await apiClient.get<{ data: BloodFinderOptions }>(endpoints.bloodOptions)).data.data,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useBloodSearch(args: {
+  bloodGroup: BloodGroupValue | null;
+  componentType: BloodComponentValue;
+  lat: number;
+  lng: number;
+  radiusKm: number;
+  enabled?: boolean;
+}) {
+  const { bloodGroup, componentType, lat, lng, radiusKm, enabled = true } = args;
+
+  return useQuery({
+    queryKey: ['blood', 'search', bloodGroup, componentType, lat, lng, radiusKm],
+    enabled: enabled && !!bloodGroup,
+    queryFn: async () =>
+      (
+        await apiClient.get<{ data: BloodBankResult[] }>(endpoints.bloodSearch, {
+          params: {
+            blood_group: bloodGroup,
+            component_type: componentType,
+            lat,
+            lng,
+            radius_km: radiusKm,
+          },
+        })
+      ).data.data,
+  });
+}
+
+export function useBloodRequests(scope: 'all' | 'open' = 'all') {
+  return useQuery({
+    queryKey: ['blood', 'requests', scope],
+    queryFn: async () =>
+      (
+        await apiClient.get<{ data: BloodRequest[] }>(endpoints.bloodRequests, {
+          params: { scope },
+        })
+      ).data.data,
+  });
+}
+
+export interface CreateBloodRequestInput {
+  care_facility_id: string;
+  blood_group: BloodGroupValue;
+  component_type?: BloodComponentValue;
+  quantity?: number;
+  urgency?: BloodUrgencyValue;
+  contact_phone?: string | null;
+  note?: string | null;
+}
+
+export function useCreateBloodRequest() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: CreateBloodRequestInput) =>
+      (await apiClient.post<{ data: BloodRequest }>(endpoints.bloodRequests, input)).data.data,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blood', 'requests'] });
+    },
+  });
+}
+
+export function useCancelBloodRequest() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (args: { id: string; reason?: string }) =>
+      (
+        await apiClient.post<{ data: BloodRequest }>(endpoints.cancelBloodRequest(args.id), {
+          reason: args.reason ?? null,
+        })
+      ).data.data,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blood', 'requests'] });
+    },
+  });
+}

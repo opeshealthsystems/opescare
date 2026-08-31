@@ -77,6 +77,11 @@ class AppServiceProvider extends ServiceProvider
         Route::middleware('api')
             ->group(base_path('routes/mobile_support.php'));
 
+        // Mobile patient Blood Finder routes — loaded here to avoid touching
+        // the sealed routes/api.php file (same pattern as mobile_support.php).
+        Route::middleware('api')
+            ->group(base_path('routes/mobile_blood.php'));
+
         RateLimiter::for('verify', function (Request $request) {
             return Limit::perMinute(30)->by($request->ip());
         });

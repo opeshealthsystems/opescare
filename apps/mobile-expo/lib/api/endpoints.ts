@@ -114,4 +114,13 @@ export const endpoints = {
   supportTickets: '/mobile/support/tickets',
   supportTicket: (id: string) => `/mobile/support/tickets/${id}`,
   supportTicketMessages: (id: string) => `/mobile/support/tickets/${id}/messages`,
+
+  // Blood Finder — patient-facing entry point (see routes/mobile_blood.php,
+  // App\Http\Controllers\Api\Mobile\MobileBloodController). Distinct from the
+  // public /v1/care-map/blood/search directory endpoint, which is a different
+  // audience and carries no patient requests.
+  bloodOptions: '/mobile/blood/options',
+  bloodSearch: '/mobile/blood/search',
+  bloodRequests: '/mobile/blood/requests',
+  cancelBloodRequest: (id: string) => `/mobile/blood/requests/${id}/cancel`,
 } as const;
