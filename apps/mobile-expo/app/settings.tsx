@@ -9,12 +9,15 @@ import {
   BellRing,
   Calendar,
   ChevronLeft,
+  ChevronRight,
   CreditCard,
   FlaskConical,
   Globe,
   Pill,
   ShieldCheck,
   Smartphone,
+  Users,
+  type LucideIcon,
 } from 'lucide-react-native';
 import { Screen } from '../components/ui/Screen';
 import {
@@ -251,6 +254,23 @@ export default function SettingsScreen() {
                 </Text>
               ) : null}
             </SectionCard>
+
+            {/* Links to related settings that live on their own screens */}
+            <View className="mb-4 overflow-hidden rounded-2xl bg-white">
+              <NavRow
+                icon={ShieldCheck}
+                label={t('privacy.title')}
+                body={t('privacy.subtitle')}
+                onPress={() => router.push('/privacy')}
+              />
+              <View className="h-px bg-cream-300" style={{ marginLeft: 60 }} />
+              <NavRow
+                icon={Users}
+                label={t('family.title')}
+                body={t('family.subtitle')}
+                onPress={() => router.push('/family')}
+              />
+            </View>
           </>
         )}
 
@@ -300,6 +320,31 @@ function LanguagePill({ label, active, onPress }: { label: string; active?: bool
       >
         {label}
       </Text>
+    </Pressable>
+  );
+}
+
+function NavRow({
+  icon: Icon,
+  label,
+  body,
+  onPress,
+}: {
+  icon: LucideIcon;
+  label: string;
+  body: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable onPress={onPress} className="flex-row items-center px-4 py-4">
+      <View className="h-9 w-9 items-center justify-center rounded-full bg-gold-50">
+        <Icon size={17} color={colors.gold[600]} />
+      </View>
+      <View className="ml-3 flex-1">
+        <Text className="text-sm font-semibold text-navy-text">{label}</Text>
+        <Text className="text-xs text-navy-secondary">{body}</Text>
+      </View>
+      <ChevronRight size={18} color={colors.navy.muted} />
     </Pressable>
   );
 }

@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Droplet,
   FileText,
+  FolderOpen,
   LogOut,
   Mail,
   MessageCircle,
@@ -78,6 +79,11 @@ export default function ProfileScreen() {
       icon: FileText,
       label: t('profile.recordsTimeline'),
       onPress: () => router.push('/(tabs)/records'),
+    },
+    {
+      icon: FolderOpen,
+      label: t('documents.title'),
+      onPress: () => router.push('/documents'),
     },
     {
       icon: MessageCircle,
@@ -181,7 +187,10 @@ export default function ProfileScreen() {
         </View>
 
         {/* Menu list */}
-        <View className="mt-6 overflow-hidden rounded-2xl bg-white">
+        <Text className="mt-6 text-xs font-bold uppercase tracking-wide text-navy-muted">
+          {t('profile.quickLinks')}
+        </Text>
+        <View className="mt-2 overflow-hidden rounded-2xl bg-white">
           {menuItems.map((item, index) => (
             <Fragment key={item.label}>
               <Pressable
