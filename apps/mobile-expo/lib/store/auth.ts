@@ -102,19 +102,30 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       await get().fetchMe();
       set({ status: 'authenticated' });
     } catch (err) {
-      // A dropped connection is not an expired session. If the patient has
-      // opted into offline access and this device holds their saved profile,
-      // boot straight into the app on the cached copy instead of wiping a
-      // perfectly valid token — the whole point of offline mode is that
-      // launching with no signal still works. Any answer from the server
-      // (401 included) still ends the session as before.
+      // A dropped connection is not an expired session, so it must never cost
+      // the patient their token. Only the server saying no does that.
+      //
+      // `isNetworkError` is true exactly when no response came back at all. In
+      // that case the token has not been rejected — it has not been judged —
+      // so we keep it and boot into the app: on the cached profile if offline
+      // access is on, otherwise authenticated with no profile yet, which the
+      // screens already handle (every read of `patient` is optional-chained)
+      // and which resolves on the first successful fetch.
+      //
+      // This previously cleared the token whenever there was no cached copy,
+      // which meant opening the app once with no signal silently logged the
+      // patient out and forced a full re-login. On a Cameroonian mobile
+      // network that is a routine event, not an edge case.
+      //
+      // If the token really is dead, the next request returns 401 and the
+      // session-expired handler at the bottom of this file ends the session —
+      // so this fails open on connectivity and closed on actual rejection.
       if (isNetworkError(err)) {
         const cached = await getCachedDemographics();
-        if (cached) {
-          set({ patient: cached, status: 'authenticated' });
-          return;
-        }
+        set({ patient: cached ?? null, status: 'authenticated' });
+        return;
       }
+
       await tokenStorage.clear();
       set({ status: 'unauthenticated' });
     }
