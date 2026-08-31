@@ -31,6 +31,10 @@ class DatabaseSeeder extends Seeder
             MinsanteFosaRegistrySeeder::class,
             CameroonOsmPharmacySeeder::class,
             CameroonPharmacyLabRegistrySeeder::class,
+            // Backfills GPS/phone onto hospitals the registry seeders above
+            // already created, so it must run after all of them. It only ever
+            // fills NULLs and never inserts.
+            MinsanteCat14BackfillSeeder::class,
             CameroonInsuranceSeeder::class,
             CareMapRegistryStubSeeder::class,
             PharmacyCatalogSeeder::class,
