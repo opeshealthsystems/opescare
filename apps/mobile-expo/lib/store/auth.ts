@@ -123,6 +123,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       if (isNetworkError(err)) {
         const cached = await getCachedDemographics();
         set({ patient: cached ?? null, status: 'authenticated' });
+
+        // Booting without a profile is a holding state, not a resting one:
+        // with `patient` null the greeting reads "—" and the avatar "?" until
+        // something fills it. Nothing else re-runs fetchMe, so retry on a
+        // backoff until it lands or the session is ended by a 401 elsewhere.
+        void (async () => {
+          for (const delayMs of [2_000, 5_000, 15_000, 30_000]) {
+            await new Promise((resolve) => setTimeout(resolve, delayMs));
+            if (get().status !== 'authenticated' || get().patient) return;
+            try {
+              await get().fetchMe();
+              return;
+            } catch {
+              // Still unreachable — fall through to the next, longer wait.
+            }
+          }
+        })();
+
         return;
       }
 

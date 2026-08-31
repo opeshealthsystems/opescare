@@ -378,9 +378,12 @@ export default function HomeScreen() {
             </View>
 
             <View className="ml-2.5 flex-1">
+              {/* letterSpacing 1 across 18 uppercase characters was ~18px of
+                  overflow on its own; 0.6 keeps the eyebrow's spaced-caps feel
+                  and lets the full label render at 375px. */}
               <Text
                 className="text-[10px] font-bold uppercase text-white/80"
-                style={{ letterSpacing: 1 }}
+                style={{ letterSpacing: 0.6 }}
                 numberOfLines={1}
               >
                 {t('home.healthId.title')}
@@ -560,8 +563,14 @@ export default function HomeScreen() {
         </View>
 
         {/* ── Appointment + Vitals, side by side (reference arrangement) ─── */}
-        <View className="mt-7 flex-row items-stretch" style={{ gap: 12 }}>
-          <View style={{ flex: 1.08 }}>
+        {/* The reference places these side by side, but that mockup is 852px
+            wide. At a real 375px viewport two columns leave each card ~170pt,
+            which clipped the appointment title, every vital's unit ("mm…"),
+            and the card headings themselves. Measured, not assumed. Stacking
+            keeps the reference's content and order while letting a blood
+            pressure render as "120/80 mmHg" instead of "120/…". */}
+        <View className="mt-7" style={{ gap: 12 }}>
+          <View>
             <AppointmentCard
               query={appointments}
               appointment={nextAppointment}
@@ -571,7 +580,7 @@ export default function HomeScreen() {
               onBook={() => router.push('/appointments/book')}
             />
           </View>
-          <View style={{ flex: 1 }}>
+          <View>
             <VitalsCard query={vitals} language={i18n.language} t={t} />
           </View>
         </View>
