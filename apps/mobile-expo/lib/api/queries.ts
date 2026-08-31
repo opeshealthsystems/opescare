@@ -1,16 +1,20 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from './client';
 import { endpoints } from './endpoints';
-import type { HealthIdCard, PaginatedAppointments } from './types';
-// Additive imports below (kept separate from the block above to avoid touching
-// existing lines — see FILE OWNERSHIP note in the mobile-expo build task).
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Appointment } from './types';
+import type { Appointment, HealthIdCard, PaginatedAppointments, TemporaryQrCode } from './types';
 
 export function useHealthIdCard() {
   return useQuery({
     queryKey: ['health-id-card'],
     queryFn: async () => (await apiClient.get<HealthIdCard>(endpoints.healthIdCard)).data,
+  });
+}
+
+/** POST /mobile/qr/temporary — issues a fresh 15-minute temporary-access QR on each call. */
+export function useGenerateTemporaryQr() {
+  return useMutation({
+    mutationFn: async () =>
+      (await apiClient.post<TemporaryQrCode>(endpoints.generateTemporaryQr)).data,
   });
 }
 
