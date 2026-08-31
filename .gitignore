@@ -42,3 +42,11 @@ bridge-agent/config.json
 
 # Tooling temp / build artifacts (regenerable — never deploy)
 .pdf-tmp/
+
+# Raw AI-generated design reference screens (source material for apps/mobile-expo
+# build, not app code — keep out of history to avoid re-bloating the repo).
+# _archive/ subfolder is intentionally NOT excluded below so triage decisions
+# (which images were rejected and why) stay reviewable.
+/Mobile app screens/*.png
+/Mobile app screens/*.csv
+!/Mobile app screens/_archive/
