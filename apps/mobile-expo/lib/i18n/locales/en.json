@@ -205,5 +205,29 @@
     "generateError": "We couldn't generate a temporary code. Please try again.",
     "shareMessage": "OpesCare temporary verification link: {{url}} (expires in {{time}})",
     "notAvailable": "Not available"
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your personal information and account settings.",
+    "verified": "Verified",
+    "active": "Active",
+    "healthId": "Health ID",
+    "dateOfBirth": "Date of Birth",
+    "gender": "Gender",
+    "bloodGroup": "Blood Group",
+    "genderMale": "Male",
+    "genderFemale": "Female",
+    "genderOther": "Other",
+    "allergies": "Allergies",
+    "conditions": "Conditions",
+    "quickLinks": "Quick Links",
+    "healthIdCard": "Health ID & QR Code",
+    "recordsTimeline": "Records & Timeline",
+    "messages": "Messages",
+    "settings": "Settings",
+    "signOut": "Sign Out",
+    "privacyTitle": "Your data is private and secure",
+    "privacyBody": "We use industry-leading encryption to protect your information and follow global health data privacy standards.",
+    "notProvided": "Not provided"
   }
 }

@@ -205,5 +205,29 @@
     "generateError": "Impossible de générer un code temporaire. Veuillez réessayer.",
     "shareMessage": "Lien de vérification temporaire OpesCare : {{url}} (expire dans {{time}})",
     "notAvailable": "Non disponible"
+  },
+  "profile": {
+    "title": "Mon profil",
+    "subtitle": "Gérez vos informations personnelles et les paramètres de votre compte.",
+    "verified": "Vérifié",
+    "active": "Actif",
+    "healthId": "Identifiant santé",
+    "dateOfBirth": "Date de naissance",
+    "gender": "Sexe",
+    "bloodGroup": "Groupe sanguin",
+    "genderMale": "Masculin",
+    "genderFemale": "Féminin",
+    "genderOther": "Autre",
+    "allergies": "Allergies",
+    "conditions": "Affections",
+    "quickLinks": "Liens rapides",
+    "healthIdCard": "Identifiant santé et code QR",
+    "recordsTimeline": "Dossiers et historique",
+    "messages": "Messages",
+    "settings": "Paramètres",
+    "signOut": "Se déconnecter",
+    "privacyTitle": "Vos données sont privées et sécurisées",
+    "privacyBody": "Nous utilisons un chiffrement de pointe pour protéger vos informations et respectons les normes mondiales de confidentialité des données de santé.",
+    "notProvided": "Non renseigné"
   }
 }
