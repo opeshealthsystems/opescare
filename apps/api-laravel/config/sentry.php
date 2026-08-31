@@ -54,12 +54,12 @@ return [
     // PHI scrubbing: strip request bodies, cookies and query strings from every
     // event before it leaves the host. Patient identifiers / clinical payloads
     // must never reach the error tracker.
-    'before_send' => function (\Sentry\Event $event): ?\Sentry\Event {
-        $request = $event->getRequest();
-        unset($request['data'], $request['cookies'], $request['query_string']);
-        $event->setRequest($request);
-        return $event;
-    },
+    //
+    // MUST stay a callable array, never a closure: `config:cache` serialises
+    // config with var_export(), which cannot represent a Closure, and the
+    // resulting failure strands a deploy in maintenance mode. See
+    // App\Support\SentryPhiScrubber for the full explanation.
+    'before_send' => [\App\Support\SentryPhiScrubber::class, 'scrub'],
 
     // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#ignore_exceptions
     // 'ignore_exceptions' => [],

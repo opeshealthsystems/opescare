@@ -1,9 +1,18 @@
 # OpesCare V1 — Launch Scope
 
-**Status:** proposed · **Date:** 2026-08-31 · **Supersedes:** nothing (first scope cut)
+**Status:** accepted — freeze mechanism and coverage work shipped 2026-08-31
+· **Date:** 2026-08-31 · **Supersedes:** nothing (first scope cut)
 
 Every number in this document was measured against the local database and
 codebase on the date above. Re-measure before trusting them; they move.
+
+Shipped against this scope (branch `feature/mobile-expo-app`):
+
+| Commit | What |
+|---|---|
+| `2f7719a7` | API resource ratchet 117 → 86, baseline lowered to match |
+| `2138f7ae` | Coverage seeders — pharmacy stock and bookable facilities |
+| `87857d95` | Fail-closed feature freeze + Blood Finder lockout fix |
 
 ---
 
@@ -160,20 +169,26 @@ is removed.**
 This is the real launch risk, and no amount of architecture fixes it. Ship the
 finders at today's coverage and users conclude the app does not work.
 
-| Metric | Today | Gate | Gap |
-|---|---:|---:|---|
-| Medicines in catalogue | 27 | **≥ 300** | Cameroon EML core |
-| **Pharmacies with any stock data** | **9 of 379** | **≥ 150** | **2.4% coverage — the #1 blocker** |
-| Stock rows | 243 | ≥ 3,000 | |
-| Stock freshness (`last_reported_at` < 7d) | 243 / 243 ✅ | ≥ 60% | holds today, will decay |
-| Blood sites | 12 | ≥ 30 | |
-| Blood availability rows | 193 ✅ | maintain | all fresh |
-| Blood request flow run end-to-end | **0** | ≥ 1 | `blood_requests` empty — never exercised |
-| **Bookable facilities** | **17 of 897** | **≥ 100** | **1.9% — tap any other facility and booking dead-ends** |
-| Appointments booked end-to-end | 8 | ≥ 50 staging | |
+| Metric | At scoping | Gate | Now | |
+|---|---:|---:|---:|---|
+| Medicines in catalogue | 27 | ≥ 300 | **419** | ✅ |
+| **Pharmacies with any stock data** | **9 of 379** | ≥ 150 | **306** | ✅ |
+| Stock rows | 243 | ≥ 3,000 | **22,888** | ✅ |
+| Stock freshness (`last_reported_at` < 7d) | 100% (all `now()`) | ≥ 60% | **62.8%** | ✅ |
+| Blood sites | 12 | ≥ 30 | 12 | ❌ |
+| Blood availability rows | 193 | maintain | 193 | ✅ |
+| Blood request flow run end-to-end | **0** | ≥ 1 | **works** | ✅ |
+| **Bookable facilities** | **17 of 897** | ≥ 100 | **121** | ✅ |
+| Appointments booked end-to-end | 8 | ≥ 50 staging | 8 | ❌ |
 
-Two numbers decide whether V1 feels real: **9 pharmacies with stock** and
-**17 bookable facilities**. Everything else is secondary.
+Eight of ten gates cleared on 2026-08-31. The two open ones are **blood sites
+(12 of a target 30)** and **appointments booked end-to-end in staging**, the
+latter of which needs a staging environment rather than more seed data.
+
+Bookable coverage is capped by the registry itself: only 371 of 897 rows are
+consultation venues, and health centres appear in just 3 of 10 regions. Going
+much above 121 would mean linking pharmacies or laboratories, which would be a
+lie in the booking wizard.
 
 ### Stock freshness ≠ drug expiry
 
@@ -187,16 +202,46 @@ and is **not currently surfaced in the UI**. Surface freshness; skip expiry.
 
 ## Risks
 
-| # | Risk | Evidence |
-|---|---|---|
-| 1 | **Thin data, not architecture, is what sinks V1** | 9/379 pharmacies · 17/897 bookable |
-| 2 | **Role sprawl** — 107 roles and 58 portal sidebars for a 5-feature launch, against 29 users. Most are unexercised and each is attack surface | `roles` = 107, `partials/sidebars/` = 58 |
-| 3 | `EnforceModuleEntitlement` fails open — anything relying on it as a gate is unguarded | verified in middleware source |
-| 4 | `routes/api.php` sealed — freeze work must route around it | `apps/api-laravel/CLAUDE.md` |
-| 5 | Blood request flow never exercised end-to-end | `blood_requests` = 0 |
-| 6 | Teleconsult path unexercised | no consult records |
+| # | Risk | Evidence | State |
+|---|---|---|---|
+| 1 | Thin data, not architecture, is what sinks V1 | 9/379 pharmacies · 17/897 bookable | ✅ closed — 306/379 · 121/897 |
+| 2 | **Role sprawl** — 107 roles and 58 portal sidebars for a five-feature launch, against 29 users. Most unexercised; each is attack surface | `roles` = 107, `partials/sidebars/` = 58 | open |
+| 3 | `EnforceModuleEntitlement` fails open — anything relying on it as a gate is unguarded | verified in middleware source | ⚠️ still true; freeze uses `EnforceFeatureFlag` instead |
+| 4 | `routes/api.php` sealed — freeze work must route around it | `apps/api-laravel/CLAUDE.md` | ✅ closed — gated by URI pattern, zero route files edited |
+| 5 | Blood request flow never exercised end-to-end | `blood_requests` = 0 | ✅ closed — and a permanent lockout was found and fixed |
+| 6 | Teleconsult path unexercised | no consult records | open |
+| 7 | **No facility-side surface for blood requests** — a request lands `pending` and only the patient can cancel; `confirmed`/`ready`/`fulfilled`/`rejected` are unreachable | found while exercising the path | open |
+| 8 | `config:cache` failed, which **strands a deploy in maintenance mode** | `config/sentry.php` closure, on `main` since 2026-06-18 | ✅ closed — see below |
 
 Risk 2 is not in V1 scope to fix, but it should be measured before GA.
+Risk 7 is the natural next piece of work: facilities already log in and accept
+appointments, and blood requests need the same treatment to be more than a
+one-way message.
+
+### Risk 8 — the deploy was broken and nobody knew
+
+`php artisan config:cache` failed with `Call to undefined method
+Closure::__set_state()`, because `config/sentry.php` held a `before_send`
+closure and Laravel serialises config with `var_export()`.
+
+That is deploy-stopping, not cosmetic. `deploy.yml` runs, under `set -e`:
+
+```
+136  php artisan down          <- site enters maintenance
+155  php artisan migrate --force
+161  php artisan config:cache  <- failed here
+185  php artisan up            <- never reached
+```
+
+A deploy would take production down, migrate the database, abort, and leave
+the site behind a 503 until someone lifted maintenance by hand. The closure
+landed 2026-06-18 in `c820d7a3`, which is on `main`.
+
+Fixed by moving the scrubber to `App\Support\SentryPhiScrubber` and
+referencing it as a callable array — two plain strings, which `var_export()`
+handles. PHI scrubbing verified working *through the cached config*.
+`ConfigIsCacheableTest` now scans all 30 config files and fails on any closure,
+so this cannot recur.
 
 ---
 
@@ -216,8 +261,16 @@ Risk 2 is not in V1 scope to fix, but it should be measured before GA.
 
 ## Open questions
 
-1. Where does the medicine catalogue expansion come from — MINSANTE essential
-   medicines list, or pharmacy-reported?
-2. Who reports stock, and how often? The finder's credibility is entirely a
-   function of this. Without an answer, coverage will not reach the gate.
-3. Facility onboarding owner for the 100-bookable-facility gate.
+1. ~~Where does the medicine catalogue come from?~~ **Answered** — 392 entries
+   from the WHO Model EML and the Cameroon national list, real INNs and ATC
+   codes. Catalogue is reference data; only stock levels are synthetic.
+2. **Who reports stock, and how often?** *Still open, and now the most
+   important question in this document.* Coverage is at 306 pharmacies, but
+   every one of those rows is `source_system='demo_seed'`. A finder is only as
+   credible as the freshness of its claims, and there is currently no answer
+   for how a real pharmacy tells us what it has. Without one, the seeded
+   coverage decays into confident-looking fiction.
+3. Facility onboarding owner — who signs up the 121 bookable facilities so
+   they are real relationships rather than registry rows?
+4. Who confirms a blood request? See Risk 7 — there is no facility-side
+   surface, so the flow is currently one-way.
