@@ -35,7 +35,7 @@ const FACILITY_TYPE_FILTERS: { value: string; key: string }[] = [
   { value: 'hospital', key: 'filterHospital' },
   { value: 'clinic', key: 'filterClinic' },
   { value: 'pharmacy', key: 'filterPharmacy' },
-  { value: 'lab', key: 'filterLab' },
+  { value: 'laboratory', key: 'filterLab' },
 ];
 
 const APPOINTMENT_TYPES: { value: string; key: string }[] = [
