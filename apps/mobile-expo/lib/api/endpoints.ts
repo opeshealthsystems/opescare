@@ -81,6 +81,18 @@ export const endpoints = {
   markNotificationRead: (id: string) => `/mobile/notifications/${id}/read`,
   markAllNotificationsRead: '/mobile/notifications/mark-all-read',
 
+  // Messaging — patient-facing entry point (see routes/mobile_telehealth.php).
+  messageThreads: '/mobile/messages/threads',
+  messageThread: (id: string | number) => `/mobile/messages/threads/${id}`,
+  sendThreadMessage: (id: string | number) => `/mobile/messages/threads/${id}/messages`,
+
+  // Telemedicine — patient-facing entry point (see routes/mobile_telehealth.php).
+  teleconsultations: '/mobile/telemedicine/consultations',
+  teleconsultation: (id: string) => `/mobile/telemedicine/consultations/${id}`,
+  teleconsultationConsent: (id: string) => `/mobile/telemedicine/consultations/${id}/consent`,
+  teleconsultationJoin: (id: string) => `/mobile/telemedicine/consultations/${id}/join`,
+  teleconsultationEnd: (id: string) => `/mobile/telemedicine/consultations/${id}/end`,
+
   // Not yet implemented on the backend — added in Phase 2 (see design spec §3, §6).
   pharmacyNearby: '/mobile/pharmacy/nearby',
   medicineSearch: '/mobile/pharmacy/medicines',

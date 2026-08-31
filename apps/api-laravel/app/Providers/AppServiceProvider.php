@@ -58,6 +58,11 @@ class AppServiceProvider extends ServiceProvider
         Route::middleware('web')
             ->group(base_path('routes/marketing.php'));
 
+        // Mobile patient Messaging + Telemedicine routes — loaded here to avoid
+        // touching the sealed routes/api.php file (same pattern as clinical.php).
+        Route::middleware('api')
+            ->group(base_path('routes/mobile_telehealth.php'));
+
         RateLimiter::for('verify', function (Request $request) {
             return Limit::perMinute(30)->by($request->ip());
         });
