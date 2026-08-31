@@ -392,16 +392,23 @@
   "facility": {
     "title": "Établissement",
     "loadError": "Impossible de charger cet établissement.",
+    "retry": "Réessayer",
     "aboutTitle": "À propos",
     "contactTitle": "Contact",
     "phone": "Téléphone",
     "email": "E-mail",
     "website": "Site web",
+    "callAction": "Appeler",
     "servicesTitle": "Services",
     "noServices": "Aucun service n'a été publié pour cet établissement.",
     "hoursTitle": "Horaires d'ouverture",
+    "hoursUnknown": "Cet établissement n'a pas publié ses horaires.",
+    "todayLabel": "Aujourd'hui",
     "open24": "Ouvert 24h/24",
     "closed": "Fermé",
+    "closedToday": "Fermé aujourd'hui",
+    "openUntil": "Ouvert · ferme à {{time}}",
+    "closedUntil": "Fermé · ouvre à {{time}}",
     "doctorsTitle": "Médecins et spécialistes",
     "doctorsSubtitle": "Praticiens exerçant ici",
     "loadDoctorsError": "Impossible de charger les praticiens de cet établissement.",
@@ -409,7 +416,31 @@
     "bookHere": "Prendre rendez-vous",
     "getDirections": "Itinéraire",
     "appointmentRequired": "Rendez-vous requis",
-    "walkInAllowed": "Sans rendez-vous accepté"
+    "walkInAllowed": "Sans rendez-vous accepté",
+    "insurancesTitle": "Assurances acceptées",
+    "insurancesSubtitle": "Couvertures déclarées par l'établissement",
+    "insuranceCashless": "Tiers payant",
+    "ownership": {
+      "public": "Public",
+      "private": "Privé",
+      "faith_based": "Confessionnel",
+      "ngo": "ONG",
+      "military": "Militaire"
+    },
+    "booking": {
+      "title": "Rendez-vous",
+      "checking": "Vérification des disponibilités…",
+      "errorBody": "Impossible de vérifier les disponibilités pour le moment. Appelez l'établissement pour convenir d'une visite.",
+      "unavailableTitle": "Réservation indisponible sur OpesCare",
+      "unavailableBody": "Cet établissement figure dans l'annuaire national mais n'a pas encore connecté son agenda de rendez-vous à OpesCare.",
+      "callInstead": "Appeler pour convenir d'une visite",
+      "noSlotsTitle": "Aucun créneau disponible",
+      "noSlotsBody": "Cet établissement réserve via OpesCare mais n'a rien de libre actuellement. Consultez d'autres dates ou appelez.",
+      "checkDates": "Voir d'autres dates",
+      "availableTitle": "Réservable sur OpesCare",
+      "availableBody": "{{slotCount}} créneaux disponibles. Prochain : {{when}}."
+    },
+    "directoryNote": "Fiche issue du registre national des établissements. Les informations peuvent changer — appelez avant de vous déplacer."
   },
   "doctor": {
     "title": "Praticien",
@@ -1811,16 +1842,16 @@
     "showLess": "Afficher moins"
   },
   "careMap": {
-    "title": "Carte des soins",
-    "subtitle": "Hôpitaux, cliniques, pharmacies et laboratoires près de vous",
-    "searchPlaceholder": "Rechercher par nom ou ville",
+    "title": "Accès aux soins",
+    "subtitle": "Hôpitaux, cliniques, pharmacies et laboratoires au Cameroun",
+    "searchPlaceholder": "Rechercher hôpitaux, cliniques, pharmacies…",
     "filters": {
       "all": "Tous",
-      "hospital": "Hôpital",
-      "clinic": "Clinique",
-      "healthCenter": "Centre de santé",
-      "pharmacy": "Pharmacie",
-      "laboratory": "Laboratoire",
+      "hospital": "Hôpitaux",
+      "clinic": "Cliniques",
+      "healthCenter": "Centres de santé",
+      "pharmacy": "Pharmacies",
+      "laboratory": "Laboratoires",
       "dental": "Dentaire",
       "diagnosticCenter": "Diagnostic",
       "imagingCenter": "Imagerie"
@@ -1838,12 +1869,45 @@
     },
     "directions": "Itinéraire",
     "call": "Appeler",
-    "locationHint": "Activez la localisation pour voir la distance de chaque établissement.",
-    "loadError": "Impossible de charger les établissements à proximité.",
+    "viewDetails": "Voir les détails",
+    "nearestTitle": "Établissement le plus proche",
+    "locationOn": "Localisation activée",
+    "locationCta": {
+      "title": "Trouvez les soins les plus proches",
+      "body": "Activez la localisation : nous ouvrirons sur votre ville et afficherons la distance de chaque établissement.",
+      "action": "Utiliser ma position",
+      "working": "Localisation en cours…"
+    },
+    "locationDenied": {
+      "title": "Localisation désactivée",
+      "body": "Sans elle, impossible de calculer les distances : vous consultez {{city}}. Changez de zone ci-dessous à tout moment.",
+      "action": "Ouvrir les réglages"
+    },
+    "locationUnavailable": {
+      "title": "Localisation indisponible",
+      "body": "Cet appareil ne peut pas partager sa position : vous consultez {{city}}. Choisissez une autre zone ci-dessous."
+    },
+    "areaAll": "Tout le Cameroun",
+    "areaAllHint": "Vous parcourez l'annuaire national dans son ordre de publication. Choisissez une ville, ou activez la localisation, pour des résultats près de vous.",
+    "areaMatched": "Zone détectée — affichage de {{city}}.",
+    "areaUnmatched": "Nous n'avons pas pu associer votre position à une ville répertoriée : vous consultez {{city}}.",
+    "resultCount": "{{loaded}} sur {{total}} affichés",
+    "sort": {
+      "relevance": "Pertinence",
+      "distance": "Distance",
+      "name": "Nom"
+    },
+    "sortNote": "Le tri s'applique aux établissements déjà chargés.",
+    "noDistanceGroup": "Distance non publiée",
+    "loading": "Chargement des établissements…",
+    "loadError": "Impossible de charger l'annuaire des établissements.",
     "retry": "Réessayer",
     "empty": "Aucun établissement trouvé",
-    "emptyBody": "Essayez une autre recherche ou un autre type d'établissement.",
-    "loadMore": "Charger plus"
+    "emptyBody": "L'annuaire n'a rien renvoyé pour cette vue.",
+    "emptyBodyFiltered": "Essayez une autre recherche, un autre type ou une autre zone.",
+    "clearFilters": "Effacer les filtres",
+    "loadMore": "Charger plus",
+    "disclaimer": "Les fiches proviennent du registre national des établissements et de données cartographiques publiques, et peuvent changer. Appelez avant de vous déplacer."
   },
   "forgotPassword": {
     "title": "Mot de passe oublié ?",

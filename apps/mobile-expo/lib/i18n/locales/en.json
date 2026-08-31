@@ -392,16 +392,23 @@
   "facility": {
     "title": "Facility",
     "loadError": "We couldn't load this facility.",
+    "retry": "Try Again",
     "aboutTitle": "About",
     "contactTitle": "Contact",
     "phone": "Phone",
     "email": "Email",
     "website": "Website",
+    "callAction": "Call",
     "servicesTitle": "Services",
     "noServices": "No services have been published for this facility.",
     "hoursTitle": "Opening Hours",
+    "hoursUnknown": "This facility hasn't published its opening hours.",
+    "todayLabel": "Today",
     "open24": "Open 24 hours",
     "closed": "Closed",
+    "closedToday": "Closed today",
+    "openUntil": "Open · closes {{time}}",
+    "closedUntil": "Closed · opens {{time}}",
     "doctorsTitle": "Doctors & Specialists",
     "doctorsSubtitle": "Clinicians practising here",
     "loadDoctorsError": "We couldn't load this facility's clinicians.",
@@ -409,7 +416,31 @@
     "bookHere": "Book an Appointment",
     "getDirections": "Get Directions",
     "appointmentRequired": "Appointment required",
-    "walkInAllowed": "Walk-ins welcome"
+    "walkInAllowed": "Walk-ins welcome",
+    "insurancesTitle": "Accepted insurance",
+    "insurancesSubtitle": "Cover this facility reports accepting",
+    "insuranceCashless": "Cashless",
+    "ownership": {
+      "public": "Public",
+      "private": "Private",
+      "faith_based": "Faith-based",
+      "ngo": "NGO",
+      "military": "Military"
+    },
+    "booking": {
+      "title": "Appointments",
+      "checking": "Checking availability…",
+      "errorBody": "We couldn't check appointment availability right now. Call the facility to arrange a visit.",
+      "unavailableTitle": "Not bookable through OpesCare",
+      "unavailableBody": "This facility is listed in the national directory but hasn't connected its appointment calendar to OpesCare yet.",
+      "callInstead": "Call to arrange a visit",
+      "noSlotsTitle": "No open times right now",
+      "noSlotsBody": "This facility books through OpesCare but has nothing free at the moment. Check other dates or call ahead.",
+      "checkDates": "Check other dates",
+      "availableTitle": "Bookable through OpesCare",
+      "availableBody": "{{slotCount}} open times. Next: {{when}}."
+    },
+    "directoryNote": "Listed from the national facility register. Details can change — please call ahead."
   },
   "doctor": {
     "title": "Clinician",
@@ -1811,16 +1842,16 @@
     "showLess": "Show less"
   },
   "careMap": {
-    "title": "Care Map",
-    "subtitle": "Hospitals, clinics, pharmacies and labs near you",
-    "searchPlaceholder": "Search by name or city",
+    "title": "Care Access",
+    "subtitle": "Hospitals, clinics, pharmacies and labs across Cameroon",
+    "searchPlaceholder": "Search hospitals, clinics, pharmacies…",
     "filters": {
       "all": "All",
-      "hospital": "Hospital",
-      "clinic": "Clinic",
-      "healthCenter": "Health Center",
-      "pharmacy": "Pharmacy",
-      "laboratory": "Laboratory",
+      "hospital": "Hospitals",
+      "clinic": "Clinics",
+      "healthCenter": "Health Centres",
+      "pharmacy": "Pharmacies",
+      "laboratory": "Laboratories",
       "dental": "Dental",
       "diagnosticCenter": "Diagnostics",
       "imagingCenter": "Imaging"
@@ -1828,22 +1859,55 @@
     "types": {
       "hospital": "Hospital",
       "clinic": "Clinic",
-      "health_center": "Health Center",
+      "health_center": "Health Centre",
       "pharmacy": "Pharmacy",
       "laboratory": "Laboratory",
       "dental": "Dental",
-      "diagnostic_center": "Diagnostic Center",
-      "imaging_center": "Imaging Center",
+      "diagnostic_center": "Diagnostic Centre",
+      "imaging_center": "Imaging Centre",
       "blood_bank": "Blood Bank"
     },
     "directions": "Directions",
     "call": "Call",
-    "locationHint": "Enable location access to see how far each facility is from you.",
-    "loadError": "Couldn't load nearby facilities.",
+    "viewDetails": "View details",
+    "nearestTitle": "Nearest facility",
+    "locationOn": "Location on",
+    "locationCta": {
+      "title": "Find care closest to you",
+      "body": "Turn on location and we'll open on your own city and show how far away each facility is.",
+      "action": "Use my location",
+      "working": "Locating you…"
+    },
+    "locationDenied": {
+      "title": "Location is off",
+      "body": "Without it we can't measure distances, so you're browsing {{city}}. Change the area below at any time.",
+      "action": "Open settings"
+    },
+    "locationUnavailable": {
+      "title": "Location unavailable",
+      "body": "This device can't share its position, so you're browsing {{city}}. Pick another area below."
+    },
+    "areaAll": "All Cameroon",
+    "areaAllHint": "Browsing the whole national register in the order it was published. Pick a city, or turn on location, for results near you.",
+    "areaMatched": "Matched to your area — showing {{city}}.",
+    "areaUnmatched": "We couldn't match your position to a listed city, so you're browsing {{city}}.",
+    "resultCount": "Showing {{loaded}} of {{total}}",
+    "sort": {
+      "relevance": "Relevance",
+      "distance": "Distance",
+      "name": "Name"
+    },
+    "sortNote": "Ordering applies to the facilities loaded so far.",
+    "noDistanceGroup": "Distance not published",
+    "loading": "Loading facilities…",
+    "loadError": "Couldn't load the facility directory.",
     "retry": "Try Again",
     "empty": "No facilities found",
-    "emptyBody": "Try a different search or facility type.",
-    "loadMore": "Load More"
+    "emptyBody": "The directory returned nothing for this view.",
+    "emptyBodyFiltered": "Try another search, type or area.",
+    "clearFilters": "Clear filters",
+    "loadMore": "Load More",
+    "disclaimer": "Listings come from the national facility register and public map data, and may change. Please call ahead before travelling."
   },
   "forgotPassword": {
     "title": "Forgot Password?",
