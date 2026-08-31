@@ -264,5 +264,26 @@
       "registerError": "Couldn't enable push notifications. Please try again.",
       "revokeError": "Couldn't disable push notifications. Please try again."
     }
+  },
+  "documents": {
+    "title": "Documents",
+    "subtitle": "Your official medical documents, ready to verify.",
+    "empty": "No documents yet",
+    "emptyBody": "Official documents issued by your care facilities will appear here.",
+    "loadError": "We couldn't load your documents. Pull down to try again.",
+    "issuedOn": "Issued {{date}}",
+    "referenceNumber": "Ref. {{number}}",
+    "view": "View",
+    "viewError": "Couldn't open this document. Please try again.",
+    "type": {
+      "discharge_summary": "Discharge Summary",
+      "lab_report": "Lab Report",
+      "referral_letter": "Referral Letter",
+      "vaccination_card": "Vaccination Card",
+      "medical_certificate": "Medical Certificate",
+      "prescription": "Prescription",
+      "invoice": "Invoice",
+      "other": "Official Document"
+    }
   }
 }

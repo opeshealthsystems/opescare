@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Mobile;
 
 use App\Http\Controllers\Controller;
 use App\Models\OfficialDocument;
+use App\Services\Documents\DocumentVerificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -14,10 +15,15 @@ use Illuminate\Http\Request;
  * referral letters, lab reports, etc.) and retrieve QR-verifiable links.
  *
  * Document content is NOT streamed here to avoid exposing raw file paths.
- * Clients use the provided `verify_url` for public verification.
+ * Clients use the provided `verify_url` (minted fresh on `show()`) for
+ * public verification instead of a direct file download.
  */
 class MobileDocumentController extends Controller
 {
+    public function __construct(private DocumentVerificationService $verification)
+    {
+    }
+
     /**
      * List official documents belonging to the authenticated patient.
      *
@@ -67,7 +73,14 @@ class MobileDocumentController extends Controller
             ->with('facility:id,name')
             ->firstOrFail();
 
-        return response()->json(['data' => $this->formatDocumentDetail($doc)]);
+        // Mint a fresh, short-lived verification token for this view — raw
+        // tokens are never persisted (only their hash is), so a working
+        // verify_url can only be produced on demand, not read back from a
+        // prior issuance.
+        $rawToken = $this->verification->issueToken($doc->id, null, 60);
+        $verifyUrl = url('/verify/document/' . $rawToken);
+
+        return response()->json(['data' => $this->formatDocumentDetail($doc, $verifyUrl)]);
     }
 
     // -------------------------------------------------------------------------
@@ -75,24 +88,23 @@ class MobileDocumentController extends Controller
     private function formatDocument(OfficialDocument $d): array
     {
         return [
-            'id'             => $d->id,
-            'document_type'  => $d->document_type,
-            'title'          => $d->title ?? $d->document_type,
-            'facility_name'  => $d->facility?->name,
-            'issued_at'      => $d->issued_at?->toIso8601String(),
-            'reference_code' => $d->reference_code ?? null,
-            'verify_url'     => $d->verification_token
-                ? url('/verify/' . $d->verification_token)
-                : null,
+            'id'                => $d->id,
+            'document_type'     => $d->document_type,
+            'title'             => $d->title ?? $d->document_type,
+            'facility_name'     => $d->facility?->name,
+            'issued_at'         => $d->issued_at?->toIso8601String(),
+            'document_number'   => $d->document_number,
+            'verification_code' => $d->verification_code,
         ];
     }
 
-    private function formatDocumentDetail(OfficialDocument $d): array
+    private function formatDocumentDetail(OfficialDocument $d, ?string $verifyUrl = null): array
     {
         $base = $this->formatDocument($d);
-        $base['qr_reference'] = $d->qr_reference ?? null;
-        $base['expires_at']   = $d->expires_at?->toIso8601String() ?? null;
-        $base['metadata']     = $d->metadata ?? [];
+        $base['expires_at'] = $d->expires_at?->toIso8601String();
+        $base['sensitivity_level'] = $d->sensitivity_level;
+        $base['has_file'] = ! empty($d->pdf_path);
+        $base['verify_url'] = $verifyUrl;
         return $base;
     }
 

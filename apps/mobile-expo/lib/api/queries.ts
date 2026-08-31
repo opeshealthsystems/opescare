@@ -221,3 +221,23 @@ export function useRevokePushToken() {
       (await apiClient.delete<{ status: string }>(endpoints.pushToken(tokenId))).data,
   });
 }
+
+// ---------------------------------------------------------------------------
+// Documents (app/documents.tsx)
+// ---------------------------------------------------------------------------
+
+export function useDocuments() {
+  return useQuery({
+    queryKey: ['documents'],
+    queryFn: async () => (await apiClient.get<PaginatedDocuments>(endpoints.documents)).data,
+  });
+}
+
+/** Fetches a document's detail on demand — used to mint a fresh `verify_url`
+ * right before opening it, since the backend only issues a token per-view. */
+export function useDocumentViewer() {
+  return useMutation({
+    mutationFn: async (id: string) =>
+      (await apiClient.get<{ data: OfficialDocumentDetail }>(endpoints.document(id))).data.data,
+  });
+}

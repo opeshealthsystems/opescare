@@ -59,6 +59,11 @@ class OfficialDocument extends Model
         return $this->belongsTo(DocumentTemplate::class, 'template_id');
     }
 
+    public function facility()
+    {
+        return $this->belongsTo(Facility::class);
+    }
+
     public function signatures()
     {
         return $this->hasMany(DocumentSignature::class, 'official_document_id');

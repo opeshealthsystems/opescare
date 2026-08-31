@@ -59,3 +59,25 @@ export interface TemporaryQrCode {
   expires_at: string;
   expires_in: number;
 }
+
+export interface OfficialDocument {
+  id: string;
+  document_type: string;
+  title: string;
+  facility_name: string | null;
+  issued_at: string | null;
+  document_number: string | null;
+  verification_code: string | null;
+}
+
+export interface OfficialDocumentDetail extends OfficialDocument {
+  expires_at: string | null;
+  sensitivity_level: string | null;
+  has_file: boolean;
+  verify_url: string | null;
+}
+
+export interface PaginatedDocuments {
+  data: OfficialDocument[];
+  pagination: { total: number; per_page: number; current_page: number; last_page: number };
+}

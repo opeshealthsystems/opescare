@@ -264,5 +264,26 @@
       "registerError": "Impossible d'activer les notifications push. Veuillez réessayer.",
       "revokeError": "Impossible de désactiver les notifications push. Veuillez réessayer."
     }
+  },
+  "documents": {
+    "title": "Documents",
+    "subtitle": "Vos documents médicaux officiels, prêts à être vérifiés.",
+    "empty": "Aucun document pour l'instant",
+    "emptyBody": "Les documents officiels délivrés par vos établissements de soins apparaîtront ici.",
+    "loadError": "Impossible de charger vos documents. Tirez vers le bas pour réessayer.",
+    "issuedOn": "Délivré le {{date}}",
+    "referenceNumber": "Réf. {{number}}",
+    "view": "Voir",
+    "viewError": "Impossible d'ouvrir ce document. Veuillez réessayer.",
+    "type": {
+      "discharge_summary": "Compte rendu d'hospitalisation",
+      "lab_report": "Rapport de laboratoire",
+      "referral_letter": "Lettre de référence",
+      "vaccination_card": "Carnet de vaccination",
+      "medical_certificate": "Certificat médical",
+      "prescription": "Ordonnance",
+      "invoice": "Facture",
+      "other": "Document officiel"
+    }
   }
 }
