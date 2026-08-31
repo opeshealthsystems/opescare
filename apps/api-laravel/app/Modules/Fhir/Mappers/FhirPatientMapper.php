@@ -66,12 +66,26 @@ class FhirPatientMapper
         return $resource;
     }
 
+    /**
+     * Map stored sex to FHIR Patient.gender.
+     *
+     * The platform records two sexes, male and female, so the 'other' arm this
+     * used to carry is unreachable and has been dropped.
+     *
+     * 'unknown' stays, and is not a third sex. FHIR R4 binds Patient.gender to
+     * the administrative-gender value set with a REQUIRED binding — male |
+     * female | other | unknown are the only permitted codes, and the element
+     * has no "absent" representation short of omitting it entirely. So a
+     * patient whose sex has not been recorded maps to 'unknown', which is what
+     * that code means in the specification: not the assertion of another sex,
+     * but the absence of a recorded one. Emitting anything else here would
+     * produce FHIR that fails validation at every partner.
+     */
     private function mapSex(string $sex): string
     {
         return match (strtolower($sex)) {
             'male'   => 'male',
             'female' => 'female',
-            'other'  => 'other',
             default  => 'unknown',
         };
     }

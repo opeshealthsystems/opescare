@@ -24,7 +24,7 @@ class PatientFactory extends Factory
             'middle_name' => null,
             'date_of_birth' => $this->faker->date('Y-m-d', '-18 years'),
             'is_dob_estimated' => false,
-            'sex'         => $this->faker->randomElement(['male', 'female', 'other']),
+            'sex'         => $this->faker->randomElement(['male', 'female']),
             'phone_number' => $this->faker->phoneNumber(),
             'address'     => $this->faker->address(),
             'emergency_contact' => null,

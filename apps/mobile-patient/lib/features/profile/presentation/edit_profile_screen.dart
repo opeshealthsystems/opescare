@@ -22,7 +22,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   String? _error;
 
   static const _bloodGroups = ['A+','A-','B+','B-','AB+','AB-','O+','O-'];
-  static const _sexOptions = ['male','female','other'];
+  static const _sexOptions = ['male','female'];
 
   @override
   void initState() {
