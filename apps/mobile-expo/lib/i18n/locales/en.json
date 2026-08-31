@@ -31,5 +31,36 @@
     "verify": "Verify",
     "invalidEmail": "Enter a valid email or Health ID",
     "invalidPassword": "Password is required"
+  },
+  "home": {
+    "greeting": "Welcome back,",
+    "subtitle": "Here's your health overview for today.",
+    "quickActions": {
+      "bookAppointment": "Book Appointment",
+      "healthRecords": "My Health Records",
+      "healthCheck": "Health Check",
+      "prescriptions": "Prescriptions",
+      "viewAllServices": "View All Services"
+    },
+    "healthId": {
+      "title": "OpesCare Health ID",
+      "verified": "Verified",
+      "bloodGroup": "Blood Group",
+      "allergies": "Allergies",
+      "dateOfBirth": "Date of Birth",
+      "none": "None",
+      "viewCard": "View ID Card"
+    },
+    "appointment": {
+      "title": "Upcoming Appointment",
+      "empty": "No upcoming appointments.",
+      "emptyCta": "Book your next visit",
+      "viewDetails": "View Appointment Details"
+    },
+    "insights": {
+      "title": "Stay ahead of your health",
+      "body": "Track, manage and improve your health with personalized insights.",
+      "cta": "Health Insights"
+    }
   }
 }

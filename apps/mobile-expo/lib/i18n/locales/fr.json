@@ -31,5 +31,36 @@
     "verify": "Vérifier",
     "invalidEmail": "Entrez un e-mail ou identifiant santé valide",
     "invalidPassword": "Le mot de passe est requis"
+  },
+  "home": {
+    "greeting": "Bon retour,",
+    "subtitle": "Voici votre aperçu santé du jour.",
+    "quickActions": {
+      "bookAppointment": "Prendre rendez-vous",
+      "healthRecords": "Mon dossier santé",
+      "healthCheck": "Bilan de santé",
+      "prescriptions": "Ordonnances",
+      "viewAllServices": "Tous les services"
+    },
+    "healthId": {
+      "title": "Identifiant santé OpesCare",
+      "verified": "Vérifié",
+      "bloodGroup": "Groupe sanguin",
+      "allergies": "Allergies",
+      "dateOfBirth": "Date de naissance",
+      "none": "Aucune",
+      "viewCard": "Voir la carte"
+    },
+    "appointment": {
+      "title": "Rendez-vous à venir",
+      "empty": "Aucun rendez-vous à venir.",
+      "emptyCta": "Prenez votre prochain rendez-vous",
+      "viewDetails": "Voir les détails du rendez-vous"
+    },
+    "insights": {
+      "title": "Gardez une longueur d'avance sur votre santé",
+      "body": "Suivez, gérez et améliorez votre santé grâce à des recommandations personnalisées.",
+      "cta": "Recommandations santé"
+    }
   }
 }
