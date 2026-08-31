@@ -596,7 +596,6 @@
     "location": "Location",
     "genderMale": "Male",
     "genderFemale": "Female",
-    "genderOther": "Other",
     "emergencyContact": "Emergency contact",
     "addEmergencyContact": "Add an emergency contact",
     "addEmergencyContactHint": "So responders can reach someone who knows you.",

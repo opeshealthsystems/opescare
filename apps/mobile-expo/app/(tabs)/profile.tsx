@@ -87,12 +87,11 @@ export default function ProfileScreen() {
         return t('profile.genderMale');
       case 'female':
         return t('profile.genderFemale');
-      case null:
-      case undefined:
-      case '':
-        return t('profile.notProvided');
+      // The platform records two sexes. Anything else reaching this screen is
+      // legacy data or a bad payload, and reads as "not provided" rather than
+      // asserting a third option the platform does not offer.
       default:
-        return t('profile.genderOther');
+        return t('profile.notProvided');
     }
   })();
 
