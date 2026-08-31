@@ -880,5 +880,40 @@
     "paymentNote": "Reserving does not take payment. You pay at the pharmacy.",
     "back": "Back",
     "close": "Close"
+  },
+  "careMap": {
+    "title": "Care Map",
+    "subtitle": "Hospitals, clinics, pharmacies and labs near you",
+    "searchPlaceholder": "Search by name or city",
+    "filters": {
+      "all": "All",
+      "hospital": "Hospital",
+      "clinic": "Clinic",
+      "healthCenter": "Health Center",
+      "pharmacy": "Pharmacy",
+      "laboratory": "Laboratory",
+      "dental": "Dental",
+      "diagnosticCenter": "Diagnostics",
+      "imagingCenter": "Imaging"
+    },
+    "types": {
+      "hospital": "Hospital",
+      "clinic": "Clinic",
+      "health_center": "Health Center",
+      "pharmacy": "Pharmacy",
+      "laboratory": "Laboratory",
+      "dental": "Dental",
+      "diagnostic_center": "Diagnostic Center",
+      "imaging_center": "Imaging Center",
+      "blood_bank": "Blood Bank"
+    },
+    "directions": "Directions",
+    "call": "Call",
+    "locationHint": "Enable location access to see how far each facility is from you.",
+    "loadError": "Couldn't load nearby facilities.",
+    "retry": "Try Again",
+    "empty": "No facilities found",
+    "emptyBody": "Try a different search or facility type.",
+    "loadMore": "Load More"
   }
 }

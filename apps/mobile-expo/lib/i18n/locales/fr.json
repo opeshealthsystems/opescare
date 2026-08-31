@@ -880,5 +880,40 @@
     "paymentNote": "La réservation n'entraîne aucun paiement. Vous payez à la pharmacie.",
     "back": "Retour",
     "close": "Fermer"
+  },
+  "careMap": {
+    "title": "Carte des soins",
+    "subtitle": "Hôpitaux, cliniques, pharmacies et laboratoires près de vous",
+    "searchPlaceholder": "Rechercher par nom ou ville",
+    "filters": {
+      "all": "Tous",
+      "hospital": "Hôpital",
+      "clinic": "Clinique",
+      "healthCenter": "Centre de santé",
+      "pharmacy": "Pharmacie",
+      "laboratory": "Laboratoire",
+      "dental": "Dentaire",
+      "diagnosticCenter": "Diagnostic",
+      "imagingCenter": "Imagerie"
+    },
+    "types": {
+      "hospital": "Hôpital",
+      "clinic": "Clinique",
+      "health_center": "Centre de santé",
+      "pharmacy": "Pharmacie",
+      "laboratory": "Laboratoire",
+      "dental": "Dentaire",
+      "diagnostic_center": "Centre de diagnostic",
+      "imaging_center": "Centre d'imagerie",
+      "blood_bank": "Banque de sang"
+    },
+    "directions": "Itinéraire",
+    "call": "Appeler",
+    "locationHint": "Activez la localisation pour voir la distance de chaque établissement.",
+    "loadError": "Impossible de charger les établissements à proximité.",
+    "retry": "Réessayer",
+    "empty": "Aucun établissement trouvé",
+    "emptyBody": "Essayez une autre recherche ou un autre type d'établissement.",
+    "loadMore": "Charger plus"
   }
 }
