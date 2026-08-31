@@ -72,7 +72,12 @@ export const endpoints = {
   revokeConsent: (id: string) => `/mobile/consents/${id}/revoke`,
   accessLogs: '/mobile/access-logs',
 
-  // Not yet implemented on the backend — added in Phase 2 (see design spec §3, §6).
-  pharmacyNearby: '/mobile/pharmacy/nearby',
+  // Pharmacy / Medicine Finder (design spec §6, Phase 2) — served by
+  // App\Http\Controllers\Api\Mobile\MobilePharmacyController.
+  pharmacyCategories: '/mobile/pharmacy/categories',
   medicineSearch: '/mobile/pharmacy/medicines',
+  medicine: (id: string) => `/mobile/pharmacy/medicines/${id}`,
+  pharmacyNearby: '/mobile/pharmacy/nearby',
+  medicineReservations: '/mobile/pharmacy/reservations',
+  cancelMedicineReservation: (id: string) => `/mobile/pharmacy/reservations/${id}/cancel`,
 } as const;
