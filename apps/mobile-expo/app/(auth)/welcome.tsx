@@ -1,149 +1,91 @@
-import { Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import Svg, { Path } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
-import {
-  ShieldCheck,
-  UserRound,
-  ChevronRight,
-  Stethoscope,
-  Syringe,
-  Pill,
-  FlaskConical,
-  Microscope,
-  ClipboardList,
-  ShieldPlus,
-  Dna,
-  Cross,
-  type LucideIcon,
-} from 'lucide-react-native';
+import { ChevronRight, ShieldLock, UserRound, type LucideIcon } from 'lucide-react-native';
 import { Screen } from '../../components/ui/Screen';
 import { Button } from '../../components/ui/Button';
 import { Logo } from '../../components/ui/Logo';
+import { MedicalWatermark } from '../../components/auth/MedicalWatermark';
 import { colors } from '../../theme/tokens';
 
-/** Faint recurring medical iconography scattered behind the whole screen —
- * mirrors the reference's watermark pattern of stethoscope/DNA/pill/syringe
- * line-icons on the cream background. Purely decorative, non-interactive. */
-const BACKGROUND_ICONS: Array<{
-  Icon: LucideIcon;
-  top: number;
-  left?: number;
-  right?: number;
-  size: number;
-  rotate?: string;
-}> = [
-  { Icon: ClipboardList, top: 40, left: 132, size: 30, rotate: '-8deg' },
-  { Icon: Cross, top: 54, right: 84, size: 24 },
-  { Icon: Stethoscope, top: 108, left: 20, size: 34, rotate: '10deg' },
-  { Icon: Dna, top: 88, right: 132, size: 30, rotate: '-6deg' },
-  { Icon: Syringe, top: 244, right: 34, size: 30, rotate: '18deg' },
-  { Icon: Microscope, top: 268, left: 26, size: 28 },
-  { Icon: ShieldPlus, top: 372, right: 26, size: 26 },
-  { Icon: FlaskConical, top: 400, left: 40, size: 24, rotate: '-10deg' },
-  { Icon: Pill, top: 336, right: 150, size: 22, rotate: '24deg' },
-];
+const GUTTER = 24;
+/** Width of the hero panel that bleeds off the right edge. Its gradient starts
+ * on the page background colour so the left edge feathers into the headline
+ * column instead of showing a hard seam — the same soft overlap the reference
+ * photograph has. */
+const HERO_PANEL_WIDTH = 208;
+const HERO_MIN_HEIGHT = 248;
+/** Height of the gold sweep that clips the bottom of the hero. */
+const CURVE_HEIGHT = 58;
 
-function BackgroundPattern() {
-  return (
-    <View
-      pointerEvents="none"
-      style={{ position: 'absolute', top: 0, bottom: 0, left: -24, right: -24 }}
-    >
-      {BACKGROUND_ICONS.map(({ Icon, top, left, right, size, rotate }, index) => (
-        <View
-          key={index}
-          style={{
-            position: 'absolute',
-            top,
-            left,
-            right,
-            opacity: 0.28,
-            transform: rotate ? [{ rotate }] : undefined,
-          }}
-        >
-          <Icon size={size} color={colors.gold[300]} strokeWidth={1.25} />
-        </View>
-      ))}
-    </View>
-  );
-}
-
-const AVATAR_SIZE = 46;
-
-/** Stand-in for the reference's family photo: no real photograph asset exists
- * yet, so this renders a tasteful gold-gradient card with an overlapping
- * avatar cluster instead of leaving the area blank. Swap for a real photo
- * once brand photography is available. */
-function FamilyIllustration() {
+/**
+ * Stand-in for the reference's family photograph. No brand photography asset
+ * ships with the app yet (`assets/` holds only launcher icons), so rather than
+ * leaving the hero blank this renders the brand's concentric-ring motif with a
+ * three-person cluster — one household, one shared record. Swap the whole
+ * component for an <Image> once real photography exists.
+ */
+function HeroPortrait() {
   const { t } = useTranslation();
 
   return (
     <View
       accessible
+      accessibilityRole="image"
       accessibilityLabel={t('auth.familyIllustrationAlt')}
       style={{
-        width: 134,
-        height: 164,
-        marginRight: -24,
-        borderTopLeftRadius: 28,
-        borderBottomLeftRadius: 28,
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        width: HERO_PANEL_WIDTH,
         overflow: 'hidden',
       }}
     >
       <LinearGradient
-        colors={[colors.gold[100], colors.cream[200]]}
-        style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+        // className has no effect on LinearGradient (no cssInterop is
+        // registered for it), so every value here must be an inline style.
+        colors={[colors.cream[100], colors.cream[200], colors.gold[100]]}
+        start={{ x: 0, y: 0.15 }}
+        end={{ x: 0.95, y: 1 }}
+        locations={[0, 0.35, 1]}
+        style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 34 }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           <View
             style={{
-              width: AVATAR_SIZE - 8,
-              height: AVATAR_SIZE - 8,
-              borderRadius: (AVATAR_SIZE - 8) / 2,
-              marginRight: -12,
-              backgroundColor: colors.gold[300],
-              borderWidth: 2,
-              borderColor: colors.cream[50],
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 1,
+              position: 'absolute',
+              width: 176,
+              height: 176,
+              borderRadius: 88,
+              borderWidth: 1,
+              borderColor: colors.gold[300],
+              opacity: 0.45,
             }}
-          >
-            <UserRound size={18} color={colors.white} />
-          </View>
+          />
           <View
             style={{
-              width: AVATAR_SIZE,
-              height: AVATAR_SIZE,
-              borderRadius: AVATAR_SIZE / 2,
-              marginBottom: 10,
-              backgroundColor: colors.gold[500],
-              borderWidth: 2,
-              borderColor: colors.cream[50],
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 2,
+              position: 'absolute',
+              width: 132,
+              height: 132,
+              borderRadius: 66,
+              borderWidth: 1,
+              borderColor: colors.gold[300],
+              opacity: 0.65,
             }}
-          >
-            <UserRound size={22} color={colors.white} />
-          </View>
-          <View
-            style={{
-              width: AVATAR_SIZE - 10,
-              height: AVATAR_SIZE - 10,
-              borderRadius: (AVATAR_SIZE - 10) / 2,
-              marginLeft: -12,
-              backgroundColor: colors.gold[600],
-              borderWidth: 2,
-              borderColor: colors.cream[50],
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 1,
-            }}
-          >
-            <UserRound size={16} color={colors.white} />
+          />
+
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+            <Avatar size={50} tint={colors.gold[300]} glyph={20} style={{ marginRight: -12 }} />
+            <Avatar size={40} tint={colors.gold[600]} glyph={17} style={{ zIndex: 3 }} />
+            <Avatar
+              size={56}
+              tint={colors.gold[500]}
+              glyph={22}
+              style={{ marginLeft: -12, marginBottom: 12 }}
+            />
           </View>
         </View>
       </LinearGradient>
@@ -151,16 +93,55 @@ function FamilyIllustration() {
   );
 }
 
-/** Shallow gold arc separating the hero block from the CTA stack — echoes the
- * curved line sweeping under the photo in the reference. */
-function CurveDivider() {
+function Avatar({
+  size,
+  tint,
+  glyph,
+  style,
+}: {
+  size: number;
+  tint: string;
+  glyph: number;
+  style?: object;
+}) {
   return (
-    <View style={{ marginHorizontal: -24, marginTop: 18 }}>
-      <Svg width="100%" height={22} viewBox="0 0 400 22" preserveAspectRatio="none">
+    <View
+      style={[
+        {
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          backgroundColor: tint,
+          borderWidth: 3,
+          borderColor: colors.cream[50],
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        style,
+      ]}
+    >
+      <UserRound size={glyph} color={colors.white} strokeWidth={2.25} />
+    </View>
+  );
+}
+
+/**
+ * The gold arc sweeping under the hero. The filled half is painted in the page
+ * background colour so it visually crops the bottom of the hero panel, exactly
+ * as the reference's curve crops the photograph.
+ */
+function HeroCurve() {
+  return (
+    <View
+      pointerEvents="none"
+      style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: CURVE_HEIGHT }}
+    >
+      <Svg width="100%" height={CURVE_HEIGHT} viewBox="0 0 400 58" preserveAspectRatio="none">
+        <Path d="M0 12 C 128 54, 286 58, 400 24 L400 58 L0 58 Z" fill={colors.cream[100]} />
         <Path
-          d="M0,4 Q200,26 400,4"
+          d="M0 12 C 128 54, 286 58, 400 24"
           stroke={colors.gold[300]}
-          strokeWidth={2}
+          strokeWidth={2.5}
           fill="none"
           strokeLinecap="round"
         />
@@ -169,67 +150,133 @@ function CurveDivider() {
   );
 }
 
+/** Outline CTA: leading glyph, optically centred label, trailing chevron —
+ * mirrors the "I already have an account" row in the reference. The shared
+ * Button's outline variant centres the label with no icon affordances, so this
+ * lays out locally rather than stacking absolutely-positioned icons on top. */
+function OutlineNavButton({
+  label,
+  icon: Icon,
+  onPress,
+}: {
+  label: string;
+  icon: LucideIcon;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      className="h-14 flex-row items-center rounded-2xl border border-gold-500 px-4"
+      style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+    >
+      <Icon size={20} color={colors.gold[600]} />
+      <Text
+        className="flex-1 text-center text-base font-semibold text-gold-600"
+        numberOfLines={1}
+      >
+        {label}
+      </Text>
+      <ChevronRight size={20} color={colors.gold[600]} />
+    </Pressable>
+  );
+}
+
 export default function WelcomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
 
   return (
-    <Screen className="justify-between py-6">
-      <BackgroundPattern />
+    <Screen>
+      <MedicalWatermark />
 
-      <View className="items-center pt-4">
-        <Logo />
-      </View>
+      <ScrollView
+        style={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: 'space-between',
+          paddingTop: 12,
+          paddingBottom: 20,
+        }}
+      >
+        <View className="items-center">
+          <Logo size={112} />
+        </View>
 
-      <View>
-        <View className="flex-row items-start">
-          <View className="flex-1 pr-3">
-            <Text className="text-3xl font-extrabold leading-tight text-navy-text">
+        {/* Escapes the Screen's 24pt gutter so the hero panel and the gold
+         * sweep both bleed to the physical screen edges, as in the reference. */}
+        <View
+          style={{
+            minHeight: HERO_MIN_HEIGHT,
+            justifyContent: 'center',
+            marginTop: 20,
+            marginHorizontal: -GUTTER,
+          }}
+        >
+          <HeroPortrait />
+
+          <View
+            style={{
+              paddingLeft: GUTTER,
+              paddingRight: HERO_PANEL_WIDTH - 60,
+              paddingBottom: CURVE_HEIGHT - 18,
+              zIndex: 2,
+            }}
+          >
+            <Text
+              className="font-extrabold text-navy-text"
+              style={{ fontSize: 26, lineHeight: 33 }}
+            >
               {t('auth.welcomeHeadline1')}
             </Text>
-            <Text className="text-3xl font-extrabold leading-tight text-navy-text">
+            <Text
+              className="font-extrabold text-navy-text"
+              style={{ fontSize: 26, lineHeight: 33 }}
+            >
               {t('auth.welcomeHeadline2')}
             </Text>
-            <Text className="text-3xl font-extrabold leading-tight text-gold-500">
+            <Text
+              className="font-extrabold text-gold-500"
+              style={{ fontSize: 26, lineHeight: 33 }}
+            >
               {t('auth.welcomeHeadline3')}
             </Text>
+
+            <View className="my-4 h-1 w-14 rounded-full bg-gold-500" />
+
+            <Text
+              className="text-navy-secondary"
+              style={{ fontSize: 15, lineHeight: 23 }}
+            >
+              {t('auth.welcomeBody')}
+            </Text>
           </View>
-          <FamilyIllustration />
+
+          <HeroCurve />
         </View>
 
-        <View className="my-3 h-1 w-12 rounded-full bg-gold-500" />
-        <Text className="text-base text-navy-secondary">{t('auth.welcomeBody')}</Text>
-
-        <CurveDivider />
-      </View>
-
-      <View>
-        <Button label={t('auth.getStarted')} onPress={() => router.push('/(auth)/login')} />
-        <View className="h-3" />
-        <View className="relative">
-          <Button
+        <View className="pt-6">
+          <Button label={t('auth.getStarted')} onPress={() => router.push('/(auth)/signup')} />
+          <View className="h-3" />
+          <OutlineNavButton
             label={t('auth.haveAccount')}
-            variant="outline"
+            icon={UserRound}
             onPress={() => router.push('/(auth)/login')}
           />
-          <View
-            pointerEvents="none"
-            style={{ position: 'absolute', top: 0, bottom: 0, left: 16, justifyContent: 'center' }}
-          >
-            <UserRound size={18} color={colors.gold[600]} />
-          </View>
-          <View
-            pointerEvents="none"
-            style={{ position: 'absolute', top: 0, bottom: 0, right: 16, justifyContent: 'center' }}
-          >
-            <ChevronRight size={18} color={colors.gold[600]} />
+
+          <View className="mt-6 flex-row items-start justify-center">
+            <ShieldLock size={18} color={colors.gold[600]} style={{ marginTop: 1 }} />
+            <Text
+              className="ml-2 text-navy-secondary"
+              style={{ fontSize: 12, lineHeight: 18, maxWidth: 250 }}
+            >
+              {t('auth.securityNote')}
+            </Text>
           </View>
         </View>
-        <View className="mt-5 flex-row items-center justify-center px-4">
-          <ShieldCheck size={14} color={colors.gold[600]} />
-          <Text className="ml-2 text-center text-xs text-navy-muted">{t('auth.securityNote')}</Text>
-        </View>
-      </View>
+      </ScrollView>
     </Screen>
   );
 }
