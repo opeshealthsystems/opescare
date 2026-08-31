@@ -57,9 +57,6 @@
         "projectId": "c1ae70c8-48c1-48fc-bdd7-448e641792b6"
       }
     },
-    "owner": "opesware",
-    "autolinking": {
-      "exclude": ["react-native-reanimated"]
-    }
+    "owner": "opesware"
   }
 }

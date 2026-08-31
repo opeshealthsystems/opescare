@@ -43,6 +43,11 @@
   "overrides": {
     "react-native-worklets": "0.10.4"
   },
+  "expo": {
+    "autolinking": {
+      "exclude": ["react-native-reanimated"]
+    }
+  },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
