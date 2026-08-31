@@ -514,5 +514,82 @@
     "error": "Error",
     "loadFailed": "Couldn't load your family information.",
     "retry": "Retry"
+  },
+  "carePlans": {
+    "title": "Care Plans",
+    "subtitle": "Your active treatment plans, goals, and interventions.",
+    "loadError": "We couldn't load your care plans.",
+    "retry": "Try again",
+    "emptyTitle": "No active care plans",
+    "emptyBody": "Your care team hasn't created a care plan for you yet. It will appear here once one is added.",
+    "ongoing": "Ongoing",
+    "goalsCount_one": "{{count}} goal",
+    "goalsCount_other": "{{count}} goals",
+    "interventionsCount_one": "{{count}} intervention",
+    "interventionsCount_other": "{{count}} interventions",
+    "goals": "Goals",
+    "interventions": "Interventions",
+    "progress": "Progress",
+    "target": "Target",
+    "noGoals": "No goals recorded yet.",
+    "noInterventions": "No interventions recorded yet.",
+    "status": {
+      "active": "Active",
+      "completed": "Completed",
+      "on_hold": "On Hold",
+      "cancelled": "Cancelled"
+    },
+    "goalStatus": {
+      "pending": "Pending",
+      "in_progress": "In Progress",
+      "achieved": "Achieved",
+      "abandoned": "Abandoned"
+    },
+    "interventionStatus": {
+      "active": "Active",
+      "completed": "Completed",
+      "discontinued": "Discontinued"
+    },
+    "interventionType": {
+      "medication": "Medication",
+      "exercise": "Exercise",
+      "diet": "Diet",
+      "monitoring": "Monitoring",
+      "referral": "Referral",
+      "education": "Education",
+      "other": "Other"
+    }
+  },
+  "surveys": {
+    "title": "Surveys",
+    "listSubtitle": "Share your feedback to help us improve your care.",
+    "loadError": "We couldn't load your surveys.",
+    "retry": "Try again",
+    "emptyTitle": "You're all caught up",
+    "emptyBody": "There are no surveys waiting for your feedback right now.",
+    "sentOn": "Sent {{date}}",
+    "expiresOn": "Expires {{date}}",
+    "takeSurvey": "Take Survey",
+    "templates": {
+      "post_visit": "Post-Visit Survey",
+      "discharge": "Discharge Survey",
+      "telemedicine": "Telemedicine Survey",
+      "general": "General Feedback"
+    },
+    "questionOf": "Question {{current}} of {{total}}",
+    "yes": "Yes",
+    "no": "No",
+    "commentsPlaceholder": "Type your answer here (optional)",
+    "requiredError": "Please answer all required questions before submitting.",
+    "submitError": "We couldn't submit your survey. Please try again.",
+    "submit": "Submit Survey",
+    "completedTitle": "Thank you for your feedback",
+    "completedBody": "You completed this survey on {{date}}.",
+    "expiredTitle": "This survey has expired",
+    "expiredBody": "The window to respond to this survey has closed.",
+    "submittedTitle": "Survey submitted",
+    "submittedBody": "Thank you — your feedback helps us improve care for every patient.",
+    "done": "Done",
+    "backToSurveys": "Back to Surveys"
   }
 }
