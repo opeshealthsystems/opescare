@@ -31,5 +31,85 @@
     "verify": "Vérifier",
     "invalidEmail": "Entrez un e-mail ou identifiant santé valide",
     "invalidPassword": "Le mot de passe est requis"
+  },
+  "insurance": {
+    "title": "Mon assurance",
+    "subtitle": "Vos polices d'assurance actives et en attente.",
+    "browseMarketplace": "Parcourir la marketplace d'assurance",
+    "emptyTitle": "Aucune police d'assurance pour l'instant",
+    "emptyBody": "Découvrez les formules disponibles et souscrivez directement depuis l'application.",
+    "emptyCta": "Parcourir la marketplace",
+    "loadError": "Impossible de charger vos informations d'assurance.",
+    "retry": "Réessayer",
+    "policyNumber": "Numéro de police",
+    "memberId": "Numéro d'adhérent",
+    "effectiveDate": "Effective",
+    "expiryDate": "Expire",
+    "relationship": "Lien de parenté",
+    "currencySuffix": "XAF",
+    "status": {
+      "pending": "En attente",
+      "active": "Active",
+      "inactive": "Inactive",
+      "expired": "Expirée",
+      "cancelled": "Annulée"
+    },
+    "relationshipToPrimary": {
+      "self": "Moi-même",
+      "spouse": "Conjoint(e)",
+      "child": "Enfant",
+      "other": "Autre"
+    },
+    "planType": {
+      "nhia": "Assurance maladie nationale",
+      "private": "Privée",
+      "employer": "Employeur",
+      "mutual": "Mutuelle"
+    },
+    "marketplace": {
+      "title": "Marketplace d'assurance",
+      "subtitle": "Comparez les formules et souscrivez à la couverture qui vous convient.",
+      "loadError": "Impossible de charger la marketplace.",
+      "empty": "Aucune formule n'est disponible pour le moment. Veuillez revenir plus tard.",
+      "monthlyPremium": "Prime mensuelle",
+      "fromPerMonth": "/ mois",
+      "cashless": "Sans avance de frais",
+      "preauthRequired": "Pré-autorisation requise"
+    },
+    "plan": {
+      "title": "Détails de la formule",
+      "loadError": "Impossible de charger cette formule.",
+      "monthlyPremium": "Prime mensuelle",
+      "annualPremium": "Prime annuelle",
+      "deductible": "Franchise",
+      "copay": "Quote-part",
+      "cashlessAvailable": "Sans avance de frais disponible",
+      "preauthRequired": "Pré-autorisation requise",
+      "coveredServices": "Services couverts",
+      "noCoveredServices": "Les détails de couverture ne sont pas listés. Contactez l'assureur pour plus de précisions.",
+      "yes": "Oui",
+      "no": "Non",
+      "enrollNow": "Souscrire à cette formule",
+      "provider": "Assureur"
+    },
+    "purchase": {
+      "confirmTitle": "Confirmez votre souscription",
+      "reviewSubtitle": "Vérifiez les détails ci-dessous avant de souscrire.",
+      "plan": "Formule",
+      "provider": "Assureur",
+      "amountDue": "Montant dû aujourd'hui",
+      "perMonth": "/ mois",
+      "paymentMethod": "Moyen de paiement",
+      "mtn": "MTN Mobile Money",
+      "orange": "Orange Money",
+      "paymentNote": "Vous recevrez une invite sur votre téléphone pour finaliser ce paiement par mobile money.",
+      "confirmButton": "Confirmer et souscrire",
+      "cancel": "Annuler",
+      "submitting": "Traitement en cours…",
+      "successTitle": "Souscription envoyée",
+      "successBody": "Votre police {{policyNumber}} est en attente d'activation. Nous vous informerons dès qu'elle sera vérifiée.",
+      "viewPolicies": "Voir mes polices",
+      "errorGeneric": "Nous n'avons pas pu finaliser votre souscription. Veuillez réessayer."
+    }
   }
 }
