@@ -1,0 +1,70 @@
+{
+  "auth": {
+    "tagline": "Une identité santé. Des soins connectés.",
+    "welcomeHeadline1": "Votre santé.",
+    "welcomeHeadline2": "Votre identité.",
+    "welcomeHeadline3": "Votre contrôle.",
+    "welcomeBody": "Gérez votre identité santé en toute sécurité et connectez-vous à votre réseau de soins de confiance.",
+    "getStarted": "Commencer",
+    "haveAccount": "J'ai déjà un compte",
+    "securityNote": "Vos données sont chiffrées et sécurisées. Vous gardez toujours le contrôle.",
+    "welcomeBack": "Bon retour",
+    "signInSubtitle": "Connectez-vous pour accéder à votre tableau de bord santé et gérer votre identité santé.",
+    "emailOrHealthId": "E-mail ou identifiant santé",
+    "emailPlaceholder": "Entrez votre e-mail ou identifiant santé",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Entrez votre mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "rememberMe": "Se souvenir de moi",
+    "signIn": "Se connecter",
+    "or": "OU",
+    "continueWithGoogle": "Continuer avec Google",
+    "continueWithApple": "Continuer avec Apple",
+    "signInWithHealthId": "Se connecter avec l'identifiant santé",
+    "recommended": "Recommandé",
+    "encryptionNote": "Vos données sont protégées par un chiffrement de bout en bout et vous gardez toujours le contrôle.",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "createAccount": "Créer un compte",
+    "otpTitle": "Vérifiez votre téléphone",
+    "otpSubtitle": "Entrez le code à 6 chiffres envoyé au {{phone}}",
+    "otpResend": "Renvoyer le code",
+    "verify": "Vérifier",
+    "invalidEmail": "Entrez un e-mail ou identifiant santé valide",
+    "invalidPassword": "Le mot de passe est requis"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "subtitle": "Gérez votre langue, vos notifications et cet appareil.",
+    "loadError": "Impossible de charger vos paramètres. Veuillez réessayer.",
+    "retry": "Réessayer",
+    "language": {
+      "title": "Langue",
+      "body": "Choisissez la langue utilisée dans OpesCare.",
+      "en": "English",
+      "fr": "Français"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "body": "Choisissez ce dont vous souhaitez être notifié.",
+      "appointments": "Rendez-vous",
+      "appointmentsBody": "Rappels et mises à jour de vos rendez-vous.",
+      "labResults": "Résultats de laboratoire",
+      "labResultsBody": "Alertes lorsque de nouveaux résultats sont disponibles.",
+      "prescriptions": "Ordonnances",
+      "prescriptionsBody": "Mises à jour sur les ordonnances nouvelles ou renouvelées.",
+      "billing": "Facturation",
+      "billingBody": "Factures, paiements et rappels de facturation.",
+      "consentRequests": "Demandes de consentement",
+      "consentRequestsBody": "Lorsqu'un établissement demande l'accès à votre dossier.",
+      "updateError": "Impossible de mettre à jour cette préférence. Veuillez réessayer."
+    },
+    "device": {
+      "title": "Cet appareil",
+      "body": "Gérez les notifications push pour cet appareil.",
+      "pushLabel": "Notifications push",
+      "pushBody": "Recevez des alertes en temps réel sur cet appareil.",
+      "registerError": "Impossible d'activer les notifications push. Veuillez réessayer.",
+      "revokeError": "Impossible de désactiver les notifications push. Veuillez réessayer."
+    }
+  }
+}
