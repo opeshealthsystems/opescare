@@ -150,8 +150,8 @@ export default function NotificationsScreen() {
   const chips: { key: Category; label: string }[] = [
     { key: 'all', label: t('notifications.filterAll') },
     { key: 'appointments', label: t('notifications.filterAppointments') },
-    { key: 'health', label: t('notifications.filterHealth') },
     { key: 'messages', label: t('notifications.filterMessages') },
+    { key: 'health', label: t('notifications.filterHealth') },
     { key: 'system', label: t('notifications.filterSystem') },
   ];
 
