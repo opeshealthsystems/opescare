@@ -1,18 +1,21 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Linking, Platform, Pressable, ScrollView, Share, Text, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   Building2,
   Calendar,
   CheckCircle2,
+  ChevronRight,
   Clock,
   Info,
   MapPin,
   Navigation,
   Search,
   Share2,
+  Stethoscope,
+  Users,
 } from 'lucide-react-native';
 import { Screen } from '../../components/ui/Screen';
 import { Button } from '../../components/ui/Button';
@@ -20,15 +23,26 @@ import { TextField } from '../../components/ui/TextField';
 import { useAuthStore } from '../../lib/store/auth';
 import {
   useFacilities,
+  useFacilityDetail,
+  useFacilityProviders,
   useFacilitySlots,
   useBookAppointment,
   type AppointmentDetail,
   type AppointmentSlotOption,
   type CareFacilitySummary,
+  type FacilityProviderSummary,
 } from '../../lib/api/queries';
 import { colors } from '../../theme/tokens';
 
-type Step = 'facility' | 'slot' | 'confirm' | 'success';
+type Step = 'facility' | 'doctor' | 'slot' | 'confirm' | 'success';
+
+/**
+ * The facility shape this flow needs. The picker hands over a
+ * CareFacilitySummary; a deep link from the facility/doctor screens hydrates
+ * from CareFacilityDetail instead, which carries everything except
+ * `listing_status` (the detail endpoint only ever returns active listings).
+ */
+type BookingFacility = Omit<CareFacilitySummary, 'listing_status'>;
 
 const FACILITY_TYPE_FILTERS: { value: string; key: string }[] = [
   { value: '', key: 'filterAll' },
@@ -81,7 +95,7 @@ function formatFullDateTime(iso: string, locale: string) {
 }
 
 /** Deep-link to a maps app for directions, same pattern as care-map.tsx. */
-function directionsUrl(facility: CareFacilitySummary): string | null {
+function directionsUrl(facility: BookingFacility): string | null {
   const label = encodeURIComponent(facility.facility_name);
   if (facility.latitude != null && facility.longitude != null) {
     const { latitude: lat, longitude: lng } = facility;
@@ -115,7 +129,7 @@ function StepHeader({ title, onBack }: { title: string; onBack: () => void }) {
 }
 
 function StepDots({ step }: { step: Step }) {
-  const order: Step[] = ['facility', 'slot', 'confirm'];
+  const order: Step[] = ['facility', 'doctor', 'slot', 'confirm'];
   const activeIndex = order.indexOf(step);
   if (activeIndex < 0) return null;
   return (
@@ -131,7 +145,17 @@ function StepDots({ step }: { step: Step }) {
   );
 }
 
-function FacilityCard({ facility, onPress }: { facility: CareFacilitySummary; onPress: () => void }) {
+function FacilityCard({
+  facility,
+  onPress,
+  onViewDetails,
+  viewDetailsLabel,
+}: {
+  facility: CareFacilitySummary;
+  onPress: () => void;
+  onViewDetails: () => void;
+  viewDetailsLabel: string;
+}) {
   return (
     <Pressable onPress={onPress} className="mb-3 rounded-2xl bg-white p-4">
       <View className="flex-row items-start">
@@ -148,10 +172,19 @@ function FacilityCard({ facility, onPress }: { facility: CareFacilitySummary; on
               {[facility.address, facility.city].filter(Boolean).join(', ') || '—'}
             </Text>
           </View>
-          <View className="mt-2 self-start rounded-full bg-cream-200 px-2.5 py-1">
-            <Text className="text-[10px] font-semibold uppercase text-navy-secondary">
-              {facility.facility_type}
-            </Text>
+          <View className="mt-2 flex-row items-center justify-between">
+            <View className="rounded-full bg-cream-200 px-2.5 py-1">
+              <Text className="text-[10px] font-semibold uppercase text-navy-secondary">
+                {facility.facility_type}
+              </Text>
+            </View>
+            {/* Look before you commit — opens the facility profile (services,
+                hours, and the clinicians who practise there) without leaving
+                the booking flow's back stack. */}
+            <Pressable onPress={onViewDetails} hitSlop={8} className="flex-row items-center">
+              <Text className="text-xs font-semibold text-gold-600">{viewDetailsLabel}</Text>
+              <ChevronRight size={14} color={colors.gold[600]} />
+            </Pressable>
           </View>
         </View>
       </View>
@@ -164,11 +197,26 @@ export default function BookAppointmentScreen() {
   const router = useRouter();
   const patient = useAuthStore((s) => s.patient);
 
+  // Deep-link entry: the facility and doctor screens push straight into this
+  // flow with the facility (and optionally the clinician) already decided, so
+  // the patient does not re-pick what they just tapped.
+  const params = useLocalSearchParams<{ facilityId?: string; providerId?: string }>();
+  const linkedFacilityId = typeof params.facilityId === 'string' ? params.facilityId : undefined;
+  const linkedProviderId = typeof params.providerId === 'string' ? params.providerId : undefined;
+
   const [step, setStep] = useState<Step>('facility');
   const [searchInput, setSearchInput] = useState('');
   const [appliedSearch, setAppliedSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
-  const [selectedFacility, setSelectedFacility] = useState<CareFacilitySummary | null>(null);
+  const [selectedFacility, setSelectedFacility] = useState<BookingFacility | null>(null);
+
+  // The clinician filter is held as an id, not an object: a deep link knows the
+  // id before the provider list has loaded, and slot filtering must not wait.
+  // `null` means "any available doctor" — the pre-existing behaviour, preserved.
+  const [selectedProviderId, setSelectedProviderId] = useState<string | null>(
+    linkedProviderId ?? null,
+  );
+  const [hydratedFromLink, setHydratedFromLink] = useState(!linkedFacilityId);
 
   const days = useMemo(() => nextDays(14), []);
   const [selectedDate, setSelectedDate] = useState(days[0].iso);
@@ -182,22 +230,57 @@ export default function BookAppointmentScreen() {
     q: appliedSearch || undefined,
     type: typeFilter || undefined,
   });
+  const linkedFacilityQuery = useFacilityDetail(hydratedFromLink ? undefined : linkedFacilityId);
+  const providersQuery = useFacilityProviders(selectedFacility?.id);
   const slotsQuery = useFacilitySlots(selectedFacility?.id, selectedDate);
   const bookMutation = useBookAppointment();
+
+  // Resolve a deep link once: adopt the facility, then land on the doctor step
+  // (or skip straight to slots when the clinician came with the link).
+  useEffect(() => {
+    if (hydratedFromLink || !linkedFacilityId) return;
+    const facility = linkedFacilityQuery.data;
+    if (!facility) return;
+    setSelectedFacility(facility);
+    setStep(linkedProviderId ? 'slot' : 'doctor');
+    setHydratedFromLink(true);
+  }, [hydratedFromLink, linkedFacilityId, linkedProviderId, linkedFacilityQuery.data]);
+
+  const providers = providersQuery.data?.data ?? [];
+  const selectedProvider: FacilityProviderSummary | null =
+    providers.find((p) => p.id === selectedProviderId) ?? null;
+
+  // Slots come back for the whole facility; AppointmentSlotOption has always
+  // carried provider_id, so narrowing to one clinician is a local filter.
+  const allSlots = slotsQuery.data?.data ?? [];
+  const visibleSlots = useMemo(
+    () => (selectedProviderId ? allSlots.filter((s) => s.provider_id === selectedProviderId) : allSlots),
+    [allSlots, selectedProviderId],
+  );
 
   const goBack = () => {
     if (step === 'facility') {
       router.back();
+    } else if (step === 'doctor') {
+      setStep('facility');
     } else if (step === 'slot') {
       setSelectedSlot(null);
-      setStep('facility');
+      setStep('doctor');
     } else if (step === 'confirm') {
       setStep('slot');
     }
   };
 
-  const handleSelectFacility = (facility: CareFacilitySummary) => {
+  const handleSelectFacility = (facility: BookingFacility) => {
     setSelectedFacility(facility);
+    setSelectedSlot(null);
+    setSelectedProviderId(null);
+    setStep('doctor');
+  };
+
+  /** `providerId === null` is the "any available doctor" path — no filtering. */
+  const handleSelectProvider = (providerId: string | null) => {
+    setSelectedProviderId(providerId);
     setSelectedSlot(null);
     setStep('slot');
   };
@@ -252,9 +335,11 @@ export default function BookAppointmentScreen() {
             title={
               step === 'facility'
                 ? t('appointments.book.stepFacility')
-                : step === 'slot'
-                  ? t('appointments.book.stepSlot')
-                  : t('appointments.book.stepConfirm')
+                : step === 'doctor'
+                  ? t('appointments.book.stepDoctor')
+                  : step === 'slot'
+                    ? t('appointments.book.stepSlot')
+                    : t('appointments.book.stepConfirm')
             }
             onBack={goBack}
           />
@@ -262,7 +347,16 @@ export default function BookAppointmentScreen() {
         </>
       ) : null}
 
-      {step === 'facility' ? (
+      {step === 'facility' && !hydratedFromLink ? (
+        // Deep link in flight — resolving the facility that was already chosen
+        // on the previous screen. Showing the picker here would be a flicker
+        // back to a decision the patient has already made.
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color={colors.gold[500]} />
+        </View>
+      ) : null}
+
+      {step === 'facility' && hydratedFromLink ? (
         <View className="flex-1 px-6 pt-4">
           <TextField
             placeholder={t('appointments.book.searchPlaceholder')}
@@ -312,7 +406,12 @@ export default function BookAppointmentScreen() {
               keyExtractor={(item) => item.id}
               contentContainerStyle={{ paddingBottom: 24 }}
               renderItem={({ item }) => (
-                <FacilityCard facility={item} onPress={() => handleSelectFacility(item)} />
+                <FacilityCard
+                  facility={item}
+                  onPress={() => handleSelectFacility(item)}
+                  onViewDetails={() => router.push(`/facility/${item.id}`)}
+                  viewDetailsLabel={t('appointments.book.viewFacility')}
+                />
               )}
               ListEmptyComponent={
                 <Text className="mt-8 text-center text-sm text-navy-secondary">
@@ -324,15 +423,131 @@ export default function BookAppointmentScreen() {
         </View>
       ) : null}
 
+      {/* ── Doctor step — optional, and always skippable ────────────────────
+          Inserted between facility and slot. Picking "any available doctor"
+          leaves selectedProviderId null and the slot list unfiltered, which is
+          byte-for-byte the pre-existing behaviour for patients who just want
+          the next opening. */}
+      {step === 'doctor' && selectedFacility ? (
+        <View className="flex-1 px-6 pt-4">
+          <View className="mb-4 rounded-2xl bg-white p-4">
+            <Text className="text-base font-bold text-navy-text">{selectedFacility.facility_name}</Text>
+            <View className="mt-1 flex-row items-center">
+              <MapPin size={12} color={colors.navy.muted} />
+              <Text className="ml-1 flex-1 text-xs text-navy-secondary" numberOfLines={1}>
+                {[selectedFacility.address, selectedFacility.city].filter(Boolean).join(', ') || '—'}
+              </Text>
+            </View>
+            <Pressable
+              onPress={() => router.push(`/facility/${selectedFacility.id}`)}
+              className="mt-3 flex-row items-center"
+            >
+              <Text className="text-xs font-semibold text-gold-600">
+                {t('appointments.book.viewFacility')}
+              </Text>
+              <ChevronRight size={14} color={colors.gold[600]} />
+            </Pressable>
+          </View>
+
+          <Text className="mb-3 text-sm font-semibold text-navy-text">
+            {t('appointments.book.chooseDoctorPrompt')}
+          </Text>
+
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
+            {/* "Any available doctor" is always offered, even when the roster
+                is empty or failed to load — the flow must never dead-end. */}
+            <Pressable
+              onPress={() => handleSelectProvider(null)}
+              className="mb-3 flex-row items-center rounded-2xl border bg-white p-4"
+              style={{
+                borderColor: selectedProviderId === null ? colors.gold[500] : colors.cream[300],
+              }}
+            >
+              <View className="mr-3 h-11 w-11 items-center justify-center rounded-full bg-gold-50">
+                <Users size={20} color={colors.gold[600]} />
+              </View>
+              <View className="flex-1">
+                <Text className="text-base font-bold text-navy-text">
+                  {t('appointments.book.anyDoctor')}
+                </Text>
+                <Text className="mt-0.5 text-xs text-navy-secondary">
+                  {t('appointments.book.anyDoctorHint')}
+                </Text>
+              </View>
+              <ChevronRight size={18} color={colors.navy.muted} />
+            </Pressable>
+
+            {providersQuery.isLoading ? (
+              <View className="items-center py-6">
+                <ActivityIndicator color={colors.gold[500]} />
+              </View>
+            ) : providersQuery.isError ? (
+              <Text className="mt-4 text-center text-sm text-navy-secondary">
+                {t('appointments.book.loadDoctorsError')}
+              </Text>
+            ) : providers.length === 0 ? (
+              <Text className="mt-4 text-center text-sm text-navy-secondary">
+                {t('appointments.book.noDoctors')}
+              </Text>
+            ) : (
+              providers.map((provider) => {
+                const active = selectedProviderId === provider.id;
+                const subtitle = [provider.job_title, provider.department]
+                  .filter(Boolean)
+                  .join(' · ');
+                return (
+                  <Pressable
+                    key={provider.id}
+                    onPress={() => handleSelectProvider(provider.id)}
+                    className="mb-3 flex-row items-center rounded-2xl border bg-white p-4"
+                    style={{ borderColor: active ? colors.gold[500] : colors.cream[300] }}
+                  >
+                    <View className="mr-3 h-11 w-11 items-center justify-center rounded-full bg-gold-50">
+                      <Stethoscope size={18} color={colors.gold[600]} />
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-base font-bold text-navy-text" numberOfLines={1}>
+                        {provider.name}
+                      </Text>
+                      {subtitle ? (
+                        <Text className="mt-0.5 text-xs text-navy-secondary" numberOfLines={1}>
+                          {subtitle}
+                        </Text>
+                      ) : null}
+                    </View>
+                    <ChevronRight size={18} color={colors.navy.muted} />
+                  </Pressable>
+                );
+              })
+            )}
+          </ScrollView>
+        </View>
+      ) : null}
+
       {step === 'slot' && selectedFacility ? (
         <View className="flex-1 px-6 pt-4">
           <View className="mb-4 rounded-2xl bg-white p-4">
             <Text className="text-base font-bold text-navy-text">{selectedFacility.facility_name}</Text>
             <View className="mt-1 flex-row items-center">
               <MapPin size={12} color={colors.navy.muted} />
-              <Text className="ml-1 text-xs text-navy-secondary" numberOfLines={1}>
+              <Text className="ml-1 flex-1 text-xs text-navy-secondary" numberOfLines={1}>
                 {[selectedFacility.address, selectedFacility.city].filter(Boolean).join(', ') || '—'}
               </Text>
+            </View>
+            <View className="mt-3 flex-row items-center">
+              <Stethoscope size={14} color={colors.gold[600]} />
+              <Text className="ml-2 flex-1 text-xs font-semibold text-navy-secondary" numberOfLines={1}>
+                {selectedProviderId
+                  ? t('appointments.book.withDoctor', {
+                      name: selectedProvider?.name ?? '…',
+                    })
+                  : t('appointments.book.anyDoctor')}
+              </Text>
+              <Pressable onPress={() => setStep('doctor')} hitSlop={8}>
+                <Text className="text-xs font-semibold text-gold-600">
+                  {t('appointments.book.changeDoctor')}
+                </Text>
+              </Pressable>
             </View>
           </View>
 
@@ -370,13 +585,20 @@ export default function BookAppointmentScreen() {
             <ActivityIndicator color={colors.gold[500]} />
           ) : slotsQuery.isError ? (
             <Text className="text-center text-sm text-navy-secondary">{t('appointments.book.loadSlotsError')}</Text>
-          ) : (slotsQuery.data?.data.length ?? 0) === 0 ? (
-            <Text className="text-center text-sm text-navy-secondary">{t('appointments.book.noSlots')}</Text>
+          ) : visibleSlots.length === 0 ? (
+            <Text className="text-center text-sm text-navy-secondary">
+              {/* Distinguish "this facility is closed today" from "this
+                  clinician has nothing left today" — the second is fixable by
+                  changing the day or the doctor, and the patient should know. */}
+              {selectedProviderId && allSlots.length > 0
+                ? t('appointments.book.noSlotsForDoctor')
+                : t('appointments.book.noSlots')}
+            </Text>
           ) : (
             <View className="flex-1">
               <ScrollView showsVerticalScrollIndicator={false}>
                 <View className="flex-row flex-wrap gap-2 pb-4">
-                  {slotsQuery.data!.data.map((slot) => {
+                  {visibleSlots.map((slot) => {
                     const active = selectedSlot?.id === slot.id;
                     return (
                       <Pressable
@@ -456,6 +678,20 @@ export default function BookAppointmentScreen() {
                 <Text className="text-xs text-navy-muted">{t('appointments.book.reviewFacility')}</Text>
                 <Text className="mt-0.5 text-sm font-semibold text-navy-text">
                   {selectedFacility.facility_name}
+                </Text>
+              </View>
+            </View>
+            <View
+              className="flex-row items-start py-2"
+              style={{ borderTopWidth: 1, borderTopColor: colors.cream[300] }}
+            >
+              <Stethoscope size={16} color={colors.gold[600]} />
+              <View className="ml-3 flex-1">
+                <Text className="text-xs text-navy-muted">{t('appointments.book.reviewDoctor')}</Text>
+                <Text className="mt-0.5 text-sm font-semibold text-navy-text">
+                  {selectedProviderId
+                    ? (selectedProvider?.name ?? '—')
+                    : t('appointments.book.anyDoctor')}
                 </Text>
               </View>
             </View>
@@ -580,6 +816,22 @@ export default function BookAppointmentScreen() {
                 </Text>
               </View>
             </View>
+            {bookedAppointment.provider_name || selectedProvider ? (
+              <View
+                className="flex-row items-start py-2"
+                style={{ borderTopWidth: 1, borderTopColor: colors.cream[300] }}
+              >
+                <Stethoscope size={16} color={colors.gold[600]} />
+                <View className="ml-3 flex-1">
+                  <Text className="text-xs text-navy-muted">
+                    {t('appointments.book.reviewDoctor')}
+                  </Text>
+                  <Text className="mt-0.5 text-sm font-semibold text-navy-text">
+                    {bookedAppointment.provider_name ?? selectedProvider?.name}
+                  </Text>
+                </View>
+              </View>
+            ) : null}
             {patient ? (
               <View
                 className="flex-row items-start py-2"

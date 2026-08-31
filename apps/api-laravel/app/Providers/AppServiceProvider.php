@@ -82,6 +82,10 @@ class AppServiceProvider extends ServiceProvider
         Route::middleware('api')
             ->group(base_path('routes/mobile_blood.php'));
 
+        // Mobile patient Clinician/Specialist directory routes — same rationale.
+        Route::middleware('api')
+            ->group(base_path('routes/mobile_providers.php'));
+
         RateLimiter::for('verify', function (Request $request) {
             return Limit::perMinute(30)->by($request->ip());
         });
