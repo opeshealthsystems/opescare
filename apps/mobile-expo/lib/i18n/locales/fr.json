@@ -600,10 +600,23 @@
   },
   "records": {
     "title": "Dossier médical",
-    "subtitle": "Vos visites, résultats et prescriptions dans une seule chronologie",
+    "subtitle": "Chaque visite, résultat et prescription au même endroit",
+    "export": "Exporter",
+    "exportA11y": "Exporter votre dossier médical en PDF ou FHIR",
+    "bloodGroup": "Groupe sanguin {{group}}",
     "summary": {
+      "heading": "En un coup d'œil",
       "allergies": "Allergies",
-      "conditions": "Affections"
+      "conditions": "Affections",
+      "immunizations": "Vaccins",
+      "events": "Entrées",
+      "unavailable": "Indisponible"
+    },
+    "browse": {
+      "heading": "Parcourir par type",
+      "labs": "Résultats d'analyses",
+      "prescriptions": "Prescriptions",
+      "documents": "Documents"
     },
     "filter": {
       "all": "Tout",
@@ -614,29 +627,91 @@
       "condition": "Affections",
       "immunization": "Vaccinations"
     },
+    "category": {
+      "visit": "Visite",
+      "lab_result": "Résultat d'analyse",
+      "prescription": "Prescription",
+      "allergy": "Allergie",
+      "condition": "Affection",
+      "immunization": "Vaccination"
+    },
     "item": {
       "visitTitle": "Visite clinique",
+      "labTitle": "Résultat d'analyse",
+      "prescriptionTitle": "Prescription",
       "allergyTitle": "Allergie — {{substance}}",
       "immunizationDose": "Dose {{n}}",
+      "prescriptionItems_one": "{{count}} médicament",
+      "prescriptionItems_other": "{{count}} médicaments",
       "recordedOn": "Enregistré le {{date}}",
       "administeredOn": "Administré le {{date}}",
       "unknownFacility": "Établissement non renseigné"
+    },
+    "visitType": {
+      "outpatient": "Consultation externe",
+      "inpatient": "Hospitalisation",
+      "emergency": "Urgences",
+      "lab-only": "Laboratoire uniquement",
+      "pharmacy-only": "Pharmacie uniquement"
+    },
+    "action": {
+      "viewLab": "Voir le rapport complet",
+      "viewPrescription": "Voir la prescription"
     },
     "status": {
       "active": "Active",
       "chronic": "Chronique",
       "resolved": "Résolue",
       "inactive": "Inactive",
-      "completed": "Complétée",
+      "completed": "Terminée",
+      "mild": "Légère",
       "low": "Faible",
       "moderate": "Modérée",
-      "high": "Élevée"
+      "high": "Élevée",
+      "severe": "Sévère"
+    },
+    "group": {
+      "undated": "Date non renseignée"
+    },
+    "timeline": {
+      "heading": "Votre chronologie",
+      "count_one": "{{count}} entrée",
+      "count_other": "{{count}} entrées"
     },
     "loading": "Chargement de votre dossier…",
-    "error": "Impossible de charger votre dossier. Tirez vers le bas pour réessayer.",
+    "loadingBody": "Récupération de votre dossier auprès des établissements qui vous ont pris en charge.",
+    "partial": {
+      "title": "Certaines sections n'ont pas pu être chargées",
+      "body": "Une partie de votre dossier n'apparaît pas ici. Rien n'a été supprimé.",
+      "retry": "Réessayer"
+    },
+    "error": {
+      "title": "Impossible de charger votre dossier",
+      "body": "Votre dossier est intact — cet appareil n'a simplement pas pu joindre OpesCare. Vérifiez votre connexion et réessayez.",
+      "retry": "Réessayer"
+    },
+    "filtered": {
+      "title": "Rien dans cette catégorie",
+      "body": "Vous n'avez encore aucune entrée de ce type. D'autres catégories peuvent en contenir.",
+      "reset": "Afficher tout le dossier"
+    },
     "empty": {
-      "title": "Aucun dossier pour le moment",
-      "body": "Votre chronologie clinique apparaîtra ici dès qu'un établissement enregistrera une visite, un résultat d'analyse ou une prescription."
+      "title": "Votre dossier est prêt",
+      "body": "Il ne manque rien — vous n'avez simplement aucune entrée pour l'instant. Votre dossier se remplit au fil de vos soins.",
+      "stepsHeading": "Comment votre dossier se remplit",
+      "step1Title": "Vous vous rendez dans un établissement",
+      "step1Body": "Tout hôpital, clinique, laboratoire ou pharmacie connecté à OpesCare.",
+      "step2Title": "Votre équipe soignante consigne les soins",
+      "step2Body": "Diagnostics, résultats d'analyses, prescriptions et vaccinations sont inscrits à votre Health ID.",
+      "step3Title": "Tout apparaît ici, durablement",
+      "step3Body": "Chaque entrée est horodatée. Elle peut être corrigée, jamais effacée en silence.",
+      "findCare": "Trouver des soins près de chez vous",
+      "bookVisit": "Prendre rendez-vous"
+    },
+    "privacy": {
+      "title": "Votre dossier est privé",
+      "body": "Seuls vous et les prestataires auxquels vous avez donné votre consentement peuvent l'ouvrir.",
+      "action": "Gérer les accès"
     }
   },
   "prescriptions": {
