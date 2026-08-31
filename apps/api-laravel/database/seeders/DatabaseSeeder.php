@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             CameroonFacilityRegistrySeeder::class,
             CameroonInsuranceSeeder::class,
             CareMapRegistryStubSeeder::class,
+            PharmacyCatalogSeeder::class,
         ]);
 
         // When demo mode is enabled, seed all demo data automatically so that

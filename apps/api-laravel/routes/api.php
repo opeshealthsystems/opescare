@@ -1219,4 +1219,13 @@ Route::prefix('mobile')->middleware('auth.mobile')->group(function () {
     // Medical record export
     Route::post('medical-records/export/pdf',  [\App\Http\Controllers\Api\Mobile\MedicalRecordExportController::class, 'exportPdf']);
     Route::post('medical-records/export/fhir', [\App\Http\Controllers\Api\Mobile\MedicalRecordExportController::class, 'exportFhir']);
+
+    // Pharmacy / Medicine Finder — catalog search, nearby pharmacy stock, reservations
+    Route::get('pharmacy/categories',                  [\App\Http\Controllers\Api\Mobile\MobilePharmacyController::class, 'categories']);
+    Route::get('pharmacy/medicines',                   [\App\Http\Controllers\Api\Mobile\MobilePharmacyController::class, 'searchMedicines']);
+    Route::get('pharmacy/medicines/{id}',              [\App\Http\Controllers\Api\Mobile\MobilePharmacyController::class, 'showMedicine']);
+    Route::get('pharmacy/nearby',                      [\App\Http\Controllers\Api\Mobile\MobilePharmacyController::class, 'nearbyPharmacies']);
+    Route::get('pharmacy/reservations',                [\App\Http\Controllers\Api\Mobile\MobilePharmacyController::class, 'listReservations']);
+    Route::post('pharmacy/reservations',               [\App\Http\Controllers\Api\Mobile\MobilePharmacyController::class, 'reserve']);
+    Route::post('pharmacy/reservations/{id}/cancel',   [\App\Http\Controllers\Api\Mobile\MobilePharmacyController::class, 'cancelReservation']);
 });
