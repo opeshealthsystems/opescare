@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             CameroonFacilityRegistrySeeder::class,
             MinsanteFosaRegistrySeeder::class,
             CameroonOsmPharmacySeeder::class,
+            CameroonPharmacyLabRegistrySeeder::class,
             CameroonInsuranceSeeder::class,
             CareMapRegistryStubSeeder::class,
             PharmacyCatalogSeeder::class,
