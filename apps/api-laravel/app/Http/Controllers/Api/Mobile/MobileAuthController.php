@@ -3,15 +3,19 @@
 namespace App\Http\Controllers\Api\Mobile;
 
 use App\Http\Controllers\Controller;
+use App\Mail\PasswordResetCodeMail;
 use App\Models\Patient;
 use App\Models\PatientAccessToken;
 use App\Models\PatientOtpCode;
+use App\Models\PasswordResetCode;
+use App\Models\User;
 use App\Modules\Notifications\Services\SmsNotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class MobileAuthController extends Controller
@@ -226,6 +230,90 @@ class MobileAuthController extends Controller
             'expires_in'   => 2592000,
             'patient_id'   => $token->patient_id,
         ], 200);
+    }
+
+    /**
+     * Step 1 of the forgot-password flow: patient requests a reset code by
+     * email. Matches the same `users` table credentials that login-email
+     * checks. Always responds 200 with a generic message regardless of
+     * whether the email is registered, to avoid account enumeration.
+     *
+     * POST /mobile/auth/forgot-password
+     * Body: { email }
+     */
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'email' => 'required|email|max:180',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if ($user) {
+            $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+            // Invalidate any still-live codes for this email before issuing a new one.
+            PasswordResetCode::where('email', $user->email)
+                ->whereNull('used_at')
+                ->update(['used_at' => Carbon::now()]);
+
+            PasswordResetCode::create([
+                'email'      => $user->email,
+                'code_hash'  => Hash::make($code),
+                'expires_at' => Carbon::now()->addMinutes(15),
+            ]);
+
+            try {
+                Mail::to($user->email)->send(new PasswordResetCodeMail($code, $user->email));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('OpesCare password reset email delivery failed', [
+                    'email' => $user->email,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        return response()->json(['message' => __('api.password_reset_code_sent')], 200);
+    }
+
+    /**
+     * Step 2: patient submits the emailed code + a new password. On success,
+     * every existing mobile access token for the linked patient is revoked
+     * so a stolen device session cannot outlive the password change.
+     *
+     * POST /mobile/auth/reset-password
+     * Body: { email, code, password, password_confirmation }
+     */
+    public function resetPassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'email'    => 'required|email|max:180',
+            'code'     => 'required|string|size:6',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        $codeRecord = PasswordResetCode::where('email', $request->email)
+            ->whereNull('used_at')
+            ->where('expires_at', '>', Carbon::now())
+            ->latest()
+            ->first();
+
+        if (!$user || !$codeRecord || !Hash::check($request->code, $codeRecord->code_hash)) {
+            return response()->json(['message' => __('api.password_reset_code_invalid')], 401);
+        }
+
+        $codeRecord->update(['used_at' => Carbon::now()]);
+
+        $user->password = $request->password; // 'hashed' cast on User::$casts
+        $user->save();
+
+        if ($user->patient_id) {
+            PatientAccessToken::where('patient_id', $user->patient_id)->delete();
+        }
+
+        return response()->json(['message' => __('api.password_reset_success')], 200);
     }
 
     private function sendOtp(Patient $patient): void

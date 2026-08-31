@@ -87,7 +87,9 @@ export default function LoginScreen() {
 
           <View className="mb-2 flex-row items-center justify-between">
             <Text className="text-sm font-semibold text-navy-text">{t('auth.password')}</Text>
-            <Text className="text-sm font-semibold text-gold-500">{t('auth.forgotPassword')}</Text>
+            <Pressable onPress={() => router.push('/(auth)/forgot-password')} hitSlop={8}>
+              <Text className="text-sm font-semibold text-gold-500">{t('auth.forgotPassword')}</Text>
+            </Pressable>
           </View>
           <TextField
             placeholder={t('auth.passwordPlaceholder')}
