@@ -86,6 +86,11 @@ class AppServiceProvider extends ServiceProvider
         Route::middleware('api')
             ->group(base_path('routes/mobile_providers.php'));
 
+        // Mobile patient Health Vitals routes — same rationale. Read-only over
+        // the existing vital_signs / triage_vital_signs / lab_results tables.
+        Route::middleware('api')
+            ->group(base_path('routes/mobile_vitals.php'));
+
         RateLimiter::for('verify', function (Request $request) {
             return Limit::perMinute(30)->by($request->ip());
         });

@@ -153,7 +153,6 @@
       "healthRecords": "Mon dossier",
       "labResults": "Analyses",
       "prescriptions": "Ordonnances",
-      "findMedicine": "Médicaments",
       "findBlood": "Trouver du sang",
       "viewAllServices": "Tous les services"
     },
@@ -164,11 +163,39 @@
       "showQr": "Afficher le QR",
       "bloodGroup": "Groupe sanguin",
       "allergies": "Allergies",
-      "conditions": "Pathologies",
       "dateOfBirth": "Date de naissance",
       "none": "Aucune",
       "viewCard": "Voir la carte",
+      "copy": "Copier l'identifiant santé",
+      "copied": "Copié",
+      "copyFailed": "Impossible de copier votre identifiant santé.",
       "loadError": "Impossible de charger votre identifiant santé."
+    },
+    "vitals": {
+      "title": "Constantes santé",
+      "seeAll": "Tout voir",
+      "showLess": "Réduire",
+      "heartRate": "Fréq. cardiaque",
+      "bloodPressure": "Tension",
+      "bloodSugar": "Glycémie",
+      "oxygenSaturation": "SpO₂",
+      "temperature": "Température",
+      "respiratoryRate": "Fréq. respiratoire",
+      "updatedToday": "Dernière mesure : aujourd'hui, {{time}}",
+      "updatedYesterday": "Dernière mesure : hier, {{time}}",
+      "updatedDaysAgo": "Dernière mesure il y a {{days}} jours",
+      "updatedOn": "Dernière mesure le {{date}}",
+      "staleNote": "Mesure ancienne — demandez-en une nouvelle à votre clinique.",
+      "status": {
+        "low": "Basse",
+        "high": "Élevée",
+        "critical": "À faire vérifier",
+        "abnormal": "Anormale",
+        "unknown": "Non classée"
+      },
+      "empty": "Aucune mesure",
+      "emptyBody": "Les constantes mesurées en clinique apparaîtront ici.",
+      "loadError": "Impossible de charger vos constantes."
     },
     "appointment": {
       "title": "Rendez-vous à venir",
