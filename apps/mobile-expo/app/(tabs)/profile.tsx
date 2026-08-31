@@ -8,6 +8,7 @@ import {
   BadgeCheck,
   Calendar,
   ChevronRight,
+  CloudOff,
   Download,
   Droplet,
   FileText,
@@ -96,6 +97,11 @@ export default function ProfileScreen() {
       icon: Download,
       label: t('profile.downloadRecords'),
       onPress: () => router.push('/export-records'),
+    },
+    {
+      icon: CloudOff,
+      label: t('offline.menuLabel'),
+      onPress: () => router.push('/offline-access'),
     },
     {
       icon: SettingsIcon,
