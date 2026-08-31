@@ -88,20 +88,30 @@ class MobileNotificationController extends Controller
      * (when a linked user account exists) notifications sent to that user —
      * scoped strictly to the identity resolved by auth.mobile middleware,
      * never to a caller-supplied id.
+     *
+     * `notifiable_type` must be matched against the model's *morph class*, not
+     * its FQCN: AppServiceProvider registers a morph map ('patient' =>
+     * Patient::class), so Laravel writes `patient` — comparing to
+     * Patient::class matched nothing and made every patient notification
+     * invisible. Both spellings are accepted so rows written on either side of
+     * the morph-map registration still resolve.
      */
     private function scopedQuery(Request $request)
     {
         $patientId     = $request->attributes->get('patient_id');
         $patientUserId = $request->attributes->get('patient_user_id');
 
+        $patientTypes = array_values(array_unique([Patient::class, (new Patient)->getMorphClass()]));
+        $userTypes    = array_values(array_unique([User::class, (new User)->getMorphClass()]));
+
         return DatabaseNotification::query()
-            ->where(function ($q) use ($patientId, $patientUserId) {
-                $q->where(function ($q2) use ($patientId) {
-                    $q2->where('notifiable_type', Patient::class)->where('notifiable_id', $patientId);
+            ->where(function ($q) use ($patientId, $patientUserId, $patientTypes, $userTypes) {
+                $q->where(function ($q2) use ($patientId, $patientTypes) {
+                    $q2->whereIn('notifiable_type', $patientTypes)->where('notifiable_id', $patientId);
                 });
                 if ($patientUserId) {
-                    $q->orWhere(function ($q2) use ($patientUserId) {
-                        $q2->where('notifiable_type', User::class)->where('notifiable_id', $patientUserId);
+                    $q->orWhere(function ($q2) use ($patientUserId, $userTypes) {
+                        $q2->whereIn('notifiable_type', $userTypes)->where('notifiable_id', $patientUserId);
                     });
                 }
             });
