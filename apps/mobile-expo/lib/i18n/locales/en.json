@@ -391,5 +391,85 @@
     "durationDays_other": "{{count}} days",
     "itemDispensed": "Dispensed",
     "itemPending": "Not yet dispensed"
+  },
+  "insurance": {
+    "title": "My Insurance",
+    "subtitle": "Your active and pending insurance policies.",
+    "browseMarketplace": "Browse the insurance marketplace",
+    "emptyTitle": "No insurance policies yet",
+    "emptyBody": "Explore available plans and enroll directly from the app.",
+    "emptyCta": "Browse Marketplace",
+    "loadError": "We couldn't load your insurance information.",
+    "retry": "Try again",
+    "policyNumber": "Policy Number",
+    "memberId": "Member ID",
+    "effectiveDate": "Effective",
+    "expiryDate": "Expires",
+    "relationship": "Relationship",
+    "currencySuffix": "XAF",
+    "status": {
+      "pending": "Pending",
+      "active": "Active",
+      "inactive": "Inactive",
+      "expired": "Expired",
+      "cancelled": "Cancelled"
+    },
+    "relationshipToPrimary": {
+      "self": "Self",
+      "spouse": "Spouse",
+      "child": "Child",
+      "other": "Other"
+    },
+    "planType": {
+      "nhia": "National Health Insurance",
+      "private": "Private",
+      "employer": "Employer-Sponsored",
+      "mutual": "Mutual"
+    },
+    "marketplace": {
+      "title": "Insurance Marketplace",
+      "subtitle": "Compare plans and enroll in the coverage that fits you.",
+      "loadError": "We couldn't load the marketplace.",
+      "empty": "No plans are available right now. Please check back later.",
+      "monthlyPremium": "Monthly premium",
+      "fromPerMonth": "/ month",
+      "cashless": "Cashless",
+      "preauthRequired": "Pre-authorization required"
+    },
+    "plan": {
+      "title": "Plan Details",
+      "loadError": "We couldn't load this plan.",
+      "monthlyPremium": "Monthly Premium",
+      "annualPremium": "Annual Premium",
+      "deductible": "Deductible",
+      "copay": "Co-pay",
+      "cashlessAvailable": "Cashless Available",
+      "preauthRequired": "Pre-authorization Required",
+      "coveredServices": "Covered Services",
+      "noCoveredServices": "Coverage details aren't listed. Contact the provider for specifics.",
+      "yes": "Yes",
+      "no": "No",
+      "enrollNow": "Enroll in This Plan",
+      "provider": "Provider"
+    },
+    "purchase": {
+      "confirmTitle": "Confirm Your Enrollment",
+      "reviewSubtitle": "Review the details below before you enroll.",
+      "plan": "Plan",
+      "provider": "Provider",
+      "amountDue": "Amount Due Today",
+      "perMonth": "/ month",
+      "paymentMethod": "Payment Method",
+      "mtn": "MTN Mobile Money",
+      "orange": "Orange Money",
+      "paymentNote": "You'll receive a prompt on your phone to complete this payment via mobile money.",
+      "confirmButton": "Confirm & Enroll",
+      "cancel": "Cancel",
+      "submitting": "Processing…",
+      "successTitle": "Enrollment Submitted",
+      "successBody": "Your policy {{policyNumber}} is pending activation. We'll notify you once it's verified.",
+      "viewPolicies": "View My Policies",
+      "errorGeneric": "We couldn't complete your enrollment. Please try again."
+    }
   }
 }
