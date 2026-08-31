@@ -163,7 +163,13 @@
       "done": "Terminé",
       "back": "Retour",
       "next": "Suivant",
-      "noSlotSelected": "Sélectionnez un créneau horaire pour continuer"
+      "noSlotSelected": "Sélectionnez un créneau horaire pour continuer",
+      "whatToExpectTitle": "À quoi s'attendre",
+      "whatToExpectArrive": "Merci d'arriver 15 minutes avant l'heure prévue.",
+      "whatToExpectBring": "Apportez tout dossier médical ou résultat d'examen pertinent.",
+      "getDirections": "Itinéraire",
+      "shareAppointment": "Partager le rendez-vous",
+      "shareMessage": "{{type}} à {{facility}} le {{datetime}}. Numéro de réservation : {{id}}."
     }
   },
   "healthId": {
