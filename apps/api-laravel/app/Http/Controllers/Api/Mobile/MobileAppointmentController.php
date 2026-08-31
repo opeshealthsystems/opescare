@@ -39,8 +39,15 @@ class MobileAppointmentController extends Controller
         match ($scope) {
             'upcoming' => $query->whereIn('status', ['booked', 'confirmed', 'checked_in'])
                                 ->where('scheduled_at', '>=', now()),
-            'past'     => $query->whereNotIn('status', ['booked', 'confirmed'])
-                                ->orWhere('scheduled_at', '<', now()),
+            // The two "past" conditions MUST stay grouped. Left un-nested, the
+            // trailing orWhere escapes the patient_id constraint entirely
+            // ((patient_id = ? AND status NOT IN (..)) OR scheduled_at < now())
+            // and every patient's past appointments — reason text included —
+            // leaks into this response.
+            'past'     => $query->where(function ($sub) {
+                $sub->whereNotIn('status', ['booked', 'confirmed'])
+                    ->orWhere('scheduled_at', '<', now());
+            }),
             default    => null,
         };
 

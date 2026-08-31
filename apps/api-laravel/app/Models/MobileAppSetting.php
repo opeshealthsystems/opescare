@@ -39,9 +39,19 @@ class MobileAppSetting extends Model
 
     /**
      * Get or create settings for a patient.
+     *
+     * The column defaults live in the migration, not on the model, so a row
+     * created here comes back holding only patient_id/id/timestamps — every
+     * preference reads as null until the row is re-read. That made the very
+     * first GET /mobile/settings of a new account return all-null, which the
+     * app renders as "every notification is off" even though the stored
+     * defaults are on. Re-read after inserting so callers always see the
+     * values that are actually persisted.
      */
     public static function forPatient(string $patientId): self
     {
-        return self::firstOrCreate(['patient_id' => $patientId]);
+        $settings = self::firstOrCreate(['patient_id' => $patientId]);
+
+        return $settings->wasRecentlyCreated ? $settings->refresh() : $settings;
     }
 }

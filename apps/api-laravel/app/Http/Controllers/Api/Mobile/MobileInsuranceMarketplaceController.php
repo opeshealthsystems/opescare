@@ -64,15 +64,18 @@ class MobileInsuranceMarketplaceController extends Controller
 
         $patientId = $request->attributes->get('patient_id');
 
-        // Prevent duplicate active enrollment in the same plan
+        // Prevent duplicate enrollment in the same plan. Self-enrolment below
+        // always creates the policy as 'pending', so checking only for 'active'
+        // never matched a policy this endpoint had itself created — the patient
+        // could tap Enroll repeatedly and mint unlimited duplicate policies.
         $existing = PatientInsurancePolicy::where('patient_id', $patientId)
             ->where('insurance_plan_id', $plan->id)
-            ->where('status', 'active')
+            ->whereIn('status', ['pending', 'active'])
             ->first();
 
         if ($existing) {
             return response()->json([
-                'message' => __('api.active_policy_exists'),
+                'message' => __('api.policy_already_exists'),
                 'policy_id' => $existing->id,
             ], 409);
         }

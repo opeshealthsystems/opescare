@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ConsentRequestResource;
 use App\Http\Resources\DataExportRequestResource;
 use App\Models\AccessLog;
+use App\Models\ConsentGrant;
 use App\Models\ConsentRequest;
 use App\Models\CorrectionRequest;
 use App\Models\DataExportRequest;
@@ -60,6 +61,10 @@ class MobileGovernanceController extends Controller
             return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => __('api.identity_unresolvable_user')], 401);
         }
 
+        if (! $this->ownsConsentRequest($request, $id)) {
+            return response()->json(['error' => 'NOT_FOUND', 'message' => __('api.not_found')], 404);
+        }
+
         $grant = $this->consentService->approveConsent($id, $userId);
 
         return response()->json([
@@ -71,6 +76,10 @@ class MobileGovernanceController extends Controller
 
     public function denyConsent(Request $request, $id)
     {
+        if (! $this->ownsConsentRequest($request, $id)) {
+            return response()->json(['error' => 'NOT_FOUND', 'message' => __('api.not_found')], 404);
+        }
+
         $consentRequest = $this->consentService->denyConsent($id);
 
         return response()->json([
@@ -88,6 +97,15 @@ class MobileGovernanceController extends Controller
             return response()->json(['error' => 'IDENTITY_UNRESOLVABLE', 'message' => __('api.identity_unresolvable_user')], 401);
         }
 
+        $patientId = $request->attributes->get('patient_id');
+        $ownsGrant = $patientId && ConsentGrant::where('id', $id)
+            ->where('patient_id', $patientId)
+            ->exists();
+
+        if (! $ownsGrant) {
+            return response()->json(['error' => 'NOT_FOUND', 'message' => __('api.not_found')], 404);
+        }
+
         $grant = $this->consentService->revokeConsent($id, $userId);
 
         return response()->json([
@@ -95,6 +113,21 @@ class MobileGovernanceController extends Controller
             'consent_grant_id' => $grant->id,
             'message'          => __('api.consent_grant_revoked'),
         ], 200);
+    }
+
+    /**
+     * ConsentService resolves consent records by bare findOrFail(), so without
+     * this check any authenticated patient could approve, deny or revoke another
+     * patient's consent simply by passing their record id (IDOR). Ownership is
+     * always taken from the middleware-set patient_id, never from input.
+     */
+    private function ownsConsentRequest(Request $request, string $id): bool
+    {
+        $patientId = $request->attributes->get('patient_id');
+
+        return (bool) $patientId && ConsentRequest::where('id', $id)
+            ->where('patient_id', $patientId)
+            ->exists();
     }
 
     // ── Access logs ───────────────────────────────────────────────────────────

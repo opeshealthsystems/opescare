@@ -377,6 +377,7 @@ return [
     'invitation_cancelled'           => 'Invitation annulée.',
     'patient_not_found_contact'      => "Aucun patient OpesCare trouvé avec ce contact. Il devra peut-être s'inscrire d'abord.",
     'active_policy_exists'           => 'Vous avez déjà une police active pour ce plan.',
+    'policy_already_exists'          => 'Vous avez déjà une police pour ce plan.',
     'enrollment_submitted'           => "Inscription soumise avec succès. Votre police est en attente d'activation.",
     'feature_requires_upgrade'       => 'Cette fonctionnalité nécessite un abonnement Premium.',
 ];
