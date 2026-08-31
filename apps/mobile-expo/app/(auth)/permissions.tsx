@@ -130,7 +130,10 @@ export default function PermissionsScreen() {
     (state: PermissionState, request: () => Promise<void>) => {
       if (state === 'undetermined') {
         request();
-      } else if (state === 'denied') {
+      } else if (state === 'denied' && Platform.OS !== 'web') {
+        // Linking.openSettings() is a native-only API — it doesn't exist on
+        // web at all (calling it throws synchronously, before any .catch()
+        // can attach), so there's no "open OS settings" affordance on web.
         Linking.openSettings().catch(() => {});
       }
     },

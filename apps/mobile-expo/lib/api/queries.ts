@@ -1,15 +1,18 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from './client';
 import { endpoints } from './endpoints';
+import { useAuthStore } from '../store/auth';
 import type {
   AllergiesResponse,
   Appointment,
   ClinicalResponse,
+  EmergencyContact,
   HealthIdCard,
   ImmunizationsResponse,
   OfficialDocumentDetail,
   PaginatedAppointments,
   PaginatedDocuments,
+  Patient,
   RegisterPatientPayload,
   RegisterPatientResponse,
   TemporaryQrCode,
@@ -20,6 +23,29 @@ export function useHealthIdCard() {
   return useQuery({
     queryKey: ['health-id-card'],
     queryFn: async () => (await apiClient.get<HealthIdCard>(endpoints.healthIdCard)).data,
+  });
+}
+
+/** PATCH /mobile/me — edits the signed-in patient's own demographic fields and
+ * emergency contact. Writes straight into the auth store's `patient` (the
+ * response already carries the full updated shape) instead of triggering a
+ * second round-trip fetch. */
+export interface UpdateProfileInput {
+  first_name?: string;
+  last_name?: string;
+  blood_group?: string | null;
+  sex?: 'male' | 'female' | 'other' | null;
+  address?: string | null;
+  emergency_contact?: EmergencyContact;
+}
+
+export function useUpdateProfile() {
+  return useMutation({
+    mutationFn: async (input: UpdateProfileInput) =>
+      (await apiClient.patch<Patient>(endpoints.me, input)).data,
+    onSuccess: (patient) => {
+      useAuthStore.setState({ patient });
+    },
   });
 }
 
@@ -587,6 +613,31 @@ export function useCancelFamilyInvitation() {
   return useMutation({
     mutationFn: async (id: string) =>
       (await apiClient.delete<{ message: string }>(endpoints.familyInvitation(id))).data,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['family'] });
+    },
+  });
+}
+
+/** Registers a brand-new dependent (e.g. a child) who has no OpesCare account
+ * of their own — POST /mobile/family creates the Patient + FamilyLink in one
+ * step, distinct from useSendFamilyInvitation which links an *existing*
+ * patient by contact. Field names/validation mirror
+ * MobileFamilyController::store() exactly. */
+export interface RegisterDependentInput {
+  full_name: string;
+  date_of_birth: string;
+  sex: 'male' | 'female' | 'other';
+  relationship: string;
+  blood_group?: string;
+  phone?: string;
+}
+
+export function useRegisterDependent() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: RegisterDependentInput) =>
+      (await apiClient.post<{ message: string; data: FamilyMember }>(endpoints.family, input)).data,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['family'] });
     },

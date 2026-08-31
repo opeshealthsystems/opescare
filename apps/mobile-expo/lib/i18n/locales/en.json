@@ -47,7 +47,11 @@
     "pin": "PIN",
     "pinPlaceholder": "••••••",
     "invalidEmail": "Enter a valid email or Health ID",
-    "invalidPassword": "Password is required"
+    "invalidPassword": "Password is required",
+    "demoLoginLabel": "Quick demo login (dev only)",
+    "demoLoginPatient": "Demo Patient — Jean Dupont",
+    "demoLoginDoctor": "Demo Doctor — Dr. Amara Diallo",
+    "demoDoctorNotice": "Doctor accounts use the OpesCare Staff Portal on the web, not this patient app. Sign in there with demo.doctor@opescare.test / DemoPass!2026."
   },
   "signup": {
     "stepIndicator": "Step {{current}} of {{total}}",
@@ -356,6 +360,19 @@
     "downloadRecords": "Download My Records",
     "helpSupport": "Help & Support"
   },
+  "editProfile": {
+    "title": "Edit Profile",
+    "subtitle": "Update your personal details and emergency contact.",
+    "sex": "Sex",
+    "bloodGroup": "Blood group",
+    "address": "Address",
+    "addressPlaceholder": "e.g. Bastos, Yaoundé",
+    "emergencyContactTitle": "Emergency contact",
+    "emergencyIncomplete": "Fill in all three emergency contact fields, or leave them all blank.",
+    "save": "Save changes",
+    "saved": "Profile updated successfully.",
+    "saveFailed": "Couldn't save your changes. Please try again."
+  },
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your language, notifications, and this device.",
@@ -640,7 +657,22 @@
     "cancelInviteFailed": "Couldn't cancel the invitation. Please try again.",
     "error": "Error",
     "loadFailed": "Couldn't load your family information.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "tabInvite": "Invite existing",
+    "tabRegister": "Register dependent",
+    "tabInviteHint": "Link someone who already has an OpesCare account.",
+    "tabRegisterHint": "Create a Health ID for a child or dependent who doesn't have their own account.",
+    "fullNameLabel": "Full name",
+    "fullNamePlaceholder": "e.g. Amina Ngo",
+    "fullNameRequired": "Enter the dependent's full name",
+    "dobInvalid": "Enter a valid date of birth",
+    "sexLabel": "Sex",
+    "sexRequired": "Select a sex",
+    "bloodGroupLabel": "Blood group (optional)",
+    "bloodGroupPlaceholder": "e.g. O+",
+    "registerDependent": "Register dependent",
+    "dependentRegistered": "Dependent registered successfully.",
+    "dependentRegisterFailed": "Couldn't register the dependent. Please try again."
   },
   "carePlans": {
     "title": "Care Plans",

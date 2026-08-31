@@ -1,3 +1,9 @@
+export interface EmergencyContact {
+  name: string;
+  relationship: string;
+  phone: string;
+}
+
 export interface Patient {
   health_id: string;
   display_name: string;
@@ -8,6 +14,8 @@ export interface Patient {
   dob: string | null;
   sex: string | null;
   blood_group: string | null;
+  address: string | null;
+  emergency_contact: EmergencyContact | null;
   status: string;
   allergies_count: number;
   conditions_count: number;

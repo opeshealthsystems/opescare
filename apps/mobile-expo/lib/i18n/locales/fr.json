@@ -47,7 +47,11 @@
     "pin": "Code PIN",
     "pinPlaceholder": "••••••",
     "invalidEmail": "Entrez un e-mail ou identifiant santé valide",
-    "invalidPassword": "Le mot de passe est requis"
+    "invalidPassword": "Le mot de passe est requis",
+    "demoLoginLabel": "Connexion démo rapide (développement uniquement)",
+    "demoLoginPatient": "Patient démo — Jean Dupont",
+    "demoLoginDoctor": "Médecin démo — Dr Amara Diallo",
+    "demoDoctorNotice": "Les comptes médecins utilisent le portail personnel OpesCare sur le web, pas cette application patient. Connectez-vous là-bas avec demo.doctor@opescare.test / DemoPass!2026."
   },
   "signup": {
     "stepIndicator": "Étape {{current}} sur {{total}}",
@@ -356,6 +360,19 @@
     "downloadRecords": "Télécharger mon dossier",
     "helpSupport": "Aide et assistance"
   },
+  "editProfile": {
+    "title": "Modifier le profil",
+    "subtitle": "Mettez à jour vos informations personnelles et votre contact d'urgence.",
+    "sex": "Sexe",
+    "bloodGroup": "Groupe sanguin",
+    "address": "Adresse",
+    "addressPlaceholder": "ex. Bastos, Yaoundé",
+    "emergencyContactTitle": "Contact d'urgence",
+    "emergencyIncomplete": "Renseignez les trois champs du contact d'urgence, ou laissez-les tous vides.",
+    "save": "Enregistrer les modifications",
+    "saved": "Profil mis à jour avec succès.",
+    "saveFailed": "Impossible d'enregistrer vos modifications. Veuillez réessayer."
+  },
   "settings": {
     "title": "Paramètres",
     "subtitle": "Gérez votre langue, vos notifications et cet appareil.",
@@ -640,7 +657,22 @@
     "cancelInviteFailed": "Impossible d'annuler l'invitation. Veuillez réessayer.",
     "error": "Erreur",
     "loadFailed": "Impossible de charger vos informations familiales.",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "tabInvite": "Inviter un membre existant",
+    "tabRegister": "Enregistrer une personne à charge",
+    "tabInviteHint": "Associez une personne qui possède déjà un compte OpesCare.",
+    "tabRegisterHint": "Créez un identifiant santé pour un enfant ou une personne à charge qui n'a pas son propre compte.",
+    "fullNameLabel": "Nom complet",
+    "fullNamePlaceholder": "ex. Amina Ngo",
+    "fullNameRequired": "Entrez le nom complet de la personne à charge",
+    "dobInvalid": "Entrez une date de naissance valide",
+    "sexLabel": "Sexe",
+    "sexRequired": "Sélectionnez un sexe",
+    "bloodGroupLabel": "Groupe sanguin (facultatif)",
+    "bloodGroupPlaceholder": "ex. O+",
+    "registerDependent": "Enregistrer la personne à charge",
+    "dependentRegistered": "Personne à charge enregistrée avec succès.",
+    "dependentRegisterFailed": "Impossible d'enregistrer la personne à charge. Veuillez réessayer."
   },
   "carePlans": {
     "title": "Plans de soins",

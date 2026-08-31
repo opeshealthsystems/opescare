@@ -46,6 +46,8 @@ class MobilePatientController extends Controller
             'dob'               => $patient->date_of_birth?->toDateString(),
             'sex'               => $patient->sex,
             'blood_group'       => $patient->blood_group,
+            'address'           => $patient->address,
+            'emergency_contact' => $patient->emergency_contact,
             'status'            => $patient->identity_status ?? 'active',
             'allergies_count'   => $allergiesCount,
             'conditions_count'  => $conditionsCount,
@@ -253,11 +255,15 @@ class MobilePatientController extends Controller
         }
 
         $validated = $request->validate([
-            'first_name'   => 'sometimes|string|max:100',
-            'last_name'    => 'sometimes|string|max:100',
-            'blood_group'  => 'sometimes|nullable|string|max:10|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'sex'          => 'sometimes|nullable|string|in:male,female,other',
-            'address'      => 'sometimes|nullable|string|max:500',
+            'first_name'                        => 'sometimes|string|max:100',
+            'last_name'                         => 'sometimes|string|max:100',
+            'blood_group'                       => 'sometimes|nullable|string|max:10|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
+            'sex'                                => 'sometimes|nullable|string|in:male,female,other',
+            'address'                            => 'sometimes|nullable|string|max:500',
+            'emergency_contact'                  => 'sometimes|nullable|array',
+            'emergency_contact.name'             => 'required_with:emergency_contact|string|max:120',
+            'emergency_contact.relationship'     => 'required_with:emergency_contact|string|max:80',
+            'emergency_contact.phone'            => 'required_with:emergency_contact|string|max:30',
         ]);
 
         $patient->update($validated);
@@ -266,18 +272,20 @@ class MobilePatientController extends Controller
         $conditionsCount = \App\Models\Diagnosis::where('patient_id', $patient->id)->whereIn('status', ['active', 'chronic'])->count();
 
         return response()->json([
-            'health_id'       => $patient->health_id,
-            'display_name'    => trim($patient->first_name . ' ' . substr($patient->last_name, 0, 1) . '.'),
-            'first_name'      => $patient->first_name,
-            'last_name'       => $patient->last_name,
-            'phone'           => $patient->phone_number,
-            'email'           => $patient->email,
-            'dob'             => $patient->date_of_birth?->toDateString() ?? null,
-            'sex'             => $patient->sex,
-            'blood_group'     => $patient->blood_group,
-            'status'          => $patient->identity_status ?? 'active',
-            'allergies_count' => $allergiesCount,
-            'conditions_count'=> $conditionsCount,
+            'health_id'         => $patient->health_id,
+            'display_name'      => trim($patient->first_name . ' ' . substr($patient->last_name, 0, 1) . '.'),
+            'first_name'        => $patient->first_name,
+            'last_name'         => $patient->last_name,
+            'phone'             => $patient->phone_number,
+            'email'             => $patient->email,
+            'dob'               => $patient->date_of_birth?->toDateString() ?? null,
+            'sex'               => $patient->sex,
+            'blood_group'       => $patient->blood_group,
+            'address'           => $patient->address,
+            'emergency_contact' => $patient->emergency_contact,
+            'status'            => $patient->identity_status ?? 'active',
+            'allergies_count'   => $allergiesCount,
+            'conditions_count'  => $conditionsCount,
         ]);
     }
 

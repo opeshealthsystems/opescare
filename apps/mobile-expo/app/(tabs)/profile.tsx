@@ -16,6 +16,7 @@ import {
   LogOut,
   Mail,
   MessageCircle,
+  Pencil,
   Phone,
   QrCode,
   Settings as SettingsIcon,
@@ -147,6 +148,13 @@ export default function ProfileScreen() {
                 </Text>
               </View>
             </View>
+            <Pressable
+              onPress={() => router.push('/edit-profile')}
+              hitSlop={8}
+              className="h-10 w-10 items-center justify-center rounded-full bg-gold-50"
+            >
+              <Pencil size={16} color={colors.gold[600]} />
+            </Pressable>
           </View>
 
           <View className="mt-4 border-t border-cream-300 pt-4">

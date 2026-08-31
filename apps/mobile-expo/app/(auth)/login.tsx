@@ -6,10 +6,13 @@ import {
   Apple,
   ArrowLeft,
   Check,
+  ChevronDown,
   ChevronRight,
+  ChevronUp,
   Globe,
   Lock,
   ShieldLock,
+  Stethoscope,
   User,
 } from 'lucide-react-native';
 import { Screen } from '../../components/ui/Screen';
@@ -18,6 +21,27 @@ import { TextField } from '../../components/ui/TextField';
 import { Logo } from '../../components/ui/Logo';
 import { useAuthStore } from '../../lib/store/auth';
 import { colors } from '../../theme/tokens';
+
+/** Dev-only quick-login shortcuts for local/demo backends (seeded by
+ * DemoUsersSeeder). Only the patient account can actually sign into this
+ * app — its mobile API is patient-scoped end to end — so "doctor" surfaces
+ * an explainer instead of credentials that would just fail here. */
+const DEMO_ACCOUNTS = [
+  {
+    key: 'patient',
+    icon: User,
+    labelKey: 'auth.demoLoginPatient',
+    email: 'demo.patient@opescare.test',
+    password: 'DemoPass!2026',
+  },
+  {
+    key: 'doctor',
+    icon: Stethoscope,
+    labelKey: 'auth.demoLoginDoctor',
+    email: null,
+    password: null,
+  },
+] as const;
 
 export default function LoginScreen() {
   const { t } = useTranslation();
@@ -30,6 +54,20 @@ export default function LoginScreen() {
   const [rememberMe, setRememberMe] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
+  const [demoMenuOpen, setDemoMenuOpen] = useState(false);
+  const [demoNotice, setDemoNotice] = useState<string | null>(null);
+
+  const handleSelectDemoAccount = (account: (typeof DEMO_ACCOUNTS)[number]) => {
+    setDemoMenuOpen(false);
+    if (account.email && account.password) {
+      setEmail(account.email);
+      setPassword(account.password);
+      setFieldErrors({});
+      setDemoNotice(null);
+    } else {
+      setDemoNotice(t('auth.demoDoctorNotice'));
+    }
+  };
 
   const handleSignIn = async () => {
     const errors: typeof fieldErrors = {};
@@ -72,6 +110,51 @@ export default function LoginScreen() {
         <Text className="mt-2 text-center text-sm text-navy-secondary">
           {t('auth.signInSubtitle')}
         </Text>
+
+        {__DEV__ ? (
+          <View className="mt-5">
+            <Pressable
+              onPress={() => setDemoMenuOpen((v) => !v)}
+              className="flex-row items-center justify-between rounded-2xl border border-dashed border-gold-300 bg-gold-50 px-4 py-3"
+            >
+              <Text className="text-sm font-semibold text-gold-600">
+                {t('auth.demoLoginLabel')}
+              </Text>
+              {demoMenuOpen ? (
+                <ChevronUp size={18} color={colors.gold[600]} />
+              ) : (
+                <ChevronDown size={18} color={colors.gold[600]} />
+              )}
+            </Pressable>
+
+            {demoMenuOpen ? (
+              <View className="mt-2 overflow-hidden rounded-2xl border border-cream-300 bg-white">
+                {DEMO_ACCOUNTS.map((account, index) => (
+                  <Pressable
+                    key={account.key}
+                    onPress={() => handleSelectDemoAccount(account)}
+                    className={`flex-row items-center px-4 py-3 ${
+                      index > 0 ? 'border-t border-cream-200' : ''
+                    }`}
+                  >
+                    <View className="h-9 w-9 items-center justify-center rounded-full bg-gold-50">
+                      <account.icon size={16} color={colors.gold[600]} />
+                    </View>
+                    <Text className="ml-3 flex-1 text-sm font-semibold text-navy-text">
+                      {t(account.labelKey)}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            ) : null}
+
+            {demoNotice ? (
+              <View className="mt-2 rounded-2xl bg-cream-200 p-3">
+                <Text className="text-xs text-navy-secondary">{demoNotice}</Text>
+              </View>
+            ) : null}
+          </View>
+        ) : null}
 
         <View className="mt-6">
           <TextField

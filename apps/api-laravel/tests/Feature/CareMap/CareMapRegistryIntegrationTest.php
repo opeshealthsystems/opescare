@@ -76,20 +76,20 @@ class CareMapRegistryIntegrationTest extends TestCase
         $this->assertNotNull($pasteur->gps_lat);
     }
 
-    // ── Test 2: Stub seeder creates care_facilities from GPS entries ─────────
+    // ── Test 2: Stub seeder creates a care_facilities listing for every registry entry ─
 
-    public function test_stub_seeder_creates_care_facilities_from_gps_entries(): void
+    public function test_stub_seeder_creates_care_facilities_from_all_registry_entries(): void
     {
         $this->seed(CameroonFacilityRegistrySeeder::class);
 
-        $gpsBearing = FacilityRegistry::whereNotNull('gps_lat')->count();
-        $this->assertGreaterThan(0, $gpsBearing, 'Seeder produced no GPS-bearing entries');
+        $totalRegistry = FacilityRegistry::count();
+        $this->assertGreaterThan(0, $totalRegistry, 'Seeder produced no registry entries');
 
         $this->seed(CareMapRegistryStubSeeder::class);
 
         $cmStubs = CareFacility::where('country_code', 'CM')->count();
-        $this->assertGreaterThanOrEqual($gpsBearing, $cmStubs,
-            'Stub seeder should create at least as many stubs as GPS-bearing registry entries');
+        $this->assertEquals($totalRegistry, $cmStubs,
+            'Stub seeder should promote every registry entry into care_facilities, GPS-bearing or not');
     }
 
     public function test_stub_seeder_sets_correct_defaults(): void
@@ -100,11 +100,25 @@ class CareMapRegistryIntegrationTest extends TestCase
         $stubs = CareFacility::where('country_code', 'CM')->get();
         $this->assertNotEmpty($stubs, 'No CM stubs were created');
 
+        // The stub seeder promotes every registry entry (not just GPS-bearing
+        // ones) so the full real directory is reachable via the Facility
+        // Directory/booking flow — only entries whose registry source actually
+        // had coordinates are expected to carry a lat/lng (and thus a CareMap
+        // pin); the rest are legitimately null.
         foreach ($stubs as $stub) {
             $this->assertEquals('active',     $stub->listing_status,      "{$stub->facility_name} listing_status wrong");
             $this->assertEquals('unverified', $stub->verification_status, "{$stub->facility_name} verification_status wrong");
-            $this->assertNotNull($stub->latitude,  "{$stub->facility_name} missing latitude");
-            $this->assertNotNull($stub->longitude, "{$stub->facility_name} missing longitude");
+
+            $registryEntry = FacilityRegistry::where('name', $stub->facility_name)
+                ->where('city', $stub->city)
+                ->first();
+
+            if ($registryEntry?->gps_lat !== null) {
+                $this->assertNotNull($stub->latitude,  "{$stub->facility_name} missing latitude despite GPS-bearing registry source");
+                $this->assertNotNull($stub->longitude, "{$stub->facility_name} missing longitude despite GPS-bearing registry source");
+            } else {
+                $this->assertNull($stub->latitude,  "{$stub->facility_name} should have null latitude — registry source has no GPS");
+            }
         }
     }
 

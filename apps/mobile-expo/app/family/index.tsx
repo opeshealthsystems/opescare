@@ -4,6 +4,8 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
+  Baby,
+  Calendar,
   Clock,
   Mail,
   Phone,
@@ -20,6 +22,7 @@ import {
   useCancelFamilyInvitation,
   useFamilyInvitations,
   useFamilyMembers,
+  useRegisterDependent,
   useSendFamilyInvitation,
   type FamilyInvitation,
 } from '../../lib/api/queries';
@@ -35,9 +38,39 @@ const RELATIONSHIP_OPTIONS = [
   'other',
 ] as const;
 
+const SEX_OPTIONS = ['male', 'female', 'other'] as const;
+const SEX_LABEL_KEYS: Record<(typeof SEX_OPTIONS)[number], string> = {
+  male: 'signup.sexMale',
+  female: 'signup.sexFemale',
+  other: 'signup.sexOther',
+};
+
 function extractErrorMessage(err: unknown, fallback: string): string {
   const anyErr = err as any;
   return anyErr?.response?.data?.message ?? fallback;
+}
+
+/** Turns raw digit entry into "YYYY-MM-DD" as the guardian types, without a
+ * date-picker dependency this screen isn't allowed to add — mirrors
+ * (auth)/signup.tsx's formatDobInput/isValidPastDate exactly. */
+function formatDobInput(raw: string): string {
+  const digits = raw.replace(/\D/g, '').slice(0, 8);
+  const y = digits.slice(0, 4);
+  const m = digits.slice(4, 6);
+  const d = digits.slice(6, 8);
+  return [y, m, d].filter(Boolean).join('-');
+}
+
+function isValidPastDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [y, m, d] = value.split('-').map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d));
+  if (date.getUTCFullYear() !== y || date.getUTCMonth() !== m - 1 || date.getUTCDate() !== d) {
+    return false;
+  }
+  const today = new Date();
+  const todayUtc = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+  return date.getTime() < todayUtc;
 }
 
 function initialsOf(name: string): string {
@@ -60,13 +93,26 @@ export default function FamilyScreen() {
   const invitationsQuery = useFamilyInvitations();
   const sendInvitation = useSendFamilyInvitation();
   const cancelInvitation = useCancelFamilyInvitation();
+  const registerDependent = useRegisterDependent();
 
   const [showForm, setShowForm] = useState(false);
+  const [mode, setMode] = useState<'invite' | 'register'>('invite');
   const [contact, setContact] = useState('');
   const [relationship, setRelationship] = useState<(typeof RELATIONSHIP_OPTIONS)[number]>('parent');
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
+
+  // Register-a-dependent form (POST /mobile/family — a brand-new Patient with
+  // no account of their own, e.g. a child), distinct from the invite-by-contact
+  // form above which links an *existing* OpesCare patient.
+  const [depFullName, setDepFullName] = useState('');
+  const [depDob, setDepDob] = useState('');
+  const [depSex, setDepSex] = useState<(typeof SEX_OPTIONS)[number] | null>(null);
+  const [depRelationship, setDepRelationship] =
+    useState<(typeof RELATIONSHIP_OPTIONS)[number]>('child');
+  const [depBloodGroup, setDepBloodGroup] = useState('');
+  const [depPhone, setDepPhone] = useState('');
 
   const members = useMemo(
     () => (membersQuery.data ?? []).filter((m) => !m.is_pending && m.patient),
@@ -100,6 +146,43 @@ export default function FamilyScreen() {
       setSuccessMessage(t('family.invitationSent'));
     } catch (err) {
       setFormError(extractErrorMessage(err, t('family.invitationFailed')));
+    }
+  };
+
+  const handleRegisterDependent = async () => {
+    setFormError(null);
+    setSuccessMessage(null);
+    if (!depFullName.trim()) {
+      setFormError(t('family.fullNameRequired'));
+      return;
+    }
+    if (!isValidPastDate(depDob)) {
+      setFormError(t('family.dobInvalid'));
+      return;
+    }
+    if (!depSex) {
+      setFormError(t('family.sexRequired'));
+      return;
+    }
+    try {
+      await registerDependent.mutateAsync({
+        full_name: depFullName.trim(),
+        date_of_birth: depDob,
+        sex: depSex,
+        relationship: depRelationship,
+        ...(depBloodGroup.trim() ? { blood_group: depBloodGroup.trim() } : {}),
+        ...(depPhone.trim() ? { phone: depPhone.trim() } : {}),
+      });
+      setDepFullName('');
+      setDepDob('');
+      setDepSex(null);
+      setDepRelationship('child');
+      setDepBloodGroup('');
+      setDepPhone('');
+      setShowForm(false);
+      setSuccessMessage(t('family.dependentRegistered'));
+    } catch (err) {
+      setFormError(extractErrorMessage(err, t('family.dependentRegisterFailed')));
     }
   };
 
@@ -185,52 +268,193 @@ export default function FamilyScreen() {
 
           {showForm ? (
             <View className="mt-4">
-              <TextField
-                label={t('family.contactLabel')}
-                placeholder={t('family.contactPlaceholder')}
-                icon={contact.includes('@') ? Mail : Phone}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                value={contact}
-                onChangeText={setContact}
-              />
-
-              <Text className="mb-2 text-sm font-semibold text-navy-text">
-                {t('family.relationshipLabel')}
-              </Text>
-              <View className="mb-4 flex-row flex-wrap" style={{ gap: 8 }}>
-                {RELATIONSHIP_OPTIONS.map((option) => {
-                  const active = relationship === option;
-                  return (
-                    <Pressable
-                      key={option}
-                      onPress={() => setRelationship(option)}
-                      className="rounded-full border px-3 py-2"
-                      style={{
-                        borderColor: active ? colors.gold[500] : colors.cream[300],
-                        backgroundColor: active ? colors.gold[50] : colors.white,
-                      }}
-                    >
-                      <Text
-                        className="text-xs font-semibold"
-                        style={{ color: active ? colors.gold[600] : colors.navy.secondary }}
-                      >
-                        {t(`family.relationships.${option}`)}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
+              <View className="mb-4 flex-row rounded-full bg-cream-200 p-1">
+                <Pressable
+                  onPress={() => {
+                    setMode('invite');
+                    setFormError(null);
+                  }}
+                  className="flex-1 items-center rounded-full py-2"
+                  style={{ backgroundColor: mode === 'invite' ? colors.white : 'transparent' }}
+                >
+                  <Text
+                    className="text-xs font-semibold"
+                    style={{ color: mode === 'invite' ? colors.gold[600] : colors.navy.secondary }}
+                  >
+                    {t('family.tabInvite')}
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => {
+                    setMode('register');
+                    setFormError(null);
+                  }}
+                  className="flex-1 items-center rounded-full py-2"
+                  style={{ backgroundColor: mode === 'register' ? colors.white : 'transparent' }}
+                >
+                  <Text
+                    className="text-xs font-semibold"
+                    style={{ color: mode === 'register' ? colors.gold[600] : colors.navy.secondary }}
+                  >
+                    {t('family.tabRegister')}
+                  </Text>
+                </Pressable>
               </View>
 
-              {formError ? <Text className="mb-3 text-sm text-danger">{formError}</Text> : null}
+              {mode === 'invite' ? (
+                <>
+                  <Text className="mb-3 text-xs text-navy-secondary">
+                    {t('family.tabInviteHint')}
+                  </Text>
+                  <TextField
+                    label={t('family.contactLabel')}
+                    placeholder={t('family.contactPlaceholder')}
+                    icon={contact.includes('@') ? Mail : Phone}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    value={contact}
+                    onChangeText={setContact}
+                  />
 
-              <Button
-                label={t('family.sendInvite')}
-                onPress={handleSendInvitation}
-                loading={sendInvitation.isPending}
-                leftIcon={Send}
-                showChevron={false}
-              />
+                  <Text className="mb-2 text-sm font-semibold text-navy-text">
+                    {t('family.relationshipLabel')}
+                  </Text>
+                  <View className="mb-4 flex-row flex-wrap" style={{ gap: 8 }}>
+                    {RELATIONSHIP_OPTIONS.map((option) => {
+                      const active = relationship === option;
+                      return (
+                        <Pressable
+                          key={option}
+                          onPress={() => setRelationship(option)}
+                          className="rounded-full border px-3 py-2"
+                          style={{
+                            borderColor: active ? colors.gold[500] : colors.cream[300],
+                            backgroundColor: active ? colors.gold[50] : colors.white,
+                          }}
+                        >
+                          <Text
+                            className="text-xs font-semibold"
+                            style={{ color: active ? colors.gold[600] : colors.navy.secondary }}
+                          >
+                            {t(`family.relationships.${option}`)}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+
+                  {formError ? <Text className="mb-3 text-sm text-danger">{formError}</Text> : null}
+
+                  <Button
+                    label={t('family.sendInvite')}
+                    onPress={handleSendInvitation}
+                    loading={sendInvitation.isPending}
+                    leftIcon={Send}
+                    showChevron={false}
+                  />
+                </>
+              ) : (
+                <>
+                  <Text className="mb-3 text-xs text-navy-secondary">
+                    {t('family.tabRegisterHint')}
+                  </Text>
+                  <TextField
+                    label={t('family.fullNameLabel')}
+                    placeholder={t('family.fullNamePlaceholder')}
+                    icon={UserPlus}
+                    value={depFullName}
+                    onChangeText={setDepFullName}
+                  />
+                  <TextField
+                    label={t('signup.dateOfBirth')}
+                    placeholder={t('signup.dateOfBirthPlaceholder')}
+                    icon={Calendar}
+                    keyboardType="number-pad"
+                    maxLength={10}
+                    value={depDob}
+                    onChangeText={(v) => setDepDob(formatDobInput(v))}
+                  />
+
+                  <Text className="mb-2 text-sm font-semibold text-navy-text">
+                    {t('family.sexLabel')}
+                  </Text>
+                  <View className="mb-4 flex-row" style={{ gap: 8 }}>
+                    {SEX_OPTIONS.map((option) => {
+                      const active = depSex === option;
+                      return (
+                        <Pressable
+                          key={option}
+                          onPress={() => setDepSex(option)}
+                          className="flex-1 items-center rounded-full border px-3 py-2"
+                          style={{
+                            borderColor: active ? colors.gold[500] : colors.cream[300],
+                            backgroundColor: active ? colors.gold[50] : colors.white,
+                          }}
+                        >
+                          <Text
+                            className="text-xs font-semibold"
+                            style={{ color: active ? colors.gold[600] : colors.navy.secondary }}
+                          >
+                            {t(SEX_LABEL_KEYS[option])}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+
+                  <Text className="mb-2 text-sm font-semibold text-navy-text">
+                    {t('family.relationshipLabel')}
+                  </Text>
+                  <View className="mb-4 flex-row flex-wrap" style={{ gap: 8 }}>
+                    {RELATIONSHIP_OPTIONS.map((option) => {
+                      const active = depRelationship === option;
+                      return (
+                        <Pressable
+                          key={option}
+                          onPress={() => setDepRelationship(option)}
+                          className="rounded-full border px-3 py-2"
+                          style={{
+                            borderColor: active ? colors.gold[500] : colors.cream[300],
+                            backgroundColor: active ? colors.gold[50] : colors.white,
+                          }}
+                        >
+                          <Text
+                            className="text-xs font-semibold"
+                            style={{ color: active ? colors.gold[600] : colors.navy.secondary }}
+                          >
+                            {t(`family.relationships.${option}`)}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+
+                  <TextField
+                    label={t('family.bloodGroupLabel')}
+                    placeholder={t('family.bloodGroupPlaceholder')}
+                    value={depBloodGroup}
+                    onChangeText={setDepBloodGroup}
+                  />
+                  <TextField
+                    label={t('auth.phoneNumber')}
+                    placeholder={t('auth.phoneNumberPlaceholder')}
+                    icon={Phone}
+                    keyboardType="phone-pad"
+                    value={depPhone}
+                    onChangeText={setDepPhone}
+                  />
+
+                  {formError ? <Text className="mb-3 text-sm text-danger">{formError}</Text> : null}
+
+                  <Button
+                    label={t('family.registerDependent')}
+                    onPress={handleRegisterDependent}
+                    loading={registerDependent.isPending}
+                    leftIcon={Baby}
+                    showChevron={false}
+                  />
+                </>
+              )}
             </View>
           ) : null}
         </View>
