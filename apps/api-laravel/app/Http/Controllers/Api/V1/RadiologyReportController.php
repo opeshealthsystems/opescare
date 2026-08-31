@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\RadiologyReportResource;
 use App\Models\RadiologyReport;
 use App\Services\Documents\DocumentIssuanceService;
 use App\Services\Lab\RadiologyReportService;
@@ -37,12 +38,12 @@ class RadiologyReportController extends Controller {
         ]);
         $validated['facility_id'] = $facilityId;
         $report = $this->service->createDraft($validated);
-        return response()->json(['data' => $report], Response::HTTP_CREATED);
+        return response()->json(['data' => RadiologyReportResource::make($report)], Response::HTTP_CREATED);
     }
 
     public function show(string $id): JsonResponse {
         $report = \App\Models\RadiologyReport::with(['patient','orderedBy','reportedBy','facility'])->findOrFail($id);
-        return response()->json(['data' => $report]);
+        return response()->json(['data' => RadiologyReportResource::make($report)]);
     }
 
     public function finalize(Request $request, string $id): JsonResponse {
@@ -68,7 +69,7 @@ class RadiologyReportController extends Controller {
             } catch (\Throwable) {}
         }
 
-        return response()->json(['data' => $report]);
+        return response()->json(['data' => RadiologyReportResource::make($report)]);
     }
 
     public function amend(Request $request, string $id): JsonResponse {
@@ -82,7 +83,7 @@ class RadiologyReportController extends Controller {
         $reason  = $validated['reason'];
         $changes = Arr::except($validated, ['reason']);
         $report  = $this->service->amend($id, $reason, $changes);
-        return response()->json(['data' => $report]);
+        return response()->json(['data' => RadiologyReportResource::make($report)]);
     }
 
     public function distribute(Request $request, string $id): JsonResponse {
@@ -91,11 +92,11 @@ class RadiologyReportController extends Controller {
             'user_ids.*' => ['required','uuid','exists:users,id'],
         ]);
         $report = $this->service->distribute($id, $validated['user_ids']);
-        return response()->json(['data' => $report]);
+        return response()->json(['data' => RadiologyReportResource::make($report)]);
     }
 
     public function pending(string $facilityId): JsonResponse {
         $reports = $this->service->getPendingForFacility($facilityId);
-        return response()->json(['data' => $reports]);
+        return response()->json(['data' => RadiologyReportResource::collection($reports)]);
     }
 }

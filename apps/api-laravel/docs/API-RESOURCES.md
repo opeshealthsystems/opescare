@@ -46,6 +46,13 @@ themselves.
 4. Compose the envelope in the controller:
    `response()->json(['message' => __('...'), 'data' => FooResource::make($m)])`
    or, for a collection, `FooResource::collection($paginator)`.
+5. If the endpoint being converted eager-loads relations (`->with([...])`), the
+   resource MUST re-emit them behind `$this->whenLoaded('rel')` — otherwise the
+   conversion silently drops keys consumers already receive. Use the related
+   entity's own resource when one exists; pass the relation through raw when it
+   does not (still an allow-listed key, and shape-identical to the pre-resource
+   response). `whenLoaded` emits nothing when the relation was not loaded, so
+   endpoints that never load it are unaffected.
 
 **Example — the reference slice** (already converted):
 [EncounterController.php](../app/Http/Controllers/Api/V1/EncounterController.php)
@@ -95,18 +102,26 @@ the recorded baseline.
 A `FooResource::make($m)` return does not match the pattern, so converting an
 endpoint cleanly removes it from the count.
 
-**Current baseline: 197** (FHIR excluded). Progress: 219 → 205 (Communication)
-→ 197 (Legal + Support). The 40 Tier-1 resources already exist under
+**Current baseline: 86** (FHIR excluded). Progress: 219 → 205 (Communication)
+→ 197 (Legal + Support) → 191 (CareMap + Document + PenTest) → 182 (Mortuary
++ MobileGovernance) → 172 (Admin/Tier-1) → 146 (Tier-2) → 117 (Tier-3) → 115
+(Tier-4 tail) → **86** (Tier-5: Radiology, Maternity, AdvanceDirective,
+PenTest, BloodInventory, PaymentPlan, ResearchAccess). The resources live under
 `app/Http/Resources/`.
 
 ## 4. Migration backlog
 
-197 heuristic sites remain across the controllers. Convert high-stakes external
+86 heuristic sites remain across the controllers. Convert high-stakes external
 surfaces first (mobile + Connect partner-facing, then clinical writes), then the
 long tail. After each batch, run the ratchet test and lower the baseline.
 
-> **The count is a heuristic, not a leak list.** A meaningful share of the 197
-> are NOT raw-model leaks — they are **service-returned arrays / DTOs** that the
+The tier tables below are the *original* survey and are no longer a live
+worklist — many of the controllers named there are already converted. Run
+`php artisan test --filter=ApiResponseRatchetTest` to print the current
+hotspots before picking a batch.
+
+> **The count is a heuristic, not a leak list.** A meaningful share of the
+> remainder are NOT raw-model leaks — they are **service-returned arrays / DTOs** that the
 > regex matches but which must be left as-is (e.g. `CarePlanController`,
 > `ControlledSubstanceController` return `$this->service->...()` results guarded
 > by `is_array($x) ? $x['id'] : $x->id` — converting them to `Resource::make()`

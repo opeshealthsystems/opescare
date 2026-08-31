@@ -29,6 +29,12 @@ class PregnancyRecordResource extends ApiResource
             'registered_at'   => $this->registered_at?->toISOString(),
             'created_at'      => $this->created_at?->toISOString(),
             'updated_at'      => $this->updated_at?->toISOString(),
+
+            // Relations are emitted only when eager-loaded, preserving the
+            // pre-resource wire shape of the endpoints that load them.
+            'patient'         => $this->whenLoaded('patient'),
+            'facility'        => $this->whenLoaded('facility'),
+            'provider'        => $this->whenLoaded('provider'),
         ];
     }
 }

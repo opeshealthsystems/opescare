@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DataAccessCommitteeReviewResource;
+use App\Http\Resources\ResearchAccessLogResource;
 use App\Http\Resources\ResearchAccessRequestResource;
 use App\Http\Resources\ResearchDataAgreementResource;
 use App\Models\DataAccessCommitteeReview;
@@ -76,7 +78,7 @@ class ResearchAccessController extends Controller
     {
         $researchRequest->load(['dacReviews', 'dataAgreements']);
 
-        return response()->json(['data' => $researchRequest]);
+        return response()->json(['data' => ResearchAccessRequestResource::make($researchRequest)]);
     }
 
     // ── 2. Submit Request ─────────────────────────────────────────────────
@@ -112,7 +114,7 @@ class ResearchAccessController extends Controller
 
         return response()->json([
             'message' => __('api.research_request_submitted'),
-            'data'    => $researchRequest,
+            'data'    => ResearchAccessRequestResource::make($researchRequest),
         ], 201);
     }
 
@@ -146,7 +148,7 @@ class ResearchAccessController extends Controller
 
         return response()->json([
             'message' => __('api.dac_review_recorded'),
-            'data'    => $review,
+            'data'    => DataAccessCommitteeReviewResource::make($review),
         ], 201);
     }
 
@@ -252,7 +254,7 @@ class ResearchAccessController extends Controller
 
         return response()->json([
             'message' => __('api.access_logged'),
-            'data'    => $log,
+            'data'    => ResearchAccessLogResource::make($log),
         ], 201);
     }
 }

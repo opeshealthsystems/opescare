@@ -21,7 +21,7 @@ class AdvanceDirectiveController extends Controller
     public function index(string $patientId): JsonResponse
     {
         $directives = $this->service->getActiveForPatient($patientId);
-        return response()->json(['data' => $directives]);
+        return response()->json(['data' => AdvanceDirectiveResource::collection($directives)]);
     }
 
     /** POST /api/v1/patients/{patientId}/advance-directives */
@@ -69,7 +69,7 @@ class AdvanceDirectiveController extends Controller
             } catch (\Throwable) {}
         }
 
-        return response()->json(['data' => $directive], 201);
+        return response()->json(['data' => AdvanceDirectiveResource::make($directive)], 201);
     }
 
     /** GET /api/v1/patients/{patientId}/advance-directives/{id} */
@@ -88,6 +88,6 @@ class AdvanceDirectiveController extends Controller
         }
 
         $directive = $this->service->revoke($id, $actorId);
-        return response()->json(['data' => $directive, 'message' => __('api.directive_revoked')]);
+        return response()->json(['data' => AdvanceDirectiveResource::make($directive), 'message' => __('api.directive_revoked')]);
     }
 }

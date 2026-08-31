@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PatientPaymentPlanResource;
+use App\Http\Resources\PaymentPlanInstallmentResource;
 use App\Models\PatientPaymentPlan;
 use App\Services\Billing\PaymentPlanService;
 use Illuminate\Http\JsonResponse;
@@ -41,7 +42,7 @@ class PatientPaymentPlanController extends Controller
             return response()->json(['message' => $e->getMessage(), 'errors' => ['total_amount' => [$e->getMessage()]]], 422);
         }
 
-        return response()->json(['data' => $plan], Response::HTTP_CREATED);
+        return response()->json(['data' => PatientPaymentPlanResource::make($plan)], Response::HTTP_CREATED);
     }
 
     public function show(string $id): JsonResponse
@@ -70,7 +71,7 @@ class PatientPaymentPlanController extends Controller
             $validated['reference'],
         );
 
-        return response()->json(['data' => $installment]);
+        return response()->json(['data' => PaymentPlanInstallmentResource::make($installment)]);
     }
 
     public function forPatient(Request $request, string $patientId): JsonResponse

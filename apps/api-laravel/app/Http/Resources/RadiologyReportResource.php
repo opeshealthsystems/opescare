@@ -31,6 +31,13 @@ class RadiologyReportResource extends ApiResource
             'distributed_at'     => $this->distributed_at?->toISOString(),
             'created_at'         => $this->created_at?->toISOString(),
             'updated_at'         => $this->updated_at?->toISOString(),
+
+            // Relations are emitted only when the controller eager-loaded them,
+            // preserving the pre-resource wire shape of show()/pending().
+            'patient'            => $this->whenLoaded('patient'),
+            'facility'           => $this->whenLoaded('facility'),
+            'orderedBy'          => $this->whenLoaded('orderedBy'),
+            'reportedBy'         => $this->whenLoaded('reportedBy'),
         ];
     }
 }

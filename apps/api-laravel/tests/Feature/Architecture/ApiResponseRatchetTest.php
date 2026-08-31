@@ -40,9 +40,11 @@ class ApiResponseRatchetTest extends TestCase
      * after Mortuary + MobileGovernance; 172 after the Admin controllers
      * (completes Tier-1); 146 after the Tier-2 batch (11 controllers); 117
      * after the Tier-3 batch (17 controllers); 115 after the Tier-4 tail
-     * (CountryExpansion + OfflineSync). This number must only ever go DOWN.
+     * (CountryExpansion + OfflineSync); 86 after the Tier-5 batch (Radiology,
+     * Maternity, AdvanceDirective, PenTest, BloodInventory, PaymentPlan,
+     * ResearchAccess). This number must only ever go DOWN.
      */
-    private const BASELINE = 115;
+    private const BASELINE = 86;
 
     public function test_raw_model_api_responses_do_not_exceed_baseline(): void
     {

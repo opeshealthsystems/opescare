@@ -2,6 +2,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AntenatalRecordResource;
+use App\Http\Resources\AntenatalVisitResource;
+use App\Http\Resources\DeliveryRecordResource;
+use App\Http\Resources\PregnancyRecordResource;
 use App\Models\AntenatalRecord;
 use App\Models\PregnancyRecord;
 use App\Modules\Maternity\Services\AntenatalCareService;
@@ -25,7 +29,7 @@ class MaternityController extends Controller
             ->orderByDesc('registered_at')
             ->get();
 
-        return response()->json(['data' => $records]);
+        return response()->json(['data' => PregnancyRecordResource::collection($records)]);
     }
 
     public function store(Request $request, string $patientId): JsonResponse
@@ -56,20 +60,20 @@ class MaternityController extends Controller
 
         $record = $this->service->registerPregnancy($validated);
 
-        return response()->json(['data' => $record], 201);
+        return response()->json(['data' => PregnancyRecordResource::make($record)], 201);
     }
 
     public function show(string $id): JsonResponse
     {
         $record = PregnancyRecord::with(['patient', 'facility', 'provider'])->findOrFail($id);
-        return response()->json(['data' => $record]);
+        return response()->json(['data' => PregnancyRecordResource::make($record)]);
     }
 
     public function antenatalVisits(string $id): JsonResponse
     {
         $record = PregnancyRecord::findOrFail($id);
         $visits = $record->antenatalVisits()->with('provider')->orderBy('visit_date')->get();
-        return response()->json(['data' => $visits]);
+        return response()->json(['data' => AntenatalVisitResource::collection($visits)]);
     }
 
     public function storeAntenatalVisit(Request $request, string $id): JsonResponse
@@ -99,14 +103,14 @@ class MaternityController extends Controller
 
         $validated['facility_id'] = $facilityId;
         $visit = $this->service->recordAntenatalVisit($id, $validated);
-        return response()->json(['data' => $visit], 201);
+        return response()->json(['data' => AntenatalVisitResource::make($visit)], 201);
     }
 
     public function deliveries(string $id): JsonResponse
     {
         $record     = PregnancyRecord::findOrFail($id);
         $deliveries = $record->deliveryRecords()->with('provider')->get();
-        return response()->json(['data' => $deliveries]);
+        return response()->json(['data' => DeliveryRecordResource::collection($deliveries)]);
     }
 
     // ── Antenatal Care Records (AntenatalCareService) ─────────────────────────
@@ -142,7 +146,7 @@ class MaternityController extends Controller
             $validated['risk_factors'] ?? null
         );
 
-        return response()->json(['data' => $record], 201);
+        return response()->json(['data' => AntenatalRecordResource::make($record)], 201);
     }
 
     /**
@@ -197,7 +201,7 @@ class MaternityController extends Controller
             } catch (\Throwable) {}
         }
 
-        return response()->json(['data' => $visit], 201);
+        return response()->json(['data' => AntenatalVisitResource::make($visit)], 201);
     }
 
     // ── Postnatal Care ───────────────────────────────────────────────────────
@@ -298,6 +302,6 @@ class MaternityController extends Controller
             );
         } catch (\Throwable) {}
 
-        return response()->json(['data' => $delivery], 201);
+        return response()->json(['data' => DeliveryRecordResource::make($delivery)], 201);
     }
 }

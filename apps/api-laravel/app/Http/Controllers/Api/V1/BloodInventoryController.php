@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BloodInventoryResource;
 use App\Modules\Inventory\Services\BloodInventoryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -49,7 +50,7 @@ class BloodInventoryController extends Controller
 
         $items = $this->service->list($facilityId, $request->only(['blood_group', 'component']));
 
-        return response()->json(['facility_id' => $facilityId, 'data' => $items]);
+        return response()->json(['facility_id' => $facilityId, 'data' => BloodInventoryResource::collection($items)]);
     }
 
     /**
@@ -94,7 +95,7 @@ class BloodInventoryController extends Controller
 
         $item = $this->service->upsertUnit($facilityId, $validated);
 
-        return response()->json(['message' => __('api.blood_inventory_updated'), 'data' => $item], 201);
+        return response()->json(['message' => __('api.blood_inventory_updated'), 'data' => BloodInventoryResource::make($item)], 201);
     }
 
     /**
@@ -118,7 +119,7 @@ class BloodInventoryController extends Controller
         return response()->json([
             'message'         => __('api.units_direction', ['direction' => $validated['direction'] . 'ed']),
             'available_units' => $item->available_units,
-            'data'            => $item,
+            'data'            => BloodInventoryResource::make($item),
         ]);
     }
 
@@ -146,6 +147,6 @@ class BloodInventoryController extends Controller
             return response()->json(['message' => __('api.inventory_item_not_found')], 404);
         }
 
-        return response()->json(['message' => __('api.safety_flags_updated'), 'data' => $item]);
+        return response()->json(['message' => __('api.safety_flags_updated'), 'data' => BloodInventoryResource::make($item)]);
     }
 }
