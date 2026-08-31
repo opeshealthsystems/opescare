@@ -1,54 +1,115 @@
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import {
-  ArrowLeft,
   Bell,
+  BellOff,
   Calendar,
   CheckCheck,
   ChevronRight,
+  CircleAlert,
   FlaskConical,
   HeartPulse,
   Lock,
   MessageCircle,
   Pill,
-  RotateCcw,
-  Settings,
+  Settings as SettingsIcon,
   ShieldAlert,
   Sparkles,
   Users,
   type LucideIcon,
 } from 'lucide-react-native';
 import { Screen } from '../components/ui/Screen';
+import { Card } from '../components/ui/Card';
+import { Chip } from '../components/ui/Chip';
+import { EmptyState } from '../components/ui/EmptyState';
+import { SkeletonCard } from '../components/ui/Skeleton';
+import { InlineNotice, ScreenHeader } from '../components/settings/SettingsUi';
+import { toneOf, type Tone } from '../components/ui/tone';
 import {
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
   useNotifications,
   type NotificationItem,
 } from '../lib/api/queries';
-import { colors } from '../theme/tokens';
+import { colors, radii, sizing, spacing, typography } from '../theme/tokens';
+
+/**
+ * Notification Center.
+ *
+ * Reference: `Mobile app screens/a_crisp_mobile_app_screenshot_of_a_notification_c.png`
+ * — title + "Mark all as read", a counted filter-chip row, then Today /
+ * Yesterday / Earlier groups of rows, each with a tinted rounded-square icon
+ * tile, title, body, an action link and a right-hand timestamp over an
+ * unread dot, closing on a privacy assurance block.
+ *
+ * Everything comes from GET /mobile/notifications. Two things the API gives us
+ * are deliberately NOT rendered as-is:
+ *
+ *  - **`action_url` is a web-portal path** (`/portals/patient/logs`,
+ *    `/portals/patient/health-id`), not an app route. Pushing it into the
+ *    router would 404, so it is mapped to the equivalent screen in this app and
+ *    ignored when there is no equivalent.
+ *  - **`action_label` is hardcoded English** on the API side ("View Access
+ *    Logs"), so rendering it would put English into the French app. The label
+ *    is taken from this app's own translations for the resolved destination.
+ *
+ * The demo patient currently has zero notifications, so the empty state is the
+ * state most sessions will show: it is a full `EmptyState` with a real next
+ * step (notification preferences), and it changes copy when the emptiness is
+ * caused by the active filter rather than by having nothing at all.
+ */
 
 type Category = 'all' | 'appointments' | 'health' | 'messages' | 'system';
 
-/** Category → the one tab route we know is real today. `system` has no
- * dedicated in-app destination yet, so its cards render without a tap target
- * rather than linking somewhere wrong. */
-const CATEGORY_ROUTE: Partial<Record<Category, string>> = {
-  appointments: '/(tabs)/records',
-  health: '/(tabs)/health-id',
-  messages: '/(tabs)/messages',
+/** In-app destination + the translation key naming it. */
+interface Destination {
+  route: string;
+  labelKey: string;
+}
+
+/**
+ * The portal paths the API actually emits today
+ * (EmergencyAccessAlertNotification, HealthIdExpiryNotification), mapped to
+ * this app's equivalent screens.
+ */
+const PORTAL_PATH_ROUTES: Record<string, Destination> = {
+  '/portals/patient/logs': { route: '/privacy/access-logs', labelKey: 'notifications.action.accessLogs' },
+  '/portals/patient/health-id': { route: '/(tabs)/health-id', labelKey: 'notifications.action.healthId' },
 };
 
+/** Fallback by notification `type`, for the emitters that send no action at all. */
+const TYPE_ROUTES: { match: string; destination: Destination }[] = [
+  { match: 'appointment', destination: { route: '/appointments', labelKey: 'notifications.action.appointments' } },
+  { match: 'lab', destination: { route: '/labs', labelKey: 'notifications.action.labs' } },
+  { match: 'prescription', destination: { route: '/prescriptions', labelKey: 'notifications.action.prescriptions' } },
+  { match: 'health_id', destination: { route: '/(tabs)/health-id', labelKey: 'notifications.action.healthId' } },
+  { match: 'message', destination: { route: '/(tabs)/messages', labelKey: 'notifications.action.messages' } },
+  { match: 'family', destination: { route: '/family', labelKey: 'notifications.action.family' } },
+  { match: 'emergency', destination: { route: '/privacy/access-logs', labelKey: 'notifications.action.accessLogs' } },
+  { match: 'security', destination: { route: '/privacy/access-logs', labelKey: 'notifications.action.accessLogs' } },
+];
+
+/** Every route above is a real file under `app/` — no dead taps. */
+function destinationFor(item: NotificationItem): Destination | null {
+  if (item.action_url && PORTAL_PATH_ROUTES[item.action_url]) {
+    return PORTAL_PATH_ROUTES[item.action_url];
+  }
+  const type = item.type?.toLowerCase() ?? '';
+  return TYPE_ROUTES.find((entry) => type.includes(entry.match))?.destination ?? null;
+}
+
 function iconForType(type: string): LucideIcon {
-  if (type.includes('emergency') || type.includes('security')) return ShieldAlert;
-  if (type.includes('health_id')) return HeartPulse;
-  if (type.includes('appointment')) return Calendar;
-  if (type.includes('lab')) return FlaskConical;
-  if (type.includes('prescription')) return Pill;
-  if (type.includes('family')) return Users;
-  if (type.includes('message')) return MessageCircle;
-  if (type.includes('tip') || type.includes('health')) return Sparkles;
+  const value = type?.toLowerCase() ?? '';
+  if (value.includes('emergency') || value.includes('security')) return ShieldAlert;
+  if (value.includes('health_id')) return HeartPulse;
+  if (value.includes('appointment')) return Calendar;
+  if (value.includes('lab')) return FlaskConical;
+  if (value.includes('prescription')) return Pill;
+  if (value.includes('family')) return Users;
+  if (value.includes('message')) return MessageCircle;
+  if (value.includes('tip')) return Sparkles;
   return Bell;
 }
 
@@ -61,31 +122,40 @@ function iconForCategory(category: Category): LucideIcon {
     case 'messages':
       return MessageCircle;
     case 'system':
-      return Settings;
+      return SettingsIcon;
     default:
       return Bell;
   }
 }
 
-function severityPalette(severity: string): { bg: string; fg: string } {
-  if (severity === 'high') return { bg: colors.semantic.dangerSurface, fg: colors.semantic.danger };
-  if (severity === 'medium') return { bg: colors.semantic.warningSurface, fg: colors.semantic.warning };
-  return { bg: colors.gold[50], fg: colors.gold[600] };
+/** `severity` is `high | medium | normal` (MobileNotificationController). */
+function toneForSeverity(severity: string): Tone {
+  if (severity === 'high') return 'danger';
+  if (severity === 'medium') return 'warning';
+  return 'gold';
 }
 
 function isSameDay(a: Date, b: Date): boolean {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  return (
+    a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
+  );
 }
 
 type SectionKey = 'today' | 'yesterday' | 'earlier';
 
-function timestampLabel(iso: string | null, sectionKey: SectionKey, sectionLabel: string): string {
+function timestampLabel(
+  iso: string | null,
+  sectionKey: SectionKey,
+  sectionLabel: string,
+  locale: string,
+): string {
   if (!iso) return '';
-  const d = new Date(iso);
-  const time = d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '';
+  const time = date.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' });
   if (sectionKey === 'today') return time;
   if (sectionKey === 'yesterday') return `${sectionLabel}, ${time}`;
-  return d.toLocaleString(undefined, {
+  return date.toLocaleString(locale, {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -95,8 +165,9 @@ function timestampLabel(iso: string | null, sectionKey: SectionKey, sectionLabel
 }
 
 export default function NotificationsScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
+  const locale = i18n.language?.startsWith('fr') ? 'fr-FR' : 'en-US';
   const [filter, setFilter] = useState<Category>('all');
 
   const { data, isLoading, isError, refetch, isRefetching } = useNotifications();
@@ -107,14 +178,23 @@ export default function NotificationsScreen() {
   const unreadCount = data?.unread_count ?? 0;
 
   const counts = useMemo(() => {
-    const base: Record<Category, number> = { all: items.length, appointments: 0, health: 0, messages: 0, system: 0 };
+    const base: Record<Category, number> = {
+      all: items.length,
+      appointments: 0,
+      health: 0,
+      messages: 0,
+      system: 0,
+    };
     for (const item of items) {
       if (item.category in base) base[item.category as Category] += 1;
     }
     return base;
   }, [items]);
 
-  const filtered = filter === 'all' ? items : items.filter((n) => n.category === filter);
+  const filtered = useMemo(
+    () => (filter === 'all' ? items : items.filter((n) => n.category === filter)),
+    [items, filter],
+  );
 
   const sectionLabels: Record<SectionKey, string> = {
     today: t('notifications.sectionToday'),
@@ -132,16 +212,18 @@ export default function NotificationsScreen() {
     for (const item of filtered) {
       let key: SectionKey = 'earlier';
       if (item.created_at) {
-        const d = new Date(item.created_at);
-        if (isSameDay(d, now)) key = 'today';
-        else if (isSameDay(d, yesterdayRef)) key = 'yesterday';
+        const date = new Date(item.created_at);
+        if (!Number.isNaN(date.getTime())) {
+          if (isSameDay(date, now)) key = 'today';
+          else if (isSameDay(date, yesterdayRef)) key = 'yesterday';
+        }
       }
       if (!byKey.has(key)) byKey.set(key, []);
       byKey.get(key)!.push(item);
     }
 
-    // Today / Yesterday / Earlier, in that fixed order, skipping empty ones —
-    // items already arrive newest-first from the API within each bucket.
+    // Fixed Today / Yesterday / Earlier order, empty buckets skipped. Items
+    // already arrive newest-first from the API within each bucket.
     return (['today', 'yesterday', 'earlier'] as const)
       .filter((key) => byKey.has(key))
       .map((key) => ({ key, label: sectionLabels[key], items: byKey.get(key)! }));
@@ -155,170 +237,332 @@ export default function NotificationsScreen() {
     { key: 'system', label: t('notifications.filterSystem') },
   ];
 
-  const handleCardPress = (item: NotificationItem) => {
+  const handlePress = (item: NotificationItem, destination: Destination | null) => {
     if (!item.read) markRead.mutate(item.id);
-    const route = CATEGORY_ROUTE[item.category];
-    if (route) router.push(route);
+    if (destination) router.push(destination.route);
   };
+
+  const canMarkAll = unreadCount > 0 && !markAllRead.isPending;
 
   return (
     <Screen className="px-0">
-      <View className="px-6">
-        <View className="mt-2 flex-row items-center justify-between">
-          <Pressable
-            onPress={() => router.back()}
-            hitSlop={8}
-            className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
-          >
-            <ArrowLeft size={18} color={colors.gold[600]} />
-          </Pressable>
-          <Pressable
-            onPress={() => markAllRead.mutate()}
-            disabled={unreadCount === 0 || markAllRead.isPending}
-            className="flex-row items-center gap-1.5"
-            style={{ opacity: unreadCount === 0 ? 0.4 : markAllRead.isPending ? 0.6 : 1 }}
-          >
-            <Text className="text-sm font-semibold text-success">{t('notifications.markAllRead')}</Text>
-            <CheckCheck size={16} color={colors.semantic.success} />
-          </Pressable>
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: spacing['4xl'] }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={refetch}
+            tintColor={colors.gold[500]}
+          />
+        }
+      >
+        <View style={{ paddingHorizontal: spacing['2xl'] }}>
+          <ScreenHeader
+            title={t('notifications.title')}
+            subtitle={t('notifications.subtitle')}
+            onBack={() => router.back()}
+            action={
+              <Pressable
+                onPress={() => markAllRead.mutate()}
+                disabled={!canMarkAll}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityState={{ disabled: !canMarkAll }}
+                accessibilityLabel={t('notifications.markAllRead')}
+                style={({ pressed }) => ({
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  opacity: !canMarkAll ? 0.4 : pressed ? 0.6 : 1,
+                })}
+              >
+                <Text
+                  style={{
+                    fontSize: typography.size.sm,
+                    fontWeight: typography.weight.semibold,
+                    color: colors.semantic.success,
+                  }}
+                >
+                  {t('notifications.markAllRead')}
+                </Text>
+                <CheckCheck
+                  color={colors.semantic.success}
+                  size={sizing.icon.sm}
+                  style={{ marginLeft: 5 }}
+                />
+              </Pressable>
+            }
+          />
+
+          {unreadCount > 0 ? (
+            <View style={{ marginTop: spacing.md, flexDirection: 'row' }}>
+              <Chip
+                label={t('notifications.unreadCount', { count: unreadCount })}
+                tone="gold"
+                variant="soft"
+                icon={Bell}
+              />
+            </View>
+          ) : null}
+
+          {markAllRead.isError ? (
+            <InlineNotice
+              className="mt-3"
+              tone="danger"
+              icon={CircleAlert}
+              body={t('notifications.markAllError')}
+            />
+          ) : null}
         </View>
 
-        <View className="mt-4 flex-row items-center">
-          <Text className="text-2xl font-extrabold text-navy-text">{t('notifications.title')}</Text>
-          {unreadCount > 0 ? (
-            <View className="ml-2 h-6 min-w-[24px] items-center justify-center rounded-full bg-gold-500 px-2">
-              <Text className="text-xs font-bold text-white">{unreadCount}</Text>
+        {/* Counted filter row — the reference's "All (7) · Appointments (2) …" */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="mt-5 flex-grow-0"
+          contentContainerStyle={{ paddingHorizontal: spacing['2xl'], gap: spacing.sm }}
+        >
+          {chips.map((chip) => (
+            <Chip
+              key={chip.key}
+              label={chip.label}
+              count={counts[chip.key]}
+              icon={iconForCategory(chip.key)}
+              size="md"
+              variant="outline"
+              tone="gold"
+              selected={filter === chip.key}
+              onPress={() => setFilter(chip.key)}
+            />
+          ))}
+        </ScrollView>
+
+        <View style={{ paddingHorizontal: spacing['2xl'], marginTop: spacing.xl }}>
+          {isLoading ? (
+            <View style={{ gap: spacing.lg }}>
+              <SkeletonCard rows={3} />
+              <SkeletonCard rows={2} />
+            </View>
+          ) : isError ? (
+            <Card padding="none">
+              <EmptyState
+                compact
+                tone="danger"
+                icon={CircleAlert}
+                title={t('notifications.errorTitle')}
+                description={t('notifications.errorBody')}
+                actionLabel={t('notifications.retry')}
+                onAction={() => refetch()}
+              />
+            </Card>
+          ) : filtered.length === 0 ? (
+            <Card padding="none">
+              <EmptyState
+                icon={filter === 'all' ? BellOff : iconForCategory(filter)}
+                title={
+                  filter === 'all'
+                    ? t('notifications.emptyTitle')
+                    : t('notifications.emptyFilteredTitle')
+                }
+                description={
+                  filter === 'all'
+                    ? t('notifications.emptySubtitle')
+                    : t('notifications.emptyFilteredSubtitle')
+                }
+                actionLabel={
+                  filter === 'all'
+                    ? t('notifications.emptyAction')
+                    : t('notifications.emptyFilteredAction')
+                }
+                onAction={() =>
+                  filter === 'all' ? router.push('/settings') : setFilter('all')
+                }
+              />
+            </Card>
+          ) : (
+            <>
+              {groups.map((group) => (
+                <View key={group.key} style={{ marginBottom: spacing.xl }}>
+                  <Text
+                    style={{
+                      marginBottom: spacing.md,
+                      fontSize: typography.size.xs,
+                      lineHeight: typography.lineHeight.xs,
+                      fontWeight: typography.weight.bold,
+                      letterSpacing: typography.tracking.overline,
+                      textTransform: 'uppercase',
+                      color: colors.gold[600],
+                    }}
+                  >
+                    {group.label}
+                  </Text>
+
+                  <Card padding="none">
+                    {group.items.map((item, index) => (
+                      <NotificationRow
+                        key={item.id}
+                        item={item}
+                        timestamp={timestampLabel(item.created_at, group.key, group.label, locale)}
+                        destination={destinationFor(item)}
+                        divider={index < group.items.length - 1}
+                        onPress={handlePress}
+                        importantLabel={t('notifications.important')}
+                        actionLabelFor={(labelKey) => t(labelKey)}
+                      />
+                    ))}
+                  </Card>
+                </View>
+              ))}
+
+              <InlineNotice
+                tone="gold"
+                icon={Lock}
+                title={t('notifications.privacyTitle')}
+                body={t('notifications.privacySubtitle')}
+              />
+            </>
+          )}
+        </View>
+      </ScrollView>
+    </Screen>
+  );
+}
+
+/**
+ * One notification. Bespoke rather than a `ListRow` because the reference puts
+ * the timestamp at the *top* right, level with the title, and lets the body
+ * run full width beneath it — a shape `ListRow`'s right-hand value/meta column
+ * cannot express.
+ */
+function NotificationRow({
+  item,
+  timestamp,
+  destination,
+  divider,
+  onPress,
+  importantLabel,
+  actionLabelFor,
+}: {
+  item: NotificationItem;
+  timestamp: string;
+  destination: Destination | null;
+  divider: boolean;
+  onPress: (item: NotificationItem, destination: Destination | null) => void;
+  importantLabel: string;
+  actionLabelFor: (labelKey: string) => string;
+}) {
+  const Icon = iconForType(item.type);
+  const palette = toneOf(toneForSeverity(item.severity));
+
+  return (
+    <Pressable
+      onPress={() => onPress(item, destination)}
+      accessibilityRole="button"
+      accessibilityLabel={item.title}
+      style={({ pressed }) => ({
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        paddingHorizontal: spacing.lg,
+        paddingVertical: spacing.lg,
+        borderBottomWidth: divider ? sizing.hairline : 0,
+        borderBottomColor: colors.line.subtle,
+        backgroundColor: pressed ? colors.surface.scrim : 'transparent',
+      })}
+    >
+      <View
+        style={{
+          width: sizing.tile.lg,
+          height: sizing.tile.lg,
+          borderRadius: radii.tile,
+          backgroundColor: palette.surface,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Icon color={palette.fg} size={sizing.icon.xl} />
+      </View>
+
+      <View style={{ flex: 1, marginLeft: spacing.md }}>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+          <Text
+            style={{
+              flex: 1,
+              paddingRight: spacing.sm,
+              fontSize: typography.size.md,
+              lineHeight: typography.lineHeight.md,
+              fontWeight: item.read ? typography.weight.semibold : typography.weight.bold,
+              color: colors.navy.text,
+            }}
+          >
+            {item.title}
+          </Text>
+          {timestamp ? (
+            <Text
+              numberOfLines={1}
+              style={{
+                fontSize: typography.size.xs,
+                lineHeight: typography.lineHeight.xs,
+                color: colors.navy.muted,
+              }}
+            >
+              {timestamp}
+            </Text>
+          ) : null}
+          <View
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: radii.pill,
+              marginLeft: spacing.sm,
+              marginTop: 5,
+              backgroundColor: item.read ? colors.cream[300] : colors.gold[500],
+            }}
+          />
+        </View>
+
+        {item.message ? (
+          <Text
+            style={{
+              marginTop: 3,
+              fontSize: typography.size.sm,
+              lineHeight: typography.lineHeight.sm,
+              color: colors.navy.secondary,
+            }}
+          >
+            {item.message}
+          </Text>
+        ) : null}
+
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: spacing.sm,
+            marginTop: destination || item.severity === 'high' ? spacing.sm : 0,
+          }}
+        >
+          {item.severity === 'high' ? (
+            <Chip label={importantLabel} tone="danger" icon={ShieldAlert} />
+          ) : null}
+
+          {destination ? (
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text
+                style={{
+                  fontSize: typography.size.sm,
+                  fontWeight: typography.weight.semibold,
+                  color: colors.gold[600],
+                }}
+              >
+                {actionLabelFor(destination.labelKey)}
+              </Text>
+              <ChevronRight color={colors.gold[600]} size={sizing.icon.sm} />
             </View>
           ) : null}
         </View>
-        <Text className="mt-1 text-sm text-navy-secondary">{t('notifications.subtitle')}</Text>
       </View>
-
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        className="mt-4 flex-grow-0"
-        contentContainerStyle={{ paddingHorizontal: 24, gap: 8 }}
-      >
-        {chips.map((chip) => {
-          const active = filter === chip.key;
-          const ChipIcon = iconForCategory(chip.key);
-          return (
-            <Pressable
-              key={chip.key}
-              onPress={() => setFilter(chip.key)}
-              className="flex-row items-center gap-1.5 rounded-full border px-3.5 py-2"
-              style={{
-                borderColor: active ? colors.gold[500] : colors.cream[300],
-                backgroundColor: active ? colors.gold[50] : colors.white,
-              }}
-            >
-              <ChipIcon size={14} color={active ? colors.gold[700] : colors.navy.muted} />
-              <Text
-                className="text-xs font-semibold"
-                style={{ color: active ? colors.gold[700] : colors.navy.secondary }}
-              >
-                {chip.label} ({counts[chip.key]})
-              </Text>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
-
-      <ScrollView
-        className="mt-4 flex-1 px-6"
-        showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={colors.gold[500]} />}
-      >
-        {isLoading ? (
-          <View className="items-center py-16">
-            <ActivityIndicator color={colors.gold[500]} />
-          </View>
-        ) : isError ? (
-          <View className="items-center rounded-2xl bg-white px-6 py-12">
-            <Bell size={28} color={colors.navy.muted} />
-            <Text className="mt-3 text-center text-sm font-semibold text-navy-text">
-              {t('notifications.errorTitle')}
-            </Text>
-            <Pressable onPress={() => refetch()} className="mt-4 flex-row items-center gap-1.5">
-              <RotateCcw size={14} color={colors.gold[600]} />
-              <Text className="text-sm font-semibold text-gold-600">{t('notifications.retry')}</Text>
-            </Pressable>
-          </View>
-        ) : filtered.length === 0 ? (
-          <View className="items-center rounded-2xl bg-white px-6 py-16">
-            <View className="h-14 w-14 items-center justify-center rounded-full bg-gold-50">
-              <Bell size={24} color={colors.gold[500]} />
-            </View>
-            <Text className="mt-4 text-center text-base font-bold text-navy-text">
-              {t('notifications.emptyTitle')}
-            </Text>
-            <Text className="mt-1 text-center text-sm text-navy-secondary">
-              {t('notifications.emptySubtitle')}
-            </Text>
-          </View>
-        ) : (
-          <>
-            {groups.map((group) => (
-              <View key={group.key} className="mb-2">
-                <Text className="mb-2 mt-2 text-sm font-bold text-navy-secondary">{group.label}</Text>
-                <View className="overflow-hidden rounded-2xl bg-white">
-                  {group.items.map((item, idx) => {
-                    const Icon = iconForType(item.type);
-                    const palette = severityPalette(item.severity);
-                    const route = CATEGORY_ROUTE[item.category];
-                    return (
-                      <Pressable
-                        key={item.id}
-                        onPress={() => handleCardPress(item)}
-                        className="flex-row px-4 py-4"
-                        style={{
-                          borderTopWidth: idx === 0 ? 0 : 1,
-                          borderTopColor: colors.cream[200],
-                        }}
-                      >
-                        <View
-                          className="mr-3 h-11 w-11 items-center justify-center rounded-xl"
-                          style={{ backgroundColor: palette.bg }}
-                        >
-                          <Icon size={20} color={palette.fg} />
-                        </View>
-                        <View className="flex-1">
-                          <View className="flex-row items-start justify-between">
-                            <Text className="flex-1 pr-2 text-base font-bold text-navy-text">{item.title}</Text>
-                            <Text className="text-xs text-navy-muted">
-                              {timestampLabel(item.created_at, group.key, group.label)}
-                            </Text>
-                          </View>
-                          <Text className="mt-1 text-sm text-navy-secondary">{item.message}</Text>
-                          {item.action_label && route ? (
-                            <View className="mt-2 flex-row items-center gap-0.5">
-                              <Text className="text-sm font-semibold text-gold-600">{item.action_label}</Text>
-                              <ChevronRight size={14} color={colors.gold[600]} />
-                            </View>
-                          ) : null}
-                        </View>
-                        <View
-                          className="ml-2 mt-1.5 h-2 w-2 rounded-full"
-                          style={{ backgroundColor: item.read ? colors.cream[300] : colors.gold[500] }}
-                        />
-                      </Pressable>
-                    );
-                  })}
-                </View>
-              </View>
-            ))}
-
-            <View className="mb-8 mt-2 flex-row items-center rounded-2xl bg-cream-200 px-4 py-3.5">
-              <Lock size={18} color={colors.gold[600]} />
-              <View className="ml-3 flex-1">
-                <Text className="text-sm font-semibold text-navy-text">{t('notifications.privacyTitle')}</Text>
-                <Text className="mt-0.5 text-xs text-navy-secondary">{t('notifications.privacySubtitle')}</Text>
-              </View>
-            </View>
-          </>
-        )}
-      </ScrollView>
-    </Screen>
+    </Pressable>
   );
 }

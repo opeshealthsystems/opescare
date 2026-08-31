@@ -631,37 +631,88 @@
   },
   "settings": {
     "title": "Paramètres",
-    "subtitle": "Gérez votre langue, vos notifications et cet appareil.",
-    "loadError": "Impossible de charger vos paramètres. Veuillez réessayer.",
+    "subtitle": "Gérez votre compte, vos préférences et cet appareil.",
+    "loadError": "Impossible de charger vos paramètres",
+    "loadErrorBody": "Vérifiez votre connexion et réessayez — rien n’a été modifié.",
     "retry": "Réessayer",
+    "group": {
+      "account": "Compte",
+      "language": "Langue",
+      "notifications": "Notifications",
+      "device": "Cet appareil",
+      "privacy": "Confidentialité et données",
+      "care": "Mes soins",
+      "about": "À propos et assistance"
+    },
+    "account": {
+      "viewProfile": "Voir le profil",
+      "healthId": "Identifiant santé {{id}}",
+      "personal": "Informations personnelles",
+      "personalBody": "Nom, date de naissance, coordonnées et contact d’urgence.",
+      "family": "Famille et personnes à charge",
+      "familyBody": "Invitez un proche ou gérez le dossier d’une personne à charge.",
+      "insurance": "Assurance",
+      "insuranceBody": "Votre couverture et les offres qui vous sont proposées."
+    },
     "language": {
-      "title": "Langue",
-      "body": "Choisissez la langue utilisée dans OpesCare.",
+      "title": "Langue de l’application",
+      "body": "S’applique partout dans OpesCare, sur chaque appareil où vous vous connectez.",
       "en": "English",
-      "fr": "Français"
+      "fr": "Français",
+      "saveError": "Langue modifiée ici, mais impossible de l’enregistrer sur votre compte."
     },
     "notifications": {
-      "title": "Notifications",
-      "body": "Choisissez ce dont vous souhaitez être notifié.",
       "appointments": "Rendez-vous",
-      "appointmentsBody": "Rappels et mises à jour de vos rendez-vous.",
-      "labResults": "Résultats de laboratoire",
+      "appointmentsBody": "Rappels et mises à jour concernant vos rendez-vous.",
+      "labResults": "Résultats d’analyses",
       "labResultsBody": "Alertes lorsque de nouveaux résultats sont disponibles.",
       "prescriptions": "Ordonnances",
       "prescriptionsBody": "Mises à jour sur les ordonnances nouvelles ou renouvelées.",
       "billing": "Facturation",
-      "billingBody": "Factures, paiements et rappels de facturation.",
+      "billingBody": "Factures, paiements et rappels de règlement.",
       "consentRequests": "Demandes de consentement",
-      "consentRequestsBody": "Lorsqu'un établissement demande l'accès à votre dossier.",
-      "updateError": "Impossible de mettre à jour cette préférence. Veuillez réessayer."
+      "consentRequestsBody": "Lorsqu’un établissement demande l’accès à votre dossier.",
+      "unavailable": "Impossible de lire cette préférence",
+      "updateError": "Impossible d’enregistrer cette préférence. Elle reste inchangée — veuillez réessayer.",
+      "centre": "Centre de notifications",
+      "centreBody": "Tout ce qu’OpesCare vous a envoyé."
     },
     "device": {
-      "title": "Cet appareil",
-      "body": "Gérez les notifications push pour cet appareil.",
       "pushLabel": "Notifications push",
-      "pushBody": "Recevez des alertes en temps réel sur cet appareil.",
-      "registerError": "Impossible d'activer les notifications push. Veuillez réessayer.",
-      "revokeError": "Impossible de désactiver les notifications push. Veuillez réessayer."
+      "pushBody": "Alertes en temps réel sur cet appareil.",
+      "pushChecking": "Vérification de cet appareil…",
+      "os_denied": "Votre appareil bloque les notifications d’OpesCare. Autorisez-les dans les réglages de l’appareil, puis réessayez.",
+      "register_failed": "Impossible d’activer les notifications push sur cet appareil. Veuillez réessayer.",
+      "revoke_failed": "Impossible de désactiver les notifications push sur cet appareil. Veuillez réessayer.",
+      "offline": "Accès hors ligne",
+      "offlineBody": "Conservez sur cet appareil une copie limitée et chiffrée de votre dossier."
+    },
+    "privacy": {
+      "consent": "Confidentialité et consentement",
+      "consentBody": "Autorisez ou révoquez l’accès d’un établissement à votre dossier.",
+      "accessLogs": "Historique des accès",
+      "accessLogsBody": "Qui a consulté votre dossier, quand et pourquoi.",
+      "dataRequests": "Demandes de données",
+      "dataRequestsBody": "Demandez un export ou une correction de votre dossier.",
+      "download": "Télécharger mon dossier",
+      "downloadBody": "Obtenez une copie PDF ou FHIR de votre dossier médical."
+    },
+    "care": {
+      "carePlans": "Plans de soins",
+      "carePlansBody": "Les objectifs et les étapes définis avec votre équipe soignante.",
+      "referrals": "Orientations",
+      "referralsBody": "Vers qui vous avez été orienté, et par qui."
+    },
+    "about": {
+      "help": "Aide et assistance",
+      "helpBody": "Contactez notre équipe ou suivez une demande déjà envoyée.",
+      "version": "Version de l’application",
+      "versionUnknown": "Inconnue",
+      "updateAvailable": "La version {{version}} est disponible."
+    },
+    "assurance": {
+      "title": "Votre dossier vous suit",
+      "body": "Votre identifiant santé et votre dossier vous appartiennent. Un établissement ne voit que ce que vous avez autorisé, et chaque accès est inscrit dans votre historique."
     }
   },
   "documents": {
@@ -1520,23 +1571,40 @@
   },
   "notifications": {
     "title": "Centre de notifications",
-    "subtitle": "Restez informé de votre santé, vos rendez-vous et vos messages.",
+    "subtitle": "Restez informé de votre santé, de vos rendez-vous et de vos messages.",
     "markAllRead": "Tout marquer comme lu",
+    "markAllError": "Impossible de tout marquer comme lu. Veuillez réessayer.",
+    "unreadCount_one": "{{count}} non lue",
+    "unreadCount_other": "{{count}} non lues",
+    "important": "Important",
     "filterAll": "Toutes",
     "filterAppointments": "Rendez-vous",
     "filterHealth": "Santé",
     "filterMessages": "Messages",
     "filterSystem": "Système",
-    "sectionToday": "Aujourd'hui",
+    "sectionToday": "Aujourd’hui",
     "sectionYesterday": "Hier",
     "sectionEarlier": "Plus tôt",
     "emptyTitle": "Vous êtes à jour",
-    "emptySubtitle": "Les mises à jour sur votre santé, vos rendez-vous et vos messages s'afficheront ici.",
+    "emptySubtitle": "Les mises à jour concernant vos rendez-vous, résultats, ordonnances et demandes de consentement apparaîtront ici.",
+    "emptyAction": "Préférences de notification",
+    "emptyFilteredTitle": "Rien dans cette catégorie",
+    "emptyFilteredSubtitle": "Vous avez des notifications, mais aucune dans cette catégorie.",
+    "emptyFilteredAction": "Afficher toutes les notifications",
     "errorTitle": "Impossible de charger vos notifications",
+    "errorBody": "Vérifiez votre connexion et réessayez — rien n’a été perdu.",
     "retry": "Réessayer",
-    "viewDetails": "Voir les détails",
-    "privacyTitle": "Vos notifications sont privées et sécurisées",
-    "privacySubtitle": "Vous seul pouvez consulter vos notifications de santé."
+    "privacyTitle": "Vos notifications sont privées",
+    "privacySubtitle": "Vous seul pouvez les voir, et elles ne mentionnent jamais un diagnostic ni la valeur d’un résultat.",
+    "action": {
+      "accessLogs": "Voir l’historique des accès",
+      "healthId": "Voir l’identifiant santé",
+      "appointments": "Voir les rendez-vous",
+      "labs": "Voir les résultats d’analyses",
+      "prescriptions": "Voir les ordonnances",
+      "messages": "Ouvrir les messages",
+      "family": "Voir la famille"
+    }
   },
   "messages": {
     "title": "Messages",
@@ -2024,50 +2092,85 @@
   },
   "help": {
     "title": "Aide et assistance",
-    "subtitle": "Nous sommes là pour vous aider. Contactez notre équipe ou suivez une demande.",
-    "quickLinks": "Liens rapides",
-    "quickLink": {
-      "healthId": "Identifiant santé",
-      "appointments": "Rendez-vous",
-      "records": "Dossiers de santé",
-      "privacy": "Sécurité et confidentialité",
-      "family": "Personnes à charge"
-    },
+    "subtitle": "Trouvez une réponse, contactez notre équipe ou suivez une demande déjà envoyée.",
     "contact": {
-      "title": "Nous contacter",
+      "title": "Comment pouvons-nous vous aider ?",
       "body": "Choisissez le moyen qui vous convient le mieux.",
       "email": "Assistance par e-mail",
       "emailBody": "Nous répondons généralement sous 24 heures.",
       "phone": "Assistance téléphonique",
-      "phoneBody": "Parlez à un représentant du support.",
-      "unavailable": "Aucun canal de contact direct n'est encore configuré — utilisez « Soumettre une demande » ci-dessous et notre équipe vous répondra."
+      "phoneBody": "Parlez à un conseiller de l’assistance.",
+      "unavailable": "Aucun canal de contact direct n’est encore configuré pour votre région. Envoyez une demande ci-dessous et notre équipe reviendra vers vous.",
+      "ticket": "Demande d’assistance",
+      "ticketBody": "Ouvrez une demande et suivez-la ici — nous répondons dans le fil.",
+      "ticketOpen_one": "{{count}} demande ouverte",
+      "ticketOpen_other": "{{count}} demandes ouvertes",
+      "ticketNone": "Aucune demande ouverte"
+    },
+    "topicsTitle": "Sujets d’aide fréquents",
+    "topic": {
+      "healthId": "Identifiant santé",
+      "healthIdBody": "Présentez, partagez ou renouvelez votre identité santé portable.",
+      "appointments": "Rendez-vous",
+      "appointmentsBody": "Prenez un rendez-vous, consultez-le ou annulez-le.",
+      "records": "Dossier médical",
+      "recordsBody": "Votre historique, vos résultats, ordonnances et documents.",
+      "privacy": "Confidentialité et sécurité",
+      "privacyBody": "Consentement, historique des accès et vos droits sur les données.",
+      "family": "Famille et personnes à charge",
+      "familyBody": "Invitez un proche ou gérez le dossier d’une personne à charge."
+    },
+    "faqTitle": "Questions fréquentes",
+    "faq": {
+      "healthIdQ": "Comment présenter mon identifiant santé dans un établissement ?",
+      "healthIdA": "Ouvrez l’onglet Identifiant santé. Il affiche votre identifiant et un QR code que l’établissement peut scanner. Vous pouvez aussi générer un QR code temporaire, qui expire, si vous préférez ne pas partager le permanent.",
+      "openHealthId": "Ouvrir l’identifiant santé",
+      "whoSeesQ": "Qui peut consulter mon dossier médical ?",
+      "whoSeesA": "Uniquement les établissements auxquels vous avez donné votre consentement. Vous autorisez ou révoquez chaque demande dans Confidentialité et consentement, et chaque accès à votre dossier est inscrit dans votre historique des accès.",
+      "openPrivacy": "Ouvrir Confidentialité et consentement",
+      "copyQ": "Comment obtenir une copie de mon dossier ?",
+      "copyA": "Télécharger mon dossier exporte votre dossier médical en PDF, à lire ou à imprimer, ou en fichier FHIR pour un autre système. Pour un export formel de vos données, faites une demande dans Demandes de données.",
+      "openExport": "Ouvrir Télécharger mon dossier",
+      "offlineQ": "Puis-je utiliser OpesCare sans connexion ?",
+      "offlineA": "Oui, si vous activez l’accès hors ligne. Il conserve sur cet appareil une copie limitée et chiffrée — profil, prochains rendez-vous, médicaments, allergies et profil d’urgence — et vous indique la date de la dernière mise à jour.",
+      "openOffline": "Ouvrir l’accès hors ligne",
+      "bookingQ": "Comment prendre un rendez-vous ?",
+      "bookingA": "Choisissez un établissement, sélectionnez une date et réservez l’un des créneaux qu’il a publiés. Vos rendez-vous à venir et passés figurent dans Rendez-vous, où vous pouvez aussi en annuler un.",
+      "openBooking": "Prendre un rendez-vous",
+      "familyQ": "Puis-je gérer le dossier d’un proche ?",
+      "familyA": "Vous pouvez inviter un proche à relier son dossier au vôtre, ou enregistrer une personne à charge, par exemple un enfant. Les deux se font dans Famille, et une invitation peut être annulée tant qu’elle est en attente.",
+      "openFamily": "Ouvrir Famille"
     },
     "requestForm": {
-      "title": "Soumettre une demande",
-      "body": "Vous ne trouvez pas ce qu'il vous faut ? Décrivez le problème et notre équipe vous répondra.",
+      "title": "Envoyer une demande",
+      "body": "Vous ne trouvez pas ce qu’il vous faut ? Dites-nous ce qui ne va pas et notre équipe prendra le relais.",
       "category": "Catégorie",
       "subject": "Objet",
       "subjectPlaceholder": "Décrivez brièvement le problème",
       "description": "Description",
       "descriptionPlaceholder": "Donnez-nous le plus de détails possible.",
+      "privacyHint": "Les données personnelles de votre message sont masquées avant que notre équipe ne les voie. Décrivez le problème, pas votre historique médical.",
       "submit": "Envoyer la demande",
-      "submitError": "Impossible d'envoyer votre demande. Veuillez réessayer.",
-      "submitted": "Demande envoyée — nous reviendrons vers vous bientôt."
+      "submitError": "Impossible d’envoyer votre demande. Veuillez réessayer.",
+      "submitted": "Demande reçue",
+      "submittedBody": "Nous avons ouvert la demande n° {{ref}}. Suivez-la ci-dessous dans Mes demandes."
     },
     "category": {
       "technical_issue": "Problème technique",
       "appointment_issue": "Rendez-vous",
       "billing_question": "Facturation",
       "account_access": "Accès au compte",
-      "medical_records": "Dossiers médicaux",
+      "medical_records": "Dossier médical",
       "prescription_pharmacy": "Ordonnances et pharmacie",
       "other": "Autre"
     },
     "myRequests": {
-      "title": "Mes demandes d'assistance",
-      "body": "Suivez vos demandes d'assistance et leur statut.",
-      "empty": "Vous n'avez soumis aucune demande pour le moment.",
-      "loadError": "Impossible de charger vos demandes d'assistance.",
+      "title": "Mes demandes",
+      "meta": "#{{ref}} · {{category}} · mis à jour le {{updated}}",
+      "emptyTitle": "Aucune demande pour l’instant",
+      "empty": "Lorsque vous envoyez une demande, elle apparaît ici avec son statut et nos réponses.",
+      "loadError": "Impossible de charger vos demandes",
+      "loadErrorBody": "Vérifiez votre connexion et réessayez.",
       "retry": "Réessayer"
     },
     "status": {
@@ -2077,16 +2180,22 @@
       "resolved": "Résolue"
     },
     "detail": {
-      "description": "Description",
+      "loading": "Chargement…",
+      "description": "Ce que vous nous avez indiqué",
       "conversation": "Conversation",
-      "replyPlaceholder": "Écrivez une réponse…",
-      "resolutionNote": "Note de résolution",
-      "empty": "Aucun message pour le moment."
+      "replyPlaceholder": "Écrire une réponse…",
+      "replyError": "Impossible d’envoyer votre réponse. Veuillez réessayer.",
+      "resolutionNote": "Comment cela a été résolu",
+      "empty": "Aucune réponse pour l’instant. Notre équipe répondra dans ce fil.",
+      "slaDue": "Réponse attendue le {{date}}",
+      "send": "Envoyer"
     },
     "emergency": {
       "title": "Urgence médicale ?",
-      "body": "En cas d'urgence médicale, appelez immédiatement les services d'urgence locaux — n'attendez pas une réponse du support."
-    }
+      "body": "En cas d’urgence médicale, appelez immédiatement les services d’urgence de votre localité — n’attendez pas une réponse de l’assistance."
+    },
+    "offlineTitle": "Pas de connexion ?",
+    "offlineBody": "L’accès hors ligne conserve sur cet appareil une copie chiffrée de l’essentiel."
   },
   "bloodFinder": {
     "title": "Recherche de sang",
@@ -2290,9 +2399,9 @@
     "outboxSendCta": "Envoyer",
     "outboxSending": "Envoi…",
     "outboxSent": "{{count}} transmise(s) pour rapprochement.",
-    "disableTitle": "Désactiver et effacer",
-    "disableBody": "Supprime la copie enregistrée et l'autorisation de cet appareil.",
-    "disableCta": "Effacer les données enregistrées",
+    "disableTitle": "Effacer de cet appareil",
+    "disableBody": "Supprime la copie enregistrée sur cet appareil, ainsi que les modifications en attente de synchronisation.",
+    "disableCta": "Effacer les données",
     "erasing": "Effacement…",
     "webNotice": "Ceci est l'aperçu web. Les données sont conservées dans le stockage du navigateur, qui n'est pas chiffré — utilisez l'application mobile pour un vrai accès hors connexion.",
     "privacyNote": "OpesCare enregistre quel appareil détient une copie et pour combien de temps. La copie expire d'elle-même et vous pouvez l'effacer à tout moment.",
@@ -2302,6 +2411,11 @@
     "justNow": "à l'instant",
     "minutesAgo": "il y a {{count}} min",
     "hoursAgo": "il y a {{count}} h",
-    "daysAgo": "il y a {{count}} j"
+    "daysAgo": "il y a {{count}} j",
+    "disableCancel": "Conserver",
+    "disableConfirmTitle": "Effacer la copie sur cet appareil ?",
+    "disableConfirmBody": "Tout ce qu’OpesCare a enregistré sur cet appareil est supprimé, y compris les modifications non synchronisées. L’autorisation de cet appareil n’est pas annulée — OpesCare ne dispose d’aucun moyen de la révoquer — mais elle expire d’elle-même : sous 24 heures, ou 6 heures en mode urgence. Cette action est irréversible.",
+    "erased": "Effacé. Plus rien de votre dossier n’est conservé sur cet appareil.",
+    "errorErase": "Impossible d’effacer la copie enregistrée. Veuillez réessayer."
   }
 }
