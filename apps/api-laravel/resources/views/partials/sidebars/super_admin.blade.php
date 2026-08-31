@@ -61,9 +61,11 @@
 
   {{-- Clinical --}}
   <div class="nav-section-label">{{ __('public.portal.nav_clinical', [], $l) ?: 'Clinical' }}</div>
+  @feature('clinical_decision_support')
   <a href="{{ route('portals.admin.cdss.index') }}" class="nav-item {{ request()->routeIs('portals.admin.cdss.*') ? 'active' : '' }}">
     <i data-lucide="brain"></i><span>{{ __('public.portal.nav_cdss_rules', [], $l) ?: 'CDSS Rules' }}</span>
   </a>
+  @endfeature
   <a href="{{ route('portals.admin.code_mappings.index') }}" class="nav-item {{ request()->routeIs('portals.admin.code_mappings.*') ? 'active' : '' }}">
     <i data-lucide="tags"></i><span>{{ __('public.portal.nav_code_mappings', [], $l) ?: 'Code Mappings' }}</span>
   </a>

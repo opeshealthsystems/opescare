@@ -17,10 +17,12 @@
         <i data-lucide="upload"></i>
         <span>{{ __('public.portal.nav_data_import', [], $l) ?: 'Data Import' }}</span>
     </a>
+    @feature('analytics_dashboards')
     <a href="{{ route('portals.staff.analytics.data_quality') }}" class="sidebar-link">
         <i data-lucide="bar-chart-2"></i>
         <span>{{ __('public.portal.nav_analytics', [], $l) ?: 'Data Quality Analytics' }}</span>
     </a>
+    @endfeature
     <a href="{{ route('portals.staff.support') }}" class="sidebar-link">
         <i data-lucide="headset"></i>
         <span>{{ __('public.portal.nav_support', [], $l) ?: 'Support' }}</span>

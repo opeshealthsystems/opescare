@@ -31,10 +31,26 @@ class AppServiceProvider extends ServiceProvider
             'patient' => \App\Models\Patient::class,
         ]);
 
-        // @feature('teleconsult') … @endfeature — gate UI by patient subscription
-        // feature (honours family-sharing coverage). False when not authenticated
-        // as a patient.
+        // @feature('insurance') … @endfeature — hide UI belonging to a module
+        // frozen out of the V1 launch scope (config/features.php). FAILS CLOSED:
+        // an unknown key renders nothing.
+        //
+        // A frozen module must be absent from BOTH the routes and the nav — a
+        // gated route with a live nav link is a dead link, and a nav link with
+        // no gate is a feature reachable by URL only. Wrap every nav entry that
+        // points into a frozen module.
         \Illuminate\Support\Facades\Blade::if('feature', function (string $key) {
+            return \App\Support\Features::enabled($key);
+        });
+
+        // @patientfeature('teleconsult') … @endpatientfeature — gate UI by patient
+        // subscription feature (honours family-sharing coverage). False when not
+        // authenticated as a patient.
+        //
+        // Previously registered as @feature; renamed when @feature became the V1
+        // module-freeze gate above. The two answer different questions: this one
+        // is "has this patient paid for it", @feature is "does this product ship".
+        \Illuminate\Support\Facades\Blade::if('patientfeature', function (string $key) {
             $patient = auth()->user()?->patient;
             return $patient
                 ? app(\App\Modules\Subscription\Services\PatientSubscriptionService::class)->hasFeature($patient, $key)

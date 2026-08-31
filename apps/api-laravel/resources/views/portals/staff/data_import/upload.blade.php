@@ -11,18 +11,26 @@
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_overview') }}</div>
     <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i><span>{{ __('public.portal.nav_dashboard') }}</span></a>
+    @feature('analytics_dashboards')
     <a href="{{ route('portals.staff.analytics') }}" class="sidebar-link"><i data-lucide="bar-chart-2"></i><span>{{ __('public.portal.nav_analytics') }}</span></a>
+    @endfeature
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_operations') }}</div>
+    @feature('billing')
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link"><i data-lucide="receipt"></i><span>{{ __('public.portal.nav_billing') }}</span></a>
+    @endfeature
     <a href="{{ route('portals.staff.support') }}" class="sidebar-link"><i data-lucide="headset"></i><span>{{ __('public.portal.nav_support') }}</span></a>
     <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active"><i data-lucide="upload-cloud"></i><span>{{ __('public.portal.nav_data_import') }}</span></a>
 </div>
+    @feature('clinical_decision_support')
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
         <i data-lucide="brain-circuit"></i> {{ __('public.staff_portal.nav_clinical_alerts') }}</a>
+    @endfeature
+    @feature('inventory_ops')
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
         <i data-lucide="package"></i> {{ __('public.portal.nav_supply') }}</a>
+    @endfeature
 @endsection
 
 @section('breadcrumb_home', __('staff_data.bc_home', [], app()->getLocale()) ?: 'Staff Portal')

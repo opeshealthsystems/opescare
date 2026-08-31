@@ -6,12 +6,14 @@
 <div class="page-head">
     <h2>{{ __('public.stf_tele_index_heading') }}</h2>
     <div class="page-head__spacer"></div>
+    @feature('telemedicine_full')
     <a href="{{ route('portals.staff.telemedicine.waiting_room') }}" class="btn btn-secondary btn-sm">
         {{ __('public.stf_tele_index_btn_waiting_room') }}
         @if($waiting > 0)
             <span class="badge badge-danger">{{ $waiting }}</span>
         @endif
     </a>
+    @endfeature
     <a href="{{ route('portals.staff.telemedicine.create') }}" class="btn btn-primary btn-sm">
         <i data-lucide="plus"></i> {{ __('public.stf_tele_index_btn_schedule') }}
     </a>

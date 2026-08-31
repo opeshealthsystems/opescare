@@ -25,10 +25,12 @@
         <i data-lucide="list-ordered"></i>
         <span>{{ __('public.portal.nav_queue', [], $l) ?: 'Patient Queue' }}</span>
     </a>
+    @feature('clinical_decision_support')
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link">
         <i data-lucide="brain"></i>
         <span>{{ __('public.portal.nav_cdss', [], $l) ?: 'CDSS' }}</span>
     </a>
+    @endfeature
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_operations', [], $l) ?: 'Operations' }}</div>

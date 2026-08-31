@@ -93,9 +93,11 @@
             <i data-lucide="save"></i> {{ __('public.lite_portal.consult_btn_save', [], $l) ?: 'Save note' }}
         </button>
         @if($patient)
+        @feature('billing')
         <a href="{{ route('portals.lite.billing', ['patient_id' => $patient->id]) }}" class="lite-btn lite-btn--outline">
             <i data-lucide="receipt"></i> {{ __('public.lite_portal.action_billing', [], $l) ?: 'Billing' }}
         </a>
+        @endfeature
         @endif
     </div>
     <div class="lite-empty lite-mt">

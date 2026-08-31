@@ -45,10 +45,12 @@
         <i data-lucide="microscope"></i>
         <span>{{ __('public.portal.nav_lab_orders', [], $l) ?: 'Lab Orders' }}</span>
     </a>
+    @feature('clinical_decision_support')
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link">
         <i data-lucide="brain"></i>
         <span>{{ __('public.portal.nav_cdss', [], $l) ?: 'CDSS' }}</span>
     </a>
+    @endfeature
     <a href="{{ route('portals.staff.telemedicine.index') }}" class="sidebar-link">
         <i data-lucide="video"></i>
         <span>{{ __('public.portal.nav_telemedicine', [], $l) ?: 'Telemedicine' }}</span>
@@ -56,14 +58,18 @@
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_operations', [], $l) ?: 'Operations' }}</div>
+    @feature('billing')
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>
         <span>{{ __('public.portal.nav_billing', [], $l) ?: 'Billing' }}</span>
     </a>
+    @endfeature
+    @feature('analytics_dashboards')
     <a href="{{ route('portals.staff.analytics') }}" class="sidebar-link">
         <i data-lucide="bar-chart-2"></i>
         <span>{{ __('public.portal.nav_analytics', [], $l) ?: 'Analytics' }}</span>
     </a>
+    @endfeature
     <a href="{{ route('portals.staff.support') }}" class="sidebar-link">
         <i data-lucide="headset"></i>
         <span>{{ __('public.portal.nav_support', [], $l) ?: 'Support' }}</span>

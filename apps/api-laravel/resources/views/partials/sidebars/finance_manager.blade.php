@@ -4,6 +4,7 @@
     {{ __('portal.finance_manager_role', [], $l) ?: 'Finance Manager' }}
 </div>
 <div style="margin-bottom:var(--p-space-3);"></div>
+@feature('billing')
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_dashboard', [], $l) ?: 'Overview' }}</div>
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
@@ -11,12 +12,16 @@
         <span>{{ __('public.portal.nav_dashboard', [], $l) ?: 'Dashboard' }}</span>
     </a>
 </div>
+@endfeature
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_billing', [], $l) ?: 'Finance' }}</div>
+    @feature('billing')
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>
         <span>{{ __('public.portal.nav_billing', [], $l) ?: 'Billing & Refunds' }}</span>
     </a>
+    @endfeature
+    @feature('analytics_dashboards')
     <a href="{{ route('portals.staff.analytics.financial') }}" class="sidebar-link">
         <i data-lucide="trending-up"></i>
         <span>{{ __('public.portal.nav_analytics', [], $l) ?: 'Financial Reports' }}</span>
@@ -25,6 +30,7 @@
         <i data-lucide="bar-chart-2"></i>
         <span>{{ __('public.portal.nav_analytics', [], $l) ?: 'Analytics' }}</span>
     </a>
+    @endfeature
     <a href="{{ route('portals.staff.support') }}" class="sidebar-link">
         <i data-lucide="headset"></i>
         <span>{{ __('public.portal.nav_support', [], $l) ?: 'Support' }}</span>

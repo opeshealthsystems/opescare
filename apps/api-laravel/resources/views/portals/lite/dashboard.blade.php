@@ -54,10 +54,12 @@
         <div class="lite-btn-card__icon lite-btn-card__icon--warning"><i data-lucide="stethoscope"></i></div>
         {{ __('public.lite_portal.action_consultation', [], app()->getLocale()) ?: 'Consultation' }}
     </a>
+    @feature('billing')
     <a href="{{ route('portals.lite.billing') }}" class="lite-btn-card">
         <div class="lite-btn-card__icon lite-btn-card__icon--success"><i data-lucide="receipt"></i></div>
         {{ __('public.lite_portal.action_billing', [], app()->getLocale()) ?: 'Billing' }}
     </a>
+    @endfeature
     <a href="{{ route('portals.lite.devices') }}" class="lite-btn-card">
         <div class="lite-btn-card__icon"><i data-lucide="monitor-smartphone"></i></div>
         {{ __('public.lite_portal.action_devices', [], app()->getLocale()) ?: 'Devices' }}

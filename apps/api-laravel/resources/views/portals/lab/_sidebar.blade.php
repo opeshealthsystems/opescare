@@ -18,9 +18,11 @@
         <i data-lucide="file-bar-chart"></i><span>{{ __('public.lab_portal.nav_results', [], $l) ?: 'Results' }}</span>
     </a>
 </div>
+@feature('clinical_decision_support')
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.lab_portal.nav_cdss_section', [], $l) ?: 'CDSS' }}</div>
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link" target="_self">
         <i data-lucide="brain"></i><span>{{ __('public.lab_portal.nav_cdss_rules', [], $l) ?: 'CDSS Rules' }}</span>
     </a>
 </div>
+@endfeature

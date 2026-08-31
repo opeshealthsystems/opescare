@@ -21,9 +21,11 @@
     <h2>{{ __('public.pharmacy_portal.page_heading_inventory', [], $l) ?: 'Drug inventory' }}</h2>
     <p class="page-subtitle">{{ __('public.pharmacy_portal.page_subtitle_inventory', [], $l) ?: 'Current stock levels, expiries, and availability.' }}</p>
     <div class="page-head__spacer"></div>
+    @feature('inventory_ops')
     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="btn btn-secondary btn-sm">
         <i data-lucide="settings"></i> {{ __('public.pharmacy_portal.btn_manage_stock', [], $l) ?: 'Manage stock' }}
     </a>
+    @endfeature
 </div>
 
 <form method="GET" class="filter-bar">
@@ -39,7 +41,9 @@
     </select>
     <button type="submit" class="btn btn-secondary btn-sm"><i data-lucide="filter"></i> {{ __('public.pharmacy_portal.btn_filter', [], $l) ?: 'Filter' }}</button>
     @if(request()->hasAny(['stock_status','search']))
+        @feature('inventory_ops')
         <a href="{{ route('portals.pharmacy.inventory') }}" class="btn btn-ghost btn-sm">{{ __('public.pharmacy_portal.btn_clear', [], $l) ?: 'Clear' }}</a>
+        @endfeature
     @endif
 </form>
 

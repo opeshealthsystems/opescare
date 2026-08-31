@@ -66,6 +66,7 @@
         <span>{{ __('public.pat_nav_referrals', [], $l) ?: 'Referrals' }}</span>
     </a>
 </div>
+@feature('insurance_marketplace')
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_insurance_section', [], $l) ?: 'Insurance' }}</div>
     <a href="{{ route('portals.patient.insurance') }}" class="sidebar-link {{ request()->routeIs('portals.patient.insurance*') ? 'active' : '' }}">
@@ -73,16 +74,19 @@
         <span>{{ __('public.portal.nav_health_insurance', [], $l) ?: 'Health Insurance' }}</span>
     </a>
 </div>
+@endfeature
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_billing', [], $l) ?: 'Billing' }}</div>
     <a href="{{ route('portals.patient.subscription') }}" class="sidebar-link {{ request()->routeIs('portals.patient.subscription') ? 'active' : '' }}">
         <i data-lucide="credit-card"></i>
         <span>{{ __('public.portal.nav_subscription', [], $l) ?: 'Subscription' }}</span>
     </a>
+    @feature('billing')
     <a href="{{ route('portals.patient.billing') }}" class="sidebar-link {{ request()->routeIs('portals.patient.billing*') ? 'active' : '' }}">
         <i data-lucide="receipt"></i>
         <span>{{ __('billing.nav', [], $l) ?: 'Billing' }}</span>
     </a>
+    @endfeature
     <a href="{{ route('portals.patient.refer') }}" class="sidebar-link {{ request()->routeIs('portals.patient.refer') ? 'active' : '' }}">
         <i data-lucide="gift"></i>
         <span>{{ __('referral.nav_label', [], $l) ?: 'Refer & Earn' }}</span>

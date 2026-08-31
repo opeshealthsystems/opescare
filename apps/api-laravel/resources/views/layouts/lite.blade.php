@@ -358,10 +358,12 @@
            class="lite-sidenav__link {{ request()->routeIs('portals.lite.consultation') ? 'active' : '' }}">
             <i data-lucide="stethoscope"></i> {{ __('lite_chrome.nav_consultation', [], app()->getLocale()) ?: 'Consultation' }}
         </a>
+        @feature('billing')
         <a href="{{ route('portals.lite.billing') }}"
            class="lite-sidenav__link {{ request()->routeIs('portals.lite.billing') ? 'active' : '' }}">
             <i data-lucide="receipt"></i> {{ __('lite_chrome.nav_billing', [], app()->getLocale()) ?: 'Billing' }}
         </a>
+        @endfeature
         <div class="lite-sidenav__section">{{ __('lite_chrome.nav_admin', [], app()->getLocale()) ?: 'Admin' }}</div>
         <a href="{{ route('portals.lite.devices') }}"
            class="lite-sidenav__link {{ request()->routeIs('portals.lite.devices') ? 'active' : '' }}">

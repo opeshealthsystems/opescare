@@ -33,21 +33,27 @@
     <a href="{{ route('portals.staff.hr.shifts') }}" class="sidebar-link">
         <i data-lucide="calendar-clock"></i><span>{{ __('public.adm_clin_sidebar_link_shifts') }}</span>
     </a>
+    @feature('analytics_dashboards')
     <a href="{{ route('portals.staff.analytics') }}" class="sidebar-link">
         <i data-lucide="bar-chart-2"></i><span>{{ __('public.adm_clin_sidebar_link_analytics') }}</span>
     </a>
+    @endfeature
     <a href="{{ route('portals.staff.wards') }}" class="sidebar-link">
         <i data-lucide="bed"></i><span>{{ __('public.adm_clin_sidebar_link_wards') }}</span>
     </a>
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.adm_clin_sidebar_section_finance') }}</div>
+    @feature('billing')
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i><span>{{ __('public.adm_clin_sidebar_link_billing') }}</span>
     </a>
+    @endfeature
+    @feature('analytics_dashboards')
     <a href="{{ route('portals.staff.analytics.financial') }}" class="sidebar-link">
         <i data-lucide="trending-up"></i><span>{{ __('public.adm_clin_sidebar_link_fin_analytics') }}</span>
     </a>
+    @endfeature
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.adm_clin_sidebar_section_security') }}</div>

@@ -139,10 +139,12 @@
         <div class="quick-action-icon"><i data-lucide="users"></i></div>
         <span class="quick-action-label">{{ __('public.portal.nav_family', [], app()->getLocale()) ?: 'Family' }}</span>
     </a>
+    @feature('insurance_marketplace')
     <a href="{{ route('portals.patient.insurance') }}" class="quick-action-btn">
         <div class="quick-action-icon"><i data-lucide="shield"></i></div>
         <span class="quick-action-label">{{ __('public.portal.nav_insurance', [], app()->getLocale()) ?: 'Insurance' }}</span>
     </a>
+    @endfeature
 </div>
 
 @if(isset($upcomingAppointments) && $upcomingAppointments->isNotEmpty())

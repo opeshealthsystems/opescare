@@ -4,6 +4,7 @@
     {{ __('portal.cashier_role', [], $l) ?: 'Cashier' }}
 </div>
 <div style="margin-bottom:var(--p-space-3);"></div>
+@feature('billing')
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_dashboard', [], $l) ?: 'Overview' }}</div>
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
@@ -11,12 +12,15 @@
         <span>{{ __('public.portal.nav_dashboard', [], $l) ?: 'Dashboard' }}</span>
     </a>
 </div>
+@endfeature
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_billing', [], $l) ?: 'Billing' }}</div>
+    @feature('billing')
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>
         <span>{{ __('public.portal.nav_billing', [], $l) ?: 'Billing & Payments' }}</span>
     </a>
+    @endfeature
     <a href="{{ route('portals.staff.queue') }}" class="sidebar-link">
         <i data-lucide="list-ordered"></i>
         <span>{{ __('public.portal.nav_queue', [], $l) ?: 'Patient Queue' }}</span>

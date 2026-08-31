@@ -13,9 +13,11 @@
     <a href="{{ route('portals.staff') }}" class="sidebar-link">
         <i data-lucide="layout-dashboard"></i><span>{{ __('public.portal.nav_dashboard') }}</span>
     </a>
+    @feature('analytics_dashboards')
     <a href="{{ route('portals.staff.analytics') }}" class="sidebar-link">
         <i data-lucide="bar-chart-2"></i><span>{{ __('public.portal.nav_analytics') }}</span>
     </a>
+    @endfeature
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_clinical') }}</div>
@@ -28,9 +30,11 @@
     <a href="{{ route('portals.staff.visits') }}" class="sidebar-link">
         <i data-lucide="stethoscope"></i><span>{{ __('public.portal.nav_visits') }}</span>
     </a>
+    @feature('clinical_decision_support')
     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
         <i data-lucide="brain-circuit"></i><span>{{ __('public.staff_portal.nav_clinical_alerts') }}</span>
     </a>
+    @endfeature
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_hr') }}</div>
@@ -47,6 +51,7 @@
         <i data-lucide="plane-takeoff"></i><span>{{ __('public.portal.nav_staff_leave') }}</span>
     </a>
 </div>
+@feature('inventory_ops')
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_inventory') }}</div>
     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
@@ -56,6 +61,8 @@
         <i data-lucide="droplets"></i><span>{{ __('public.portal.nav_inventory_blood') }}</span>
     </a>
 </div>
+@endfeature
+@feature('inventory_ops')
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_supply') }}</div>
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
@@ -63,17 +70,22 @@
         <span>{{ __('public.portal.nav_supply') }}</span>
     </a>
 </div>
+@endfeature
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_operations') }}</div>
+    @feature('billing')
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i><span>{{ __('public.portal.nav_billing') }}</span>
     </a>
+    @endfeature
     <a href="{{ route('portals.staff.support') }}" class="sidebar-link">
         <i data-lucide="headset"></i><span>{{ __('public.portal.nav_support') }}</span>
     </a>
+    @feature('insurance')
     <a href="{{ route('portals.insurance.policies') }}" class="sidebar-link">
         <i data-lucide="shield-check"></i><span>{{ __('public.portal.nav_insurance') }}</span>
     </a>
+    @endfeature
     <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active">
         <i data-lucide="upload-cloud"></i><span>{{ __('public.portal.nav_data_import') }}</span>
     </a>

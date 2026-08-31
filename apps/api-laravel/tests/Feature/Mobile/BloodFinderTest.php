@@ -376,6 +376,102 @@ class BloodFinderTest extends TestCase
             ->assertJsonPath('error_code', BloodRequestService::ERR_TOO_MANY_OPEN);
     }
 
+    /**
+     * The lockout regression.
+     *
+     * `expires_at` was written on every request and read by nothing, so an
+     * unanswered hold stayed `pending` for ever and kept counting against
+     * MAX_OPEN_REQUESTS. Five of them and the patient could never use the Blood
+     * Finder again — the first real user session bricked itself.
+     */
+    public function test_a_lapsed_hold_stops_counting_against_the_open_limit(): void
+    {
+        $this->fillOpenRequestQuota();
+
+        $this->mobilePostJson($this->patient, '/api/mobile/blood/requests', [
+            'care_facility_id' => $this->nearBank->id,
+            'blood_group'      => BloodGroup::ONegative->value,
+        ])
+            ->assertStatus(429)
+            ->assertJsonPath('error_code', BloodRequestService::ERR_TOO_MANY_OPEN);
+
+        // The hold window runs out with the blood bank never having answered.
+        BloodRequest::query()->where('patient_id', $this->patient->id)->update([
+            'expires_at' => now()->subHour(),
+        ]);
+
+        $this->mobilePostJson($this->patient, '/api/mobile/blood/requests', [
+            'care_facility_id' => $this->nearBank->id,
+            'blood_group'      => BloodGroup::ONegative->value,
+        ])->assertStatus(201);
+
+        // Lapsed holds are retired forward, never deleted.
+        $this->assertSame(5, BloodRequest::query()
+            ->where('patient_id', $this->patient->id)
+            ->where('status', BloodRequestStatus::Expired->value)
+            ->count());
+        $this->assertSame(6, BloodRequest::query()
+            ->where('patient_id', $this->patient->id)
+            ->count());
+    }
+
+    public function test_the_expiry_command_sweeps_lapsed_requests(): void
+    {
+        $this->fillOpenRequestQuota();
+
+        BloodRequest::query()->where('patient_id', $this->patient->id)->update([
+            'expires_at' => now()->subHour(),
+        ]);
+
+        $this->artisan('blood:expire-requests', ['--dry-run' => true])->assertSuccessful();
+        $this->assertSame(0, BloodRequest::query()
+            ->where('status', BloodRequestStatus::Expired->value)->count(),
+            'A dry run must not write');
+
+        $this->artisan('blood:expire-requests')->assertSuccessful();
+        $this->assertSame(
+            BloodRequestService::MAX_OPEN_REQUESTS,
+            BloodRequest::query()->where('status', BloodRequestStatus::Expired->value)->count(),
+        );
+
+        // Terminal rows are never re-touched, and a second sweep is a no-op.
+        $this->artisan('blood:expire-requests')->assertSuccessful();
+        $this->assertSame(0, BloodRequest::query()->open()->count());
+    }
+
+    /** Fills the patient's open-request quota at distinct facilities. */
+    private function fillOpenRequestQuota(): void
+    {
+        for ($i = 0; $i < BloodRequestService::MAX_OPEN_REQUESTS; $i++) {
+            $facility = CareFacility::create([
+                'facility_name'  => "Lapse Blood Bank {$i}",
+                'facility_type'  => 'blood_bank',
+                'listing_status' => 'active',
+                'city'           => 'Douala',
+                'region'         => 'Littoral',
+                'country_code'   => 'CM',
+                'address'        => "Avenue {$i}, Bonanjo",
+                'latitude'       => 4.05 + ($i / 1000),
+                'longitude'      => 9.76,
+                'phone_primary'  => '+23723342170' . $i,
+            ]);
+
+            BloodAvailability::create([
+                'facility_id'         => $facility->id,
+                'blood_group'         => BloodGroup::ONegative->value,
+                'component_type'      => BloodComponentType::WholeBlood->value,
+                'availability_status' => 'available',
+                'freshness_status'    => 'fresh',
+                'last_updated_at'     => now(),
+            ]);
+
+            $this->mobilePostJson($this->patient, '/api/mobile/blood/requests', [
+                'care_facility_id' => $facility->id,
+                'blood_group'      => BloodGroup::ONegative->value,
+            ])->assertStatus(201);
+        }
+    }
+
     public function test_quantity_above_the_ceiling_is_rejected(): void
     {
         $this->mobilePostJson($this->patient, '/api/mobile/blood/requests', [

@@ -21,10 +21,12 @@
         <i data-lucide="calendar-check-2"></i>
         <span>{{ __('public.portal.nav_appointments', [], $l) ?: 'Appointments' }}</span>
     </a>
+    @feature('analytics_dashboards')
     <a href="{{ route('portals.staff.analytics.queue') }}" class="sidebar-link">
         <i data-lucide="bar-chart-2"></i>
         <span>{{ __('public.portal.nav_analytics', [], $l) ?: 'Queue Analytics' }}</span>
     </a>
+    @endfeature
     <a href="{{ route('portals.staff.support') }}" class="sidebar-link">
         <i data-lucide="headset"></i>
         <span>{{ __('public.portal.nav_support', [], $l) ?: 'Support' }}</span>

@@ -169,10 +169,12 @@
                     <i data-lucide="stethoscope"></i>
                     {{ __('public.portal.nav_visits', [], app()->getLocale()) ?: 'Visits' }}
                 </a>
+                @feature('clinical_decision_support')
                 <a href="{{ route('portals.staff.cdss') }}" class="btn btn-secondary">
                     <i data-lucide="brain-circuit"></i>
                     {{ __('public.staff_portal.nav_clinical_alerts', [], app()->getLocale()) ?: 'CDSS Alerts' }}
                 </a>
+                @endfeature
                 <a href="{{ route('portals.staff.files.index') }}" class="btn btn-secondary">
                     <i data-lucide="folder"></i>
                     {{ __('public.portal.nav_files', [], app()->getLocale()) ?: 'Files' }}
@@ -188,10 +190,12 @@
 
                 {{-- Billing: receptionist, cashier, billing/finance staff, admins, doctors --}}
                 @if(in_array($roleSlug, ['receptionist', 'front_desk', 'cashier', 'billing_officer', 'finance_manager', 'hospital_admin', 'clinic_admin', 'doctor']))
+                @feature('billing')
                 <a href="{{ route('portals.staff.billing') }}" class="btn btn-secondary">
                     <i data-lucide="receipt"></i>
                     {{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}
                 </a>
+                @endfeature
                 @endif
 
                 {{-- Referrals: doctor, hospital_admin, clinic_admin --}}
@@ -204,10 +208,12 @@
 
                 {{-- Analytics: hospital_admin, clinic_admin, doctor --}}
                 @if(in_array($roleSlug, ['hospital_admin', 'clinic_admin', 'doctor']))
+                @feature('analytics_dashboards')
                 <a href="{{ route('portals.staff.analytics') }}" class="btn btn-secondary">
                     <i data-lucide="bar-chart-3"></i>
                     {{ __('public.portal.nav_analytics', [], app()->getLocale()) ?: 'Analytics' }}
                 </a>
+                @endfeature
                 @endif
 
                 {{-- Telemedicine: doctor only --}}
@@ -228,18 +234,22 @@
 
                 {{-- Pharmacy Stock: pharmacist, hospital_admin, clinic_admin --}}
                 @if(in_array($roleSlug, ['pharmacist', 'hospital_admin', 'clinic_admin']))
+                @feature('inventory_ops')
                 <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="btn btn-secondary">
                     <i data-lucide="pill"></i>
                     {{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy Stock' }}
                 </a>
+                @endfeature
                 @endif
 
                 {{-- Supply Chain: hospital_admin, clinic_admin, pharmacist --}}
                 @if(in_array($roleSlug, ['hospital_admin', 'clinic_admin', 'pharmacist']))
+                @feature('inventory_ops')
                 <a href="{{ route('portals.staff.supply') }}" class="btn btn-secondary">
                     <i data-lucide="package"></i>
                     {{ __('public.staff_portal.nav_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}
                 </a>
+                @endfeature
                 @endif
 
                 {{-- Data Import: hospital_admin, clinic_admin --}}

@@ -44,6 +44,131 @@ return Application::configure(basePath: dirname(__DIR__))
         // Subdomain scope enforcement (enabled via SUBDOMAIN_ROUTING=true in .env)
         $middleware->prepend(\App\Http\Middleware\EnforceSubdomainScope::class);
 
+        /*
+        |--------------------------------------------------------------------
+        | V1 launch-scope module freeze — applied BY URI PATTERN
+        |--------------------------------------------------------------------
+        |
+        | See docs/plans/V1_LAUNCH_SCOPE.md and config/features.php.
+        |
+        | Every pattern below is gated by its module's flag in config/features.php
+        | and FAILS CLOSED with a 404. Why patterns instead of route middleware:
+        | routes/api.php is SEALED (apps/api-laravel/CLAUDE.md) and holds the
+        | insurance v1 group. Gating by path freezes it without touching the file.
+        | routes/web.php is not sealed, but the freeze list is kept here in one
+        | auditable place rather than scattered across route files — one diff
+        | shows exactly what V1 does and does not ship, and one flag reverses it.
+        |
+        | Nothing is deleted. Every route, model, migration and seeded row stays.
+        |
+        | Read the NOT-frozen notes carefully: the neighbouring paths they name
+        | are V1 launch features and must keep working.
+        |
+        */
+        \App\Support\Features::freeze([
+
+            // Manual claims ledger: claims, preauths, policies, providers.
+            // NOT frozen: nothing else under api/v1 or portals.
+            'insurance' => [
+                'api/v1/insurance',
+                'api/v1/insurance/*',
+                'api/mobile/insurance',          // exact — marketplace is separate, below
+                'portals/insurance',
+                'portals/insurance/*',
+            ],
+
+            // Patient-facing plan shopping / purchase.
+            'insurance_marketplace' => [
+                'api/mobile/insurance/marketplace',
+                'api/mobile/insurance/marketplace/*',
+                'portals/patient/insurance',
+                'portals/patient/insurance/*',
+            ],
+
+            // Facility-internal patient billing.
+            // NOT frozen: portals/admin/financial/*, portals/admin/subscription/*
+            // and api/payments/mobile-money/*/callback — that is OpesCare's own
+            // platform revenue plus live gateway webhooks. 404-ing a payment
+            // provider's callback loses money.
+            'billing' => [
+                'api/v1/billing',
+                'api/v1/billing/*',
+                'api/v1/payment-plans',
+                'api/v1/payment-plans/*',
+                'api/v1/patients/*/payment-plans',
+                'portals/staff/billing',
+                'portals/staff/billing/*',
+                'portals/patient/billing',
+                'portals/patient/billing/*',
+                'portals/lite/billing',
+            ],
+
+            // Facility-internal stock, supply chain, batch tracking.
+            // NOT frozen — these are the V1 finders and the data plane feeding
+            // them, and they must keep working:
+            //   api/mobile/pharmacy/*        (pharmacy finder)
+            //   api/mobile/blood/*           (blood finder)
+            //   api/v1/care-map/*            (medicine + blood search)
+            //   api/v1/connect/inventory/*   (partner stock-sync ingest)
+            //   api/v1/sdk/facilities/*/stock
+            //   api/v1/pharmacy/formulary/*  (medicine catalogue)
+            'inventory_ops' => [
+                'api/v1/inventory',
+                'api/v1/inventory/*',
+                'portals/staff/inventory',
+                'portals/staff/inventory/*',
+                'portals/staff/supply',
+                'portals/staff/supply/*',
+                'portals/pharmacy/inventory',
+            ],
+
+            // Drug-interaction / allergy / lab-rule alerting.
+            'clinical_decision_support' => [
+                'api/v1/cdss',
+                'api/v1/cdss/*',
+                'portals/staff/cdss',
+                'portals/staff/cdss/*',
+                'portals/admin/cdss',
+                'portals/admin/cdss/*',
+            ],
+
+            // Analytics + public-health dashboards.
+            // NOT frozen: the rest of api/v1/public-health/* — statutory
+            // MINSANTE report generation, review and submission is a legal
+            // obligation, not a dashboard. portals/developer/analytics is the
+            // partner API-usage surface and also stays.
+            'analytics_dashboards' => [
+                'api/v1/analytics',
+                'api/v1/analytics/*',
+                'api/v1/public-health/dashboard',
+                'api/v1/public-health/facility-dashboard/*',
+                'api/v1/public-health/intelligence/*',
+                'portals/staff/analytics',
+                'portals/staff/analytics/*',
+            ],
+
+            // Full telehealth platform: waiting-room queue + video session
+            // orchestration.
+            // NOT frozen — the thin book -> consult path stays IN:
+            //   POST   api/v1/telemedicine/consultations
+            //   GET    api/v1/telemedicine/consultations/{id}
+            //   POST   api/v1/telemedicine/consultations/{id}/consent|cancel
+            //   api/mobile/telemedicine/*
+            //   portals/staff/telemedicine (+ create/show/start/end/consent/cancel)
+            'telemedicine_full' => [
+                'api/v1/telemedicine/consultations/*/call',
+                'api/v1/telemedicine/consultations/*/waiting-room',
+                'api/v1/telemedicine/sessions/*',
+                'portals/staff/telemedicine/waiting-room',
+                'portals/staff/telemedicine/waiting-room/*',
+            ],
+
+        ]);
+
+        // Runs globally so a frozen path 404s before routing — there is no route
+        // file, route group or controller a frozen module can be reached through.
+        $middleware->append(\App\Http\Middleware\EnforceFeatureFlag::class);
+
         $middleware->alias([
             'auth.bearer'      => \App\Http\Middleware\VerifyBearerToken::class,
             'sdk.token'        => \App\Http\Middleware\VerifySdkToken::class,
@@ -59,6 +184,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'api.admin'        => \App\Http\Middleware\RequireApiAdminRole::class,
             'verify.integration.client' => \App\Http\Middleware\VerifyIntegrationClient::class,
             'module'                    => \App\Http\Middleware\EnforceModuleEntitlement::class,
+            // 'feature:<key>' — V1 launch-scope kill switch, fails CLOSED with 404.
+            // Not to be confused with 'module:<key>' above (subscription
+            // entitlement, fails OPEN) or 'patient.feature' below (per-patient
+            // subscription plan).
+            'feature'                   => \App\Http\Middleware\EnforceFeatureFlag::class,
             'patient.feature'           => \App\Http\Middleware\EnsurePatientFeature::class,
             'api.deprecated'            => \App\Http\Middleware\MarkDeprecated::class,
             'api.quota'                 => \App\Http\Middleware\EnforceApiQuota::class,
@@ -170,6 +300,18 @@ return Application::configure(basePath: dirname(__DIR__))
         // Generate API plan invoices from metered usage — 1st of each month at 02:00
         $schedule->command('opescare:bill-api-usage')
                  ->monthlyOn(1, '02:00')
+                 ->withoutOverlapping();
+
+        // Blood Finder: lapse unanswered blood-unit requests — hourly.
+        //
+        // A request is a 24h hold and BloodRequestStatus documents
+        // `pending|confirmed|ready -> expired (scheduler)`, but that scheduler
+        // was never written: expires_at was set on every row and never read, so
+        // nothing left the open set and five unanswered holds locked a patient
+        // out of the feature permanently. Registered here rather than in
+        // routes/console.php because that file is SEALED (apps/api-laravel/CLAUDE.md).
+        $schedule->command('blood:expire-requests')
+                 ->hourly()
                  ->withoutOverlapping();
     })
     ->create();

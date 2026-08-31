@@ -41,22 +41,30 @@
         <div class="stat-card__label">{{ __('public.pharmacy_portal.stat_dispensed_today', [], app()->getLocale()) ?: 'Dispensed today' }}</div>
         <div class="stat-card__value">{{ $stats['dispensed_today'] ?? 0 }}</div>
     </a>
+    @feature('inventory_ops')
     <a href="{{ route('portals.pharmacy.inventory') }}" class="stat-card stat-card--primary">
         <div class="stat-card__label">{{ __('public.pharmacy_portal.stat_drug_lines', [], app()->getLocale()) ?: 'Drug lines' }}</div>
         <div class="stat-card__value">{{ $stats['total_drugs'] ?? 0 }}</div>
     </a>
+    @endfeature
+    @feature('inventory_ops')
     <a href="{{ route('portals.pharmacy.inventory') }}?stock_status=low_stock" class="stat-card stat-card--warning">
         <div class="stat-card__label">{{ __('public.pharmacy_portal.stat_low_stock', [], app()->getLocale()) ?: 'Low stock' }}</div>
         <div class="stat-card__value">{{ $stats['low_stock'] ?? 0 }}</div>
     </a>
+    @endfeature
+    @feature('inventory_ops')
     <a href="{{ route('portals.pharmacy.inventory') }}?stock_status=out_of_stock" class="stat-card stat-card--danger">
         <div class="stat-card__label">{{ __('public.pharmacy_portal.stat_out_of_stock', [], app()->getLocale()) ?: 'Out of stock' }}</div>
         <div class="stat-card__value">{{ $stats['out_of_stock'] ?? 0 }}</div>
     </a>
+    @endfeature
+    @feature('inventory_ops')
     <a href="{{ route('portals.pharmacy.inventory', ['stock_status' => 'expired']) }}" class="stat-card stat-card--danger">
         <div class="stat-card__label">{{ __('public.pharmacy_portal.stat_expired', [], app()->getLocale()) ?: 'Expired' }}</div>
         <div class="stat-card__value">{{ $stats['expired'] ?? 0 }}</div>
     </a>
+    @endfeature
 </div>
 
 <div class="field-grid">
@@ -107,7 +115,9 @@
     <div class="panel">
         <div class="panel-header">
             <h3 class="panel-title"><i data-lucide="alert-triangle"></i> {{ __('public.pharmacy_portal.panel_stock_alerts', [], app()->getLocale()) ?: 'Stock alerts' }}</h3>
+            @feature('inventory_ops')
             <a href="{{ route('portals.pharmacy.inventory') }}" class="btn btn-secondary btn-sm">{{ __('public.pharmacy_portal.nav_inventory', [], app()->getLocale()) ?: 'Inventory' }}</a>
+            @endfeature
         </div>
         <div class="table-wrapper">
             <table class="data-table">

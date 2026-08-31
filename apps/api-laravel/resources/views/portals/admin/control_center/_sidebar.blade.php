@@ -113,9 +113,11 @@
     <a href="{{ route('portals.admin.leads') }}" class="sidebar-link {{ request()->routeIs('portals.admin.leads*') ? 'active' : '' }}">
         <i data-lucide="user-plus"></i><span>{{ __('leads.admin.page_title') }}</span>
     </a>
+    @feature('clinical_decision_support')
     <a href="{{ route('portals.admin.cdss.index') }}" class="sidebar-link {{ request()->routeIs('portals.admin.cdss*') ? 'active' : '' }}">
         <i data-lucide="activity"></i><span>{{ __('public.admin_governance.nav_cdss_rules', [], app()->getLocale()) ?: 'CDSS Rules' }}</span>
     </a>
+    @endfeature
     <a href="{{ route('portals.admin.reports.minsante-monthly') }}" class="sidebar-link {{ request()->routeIs('portals.admin.reports*') ? 'active' : '' }}">
         <i data-lucide="file-bar-chart"></i><span>{{ __('public.adm_cc_sidebar_reports') }}</span>
     </a>

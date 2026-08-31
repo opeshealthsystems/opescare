@@ -70,6 +70,20 @@ class BloodRequestService
             $patientId, $facility, $availability, $bloodGroup, $componentType,
             $quantity, $urgency, $contactPhone, $patientNote, $neededBy
         ) {
+            // Retire this patient's lapsed holds before counting the quota.
+            //
+            // `expires_at` is written on every request but nothing used to read
+            // it, so a request the blood bank never acted on stayed `pending`
+            // for ever and kept counting against MAX_OPEN_REQUESTS. Five
+            // unanswered requests locked the patient out of the feature
+            // permanently — the first real user session bricked itself.
+            //
+            // The scheduled sweep (blood:expire-requests) is the system-wide
+            // pass; this is the same rule applied inline so the quota is correct
+            // the instant it is read, even on a host where the scheduler is not
+            // running.
+            $this->expireLapsed($patientId);
+
             $openForPatient = BloodRequest::query()
                 ->where('patient_id', $patientId)
                 ->open()
@@ -105,6 +119,38 @@ class BloodRequestService
                 'expires_at'            => now()->addHours(self::HOLD_HOURS),
             ]);
         });
+    }
+
+    /**
+     * Lapses open requests whose hold window has run out.
+     *
+     * A request is a 24-hour hold (HOLD_HOURS). BloodRequestStatus documents
+     * `pending|confirmed|ready → expired (scheduler)`, but no scheduler existed:
+     * `expires_at` was written and never read, so every request stayed open for
+     * ever and MAX_OPEN_REQUESTS turned into a permanent lockout after five
+     * unanswered holds.
+     *
+     * Never deletes and never touches a terminal row — expiry is one more
+     * forward-only transition, so the facility's history stays intact.
+     *
+     * @param  string|null  $patientId  Restrict to one patient; null sweeps all.
+     * @return int  Number of requests moved to `expired`.
+     */
+    public function expireLapsed(?string $patientId = null): int
+    {
+        $query = BloodRequest::query()
+            ->open()
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '<=', now());
+
+        if ($patientId !== null) {
+            $query->where('patient_id', $patientId);
+        }
+
+        return $query->update([
+            'status'     => BloodRequestStatus::Expired->value,
+            'updated_at' => now(),
+        ]);
     }
 
     /**

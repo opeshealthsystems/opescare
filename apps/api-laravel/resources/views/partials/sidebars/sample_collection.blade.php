@@ -24,10 +24,12 @@
         <i data-lucide="list-ordered"></i>
         <span>{{ __('public.portal.nav_queue', [], $l) ?: 'Sample Queue' }}</span>
     </a>
+    @feature('inventory_ops')
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link">
         <i data-lucide="package"></i>
         <span>{{ __('public.portal.nav_supply', [], $l) ?: 'Supply Chain' }}</span>
     </a>
+    @endfeature
     <a href="{{ route('portals.staff.support') }}" class="sidebar-link">
         <i data-lucide="headset"></i>
         <span>{{ __('public.portal.nav_support', [], $l) ?: 'Support' }}</span>
