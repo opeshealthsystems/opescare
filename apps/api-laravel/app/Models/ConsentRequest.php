@@ -39,4 +39,14 @@ class ConsentRequest extends Model
     {
         return $this->belongsTo(User::class, 'requesting_user_id');
     }
+
+    /**
+     * The ConsentGrant this request produced once approved (if any). A request
+     * only records the ask; the grant is what actually authorizes facility
+     * access and is therefore the target of a patient-initiated revoke.
+     */
+    public function grant()
+    {
+        return $this->hasOne(ConsentGrant::class, 'consent_request_id')->latestOfMany();
+    }
 }
