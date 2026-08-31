@@ -462,10 +462,23 @@
   },
   "records": {
     "title": "Health Records",
-    "subtitle": "Your visits, results, and prescriptions in one timeline",
+    "subtitle": "Every visit, result, and prescription in one place",
+    "export": "Export",
+    "exportA11y": "Export your medical records as PDF or FHIR",
+    "bloodGroup": "Blood group {{group}}",
     "summary": {
+      "heading": "At a glance",
       "allergies": "Allergies",
-      "conditions": "Conditions"
+      "conditions": "Conditions",
+      "immunizations": "Vaccines",
+      "events": "Entries",
+      "unavailable": "Not available"
+    },
+    "browse": {
+      "heading": "Browse by type",
+      "labs": "Lab results",
+      "prescriptions": "Prescriptions",
+      "documents": "Documents"
     },
     "filter": {
       "all": "All",
@@ -476,13 +489,36 @@
       "condition": "Conditions",
       "immunization": "Immunizations"
     },
+    "category": {
+      "visit": "Visit",
+      "lab_result": "Lab result",
+      "prescription": "Prescription",
+      "allergy": "Allergy",
+      "condition": "Condition",
+      "immunization": "Immunization"
+    },
     "item": {
       "visitTitle": "Clinical visit",
+      "labTitle": "Lab result",
+      "prescriptionTitle": "Prescription",
       "allergyTitle": "Allergy — {{substance}}",
       "immunizationDose": "Dose {{n}}",
+      "prescriptionItems_one": "{{count}} medication",
+      "prescriptionItems_other": "{{count}} medications",
       "recordedOn": "Recorded {{date}}",
       "administeredOn": "Administered {{date}}",
       "unknownFacility": "Facility not recorded"
+    },
+    "visitType": {
+      "outpatient": "Outpatient",
+      "inpatient": "Inpatient",
+      "emergency": "Emergency",
+      "lab-only": "Laboratory only",
+      "pharmacy-only": "Pharmacy only"
+    },
+    "action": {
+      "viewLab": "View full lab report",
+      "viewPrescription": "View prescription"
     },
     "status": {
       "active": "Active",
@@ -490,15 +526,54 @@
       "resolved": "Resolved",
       "inactive": "Inactive",
       "completed": "Completed",
+      "mild": "Mild",
       "low": "Low",
       "moderate": "Moderate",
-      "high": "High"
+      "high": "High",
+      "severe": "Severe"
+    },
+    "group": {
+      "undated": "Date not recorded"
+    },
+    "timeline": {
+      "heading": "Your timeline",
+      "count_one": "{{count}} entry",
+      "count_other": "{{count}} entries"
     },
     "loading": "Loading your records…",
-    "error": "We couldn't load your records. Pull down to try again.",
+    "loadingBody": "Fetching your record from the facilities that have treated you.",
+    "partial": {
+      "title": "Some sections didn't load",
+      "body": "Part of your record is missing from this view. Nothing has been deleted.",
+      "retry": "Try again"
+    },
+    "error": {
+      "title": "We couldn't load your records",
+      "body": "Your record is safe — this device just couldn't reach OpesCare. Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "filtered": {
+      "title": "Nothing in this category",
+      "body": "You have no entries of this type yet. Other categories may still have some.",
+      "reset": "Show all records"
+    },
     "empty": {
-      "title": "No records yet",
-      "body": "Your clinical timeline will appear here once a facility records a visit, lab result, or prescription for you."
+      "title": "Your record is ready and waiting",
+      "body": "Nothing is missing — you simply have no entries yet. Your record fills itself in as you receive care.",
+      "stepsHeading": "How your record fills up",
+      "step1Title": "You visit a facility",
+      "step1Body": "Any OpesCare-connected hospital, clinic, laboratory, or pharmacy.",
+      "step2Title": "Your care team records what happened",
+      "step2Body": "Diagnoses, lab results, prescriptions, and vaccinations are written to your Health ID.",
+      "step3Title": "It appears here, for good",
+      "step3Body": "Every entry is timestamped. It can be corrected, but never silently erased.",
+      "findCare": "Find care near you",
+      "bookVisit": "Book an appointment"
+    },
+    "privacy": {
+      "title": "Your record is private",
+      "body": "Only you and the providers you have given consent to can open it.",
+      "action": "Manage access"
     }
   },
   "prescriptions": {
