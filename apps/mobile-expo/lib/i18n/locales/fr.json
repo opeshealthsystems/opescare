@@ -285,5 +285,35 @@
       "invoice": "Facture",
       "other": "Document officiel"
     }
+  },
+  "referrals": {
+    "title": "Références",
+    "subtitle": "Transferts de soins entre vos prestataires",
+    "loadErrorTitle": "Impossible de charger vos références",
+    "loadErrorBody": "Vérifiez votre connexion et réessayez.",
+    "retry": "Réessayer",
+    "emptyTitle": "Aucune référence pour le moment",
+    "emptyBody": "Les références créées par vos prestataires apparaîtront ici.",
+    "from": "De",
+    "to": "Vers",
+    "reason": "Motif",
+    "notes": "Notes cliniques",
+    "referredOn": "Référé le {{date}}",
+    "acceptedOn": "Accepté le {{date}}",
+    "completedOn": "Terminé le {{date}}",
+    "status": {
+      "draft": "Brouillon",
+      "sent": "En attente",
+      "accepted": "Accepté",
+      "rejected": "Refusé",
+      "cancelled": "Annulé",
+      "completed": "Terminé",
+      "expired": "Expiré"
+    },
+    "urgency": {
+      "routine": "Routine",
+      "urgent": "Urgent",
+      "emergency": "Urgence"
+    }
   }
 }

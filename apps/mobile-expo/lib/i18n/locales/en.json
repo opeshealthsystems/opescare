@@ -285,5 +285,35 @@
       "invoice": "Invoice",
       "other": "Official Document"
     }
+  },
+  "referrals": {
+    "title": "Referrals",
+    "subtitle": "Care transfers between your providers",
+    "loadErrorTitle": "Couldn't load your referrals",
+    "loadErrorBody": "Check your connection and try again.",
+    "retry": "Retry",
+    "emptyTitle": "No referrals yet",
+    "emptyBody": "Referrals your providers create for you will show up here.",
+    "from": "From",
+    "to": "To",
+    "reason": "Reason",
+    "notes": "Clinical notes",
+    "referredOn": "Referred {{date}}",
+    "acceptedOn": "Accepted {{date}}",
+    "completedOn": "Completed {{date}}",
+    "status": {
+      "draft": "Draft",
+      "sent": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Declined",
+      "cancelled": "Cancelled",
+      "completed": "Completed",
+      "expired": "Expired"
+    },
+    "urgency": {
+      "routine": "Routine",
+      "urgent": "Urgent",
+      "emergency": "Emergency"
+    }
   }
 }
