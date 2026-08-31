@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import {
-  ArrowLeft,
   Apple,
-  Globe,
+  ArrowLeft,
   Check,
+  ChevronRight,
+  Globe,
   Lock,
-  Mail,
-  ShieldCheck,
+  ShieldLock,
+  User,
 } from 'lucide-react-native';
 import { Screen } from '../../components/ui/Screen';
 import { Button } from '../../components/ui/Button';
@@ -48,99 +49,111 @@ export default function LoginScreen() {
   };
 
   return (
-    <Screen>
-      <View className="mt-2 h-11 w-11 items-center justify-center rounded-full border border-gold-300">
-        <Pressable onPress={() => router.back()} hitSlop={8}>
-          <ArrowLeft size={18} color={colors.gold[600]} />
-        </Pressable>
-      </View>
-
-      <View className="items-center py-4">
-        <Logo size={80} />
-      </View>
-
-      <Text className="text-center text-2xl font-extrabold text-navy-text">
-        {t('auth.welcomeBack')}
-      </Text>
-      <Text className="mt-2 text-center text-sm text-navy-secondary">
-        {t('auth.signInSubtitle')}
-      </Text>
-
-      <View className="mt-6">
-        <TextField
-          label={t('auth.emailOrHealthId')}
-          placeholder={t('auth.emailPlaceholder')}
-          icon={Mail}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-          error={fieldErrors.email ?? (storeError ? ' ' : undefined)}
-        />
-
-        <View className="mb-2 flex-row items-center justify-between">
-          <Text className="text-sm font-semibold text-navy-text">{t('auth.password')}</Text>
-          <Text className="text-sm font-semibold text-gold-500">{t('auth.forgotPassword')}</Text>
+    <Screen className="px-0">
+      <ScrollView
+        className="flex-1 px-6"
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ paddingBottom: 24 }}
+      >
+        <View className="mt-2 h-11 w-11 items-center justify-center rounded-full border border-gold-300">
+          <Pressable onPress={() => router.back()} hitSlop={8}>
+            <ArrowLeft size={18} color={colors.gold[600]} />
+          </Pressable>
         </View>
-        <TextField
-          placeholder={t('auth.passwordPlaceholder')}
-          icon={Lock}
-          secureToggle
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-          error={fieldErrors.password}
-        />
 
-        <Pressable
-          onPress={() => setRememberMe((v) => !v)}
-          className="mb-5 flex-row items-center"
-        >
-          <View
-            className="mr-2 h-5 w-5 items-center justify-center rounded border"
-            style={{
-              borderColor: colors.gold[500],
-              backgroundColor: rememberMe ? colors.gold[500] : 'transparent',
-            }}
-          >
-            {rememberMe && <Check size={13} color="white" />}
+        <View className="items-center py-4">
+          <Logo size={96} />
+        </View>
+
+        <Text className="text-center text-2xl font-extrabold text-navy-text">
+          {t('auth.welcomeBack')}
+        </Text>
+        <Text className="mt-2 text-center text-sm text-navy-secondary">
+          {t('auth.signInSubtitle')}
+        </Text>
+
+        <View className="mt-6">
+          <TextField
+            label={t('auth.emailOrHealthId')}
+            placeholder={t('auth.emailPlaceholder')}
+            icon={User}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+            error={fieldErrors.email ?? (storeError ? ' ' : undefined)}
+          />
+
+          <View className="mb-2 flex-row items-center justify-between">
+            <Text className="text-sm font-semibold text-navy-text">{t('auth.password')}</Text>
+            <Text className="text-sm font-semibold text-gold-500">{t('auth.forgotPassword')}</Text>
           </View>
-          <Text className="text-sm text-navy-secondary">{t('auth.rememberMe')}</Text>
-        </Pressable>
+          <TextField
+            placeholder={t('auth.passwordPlaceholder')}
+            icon={Lock}
+            secureToggle
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            error={fieldErrors.password}
+          />
 
-        {storeError ? (
-          <Text className="mb-3 text-center text-sm text-danger">{storeError}</Text>
-        ) : null}
+          <Pressable
+            onPress={() => setRememberMe((v) => !v)}
+            className="mb-5 flex-row items-center"
+          >
+            <View
+              className="mr-2 h-5 w-5 items-center justify-center rounded border"
+              style={{
+                borderColor: colors.gold[500],
+                backgroundColor: rememberMe ? colors.gold[500] : 'transparent',
+              }}
+            >
+              {rememberMe && <Check size={13} color="white" />}
+            </View>
+            <Text className="text-sm text-navy-secondary">{t('auth.rememberMe')}</Text>
+          </Pressable>
 
-        <Button label={t('auth.signIn')} onPress={handleSignIn} loading={submitting} />
+          {storeError ? (
+            <Text className="mb-3 text-center text-sm text-danger">{storeError}</Text>
+          ) : null}
 
-        <View className="my-6 flex-row items-center">
-          <View className="h-px flex-1 bg-cream-300" />
-          <Text className="mx-3 text-xs font-semibold text-navy-muted">{t('auth.or')}</Text>
-          <View className="h-px flex-1 bg-cream-300" />
+          <Button label={t('auth.signIn')} onPress={handleSignIn} loading={submitting} />
+
+          <View className="my-6 flex-row items-center">
+            <View className="h-px flex-1 bg-cream-300" />
+            <Text className="mx-3 text-xs font-bold tracking-widest text-gold-500">
+              {t('auth.or')}
+            </Text>
+            <View className="h-px flex-1 bg-cream-300" />
+          </View>
+
+          <SocialButton icon={Globe} label={t('auth.continueWithGoogle')} />
+          <View className="h-3" />
+          <SocialButton icon={Apple} label={t('auth.continueWithApple')} />
+          <View className="h-3" />
+          <SocialButton
+            icon={ShieldLock}
+            label={t('auth.signInWithHealthId')}
+            badge={t('auth.recommended')}
+            onPress={() => router.push('/(auth)/otp')}
+          />
+
+          <View className="mt-5 flex-row items-start rounded-2xl bg-gold-50 p-4">
+            <ShieldLock size={16} color={colors.gold[600]} />
+            <Text className="ml-3 flex-1 text-xs text-navy-secondary">
+              {t('auth.encryptionNote')}
+            </Text>
+          </View>
+
+          <View className="mt-6 flex-row items-center justify-center pb-4">
+            <Text className="text-sm text-navy-secondary">{t('auth.noAccount')} </Text>
+            <Text className="text-sm font-semibold text-gold-500">{t('auth.createAccount')}</Text>
+            <ChevronRight size={16} color={colors.gold[500]} style={{ marginLeft: 2 }} />
+          </View>
         </View>
-
-        <SocialButton icon={Globe} label={t('auth.continueWithGoogle')} />
-        <View className="h-3" />
-        <SocialButton icon={Apple} label={t('auth.continueWithApple')} />
-        <View className="h-3" />
-        <SocialButton
-          icon={ShieldCheck}
-          label={t('auth.signInWithHealthId')}
-          badge={t('auth.recommended')}
-          onPress={() => router.push('/(auth)/otp')}
-        />
-
-        <View className="mt-5 flex-row items-start rounded-2xl bg-gold-50 p-4">
-          <ShieldCheck size={16} color={colors.gold[600]} />
-          <Text className="ml-3 flex-1 text-xs text-navy-secondary">{t('auth.encryptionNote')}</Text>
-        </View>
-
-        <View className="mt-6 flex-row justify-center pb-4">
-          <Text className="text-sm text-navy-secondary">{t('auth.noAccount')} </Text>
-          <Text className="text-sm font-semibold text-gold-500">{t('auth.createAccount')}</Text>
-        </View>
-      </View>
+      </ScrollView>
     </Screen>
   );
 }
@@ -151,7 +164,7 @@ function SocialButton({
   badge,
   onPress,
 }: {
-  icon: typeof Globe;
+  icon: typeof Apple;
   label: string;
   badge?: string;
   onPress?: () => void;
@@ -164,7 +177,7 @@ function SocialButton({
       <Icon size={18} color={colors.navy.text} />
       <Text className="ml-3 flex-1 text-sm font-semibold text-navy-text">{label}</Text>
       {badge ? (
-        <View className="rounded-full bg-gold-50 px-2 py-1">
+        <View className="rounded-full bg-gold-50 px-3 py-1">
           <Text className="text-[10px] font-semibold text-gold-600">{badge}</Text>
         </View>
       ) : null}
