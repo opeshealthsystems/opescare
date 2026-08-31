@@ -152,6 +152,7 @@ export default function LoginScreen() {
           <Pressable
             onPress={() => router.push('/(auth)/signup')}
             className="mt-6 flex-row items-center justify-center pb-4"
+            hitSlop={8}
           >
             <Text className="text-sm text-navy-secondary">{t('auth.noAccount')} </Text>
             <Text className="text-sm font-semibold text-gold-500">{t('auth.createAccount')}</Text>
@@ -180,7 +181,9 @@ function SocialButton({
       className="h-14 flex-row items-center rounded-2xl border border-cream-300 bg-white px-4"
     >
       <Icon size={18} color={colors.navy.text} />
-      <Text className="ml-3 flex-1 text-sm font-semibold text-navy-text">{label}</Text>
+      <Text className="ml-3 flex-1 text-sm font-semibold text-navy-text" numberOfLines={1}>
+        {label}
+      </Text>
       {badge ? (
         <View className="rounded-full bg-gold-50 px-3 py-1">
           <Text className="text-[10px] font-semibold text-gold-600">{badge}</Text>

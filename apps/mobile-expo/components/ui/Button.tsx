@@ -47,8 +47,20 @@ export function Button({
         colors={[colors.gold[600], colors.gold[500], colors.gold[300]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
-        style={{ borderRadius: 16, height: 56, alignItems: 'center' }}
-        className="flex-row justify-between px-2"
+        style={{
+          borderRadius: 16,
+          height: 56,
+          alignItems: 'center',
+          // NativeWind's className→style transform does not apply to
+          // third-party components like expo-linear-gradient's LinearGradient
+          // (it's not registered via cssInterop), so it silently no-ops here —
+          // confirmed by a wave-2 fidelity review: every primary button's icon
+          // was rendering stacked above its label instead of beside it. Plain
+          // inline style is the reliable fix.
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingHorizontal: 8,
+        }}
       >
         <View className="h-10 w-10 items-center justify-center rounded-full bg-white/90">
           {loading ? (
