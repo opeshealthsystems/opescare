@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Mobile;
 
 use App\Http\Controllers\Controller;
 use App\Models\LocalCachePolicy;
+use App\Models\User;
 use App\Modules\Offline\Services\SyncService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,17 +15,29 @@ class OfflineSyncController extends Controller
     public function createPolicy(Request $request, SyncService $service): JsonResponse
     {
         $validated = $request->validate([
-            'patient_id' => ['required', 'uuid'],
             'facility_id' => ['nullable', 'uuid'],
             'device_id' => ['required', 'string', 'max:120'],
             'allowed_scopes' => ['required', 'array', 'min:1'],
             'allowed_scopes.*' => ['string'],
             'emergency_access' => ['nullable', 'boolean'],
-            'actor_id' => ['nullable', 'uuid'],
         ]);
 
+        // The subject and the actor are the authenticated patient, taken from
+        // the middleware attribute — never from request input. Both used to be
+        // caller-supplied, which let any patient register an encrypted
+        // offline-cache policy naming ANOTHER patient's record, and attribute
+        // the audit trail to whoever they liked. Same rule the platform already
+        // enforces for facility_id: identity comes from the token, not the body.
+        $patientId = $request->attributes->get('patient_id');
+
+        if (! $patientId) {
+            return response()->json(['message' => __('api.patient_not_found')], 404);
+        }
+
+        $validated['patient_id'] = $patientId;
+
         try {
-            $policy = $service->createLocalCachePolicy($validated, $validated['actor_id'] ?? null);
+            $policy = $service->createLocalCachePolicy($validated, $this->actorUserId($patientId));
         } catch (RuntimeException $exception) {
             return response()->json(['message' => $exception->getMessage()], 422);
         }
@@ -36,11 +49,26 @@ class OfflineSyncController extends Controller
     {
         $validated = $request->validate([
             'payload' => ['required', 'array'],
-            'actor_id' => ['nullable', 'uuid'],
         ]);
 
+        $patientId = $request->attributes->get('patient_id');
+
+        if (! $patientId) {
+            return response()->json(['message' => __('api.patient_not_found')], 404);
+        }
+
+        // The policy is route-model-bound, so without this check any patient
+        // could push an encrypted payload into ANY other patient's cache policy
+        // just by knowing (or guessing) its id. 404 rather than 403 so the
+        // endpoint does not confirm that a foreign policy exists.
+        if ($policy->patient_id !== $patientId) {
+            return response()->json(['message' => __('api.not_found')], 404);
+        }
+
         try {
-            $queue = $service->queueEncryptedPayload($policy, $validated['payload'], $validated['actor_id'] ?? null);
+            // Actor is the authenticated patient, not a caller-supplied id —
+            // otherwise the audit trail can be attributed to anyone.
+            $queue = $service->queueEncryptedPayload($policy, $validated['payload'], $this->actorUserId($patientId));
         } catch (RuntimeException $exception) {
             return response()->json(['message' => $exception->getMessage()], 422);
         }
@@ -55,6 +83,20 @@ class OfflineSyncController extends Controller
                 'retry_count' => $queue->retry_count,
             ],
         ], 201);
+    }
+
+    /**
+     * The audit actor for a patient-initiated action.
+     *
+     * local_cache_policies.created_by is a foreign key to `users`, and a
+     * Patient id is not a User id — passing the patient through directly
+     * violates the constraint. Resolve the linked portal account instead, and
+     * fall back to null (the column is nullable) for a patient who has none,
+     * rather than writing an id that cannot be traced.
+     */
+    private function actorUserId(string $patientId): ?string
+    {
+        return User::where('patient_id', $patientId)->value('id');
     }
 
     private function serializePolicy(LocalCachePolicy $policy): array
