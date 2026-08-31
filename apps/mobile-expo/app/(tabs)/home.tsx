@@ -170,7 +170,7 @@ export default function HomeScreen() {
                 <Text className="text-[17px] font-extrabold text-navy-text">Opes</Text>
                 <Text className="text-[17px] font-extrabold text-gold-500">Care</Text>
               </View>
-              <Text className="text-[9px] font-medium text-navy-secondary" numberOfLines={1}>
+              <Text className="text-[8px] font-medium text-navy-secondary" numberOfLines={1}>
                 {t('auth.tagline')}
               </Text>
             </View>
@@ -213,11 +213,11 @@ export default function HomeScreen() {
         {/* ── Greeting ───────────────────────────────────────────────────── */}
         <View className="mt-7 flex-row items-center justify-between">
           <View className="flex-1 pr-4">
-            <Text className="text-[26px] font-extrabold leading-8 text-navy-text">
+            <Text className="text-[22px] font-extrabold leading-7 text-navy-text">
               {t(greetingKey())}
             </Text>
             <View className="flex-row items-center">
-              <Text className="text-[26px] font-extrabold leading-9 text-gold-500" numberOfLines={1}>
+              <Text className="text-[22px] font-extrabold leading-8 text-gold-500" numberOfLines={1}>
                 {patient?.first_name ?? '—'}
               </Text>
               <Hand size={21} color={colors.gold[300]} style={{ marginLeft: 8 }} />
@@ -227,7 +227,7 @@ export default function HomeScreen() {
 
           {/* Brand medallion — the shield motif from the reference header. */}
           <View
-            className="h-[84px] w-[84px] items-center justify-center rounded-full"
+            className="h-[72px] w-[72px] items-center justify-center rounded-full"
             style={{ backgroundColor: colors.gold[50] }}
           >
             <View
@@ -302,7 +302,7 @@ export default function HomeScreen() {
               </Text>
 
               {displayName ? (
-                <Text className="mt-1.5 text-[18px] font-extrabold text-white" numberOfLines={1}>
+                <Text className="mt-1.5 text-[16px] font-extrabold text-white" numberOfLines={1}>
                   {displayName}
                 </Text>
               ) : null}
@@ -311,8 +311,8 @@ export default function HomeScreen() {
                 <ActivityIndicator color={colors.white} style={{ marginTop: 8, alignSelf: 'flex-start' }} />
               ) : (
                 <Text
-                  className="mt-0.5 text-[17px] font-bold text-white/95"
-                  style={{ letterSpacing: 0.6 }}
+                  className="mt-0.5 text-[15px] font-bold text-white/95"
+                  style={{ letterSpacing: 0.2 }}
                   numberOfLines={1}
                 >
                   {healthId.data?.health_id ?? patient?.health_id ?? '—'}
@@ -340,12 +340,12 @@ export default function HomeScreen() {
               accessibilityRole="button"
               accessibilityLabel={t('home.healthId.showQr')}
             >
-              <View className="items-center rounded-2xl bg-white px-2 pb-1.5 pt-2" style={{ width: 86 }}>
-                <View className="items-center justify-center" style={{ height: 66, width: 66 }}>
+              <View className="items-center rounded-2xl bg-white px-2 pb-1.5 pt-2" style={{ width: 78 }}>
+                <View className="items-center justify-center" style={{ height: 60, width: 60 }}>
                   {qrPayload ? (
                     <QRCode
                       value={qrPayload}
-                      size={66}
+                      size={60}
                       color={colors.navy.text}
                       backgroundColor={colors.white}
                     />
@@ -661,16 +661,22 @@ function ActionTile({ icon: Icon, label, onPress }: { icon: LucideIcon; label: s
 }
 
 /** Icon + label + value cell on the gold hero. Two per row. */
+/** One cell of the Health ID card's 2x2 detail grid.
+ *
+ * The icon disc and gutter used to consume 40px of a ~112px half-cell, which
+ * clipped a full date ("Apr 14, 1992" needs 79px but had 72px). The disc and
+ * gutter are trimmed rather than the value's type size — this is credential
+ * data, so legibility wins over decoration. */
 function HeroStat({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
   return (
-    <View className="mb-1 w-1/2 flex-row items-center pr-2 pt-2">
+    <View className="mb-1 w-1/2 flex-row items-center pr-1 pt-2">
       <View
-        className="h-8 w-8 items-center justify-center"
-        style={{ backgroundColor: 'rgba(255,255,255,0.22)', borderRadius: 11 }}
+        className="h-7 w-7 items-center justify-center"
+        style={{ backgroundColor: 'rgba(255,255,255,0.22)', borderRadius: 10 }}
       >
-        <Icon size={15} color={colors.white} />
+        <Icon size={14} color={colors.white} />
       </View>
-      <View className="ml-2 flex-1">
+      <View className="ml-1.5 flex-1">
         <Text className="text-[10px] font-medium text-white/75" numberOfLines={1}>
           {label}
         </Text>
