@@ -105,36 +105,47 @@
     "genericError": "Une erreur s'est produite. Veuillez réessayer."
   },
   "home": {
-    "greeting": "Bon retour,",
+    "greetingMorning": "Bonjour,",
+    "greetingAfternoon": "Bon après-midi,",
+    "greetingEvening": "Bonsoir,",
     "subtitle": "Voici votre aperçu santé du jour.",
+    "retry": "Réessayer",
     "quickActions": {
+      "title": "Actions rapides",
       "bookAppointment": "Prendre rendez-vous",
-      "healthRecords": "Mon dossier santé",
-      "healthCheck": "Bilan de santé",
+      "healthRecords": "Mon dossier",
+      "labResults": "Analyses",
       "prescriptions": "Ordonnances",
-      "findMedicine": "Trouver un médicament",
+      "findMedicine": "Médicaments",
       "findBlood": "Trouver du sang",
       "viewAllServices": "Tous les services"
     },
     "healthId": {
       "title": "Identifiant santé OpesCare",
       "verified": "Vérifié",
+      "pending": "Vérification en attente",
+      "showQr": "Afficher le QR",
       "bloodGroup": "Groupe sanguin",
       "allergies": "Allergies",
+      "conditions": "Pathologies",
       "dateOfBirth": "Date de naissance",
       "none": "Aucune",
-      "viewCard": "Voir la carte"
+      "viewCard": "Voir la carte",
+      "loadError": "Impossible de charger votre identifiant santé."
     },
     "appointment": {
       "title": "Rendez-vous à venir",
-      "empty": "Aucun rendez-vous à venir.",
+      "viewAll": "Voir tout",
+      "empty": "Aucune visite prévue",
+      "emptyBody": "Dès que vous réservez une consultation, elle apparaît ici avec la date, l'heure et le lieu.",
       "emptyCta": "Prenez votre prochain rendez-vous",
-      "viewDetails": "Voir les détails du rendez-vous"
+      "viewDetails": "Voir les détails du rendez-vous",
+      "loadError": "Impossible de charger vos rendez-vous."
     },
     "insights": {
       "title": "Gardez une longueur d'avance sur votre santé",
-      "body": "Suivez, gérez et améliorez votre santé grâce à des recommandations personnalisées.",
-      "cta": "Recommandations santé"
+      "body": "Suivez les objectifs et les étapes définis par votre équipe soignante.",
+      "cta": "Voir mon plan de soins"
     }
   },
   "appointments": {
