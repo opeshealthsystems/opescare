@@ -105,36 +105,47 @@
     "genericError": "Something went wrong. Please try again."
   },
   "home": {
-    "greeting": "Welcome back,",
+    "greetingMorning": "Good morning,",
+    "greetingAfternoon": "Good afternoon,",
+    "greetingEvening": "Good evening,",
     "subtitle": "Here's your health overview for today.",
+    "retry": "Try again",
     "quickActions": {
+      "title": "Quick Actions",
       "bookAppointment": "Book Appointment",
-      "healthRecords": "My Health Records",
-      "healthCheck": "Health Check",
+      "healthRecords": "My Records",
+      "labResults": "Lab Results",
       "prescriptions": "Prescriptions",
       "findMedicine": "Find Medicine",
       "findBlood": "Find Blood",
-      "viewAllServices": "View All Services"
+      "viewAllServices": "All services"
     },
     "healthId": {
       "title": "OpesCare Health ID",
       "verified": "Verified",
+      "pending": "Verification pending",
+      "showQr": "Show QR",
       "bloodGroup": "Blood Group",
       "allergies": "Allergies",
+      "conditions": "Conditions",
       "dateOfBirth": "Date of Birth",
       "none": "None",
-      "viewCard": "View ID Card"
+      "viewCard": "View ID Card",
+      "loadError": "We couldn't load your Health ID."
     },
     "appointment": {
       "title": "Upcoming Appointment",
-      "empty": "No upcoming appointments.",
+      "viewAll": "View all",
+      "empty": "No upcoming visits",
+      "emptyBody": "Once you book a consultation it shows up here with the date, time and place.",
       "emptyCta": "Book your next visit",
-      "viewDetails": "View Appointment Details"
+      "viewDetails": "View appointment details",
+      "loadError": "We couldn't load your appointments."
     },
     "insights": {
       "title": "Stay ahead of your health",
-      "body": "Track, manage and improve your health with personalized insights.",
-      "cta": "Health Insights"
+      "body": "Follow the goals and steps your care team set out for you.",
+      "cta": "View care plan"
     }
   },
   "appointments": {
