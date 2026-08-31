@@ -15,10 +15,18 @@ class MobileAppConfigController extends Controller
      */
     public function show(): JsonResponse
     {
-        return response()->json([
-            'min_supported_build' => (int) config('mobile.min_supported_build'),
-            'latest_version'      => (string) config('mobile.latest_version'),
-            'store_url'           => (string) config('mobile.store_url'),
-        ]);
+        // Never cacheable. This drives the forced-update gate and doubles as the
+        // client's reachability probe, so a cached copy defeats both: a client
+        // pinned to a stale min_supported_build can't be blocked, and a cached
+        // response (or, on web, a cached CORS failure from before an origin was
+        // allowed) makes the app report itself offline while the API is healthy.
+        return response()
+            ->json([
+                'min_supported_build' => (int) config('mobile.min_supported_build'),
+                'latest_version'      => (string) config('mobile.latest_version'),
+                'store_url'           => (string) config('mobile.store_url'),
+            ])
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate')
+            ->header('Pragma', 'no-cache');
     }
 }
