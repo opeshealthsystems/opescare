@@ -2,12 +2,16 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from './client';
 import { endpoints } from './endpoints';
 import type {
+  AllergiesResponse,
   Appointment,
+  ClinicalResponse,
   HealthIdCard,
+  ImmunizationsResponse,
   OfficialDocumentDetail,
   PaginatedAppointments,
   PaginatedDocuments,
   TemporaryQrCode,
+  TimelineResponse,
 } from './types';
 
 export function useHealthIdCard() {
@@ -287,5 +291,40 @@ export function useReferrals() {
   return useQuery({
     queryKey: ['referrals'],
     queryFn: async () => (await apiClient.get<ReferralsResponse>(endpoints.referrals)).data,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Records / Timeline (app/(tabs)/records.tsx)
+// ---------------------------------------------------------------------------
+
+/** Records/Timeline screen — chronological feed of visits, resulted labs, prescriptions. */
+export function useTimeline(limit = 50) {
+  return useQuery({
+    queryKey: ['timeline', limit],
+    queryFn: async () =>
+      (await apiClient.get<TimelineResponse>(endpoints.timeline, { params: { limit } })).data,
+  });
+}
+
+export function useAllergies() {
+  return useQuery({
+    queryKey: ['allergies'],
+    queryFn: async () => (await apiClient.get<AllergiesResponse>(endpoints.allergies)).data,
+  });
+}
+
+export function useClinical() {
+  return useQuery({
+    queryKey: ['clinical'],
+    queryFn: async () => (await apiClient.get<ClinicalResponse>(endpoints.clinical)).data,
+  });
+}
+
+export function useImmunizations() {
+  return useQuery({
+    queryKey: ['immunizations'],
+    queryFn: async () =>
+      (await apiClient.get<ImmunizationsResponse>(endpoints.immunizations)).data,
   });
 }

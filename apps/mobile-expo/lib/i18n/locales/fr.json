@@ -315,5 +315,46 @@
       "urgent": "Urgent",
       "emergency": "Urgence"
     }
+  },
+  "records": {
+    "title": "Dossier médical",
+    "subtitle": "Vos visites, résultats et prescriptions dans une seule chronologie",
+    "summary": {
+      "allergies": "Allergies",
+      "conditions": "Affections"
+    },
+    "filter": {
+      "all": "Tout",
+      "visit": "Visites",
+      "lab_result": "Analyses",
+      "prescription": "Prescriptions",
+      "allergy": "Allergies",
+      "condition": "Affections",
+      "immunization": "Vaccinations"
+    },
+    "item": {
+      "visitTitle": "Visite clinique",
+      "allergyTitle": "Allergie — {{substance}}",
+      "immunizationDose": "Dose {{n}}",
+      "recordedOn": "Enregistré le {{date}}",
+      "administeredOn": "Administré le {{date}}",
+      "unknownFacility": "Établissement non renseigné"
+    },
+    "status": {
+      "active": "Active",
+      "chronic": "Chronique",
+      "resolved": "Résolue",
+      "inactive": "Inactive",
+      "completed": "Complétée",
+      "low": "Faible",
+      "moderate": "Modérée",
+      "high": "Élevée"
+    },
+    "loading": "Chargement de votre dossier…",
+    "error": "Impossible de charger votre dossier. Tirez vers le bas pour réessayer.",
+    "empty": {
+      "title": "Aucun dossier pour le moment",
+      "body": "Votre chronologie clinique apparaîtra ici dès qu'un établissement enregistrera une visite, un résultat d'analyse ou une prescription."
+    }
   }
 }

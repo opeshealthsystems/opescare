@@ -315,5 +315,46 @@
       "urgent": "Urgent",
       "emergency": "Emergency"
     }
+  },
+  "records": {
+    "title": "Health Records",
+    "subtitle": "Your visits, results, and prescriptions in one timeline",
+    "summary": {
+      "allergies": "Allergies",
+      "conditions": "Conditions"
+    },
+    "filter": {
+      "all": "All",
+      "visit": "Visits",
+      "lab_result": "Labs",
+      "prescription": "Prescriptions",
+      "allergy": "Allergies",
+      "condition": "Conditions",
+      "immunization": "Immunizations"
+    },
+    "item": {
+      "visitTitle": "Clinical visit",
+      "allergyTitle": "Allergy — {{substance}}",
+      "immunizationDose": "Dose {{n}}",
+      "recordedOn": "Recorded {{date}}",
+      "administeredOn": "Administered {{date}}",
+      "unknownFacility": "Facility not recorded"
+    },
+    "status": {
+      "active": "Active",
+      "chronic": "Chronic",
+      "resolved": "Resolved",
+      "inactive": "Inactive",
+      "completed": "Completed",
+      "low": "Low",
+      "moderate": "Moderate",
+      "high": "High"
+    },
+    "loading": "Loading your records…",
+    "error": "We couldn't load your records. Pull down to try again.",
+    "empty": {
+      "title": "No records yet",
+      "body": "Your clinical timeline will appear here once a facility records a visit, lab result, or prescription for you."
+    }
   }
 }
