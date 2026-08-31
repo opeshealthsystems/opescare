@@ -101,4 +101,11 @@ export const endpoints = {
   pharmacyNearby: '/mobile/pharmacy/nearby',
   medicineReservations: '/mobile/pharmacy/reservations',
   cancelMedicineReservation: (id: string) => `/mobile/pharmacy/reservations/${id}/cancel`,
+
+  // Help & Support — patient-facing entry point (see routes/mobile_support.php,
+  // App\Http\Controllers\Api\Mobile\MobileSupportController).
+  supportContact: '/mobile/support/contact',
+  supportTickets: '/mobile/support/tickets',
+  supportTicket: (id: string) => `/mobile/support/tickets/${id}`,
+  supportTicketMessages: (id: string) => `/mobile/support/tickets/${id}/messages`,
 } as const;

@@ -225,6 +225,7 @@
     "recordsTimeline": "Dossiers et historique",
     "messages": "Messages",
     "settings": "Paramètres",
+    "helpSupport": "Aide et assistance",
     "signOut": "Se déconnecter",
     "privacyTitle": "Vos données sont privées et sécurisées",
     "privacyBody": "Nous utilisons un chiffrement de pointe pour protéger vos informations et respectons les normes mondiales de confidentialité des données de santé.",
@@ -915,5 +916,71 @@
     "empty": "Aucun établissement trouvé",
     "emptyBody": "Essayez une autre recherche ou un autre type d'établissement.",
     "loadMore": "Charger plus"
+  },
+  "help": {
+    "title": "Aide et assistance",
+    "subtitle": "Nous sommes là pour vous aider. Contactez notre équipe ou suivez une demande.",
+    "quickLinks": "Liens rapides",
+    "quickLink": {
+      "healthId": "Identifiant santé",
+      "appointments": "Rendez-vous",
+      "records": "Dossiers de santé",
+      "privacy": "Sécurité et confidentialité",
+      "family": "Personnes à charge"
+    },
+    "contact": {
+      "title": "Nous contacter",
+      "body": "Choisissez le moyen qui vous convient le mieux.",
+      "email": "Assistance par e-mail",
+      "emailBody": "Nous répondons généralement sous 24 heures.",
+      "phone": "Assistance téléphonique",
+      "phoneBody": "Parlez à un représentant du support.",
+      "unavailable": "Aucun canal de contact direct n'est encore configuré — utilisez « Soumettre une demande » ci-dessous et notre équipe vous répondra."
+    },
+    "requestForm": {
+      "title": "Soumettre une demande",
+      "body": "Vous ne trouvez pas ce qu'il vous faut ? Décrivez le problème et notre équipe vous répondra.",
+      "category": "Catégorie",
+      "subject": "Objet",
+      "subjectPlaceholder": "Décrivez brièvement le problème",
+      "description": "Description",
+      "descriptionPlaceholder": "Donnez-nous le plus de détails possible.",
+      "submit": "Envoyer la demande",
+      "submitError": "Impossible d'envoyer votre demande. Veuillez réessayer.",
+      "submitted": "Demande envoyée — nous reviendrons vers vous bientôt."
+    },
+    "category": {
+      "technical_issue": "Problème technique",
+      "appointment_issue": "Rendez-vous",
+      "billing_question": "Facturation",
+      "account_access": "Accès au compte",
+      "medical_records": "Dossiers médicaux",
+      "prescription_pharmacy": "Ordonnances et pharmacie",
+      "other": "Autre"
+    },
+    "myRequests": {
+      "title": "Mes demandes d'assistance",
+      "body": "Suivez vos demandes d'assistance et leur statut.",
+      "empty": "Vous n'avez soumis aucune demande pour le moment.",
+      "loadError": "Impossible de charger vos demandes d'assistance.",
+      "retry": "Réessayer"
+    },
+    "status": {
+      "open": "Ouverte",
+      "assigned": "En cours",
+      "escalated": "Escaladée",
+      "resolved": "Résolue"
+    },
+    "detail": {
+      "description": "Description",
+      "conversation": "Conversation",
+      "replyPlaceholder": "Écrivez une réponse…",
+      "resolutionNote": "Note de résolution",
+      "empty": "Aucun message pour le moment."
+    },
+    "emergency": {
+      "title": "Urgence médicale ?",
+      "body": "En cas d'urgence médicale, appelez immédiatement les services d'urgence locaux — n'attendez pas une réponse du support."
+    }
   }
 }

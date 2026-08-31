@@ -1385,3 +1385,115 @@ export function usePrescriptionsForReservation(enabled = true) {
       ).data.data,
   });
 }
+
+// ── Help & Support ──────────────────────────────────────────────────────
+// Backed by App\Http\Controllers\Api\Mobile\MobileSupportController, wrapping
+// the platform's existing Support/helpdesk module (App\Modules\Support) for
+// the first time on the patient-facing side. See routes/mobile_support.php.
+
+export type SupportTicketCategory =
+  | 'technical_issue'
+  | 'appointment_issue'
+  | 'billing_question'
+  | 'account_access'
+  | 'medical_records'
+  | 'prescription_pharmacy'
+  | 'other';
+
+/** open | assigned | escalated | resolved */
+export type SupportTicketStatus = string;
+
+export interface SupportContactInfo {
+  /** null when the platform has no support email configured — never fabricated. */
+  email: string | null;
+  /** null when the platform has no support phone configured — never fabricated. */
+  phone: string | null;
+  categories: SupportTicketCategory[];
+}
+
+export function useSupportContact() {
+  return useQuery({
+    queryKey: ['support', 'contact'],
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () =>
+      (await apiClient.get<{ data: SupportContactInfo }>(endpoints.supportContact)).data.data,
+  });
+}
+
+export interface SupportTicketSummary {
+  id: string;
+  category: SupportTicketCategory;
+  priority: string;
+  status: SupportTicketStatus;
+  subject: string;
+  description: string;
+  sla_due_at: string | null;
+  resolved_at: string | null;
+  resolution_note: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SupportTicketMessage {
+  id: string;
+  sender_type: string;
+  is_mine: boolean;
+  body: string;
+  created_at: string;
+}
+
+export interface SupportTicketDetail extends SupportTicketSummary {
+  messages: SupportTicketMessage[];
+}
+
+export function useSupportTickets() {
+  return useQuery({
+    queryKey: ['support', 'tickets'],
+    queryFn: async () =>
+      (await apiClient.get<{ data: SupportTicketSummary[] }>(endpoints.supportTickets)).data.data,
+  });
+}
+
+export function useSupportTicket(id: string | null) {
+  return useQuery({
+    queryKey: ['support', 'tickets', id],
+    enabled: !!id,
+    queryFn: async () =>
+      (await apiClient.get<{ data: SupportTicketDetail }>(endpoints.supportTicket(id as string))).data
+        .data,
+  });
+}
+
+export interface CreateSupportTicketInput {
+  category: SupportTicketCategory;
+  subject: string;
+  description: string;
+  priority?: 'low' | 'normal' | 'high' | 'urgent';
+}
+
+export function useCreateSupportTicket() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: CreateSupportTicketInput) =>
+      (await apiClient.post<{ data: SupportTicketSummary }>(endpoints.supportTickets, input)).data
+        .data,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['support', 'tickets'] }),
+  });
+}
+
+export function useSendSupportTicketMessage(ticketId: string | null) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: string) =>
+      (
+        await apiClient.post<{ data: SupportTicketMessage }>(
+          endpoints.supportTicketMessages(ticketId as string),
+          { body },
+        )
+      ).data.data,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['support', 'tickets', ticketId] });
+      queryClient.invalidateQueries({ queryKey: ['support', 'tickets'] });
+    },
+  });
+}
