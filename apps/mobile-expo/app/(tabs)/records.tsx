@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import {
   Activity,
   AlertTriangle,
+  ChevronRight,
   FlaskConical,
   Inbox,
   Pill,
@@ -28,6 +30,7 @@ type FilterValue = 'all' | FeedType;
 
 interface FeedItem {
   key: string;
+  id: string;
   type: FeedType;
   title: string;
   subtitle: string | null;
@@ -48,6 +51,7 @@ const FILTERS: FilterValue[] = ['all', 'visit', 'lab_result', 'prescription', 'a
 
 export default function RecordsScreen() {
   const { t, i18n } = useTranslation();
+  const router = useRouter();
   const patient = useAuthStore((s) => s.patient);
   const locale = i18n.language?.startsWith('fr') ? 'fr-FR' : 'en-US';
 
@@ -92,6 +96,7 @@ export default function RecordsScreen() {
       const d = new Date(ev.occurred_at);
       items.push({
         key: `${ev.event_type}-${ev.id}`,
+        id: ev.id,
         type: ev.event_type,
         title: ev.summary,
         subtitle: ev.facility_name ?? t('records.item.unknownFacility'),
@@ -105,6 +110,7 @@ export default function RecordsScreen() {
       const d = a.recorded ? new Date(a.recorded) : null;
       items.push({
         key: `allergy-${a.id}`,
+        id: a.id,
         type: 'allergy',
         title: t('records.item.allergyTitle', { substance: a.substance }),
         subtitle: statusLabel(a.severity),
@@ -118,6 +124,7 @@ export default function RecordsScreen() {
       const d = c.recorded ? new Date(c.recorded) : null;
       items.push({
         key: `condition-${c.id}`,
+        id: c.id,
         type: 'condition',
         title: c.display_name,
         subtitle: statusLabel(c.status),
@@ -130,6 +137,7 @@ export default function RecordsScreen() {
       const d = im.administered_at ? new Date(im.administered_at) : null;
       items.push({
         key: `immunization-${im.id}`,
+        id: im.id,
         type: 'immunization',
         title: im.vaccine_name,
         subtitle: im.dose_number ? t('records.item.immunizationDose', { n: im.dose_number }) : statusLabel(im.status),
@@ -200,7 +208,14 @@ export default function RecordsScreen() {
               <Text className="mt-1 text-center text-sm text-navy-muted">{t('records.empty.body')}</Text>
             </View>
           ) : (
-            visibleFeed.map((item) => <FeedRow key={item.key} item={item} />)
+            visibleFeed.map((item) => (
+              <FeedRow
+                key={item.key}
+                item={item}
+                onPress={item.type === 'lab_result' ? () => router.push(`/labs/${item.id}`) : undefined}
+                pressLabel={item.type === 'lab_result' ? t('labs.viewFullReport') : undefined}
+              />
+            ))
           )}
         </View>
 
@@ -251,22 +266,49 @@ function FilterChip({ active, label, onPress }: { active: boolean; label: string
   );
 }
 
-function FeedRow({ item }: { item: FeedItem }) {
+function FeedRow({
+  item,
+  onPress,
+  pressLabel,
+}: {
+  item: FeedItem;
+  onPress?: () => void;
+  pressLabel?: string;
+}) {
   const meta = FEED_META[item.type];
   const Icon = meta.icon;
-  return (
-    <View className="mb-3 flex-row rounded-2xl bg-white p-4">
-      <View
-        className="h-10 w-10 items-center justify-center rounded-full"
-        style={{ backgroundColor: meta.surface }}
-      >
-        <Icon size={18} color={meta.color} />
+  const content = (
+    <>
+      <View className="flex-row">
+        <View
+          className="h-10 w-10 items-center justify-center rounded-full"
+          style={{ backgroundColor: meta.surface }}
+        >
+          <Icon size={18} color={meta.color} />
+        </View>
+        <View className="ml-3 flex-1">
+          <Text className="text-sm font-bold text-navy-text">{item.title}</Text>
+          {item.subtitle ? <Text className="mt-0.5 text-xs text-navy-secondary">{item.subtitle}</Text> : null}
+          {item.dateLabel ? <Text className="mt-1 text-xs text-navy-muted">{item.dateLabel}</Text> : null}
+        </View>
+        {onPress ? <ChevronRight size={18} color={colors.navy.muted} /> : null}
       </View>
-      <View className="ml-3 flex-1">
-        <Text className="text-sm font-bold text-navy-text">{item.title}</Text>
-        {item.subtitle ? <Text className="mt-0.5 text-xs text-navy-secondary">{item.subtitle}</Text> : null}
-        {item.dateLabel ? <Text className="mt-1 text-xs text-navy-muted">{item.dateLabel}</Text> : null}
-      </View>
-    </View>
+      {onPress && pressLabel ? (
+        <View className="mt-3 flex-row items-center justify-end border-t border-cream-200 pt-3">
+          <Text className="text-xs font-semibold text-gold-600">{pressLabel}</Text>
+          <ChevronRight size={14} color={colors.gold[600]} />
+        </View>
+      ) : null}
+    </>
   );
+
+  if (onPress) {
+    return (
+      <Pressable onPress={onPress} className="mb-3 rounded-2xl bg-white p-4">
+        {content}
+      </Pressable>
+    );
+  }
+
+  return <View className="mb-3 rounded-2xl bg-white p-4">{content}</View>;
 }

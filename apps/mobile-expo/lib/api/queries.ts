@@ -1385,3 +1385,77 @@ export function usePrescriptionsForReservation(enabled = true) {
       ).data.data,
   });
 }
+
+// ---------------------------------------------------------------------------
+// Labs — lab orders + full parameter results (screens: app/labs/*).
+// Distinct from Records/Timeline, which only ever surfaces a resulted lab
+// order as a single feed row with no reference ranges/flags. Backed by
+// GET /mobile/labs and GET /mobile/labs/{id} (MobileLabController).
+// ---------------------------------------------------------------------------
+
+export type LabOrderStatus = 'pending' | 'collected' | 'processing' | 'resulted' | 'cancelled';
+export type LabUrgency = 'routine' | 'urgent' | 'stat';
+
+export interface LabOrderSummary {
+  id: string;
+  test_name: string;
+  test_code: string | null;
+  urgency: string;
+  status: string;
+  status_color: 'success' | 'info' | 'warning' | 'default';
+  facility_name: string | null;
+  ordered_at: string | null;
+  resulted_at: string | null;
+  result_count: number;
+  has_abnormal: boolean;
+}
+
+export interface LabResultParameter {
+  id: string;
+  parameter_name: string;
+  value: string;
+  unit: string | null;
+  reference_range: string | null;
+  flag: string | null;
+  flag_label: string;
+  is_abnormal: boolean;
+  notes: string | null;
+  resulted_at: string | null;
+}
+
+export interface LabOrderDetail extends LabOrderSummary {
+  clinical_indication: string | null;
+  notes: string | null;
+  collected_at: string | null;
+  results: LabResultParameter[];
+}
+
+export interface PaginatedLabOrders {
+  data: LabOrderSummary[];
+  pagination: { total: number; per_page: number; current_page: number; last_page: number };
+}
+
+/** List of the patient's lab orders, optionally filtered by status
+ * ('pending' | 'collected' | 'processing' | 'resulted' | 'cancelled'). */
+export function useLabOrders(status?: string) {
+  return useQuery({
+    queryKey: ['labs', status ?? 'all'],
+    queryFn: async () =>
+      (
+        await apiClient.get<PaginatedLabOrders>(endpoints.labs, {
+          params: status ? { status } : undefined,
+        })
+      ).data,
+  });
+}
+
+/** Single lab order with its full set of result parameters (value, unit,
+ * reference range, abnormal flag). */
+export function useLabOrderDetail(id: string | undefined) {
+  return useQuery({
+    queryKey: ['labs', id],
+    queryFn: async () =>
+      (await apiClient.get<{ data: LabOrderDetail }>(endpoints.lab(id as string))).data.data,
+    enabled: !!id,
+  });
+}
