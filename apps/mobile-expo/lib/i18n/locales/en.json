@@ -662,37 +662,88 @@
   },
   "settings": {
     "title": "Settings",
-    "subtitle": "Manage your language, notifications, and this device.",
-    "loadError": "We couldn't load your settings. Please try again.",
-    "retry": "Retry",
+    "subtitle": "Manage your account, your preferences and this device.",
+    "loadError": "We couldn't load your settings",
+    "loadErrorBody": "Check your connection and try again — nothing has been changed.",
+    "retry": "Try again",
+    "group": {
+      "account": "Account",
+      "language": "Language",
+      "notifications": "Notifications",
+      "device": "This device",
+      "privacy": "Privacy & data",
+      "care": "My care",
+      "about": "About & support"
+    },
+    "account": {
+      "viewProfile": "View profile",
+      "healthId": "Health ID {{id}}",
+      "personal": "Personal information",
+      "personalBody": "Name, date of birth, contact details and emergency contact.",
+      "family": "Family & dependents",
+      "familyBody": "Invite a relative, or manage a dependent’s record.",
+      "insurance": "Insurance",
+      "insuranceBody": "Your cover, and the plans available to you."
+    },
     "language": {
-      "title": "Language",
-      "body": "Choose the language used across OpesCare.",
+      "title": "App language",
+      "body": "Applies everywhere in OpesCare, on every device you sign in to.",
       "en": "English",
-      "fr": "Français"
+      "fr": "Français",
+      "saveError": "Language changed here, but we couldn't save it to your account."
     },
     "notifications": {
-      "title": "Notifications",
-      "body": "Choose what you'd like to be notified about.",
       "appointments": "Appointments",
       "appointmentsBody": "Reminders and updates about your appointments.",
-      "labResults": "Lab Results",
+      "labResults": "Lab results",
       "labResultsBody": "Alerts when new lab results are available.",
       "prescriptions": "Prescriptions",
       "prescriptionsBody": "Updates on new or renewed prescriptions.",
       "billing": "Billing",
-      "billingBody": "Invoices, payments, and billing reminders.",
-      "consentRequests": "Consent Requests",
-      "consentRequestsBody": "When a facility requests access to your record.",
-      "updateError": "Couldn't update this preference. Please try again."
+      "billingBody": "Invoices, payments and billing reminders.",
+      "consentRequests": "Consent requests",
+      "consentRequestsBody": "When a facility asks for access to your record.",
+      "unavailable": "We couldn't read this preference",
+      "updateError": "Couldn't save that preference. It has been left as it was — please try again.",
+      "centre": "Notification centre",
+      "centreBody": "Everything OpesCare has sent you."
     },
     "device": {
-      "title": "This Device",
-      "body": "Manage push notifications for this device.",
-      "pushLabel": "Push Notifications",
-      "pushBody": "Get real-time alerts on this device.",
-      "registerError": "Couldn't enable push notifications. Please try again.",
-      "revokeError": "Couldn't disable push notifications. Please try again."
+      "pushLabel": "Push notifications",
+      "pushBody": "Real-time alerts on this device.",
+      "pushChecking": "Checking this device…",
+      "os_denied": "Your device is blocking notifications for OpesCare. Allow them in your device settings, then try again.",
+      "register_failed": "Couldn't turn on push notifications for this device. Please try again.",
+      "revoke_failed": "Couldn't turn off push notifications for this device. Please try again.",
+      "offline": "Offline access",
+      "offlineBody": "Keep a limited, encrypted copy of your record on this device."
+    },
+    "privacy": {
+      "consent": "Privacy & consent",
+      "consentBody": "Approve or revoke a facility’s access to your record.",
+      "accessLogs": "Access history",
+      "accessLogsBody": "Who opened your record, when, and why.",
+      "dataRequests": "Data requests",
+      "dataRequestsBody": "Ask for an export or a correction to your record.",
+      "download": "Download my records",
+      "downloadBody": "Get a PDF or FHIR copy of your medical record."
+    },
+    "care": {
+      "carePlans": "Care plans",
+      "carePlansBody": "The goals and steps your care team set with you.",
+      "referrals": "Referrals",
+      "referralsBody": "Where you have been referred, and by whom."
+    },
+    "about": {
+      "help": "Help & support",
+      "helpBody": "Contact our team, or track a request you have already sent.",
+      "version": "App version",
+      "versionUnknown": "Unknown",
+      "updateAvailable": "Version {{version}} is available."
+    },
+    "assurance": {
+      "title": "Your record travels with you",
+      "body": "Your Health ID and your record are yours. A facility sees only what you have consented to, and every access is written to your history."
     }
   },
   "documents": {
@@ -1551,8 +1602,12 @@
   },
   "notifications": {
     "title": "Notification Center",
-    "subtitle": "Stay updated with your health, appointments, and messages.",
+    "subtitle": "Stay updated with your health, appointments and messages.",
     "markAllRead": "Mark all as read",
+    "markAllError": "Couldn't mark everything as read. Please try again.",
+    "unreadCount_one": "{{count}} unread",
+    "unreadCount_other": "{{count}} unread",
+    "important": "Important",
     "filterAll": "All",
     "filterAppointments": "Appointments",
     "filterHealth": "Health",
@@ -1562,12 +1617,25 @@
     "sectionYesterday": "Yesterday",
     "sectionEarlier": "Earlier",
     "emptyTitle": "You're all caught up",
-    "emptySubtitle": "Updates about your health, appointments, and messages will show up here.",
+    "emptySubtitle": "Updates about your appointments, results, prescriptions and consent requests will appear here.",
+    "emptyAction": "Notification settings",
+    "emptyFilteredTitle": "Nothing in this category",
+    "emptyFilteredSubtitle": "You have notifications, but none of them are in this category.",
+    "emptyFilteredAction": "Show all notifications",
     "errorTitle": "Couldn't load your notifications",
+    "errorBody": "Check your connection and try again — nothing has been missed.",
     "retry": "Try again",
-    "viewDetails": "View details",
-    "privacyTitle": "Your notifications are private and secure",
-    "privacySubtitle": "Only you can view your health notifications."
+    "privacyTitle": "Your notifications are private",
+    "privacySubtitle": "Only you can see them, and they never name a diagnosis or a result value.",
+    "action": {
+      "accessLogs": "View access history",
+      "healthId": "View Health ID",
+      "appointments": "View appointments",
+      "labs": "View lab results",
+      "prescriptions": "View prescriptions",
+      "messages": "Open messages",
+      "family": "View family"
+    }
   },
   "messages": {
     "title": "Messages",
@@ -2088,69 +2156,110 @@
   },
   "help": {
     "title": "Help & Support",
-    "subtitle": "We're here to help. Reach our team or track a request.",
-    "quickLinks": "Quick Links",
-    "quickLink": {
-      "healthId": "Health ID",
-      "appointments": "Appointments",
-      "records": "Health Records",
-      "privacy": "Security & Privacy",
-      "family": "Dependents"
-    },
+    "subtitle": "Find an answer, reach our team, or follow a request you have already sent.",
     "contact": {
-      "title": "Contact Us",
+      "title": "How can we help?",
       "body": "Choose the way that works best for you.",
-      "email": "Email Support",
+      "email": "Email support",
       "emailBody": "We typically respond within 24 hours.",
-      "phone": "Call Support",
+      "phone": "Call support",
       "phoneBody": "Speak with a support representative.",
-      "unavailable": "No direct contact channel is configured yet — use \"Submit a Request\" below and our team will reach you."
+      "unavailable": "No direct contact channel is configured for your region yet. Submit a request below and our team will come back to you.",
+      "ticket": "Support request",
+      "ticketBody": "Open a request and follow it here — we reply in the thread.",
+      "ticketOpen_one": "{{count}} request open",
+      "ticketOpen_other": "{{count}} requests open",
+      "ticketNone": "No open requests"
+    },
+    "topicsTitle": "Popular help topics",
+    "topic": {
+      "healthId": "Health ID",
+      "healthIdBody": "Show, share or renew your portable health identity.",
+      "appointments": "Appointments",
+      "appointmentsBody": "Book a visit, or check and cancel one you have.",
+      "records": "Health records",
+      "recordsBody": "Your timeline, results, prescriptions and documents.",
+      "privacy": "Privacy & security",
+      "privacyBody": "Consent, access history and your data rights.",
+      "family": "Family & dependents",
+      "familyBody": "Invite a relative, or manage a dependent’s record."
+    },
+    "faqTitle": "Frequently asked",
+    "faq": {
+      "healthIdQ": "How do I show my Health ID at a facility?",
+      "healthIdA": "Open the Health ID tab. It shows your Health ID and a QR code the facility can scan. You can also generate a temporary QR code that expires, when you would rather not share the permanent one.",
+      "openHealthId": "Open Health ID",
+      "whoSeesQ": "Who can see my medical record?",
+      "whoSeesA": "Only the facilities you have granted consent to. You approve or revoke each request under Privacy & consent, and every access to your record is written to your access history.",
+      "openPrivacy": "Open Privacy & consent",
+      "copyQ": "How do I get a copy of my records?",
+      "copyA": "Download my records exports your medical record as a PDF to read or print, or as a FHIR file for another system. For a formal data export, raise a request under Data requests.",
+      "openExport": "Open Download my records",
+      "offlineQ": "Can I use OpesCare without a connection?",
+      "offlineA": "Yes, if you turn on offline access. It keeps a limited, encrypted copy on this device — profile, upcoming appointments, medications, allergies and your emergency profile — and tells you when it was last refreshed.",
+      "openOffline": "Open offline access",
+      "bookingQ": "How do I book an appointment?",
+      "bookingA": "Choose a facility, pick a date, and book one of the slots it has published. Your upcoming and past appointments are listed under Appointments, where you can also cancel one.",
+      "openBooking": "Book an appointment",
+      "familyQ": "Can I manage a relative’s record?",
+      "familyA": "You can invite a relative to link their record to yours, or register a dependent such as a child. Both are under Family, and an invitation can be cancelled while it is still pending.",
+      "openFamily": "Open Family"
     },
     "requestForm": {
-      "title": "Submit a Request",
-      "body": "Can't find what you need? Tell us what's wrong and our team will get back to you.",
+      "title": "Submit a request",
+      "body": "Can't find what you need? Tell us what is wrong and our team will pick it up.",
       "category": "Category",
       "subject": "Subject",
       "subjectPlaceholder": "Briefly describe the issue",
       "description": "Description",
       "descriptionPlaceholder": "Give us as much detail as you can.",
-      "submit": "Submit Request",
+      "privacyHint": "Personal details in your message are redacted before our team sees them. Describe the problem, not your medical history.",
+      "submit": "Submit request",
       "submitError": "Couldn't submit your request. Please try again.",
-      "submitted": "Request submitted — we'll follow up soon."
+      "submitted": "Request received",
+      "submittedBody": "We opened request #{{ref}}. Track it under My requests below."
     },
     "category": {
-      "technical_issue": "Technical Issue",
+      "technical_issue": "Technical issue",
       "appointment_issue": "Appointments",
       "billing_question": "Billing",
-      "account_access": "Account Access",
-      "medical_records": "Medical Records",
-      "prescription_pharmacy": "Prescriptions & Pharmacy",
+      "account_access": "Account access",
+      "medical_records": "Medical records",
+      "prescription_pharmacy": "Prescriptions & pharmacy",
       "other": "Other"
     },
     "myRequests": {
-      "title": "My Support Requests",
-      "body": "Track your support requests and their status.",
-      "empty": "You haven't submitted any requests yet.",
-      "loadError": "Couldn't load your support requests.",
-      "retry": "Retry"
+      "title": "My requests",
+      "meta": "#{{ref}} · {{category}} · updated {{updated}}",
+      "emptyTitle": "No requests yet",
+      "empty": "When you submit a request it appears here, with its status and our replies.",
+      "loadError": "Couldn't load your requests",
+      "loadErrorBody": "Check your connection and try again.",
+      "retry": "Try again"
     },
     "status": {
       "open": "Open",
-      "assigned": "In Progress",
+      "assigned": "In progress",
       "escalated": "Escalated",
       "resolved": "Resolved"
     },
     "detail": {
-      "description": "Description",
+      "loading": "Loading…",
+      "description": "What you told us",
       "conversation": "Conversation",
       "replyPlaceholder": "Write a reply…",
-      "resolutionNote": "Resolution note",
-      "empty": "No messages yet."
+      "replyError": "Couldn't send your reply. Please try again.",
+      "resolutionNote": "How this was resolved",
+      "empty": "No replies yet. Our team will answer in this thread.",
+      "slaDue": "Response due {{date}}",
+      "send": "Send"
     },
     "emergency": {
-      "title": "Medical Emergency?",
+      "title": "Medical emergency?",
       "body": "If you are experiencing a medical emergency, call your local emergency services immediately — do not wait for a support reply."
-    }
+    },
+    "offlineTitle": "No connection?",
+    "offlineBody": "Offline access keeps an encrypted copy of the essentials on this device."
   },
   "bloodFinder": {
     "title": "Blood Finder",
@@ -2354,8 +2463,8 @@
     "outboxSendCta": "Send now",
     "outboxSending": "Sending…",
     "outboxSent": "Sent {{count}} for reconciliation.",
-    "disableTitle": "Turn off and erase",
-    "disableBody": "Removes the saved copy and this device's authorisation.",
+    "disableTitle": "Erase from this device",
+    "disableBody": "Removes the copy saved on this device, and any changes still waiting to sync.",
     "disableCta": "Erase saved data",
     "erasing": "Erasing…",
     "webNotice": "This is the web preview. Saved data is kept in browser storage, which is not encrypted — use the mobile app for real offline access.",
@@ -2366,6 +2475,11 @@
     "justNow": "just now",
     "minutesAgo": "{{count}} min ago",
     "hoursAgo": "{{count}} h ago",
-    "daysAgo": "{{count}} d ago"
+    "daysAgo": "{{count}} d ago",
+    "disableCancel": "Keep it",
+    "disableConfirmTitle": "Erase the copy on this device?",
+    "disableConfirmBody": "Everything OpesCare saved on this device is deleted, including changes that have not synced yet. This device’s authorisation is not cancelled — OpesCare has no route to revoke one — but it expires on its own: within 24 hours, or 6 hours in emergency mode. This cannot be undone.",
+    "erased": "Erased. Nothing from your record is stored on this device any more.",
+    "errorErase": "Couldn't erase the saved copy. Please try again."
   }
 }

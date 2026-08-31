@@ -17,24 +17,34 @@ import { useTranslation } from 'react-i18next';
 import {
   AlertTriangle,
   Calendar,
-  ChevronLeft,
+  ChevronDown,
   ChevronRight,
+  ChevronUp,
+  CircleAlert,
+  CloudOff,
   FileText,
   Headset,
-  Inbox,
-  LifeBuoy,
   Mail,
+  MessageSquare,
   Phone,
   QrCode,
   Send,
   ShieldCheck,
+  Ticket,
   Users,
   X,
   type LucideIcon,
 } from 'lucide-react-native';
 import { Screen } from '../components/ui/Screen';
 import { Button } from '../components/ui/Button';
-import { colors } from '../theme/tokens';
+import { Card } from '../components/ui/Card';
+import { Chip } from '../components/ui/Chip';
+import { EmptyState } from '../components/ui/EmptyState';
+import { ListRow } from '../components/ui/ListRow';
+import { SkeletonCard } from '../components/ui/Skeleton';
+import { InlineNotice, ScreenHeader } from '../components/settings/SettingsUi';
+import { toneOf, type Tone } from '../components/ui/tone';
+import { colors, radii, sizing, spacing, typography } from '../theme/tokens';
 import {
   useCreateSupportTicket,
   useSendSupportTicketMessage,
@@ -45,7 +55,37 @@ import {
   type SupportTicketSummary,
 } from '../lib/api/queries';
 
-const CATEGORIES: SupportTicketCategory[] = [
+/**
+ * Help & Support — a real helpdesk, not a contact form.
+ *
+ * Reference: `Mobile app screens/a_full_screen_mobile_app_ui_screenshot_help_sup.png`
+ * — "How can we help you today?" contact channels, popular help topics, a
+ * "Submit a Request" block, then "My Support Requests" with a status per row,
+ * closing on a medical-emergency notice.
+ *
+ * Backed end-to-end by MobileSupportController (`routes/mobile_support.php`):
+ * GET /support/contact, GET|POST /support/tickets, GET /support/tickets/{id},
+ * POST /support/tickets/{id}/messages. A ticket the patient opens here is the
+ * same record the staff helpdesk works, so it gets a real status, a thread and
+ * a resolution note.
+ *
+ * Departures from the reference, each because the platform cannot honestly
+ * support what it draws:
+ *  - **No Live Chat channel.** There is no chat transport for support; the
+ *    ticket thread is the real-time channel and is presented as such.
+ *  - **No article search or "Support Center" link.** There is no help-article
+ *    API and no published support site to link to. The help topics below
+ *    navigate to the screens that actually do the thing, and the FAQ answers
+ *    describe only behaviour this app really has.
+ *  - **No "SR-2025-0456" request number.** `support_tickets` has no reference
+ *    column — the id is a bare UUID — so rows show a short prefix of the real
+ *    id rather than a fabricated ticket number.
+ *  - **No system-status panel and no satisfaction rating.** Neither has an
+ *    endpoint.
+ */
+
+/** Fallback order if GET /support/contact does not return the category list. */
+const FALLBACK_CATEGORIES: SupportTicketCategory[] = [
   'technical_issue',
   'appointment_issue',
   'billing_question',
@@ -55,40 +95,120 @@ const CATEGORIES: SupportTicketCategory[] = [
   'other',
 ];
 
-/** Help & Support — real contact channels (config-driven, never fabricated),
- * a real "Submit a Request" form, and the patient's own ticket history +
- * threaded replies, all backed by MobileSupportController (see
- * routes/mobile_support.php), a new patient-facing entry point onto the
- * platform's existing Support/helpdesk module. Reachable from Profile. */
+/** Help topics — each navigates to the screen that actually does the thing. */
+const HELP_TOPICS: { icon: LucideIcon; tone: Tone; titleKey: string; bodyKey: string; route: string }[] =
+  [
+    {
+      icon: QrCode,
+      tone: 'gold',
+      titleKey: 'help.topic.healthId',
+      bodyKey: 'help.topic.healthIdBody',
+      route: '/(tabs)/health-id',
+    },
+    {
+      icon: Calendar,
+      tone: 'info',
+      titleKey: 'help.topic.appointments',
+      bodyKey: 'help.topic.appointmentsBody',
+      route: '/appointments',
+    },
+    {
+      icon: FileText,
+      tone: 'success',
+      titleKey: 'help.topic.records',
+      bodyKey: 'help.topic.recordsBody',
+      route: '/(tabs)/records',
+    },
+    {
+      icon: ShieldCheck,
+      tone: 'warning',
+      titleKey: 'help.topic.privacy',
+      bodyKey: 'help.topic.privacyBody',
+      route: '/privacy',
+    },
+    {
+      icon: Users,
+      tone: 'neutral',
+      titleKey: 'help.topic.family',
+      bodyKey: 'help.topic.familyBody',
+      route: '/family',
+    },
+  ];
+
+/**
+ * FAQ. Every answer describes behaviour this app genuinely has, and links to
+ * the screen that performs it — nothing here is invented, and each entry was
+ * checked against the screen it points at.
+ */
+const FAQS: { id: string; route: string; routeLabelKey: string }[] = [
+  { id: 'healthId', route: '/(tabs)/health-id', routeLabelKey: 'help.faq.openHealthId' },
+  { id: 'whoSees', route: '/privacy', routeLabelKey: 'help.faq.openPrivacy' },
+  { id: 'copy', route: '/export-records', routeLabelKey: 'help.faq.openExport' },
+  { id: 'offline', route: '/offline-access', routeLabelKey: 'help.faq.openOffline' },
+  { id: 'booking', route: '/appointments/book', routeLabelKey: 'help.faq.openBooking' },
+  { id: 'family', route: '/family', routeLabelKey: 'help.faq.openFamily' },
+];
+
+/** open | assigned | escalated | resolved — the four SupportService writes. */
+function statusTone(status: string): Tone {
+  switch (status) {
+    case 'resolved':
+      return 'success';
+    case 'escalated':
+      return 'danger';
+    case 'assigned':
+      return 'warning';
+    default:
+      return 'info';
+  }
+}
+
+/** A short, stable handle for a ticket: the leading segment of its real UUID.
+ * Not a fabricated "SR-…" number — the API has no reference field. */
+function shortRef(id: string): string {
+  return id.replace(/-/g, '').slice(0, 8).toUpperCase();
+}
+
+function formatDate(iso: string | null, locale: string): string {
+  if (!iso) return '';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
 export default function HelpScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
+  const locale = i18n.language?.startsWith('fr') ? 'fr-FR' : 'en-US';
 
   const contactQuery = useSupportContact();
   const ticketsQuery = useSupportTickets();
   const createTicket = useCreateSupportTicket();
 
+  const categories = contactQuery.data?.categories?.length
+    ? contactQuery.data.categories
+    : FALLBACK_CATEGORIES;
+
   const [category, setCategory] = useState<SupportTicketCategory>('technical_issue');
   const [subject, setSubject] = useState('');
   const [description, setDescription] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const [submittedRef, setSubmittedRef] = useState<string | null>(null);
+  const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [activeTicketId, setActiveTicketId] = useState<string | null>(null);
 
-  const quickLinks: { icon: LucideIcon; label: string; onPress: () => void }[] = [
-    { icon: QrCode, label: t('help.quickLink.healthId'), onPress: () => router.push('/(tabs)/health-id') },
-    { icon: Calendar, label: t('help.quickLink.appointments'), onPress: () => router.push('/appointments') },
-    { icon: FileText, label: t('help.quickLink.records'), onPress: () => router.push('/(tabs)/records') },
-    { icon: ShieldCheck, label: t('help.quickLink.privacy'), onPress: () => router.push('/privacy') },
-    { icon: Users, label: t('help.quickLink.family'), onPress: () => router.push('/family') },
-  ];
+  const email = contactQuery.data?.email ?? null;
+  const phone = contactQuery.data?.phone ?? null;
+  const tickets = ticketsQuery.data ?? [];
+  const openTickets = tickets.filter((ticket) => ticket.status !== 'resolved').length;
 
-  const canSubmit = subject.trim().length > 0 && description.trim().length > 0 && !createTicket.isPending;
+  const canSubmit =
+    subject.trim().length > 0 && description.trim().length > 0 && !createTicket.isPending;
 
   const submitRequest = async () => {
     if (!canSubmit) return;
-    setSubmitted(false);
+    setSubmittedRef(null);
     try {
-      await createTicket.mutateAsync({
+      const created = await createTicket.mutateAsync({
         category,
         subject: subject.trim(),
         description: description.trim(),
@@ -96,28 +216,21 @@ export default function HelpScreen() {
       setSubject('');
       setDescription('');
       setCategory('technical_issue');
-      setSubmitted(true);
+      setSubmittedRef(shortRef(created.id));
     } catch {
-      // createTicket.isError renders the inline error below the form
+      // createTicket.isError renders the inline error below the form.
     }
   };
 
   return (
     <Screen className="px-0">
-      <View className="flex-row items-center justify-between px-6 pt-2">
-        <Pressable onPress={() => router.back()} hitSlop={10} className="h-10 w-10 items-center justify-center">
-          <ChevronLeft size={24} color={colors.navy.text} />
-        </Pressable>
-        <Text className="text-lg font-bold text-navy-text">{t('help.title')}</Text>
-        <View className="h-10 w-10" />
-      </View>
-
       <ScrollView
-        className="flex-1 px-6"
+        className="flex-1"
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: spacing['2xl'], paddingBottom: spacing['4xl'] }}
         refreshControl={
           <RefreshControl
-            refreshing={ticketsQuery.isRefetching}
+            refreshing={ticketsQuery.isRefetching || contactQuery.isRefetching}
             onRefresh={() => {
               ticketsQuery.refetch();
               contactQuery.refetch();
@@ -126,127 +239,175 @@ export default function HelpScreen() {
           />
         }
       >
-        <Text className="mb-4 mt-1 text-sm text-navy-secondary">{t('help.subtitle')}</Text>
+        <ScreenHeader
+          title={t('help.title')}
+          subtitle={t('help.subtitle')}
+          onBack={() => router.back()}
+        />
 
-        {/* Quick links */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-1 mb-5">
-          {quickLinks.map((link) => (
-            <Pressable
-              key={link.label}
-              onPress={link.onPress}
-              className="mx-1 w-24 items-center rounded-2xl bg-white px-2 py-4"
+        {/* ── How can we help? — the real channels ────────────────────── */}
+        <Card className="mt-6" padding="lg">
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View
+              style={{
+                width: sizing.tile.md,
+                height: sizing.tile.md,
+                borderRadius: radii.tile,
+                backgroundColor: colors.gold[50],
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              <View className="mb-2 h-10 w-10 items-center justify-center rounded-full bg-gold-50">
-                <link.icon size={18} color={colors.gold[600]} />
-              </View>
-              <Text className="text-center text-xs font-semibold text-navy-text" numberOfLines={2}>
-                {link.label}
-              </Text>
-            </Pressable>
-          ))}
-        </ScrollView>
-
-        {/* Contact us */}
-        <View className="mb-5 rounded-2xl bg-white p-4">
-          <View className="mb-3 flex-row items-center">
-            <View className="h-9 w-9 items-center justify-center rounded-full bg-gold-100">
-              <Headset size={18} color={colors.gold[600]} />
+              <Headset color={colors.gold[600]} size={sizing.icon.lg} />
             </View>
-            <View className="ml-3 flex-1">
-              <Text className="text-base font-bold text-navy-text">{t('help.contact.title')}</Text>
-              <Text className="text-xs text-navy-secondary">{t('help.contact.body')}</Text>
-            </View>
-          </View>
-
-          {contactQuery.isLoading ? (
-            <ActivityIndicator color={colors.gold[500]} />
-          ) : (
-            <View style={{ gap: 10 }}>
-              {contactQuery.data?.email ? (
-                <Pressable
-                  onPress={() => Linking.openURL(`mailto:${contactQuery.data!.email}`).catch(() => {})}
-                  className="flex-row items-center rounded-xl px-3 py-3"
-                  style={{ backgroundColor: colors.cream[100] }}
-                >
-                  <View className="h-9 w-9 items-center justify-center rounded-full bg-white">
-                    <Mail size={16} color={colors.gold[600]} />
-                  </View>
-                  <View className="ml-3 flex-1">
-                    <Text className="text-sm font-semibold text-navy-text">{t('help.contact.email')}</Text>
-                    <Text className="text-xs text-navy-secondary" numberOfLines={1}>
-                      {contactQuery.data.email}
-                    </Text>
-                  </View>
-                  <ChevronRight size={16} color={colors.navy.muted} />
-                </Pressable>
-              ) : null}
-
-              {contactQuery.data?.phone ? (
-                <Pressable
-                  onPress={() =>
-                    Linking.openURL(`tel:${contactQuery.data!.phone!.replace(/[^+\d]/g, '')}`).catch(() => {})
-                  }
-                  className="flex-row items-center rounded-xl px-3 py-3"
-                  style={{ backgroundColor: colors.cream[100] }}
-                >
-                  <View className="h-9 w-9 items-center justify-center rounded-full bg-white">
-                    <Phone size={16} color={colors.gold[600]} />
-                  </View>
-                  <View className="ml-3 flex-1">
-                    <Text className="text-sm font-semibold text-navy-text">{t('help.contact.phone')}</Text>
-                    <Text className="text-xs text-navy-secondary" numberOfLines={1}>
-                      {contactQuery.data.phone}
-                    </Text>
-                  </View>
-                  <ChevronRight size={16} color={colors.navy.muted} />
-                </Pressable>
-              ) : null}
-
-              {!contactQuery.data?.email && !contactQuery.data?.phone ? (
-                <Text className="text-xs text-navy-secondary">{t('help.contact.unavailable')}</Text>
-              ) : null}
-            </View>
-          )}
-        </View>
-
-        {/* Submit a request */}
-        <View className="mb-5 rounded-2xl bg-white p-4">
-          <View className="mb-3 flex-row items-center">
-            <View className="h-9 w-9 items-center justify-center rounded-full bg-gold-100">
-              <LifeBuoy size={18} color={colors.gold[600]} />
-            </View>
-            <View className="ml-3 flex-1">
-              <Text className="text-base font-bold text-navy-text">{t('help.requestForm.title')}</Text>
-              <Text className="text-xs text-navy-secondary">{t('help.requestForm.body')}</Text>
-            </View>
-          </View>
-
-          <Text className="mb-2 text-xs font-semibold text-navy-secondary">{t('help.requestForm.category')}</Text>
-          <View className="mb-4 flex-row flex-wrap" style={{ gap: 8 }}>
-            {CATEGORIES.map((c) => (
-              <Pressable
-                key={c}
-                onPress={() => setCategory(c)}
-                className="rounded-full border px-3 py-2"
+            <View style={{ flex: 1, marginLeft: spacing.md }}>
+              <Text
                 style={{
-                  borderColor: category === c ? colors.gold[500] : colors.cream[300],
-                  backgroundColor: category === c ? colors.gold[50] : 'transparent',
+                  fontSize: typography.size.lg,
+                  lineHeight: typography.lineHeight.lg,
+                  fontWeight: typography.weight.bold,
+                  color: colors.navy.text,
                 }}
               >
-                <Text
-                  className="text-xs font-semibold"
-                  style={{ color: category === c ? colors.gold[600] : colors.navy.secondary }}
-                >
-                  {t(`help.category.${c}`)}
-                </Text>
-              </Pressable>
+                {t('help.contact.title')}
+              </Text>
+              <Text
+                style={{
+                  marginTop: 2,
+                  fontSize: typography.size.sm,
+                  lineHeight: typography.lineHeight.sm,
+                  color: colors.navy.secondary,
+                }}
+              >
+                {t('help.contact.body')}
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ marginTop: spacing.lg, gap: spacing.md }}>
+            {contactQuery.isLoading ? (
+              <ActivityIndicator color={colors.gold[500]} />
+            ) : (
+              <>
+                {email ? (
+                  <ChannelRow
+                    icon={Mail}
+                    tone="info"
+                    title={t('help.contact.email')}
+                    body={t('help.contact.emailBody')}
+                    value={email}
+                    onPress={() => {
+                      Linking.openURL(`mailto:${email}`).catch(() => undefined);
+                    }}
+                  />
+                ) : null}
+
+                {phone ? (
+                  <ChannelRow
+                    icon={Phone}
+                    tone="success"
+                    title={t('help.contact.phone')}
+                    body={t('help.contact.phoneBody')}
+                    value={phone}
+                    onPress={() => {
+                      Linking.openURL(`tel:${phone.replace(/[^+\d]/g, '')}`).catch(() => undefined);
+                    }}
+                  />
+                ) : null}
+
+                {!email && !phone ? (
+                  <InlineNotice tone="warning" icon={CircleAlert} body={t('help.contact.unavailable')} />
+                ) : null}
+
+                <ChannelRow
+                  icon={MessageSquare}
+                  tone="gold"
+                  title={t('help.contact.ticket')}
+                  body={t('help.contact.ticketBody')}
+                  value={
+                    openTickets > 0
+                      ? t('help.contact.ticketOpen', { count: openTickets })
+                      : t('help.contact.ticketNone')
+                  }
+                />
+              </>
+            )}
+          </View>
+        </Card>
+
+        {/* ── Popular help topics ─────────────────────────────────────── */}
+        <SectionLabel text={t('help.topicsTitle')} />
+        <Card padding="none" style={{ paddingHorizontal: spacing.lg }}>
+          {HELP_TOPICS.map((topic, index) => (
+            <ListRow
+              key={topic.titleKey}
+              icon={topic.icon}
+              tone={topic.tone}
+              title={t(topic.titleKey)}
+              subtitle={t(topic.bodyKey)}
+              onPress={() => router.push(topic.route)}
+              divider={index < HELP_TOPICS.length - 1}
+            />
+          ))}
+        </Card>
+
+        {/* ── FAQ ─────────────────────────────────────────────────────── */}
+        <SectionLabel text={t('help.faqTitle')} />
+        <Card padding="none" style={{ paddingHorizontal: spacing.lg }}>
+          {FAQS.map((faq, index) => (
+            <FaqRow
+              key={faq.id}
+              question={t(`help.faq.${faq.id}Q`)}
+              answer={t(`help.faq.${faq.id}A`)}
+              linkLabel={t(faq.routeLabelKey)}
+              open={openFaq === faq.id}
+              onToggle={() => setOpenFaq((current) => (current === faq.id ? null : faq.id))}
+              onFollowLink={() => router.push(faq.route)}
+              divider={index < FAQS.length - 1}
+            />
+          ))}
+        </Card>
+
+        {/* ── Submit a request ────────────────────────────────────────── */}
+        <SectionLabel text={t('help.requestForm.title')} />
+        <Card padding="lg">
+          <Text
+            style={{
+              fontSize: typography.size.sm,
+              lineHeight: typography.lineHeight.sm,
+              color: colors.navy.secondary,
+            }}
+          >
+            {t('help.requestForm.body')}
+          </Text>
+
+          <FieldLabel text={t('help.requestForm.category')} />
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+            {categories.map((value) => (
+              <Chip
+                key={value}
+                label={t(`help.category.${value}`)}
+                size="md"
+                variant="outline"
+                tone="gold"
+                selected={category === value}
+                onPress={() => setCategory(value)}
+              />
             ))}
           </View>
 
-          <Text className="mb-2 text-xs font-semibold text-navy-secondary">{t('help.requestForm.subject')}</Text>
+          <FieldLabel text={t('help.requestForm.subject')} />
           <TextInput
-            className="mb-4 h-12 rounded-xl border px-4 text-sm text-navy-text"
-            style={{ borderColor: colors.cream[300], backgroundColor: colors.white }}
+            style={{
+              height: sizing.control.lg,
+              borderRadius: radii.lg,
+              borderWidth: 1,
+              borderColor: colors.line.default,
+              backgroundColor: colors.surface.card,
+              paddingHorizontal: spacing.lg,
+              fontSize: typography.size.md,
+              color: colors.navy.text,
+            }}
             placeholder={t('help.requestForm.subjectPlaceholder')}
             placeholderTextColor={colors.navy.muted}
             value={subject}
@@ -254,10 +415,20 @@ export default function HelpScreen() {
             maxLength={255}
           />
 
-          <Text className="mb-2 text-xs font-semibold text-navy-secondary">{t('help.requestForm.description')}</Text>
+          <FieldLabel text={t('help.requestForm.description')} />
           <TextInput
-            className="mb-4 rounded-xl border px-4 py-3 text-sm text-navy-text"
-            style={{ borderColor: colors.cream[300], backgroundColor: colors.white, minHeight: 90 }}
+            style={{
+              minHeight: 110,
+              borderRadius: radii.lg,
+              borderWidth: 1,
+              borderColor: colors.line.default,
+              backgroundColor: colors.surface.card,
+              paddingHorizontal: spacing.lg,
+              paddingVertical: spacing.md,
+              fontSize: typography.size.md,
+              lineHeight: typography.lineHeight.md,
+              color: colors.navy.text,
+            }}
             placeholder={t('help.requestForm.descriptionPlaceholder')}
             placeholderTextColor={colors.navy.muted}
             value={description}
@@ -266,140 +437,350 @@ export default function HelpScreen() {
             textAlignVertical="top"
             maxLength={5000}
           />
+          <Text
+            style={{
+              marginTop: spacing.sm,
+              fontSize: typography.size.xs,
+              color: colors.navy.muted,
+            }}
+          >
+            {t('help.requestForm.privacyHint')}
+          </Text>
 
           {createTicket.isError ? (
-            <Text className="mb-3 text-xs" style={{ color: colors.semantic.danger }}>
-              {t('help.requestForm.submitError')}
-            </Text>
-          ) : null}
-          {submitted ? (
-            <Text className="mb-3 text-xs font-semibold" style={{ color: colors.semantic.success }}>
-              {t('help.requestForm.submitted')}
-            </Text>
+            <View style={{ marginTop: spacing.md }}>
+              <InlineNotice tone="danger" icon={CircleAlert} body={t('help.requestForm.submitError')} />
+            </View>
           ) : null}
 
-          <Button
-            label={t('help.requestForm.submit')}
-            onPress={submitRequest}
-            loading={createTicket.isPending}
-            disabled={!canSubmit}
-            showChevron={false}
-            leftIcon={Send}
+          {submittedRef ? (
+            <View style={{ marginTop: spacing.md }}>
+              <InlineNotice
+                tone="success"
+                icon={Ticket}
+                title={t('help.requestForm.submitted')}
+                body={t('help.requestForm.submittedBody', { ref: submittedRef })}
+              />
+            </View>
+          ) : null}
+
+          <View style={{ marginTop: spacing.lg }}>
+            <Button
+              label={t('help.requestForm.submit')}
+              onPress={submitRequest}
+              loading={createTicket.isPending}
+              disabled={!canSubmit}
+              showChevron={false}
+              leftIcon={Send}
+            />
+          </View>
+        </Card>
+
+        {/* ── My support requests ─────────────────────────────────────── */}
+        <SectionLabel text={t('help.myRequests.title')} />
+        {ticketsQuery.isLoading ? (
+          <SkeletonCard rows={3} />
+        ) : ticketsQuery.isError ? (
+          <Card padding="none">
+            <EmptyState
+              compact
+              tone="danger"
+              icon={CircleAlert}
+              title={t('help.myRequests.loadError')}
+              description={t('help.myRequests.loadErrorBody')}
+              actionLabel={t('help.myRequests.retry')}
+              onAction={() => ticketsQuery.refetch()}
+            />
+          </Card>
+        ) : tickets.length === 0 ? (
+          <Card padding="none">
+            <EmptyState
+              compact
+              icon={Ticket}
+              title={t('help.myRequests.emptyTitle')}
+              description={t('help.myRequests.empty')}
+            />
+          </Card>
+        ) : (
+          <Card padding="none" style={{ paddingHorizontal: spacing.lg }}>
+            {tickets.map((ticket, index) => (
+              <ListRow
+                key={ticket.id}
+                icon={Ticket}
+                tone={statusTone(ticket.status)}
+                title={ticket.subject}
+                subtitle={t('help.myRequests.meta', {
+                  ref: shortRef(ticket.id),
+                  category: t(`help.category.${ticket.category}`),
+                  updated: formatDate(ticket.updated_at, locale),
+                })}
+                trailing={
+                  <Chip
+                    label={t(`help.status.${ticket.status}`, { defaultValue: ticket.status })}
+                    tone={statusTone(ticket.status)}
+                  />
+                }
+                onPress={() => setActiveTicketId(ticket.id)}
+                divider={index < tickets.length - 1}
+              />
+            ))}
+          </Card>
+        )}
+
+        {/* ── Emergency ───────────────────────────────────────────────── */}
+        <View style={{ marginTop: spacing.xl }}>
+          <InlineNotice
+            tone="danger"
+            icon={AlertTriangle}
+            title={t('help.emergency.title')}
+            body={t('help.emergency.body')}
           />
         </View>
 
-        {/* My support requests */}
-        <View className="mb-5 rounded-2xl bg-white p-4">
-          <View className="mb-1 flex-row items-center justify-between">
-            <Text className="text-base font-bold text-navy-text">{t('help.myRequests.title')}</Text>
-          </View>
-          <Text className="mb-3 text-xs text-navy-secondary">{t('help.myRequests.body')}</Text>
-
-          {ticketsQuery.isLoading ? (
-            <ActivityIndicator color={colors.gold[500]} />
-          ) : ticketsQuery.isError ? (
-            <View className="items-center py-4">
-              <Text className="mb-2 text-center text-xs text-navy-secondary">{t('help.myRequests.loadError')}</Text>
-              <Pressable onPress={() => ticketsQuery.refetch()}>
-                <Text className="text-xs font-semibold text-gold-600">{t('help.myRequests.retry')}</Text>
-              </Pressable>
-            </View>
-          ) : !ticketsQuery.data?.length ? (
-            <View className="items-center py-6">
-              <Inbox size={22} color={colors.navy.muted} />
-              <Text className="mt-2 text-center text-xs text-navy-secondary">{t('help.myRequests.empty')}</Text>
-            </View>
-          ) : (
-            <View>
-              {ticketsQuery.data.map((ticket, index) => (
-                <TicketRow
-                  key={ticket.id}
-                  ticket={ticket}
-                  isLast={index === ticketsQuery.data!.length - 1}
-                  locale={i18n.language}
-                  onPress={() => setActiveTicketId(ticket.id)}
-                />
-              ))}
-            </View>
-          )}
-        </View>
-
-        {/* Emergency notice */}
-        <View
-          className="mb-6 flex-row items-start rounded-2xl p-4"
-          style={{ backgroundColor: colors.semantic.dangerSurface }}
-        >
-          <AlertTriangle size={18} color={colors.semantic.danger} />
-          <View className="ml-3 flex-1">
-            <Text className="text-sm font-bold" style={{ color: colors.semantic.danger }}>
-              {t('help.emergency.title')}
-            </Text>
-            <Text className="mt-1 text-xs text-navy-secondary">{t('help.emergency.body')}</Text>
-          </View>
-        </View>
+        <Card className="mt-4" padding="none" style={{ paddingHorizontal: spacing.lg }}>
+          <ListRow
+            icon={CloudOff}
+            title={t('help.offlineTitle')}
+            subtitle={t('help.offlineBody')}
+            onPress={() => router.push('/offline-access')}
+          />
+        </Card>
       </ScrollView>
 
       <TicketDetailModal
         ticketId={activeTicketId}
         visible={activeTicketId !== null}
         onClose={() => setActiveTicketId(null)}
-        locale={i18n.language}
+        locale={locale}
       />
     </Screen>
   );
 }
 
-function statusColors(status: string) {
-  switch (status) {
-    case 'resolved':
-      return { fg: colors.semantic.success, bg: colors.semantic.successSurface };
-    case 'escalated':
-      return { fg: colors.semantic.danger, bg: colors.semantic.dangerSurface };
-    case 'assigned':
-      return { fg: colors.semantic.warning, bg: colors.semantic.warningSurface };
-    default:
-      return { fg: colors.semantic.info, bg: colors.semantic.infoSurface };
-  }
+// ---------------------------------------------------------------------------
+
+function SectionLabel({ text }: { text: string }) {
+  return (
+    <Text
+      style={{
+        marginTop: spacing['3xl'],
+        marginBottom: spacing.md,
+        fontSize: typography.size.xs,
+        lineHeight: typography.lineHeight.xs,
+        fontWeight: typography.weight.bold,
+        letterSpacing: typography.tracking.overline,
+        textTransform: 'uppercase',
+        color: colors.gold[600],
+      }}
+    >
+      {text}
+    </Text>
+  );
 }
 
-function TicketRow({
-  ticket,
-  isLast,
-  locale,
+function FieldLabel({ text }: { text: string }) {
+  return (
+    <Text
+      style={{
+        marginTop: spacing.lg,
+        marginBottom: spacing.sm,
+        fontSize: typography.size.xs,
+        fontWeight: typography.weight.semibold,
+        color: colors.navy.secondary,
+      }}
+    >
+      {text}
+    </Text>
+  );
+}
+
+/** One contact channel: icon tile, what it is, and the real value. */
+function ChannelRow({
+  icon: Icon,
+  tone,
+  title,
+  body,
+  value,
   onPress,
 }: {
-  ticket: SupportTicketSummary;
-  isLast: boolean;
-  locale: string;
-  onPress: () => void;
+  icon: LucideIcon;
+  tone: Tone;
+  title: string;
+  body: string;
+  value: string;
+  onPress?: () => void;
 }) {
-  const { t } = useTranslation();
-  const sc = statusColors(ticket.status);
+  const palette = toneOf(tone);
+
+  const content = (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: spacing.md,
+        borderRadius: radii.lg,
+        backgroundColor: colors.surface.sunken,
+      }}
+    >
+      <View
+        style={{
+          width: sizing.tile.sm,
+          height: sizing.tile.sm,
+          borderRadius: radii.tile,
+          backgroundColor: colors.surface.card,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Icon color={palette.fg} size={sizing.icon.md} />
+      </View>
+      <View style={{ flex: 1, marginLeft: spacing.md }}>
+        <Text
+          style={{
+            fontSize: typography.size.sm,
+            lineHeight: typography.lineHeight.sm,
+            fontWeight: typography.weight.semibold,
+            color: colors.navy.text,
+          }}
+        >
+          {title}
+        </Text>
+        <Text
+          numberOfLines={1}
+          style={{
+            marginTop: 1,
+            fontSize: typography.size.xs,
+            lineHeight: typography.lineHeight.xs,
+            color: colors.navy.secondary,
+          }}
+        >
+          {body}
+        </Text>
+        <Text
+          numberOfLines={1}
+          style={{
+            marginTop: 2,
+            fontSize: typography.size.sm,
+            fontWeight: typography.weight.semibold,
+            color: palette.fg,
+          }}
+        >
+          {value}
+        </Text>
+      </View>
+      {onPress ? <ChevronRight color={colors.navy.muted} size={sizing.icon.lg} /> : null}
+    </View>
+  );
+
+  if (!onPress) return content;
 
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center py-3"
-      style={!isLast ? { borderBottomWidth: 1, borderBottomColor: colors.cream[300] } : undefined}
+      accessibilityRole="button"
+      accessibilityLabel={`${title} — ${value}`}
+      style={({ pressed }) => ({ opacity: pressed ? 0.75 : 1 })}
     >
-      <View className="flex-1 pr-2">
-        <Text className="text-sm font-semibold text-navy-text" numberOfLines={1}>
-          {ticket.subject}
-        </Text>
-        <Text className="mt-0.5 text-xs text-navy-muted">
-          {t(`help.category.${ticket.category}`)} · {formatDate(ticket.created_at, locale)}
-        </Text>
-      </View>
-      <View className="rounded-full px-2 py-1" style={{ backgroundColor: sc.bg }}>
-        <Text className="text-[10px] font-semibold" style={{ color: sc.fg }}>
-          {t(`help.status.${ticket.status}`, ticket.status)}
-        </Text>
-      </View>
-      <ChevronRight size={16} color={colors.navy.muted} style={{ marginLeft: 8 }} />
+      {content}
     </Pressable>
   );
 }
 
+function FaqRow({
+  question,
+  answer,
+  linkLabel,
+  open,
+  onToggle,
+  onFollowLink,
+  divider,
+}: {
+  question: string;
+  answer: string;
+  linkLabel: string;
+  open: boolean;
+  onToggle: () => void;
+  onFollowLink: () => void;
+  divider: boolean;
+}) {
+  return (
+    <View
+      style={{
+        borderBottomWidth: divider ? sizing.hairline : 0,
+        borderBottomColor: colors.line.subtle,
+      }}
+    >
+      <Pressable
+        onPress={onToggle}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        accessibilityLabel={question}
+        style={({ pressed }) => ({
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingVertical: spacing.lg,
+          opacity: pressed ? 0.7 : 1,
+        })}
+      >
+        <Text
+          style={{
+            flex: 1,
+            paddingRight: spacing.md,
+            fontSize: typography.size.md,
+            lineHeight: typography.lineHeight.md,
+            fontWeight: typography.weight.semibold,
+            color: colors.navy.text,
+          }}
+        >
+          {question}
+        </Text>
+        {open ? (
+          <ChevronUp color={colors.gold[600]} size={sizing.icon.lg} />
+        ) : (
+          <ChevronDown color={colors.navy.muted} size={sizing.icon.lg} />
+        )}
+      </Pressable>
+
+      {open ? (
+        <View style={{ paddingBottom: spacing.lg }}>
+          <Text
+            style={{
+              fontSize: typography.size.sm,
+              lineHeight: typography.lineHeight.sm,
+              color: colors.navy.secondary,
+            }}
+          >
+            {answer}
+          </Text>
+          <Pressable
+            onPress={onFollowLink}
+            accessibilityRole="button"
+            accessibilityLabel={linkLabel}
+            style={({ pressed }) => ({
+              marginTop: spacing.md,
+              flexDirection: 'row',
+              alignItems: 'center',
+              opacity: pressed ? 0.6 : 1,
+            })}
+          >
+            <Text
+              style={{
+                fontSize: typography.size.sm,
+                fontWeight: typography.weight.semibold,
+                color: colors.gold[600],
+              }}
+            >
+              {linkLabel}
+            </Text>
+            <ChevronRight color={colors.gold[600]} size={sizing.icon.sm} />
+          </Pressable>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+/** The ticket thread — description, resolution note, messages, and a reply box. */
 function TicketDetailModal({
   ticketId,
   visible,
@@ -416,7 +797,8 @@ function TicketDetailModal({
   const sendMessage = useSendSupportTicketMessage(ticketId);
   const [reply, setReply] = useState('');
 
-  const sc = statusColors(ticketQuery.data?.status ?? 'open');
+  const ticket = ticketQuery.data;
+  const tone = statusTone(ticket?.status ?? 'open');
 
   const submitReply = async () => {
     const body = reply.trim();
@@ -431,95 +813,236 @@ function TicketDetailModal({
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <View className="flex-1 justify-end" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>
+      <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: colors.surface.overlay }}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <View className="max-h-[85%] rounded-t-3xl bg-cream-100 px-6 pb-6 pt-5">
-            <View className="mb-3 flex-row items-center justify-between">
-              <Text className="flex-1 pr-3 text-base font-bold text-navy-text" numberOfLines={1}>
-                {ticketQuery.data?.subject ?? '…'}
-              </Text>
-              <Pressable onPress={onClose} hitSlop={8}>
-                <X size={20} color={colors.navy.muted} />
+          <View
+            style={{
+              maxHeight: '88%',
+              borderTopLeftRadius: radii.card + 4,
+              borderTopRightRadius: radii.card + 4,
+              backgroundColor: colors.surface.app,
+              paddingHorizontal: spacing['2xl'],
+              paddingTop: spacing.xl,
+              paddingBottom: spacing['2xl'],
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+              <View style={{ flex: 1, paddingRight: spacing.md }}>
+                <Text
+                  numberOfLines={2}
+                  style={{
+                    fontSize: typography.size.lg,
+                    lineHeight: typography.lineHeight.lg,
+                    fontWeight: typography.weight.bold,
+                    color: colors.navy.text,
+                  }}
+                >
+                  {ticket?.subject ?? t('help.detail.loading')}
+                </Text>
+                {ticket ? (
+                  <Text
+                    style={{
+                      marginTop: 3,
+                      fontSize: typography.size.xs,
+                      color: colors.navy.muted,
+                    }}
+                  >
+                    {t('help.myRequests.meta', {
+                      ref: shortRef(ticket.id),
+                      category: t(`help.category.${ticket.category}`),
+                      updated: formatDate(ticket.updated_at, locale),
+                    })}
+                  </Text>
+                ) : null}
+              </View>
+              <Pressable onPress={onClose} hitSlop={10} accessibilityRole="button">
+                <X color={colors.navy.muted} size={sizing.icon.xl} />
               </Pressable>
             </View>
 
             {ticketQuery.isLoading ? (
-              <View className="items-center py-8">
+              <View style={{ paddingVertical: spacing['3xl'], alignItems: 'center' }}>
                 <ActivityIndicator color={colors.gold[500]} />
               </View>
-            ) : !ticketQuery.data ? (
-              <Text className="py-8 text-center text-sm text-navy-secondary">{t('help.myRequests.loadError')}</Text>
+            ) : !ticket ? (
+              <EmptyState
+                compact
+                tone="danger"
+                icon={CircleAlert}
+                title={t('help.myRequests.loadError')}
+                description={t('help.myRequests.loadErrorBody')}
+                actionLabel={t('help.myRequests.retry')}
+                onAction={() => ticketQuery.refetch()}
+              />
             ) : (
               <>
-                <View className="mb-3 flex-row items-center" style={{ gap: 8 }}>
-                  <View className="rounded-full px-2 py-1" style={{ backgroundColor: sc.bg }}>
-                    <Text className="text-[10px] font-semibold" style={{ color: sc.fg }}>
-                      {t(`help.status.${ticketQuery.data.status}`, ticketQuery.data.status)}
+                <View
+                  style={{
+                    marginTop: spacing.md,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: spacing.sm,
+                  }}
+                >
+                  <Chip
+                    label={t(`help.status.${ticket.status}`, { defaultValue: ticket.status })}
+                    tone={tone}
+                  />
+                  {ticket.sla_due_at && !ticket.resolved_at ? (
+                    <Text style={{ fontSize: typography.size.xs, color: colors.navy.muted }}>
+                      {t('help.detail.slaDue', { date: formatDate(ticket.sla_due_at, locale) })}
                     </Text>
-                  </View>
-                  <Text className="text-xs text-navy-muted">
-                    {t(`help.category.${ticketQuery.data.category}`)} ·{' '}
-                    {formatDate(ticketQuery.data.created_at, locale)}
-                  </Text>
+                  ) : null}
                 </View>
 
-                <ScrollView style={{ maxHeight: 320 }} showsVerticalScrollIndicator={false}>
-                  <Text className="mb-1 text-xs font-semibold text-navy-secondary">
-                    {t('help.detail.description')}
-                  </Text>
-                  <Text className="mb-4 text-sm text-navy-text">{ticketQuery.data.description}</Text>
+                <ScrollView style={{ maxHeight: 360 }} showsVerticalScrollIndicator={false}>
+                  <Card className="mt-4" padding="md">
+                    <Text
+                      style={{
+                        fontSize: typography.size.xs,
+                        fontWeight: typography.weight.semibold,
+                        color: colors.navy.secondary,
+                      }}
+                    >
+                      {t('help.detail.description')}
+                    </Text>
+                    <Text
+                      style={{
+                        marginTop: spacing.sm,
+                        fontSize: typography.size.sm,
+                        lineHeight: typography.lineHeight.sm,
+                        color: colors.navy.text,
+                      }}
+                    >
+                      {ticket.description}
+                    </Text>
+                  </Card>
 
-                  {ticketQuery.data.resolution_note ? (
-                    <View className="mb-4 rounded-xl p-3" style={{ backgroundColor: colors.semantic.successSurface }}>
-                      <Text className="mb-1 text-xs font-semibold" style={{ color: colors.semantic.success }}>
-                        {t('help.detail.resolutionNote')}
-                      </Text>
-                      <Text className="text-sm text-navy-text">{ticketQuery.data.resolution_note}</Text>
+                  {ticket.resolution_note ? (
+                    <View style={{ marginTop: spacing.md }}>
+                      <InlineNotice
+                        tone="success"
+                        icon={ShieldCheck}
+                        title={t('help.detail.resolutionNote')}
+                        body={ticket.resolution_note}
+                      />
                     </View>
                   ) : null}
 
-                  <Text className="mb-2 text-xs font-semibold text-navy-secondary">
+                  <Text
+                    style={{
+                      marginTop: spacing.xl,
+                      marginBottom: spacing.sm,
+                      fontSize: typography.size.xs,
+                      fontWeight: typography.weight.semibold,
+                      color: colors.navy.secondary,
+                    }}
+                  >
                     {t('help.detail.conversation')}
                   </Text>
-                  {ticketQuery.data.messages.length === 0 ? (
-                    <Text className="mb-2 text-xs text-navy-muted">{t('help.detail.empty')}</Text>
+
+                  {ticket.messages.length === 0 ? (
+                    <Text
+                      style={{
+                        fontSize: typography.size.sm,
+                        lineHeight: typography.lineHeight.sm,
+                        color: colors.navy.muted,
+                      }}
+                    >
+                      {t('help.detail.empty')}
+                    </Text>
                   ) : (
-                    ticketQuery.data.messages.map((m) => (
+                    ticket.messages.map((message) => (
                       <View
-                        key={m.id}
-                        className="mb-2 max-w-[85%] rounded-2xl px-3 py-2"
+                        key={message.id}
                         style={{
-                          alignSelf: m.is_mine ? 'flex-end' : 'flex-start',
-                          backgroundColor: m.is_mine ? colors.gold[500] : colors.white,
+                          marginBottom: spacing.sm,
+                          maxWidth: '86%',
+                          alignSelf: message.is_mine ? 'flex-end' : 'flex-start',
+                          paddingHorizontal: spacing.md,
+                          paddingVertical: spacing.sm,
+                          borderRadius: radii.lg,
+                          borderBottomRightRadius: message.is_mine ? radii.xs : radii.lg,
+                          borderBottomLeftRadius: message.is_mine ? radii.lg : radii.xs,
+                          backgroundColor: message.is_mine ? colors.gold[500] : colors.surface.card,
+                          borderWidth: message.is_mine ? 0 : 1,
+                          borderColor: colors.line.subtle,
                         }}
                       >
-                        <Text className={m.is_mine ? 'text-xs text-white' : 'text-xs text-navy-text'}>
-                          {m.body}
+                        <Text
+                          style={{
+                            fontSize: typography.size.sm,
+                            lineHeight: typography.lineHeight.sm,
+                            color: message.is_mine ? colors.white : colors.navy.text,
+                          }}
+                        >
+                          {message.body}
+                        </Text>
+                        <Text
+                          style={{
+                            marginTop: 2,
+                            fontSize: 11,
+                            color: message.is_mine ? colors.gold[50] : colors.navy.muted,
+                          }}
+                        >
+                          {formatDate(message.created_at, locale)}
                         </Text>
                       </View>
                     ))
                   )}
                 </ScrollView>
 
-                <View className="mt-3 flex-row items-center gap-2">
+                {sendMessage.isError ? (
+                  <View style={{ marginTop: spacing.md }}>
+                    <InlineNotice tone="danger" icon={CircleAlert} body={t('help.detail.replyError')} />
+                  </View>
+                ) : null}
+
+                <View
+                  style={{
+                    marginTop: spacing.lg,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: spacing.sm,
+                  }}
+                >
                   <TextInput
-                    className="h-11 flex-1 rounded-full border px-4 text-sm text-navy-text"
-                    style={{ borderColor: colors.cream[300], backgroundColor: colors.white }}
+                    style={{
+                      flex: 1,
+                      height: sizing.control.md,
+                      borderRadius: radii.pill,
+                      borderWidth: 1,
+                      borderColor: colors.line.default,
+                      backgroundColor: colors.surface.card,
+                      paddingHorizontal: spacing.lg,
+                      fontSize: typography.size.sm,
+                      color: colors.navy.text,
+                    }}
                     placeholder={t('help.detail.replyPlaceholder')}
                     placeholderTextColor={colors.navy.muted}
                     value={reply}
                     onChangeText={setReply}
+                    maxLength={5000}
                   />
                   <Pressable
                     onPress={submitReply}
                     disabled={!reply.trim() || sendMessage.isPending}
-                    className="h-11 w-11 items-center justify-center rounded-full bg-gold-500"
-                    style={{ opacity: !reply.trim() || sendMessage.isPending ? 0.5 : 1 }}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('help.detail.send')}
+                    style={{
+                      width: sizing.control.md,
+                      height: sizing.control.md,
+                      borderRadius: radii.pill,
+                      backgroundColor: colors.gold[500],
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      opacity: !reply.trim() || sendMessage.isPending ? 0.5 : 1,
+                    }}
                   >
                     {sendMessage.isPending ? (
-                      <ActivityIndicator color="white" size="small" />
+                      <ActivityIndicator color={colors.white} size="small" />
                     ) : (
-                      <Send size={16} color="white" />
+                      <Send color={colors.white} size={sizing.icon.md} />
                     )}
                   </Pressable>
                 </View>
@@ -530,16 +1053,4 @@ function TicketDetailModal({
       </View>
     </Modal>
   );
-}
-
-function formatDate(iso: string, locale: string) {
-  try {
-    return new Date(iso).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  } catch {
-    return iso;
-  }
 }

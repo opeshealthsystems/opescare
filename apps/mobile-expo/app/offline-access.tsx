@@ -1,15 +1,16 @@
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import {
   AlertTriangle,
-  ArrowLeft,
   Check,
+  CircleAlert,
   CloudOff,
   Database,
   HeartPulse,
   Lock,
+  Pill,
   RefreshCw,
   ShieldCheck,
   Smartphone,
@@ -20,6 +21,10 @@ import {
 } from 'lucide-react-native';
 import { Screen } from '../components/ui/Screen';
 import { Button } from '../components/ui/Button';
+import { Card } from '../components/ui/Card';
+import { Chip } from '../components/ui/Chip';
+import { SkeletonCard } from '../components/ui/Skeleton';
+import { ConfirmPanel, InlineNotice, ScreenHeader } from '../components/settings/SettingsUi';
 import {
   useDisableOfflineAccess,
   useEnableOfflineAccess,
@@ -31,7 +36,7 @@ import { useIsOnline } from '../lib/offline/connectivity';
 import { formatDateTime, formatSavedAt } from '../lib/offline/relativeTime';
 import type { OfflineScope } from '../lib/offline/scopes';
 import type { ScopeCacheSummary } from '../lib/offline/cache';
-import { colors } from '../theme/tokens';
+import { colors, radii, sizing, spacing, typography } from '../theme/tokens';
 
 /**
  * Offline access — the patient-facing control for the backend's limited
@@ -39,6 +44,24 @@ import { colors } from '../theme/tokens';
  *
  * The patient opts in, sees exactly what is held on this device and when it
  * was last refreshed, and can erase it. Nothing is stored before they say yes.
+ *
+ * No reference screen in `Mobile app screens/` covers offline access — the
+ * reference set has no equivalent — so this follows the app's established
+ * language instead: `ScreenHeader`, overline-labelled groups, `Card` blocks
+ * and `InlineNotice` callouts, exactly as Settings and Help use them.
+ *
+ * Two honest limits are surfaced in the UI rather than hidden:
+ *  1. **Erasing does not revoke the server-side authorisation.** The API has
+ *     no revoke route at all — `routes/api.php` exposes only
+ *     `POST /mobile/offline/policies` and `POST .../{policy}/queue`. Erasing
+ *     wipes this device; the authorisation itself lapses on its own when it
+ *     expires. Saying "removes this device's authorisation" would be false.
+ *  2. **On web the copy is not encrypted at rest** — `localStorage` offers no
+ *     at-rest encryption, and the screen says so.
+ *
+ * Every confirmation is in-screen. `Alert.alert` is a silent no-op on React
+ * Native Web, so a destructive confirm built on it never fires there — this
+ * screen previously erased behind such a dialog.
  */
 
 const SCOPE_LABEL_KEY: Record<OfflineScope, string> = {
@@ -52,12 +75,13 @@ const SCOPE_LABEL_KEY: Record<OfflineScope, string> = {
 const SCOPE_ICON: Record<OfflineScope, LucideIcon> = {
   demographics: Smartphone,
   appointments: Database,
-  medications: Database,
+  medications: Pill,
   allergies: AlertTriangle,
   emergency_profile: HeartPulse,
 };
 
 type Mode = 'full' | 'emergency';
+type Notice = { tone: 'danger' | 'warning' | 'success'; body: string };
 
 export default function OfflineAccessScreen() {
   const { t, i18n } = useTranslation();
@@ -71,6 +95,8 @@ export default function OfflineAccessScreen() {
   const flushMutation = useFlushOfflineOutbox();
 
   const [mode, setMode] = useState<Mode>('full');
+  const [notice, setNotice] = useState<Notice | null>(null);
+  const [confirmingErase, setConfirmingErase] = useState(false);
 
   const enabled = status?.enabled ?? false;
   const policy = status?.policy ?? null;
@@ -79,99 +105,137 @@ export default function OfflineAccessScreen() {
 
   const lastSavedLabel = formatSavedAt(status?.lastCachedAt, t);
 
+  /** Every network action funnels through this so "you need a connection"
+   * always lands in the page rather than in an OS dialog that web ignores. */
+  const requireConnection = useCallback(() => {
+    if (isOnline) return true;
+    setNotice({ tone: 'warning', body: t('offline.errorNeedsConnection') });
+    return false;
+  }, [isOnline, t]);
+
   const handleEnable = useCallback(() => {
-    if (!isOnline) {
-      Alert.alert(t('offline.title'), t('offline.errorNeedsConnection'));
-      return;
-    }
+    setNotice(null);
+    if (!requireConnection()) return;
     enableMutation.mutate(
       { emergencyAccess: mode === 'emergency' },
-      {
-        onError: () => Alert.alert(t('offline.title'), t('offline.errorEnable')),
-      },
+      { onError: () => setNotice({ tone: 'danger', body: t('offline.errorEnable') }) },
     );
-  }, [enableMutation, isOnline, mode, t]);
+  }, [enableMutation, mode, requireConnection, t]);
 
   const handleSync = useCallback(() => {
-    if (!isOnline) {
-      Alert.alert(t('offline.title'), t('offline.errorNeedsConnection'));
-      return;
-    }
+    setNotice(null);
+    if (!requireConnection()) return;
     syncMutation.mutate(undefined, {
-      onError: () => Alert.alert(t('offline.title'), t('offline.errorSync')),
+      onError: () => setNotice({ tone: 'danger', body: t('offline.errorSync') }),
     });
-  }, [isOnline, syncMutation, t]);
+  }, [requireConnection, syncMutation, t]);
 
   const handleFlush = useCallback(() => {
-    if (!isOnline) {
-      Alert.alert(t('offline.title'), t('offline.errorNeedsConnection'));
-      return;
-    }
+    setNotice(null);
+    if (!requireConnection()) return;
     flushMutation.mutate(undefined, {
-      onError: () => Alert.alert(t('offline.title'), t('offline.errorSync')),
+      onError: () => setNotice({ tone: 'danger', body: t('offline.errorSync') }),
     });
-  }, [flushMutation, isOnline, t]);
+  }, [flushMutation, requireConnection, t]);
 
-  const handleDisable = useCallback(() => {
-    Alert.alert(t('offline.disableTitle'), t('offline.disableBody'), [
-      { text: t('permissions.skip'), style: 'cancel' },
-      {
-        text: t('offline.disableCta'),
-        style: 'destructive',
-        onPress: () => disableMutation.mutate(),
+  const handleErase = useCallback(() => {
+    setNotice(null);
+    disableMutation.mutate(undefined, {
+      onSuccess: () => {
+        setConfirmingErase(false);
+        setNotice({ tone: 'success', body: t('offline.erased') });
       },
-    ]);
+      onError: () => setNotice({ tone: 'danger', body: t('offline.errorErase') }),
+    });
   }, [disableMutation, t]);
 
   return (
     <Screen className="px-0">
       <ScrollView
-        className="flex-1 px-6"
+        className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{ paddingHorizontal: spacing['2xl'], paddingBottom: spacing['4xl'] }}
         refreshControl={
-          <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={refetch}
-            tintColor={colors.gold[500]}
-          />
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={colors.gold[500]} />
         }
       >
-        <View className="mt-2 flex-row items-center">
-          <Pressable
-            onPress={() => router.back()}
-            hitSlop={8}
-            className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
-          >
-            <ArrowLeft size={18} color={colors.gold[600]} />
-          </Pressable>
-          <View className="ml-3 flex-1">
-            <Text className="text-xl font-extrabold text-navy-text">{t('offline.title')}</Text>
-          </View>
-          <CloudOff size={22} color={colors.gold[500]} />
-        </View>
-        <Text className="mt-2 text-sm text-navy-secondary">{t('offline.subtitle')}</Text>
+        <ScreenHeader
+          title={t('offline.title')}
+          subtitle={t('offline.subtitle')}
+          onBack={() => router.back()}
+          action={
+            <Chip
+              label={isOnline ? t('offline.statusOnline') : t('offline.statusOffline')}
+              tone={isOnline ? 'success' : 'warning'}
+              icon={isOnline ? Wifi : CloudOff}
+            />
+          }
+        />
 
-        <ConnectivityPill isOnline={isOnline} t={t} />
+        {notice ? (
+          <View style={{ marginTop: spacing.lg }}>
+            <InlineNotice
+              tone={notice.tone}
+              icon={notice.tone === 'success' ? Check : CircleAlert}
+              body={notice.body}
+            />
+          </View>
+        ) : null}
 
         {status && !status.encryptedAtRest ? (
-          <NoteCard tone="warning" icon={AlertTriangle} body={t('offline.webNotice')} />
+          <View style={{ marginTop: spacing.lg }}>
+            <InlineNotice tone="warning" icon={AlertTriangle} body={t('offline.webNotice')} />
+          </View>
         ) : null}
 
         {isLoading ? (
-          <ActivityIndicator color={colors.gold[500]} className="mt-10" />
+          <View style={{ marginTop: spacing.xl, gap: spacing.lg }}>
+            <SkeletonCard rows={2} />
+            <SkeletonCard rows={3} />
+          </View>
         ) : !enabled ? (
+          /* ── Opt in ──────────────────────────────────────────────── */
           <>
-            <View className="mt-5 rounded-2xl bg-white p-5">
-              <Text className="text-base font-bold text-navy-text">
-                {t('offline.notEnabledTitle')}
-              </Text>
-              <Text className="mt-1 text-sm text-navy-secondary">
+            <Card className="mt-6" padding="lg">
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View
+                  style={{
+                    width: sizing.tile.md,
+                    height: sizing.tile.md,
+                    borderRadius: radii.tile,
+                    backgroundColor: colors.gold[50],
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <CloudOff color={colors.gold[600]} size={sizing.icon.lg} />
+                </View>
+                <View style={{ flex: 1, marginLeft: spacing.md }}>
+                  <Text
+                    style={{
+                      fontSize: typography.size.lg,
+                      lineHeight: typography.lineHeight.lg,
+                      fontWeight: typography.weight.bold,
+                      color: colors.navy.text,
+                    }}
+                  >
+                    {t('offline.notEnabledTitle')}
+                  </Text>
+                </View>
+              </View>
+              <Text
+                style={{
+                  marginTop: spacing.md,
+                  fontSize: typography.size.sm,
+                  lineHeight: typography.lineHeight.sm,
+                  color: colors.navy.secondary,
+                }}
+              >
                 {t('offline.notEnabledBody')}
               </Text>
-            </View>
+            </Card>
 
-            <SectionTitle text={t('offline.chooseMode')} />
+            <SectionLabel text={t('offline.chooseMode')} />
             <ModeOption
               selected={mode === 'full'}
               onPress={() => setMode('full')}
@@ -179,6 +243,7 @@ export default function OfflineAccessScreen() {
               title={t('offline.modeFull')}
               body={t('offline.modeFullBody')}
             />
+            <View style={{ height: spacing.md }} />
             <ModeOption
               selected={mode === 'emergency'}
               onPress={() => setMode('emergency')}
@@ -187,46 +252,46 @@ export default function OfflineAccessScreen() {
               body={t('offline.modeEmergencyBody')}
             />
 
-            <View className="mt-5">
+            <View style={{ marginTop: spacing.xl }}>
               <Button
                 label={enableMutation.isPending ? t('offline.enabling') : t('offline.enableCta')}
                 onPress={handleEnable}
                 loading={enableMutation.isPending}
                 disabled={!isOnline}
                 leftIcon={Lock}
+                showChevron={false}
               />
             </View>
             {!isOnline ? (
-              <Text className="mt-2 text-center text-xs text-navy-muted">
+              <Text
+                style={{
+                  marginTop: spacing.sm,
+                  textAlign: 'center',
+                  fontSize: typography.size.xs,
+                  color: colors.navy.muted,
+                }}
+              >
                 {t('offline.errorNeedsConnection')}
               </Text>
             ) : null}
           </>
         ) : (
+          /* ── Enabled ─────────────────────────────────────────────── */
           <>
             {/* Device authorisation — the server-side policy this device holds */}
-            <SectionTitle text={t('offline.policyTitle')} />
-            <View className="mt-2 rounded-2xl bg-white p-5">
+            <SectionLabel text={t('offline.policyTitle')} />
+            <Card padding="lg">
               {policy?.emergency_access ? (
-                <View
-                  className="mb-3 flex-row items-center self-start rounded-full px-2.5 py-1"
-                  style={{ backgroundColor: colors.semantic.dangerSurface }}
-                >
-                  <HeartPulse size={12} color={colors.semantic.danger} />
-                  <Text
-                    className="ml-1 text-xs font-semibold"
-                    style={{ color: colors.semantic.danger }}
-                  >
-                    {t('offline.policyEmergencyBadge')}
-                  </Text>
+                <View style={{ marginBottom: spacing.md, flexDirection: 'row' }}>
+                  <Chip
+                    label={t('offline.policyEmergencyBadge')}
+                    tone="danger"
+                    icon={HeartPulse}
+                  />
                 </View>
               ) : null}
 
-              <DetailRow
-                icon={Smartphone}
-                label={t('offline.policyDevice')}
-                value={policy?.device_id ?? '—'}
-              />
+              <DetailRow icon={Smartphone} label={t('offline.policyDevice')} value={policy?.device_id ?? '—'} />
               <DetailRow
                 icon={Lock}
                 label={t('offline.policyEncryption')}
@@ -245,22 +310,37 @@ export default function OfflineAccessScreen() {
                     : t('offline.policyExpired')
                 }
                 danger={!status?.policyUsable}
+                isLast={!policy?.review_required}
               />
 
               {policy?.review_required ? (
-                <Text className="mt-2 text-xs text-navy-muted">
+                <Text
+                  style={{
+                    marginTop: spacing.sm,
+                    fontSize: typography.size.xs,
+                    lineHeight: typography.lineHeight.xs,
+                    color: colors.navy.muted,
+                  }}
+                >
                   {t('offline.policyReviewNote')}
                 </Text>
               ) : null}
-            </View>
+            </Card>
 
             {/* What is actually on the device right now */}
-            <SectionTitle text={t('offline.savedDataTitle')} />
-            <Text className="mt-1 text-xs text-navy-muted">
+            <SectionLabel text={t('offline.savedDataTitle')} />
+            <Text
+              style={{
+                marginTop: -spacing.sm,
+                marginBottom: spacing.md,
+                fontSize: typography.size.xs,
+                color: colors.navy.muted,
+              }}
+            >
               {lastSavedLabel ? t('offline.lastSaved', { when: lastSavedLabel }) : t('offline.neverSaved')}
             </Text>
 
-            <View className="mt-2 overflow-hidden rounded-2xl bg-white">
+            <Card padding="none" style={{ paddingHorizontal: spacing.lg }}>
               {(status?.scopes ?? [])
                 .filter((scope) => grantedScopes.includes(scope.scope))
                 .map((scope, index, list) => (
@@ -271,9 +351,9 @@ export default function OfflineAccessScreen() {
                     t={t}
                   />
                 ))}
-            </View>
+            </Card>
 
-            <View className="mt-4">
+            <View style={{ marginTop: spacing.lg }}>
               <Button
                 label={syncMutation.isPending ? t('offline.syncing') : t('offline.syncCta')}
                 onPress={handleSync}
@@ -281,15 +361,30 @@ export default function OfflineAccessScreen() {
                 disabled={!isOnline}
                 leftIcon={RefreshCw}
                 variant="outline"
+                showChevron={false}
               />
             </View>
             {!isOnline ? (
-              <Text className="mt-2 text-center text-xs text-navy-muted">
+              <Text
+                style={{
+                  marginTop: spacing.sm,
+                  textAlign: 'center',
+                  fontSize: typography.size.xs,
+                  color: colors.navy.muted,
+                }}
+              >
                 {t('offline.syncOfflineHint')}
               </Text>
             ) : null}
             {syncMutation.isSuccess && syncMutation.data ? (
-              <Text className="mt-2 text-center text-xs" style={{ color: colors.semantic.success }}>
+              <Text
+                style={{
+                  marginTop: spacing.sm,
+                  textAlign: 'center',
+                  fontSize: typography.size.xs,
+                  color: colors.semantic.success,
+                }}
+              >
                 {t('offline.syncDone', {
                   done: syncMutation.data.outcomes.filter((outcome) => outcome.ok).length,
                   total: syncMutation.data.outcomes.length,
@@ -298,65 +393,141 @@ export default function OfflineAccessScreen() {
             ) : null}
 
             {/* Changes captured while offline, awaiting reconciliation */}
-            <SectionTitle text={t('offline.outboxTitle')} />
-            <View className="mt-2 rounded-2xl bg-white p-5">
-              <Text className="text-xs text-navy-secondary">{t('offline.outboxBody')}</Text>
+            <SectionLabel text={t('offline.outboxTitle')} />
+            <Card padding="lg">
+              <Text
+                style={{
+                  fontSize: typography.size.sm,
+                  lineHeight: typography.lineHeight.sm,
+                  color: colors.navy.secondary,
+                }}
+              >
+                {t('offline.outboxBody')}
+              </Text>
+
               {outbox.length === 0 ? (
-                <Text className="mt-3 text-sm font-semibold text-navy-muted">
+                <Text
+                  style={{
+                    marginTop: spacing.md,
+                    fontSize: typography.size.sm,
+                    fontWeight: typography.weight.semibold,
+                    color: colors.navy.muted,
+                  }}
+                >
                   {t('offline.outboxEmpty')}
                 </Text>
               ) : (
                 <>
                   {outbox.map((item) => (
-                    <View key={item.id} className="mt-3 flex-row items-center">
-                      <UploadCloud size={15} color={colors.gold[600]} />
-                      <Text className="ml-2 flex-1 text-xs text-navy-text" numberOfLines={1}>
+                    <View
+                      key={item.id}
+                      style={{ marginTop: spacing.md, flexDirection: 'row', alignItems: 'center' }}
+                    >
+                      <UploadCloud color={colors.gold[600]} size={sizing.icon.sm} />
+                      <Text
+                        numberOfLines={1}
+                        style={{
+                          flex: 1,
+                          marginLeft: spacing.sm,
+                          fontSize: typography.size.xs,
+                          color: colors.navy.text,
+                        }}
+                      >
                         {item.method} {item.path}
                       </Text>
-                      <Text className="text-xs text-navy-muted">
+                      <Text style={{ fontSize: typography.size.xs, color: colors.navy.muted }}>
                         {formatSavedAt(item.capturedAt, t)}
                       </Text>
                     </View>
                   ))}
-                  <View className="mt-4">
+                  <View style={{ marginTop: spacing.lg }}>
                     <Button
                       label={
-                        flushMutation.isPending
-                          ? t('offline.outboxSending')
-                          : t('offline.outboxSendCta')
+                        flushMutation.isPending ? t('offline.outboxSending') : t('offline.outboxSendCta')
                       }
                       onPress={handleFlush}
                       loading={flushMutation.isPending}
                       disabled={!isOnline}
                       leftIcon={UploadCloud}
                       variant="outline"
+                      showChevron={false}
                     />
                   </View>
                 </>
               )}
+
               {flushMutation.isSuccess && flushMutation.data ? (
-                <Text className="mt-2 text-xs" style={{ color: colors.semantic.success }}>
+                <Text
+                  style={{
+                    marginTop: spacing.sm,
+                    fontSize: typography.size.xs,
+                    color: colors.semantic.success,
+                  }}
+                >
                   {t('offline.outboxSent', { count: flushMutation.data.queued })}
                 </Text>
               ) : null}
+            </Card>
+
+            <View style={{ marginTop: spacing.lg }}>
+              <InlineNotice tone="gold" icon={ShieldCheck} body={t('offline.privacyNote')} />
             </View>
 
-            <NoteCard tone="info" icon={ShieldCheck} body={t('offline.privacyNote')} />
-
-            {/* Opt out */}
-            <SectionTitle text={t('offline.disableTitle')} />
-            <Text className="mt-1 text-xs text-navy-muted">{t('offline.disableBody')}</Text>
-            <Pressable
-              onPress={handleDisable}
-              disabled={disableMutation.isPending}
-              className="mt-3 h-14 flex-row items-center justify-center rounded-2xl border"
-              style={{ borderColor: colors.semantic.danger, opacity: disableMutation.isPending ? 0.6 : 1 }}
-            >
-              <Trash2 size={17} color={colors.semantic.danger} />
-              <Text className="ml-2 font-semibold" style={{ color: colors.semantic.danger }}>
-                {disableMutation.isPending ? t('offline.erasing') : t('offline.disableCta')}
-              </Text>
-            </Pressable>
+            {/* Opt out — in-screen confirm, and honest about what it does not do */}
+            <SectionLabel text={t('offline.disableTitle')} />
+            {confirmingErase ? (
+              <ConfirmPanel
+                icon={Trash2}
+                title={t('offline.disableConfirmTitle')}
+                body={t('offline.disableConfirmBody')}
+                confirmLabel={t('offline.disableCta')}
+                cancelLabel={t('offline.disableCancel')}
+                onConfirm={handleErase}
+                onCancel={() => setConfirmingErase(false)}
+                busy={disableMutation.isPending}
+              />
+            ) : (
+              <>
+                <Text
+                  style={{
+                    marginTop: -spacing.sm,
+                    marginBottom: spacing.md,
+                    fontSize: typography.size.sm,
+                    lineHeight: typography.lineHeight.sm,
+                    color: colors.navy.secondary,
+                  }}
+                >
+                  {t('offline.disableBody')}
+                </Text>
+                <Pressable
+                  onPress={() => setConfirmingErase(true)}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('offline.disableCta')}
+                  style={({ pressed }) => ({
+                    height: sizing.control.lg,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: radii.card,
+                    borderWidth: 1,
+                    borderColor: colors.semantic.danger,
+                    opacity: pressed ? 0.7 : 1,
+                  })}
+                >
+                  <Trash2 color={colors.semantic.danger} size={sizing.icon.md} />
+                  <Text
+                    style={{
+                      marginLeft: spacing.sm,
+                      fontSize: typography.size.md,
+                      fontWeight: typography.weight.semibold,
+                      color: colors.semantic.danger,
+                    }}
+                  >
+                    {t('offline.disableCta')}
+                  </Text>
+                </Pressable>
+              </>
+            )}
           </>
         )}
       </ScrollView>
@@ -364,27 +535,24 @@ export default function OfflineAccessScreen() {
   );
 }
 
-function ConnectivityPill({ isOnline, t }: { isOnline: boolean; t: (key: string) => string }) {
-  const tone = isOnline
-    ? { bg: colors.semantic.successSurface, fg: colors.semantic.success, Icon: Wifi }
-    : { bg: colors.semantic.warningSurface, fg: colors.semantic.warning, Icon: CloudOff };
+// ---------------------------------------------------------------------------
 
+function SectionLabel({ text }: { text: string }) {
   return (
-    <View
-      className="mt-4 flex-row items-center self-start rounded-full px-3 py-1.5"
-      style={{ backgroundColor: tone.bg }}
+    <Text
+      style={{
+        marginTop: spacing['3xl'],
+        marginBottom: spacing.md,
+        fontSize: typography.size.xs,
+        lineHeight: typography.lineHeight.xs,
+        fontWeight: typography.weight.bold,
+        letterSpacing: typography.tracking.overline,
+        textTransform: 'uppercase',
+        color: colors.gold[600],
+      }}
     >
-      <tone.Icon size={13} color={tone.fg} />
-      <Text className="ml-1.5 text-xs font-semibold" style={{ color: tone.fg }}>
-        {isOnline ? t('offline.statusOnline') : t('offline.statusOffline')}
-      </Text>
-    </View>
-  );
-}
-
-function SectionTitle({ text }: { text: string }) {
-  return (
-    <Text className="mt-6 text-xs font-bold uppercase tracking-wide text-navy-muted">{text}</Text>
+      {text}
+    </Text>
   );
 }
 
@@ -402,28 +570,68 @@ function ModeOption({
   body: string;
 }) {
   return (
-    <Pressable
+    <Card
+      variant={selected ? 'elevated' : 'flat'}
+      padding="lg"
       onPress={onPress}
-      className="mt-2 flex-row items-start rounded-2xl border bg-white p-4"
-      style={{ borderColor: selected ? colors.gold[500] : colors.cream[300] }}
+      accessibilityLabel={title}
+      style={selected ? { borderColor: colors.gold[500], borderWidth: 1.5 } : undefined}
     >
-      <View className="h-10 w-10 items-center justify-center rounded-full bg-gold-50">
-        <Icon size={18} color={colors.gold[600]} />
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+        <View
+          style={{
+            width: sizing.tile.md,
+            height: sizing.tile.md,
+            borderRadius: radii.tile,
+            backgroundColor: selected ? colors.gold[50] : colors.surface.sunken,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Icon color={selected ? colors.gold[600] : colors.navy.secondary} size={sizing.icon.lg} />
+        </View>
+
+        <View style={{ flex: 1, marginLeft: spacing.md }}>
+          <Text
+            style={{
+              fontSize: typography.size.md,
+              lineHeight: typography.lineHeight.md,
+              fontWeight: typography.weight.bold,
+              color: colors.navy.text,
+            }}
+          >
+            {title}
+          </Text>
+          <Text
+            style={{
+              marginTop: 3,
+              fontSize: typography.size.sm,
+              lineHeight: typography.lineHeight.sm,
+              color: colors.navy.secondary,
+            }}
+          >
+            {body}
+          </Text>
+        </View>
+
+        <View
+          style={{
+            marginLeft: spacing.sm,
+            marginTop: 2,
+            width: 22,
+            height: 22,
+            borderRadius: radii.pill,
+            borderWidth: 1.5,
+            borderColor: selected ? colors.gold[500] : colors.line.strong,
+            backgroundColor: selected ? colors.gold[500] : 'transparent',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {selected ? <Check color={colors.white} size={13} /> : null}
+        </View>
       </View>
-      <View className="ml-3 flex-1">
-        <Text className="text-sm font-bold text-navy-text">{title}</Text>
-        <Text className="mt-0.5 text-xs text-navy-secondary">{body}</Text>
-      </View>
-      <View
-        className="ml-2 h-5 w-5 items-center justify-center rounded-full border"
-        style={{
-          borderColor: selected ? colors.gold[500] : colors.cream[300],
-          backgroundColor: selected ? colors.gold[500] : 'transparent',
-        }}
-      >
-        {selected ? <Check size={12} color={colors.white} /> : null}
-      </View>
-    </Pressable>
+    </Card>
   );
 }
 
@@ -432,22 +640,46 @@ function DetailRow({
   label,
   value,
   danger = false,
+  isLast = false,
 }: {
   icon: LucideIcon;
   label: string;
   value: string;
   danger?: boolean;
+  isLast?: boolean;
 }) {
   return (
-    <View className="mb-3 flex-row items-start">
-      <Icon size={15} color={colors.navy.muted} />
-      <Text className="ml-2 text-xs text-navy-muted" style={{ width: 110 }}>
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        paddingBottom: isLast ? 0 : spacing.md,
+        marginBottom: isLast ? 0 : spacing.md,
+        borderBottomWidth: isLast ? 0 : sizing.hairline,
+        borderBottomColor: colors.line.subtle,
+      }}
+    >
+      <Icon color={colors.navy.muted} size={sizing.icon.sm} style={{ marginTop: 1 }} />
+      <Text
+        style={{
+          marginLeft: spacing.sm,
+          width: 118,
+          fontSize: typography.size.xs,
+          lineHeight: typography.lineHeight.xs,
+          color: colors.navy.muted,
+        }}
+      >
         {label}
       </Text>
       <Text
-        className="flex-1 text-xs font-semibold"
-        style={{ color: danger ? colors.semantic.danger : colors.navy.text }}
         numberOfLines={2}
+        style={{
+          flex: 1,
+          fontSize: typography.size.xs,
+          lineHeight: typography.lineHeight.xs,
+          fontWeight: typography.weight.semibold,
+          color: danger ? colors.semantic.danger : colors.navy.text,
+        }}
       >
         {value}
       </Text>
@@ -468,51 +700,63 @@ function ScopeRow({
   const savedWhen = formatSavedAt(scope.cachedAt, t);
 
   return (
-    <>
-      <View className="flex-row items-center px-4 py-4">
-        <View className="h-9 w-9 items-center justify-center rounded-full bg-gold-50">
-          <Icon size={16} color={colors.gold[600]} />
-        </View>
-        <View className="ml-3 flex-1">
-          <Text className="text-sm font-semibold text-navy-text">
-            {t(SCOPE_LABEL_KEY[scope.scope])}
-          </Text>
-          <Text className="mt-0.5 text-xs text-navy-muted">
-            {savedWhen ? t('offline.lastSaved', { when: savedWhen }) : t('offline.scopeEmpty')}
-          </Text>
-        </View>
-        {scope.itemCount !== null ? (
-          <Text className="text-xs font-semibold text-gold-600">
-            {t('offline.itemsSaved', { count: scope.itemCount })}
-          </Text>
-        ) : null}
-      </View>
-      {!isLast ? <View className="h-px bg-cream-200" style={{ marginLeft: 60 }} /> : null}
-    </>
-  );
-}
-
-function NoteCard({
-  tone,
-  icon: Icon,
-  body,
-}: {
-  tone: 'warning' | 'info';
-  icon: LucideIcon;
-  body: string;
-}) {
-  const palette =
-    tone === 'warning'
-      ? { bg: colors.semantic.warningSurface, fg: colors.semantic.warning }
-      : { bg: colors.gold[50], fg: colors.gold[600] };
-
-  return (
     <View
-      className="mt-4 flex-row items-start rounded-2xl p-4"
-      style={{ backgroundColor: palette.bg }}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: spacing.md + 2,
+        borderBottomWidth: isLast ? 0 : sizing.hairline,
+        borderBottomColor: colors.line.subtle,
+      }}
     >
-      <Icon size={16} color={palette.fg} />
-      <Text className="ml-3 flex-1 text-xs text-navy-secondary">{body}</Text>
+      <View
+        style={{
+          width: sizing.tile.sm,
+          height: sizing.tile.sm,
+          borderRadius: radii.tile,
+          backgroundColor: colors.gold[50],
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Icon color={colors.gold[600]} size={sizing.icon.md} />
+      </View>
+
+      <View style={{ flex: 1, marginLeft: spacing.md }}>
+        <Text
+          style={{
+            fontSize: typography.size.md,
+            lineHeight: typography.lineHeight.md,
+            fontWeight: typography.weight.semibold,
+            color: colors.navy.text,
+          }}
+        >
+          {t(SCOPE_LABEL_KEY[scope.scope])}
+        </Text>
+        <Text
+          style={{
+            marginTop: 2,
+            fontSize: typography.size.xs,
+            lineHeight: typography.lineHeight.xs,
+            color: colors.navy.muted,
+          }}
+        >
+          {savedWhen ? t('offline.lastSaved', { when: savedWhen }) : t('offline.scopeEmpty')}
+        </Text>
+      </View>
+
+      {scope.itemCount !== null ? (
+        <Text
+          style={{
+            marginLeft: spacing.sm,
+            fontSize: typography.size.xs,
+            fontWeight: typography.weight.semibold,
+            color: colors.gold[600],
+          }}
+        >
+          {t('offline.itemsSaved', { count: scope.itemCount })}
+        </Text>
+      ) : null}
     </View>
   );
 }
