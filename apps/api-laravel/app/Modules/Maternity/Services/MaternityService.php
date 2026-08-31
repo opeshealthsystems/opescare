@@ -3,6 +3,7 @@ namespace App\Modules\Maternity\Services;
 
 use App\Models\AntenatalVisit;
 use App\Models\DeliveryRecord;
+use App\Models\PostnatalVisit;
 use App\Models\PregnancyRecord;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -32,6 +33,25 @@ class MaternityService
         }
 
         return $visit;
+    }
+
+    /**
+     * Record a postnatal care visit.
+     *
+     * MaternityController::recordPostnatalVisit() has called this since the
+     * module landed, but the method was never written — so the endpoint threw
+     * BadMethodCallException on every request. The controller validates and
+     * supplies the whole payload (including facility_id, taken from the auth
+     * middleware attributes, never the request body), so there is nothing to
+     * derive here.
+     *
+     * Unlike an antenatal visit this does not hang off a PregnancyRecord: care
+     * continues after a pregnancy record is closed, and the controller
+     * deliberately keys on patient_id rather than a pregnancy id.
+     */
+    public function recordPostnatalVisit(array $data): PostnatalVisit
+    {
+        return PostnatalVisit::create($data);
     }
 
     public function recordDelivery(string $pregnancyRecordId, array $data): DeliveryRecord

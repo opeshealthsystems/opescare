@@ -3,6 +3,7 @@ namespace Tests\Feature;
 
 use App\Models\Facility;
 use App\Models\Patient;
+use App\Models\PostnatalVisit;
 use App\Models\PregnancyRecord;
 use App\Models\User;
 use App\Modules\Maternity\Services\MaternityService;
@@ -26,6 +27,61 @@ class MaternityTest extends TestCase
         $this->provider = User::factory()->create();
         $this->patient  = Patient::factory()->create();
         $this->facility = Facility::factory()->create();
+    }
+
+    /**
+     * Regression: MaternityController::recordPostnatalVisit() called
+     * MaternityService::recordPostnatalVisit(), which did not exist, so the
+     * endpoint threw BadMethodCallException on every request. Nothing covered
+     * it, so a full green suite sat on top of a dead endpoint.
+     */
+    public function test_can_record_a_postnatal_visit(): void
+    {
+        $visit = $this->service->recordPostnatalVisit([
+            'patient_id'           => $this->patient->id,
+            'facility_id'          => $this->facility->id,
+            'provider_id'          => $this->provider->id,
+            'visit_date'           => now()->subDays(3)->toDateString(),
+            'days_postpartum'      => 3,
+            'bp_systolic'          => 118,
+            'bp_diastolic'         => 76,
+            'weight_kg'            => 68.40,
+            'lochia'               => 'rubra',
+            'wound_healing'        => 'normal',
+            'breastfeeding_status' => 'exclusive',
+            'infant_weight_grams'  => 3200,
+            'notes'                => 'Mother and infant well. No pyrexia.',
+            'next_visit_plan'      => 'Review at day 7.',
+        ]);
+
+        $this->assertInstanceOf(PostnatalVisit::class, $visit);
+        $this->assertDatabaseHas('postnatal_visits', [
+            'id'              => $visit->id,
+            'patient_id'      => $this->patient->id,
+            'facility_id'     => $this->facility->id,
+            'days_postpartum' => 3,
+            'lochia'          => 'rubra',
+        ]);
+        $this->assertSame(3200, $visit->infant_weight_grams);
+        $this->assertSame('exclusive', $visit->breastfeeding_status);
+    }
+
+    /**
+     * Postnatal care continues after a pregnancy record is closed, so a visit
+     * must not require one — the controller keys on patient_id, not pregnancy.
+     */
+    public function test_postnatal_visit_does_not_require_a_pregnancy_record(): void
+    {
+        $visit = $this->service->recordPostnatalVisit([
+            'patient_id'      => $this->patient->id,
+            'facility_id'     => $this->facility->id,
+            'provider_id'     => $this->provider->id,
+            'visit_date'      => now()->toDateString(),
+            'days_postpartum' => 42,
+        ]);
+
+        $this->assertDatabaseHas('postnatal_visits', ['id' => $visit->id]);
+        $this->assertNull($visit->lochia);
     }
 
     public function test_can_register_pregnancy(): void
