@@ -1402,3 +1402,35 @@ export function useRegisterPatient() {
       (await apiClient.post<RegisterPatientResponse>(endpoints.register, payload)).data,
   });
 }
+
+// ---------------------------------------------------------------------------
+// Forgot / Reset Password — app/(auth)/forgot-password.tsx. Kept additive per
+// FILE OWNERSHIP. Public, pre-auth endpoints (no bearer token attached).
+// ---------------------------------------------------------------------------
+
+interface ApiMessageResponse {
+  message: string;
+}
+
+export interface ResetPasswordPayload {
+  email: string;
+  code: string;
+  password: string;
+  password_confirmation: string;
+}
+
+/** POST /mobile/auth/forgot-password — requests a 6-digit reset code by email. */
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: async (email: string) =>
+      (await apiClient.post<ApiMessageResponse>(endpoints.forgotPassword, { email })).data,
+  });
+}
+
+/** POST /mobile/auth/reset-password — submits the emailed code + new password. */
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: async (payload: ResetPasswordPayload) =>
+      (await apiClient.post<ApiMessageResponse>(endpoints.resetPassword, payload)).data,
+  });
+}

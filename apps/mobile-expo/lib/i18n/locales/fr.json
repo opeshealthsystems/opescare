@@ -966,5 +966,32 @@
     "empty": "Aucun établissement trouvé",
     "emptyBody": "Essayez une autre recherche ou un autre type d'établissement.",
     "loadMore": "Charger plus"
+  },
+  "forgotPassword": {
+    "title": "Mot de passe oublié ?",
+    "emailSubtitle": "Saisissez l'adresse e-mail associée à votre compte. Nous vous enverrons un code à 6 chiffres pour réinitialiser votre mot de passe.",
+    "emailLabel": "Adresse e-mail",
+    "emailPlaceholder": "vous@exemple.com",
+    "invalidEmail": "Saisissez une adresse e-mail valide",
+    "sendCode": "Envoyer le code",
+    "genericError": "Une erreur est survenue. Veuillez réessayer.",
+    "codeTitle": "Saisir le code de réinitialisation",
+    "codeSubtitle": "Nous avons envoyé un code à 6 chiffres à",
+    "codeExpiresIn": "Ce code expirera dans",
+    "codeExpired": "Ce code a expiré",
+    "resendCode": "Renvoyer le code",
+    "resendFailed": "Impossible de renvoyer le code. Veuillez réessayer.",
+    "newPassword": "Nouveau mot de passe",
+    "newPasswordPlaceholder": "Au moins 8 caractères",
+    "confirmPassword": "Confirmer le mot de passe",
+    "confirmPasswordPlaceholder": "Ressaisissez le nouveau mot de passe",
+    "invalidCode": "Saisissez le code à 6 chiffres",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "changeEmail": "Utiliser une autre adresse e-mail",
+    "successTitle": "Mot de passe réinitialisé",
+    "successBody": "Votre mot de passe a été modifié avec succès. Connectez-vous avec votre nouveau mot de passe.",
+    "backToSignIn": "Retour à la connexion"
   }
 }

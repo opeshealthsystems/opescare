@@ -67,6 +67,11 @@ class AppServiceProvider extends ServiceProvider
         Route::middleware('api')
             ->group(base_path('routes/mobile_registration.php'));
 
+        // Mobile patient Forgot/Reset Password routes — loaded here to avoid
+        // touching the sealed routes/api.php file (same pattern as above).
+        Route::middleware('api')
+            ->group(base_path('routes/mobile_password_reset.php'));
+
         RateLimiter::for('verify', function (Request $request) {
             return Limit::perMinute(30)->by($request->ip());
         });

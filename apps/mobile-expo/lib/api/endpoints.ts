@@ -16,6 +16,11 @@ export const endpoints = {
   refresh: '/mobile/auth/refresh',
   appConfig: '/mobile/app-config',
 
+  // Forgot / reset password — app/(auth)/forgot-password.tsx. Public, pre-auth
+  // (see routes/mobile_password_reset.php on the backend).
+  forgotPassword: '/mobile/auth/forgot-password',
+  resetPassword: '/mobile/auth/reset-password',
+
   me: '/mobile/me',
   timeline: '/mobile/timeline',
   healthIdCard: '/mobile/health-id-card',
