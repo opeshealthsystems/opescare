@@ -44,6 +44,10 @@ class DatabaseSeeder extends Seeder
         // `php artisan db:seed` (or migrate:fresh --seed) is a single-step setup.
         if (config('demo.enabled', (bool) env('OPESCARE_DEMO_MODE', false))) {
             $this->call(DemoDatabaseSeeder::class);
+            // Demo vitals for the demo patient only, so the home screen's
+            // Health Vitals card renders populated. Guarded on the demo
+            // patient existing, so it is a no-op elsewhere.
+            $this->call(DemoPatientVitalsSeeder::class);
         }
     }
 }
