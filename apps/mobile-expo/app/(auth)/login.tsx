@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   Apple,
-  Chrome,
+  Globe,
   Check,
   Lock,
   Mail,
@@ -120,7 +120,7 @@ export default function LoginScreen() {
           <View className="h-px flex-1 bg-cream-300" />
         </View>
 
-        <SocialButton icon={Chrome} label={t('auth.continueWithGoogle')} />
+        <SocialButton icon={Globe} label={t('auth.continueWithGoogle')} />
         <View className="h-3" />
         <SocialButton icon={Apple} label={t('auth.continueWithApple')} />
         <View className="h-3" />
@@ -151,7 +151,7 @@ function SocialButton({
   badge,
   onPress,
 }: {
-  icon: typeof Chrome;
+  icon: typeof Globe;
   label: string;
   badge?: string;
   onPress?: () => void;
