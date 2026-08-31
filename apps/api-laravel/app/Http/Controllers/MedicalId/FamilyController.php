@@ -49,7 +49,7 @@ class FamilyController extends Controller
             'first_name'   => 'required|string|max:100',
             'last_name'    => 'required|string|max:100',
             'date_of_birth'=> 'required|date|before:today',
-            'sex'          => 'required|in:male,female,other',
+            'sex'          => 'required|in:male,female',
             'relationship' => 'required|in:parent,grandparent,spouse,sibling,caregiver,legal_guardian,other',
             'access_level' => 'required|in:full,read_only',
         ]);

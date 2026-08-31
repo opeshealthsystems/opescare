@@ -211,7 +211,7 @@ class MobileAuthController extends Controller
             'first_name'             => 'required|string|max:100',
             'last_name'              => 'required|string|max:100',
             'dob'                    => 'required|date|before:today',
-            'sex'                    => 'required|in:male,female,other,unknown',
+            'sex'                    => 'required|in:male,female',
             'phone'                  => 'required|string|max:30',
             'email'                  => 'nullable|email|max:180|unique:users,email',
             'country'                => 'nullable|string|max:80',

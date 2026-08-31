@@ -60,7 +60,7 @@ class MobileFamilyController extends Controller
         $data = $request->validate([
             'full_name'     => 'required|string|max:200',
             'date_of_birth' => 'required|date|before:today',
-            'sex'           => 'required|in:male,female,other',
+            'sex'           => 'required|in:male,female',
             'relationship'  => 'required|in:parent,grandparent,spouse,sibling,caregiver,legal_guardian,child,other',
             'blood_group'   => 'nullable|string|max:20',
             'phone'         => 'nullable|string|max:30',

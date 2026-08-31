@@ -25,7 +25,7 @@ import { useAuthStore } from '../lib/store/auth';
 import { useUpdateMyProfile } from '../lib/api/profileQueries';
 import { colors } from '../theme/tokens';
 
-const SEX_OPTIONS = ['male', 'female', 'other'] as const;
+const SEX_OPTIONS = ['male', 'female'] as const;
 const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as const;
 
 function extractErrorMessage(err: unknown, fallback: string): string {

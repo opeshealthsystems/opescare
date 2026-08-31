@@ -52,11 +52,10 @@ const RELATIONSHIP_OPTIONS = [
   'other',
 ] as const;
 
-const SEX_OPTIONS = ['male', 'female', 'other'] as const;
+const SEX_OPTIONS = ['male', 'female'] as const;
 const SEX_LABEL_KEYS: Record<(typeof SEX_OPTIONS)[number], string> = {
   male: 'family.sexMale',
   female: 'family.sexFemale',
-  other: 'family.sexOther',
 };
 
 function extractErrorMessage(err: unknown, fallback: string): string {

@@ -258,7 +258,7 @@ class MobilePatientController extends Controller
             'first_name'                        => 'sometimes|string|max:100',
             'last_name'                         => 'sometimes|string|max:100',
             'blood_group'                       => 'sometimes|nullable|string|max:10|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'sex'                                => 'sometimes|nullable|string|in:male,female,other',
+            'sex'                                => 'sometimes|nullable|string|in:male,female',
             'address'                            => 'sometimes|nullable|string|max:500',
             'emergency_contact'                  => 'sometimes|nullable|array',
             'emergency_contact.name'             => 'required_with:emergency_contact|string|max:120',

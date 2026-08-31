@@ -37,7 +37,7 @@ import { isNetworkError } from '../../lib/offline/cache';
 import type { ApiValidationErrorBody, RegisterPatientPayload } from '../../lib/api/types';
 import { colors } from '../../theme/tokens';
 
-type Sex = 'male' | 'female' | 'other' | 'unknown';
+type Sex = 'male' | 'female';
 type StepNumber = 1 | 2 | 3;
 const TOTAL_STEPS = 3;
 
@@ -783,8 +783,6 @@ function DobField({
 const SEX_OPTIONS: { value: Sex; icon: LucideIcon; labelKey: string }[] = [
   { value: 'male', icon: Mars, labelKey: 'signup.sexMale' },
   { value: 'female', icon: Venus, labelKey: 'signup.sexFemale' },
-  { value: 'other', icon: CircleUserRound, labelKey: 'signup.sexOther' },
-  { value: 'unknown', icon: CircleHelp, labelKey: 'signup.sexUnknown' },
 ];
 
 /** Two-up chip grid — the same selection language as the reference's medical

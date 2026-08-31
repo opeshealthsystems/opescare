@@ -68,11 +68,21 @@ export async function probeConnectivity(): Promise<boolean> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), PROBE_TIMEOUT_MS);
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoints.appConfig}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json' },
-      signal: controller.signal,
-    });
+    // A reachability probe must never be answered from cache — a cached
+    // response (or, on web, a cached CORS *failure*) would report a stale
+    // verdict forever. Observed for real: after the API's allowed origins were
+    // widened, the browser kept replaying the earlier CORS rejection and the
+    // app sat behind an "Offline" banner while the server was answering 200.
+    // `cache: 'no-store'` plus a unique query string defeats both layers.
+    const response = await fetch(
+      `${API_BASE_URL}${endpoints.appConfig}?_probe=${Date.now()}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        cache: 'no-store',
+        signal: controller.signal,
+      },
+    );
     // Any HTTP answer — even a 4xx/5xx — proves the network path works.
     const reachable = response.status > 0;
     useConnectivityStore.getState().report(reachable);
