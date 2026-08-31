@@ -8,6 +8,7 @@ import {
   BadgeCheck,
   Calendar,
   ChevronRight,
+  Download,
   Droplet,
   FileText,
   LogOut,
@@ -83,6 +84,11 @@ export default function ProfileScreen() {
       icon: MessageCircle,
       label: t('profile.messages'),
       onPress: () => router.push('/(tabs)/messages'),
+    },
+    {
+      icon: Download,
+      label: t('profile.downloadRecords'),
+      onPress: () => router.push('/export-records'),
     },
     {
       icon: SettingsIcon,

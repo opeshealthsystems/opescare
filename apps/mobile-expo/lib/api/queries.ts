@@ -1507,3 +1507,45 @@ export function useLabOrderDetail(id: string | undefined) {
     enabled: !!id,
   });
 }
+
+// ---------------------------------------------------------------------------
+// Medical record export — direct PDF/FHIR download (app/export-records.tsx).
+// Distinct from the Privacy hub's data-export-requests approval workflow
+// (useDataExportRequests et al. above): this is an immediate, unmoderated
+// export of the patient's own full record, matching
+// POST /mobile/medical-records/export/{pdf,fhir}.
+// ---------------------------------------------------------------------------
+
+/** POST /mobile/medical-records/export/pdf — the generated PDF is returned
+ * inline as base64 (no server path the client could otherwise reach). */
+export interface MedicalRecordPdfExport {
+  message: string;
+  filename: string;
+  mime_type: string;
+  file_base64: string;
+}
+
+export function useExportMedicalRecordsPdf() {
+  return useMutation({
+    mutationFn: async () =>
+      (await apiClient.post<MedicalRecordPdfExport>(endpoints.exportRecordsPdf, {})).data,
+  });
+}
+
+/** POST /mobile/medical-records/export/fhir — the response body IS the FHIR
+ * R4 Bundle (no wrapper), ready to be written to disk and shared as-is. */
+export interface MedicalRecordFhirExport {
+  resourceType: 'Bundle';
+  id: string;
+  type: string;
+  timestamp: string;
+  total: number;
+  entry: Array<{ resource: Record<string, unknown> }>;
+}
+
+export function useExportMedicalRecordsFhir() {
+  return useMutation({
+    mutationFn: async () =>
+      (await apiClient.post<MedicalRecordFhirExport>(endpoints.exportRecordsFhir, {})).data,
+  });
+}
