@@ -31,5 +31,45 @@
     "verify": "Verify",
     "invalidEmail": "Enter a valid email or Health ID",
     "invalidPassword": "Password is required"
+  },
+  "healthId": {
+    "title": "Health ID",
+    "subtitle": "Your portable digital health identity.",
+    "cardLabel": "OpesCare Health ID",
+    "idLabel": "Health ID",
+    "sex": "Sex",
+    "dob": "Date of Birth",
+    "bloodType": "Blood Type",
+    "sexValues": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+    "statusValues": {
+      "provisional": "Provisional",
+      "unverified": "Unverified",
+      "active": "Active",
+      "verified": "Verified",
+      "verified_by_facility": "Verified by Facility",
+      "suspended": "Suspended",
+      "deceased": "Deceased",
+      "entered_in_error": "Entered in Error",
+      "merged": "Merged",
+      "erasure_pending": "Erasure Pending"
+    },
+    "qrSectionTitle": "Scan to Verify",
+    "qrSectionBody": "Present this QR code to a facility to verify your identity.",
+    "temporaryQrTitle": "Temporary Access QR",
+    "temporaryQrBody": "Generate a one-time code for short-term record access. It expires automatically after 15 minutes.",
+    "generateButton": "Generate Temporary QR",
+    "generating": "Generating…",
+    "expiresIn": "Expires in {{time}}",
+    "share": "Share",
+    "regenerate": "New Code",
+    "loadError": "We couldn't load your Health ID.",
+    "retry": "Retry",
+    "generateError": "We couldn't generate a temporary code. Please try again.",
+    "shareMessage": "OpesCare temporary verification link: {{url}} (expires in {{time}})",
+    "notAvailable": "Not available"
   }
 }

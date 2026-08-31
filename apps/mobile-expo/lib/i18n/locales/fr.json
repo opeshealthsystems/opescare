@@ -31,5 +31,45 @@
     "verify": "Vérifier",
     "invalidEmail": "Entrez un e-mail ou identifiant santé valide",
     "invalidPassword": "Le mot de passe est requis"
+  },
+  "healthId": {
+    "title": "Identifiant Santé",
+    "subtitle": "Votre identité santé numérique portable.",
+    "cardLabel": "Identifiant Santé OpesCare",
+    "idLabel": "Identifiant Santé",
+    "sex": "Sexe",
+    "dob": "Date de naissance",
+    "bloodType": "Groupe sanguin",
+    "sexValues": {
+      "male": "Masculin",
+      "female": "Féminin",
+      "other": "Autre"
+    },
+    "statusValues": {
+      "provisional": "Provisoire",
+      "unverified": "Non vérifié",
+      "active": "Actif",
+      "verified": "Vérifié",
+      "verified_by_facility": "Vérifié par l'établissement",
+      "suspended": "Suspendu",
+      "deceased": "Décédé",
+      "entered_in_error": "Enregistré par erreur",
+      "merged": "Fusionné",
+      "erasure_pending": "Effacement en attente"
+    },
+    "qrSectionTitle": "Scanner pour vérifier",
+    "qrSectionBody": "Présentez ce code QR à un établissement pour vérifier votre identité.",
+    "temporaryQrTitle": "QR d'accès temporaire",
+    "temporaryQrBody": "Générez un code à usage unique pour un accès de courte durée à votre dossier. Il expire automatiquement après 15 minutes.",
+    "generateButton": "Générer un QR temporaire",
+    "generating": "Génération…",
+    "expiresIn": "Expire dans {{time}}",
+    "share": "Partager",
+    "regenerate": "Nouveau code",
+    "loadError": "Impossible de charger votre identifiant santé.",
+    "retry": "Réessayer",
+    "generateError": "Impossible de générer un code temporaire. Veuillez réessayer.",
+    "shareMessage": "Lien de vérification temporaire OpesCare : {{url}} (expire dans {{time}})",
+    "notAvailable": "Non disponible"
   }
 }

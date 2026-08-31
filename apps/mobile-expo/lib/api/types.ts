@@ -50,3 +50,12 @@ export interface HealthIdCard {
   qr_payload: string;
   status: string;
 }
+
+/** Response from POST /mobile/qr/temporary — a short-lived (15-minute) QR for record access. */
+export interface TemporaryQrCode {
+  qr_payload: string;
+  verify_url: string;
+  raw_token: string;
+  expires_at: string;
+  expires_in: number;
+}
