@@ -30,7 +30,20 @@
       "expo-localization",
       "expo-font",
       "expo-splash-screen",
-      "expo-sharing"
+      "expo-sharing",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "OpesCare uses your location to find nearby pharmacies and healthcare facilities on the Care Map."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#A6720B"
+        }
+      ]
     ]
   }
 }

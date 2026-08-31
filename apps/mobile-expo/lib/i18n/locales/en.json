@@ -1060,5 +1060,23 @@
     "errorTitle": "Export failed",
     "errorBody": "We couldn't generate your export. Please try again.",
     "privacyNote": "Downloaded copies are not encrypted like your in-app record — store and share them carefully."
+  },
+  "permissions": {
+    "title": "Enable Permissions",
+    "subtitle": "Allow the following so OpesCare can keep you informed and connect you to care nearby.",
+    "notificationsTitle": "Notifications",
+    "notificationsBody": "Get appointment reminders, health alerts, and important updates.",
+    "locationTitle": "Location",
+    "locationBody": "Find nearby pharmacies and healthcare facilities on the Care Map.",
+    "statusAllowed": "Allowed",
+    "statusDenied": "Denied",
+    "statusNotSet": "Not set",
+    "statusChecking": "Checking…",
+    "enable": "Enable",
+    "openSettings": "Open Settings",
+    "privacyNote": "Your privacy is our priority. You can change these permissions anytime from Settings.",
+    "continue": "Continue",
+    "skip": "Skip for now",
+    "pushRegisterError": "Notifications are on, but we couldn't finish set up. You can retry from Settings."
   }
 }

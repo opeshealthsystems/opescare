@@ -1,10 +1,64 @@
 import { create } from 'zustand';
+import { Platform } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+import { router } from 'expo-router';
 import { apiClient, setSessionExpiredHandler } from '../api/client';
 import { endpoints } from '../api/endpoints';
 import { tokenStorage } from '../api/tokenStorage';
 import type { AuthTokenResponse, Patient } from '../api/types';
 
-type AuthStatus = 'booting' | 'unauthenticated' | 'otp_pending' | 'authenticated';
+// 'permissions_pending' is a deliberately non-'authenticated' status so the
+// root layout's auth-gating effect (app/_layout.tsx — not modified here)
+// leaves the user on /(auth)/permissions instead of bouncing them to
+// /(tabs)/home: that effect only redirects when status is exactly
+// 'unauthenticated'-ish (out of the auth group) or exactly 'authenticated'
+// (out of it); anything else is a deliberate no-op zone it ignores.
+type AuthStatus =
+  | 'booting'
+  | 'unauthenticated'
+  | 'otp_pending'
+  | 'permissions_pending'
+  | 'authenticated';
+
+/**
+ * Device-local flag: has this device already been through the permissions
+ * priming screen once? Permissions are OS+device scoped (not account
+ * scoped), so this intentionally survives logout/login on the same device
+ * and is keyed independently of the session token.
+ */
+const PERMISSIONS_PRIMER_SEEN_KEY = 'opescare_permissions_primer_seen';
+
+const permissionsPrimerFlag =
+  Platform.OS === 'web'
+    ? {
+        get: async () =>
+          typeof localStorage !== 'undefined' ? localStorage.getItem(PERMISSIONS_PRIMER_SEEN_KEY) : '1',
+        set: async () => {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(PERMISSIONS_PRIMER_SEEN_KEY, '1');
+          }
+        },
+      }
+    : {
+        get: () => SecureStore.getItemAsync(PERMISSIONS_PRIMER_SEEN_KEY),
+        set: () => SecureStore.setItemAsync(PERMISSIONS_PRIMER_SEEN_KEY, '1'),
+      };
+
+/** Resolves the status a just-completed login/signup should land on: the
+ * permissions primer only shows once per device, right after the first
+ * successful auth on it. */
+/** Exported so screens that mint a session outside the store's own actions
+ * (currently just signup.tsx, which issues its own token via a dedicated
+ * registration mutation) can route through the same one-time permissions
+ * primer as loginWithEmail/verifyOtp instead of duplicating the check. */
+export async function resolvePostAuthStatus(): Promise<AuthStatus> {
+  try {
+    const seen = await permissionsPrimerFlag.get();
+    return seen ? 'authenticated' : 'permissions_pending';
+  } catch {
+    return 'authenticated';
+  }
+}
 
 interface AuthState {
   status: AuthStatus;
@@ -20,6 +74,10 @@ interface AuthState {
   fetchMe: () => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
+  /** Called by the permissions priming screen when the user finishes or
+   * skips it — records the device as primed and settles status to
+   * 'authenticated', which the root layout then routes home from. */
+  completePermissionsPriming: () => Promise<void>;
 }
 
 function extractErrorMessage(err: unknown): string {
@@ -57,7 +115,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
       await tokenStorage.set(data.access_token);
       await get().fetchMe();
-      set({ status: 'authenticated' });
+      const nextStatus = await resolvePostAuthStatus();
+      set({ status: nextStatus });
+      if (nextStatus === 'permissions_pending') router.replace('/(auth)/permissions');
     } catch (err) {
       set({ error: extractErrorMessage(err) });
       throw err;
@@ -90,7 +150,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
       await tokenStorage.set(data.access_token);
       await get().fetchMe();
-      set({ status: 'authenticated', pendingPhone: null });
+      const nextStatus = await resolvePostAuthStatus();
+      set({ status: nextStatus, pendingPhone: null });
+      if (nextStatus === 'permissions_pending') router.replace('/(auth)/permissions');
     } catch (err) {
       set({ error: extractErrorMessage(err) });
       throw err;
@@ -114,6 +176,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   clearError: () => set({ error: null }),
+
+  completePermissionsPriming: async () => {
+    try {
+      await permissionsPrimerFlag.set();
+    } catch {
+      // Best-effort — worst case the primer shows again on this device next login.
+    }
+    set({ status: 'authenticated' });
+  },
 }));
 
 // Wired once, outside the component tree: if any request's token refresh fails,

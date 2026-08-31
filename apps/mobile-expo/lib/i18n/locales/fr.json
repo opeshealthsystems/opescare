@@ -1060,5 +1060,23 @@
     "errorTitle": "Échec de l'export",
     "errorBody": "Impossible de générer votre export. Veuillez réessayer.",
     "privacyNote": "Les copies téléchargées ne sont pas chiffrées comme votre dossier dans l'application — conservez-les et partagez-les avec précaution."
+  },
+  "permissions": {
+    "title": "Activer les autorisations",
+    "subtitle": "Autorisez les éléments suivants pour qu'OpesCare vous tienne informé et vous connecte aux soins à proximité.",
+    "notificationsTitle": "Notifications",
+    "notificationsBody": "Recevez des rappels de rendez-vous, des alertes santé et des mises à jour importantes.",
+    "locationTitle": "Localisation",
+    "locationBody": "Trouvez les pharmacies et établissements de santé à proximité sur la carte des soins.",
+    "statusAllowed": "Autorisé",
+    "statusDenied": "Refusé",
+    "statusNotSet": "Non défini",
+    "statusChecking": "Vérification…",
+    "enable": "Activer",
+    "openSettings": "Ouvrir les réglages",
+    "privacyNote": "Votre vie privée est notre priorité. Vous pouvez modifier ces autorisations à tout moment depuis les réglages.",
+    "continue": "Continuer",
+    "skip": "Ignorer pour l'instant",
+    "pushRegisterError": "Les notifications sont activées, mais la configuration n'a pas pu être terminée. Réessayez depuis les réglages."
   }
 }

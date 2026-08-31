@@ -17,7 +17,7 @@ import { Screen } from '../../components/ui/Screen';
 import { Button } from '../../components/ui/Button';
 import { TextField } from '../../components/ui/TextField';
 import { Logo } from '../../components/ui/Logo';
-import { useAuthStore } from '../../lib/store/auth';
+import { resolvePostAuthStatus, useAuthStore } from '../../lib/store/auth';
 import { tokenStorage } from '../../lib/api/tokenStorage';
 import { useRegisterPatient } from '../../lib/api/queries';
 import type { ApiValidationErrorBody, RegisterPatientPayload } from '../../lib/api/types';
@@ -196,8 +196,10 @@ export default function SignupScreen() {
       const data = await registerPatient.mutateAsync(payload);
       await tokenStorage.set(data.access_token);
       await useAuthStore.getState().fetchMe();
-      useAuthStore.setState({ status: 'authenticated' });
-      // Root layout redirects to /(tabs)/home once status flips to authenticated.
+      const nextStatus = await resolvePostAuthStatus();
+      useAuthStore.setState({ status: nextStatus });
+      if (nextStatus === 'permissions_pending') router.replace('/(auth)/permissions');
+      // Otherwise the root layout redirects to /(tabs)/home once status flips to authenticated.
     } catch (err) {
       const { fieldErrors: serverFieldErrors, banner } = extractErrorMessage(err);
       if (serverFieldErrors) {
