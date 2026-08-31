@@ -1,18 +1,32 @@
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { LinearGradient } from 'expo-linear-gradient';
 import {
+  AlertTriangle,
   ArrowLeft,
   Baby,
   Calendar,
+  ChevronRight,
   Clock,
   Mail,
+  MailCheck,
   Phone,
+  RotateCw,
   Send,
   UserPlus,
   Users,
   X,
+  type LucideIcon,
 } from 'lucide-react-native';
 import { Screen } from '../../components/ui/Screen';
 import { Button } from '../../components/ui/Button';
@@ -40,9 +54,9 @@ const RELATIONSHIP_OPTIONS = [
 
 const SEX_OPTIONS = ['male', 'female', 'other'] as const;
 const SEX_LABEL_KEYS: Record<(typeof SEX_OPTIONS)[number], string> = {
-  male: 'signup.sexMale',
-  female: 'signup.sexFemale',
-  other: 'signup.sexOther',
+  male: 'family.sexMale',
+  female: 'family.sexFemale',
+  other: 'family.sexOther',
 };
 
 function extractErrorMessage(err: unknown, fallback: string): string {
@@ -80,10 +94,17 @@ function initialsOf(name: string): string {
   return `${parts[0]![0]}${parts[parts.length - 1]![0]}`.toUpperCase();
 }
 
+type Mode = 'invite' | 'register';
+
 /**
  * Family: linked members + invitations. GET /mobile/family (active + pending
  * links), GET/POST /mobile/family/invitations, DELETE /mobile/family/invitations/{id}.
  * Backend: App\Http\Controllers\Api\Mobile\MobileFamilyController (already wired).
+ *
+ * Two genuinely different actions share this screen, so they are presented as a
+ * deliberate choice rather than a segmented control over one blob of fields:
+ * inviting an *existing* OpesCare patient by contact, and registering a brand
+ * new dependent (which mints a real Patient + Health ID).
  */
 export default function FamilyScreen() {
   const { t } = useTranslation();
@@ -95,8 +116,7 @@ export default function FamilyScreen() {
   const cancelInvitation = useCancelFamilyInvitation();
   const registerDependent = useRegisterDependent();
 
-  const [showForm, setShowForm] = useState(false);
-  const [mode, setMode] = useState<'invite' | 'register'>('invite');
+  const [mode, setMode] = useState<Mode | null>(null);
   const [contact, setContact] = useState('');
   const [relationship, setRelationship] = useState<(typeof RELATIONSHIP_OPTIONS)[number]>('parent');
   const [formError, setFormError] = useState<string | null>(null);
@@ -105,7 +125,7 @@ export default function FamilyScreen() {
 
   // Register-a-dependent form (POST /mobile/family — a brand-new Patient with
   // no account of their own, e.g. a child), distinct from the invite-by-contact
-  // form above which links an *existing* OpesCare patient.
+  // form which links an *existing* OpesCare patient.
   const [depFullName, setDepFullName] = useState('');
   const [depDob, setDepDob] = useState('');
   const [depSex, setDepSex] = useState<(typeof SEX_OPTIONS)[number] | null>(null);
@@ -131,6 +151,17 @@ export default function FamilyScreen() {
     invitationsQuery.refetch();
   };
 
+  const closeForm = () => {
+    setMode(null);
+    setFormError(null);
+  };
+
+  const openForm = (next: Mode) => {
+    setMode(next);
+    setFormError(null);
+    setSuccessMessage(null);
+  };
+
   const handleSendInvitation = async () => {
     setFormError(null);
     setSuccessMessage(null);
@@ -142,7 +173,7 @@ export default function FamilyScreen() {
       await sendInvitation.mutateAsync({ contact: contact.trim(), relationship });
       setContact('');
       setRelationship('parent');
-      setShowForm(false);
+      setMode(null);
       setSuccessMessage(t('family.invitationSent'));
     } catch (err) {
       setFormError(extractErrorMessage(err, t('family.invitationFailed')));
@@ -179,7 +210,7 @@ export default function FamilyScreen() {
       setDepRelationship('child');
       setDepBloodGroup('');
       setDepPhone('');
-      setShowForm(false);
+      setMode(null);
       setSuccessMessage(t('family.dependentRegistered'));
     } catch (err) {
       setFormError(extractErrorMessage(err, t('family.dependentRegisterFailed')));
@@ -200,7 +231,10 @@ export default function FamilyScreen() {
             try {
               await cancelInvitation.mutateAsync(invitation.id);
             } catch (err) {
-              Alert.alert(t('family.error'), extractErrorMessage(err, t('family.cancelInviteFailed')));
+              Alert.alert(
+                t('family.error'),
+                extractErrorMessage(err, t('family.cancelInviteFailed')),
+              );
             } finally {
               setCancellingId(null);
             }
@@ -211,12 +245,14 @@ export default function FamilyScreen() {
   };
 
   return (
-    <Screen>
-      <View className="flex-row items-center pt-2">
+    <Screen className="px-0">
+      <View className="flex-row items-center px-6 pt-2">
         <Pressable
           onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel={t('family.back')}
           hitSlop={8}
-          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300"
+          className="h-11 w-11 items-center justify-center rounded-full border border-gold-300 bg-white"
         >
           <ArrowLeft size={18} color={colors.gold[600]} />
         </Pressable>
@@ -224,88 +260,136 @@ export default function FamilyScreen() {
       </View>
 
       <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ paddingBottom: 40 }}
+        className="flex-1 px-6"
+        contentContainerStyle={{ paddingBottom: 48 }}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.gold[500]} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.gold[500]}
+          />
         }
       >
         <Text className="mt-2 text-sm text-navy-secondary">{t('family.subtitle')}</Text>
 
+        {/* Care-circle summary */}
+        <LinearGradient
+          colors={[colors.gold[600], colors.gold[500], colors.gold[300]]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ borderRadius: 24, marginTop: 20, padding: 20 }}
+        >
+          <View className="flex-row items-center">
+            <View className="h-11 w-11 items-center justify-center rounded-2xl bg-white/25">
+              <Users size={20} color={colors.white} />
+            </View>
+            <View className="ml-3 flex-1">
+              <Text className="text-base font-extrabold text-white">
+                {t('family.summaryTitle')}
+              </Text>
+              <Text className="mt-0.5 text-xs text-white/90">{t('family.summaryDesc')}</Text>
+            </View>
+          </View>
+          <View className="mt-5 flex-row">
+            <SummaryStat
+              label={t('family.summaryLinked')}
+              value={initialLoading ? '…' : String(members.length)}
+            />
+            <View className="mx-4 w-px bg-white/30" />
+            <SummaryStat
+              label={t('family.summaryPending')}
+              value={initialLoading ? '…' : String(invitations.length)}
+            />
+          </View>
+        </LinearGradient>
+
         {hasLoadError ? (
-          <View className="mt-4 rounded-2xl p-4" style={{ backgroundColor: colors.semantic.dangerSurface }}>
-            <Text className="text-center text-sm font-semibold" style={{ color: colors.semantic.danger }}>
+          <View
+            className="mt-4 flex-row items-center rounded-2xl p-4"
+            style={{ backgroundColor: colors.semantic.dangerSurface }}
+          >
+            <AlertTriangle size={17} color={colors.semantic.danger} />
+            <Text
+              className="ml-2 flex-1 text-sm font-semibold"
+              style={{ color: colors.semantic.danger }}
+            >
               {t('family.loadFailed')}
             </Text>
-            <Pressable onPress={onRefresh} className="mt-2 items-center">
-              <Text className="text-sm font-bold" style={{ color: colors.semantic.danger }}>
+            <Pressable
+              onPress={onRefresh}
+              accessibilityRole="button"
+              hitSlop={8}
+              className="ml-2 flex-row items-center rounded-full bg-white px-3 py-1.5"
+            >
+              <RotateCw size={13} color={colors.semantic.danger} />
+              <Text
+                className="ml-1 text-xs font-bold"
+                style={{ color: colors.semantic.danger }}
+              >
                 {t('family.retry')}
               </Text>
             </Pressable>
           </View>
         ) : null}
 
-        {/* Invite card */}
-        <View className="mt-5 rounded-2xl border border-cream-300 bg-white p-4">
-          <Pressable
-            onPress={() => {
-              setShowForm((v) => !v);
-              setFormError(null);
-            }}
-            className="flex-row items-center justify-between"
-          >
-            <View className="flex-row items-center">
-              <View className="h-10 w-10 items-center justify-center rounded-full bg-gold-50">
-                <UserPlus size={18} color={colors.gold[600]} />
-              </View>
-              <Text className="ml-3 text-base font-bold text-navy-text">{t('family.inviteTitle')}</Text>
-            </View>
-            <Text className="text-sm font-semibold text-gold-500">
-              {showForm ? t('family.close') : t('family.invite')}
-            </Text>
-          </Pressable>
+        {/* Add someone — an explicit choice between two different actions */}
+        {mode === null ? (
+          <View className="mt-4 rounded-3xl border border-cream-300 bg-white p-4">
+            <Text className="text-base font-bold text-navy-text">{t('family.addTitle')}</Text>
+            <Text className="mt-1 text-xs text-navy-secondary">{t('family.addDesc')}</Text>
 
-          {showForm ? (
             <View className="mt-4">
-              <View className="mb-4 flex-row rounded-full bg-cream-200 p-1">
-                <Pressable
-                  onPress={() => {
-                    setMode('invite');
-                    setFormError(null);
-                  }}
-                  className="flex-1 items-center rounded-full py-2"
-                  style={{ backgroundColor: mode === 'invite' ? colors.white : 'transparent' }}
-                >
-                  <Text
-                    className="text-xs font-semibold"
-                    style={{ color: mode === 'invite' ? colors.gold[600] : colors.navy.secondary }}
-                  >
-                    {t('family.tabInvite')}
-                  </Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setMode('register');
-                    setFormError(null);
-                  }}
-                  className="flex-1 items-center rounded-full py-2"
-                  style={{ backgroundColor: mode === 'register' ? colors.white : 'transparent' }}
-                >
-                  <Text
-                    className="text-xs font-semibold"
-                    style={{ color: mode === 'register' ? colors.gold[600] : colors.navy.secondary }}
-                  >
-                    {t('family.tabRegister')}
-                  </Text>
-                </Pressable>
+              <ChoiceRow
+                icon={UserPlus}
+                title={t('family.optionInviteTitle')}
+                description={t('family.optionInviteDesc')}
+                onPress={() => openForm('invite')}
+              />
+              <View className="h-px bg-cream-200" style={{ marginVertical: 4 }} />
+              <ChoiceRow
+                icon={Baby}
+                title={t('family.optionRegisterTitle')}
+                description={t('family.optionRegisterDesc')}
+                onPress={() => openForm('register')}
+              />
+            </View>
+          </View>
+        ) : (
+          <View className="mt-4 rounded-3xl border border-cream-300 bg-white p-4">
+            <View className="flex-row items-start">
+              <View className="h-10 w-10 items-center justify-center rounded-xl bg-gold-50">
+                {mode === 'invite' ? (
+                  <UserPlus size={18} color={colors.gold[600]} />
+                ) : (
+                  <Baby size={18} color={colors.gold[600]} />
+                )}
               </View>
+              <View className="ml-3 flex-1">
+                <Text className="text-base font-bold text-navy-text">
+                  {mode === 'invite'
+                    ? t('family.optionInviteTitle')
+                    : t('family.optionRegisterTitle')}
+                </Text>
+                <Text className="mt-1 text-xs text-navy-secondary">
+                  {mode === 'invite' ? t('family.tabInviteHint') : t('family.tabRegisterHint')}
+                </Text>
+              </View>
+              <Pressable
+                onPress={closeForm}
+                accessibilityRole="button"
+                accessibilityLabel={t('family.cancel')}
+                hitSlop={8}
+                className="h-9 w-9 items-center justify-center rounded-full bg-cream-200"
+              >
+                <X size={16} color={colors.navy.secondary} />
+              </Pressable>
+            </View>
 
+            <View className="mt-5">
               {mode === 'invite' ? (
                 <>
-                  <Text className="mb-3 text-xs text-navy-secondary">
-                    {t('family.tabInviteHint')}
-                  </Text>
                   <TextField
                     label={t('family.contactLabel')}
                     placeholder={t('family.contactPlaceholder')}
@@ -316,34 +400,15 @@ export default function FamilyScreen() {
                     onChangeText={setContact}
                   />
 
-                  <Text className="mb-2 text-sm font-semibold text-navy-text">
-                    {t('family.relationshipLabel')}
-                  </Text>
-                  <View className="mb-4 flex-row flex-wrap" style={{ gap: 8 }}>
-                    {RELATIONSHIP_OPTIONS.map((option) => {
-                      const active = relationship === option;
-                      return (
-                        <Pressable
-                          key={option}
-                          onPress={() => setRelationship(option)}
-                          className="rounded-full border px-3 py-2"
-                          style={{
-                            borderColor: active ? colors.gold[500] : colors.cream[300],
-                            backgroundColor: active ? colors.gold[50] : colors.white,
-                          }}
-                        >
-                          <Text
-                            className="text-xs font-semibold"
-                            style={{ color: active ? colors.gold[600] : colors.navy.secondary }}
-                          >
-                            {t(`family.relationships.${option}`)}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
+                  <ChipGroup
+                    label={t('family.relationshipLabel')}
+                    options={RELATIONSHIP_OPTIONS}
+                    value={relationship}
+                    onSelect={setRelationship}
+                    labelFor={(option) => t(`family.relationships.${option}`)}
+                  />
 
-                  {formError ? <Text className="mb-3 text-sm text-danger">{formError}</Text> : null}
+                  {formError ? <FormError message={formError} /> : null}
 
                   <Button
                     label={t('family.sendInvite')}
@@ -355,9 +420,6 @@ export default function FamilyScreen() {
                 </>
               ) : (
                 <>
-                  <Text className="mb-3 text-xs text-navy-secondary">
-                    {t('family.tabRegisterHint')}
-                  </Text>
                   <TextField
                     label={t('family.fullNameLabel')}
                     placeholder={t('family.fullNamePlaceholder')}
@@ -366,8 +428,8 @@ export default function FamilyScreen() {
                     onChangeText={setDepFullName}
                   />
                   <TextField
-                    label={t('signup.dateOfBirth')}
-                    placeholder={t('signup.dateOfBirthPlaceholder')}
+                    label={t('family.dateOfBirth')}
+                    placeholder={t('family.dateOfBirthPlaceholder')}
                     icon={Calendar}
                     keyboardType="number-pad"
                     maxLength={10}
@@ -385,7 +447,9 @@ export default function FamilyScreen() {
                         <Pressable
                           key={option}
                           onPress={() => setDepSex(option)}
-                          className="flex-1 items-center rounded-full border px-3 py-2"
+                          accessibilityRole="button"
+                          accessibilityState={{ selected: active }}
+                          className="flex-1 items-center rounded-full border px-3 py-2.5"
                           style={{
                             borderColor: active ? colors.gold[500] : colors.cream[300],
                             backgroundColor: active ? colors.gold[50] : colors.white,
@@ -402,32 +466,13 @@ export default function FamilyScreen() {
                     })}
                   </View>
 
-                  <Text className="mb-2 text-sm font-semibold text-navy-text">
-                    {t('family.relationshipLabel')}
-                  </Text>
-                  <View className="mb-4 flex-row flex-wrap" style={{ gap: 8 }}>
-                    {RELATIONSHIP_OPTIONS.map((option) => {
-                      const active = depRelationship === option;
-                      return (
-                        <Pressable
-                          key={option}
-                          onPress={() => setDepRelationship(option)}
-                          className="rounded-full border px-3 py-2"
-                          style={{
-                            borderColor: active ? colors.gold[500] : colors.cream[300],
-                            backgroundColor: active ? colors.gold[50] : colors.white,
-                          }}
-                        >
-                          <Text
-                            className="text-xs font-semibold"
-                            style={{ color: active ? colors.gold[600] : colors.navy.secondary }}
-                          >
-                            {t(`family.relationships.${option}`)}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
+                  <ChipGroup
+                    label={t('family.relationshipLabel')}
+                    options={RELATIONSHIP_OPTIONS}
+                    value={depRelationship}
+                    onSelect={setDepRelationship}
+                    labelFor={(option) => t(`family.relationships.${option}`)}
+                  />
 
                   <TextField
                     label={t('family.bloodGroupLabel')}
@@ -436,15 +481,25 @@ export default function FamilyScreen() {
                     onChangeText={setDepBloodGroup}
                   />
                   <TextField
-                    label={t('auth.phoneNumber')}
-                    placeholder={t('auth.phoneNumberPlaceholder')}
+                    label={t('family.phoneLabel')}
+                    placeholder={t('family.phonePlaceholder')}
                     icon={Phone}
                     keyboardType="phone-pad"
                     value={depPhone}
                     onChangeText={setDepPhone}
                   />
 
-                  {formError ? <Text className="mb-3 text-sm text-danger">{formError}</Text> : null}
+                  <View
+                    className="mb-4 flex-row items-start rounded-2xl p-3"
+                    style={{ backgroundColor: colors.gold[50] }}
+                  >
+                    <Baby size={15} color={colors.gold[600]} />
+                    <Text className="ml-2 flex-1 text-xs text-navy-secondary">
+                      {t('family.registerNotice')}
+                    </Text>
+                  </View>
+
+                  {formError ? <FormError message={formError} /> : null}
 
                   <Button
                     label={t('family.registerDependent')}
@@ -456,16 +511,17 @@ export default function FamilyScreen() {
                 </>
               )}
             </View>
-          ) : null}
-        </View>
+          </View>
+        )}
 
         {successMessage ? (
           <View
-            className="mt-4 rounded-2xl p-3"
+            className="mt-4 flex-row items-center justify-center rounded-2xl p-3"
             style={{ backgroundColor: colors.semantic.successSurface }}
           >
+            <MailCheck size={16} color={colors.semantic.success} />
             <Text
-              className="text-center text-sm font-semibold"
+              className="ml-2 text-sm font-semibold"
               style={{ color: colors.semantic.success }}
             >
               {successMessage}
@@ -474,37 +530,44 @@ export default function FamilyScreen() {
         ) : null}
 
         {/* Pending invitations */}
-        <Text className="mb-3 mt-7 text-base font-bold text-navy-text">
-          {t('family.pendingInvitations')}
-          {invitations.length > 0 ? ` (${invitations.length})` : ''}
-        </Text>
+        <SectionHeader
+          title={t('family.pendingInvitations')}
+          count={initialLoading ? null : invitations.length}
+        />
 
         {initialLoading ? (
-          <ActivityIndicator color={colors.gold[500]} />
+          <SkeletonRow />
         ) : invitations.length === 0 ? (
-          <Text className="text-sm text-navy-secondary">{t('family.noPendingInvitations')}</Text>
+          <EmptyState icon={MailCheck} message={t('family.noPendingInvitations')} />
         ) : (
           invitations.map((invitation) => (
             <View
               key={invitation.id}
               className="mb-3 flex-row items-center rounded-2xl border border-cream-300 bg-white p-4"
             >
-              <View className="h-10 w-10 items-center justify-center rounded-full bg-gold-50">
-                <Clock size={16} color={colors.gold[600]} />
+              <View
+                className="h-11 w-11 items-center justify-center rounded-2xl"
+                style={{ backgroundColor: colors.semantic.warningSurface }}
+              >
+                <Clock size={17} color={colors.semantic.warning} />
               </View>
               <View className="ml-3 flex-1">
-                <Text className="text-sm font-bold text-navy-text">{invitation.contact}</Text>
+                <Text className="text-sm font-bold text-navy-text" numberOfLines={1}>
+                  {invitation.contact}
+                </Text>
                 <Text className="mt-0.5 text-xs text-navy-secondary">
                   {t(`family.relationships.${invitation.relationship}`, {
                     defaultValue: invitation.relationship,
                   })}
                 </Text>
-                <Text className="mt-0.5 text-xs text-navy-muted">
+                <Text className="mt-0.5 text-[11px] text-navy-muted">
                   {t('family.expiresOn', { date: invitation.expires_at ?? '—' })}
                 </Text>
               </View>
               <Pressable
                 onPress={() => handleCancelInvitation(invitation)}
+                accessibilityRole="button"
+                accessibilityLabel={t('family.cancelInviteConfirm')}
                 hitSlop={8}
                 disabled={cancellingId === invitation.id}
                 className="h-9 w-9 items-center justify-center rounded-full"
@@ -524,58 +587,203 @@ export default function FamilyScreen() {
         )}
 
         {/* Linked members */}
-        <Text className="mb-3 mt-7 text-base font-bold text-navy-text">
-          {t('family.linkedMembers')}
-          {members.length > 0 ? ` (${members.length})` : ''}
-        </Text>
+        <SectionHeader
+          title={t('family.linkedMembers')}
+          count={initialLoading ? null : members.length}
+        />
 
         {initialLoading ? (
-          <ActivityIndicator color={colors.gold[500]} />
+          <SkeletonRow />
         ) : members.length === 0 ? (
-          <View className="items-center rounded-2xl border border-dashed border-cream-300 p-6">
-            <Users size={22} color={colors.navy.muted} />
-            <Text className="mt-2 text-center text-sm text-navy-secondary">
-              {t('family.noMembers')}
-            </Text>
-          </View>
+          <EmptyState icon={Users} message={t('family.noMembers')} />
         ) : (
           members.map((member) => (
             <View
               key={member.id}
-              className="mb-3 flex-row items-center rounded-2xl border border-cream-300 bg-white p-4"
+              className="mb-3 rounded-2xl border border-cream-300 bg-white p-4"
             >
-              <View className="h-11 w-11 items-center justify-center rounded-full bg-gold-100">
-                <Text className="text-sm font-bold text-gold-600">
-                  {initialsOf(member.patient?.full_name ?? '?')}
-                </Text>
-              </View>
-              <View className="ml-3 flex-1">
-                <Text className="text-sm font-bold text-navy-text">{member.patient?.full_name}</Text>
-                <View className="mt-0.5 flex-row items-center">
-                  <Text className="text-xs text-navy-secondary">
+              <View className="flex-row items-center">
+                <View className="h-12 w-12 items-center justify-center rounded-full bg-gold-100">
+                  <Text className="text-sm font-extrabold text-gold-600">
+                    {initialsOf(member.patient?.full_name ?? '?')}
+                  </Text>
+                </View>
+                <View className="ml-3 flex-1">
+                  <Text className="text-sm font-bold text-navy-text" numberOfLines={1}>
+                    {member.patient?.full_name}
+                  </Text>
+                  <Text className="mt-0.5 text-xs text-navy-secondary">
                     {t(`family.relationships.${member.relationship}`, {
                       defaultValue: member.relationship,
                     })}
+                    {member.patient?.age != null
+                      ? ` · ${t('family.age', { age: member.patient.age })}`
+                      : ''}
                   </Text>
-                  {member.patient?.age != null ? (
-                    <Text className="text-xs text-navy-muted">
-                      {' '}
-                      · {t('family.age', { age: member.patient.age })}
-                    </Text>
-                  ) : null}
+                </View>
+                <View className="rounded-full bg-cream-200 px-3 py-1">
+                  <Text className="text-[10px] font-bold text-navy-secondary">
+                    {t(`family.accessLevels.${member.access_level}`, {
+                      defaultValue: member.access_level,
+                    })}
+                  </Text>
                 </View>
               </View>
-              <View className="rounded-full bg-cream-200 px-3 py-1">
-                <Text className="text-[10px] font-semibold text-navy-secondary">
-                  {t(`family.accessLevels.${member.access_level}`, {
-                    defaultValue: member.access_level,
-                  })}
-                </Text>
-              </View>
+
+              {member.patient?.health_id ? (
+                <View className="mt-3 flex-row items-center border-t border-cream-200 pt-3">
+                  <Text className="text-[10px] font-bold uppercase tracking-wide text-navy-muted">
+                    {t('family.healthIdLabel')}
+                  </Text>
+                  <Text className="ml-2 flex-1 text-xs font-bold text-gold-600" numberOfLines={1}>
+                    {member.patient.health_id}
+                  </Text>
+                </View>
+              ) : null}
             </View>
           ))
         )}
       </ScrollView>
     </Screen>
+  );
+}
+
+function SummaryStat({ label, value }: { label: string; value: string }) {
+  return (
+    <View className="flex-1">
+      <Text className="text-2xl font-extrabold text-white">{value}</Text>
+      <Text className="mt-0.5 text-xs text-white/90">{label}</Text>
+    </View>
+  );
+}
+
+function ChoiceRow({
+  icon: Icon,
+  title,
+  description,
+  onPress,
+}: {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      className="flex-row items-center py-3"
+    >
+      <View className="h-11 w-11 items-center justify-center rounded-2xl bg-gold-50">
+        <Icon size={19} color={colors.gold[600]} />
+      </View>
+      <View className="ml-3 flex-1">
+        <Text className="text-sm font-bold text-navy-text">{title}</Text>
+        <Text className="mt-0.5 text-xs text-navy-secondary">{description}</Text>
+      </View>
+      <ChevronRight size={18} color={colors.navy.muted} />
+    </Pressable>
+  );
+}
+
+function ChipGroup<T extends string>({
+  label,
+  options,
+  value,
+  onSelect,
+  labelFor,
+}: {
+  label: string;
+  options: readonly T[];
+  value: T;
+  onSelect: (option: T) => void;
+  labelFor: (option: T) => string;
+}) {
+  return (
+    <>
+      <Text className="mb-2 text-sm font-semibold text-navy-text">{label}</Text>
+      <View className="mb-4 flex-row flex-wrap" style={{ gap: 8 }}>
+        {options.map((option) => {
+          const active = value === option;
+          return (
+            <Pressable
+              key={option}
+              onPress={() => onSelect(option)}
+              accessibilityRole="button"
+              accessibilityState={{ selected: active }}
+              className="rounded-full border px-3 py-2"
+              style={{
+                borderColor: active ? colors.gold[500] : colors.cream[300],
+                backgroundColor: active ? colors.gold[50] : colors.white,
+              }}
+            >
+              <Text
+                className="text-xs font-semibold"
+                style={{ color: active ? colors.gold[600] : colors.navy.secondary }}
+              >
+                {labelFor(option)}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    </>
+  );
+}
+
+function FormError({ message }: { message: string }) {
+  return (
+    <View
+      className="mb-3 flex-row items-start rounded-2xl p-3"
+      style={{ backgroundColor: colors.semantic.dangerSurface }}
+    >
+      <AlertTriangle size={15} color={colors.semantic.danger} />
+      <Text
+        className="ml-2 flex-1 text-xs font-semibold"
+        style={{ color: colors.semantic.danger }}
+      >
+        {message}
+      </Text>
+    </View>
+  );
+}
+
+function SectionHeader({ title, count }: { title: string; count: number | null }) {
+  return (
+    <View className="mb-3 mt-7 flex-row items-center">
+      <Text className="text-base font-bold text-navy-text">{title}</Text>
+      {count !== null ? (
+        <View className="ml-2 rounded-full bg-cream-200 px-2 py-0.5">
+          <Text className="text-[11px] font-bold text-navy-secondary">{count}</Text>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+function EmptyState({ icon: Icon, message }: { icon: LucideIcon; message: string }) {
+  return (
+    <View className="items-center rounded-2xl border border-dashed border-cream-300 px-6 py-8">
+      <View className="h-12 w-12 items-center justify-center rounded-full bg-cream-200">
+        <Icon size={20} color={colors.navy.muted} />
+      </View>
+      <Text className="mt-3 text-center text-sm text-navy-secondary">{message}</Text>
+    </View>
+  );
+}
+
+/** Placeholder card matching the real row's geometry, so the list doesn't jump
+ * when the two family queries resolve. */
+function SkeletonRow() {
+  return (
+    <View className="mb-3 flex-row items-center rounded-2xl border border-cream-300 bg-white p-4">
+      <View className="h-12 w-12 rounded-full bg-cream-200" />
+      <View className="ml-3 flex-1">
+        <View className="h-3 rounded-full bg-cream-200" style={{ width: '55%' }} />
+        <View className="mt-2 h-2.5 rounded-full bg-cream-200" style={{ width: '35%' }} />
+      </View>
+      <ActivityIndicator size="small" color={colors.gold[500]} />
+    </View>
   );
 }
