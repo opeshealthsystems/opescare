@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('mobile')->middleware('auth.mobile')->group(function () {
+Route::prefix('api/mobile')->middleware('auth.mobile')->group(function () {
     // Messaging — patient-facing entry point onto the Messaging module.
     Route::get('messages/threads', [MobileMessagingController::class, 'index']);
     Route::post('messages/threads', [MobileMessagingController::class, 'start']);
