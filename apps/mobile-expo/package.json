@@ -28,7 +28,6 @@
     "react-i18next": "^17.0.12",
     "react-native": "0.86.3",
     "react-native-qrcode-svg": "^6.3.21",
-    "react-native-reanimated": "^4.6.0",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
     "react-native-svg": "^15.15.5",
@@ -40,6 +39,9 @@
     "@types/react": "~19.2.2",
     "babel-preset-expo": "~57.0.0",
     "typescript": "~6.0.3"
+  },
+  "overrides": {
+    "react-native-worklets": "0.10.4"
   },
   "scripts": {
     "start": "expo start",
