@@ -50,3 +50,55 @@ export interface HealthIdCard {
   qr_payload: string;
   status: string;
 }
+
+/** One row of GET /mobile/timeline — a visit, resulted lab, or issued prescription. */
+export interface TimelineEvent {
+  event_type: 'visit' | 'lab_result' | 'prescription';
+  id: string;
+  facility_name: string | null;
+  occurred_at: string;
+  summary: string;
+}
+
+export interface TimelineResponse {
+  timeline: TimelineEvent[];
+}
+
+export interface Allergy {
+  id: string;
+  substance: string;
+  severity: string | null;
+  status: string;
+  recorded: string | null;
+}
+
+export interface AllergiesResponse {
+  blood_group: string | null;
+  allergies: Allergy[];
+}
+
+export interface ClinicalCondition {
+  id: string;
+  display_name: string;
+  code: string | null;
+  code_system: string | null;
+  status: string;
+  recorded: string | null;
+}
+
+export interface ClinicalResponse {
+  conditions: ClinicalCondition[];
+}
+
+export interface Immunization {
+  id: string;
+  vaccine_name: string;
+  lot_number: string | null;
+  dose_number: number | null;
+  administered_at: string | null;
+  status: string;
+}
+
+export interface ImmunizationsResponse {
+  immunizations: Immunization[];
+}
