@@ -8,109 +8,30 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Seeds the Medicine Finder reference data: pharmacy directory listings,
- * a medicine catalog, opening hours, and per-pharmacy stock.
+ * Seeds the Medicine Finder reference data: a medicine catalog plus
+ * per-pharmacy stock held at REAL pharmacies from the facility directory.
  *
  * Idempotent — every row has a stable UUID and is written with updateOrInsert,
- * so re-running refreshes prices/stock without duplicating listings.
+ * so re-running refreshes prices/stock without duplicating rows.
  *
- * Facility linkage follows the ProductionAccountsSeeder fixture pattern: the
- * "OpesCare Pharmacy" tenant (facilities.id 00000000-0000-0000-0000-800000000004)
- * gets a care_facilities directory listing carrying the GPS coordinates the
- * finder searches on, linked back through care_facilities.facility_id.
+ * This seeder used to insert six invented directory listings ("OpesCare
+ * Pharmacy", "PharmaPlus Bonapriso", ...) into care_facilities and hang the
+ * stock off those. care_facilities is the public, patient-facing directory, so
+ * that put fabricated businesses in front of patients alongside real
+ * MINSANTE/OSM-sourced institutions. Stock levels here remain illustrative
+ * demo data, but the pharmacies holding them are now real, and are resolved at
+ * run time by resolvePharmacies().
  *
- * The four neighbouring Douala pharmacies are **seed fixtures for staging and
- * demo**, not verified registry entries — they are written with
- * verification_status = 'unverified' for exactly that reason. In production the
- * real listings come from the MINSANTE facility registry via
- * CareMapRegistryStubSeeder and from pharmacies claiming their own listing.
+ * Depends on the real pharmacy directory existing first — run
+ * CameroonOsmPharmacySeeder (real names + OSM coordinates) and
+ * CareMapRegistryStubSeeder (promotes registry -> care_facilities) before this.
+ * Coordinates are required: MedicineFinderService filters on
+ * whereNotNull('latitude')/('longitude').
  *
  * Run:  php artisan db:seed --class=PharmacyCatalogSeeder
  */
 class PharmacyCatalogSeeder extends Seeder
 {
-    /** The seeded pharmacy tenant from ProductionAccountsSeeder. */
-    private const OPESCARE_PHARMACY_FACILITY_ID = '00000000-0000-0000-0000-800000000004';
-
-    /**
-     * Directory listings.
-     * [ care_facility_id, name, neighbourhood/address, lat, lng, phone, facilities.id|null, opens, closes ]
-     */
-    private const PHARMACIES = [
-        [
-            'id'          => '00000000-0000-0000-0000-810000000001',
-            'name'        => 'OpesCare Pharmacy',
-            'address'     => 'Boulevard de la Liberté, Akwa, Douala',
-            'latitude'    => 4.0511,
-            'longitude'   => 9.7679,
-            'phone'       => '+237233420004',
-            'facility_id' => self::OPESCARE_PHARMACY_FACILITY_ID,
-            'opens_at'    => '07:30:00',
-            'closes_at'   => '21:00:00',
-            'verification' => 'government_verified',
-        ],
-        [
-            'id'          => '00000000-0000-0000-0000-810000000002',
-            'name'        => 'PharmaPlus Bonapriso',
-            'address'     => 'Rue Joffre, Bonapriso, Douala',
-            'latitude'    => 4.0342,
-            'longitude'   => 9.7112,
-            'phone'       => '+237233421001',
-            'facility_id' => null,
-            'opens_at'    => '08:00:00',
-            'closes_at'   => '20:00:00',
-            'verification' => 'unverified',
-        ],
-        [
-            'id'          => '00000000-0000-0000-0000-810000000003',
-            'name'        => 'Pharmacie du Littoral',
-            'address'     => 'Avenue de l\'Indépendance, Bali, Douala',
-            'latitude'    => 4.0455,
-            'longitude'   => 9.7008,
-            'phone'       => '+237233421002',
-            'facility_id' => null,
-            'opens_at'    => '08:00:00',
-            'closes_at'   => '19:30:00',
-            'verification' => 'unverified',
-        ],
-        [
-            'id'          => '00000000-0000-0000-0000-810000000004',
-            'name'        => 'PharmaCare Akwa',
-            'address'     => 'Rue Kitchener, Akwa, Douala',
-            'latitude'    => 4.0587,
-            'longitude'   => 9.7031,
-            'phone'       => '+237233421003',
-            'facility_id' => null,
-            'opens_at'    => '08:30:00',
-            'closes_at'   => '18:30:00',
-            'verification' => 'unverified',
-        ],
-        [
-            'id'          => '00000000-0000-0000-0000-810000000005',
-            'name'        => 'Santé Plus Deido',
-            'address'     => 'Carrefour Deido, Douala',
-            'latitude'    => 4.0692,
-            'longitude'   => 9.7095,
-            'phone'       => '+237233421004',
-            'facility_id' => null,
-            'opens_at'    => '08:00:00',
-            'closes_at'   => '21:00:00',
-            'verification' => 'unverified',
-        ],
-        [
-            'id'          => '00000000-0000-0000-0000-810000000006',
-            'name'        => 'Pharmacie Centrale Bonanjo',
-            'address'     => 'Place du Gouvernement, Bonanjo, Douala',
-            'latitude'    => 4.0451,
-            'longitude'   => 9.6892,
-            'phone'       => '+237233421005',
-            'facility_id' => null,
-            'opens_at'    => '07:00:00',
-            'closes_at'   => '17:00:00',
-            'verification' => 'unverified',
-        ],
-    ];
-
     /**
      * Catalog. Prices are indicative national ranges in XAF (FCFA).
      * [ id_suffix, name, generic, strength, form, category, rx?, description, indications, pack sizes, min, max ]
@@ -206,75 +127,56 @@ class PharmacyCatalogSeeder extends Seeder
     {
         $now = now();
 
-        $this->seedPharmacies($now);
+        $pharmacyIds = $this->resolvePharmacies();
+
+        if ($pharmacyIds === []) {
+            $this->command?->warn(
+                'PharmacyCatalogSeeder: no real GPS-bearing pharmacy found in care_facilities — '
+                . 'skipping stock. Run CameroonOsmPharmacySeeder + CareMapRegistryStubSeeder first.'
+            );
+            return;
+        }
+
         $medicineIds = $this->seedMedicines($now);
-        $this->seedStock($medicineIds, $now);
+        $this->seedStock($medicineIds, $pharmacyIds, $now);
 
         $this->command?->info(sprintf(
-            'PharmacyCatalogSeeder: %d pharmacy listings, %d medicines, %d stock rows.',
-            count(self::PHARMACIES),
+            'PharmacyCatalogSeeder: %d real pharmacies stocked, %d medicines, %d stock rows.',
+            count($pharmacyIds),
             count($medicineIds),
             DB::table('medicine_pharmacy_stocks')->count(),
         ));
     }
 
-    private function seedPharmacies(\Illuminate\Support\Carbon $now): void
+    /**
+     * Picks real pharmacies from the directory to hold the demo stock.
+     *
+     * This seeder used to insert six invented listings ("OpesCare Pharmacy",
+     * "PharmaPlus Bonapriso", ...) straight into care_facilities — the public,
+     * patient-facing directory — so fabricated businesses appeared alongside
+     * real MINSANTE/OSM-sourced institutions. Stock levels are illustrative,
+     * but the pharmacies holding them must be real.
+     *
+     * GPS is required, not optional: MedicineFinderService filters on
+     * whereNotNull('latitude')/('longitude'), so stock at a coordinate-less
+     * pharmacy could never surface in the Medicine Finder.
+     *
+     * @return list<string> care_facilities ids
+     */
+    private function resolvePharmacies(): array
     {
-        foreach (self::PHARMACIES as $pharmacy) {
-            // Only claim the tenant link when that facility actually exists —
-            // ProductionAccountsSeeder may not have run in this environment.
-            $facilityId = $pharmacy['facility_id'];
-            if ($facilityId && ! DB::table('facilities')->where('id', $facilityId)->exists()) {
-                $facilityId = null;
-            }
-
-            DB::table('care_facilities')->updateOrInsert(
-                ['id' => $pharmacy['id']],
-                [
-                    'facility_id'         => $facilityId,
-                    'facility_name'       => $pharmacy['name'],
-                    'facility_type'       => 'pharmacy',
-                    'ownership_type'      => 'private',
-                    'license_status'      => 'active',
-                    'verification_status' => $pharmacy['verification'],
-                    'listing_status'      => 'active',
-                    'country_code'        => 'CM',
-                    'region'              => 'Littoral',
-                    'city'                => 'Douala',
-                    'address'             => $pharmacy['address'],
-                    'latitude'            => $pharmacy['latitude'],
-                    'longitude'           => $pharmacy['longitude'],
-                    'geocoding_accuracy'  => 'street_level',
-                    'phone_primary'       => $pharmacy['phone'],
-                    'integration_status'  => $facilityId ? 'connected' : 'none',
-                    'updated_at'          => $now,
-                    'created_at'          => $now,
-                ],
-            );
-
-            // Monday–Saturday trading, Sunday closed. Deterministic ids so the
-            // hours refresh rather than multiply on re-run.
-            for ($day = 0; $day <= 6; $day++) {
-                $hourId = $this->deterministicId('pharmacy-hours', $pharmacy['id'], (string) $day);
-                $closed = $day === 0;
-
-                DB::table('care_facility_hours')->updateOrInsert(
-                    ['id' => $hourId],
-                    [
-                        'facility_id'     => $pharmacy['id'],
-                        'day_of_week'     => $day,
-                        'opens_at'        => $closed ? null : $pharmacy['opens_at'],
-                        'closes_at'       => $closed ? null : $pharmacy['closes_at'],
-                        'is_closed'       => $closed,
-                        'is_24_hours'     => false,
-                        'service_context' => 'Pharmacy',
-                        'updated_at'      => $now,
-                        'created_at'      => $now,
-                    ],
-                );
-            }
-        }
+        return DB::table('care_facilities')
+            ->where('facility_type', 'pharmacy')
+            ->where('country_code', 'CM')
+            ->where('listing_status', 'active')
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->orderBy('facility_name')   // deterministic across runs
+            ->limit(6)
+            ->pluck('id')
+            ->all();
     }
+
 
     /** @return array<string,string> catalog suffix => medicine uuid */
     private function seedMedicines(\Illuminate\Support\Carbon $now): array
@@ -325,32 +227,37 @@ class PharmacyCatalogSeeder extends Seeder
      *
      * @param  array<string,string>  $medicineIds
      */
-    private function seedStock(array $medicineIds, \Illuminate\Support\Carbon $now): void
+    /**
+     * @param list<string> $pharmacyIds care_facilities ids resolved by resolvePharmacies()
+     */
+    private function seedStock(array $medicineIds, array $pharmacyIds, \Illuminate\Support\Carbon $now): void
     {
-        // pharmacy id => [status, packs, unit price] for Paracetamol 500mg.
+        // Position in $pharmacyIds => [status, packs, unit price] for Paracetamol
+        // 500mg, so the flagship medicine always shows a readable spread of
+        // in-stock / low-stock / out-of-stock across the pharmacy list.
         $paracetamolReference = [
-            '00000000-0000-0000-0000-810000000001' => [PharmacyStockStatus::InStock, 45, 250],
-            '00000000-0000-0000-0000-810000000002' => [PharmacyStockStatus::InStock, 32, 250],
-            '00000000-0000-0000-0000-810000000003' => [PharmacyStockStatus::InStock, 12, 300],
-            '00000000-0000-0000-0000-810000000004' => [PharmacyStockStatus::InStock, 7, 350],
-            '00000000-0000-0000-0000-810000000005' => [PharmacyStockStatus::LowStock, 3, 400],
-            '00000000-0000-0000-0000-810000000006' => [PharmacyStockStatus::OutOfStock, 0, null],
+            0 => [PharmacyStockStatus::InStock, 45, 250],
+            1 => [PharmacyStockStatus::InStock, 32, 250],
+            2 => [PharmacyStockStatus::InStock, 12, 300],
+            3 => [PharmacyStockStatus::InStock, 7, 350],
+            4 => [PharmacyStockStatus::LowStock, 3, 400],
+            5 => [PharmacyStockStatus::OutOfStock, 0, null],
         ];
 
         $catalog = collect($this->catalog())->keyBy(0);
 
-        foreach (self::PHARMACIES as $pharmacy) {
+        foreach ($pharmacyIds as $index => $pharmacyId) {
             foreach ($medicineIds as $suffix => $medicineId) {
                 $row      = $catalog[$suffix];
                 $priceMin = (int) $row[10];
                 $priceMax = (int) $row[11];
                 $packs    = $row[9];
 
-                if ($suffix === '001' && isset($paracetamolReference[$pharmacy['id']])) {
-                    [$status, $packsAvailable, $price] = $paracetamolReference[$pharmacy['id']];
+                if ($suffix === '001' && isset($paracetamolReference[$index])) {
+                    [$status, $packsAvailable, $price] = $paracetamolReference[$index];
                 } else {
                     // Deterministic spread: same inputs always give the same row.
-                    $seed  = crc32($medicineId . $pharmacy['id']);
+                    $seed  = crc32($medicineId . $pharmacyId);
                     $bucket = $seed % 10;
 
                     $status = match (true) {
@@ -372,26 +279,49 @@ class PharmacyCatalogSeeder extends Seeder
                         : $priceMin + ($seed % $span);
                 }
 
-                $stockId = $this->deterministicId('medicine-stock', $medicineId, $pharmacy['id']);
+                $stockId = $this->deterministicId('medicine-stock', $medicineId, $pharmacyId);
 
-                DB::table('medicine_pharmacy_stocks')->updateOrInsert(
-                    ['id' => $stockId],
-                    [
-                        'medicine_id'         => $medicineId,
-                        'care_facility_id'    => $pharmacy['id'],
-                        'stock_status'        => $status->value,
-                        'packs_available'     => $packsAvailable,
-                        'pack_size'           => $packs[0],
-                        'unit_price'          => $price,
-                        'currency'            => 'XAF',
-                        'reservation_enabled' => $status->isReservable(),
-                        'source_system'       => 'seed',
-                        'last_stocked_at'     => $now->copy()->subDays(($packsAvailable % 7) + 1),
-                        'last_reported_at'    => $now,
-                        'updated_at'          => $now,
-                        'created_at'          => $now,
-                    ],
-                );
+                // Match on (medicine_id, care_facility_id) — the table's real
+                // unique key (medicine_pharmacy_stocks_unique) — not on the
+                // synthetic id. Keying on id breaks the moment a stock row is
+                // moved to a different pharmacy: the derived id no longer
+                // matches the existing row, so the insert collides on the
+                // natural key instead of updating it.
+                $payload = [
+                    'stock_status'        => $status->value,
+                    'packs_available'     => $packsAvailable,
+                    'pack_size'           => $packs[0],
+                    'unit_price'          => $price,
+                    'currency'            => 'XAF',
+                    'reservation_enabled' => $status->isReservable(),
+                    'source_system'       => 'seed',
+                    'last_stocked_at'     => $now->copy()->subDays(($packsAvailable % 7) + 1),
+                    'last_reported_at'    => $now,
+                    'updated_at'          => $now,
+                ];
+
+                // Existence is decided on (medicine_id, care_facility_id) — the
+                // table's real unique key — but the row's own id is never
+                // rewritten on update: reservations reference it, and a stock
+                // row that has been moved between pharmacies would otherwise
+                // have its primary key changed underneath them.
+                $existing = DB::table('medicine_pharmacy_stocks')
+                    ->where('medicine_id', $medicineId)
+                    ->where('care_facility_id', $pharmacyId)
+                    ->first(['id']);
+
+                if ($existing !== null) {
+                    DB::table('medicine_pharmacy_stocks')
+                        ->where('id', $existing->id)
+                        ->update($payload);
+                } else {
+                    DB::table('medicine_pharmacy_stocks')->insert($payload + [
+                        'id'               => $stockId,
+                        'medicine_id'      => $medicineId,
+                        'care_facility_id' => $pharmacyId,
+                        'created_at'       => $now,
+                    ]);
+                }
             }
         }
     }

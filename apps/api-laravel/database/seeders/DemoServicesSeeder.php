@@ -5,107 +5,92 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Seeds demo care facilities (Care Map) and their services.
- * Idempotent – safe to run multiple times.
+ * Attaches service listings (departments a patient can browse and book against)
+ * to REAL Cameroonian facilities from the registry.
+ *
+ * This seeder used to invent three fake directory entries — "Demo Central
+ * Hospital", "Demo City Clinic", "DemoCare Pharmacy" — and hang the services
+ * off those. Because `care_facilities` is the public, patient-facing directory
+ * (MobileFacilityController and the Care Map both read it, and it has no
+ * is_demo column to isolate on), those fixtures showed up in the real facility
+ * list alongside — and above — genuine MINSANTE-sourced institutions. Demo
+ * scaffolding must never appear in the real institutional directory, so the
+ * services are now attached to real facilities looked up by name.
+ *
+ * Idempotent. Skips any facility that isn't in the registry yet (run
+ * CameroonFacilityRegistrySeeder + CareMapRegistryStubSeeder first) rather
+ * than failing, so ordering never breaks a fresh install.
  */
 class DemoServicesSeeder extends Seeder
 {
-    private const CF1 = '00000000-0000-0000-0018-100000000001';  // Demo Central Hospital (care map)
-    private const CF2 = '00000000-0000-0000-0018-100000000002';  // Demo City Clinic (care map)
-    private const CF3 = '00000000-0000-0000-0018-100000000003';  // DemoCare Pharmacy (care map)
+    /**
+     * Real facilities (matched on facility_name) and the services each offers.
+     * Service ids are deterministic so re-running never duplicates a row.
+     */
+    private const SERVICE_MAP = [
+        'Hôpital Central de Yaoundé' => [
+            ['id' => '00000000-0000-0000-0019-100000000001', 'name' => 'Emergency Medicine',                'category' => 'emergency',    'walk_in' => true],
+            ['id' => '00000000-0000-0000-0019-100000000002', 'name' => 'General Outpatient Consultation',   'category' => 'consultation', 'walk_in' => true],
+            ['id' => '00000000-0000-0000-0019-100000000003', 'name' => 'Cardiology',                        'category' => 'specialist',   'walk_in' => false],
+            ['id' => '00000000-0000-0000-0019-100000000004', 'name' => 'Clinical Laboratory',               'category' => 'diagnostic',   'walk_in' => true],
+            ['id' => '00000000-0000-0000-0019-100000000005', 'name' => 'Blood Bank',                        'category' => 'blood_bank',   'walk_in' => false],
+            ['id' => '00000000-0000-0000-0019-100000000006', 'name' => 'Inpatient / General Ward',          'category' => 'inpatient',    'walk_in' => false],
+        ],
+        'Hôpital Laquintinie de Douala' => [
+            ['id' => '00000000-0000-0000-0019-100000000007', 'name' => 'Family Medicine',                   'category' => 'consultation', 'walk_in' => true],
+            ['id' => '00000000-0000-0000-0019-100000000008', 'name' => 'Antenatal Care',                    'category' => 'maternal',     'walk_in' => false],
+            ['id' => '00000000-0000-0000-0019-100000000009', 'name' => 'Child Immunisation',                'category' => 'paediatric',   'walk_in' => true],
+        ],
+        'Pharmacie Centrale de Yaoundé' => [
+            ['id' => '00000000-0000-0000-0019-100000000010', 'name' => 'Dispensing & Retail Pharmacy',      'category' => 'pharmacy',     'walk_in' => true],
+            ['id' => '00000000-0000-0000-0019-100000000011', 'name' => 'Medication Counselling',            'category' => 'pharmacy',     'walk_in' => true],
+        ],
+    ];
 
     public function run(): void
     {
-        // ── Care facilities (public directory entries) ────────────────
-        $facilities = [
-            [
-                'id' => self::CF1, 'facility_name' => 'Demo Central Hospital',
-                'facility_type' => 'hospital', 'ownership_type' => 'public',
-                'license_status' => 'active', 'verification_status' => 'government_verified',
-                'listing_status' => 'active', 'country_code' => 'CM',
-                'region' => 'Centre', 'city' => 'Yaoundé',
-                'address' => '12 Avenue de l\'Indépendance, Yaoundé, Cameroon',
-                'latitude' => 3.8687, 'longitude' => 11.5214,
-                'phone_primary' => '+237 222 000 100',
-                'email' => 'info@demo-central-hospital.test',
-            ],
-            [
-                'id' => self::CF2, 'facility_name' => 'Demo City Clinic',
-                'facility_type' => 'clinic', 'ownership_type' => 'private',
-                'license_status' => 'active', 'verification_status' => 'license_verified',
-                'listing_status' => 'active', 'country_code' => 'CM',
-                'region' => 'Littoral', 'city' => 'Douala',
-                'address' => '5 Rue des Palmiers, Douala, Cameroon',
-                'latitude' => 4.0510, 'longitude' => 9.7679,
-                'phone_primary' => '+237 233 000 200',
-                'email' => 'contact@demo-city-clinic.test',
-            ],
-            [
-                'id' => self::CF3, 'facility_name' => 'DemoCare Pharmacy',
-                'facility_type' => 'pharmacy', 'ownership_type' => 'private',
-                'license_status' => 'active', 'verification_status' => 'license_verified',
-                'listing_status' => 'active', 'country_code' => 'CM',
-                'region' => 'Centre', 'city' => 'Yaoundé',
-                'address' => '3 Boulevard de la Liberté, Yaoundé, Cameroon',
-                'latitude' => 3.8650, 'longitude' => 11.5169,
-                'phone_primary' => '+237 222 000 300',
-                'email' => 'pharmacy@democare.test',
-            ],
-        ];
+        $attached = 0;
+        $skipped  = 0;
 
-        foreach ($facilities as $f) {
-            if (DB::table('care_facilities')->where('id', $f['id'])->doesntExist()) {
-                DB::table('care_facilities')->insert(array_merge($f, [
-                    'geocoding_accuracy' => 'street_level',
-                    'created_at' => now(), 'updated_at' => now(),
-                ]));
+        foreach (self::SERVICE_MAP as $facilityName => $services) {
+            $facilityId = DB::table('care_facilities')
+                ->where('facility_name', $facilityName)
+                ->where('country_code', 'CM')
+                ->value('id');
+
+            if (! $facilityId) {
+                $this->command?->warn(
+                    "DemoServicesSeeder: '{$facilityName}' not found in care_facilities — skipping its services. "
+                    . 'Run CameroonFacilityRegistrySeeder + CareMapRegistryStubSeeder first.'
+                );
+                $skipped += count($services);
+                continue;
             }
-        }
 
-        // ── Care facility services ────────────────────────────────────
-        $services = [
-            // Hospital services
-            ['id' => '00000000-0000-0000-0019-100000000001', 'fac' => self::CF1,
-             'name' => 'Emergency Medicine', 'category' => 'emergency', 'walk_in' => true],
-            ['id' => '00000000-0000-0000-0019-100000000002', 'fac' => self::CF1,
-             'name' => 'General Outpatient Consultation', 'category' => 'consultation', 'walk_in' => true],
-            ['id' => '00000000-0000-0000-0019-100000000003', 'fac' => self::CF1,
-             'name' => 'Cardiology', 'category' => 'specialist', 'walk_in' => false],
-            ['id' => '00000000-0000-0000-0019-100000000004', 'fac' => self::CF1,
-             'name' => 'Clinical Laboratory', 'category' => 'diagnostic', 'walk_in' => true],
-            ['id' => '00000000-0000-0000-0019-100000000005', 'fac' => self::CF1,
-             'name' => 'Blood Bank', 'category' => 'blood_bank', 'walk_in' => false],
-            ['id' => '00000000-0000-0000-0019-100000000006', 'fac' => self::CF1,
-             'name' => 'Inpatient / General Ward', 'category' => 'inpatient', 'walk_in' => false],
-            // Clinic services
-            ['id' => '00000000-0000-0000-0019-100000000007', 'fac' => self::CF2,
-             'name' => 'Family Medicine', 'category' => 'consultation', 'walk_in' => true],
-            ['id' => '00000000-0000-0000-0019-100000000008', 'fac' => self::CF2,
-             'name' => 'Antenatal Care', 'category' => 'maternal', 'walk_in' => false],
-            ['id' => '00000000-0000-0000-0019-100000000009', 'fac' => self::CF2,
-             'name' => 'Child Immunisation', 'category' => 'paediatric', 'walk_in' => true],
-            // Pharmacy services
-            ['id' => '00000000-0000-0000-0019-100000000010', 'fac' => self::CF3,
-             'name' => 'Dispensing & Retail Pharmacy', 'category' => 'pharmacy', 'walk_in' => true],
-            ['id' => '00000000-0000-0000-0019-100000000011', 'fac' => self::CF3,
-             'name' => 'Medication Counselling', 'category' => 'pharmacy', 'walk_in' => true],
-        ];
+            foreach ($services as $s) {
+                if (DB::table('care_facility_services')->where('id', $s['id'])->exists()) {
+                    continue;
+                }
 
-        foreach ($services as $s) {
-            if (DB::table('care_facility_services')->where('id', $s['id'])->doesntExist()) {
                 DB::table('care_facility_services')->insert([
-                    'id'                  => $s['id'],
-                    'facility_id'         => $s['fac'],
-                    'service_name'        => $s['name'],
-                    'service_category'    => $s['category'],
-                    'availability_status' => 'available',
-                    'appointment_required'=> !$s['walk_in'],
-                    'walk_in_allowed'     => $s['walk_in'],
-                    'last_updated_at'     => now(),
-                    'created_at'          => now(),
-                    'updated_at'          => now(),
+                    'id'                   => $s['id'],
+                    'facility_id'          => $facilityId,
+                    'service_name'         => $s['name'],
+                    'service_category'     => $s['category'],
+                    'availability_status'  => 'available',
+                    'appointment_required' => ! $s['walk_in'],
+                    'walk_in_allowed'      => $s['walk_in'],
+                    'last_updated_at'      => now(),
+                    'created_at'           => now(),
+                    'updated_at'           => now(),
                 ]);
+
+                $attached++;
             }
         }
+
+        $this->command?->info(
+            "DemoServicesSeeder: {$attached} service(s) attached to real facilities, {$skipped} skipped."
+        );
     }
 }

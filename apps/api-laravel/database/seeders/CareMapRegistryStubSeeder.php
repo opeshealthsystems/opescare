@@ -63,7 +63,13 @@ class CareMapRegistryStubSeeder extends Seeder
                 'country_code'        => 'CM',
                 'region'              => $entry->region,
                 'city'                => $entry->city ?? '',
-                'address'             => $entry->address ?? (($entry->city ?? '') . ', Cameroon'),
+                // care_facilities.address is NOT NULL, but most registry entries have
+                // no street address. Fall back to the city alone rather than
+                // synthesising "<city>, Cameroon" — consumers render "address, city",
+                // so a synthetic value that already contains the city renders as
+                // "Yaoundé, Cameroon, Yaoundé". Storing only what we actually know
+                // keeps the record honest and lets the UI dedupe cleanly.
+                'address'             => $entry->address ?? ($entry->city ?? ''),
                 'latitude'            => $entry->gps_lat,
                 'longitude'           => $entry->gps_lng,
                 'phone_primary'       => $entry->phone ?? 'N/A',

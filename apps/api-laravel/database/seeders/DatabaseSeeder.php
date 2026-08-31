@@ -15,12 +15,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Order matters for the facility pipeline:
+        //   1. the three registry seeders fill facility_registry with real
+        //      institutions (MINSANTE annuaire, ONPC/WHO, OpenStreetMap),
+        //   2. CareMapRegistryStubSeeder promotes every registry row into
+        //      care_facilities — the table the mobile app and Care Map read,
+        //   3. PharmacyCatalogSeeder then attaches medicine stock to real,
+        //      GPS-bearing pharmacies that step 2 created.
         $this->call([
             AccountCategoriesSeeder::class,
             DashboardProfilesSeeder::class,
             RolesSeeder::class,
             NotificationTemplateSeeder::class,
             CameroonFacilityRegistrySeeder::class,
+            MinsanteFosaRegistrySeeder::class,
+            CameroonOsmPharmacySeeder::class,
             CameroonInsuranceSeeder::class,
             CareMapRegistryStubSeeder::class,
             PharmacyCatalogSeeder::class,

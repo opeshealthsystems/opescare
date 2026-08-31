@@ -118,6 +118,32 @@ function getDeviceCoords(): Promise<Coords | null> {
   });
 }
 
+/**
+ * Joins location parts, dropping any that a previous part already covers.
+ * Most registry-sourced facilities have no street address, so `address`
+ * falls back to the city — without this, "Yaoundé" + "Yaoundé" would render
+ * as "Yaoundé, Yaoundé". Compared case/accent-insensitively so "YAOUNDE"
+ * and "Yaoundé" are treated as the same place.
+ */
+function joinLocationParts(...parts: (string | null | undefined)[]): string {
+  const normalize = (v: string) =>
+    v
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+
+  const kept: string[] = [];
+  for (const part of parts) {
+    const value = part?.trim();
+    if (!value) continue;
+    const key = normalize(value);
+    if (kept.some((existing) => normalize(existing).includes(key))) continue;
+    kept.push(value);
+  }
+  return kept.join(', ');
+}
+
 function directionsUrl(facility: CareFacilitySummary): string | null {
   const label = encodeURIComponent(facility.facility_name);
   if (facility.latitude != null && facility.longitude != null) {
@@ -130,7 +156,7 @@ function directionsUrl(facility: CareFacilitySummary): string | null {
       }) ?? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
     );
   }
-  const address = [facility.address, facility.city, facility.region].filter(Boolean).join(', ');
+  const address = joinLocationParts(facility.address, facility.city, facility.region);
   return address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}` : null;
 }
 
@@ -176,7 +202,7 @@ function FacilityCard({
           <View className="mt-1 flex-row items-start">
             <MapPin size={12} color={colors.navy.muted} style={{ marginTop: 2 }} />
             <Text className="ml-1 flex-1 text-xs text-navy-secondary">
-              {[facility.address, facility.city].filter(Boolean).join(', ') || '—'}
+              {joinLocationParts(facility.address, facility.city) || '—'}
             </Text>
           </View>
           <View className="mt-2 self-start rounded-full bg-cream-200 px-2.5 py-1">
