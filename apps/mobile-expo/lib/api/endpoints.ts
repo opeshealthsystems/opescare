@@ -76,6 +76,11 @@ export const endpoints = {
   downloadDataExport: (id: string) => `/mobile/data-exports/${id}/download`,
   correctionRequests: '/mobile/correction-requests',
 
+  notifications: '/mobile/notifications',
+  notificationUnreadCount: '/mobile/notifications/unread-count',
+  markNotificationRead: (id: string) => `/mobile/notifications/${id}/read`,
+  markAllNotificationsRead: '/mobile/notifications/mark-all-read',
+
   // Not yet implemented on the backend — added in Phase 2 (see design spec §3, §6).
   pharmacyNearby: '/mobile/pharmacy/nearby',
   medicineSearch: '/mobile/pharmacy/medicines',

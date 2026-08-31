@@ -209,6 +209,7 @@ return [
     'notification_acknowledged'     => 'Notification accusÃ©e de rÃ©ception',
     'all_notifications_read'        => 'Toutes les notifications marquÃ©es comme lues',
     'notification_archived'         => 'Notification archivÃ©e',
+    'notif_title_appointment_reminder' => 'Rappel de rendez-vous',
     'task_acknowledged'             => 'TÃ¢che accusÃ©e de rÃ©ception',
     'task_completed'                => 'TÃ¢che terminÃ©e',
     'task_assigned'                 => 'TÃ¢che attribuÃ©e',

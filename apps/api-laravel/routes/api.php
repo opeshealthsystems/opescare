@@ -296,6 +296,13 @@ Route::prefix('mobile')->group(function () {
         Route::get('/family/invitations',             [\App\Http\Controllers\Api\Mobile\MobileFamilyController::class, 'invitations']);
         Route::post('/family/invitations',            [\App\Http\Controllers\Api\Mobile\MobileFamilyController::class, 'sendInvitation']);
         Route::delete('/family/invitations/{id}',     [\App\Http\Controllers\Api\Mobile\MobileFamilyController::class, 'cancelInvitation']);
+
+        // Notification centre — reads the patient's + their linked user's
+        // real notification records (see App\Notifications\*).
+        Route::get('/notifications',                  [\App\Http\Controllers\Api\Mobile\MobileNotificationController::class, 'index']);
+        Route::get('/notifications/unread-count',     [\App\Http\Controllers\Api\Mobile\MobileNotificationController::class, 'unreadCount']);
+        Route::post('/notifications/{id}/read',       [\App\Http\Controllers\Api\Mobile\MobileNotificationController::class, 'markRead']);
+        Route::post('/notifications/mark-all-read',   [\App\Http\Controllers\Api\Mobile\MobileNotificationController::class, 'markAllRead']);
     });
 });
 
