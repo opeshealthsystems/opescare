@@ -8,6 +8,19 @@
  * clustering across onboarding, login, and dashboard references). Text/semantic
  * values are visual-read approximations, refined per-screen by the pixel-diff
  * tool as each screen is built — see docs/superpowers/specs/2026-08-31-mobile-expo-app-design.md.
+ *
+ * ------------------------------------------------------------------------
+ * ADDITIVE-ONLY CONTRACT
+ * ------------------------------------------------------------------------
+ * Screens reference these tokens by name and `tailwind.config.js` turns several
+ * of them into utility classes. **Never rename or remove a key.** New keys are
+ * fine; changing the value of an existing key silently re-skins every screen.
+ *
+ * In particular `radii` is spread into Tailwind's `borderRadius`, so its keys
+ * shadow Tailwind's own scale. `2xl` / `3xl` are deliberately NOT defined here
+ * so `rounded-2xl` (16) and `rounded-3xl` (24) keep their stock Tailwind values;
+ * the brand-specific radii are exposed under non-colliding names (`card`,
+ * `pill`, `xs`).
  */
 
 const colors = {
@@ -16,20 +29,32 @@ const colors = {
     100: '#FDF8F0', // primary app background — sampled, ~30-70% of every reference screen
     200: '#F7F0E3', // card / elevated surface on cream
     300: '#EADFC8', // borders, dividers
+    // --- added (derived from the reference card/divider ramp) ---
+    400: '#DCCDAE', // stronger divider / disabled control fill
+    500: '#C4B18B', // muted icon on cream, chart gridlines
   },
   gold: {
     50: '#FBF3DF',
     100: '#F5E4B8',
+    // --- added: the ramp had a 100 -> 300 gap, which forced screens to
+    // approximate mid-gold tints with opacity hacks ---
+    200: '#EBD08A',
     300: '#D9A73A',
+    400: '#C08F1E', // gradient mid-stop / hover
     500: '#A6720B', // primary brand accent — sampled
     600: '#8B600A', // gradient-dark / pressed state — sampled
     700: '#6E4C08',
+    800: '#5B3E06',
     900: '#4A3305',
   },
   navy: {
     text: '#1A2338', // headline / primary text
     secondary: '#5B6472', // body / secondary text
     muted: '#93989F', // placeholder / disabled text
+    // --- added: the deep navy used for the Health ID / inverse cards in the
+    // references ("OpesCare Health ID" dark card, "Go to Dashboard" CTA) ---
+    deep: '#0E1729',
+    soft: '#28324A',
   },
   white: '#FFFFFF',
   black: '#000000',
@@ -42,16 +67,196 @@ const colors = {
     warningSurface: '#FBF3DF',
     info: '#2F6FED',
     infoSurface: '#E9F0FE',
+    // --- added: grey "Closed" / "Cancelled" / "Draft" chip treatment seen on
+    // the appointment-list and pharmacy references ---
+    neutral: '#5B6472',
+    neutralSurface: '#F1EEE7',
+  },
+
+  /**
+   * Semantic surfaces — say what a surface *is*, not what colour it happens to
+   * be. Prefer these over raw `cream.*` when painting a background.
+   */
+  surface: {
+    app: '#FDF8F0', // page background (= cream.100)
+    appTint: '#FFFDF9', // top of the page wash (= cream.50)
+    card: '#FFFFFF', // default card
+    cardMuted: '#FDFBF6', // card on white, or a second-level card
+    sunken: '#F7F0E3', // inset wells, search fields, table headers (= cream.200)
+    gold: '#A6720B', // filled brand surface (= gold.500)
+    goldSoft: '#FBF3DF', // gold-tinted surface for icon tiles (= gold.50)
+    inverse: '#0E1729', // dark Health-ID card (= navy.deep)
+    overlay: 'rgba(14, 23, 41, 0.45)', // modal scrim
+    scrim: 'rgba(14, 23, 41, 0.08)', // pressed-state wash over a light surface
+  },
+
+  /** Hairlines. The references use a 1px warm line, never a grey one. */
+  line: {
+    subtle: '#F2EADB',
+    default: '#EADFC8', // (= cream.300)
+    strong: '#DCCDAE', // (= cream.400)
+    gold: '#D9A73A', // (= gold.300) — focus rings, selected chips
+    inverse: 'rgba(255, 255, 255, 0.16)',
   },
 };
 
-const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 20, '2xl': 24, '3xl': 32, '4xl': 40 };
+const spacing = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  '2xl': 24,
+  '3xl': 32,
+  '4xl': 40,
+  // --- added: hero / empty-state vertical rhythm ---
+  '5xl': 48,
+  '6xl': 64,
+};
 
-const radii = { sm: 8, md: 12, lg: 16, xl: 20, full: 999 };
+/**
+ * Spread into Tailwind's `borderRadius`. Only names that do NOT exist in
+ * Tailwind's stock scale, or that we intentionally re-map, belong here.
+ */
+const radii = {
+  xs: 6, // new — tiny chips, count pills
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  card: 20, // new — the canonical card radius across every reference
+  tile: 14, // new — square icon tile behind a list-row / stat icon
+  pill: 999, // new — chips, badges, avatars
+  full: 999,
+};
+
+/**
+ * React Native shadow objects. `shadowColor` is a warm brown-black rather than
+ * pure black — on cream, a neutral shadow reads dirty; the references cast a
+ * warm one. Spread these into a `style` prop:
+ *   <View style={[{ backgroundColor: colors.surface.card }, elevation.md]} />
+ */
+const elevation = {
+  none: {
+    shadowColor: 'transparent',
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 0,
+  },
+  /** Hairline lift — chips, inline pills, sticky headers. */
+  sm: {
+    shadowColor: colors.gold[900],
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 1,
+  },
+  /** The default card shadow. Soft, wide, barely there. */
+  md: {
+    shadowColor: colors.gold[900],
+    shadowOpacity: 0.07,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
+  },
+  /** Floating surfaces — bottom tab bar, sheets, the Health ID card. */
+  lg: {
+    shadowColor: colors.gold[900],
+    shadowOpacity: 0.1,
+    shadowRadius: 22,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 10,
+  },
+  /** Coloured glow under a gold CTA. */
+  gold: {
+    shadowColor: colors.gold[600],
+    shadowOpacity: 0.3,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 8,
+  },
+  /** Coloured glow under a navy/inverse CTA or card. */
+  navy: {
+    shadowColor: colors.navy.deep,
+    shadowOpacity: 0.22,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 8,
+  },
+};
+
+/** Canonical gradient stops. Pass straight to `LinearGradient.colors`. */
+const gradients = {
+  gold: [colors.gold[600], colors.gold[500], colors.gold[300]],
+  goldSoft: [colors.gold[100], colors.gold[50]],
+  navy: [colors.navy.deep, colors.navy.soft],
+  /** The warm page wash — light at the top, settling into the app cream. */
+  page: [colors.cream[50], colors.cream[100]],
+  /** Skeleton shimmer sweep. */
+  shimmer: [colors.cream[200], colors.cream[100], colors.cream[200]],
+};
 
 const typography = {
   fontFamily: { heading: 'System', body: 'System' },
-  size: { xs: 12, sm: 14, md: 16, lg: 18, xl: 22, '2xl': 28, '3xl': 34 },
+  size: {
+    xs: 12,
+    sm: 14,
+    md: 16,
+    lg: 18,
+    xl: 22,
+    '2xl': 28,
+    '3xl': 34,
+    // --- added ---
+    '4xl': 40,
+  },
+  /**
+   * Line heights paired with `size`. RN does not derive these, and unset
+   * line-height is the single biggest source of cramped-looking screens.
+   */
+  lineHeight: {
+    xs: 16,
+    sm: 20,
+    md: 22,
+    lg: 24,
+    xl: 28,
+    '2xl': 34,
+    '3xl': 40,
+    '4xl': 46,
+  },
+  /** RN `fontWeight` values, named so screens stop guessing. */
+  weight: {
+    regular: '400',
+    medium: '500',
+    semibold: '600',
+    bold: '700',
+    extrabold: '800',
+  },
+  /** RN `letterSpacing` is in px, not em. */
+  tracking: {
+    tight: -0.4, // large display headings
+    normal: 0,
+    wide: 0.3,
+    overline: 1.1, // uppercase section labels
+  },
 };
 
-module.exports = { colors, spacing, radii, typography };
+/** Fixed control heights — keeps buttons, inputs and chips on one rhythm. */
+const sizing = {
+  control: { sm: 36, md: 44, lg: 56 },
+  icon: { xs: 14, sm: 16, md: 18, lg: 20, xl: 24 },
+  /** Rounded-square tile behind a list-row or stat icon. */
+  tile: { sm: 36, md: 44, lg: 52 },
+  avatar: { sm: 32, md: 44, lg: 64, xl: 96 },
+  hairline: 1,
+};
+
+module.exports = {
+  colors,
+  spacing,
+  radii,
+  typography,
+  elevation,
+  gradients,
+  sizing,
+};
