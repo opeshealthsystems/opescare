@@ -114,4 +114,12 @@ export const endpoints = {
   supportTickets: '/mobile/support/tickets',
   supportTicket: (id: string) => `/mobile/support/tickets/${id}`,
   supportTicketMessages: (id: string) => `/mobile/support/tickets/${id}/messages`,
+
+  // Clinician / specialist directory — served by
+  // App\Http\Controllers\Api\Mobile\MobileProviderController (see
+  // routes/mobile_providers.php). `facilityProviders` takes a care_facilities
+  // id (the directory id the patient browses, same as `facility`/`facilitySlots`);
+  // `provider` takes a users.id — the exact value carried on a slot's provider_id.
+  facilityProviders: (id: string) => `/mobile/facilities/${id}/providers`,
+  provider: (id: string) => `/mobile/providers/${id}`,
 } as const;

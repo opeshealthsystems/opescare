@@ -111,6 +111,13 @@ class MobileAppointmentController extends Controller
             return Appointment::create([
                 'patient_id'          => $patientId,
                 'facility_id'         => $validated['facility_id'],
+                // Carry the slot's clinician onto the appointment. The slot has
+                // always known its provider, but this create dropped it — which
+                // left every patient-booked appointment with provider_name null
+                // and made provider messaging (which needs an appointment with a
+                // provider) unreachable from the patient app. Taken from the
+                // locked slot row, never from request input.
+                'provider_id'         => $slot->provider_id,
                 'appointment_slot_id' => $validated['appointment_slot_id'],
                 'appointment_type'    => $validated['appointment_type'],
                 'status'              => 'booked',

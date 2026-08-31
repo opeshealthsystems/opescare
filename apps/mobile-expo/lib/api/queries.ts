@@ -1660,3 +1660,127 @@ export function useSendSupportTicketMessage(ticketId: string | null) {
     },
   });
 }
+
+// ── Facility detail + clinician / specialist directory ───────────────────
+// Backend: routes/mobile_providers.php + MobileProviderController, plus the
+// pre-existing (until now unused) GET /mobile/facilities/{id} detail endpoint.
+// These close the "which doctor is this slot with?" gap: AppointmentSlotOption
+// has always carried provider_id, but nothing ever resolved it to a person.
+
+export interface CareFacilityService {
+  service_name: string;
+  service_category: string | null;
+  specialty: string | null;
+  appointment_required: boolean | null;
+  walk_in_allowed: boolean | null;
+  availability_status: string | null;
+}
+
+export interface CareFacilityHour {
+  day_of_week: number;
+  opens_at: string | null;
+  closes_at: string | null;
+  is_closed: boolean | null;
+  is_24_hours: boolean | null;
+  service_context: string | null;
+}
+
+export interface CareFacilityInsurance {
+  insurance_name: string;
+  cashless_available: boolean | null;
+  status: string | null;
+}
+
+/** Full GET /mobile/facilities/{id} payload — richer than CareFacilitySummary. */
+export interface CareFacilityDetail extends Omit<CareFacilitySummary, 'listing_status'> {
+  description: string | null;
+  services: CareFacilityService[];
+  hours: CareFacilityHour[];
+  insurances: CareFacilityInsurance[];
+}
+
+export interface ProviderCredentialSummary {
+  type: string;
+  issuing_body: string | null;
+}
+
+export interface ProviderLicenseSummary {
+  profession: string | null;
+  issuing_body: string | null;
+}
+
+/**
+ * One clinician in the directory. `id` is a users.id — deliberately the same
+ * identifier as `AppointmentSlotOption.provider_id`, so a slot can be matched
+ * to a person client-side without another round trip.
+ */
+export interface FacilityProviderSummary {
+  id: string;
+  staff_profile_id: string;
+  name: string;
+  job_title: string | null;
+  department: string | null;
+  profession: string | null;
+  employment_type: string | null;
+  facility_id: string;
+  care_facility_id: string;
+  facility_name: string;
+  city: string | null;
+  credentials: ProviderCredentialSummary[];
+  licenses: ProviderLicenseSummary[];
+}
+
+export interface FacilityProvidersResponse {
+  /** Internal `facilities` id — null when the directory entry has no linked facility. */
+  facility_id: string | null;
+  care_facility_id: string;
+  facility_name: string;
+  data: FacilityProviderSummary[];
+}
+
+export interface ProviderDetail extends FacilityProviderSummary {
+  next_slots: AppointmentSlotOption[];
+  /**
+   * The caller's own most recent appointment with this clinician, or null.
+   * Messaging requires an existing care relationship (enforced by
+   * MobileMessagingController::start), so this is what makes the "Message"
+   * action actually work — or tells the UI to route to booking first.
+   */
+  messaging_appointment_id: string | null;
+}
+
+/** Full facility profile — powers app/facility/[id].tsx. */
+export function useFacilityDetail(careFacilityId: string | undefined) {
+  return useQuery({
+    queryKey: ['facilities', 'detail', careFacilityId],
+    queryFn: async () =>
+      (await apiClient.get<{ data: CareFacilityDetail }>(endpoints.facility(careFacilityId as string)))
+        .data.data,
+    enabled: !!careFacilityId,
+  });
+}
+
+/** Clinicians practising at one directory facility. */
+export function useFacilityProviders(careFacilityId: string | undefined, enabled = true) {
+  return useQuery({
+    queryKey: ['facilities', careFacilityId, 'providers'],
+    queryFn: async () =>
+      (
+        await apiClient.get<FacilityProvidersResponse>(
+          endpoints.facilityProviders(careFacilityId as string),
+        )
+      ).data,
+    enabled: !!careFacilityId && enabled,
+  });
+}
+
+/** One clinician's profile + their next open slots — powers app/doctor/[id].tsx. */
+export function useProviderDetail(providerId: string | undefined) {
+  return useQuery({
+    queryKey: ['providers', 'detail', providerId],
+    queryFn: async () =>
+      (await apiClient.get<{ data: ProviderDetail }>(endpoints.provider(providerId as string))).data
+        .data,
+    enabled: !!providerId,
+  });
+}
