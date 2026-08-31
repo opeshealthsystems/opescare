@@ -143,13 +143,37 @@ class PatientBookingTest extends TestCase
         $response = $this->mobileGetJson($this->patient, '/api/mobile/facilities/' . $this->facility->id . '/slots');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure(['data' => [['id', 'starts_at', 'ends_at', 'available_count']]]);
+                 ->assertJsonStructure(['facility_id', 'data' => [['id', 'starts_at', 'ends_at', 'available_count']]]);
 
         $slotIds = collect($response->json('data'))->pluck('id')->all();
         $this->assertContains($this->slot->id, $slotIds, 'The setUp slot should appear in the response');
 
         $slotData = collect($response->json('data'))->firstWhere('id', $this->slot->id);
         $this->assertEquals(2, $slotData['available_count']); // capacity(2) - booked_count(0)
+
+        // The mobile client only ever sees the care_facility (directory) id — it must
+        // be handed the internal `facilities` id here so it can echo it back on
+        // POST /mobile/appointments, which validates against `facilities`, not
+        // `care_facilities`.
+        $this->assertEquals(\App\Models\Facility::first()->id, $response->json('facility_id'));
+    }
+
+    public function test_list_slots_returns_null_facility_id_when_unlinked(): void
+    {
+        $unlinked = CareFacility::create([
+            'facility_name'  => 'Unlinked Clinic',
+            'facility_type'  => 'clinic',
+            'listing_status' => 'active',
+            'city'           => 'Douala',
+            'country_code'   => 'CM',
+            'address'        => '9 Unlinked Road',
+            'phone_primary'  => '+237600000003',
+        ]);
+
+        $response = $this->mobileGetJson($this->patient, '/api/mobile/facilities/' . $unlinked->id . '/slots');
+
+        $response->assertStatus(200)
+                 ->assertExactJson(['facility_id' => null, 'data' => []]);
     }
 
     // ── Task 3 tests (booking) ───────────────────────────────────────

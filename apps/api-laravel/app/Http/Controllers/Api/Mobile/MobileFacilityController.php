@@ -121,7 +121,7 @@ class MobileFacilityController extends Controller
 
         // No linked internal facility — return empty gracefully
         if (!$careFacility->facility_id) {
-            return response()->json(['data' => []]);
+            return response()->json(['facility_id' => null, 'data' => []]);
         }
 
         $from = $request->query('date')
@@ -137,6 +137,11 @@ class MobileFacilityController extends Controller
             ->get();
 
         return response()->json([
+            // Internal `facilities` table id — the mobile client must echo this back
+            // as `facility_id` when it calls POST /mobile/appointments (that endpoint
+            // validates against `facilities`, not the public `care_facilities` directory
+            // the patient actually browsed), so it has to be surfaced here.
+            'facility_id' => $careFacility->facility_id,
             'data' => $slots->map(fn ($s) => [
                 'id'              => $s->id,
                 'starts_at'       => $s->starts_at->toIso8601String(),
