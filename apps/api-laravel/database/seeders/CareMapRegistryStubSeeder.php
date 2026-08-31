@@ -43,9 +43,19 @@ class CareMapRegistryStubSeeder extends Seeder
         $skipped  = 0;
 
         foreach ($registryEntries as $entry) {
+            // Normalise the city ONCE and use the same value for the lookup and
+            // the insert below. 16 registry rows (all laboratories) carry a NULL
+            // city, and this check used to compare `city = NULL`, which is never
+            // true in PostgreSQL — so the row was judged missing and re-inserted
+            // on every run. The insert then stored '' rather than NULL, so the
+            // lookup could never match it on a later pass either. Two halves of
+            // the same mismatch; a full `db:seed` duplicated those 16 labs each
+            // time it ran. Keep the lookup and the write agreeing on one value.
+            $city = $entry->city ?? '';
+
             $alreadyExists = DB::table('care_facilities')
                 ->where('facility_name', $entry->name)
-                ->where('city', $entry->city)
+                ->where('city', $city)
                 ->where('country_code', 'CM')
                 ->exists();
 
@@ -62,7 +72,7 @@ class CareMapRegistryStubSeeder extends Seeder
                 'ownership_type'      => $entry->ownership,
                 'country_code'        => 'CM',
                 'region'              => $entry->region,
-                'city'                => $entry->city ?? '',
+                'city'                => $city,
                 // care_facilities.address is NOT NULL, but most registry entries have
                 // no street address. Fall back to the city alone rather than
                 // synthesising "<city>, Cameroon" — consumers render "address, city",

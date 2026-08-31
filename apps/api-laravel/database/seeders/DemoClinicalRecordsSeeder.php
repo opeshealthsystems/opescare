@@ -1,6 +1,7 @@
 <?php
 namespace Database\Seeders;
 
+use Database\Seeders\Support\DemoFacilityResolver;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -14,8 +15,14 @@ use Carbon\Carbon;
  */
 class DemoClinicalRecordsSeeder extends Seeder
 {
-    // Primary demo facility
-    private const FAC    = '00000000-0000-0000-0000-100000000001';
+    // Her real hospital, resolved at run time from the 897-row directory.
+    // This used to be a hardcoded id for an invented facility called "Demo
+    // Central Hospital", whose name rendered straight into the patient's own
+    // timeline — a visit to a hospital that does not exist, in an app whose
+    // whole claim is that it holds real MINSANTE institutions.
+    private const FAC_FALLBACK = '00000000-0000-0000-0000-100000000001';
+
+    private string $fac = self::FAC_FALLBACK;
     // Demo users
     private const DOC    = '00000000-0000-0000-0000-200000000001';  // Dr. Amara Diallo
     private const NURSE  = '00000000-0000-0000-0000-200000000010';  // Nurse Fatou
@@ -35,18 +42,23 @@ class DemoClinicalRecordsSeeder extends Seeder
     {
         $now = Carbon::now();
 
+        // Real institution first; fall back to the legacy demo row only if the
+        // directory has not been seeded yet, so this never writes a clinical
+        // record against a facility that does not exist.
+        $this->fac = DemoFacilityResolver::primaryHospital() ?? self::FAC_FALLBACK;
+
         // ── Billing accounts ─────────────────────────────────────────
-        $this->upsertBillingAccount(self::BACCT1, self::PAT1, self::FAC, 45000);
-        $this->upsertBillingAccount(self::BACCT2, self::PAT2, self::FAC, 0);
-        $this->upsertBillingAccount(self::BACCT3, self::PAT3, self::FAC, 120000);
+        $this->upsertBillingAccount(self::BACCT1, self::PAT1, $this->fac, 45000);
+        $this->upsertBillingAccount(self::BACCT2, self::PAT2, $this->fac, 0);
+        $this->upsertBillingAccount(self::BACCT3, self::PAT3, $this->fac, 120000);
 
         // ── Visits ───────────────────────────────────────────────────
-        $this->upsertVisit(self::VISIT1, self::PAT1, self::FAC, self::DOC, 'outpatient', 'closed',
+        $this->upsertVisit(self::VISIT1, self::PAT1, $this->fac, self::DOC, 'outpatient', 'closed',
             $now->copy()->subDays(3)->setTime(9, 0),
             $now->copy()->subDays(3)->setTime(10, 30));
-        $this->upsertVisit(self::VISIT2, self::PAT2, self::FAC, self::DOC, 'outpatient', 'open',
+        $this->upsertVisit(self::VISIT2, self::PAT2, $this->fac, self::DOC, 'outpatient', 'open',
             $now->copy()->setTime(8, 30), null);
-        $this->upsertVisit(self::VISIT3, self::PAT3, self::FAC, self::DOC, 'emergency', 'closed',
+        $this->upsertVisit(self::VISIT3, self::PAT3, $this->fac, self::DOC, 'emergency', 'closed',
             $now->copy()->subDays(1)->setTime(2, 15),
             $now->copy()->subDays(1)->setTime(5, 45));
 
@@ -96,36 +108,36 @@ class DemoClinicalRecordsSeeder extends Seeder
 
         // ── Today's appointments ─────────────────────────────────────
         $this->upsertAppointment(
-            '00000000-0000-0000-0008-100000000001', self::PAT1, self::FAC, self::DOC,
+            '00000000-0000-0000-0008-100000000001', self::PAT1, $this->fac, self::DOC,
             'outpatient', 'scheduled', $now->copy()->setTime(10, 0), 'Follow-up: pneumonia recovery');
         $this->upsertAppointment(
-            '00000000-0000-0000-0008-100000000002', self::PAT2, self::FAC, self::DOC,
+            '00000000-0000-0000-0008-100000000002', self::PAT2, $this->fac, self::DOC,
             'outpatient', 'scheduled', $now->copy()->setTime(11, 30), 'Paediatric immunisation');
         $this->upsertAppointment(
-            '00000000-0000-0000-0008-100000000003', self::PAT3, self::FAC, self::DOC,
+            '00000000-0000-0000-0008-100000000003', self::PAT3, $this->fac, self::DOC,
             'specialist', 'checked_in', $now->copy()->setTime(9, 0), 'Cardiology follow-up post-STEMI');
         $this->upsertAppointment(
-            '00000000-0000-0000-0008-100000000004', self::PAT1, self::FAC, self::DOC,
+            '00000000-0000-0000-0008-100000000004', self::PAT1, $this->fac, self::DOC,
             'outpatient', 'scheduled', $now->copy()->addDays(2)->setTime(14, 0), 'Routine blood pressure check');
 
         // ── Invoices ─────────────────────────────────────────────────
         $this->upsertInvoice(
-            '00000000-0000-0000-0009-100000000001', self::BACCT1, self::PAT1, self::FAC, self::VISIT1,
+            '00000000-0000-0000-0009-100000000001', self::BACCT1, self::PAT1, $this->fac, self::VISIT1,
             'DEMO-INV-001', 'issued', 45000, 45000, $now->copy()->subDays(3));
         $this->upsertInvoice(
-            '00000000-0000-0000-0009-100000000002', self::BACCT3, self::PAT3, self::FAC, self::VISIT3,
+            '00000000-0000-0000-0009-100000000002', self::BACCT3, self::PAT3, $this->fac, self::VISIT3,
             'DEMO-INV-002', 'issued', 350000, 350000, $now->copy()->subDays(1));
         $this->upsertInvoice(
-            '00000000-0000-0000-0009-100000000003', self::BACCT1, self::PAT1, self::FAC, null,
+            '00000000-0000-0000-0009-100000000003', self::BACCT1, self::PAT1, $this->fac, null,
             'DEMO-INV-003', 'issued', 15000, 15000, $now->copy());
 
         // ── Active queue tickets ──────────────────────────────────────
         $this->upsertQueueTicket(
-            '00000000-0000-0000-0010-100000000001', self::PAT1, self::FAC, 'A001', 'outpatient', 'waiting', 5);
+            '00000000-0000-0000-0010-100000000001', self::PAT1, $this->fac, 'A001', 'outpatient', 'waiting', 5);
         $this->upsertQueueTicket(
-            '00000000-0000-0000-0010-100000000002', self::PAT2, self::FAC, 'A002', 'outpatient', 'called', 5);
+            '00000000-0000-0000-0010-100000000002', self::PAT2, $this->fac, 'A002', 'outpatient', 'called', 5);
         $this->upsertQueueTicket(
-            '00000000-0000-0000-0010-100000000003', self::PAT3, self::FAC, 'E001', 'emergency', 'service_started', 1);
+            '00000000-0000-0000-0010-100000000003', self::PAT3, $this->fac, 'E001', 'emergency', 'service_started', 1);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────

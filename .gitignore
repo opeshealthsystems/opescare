@@ -43,6 +43,11 @@ bridge-agent/config.json
 # Tooling temp / build artifacts (regenerable — never deploy)
 .pdf-tmp/
 
+# Local dev-server logs. Regenerated on every run and machine-specific
+# (they carry LAN addresses and local ports), so they are noise in a diff.
+.expo-go-server.log
+*.dev-server.log
+
 # Raw AI-generated design reference screens (source material for apps/mobile-expo
 # build, not app code — keep out of history to avoid re-bloating the repo).
 # _archive/ subfolder is intentionally NOT excluded below so triage decisions

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Carbon\Carbon;
+use Database\Seeders\Support\DemoFacilityResolver;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -11,10 +12,10 @@ use Illuminate\Support\Facades\DB;
  * something real to render.
  *
  * Deliberate boundaries:
- *   - Touches exactly one patient (self::PATIENT) and one facility
- *     (self::FACILITY, the seeded demo facility). It will NOT run against a
- *     database where either is missing, so it can never attach invented
- *     readings to one of the 903 real facilities or to a real patient.
+ *   - Touches exactly one patient (self::PATIENT) and one facility — her real
+ *     hospital, resolved from the directory at run time. It will NOT run
+ *     against a database where either is missing, so it can never attach
+ *     invented readings to an arbitrary facility or to a real patient.
  *   - Everything it writes carries a stable UUID in the reserved
  *     00000000-0000-0000-00xx- demo space and every row is prefixed/labelled
  *     as demo data (visit `is_demo`, triage complaint, lab notes).
@@ -32,7 +33,11 @@ use Illuminate\Support\Facades\DB;
 class DemoPatientVitalsSeeder extends Seeder
 {
     private const PATIENT  = '00000000-0000-0000-0000-300000000001'; // Demo Patient One
-    private const FACILITY = '00000000-0000-0000-0000-100000000001'; // Demo facility
+    // Resolved at run time to her real hospital; the literal below is only a
+    // fallback for a database whose directory has not been seeded yet.
+    private const FACILITY_FALLBACK = '00000000-0000-0000-0000-100000000001';
+
+    private string $facility = self::FACILITY_FALLBACK;
     private const NURSE    = '00000000-0000-0000-0000-200000000010'; // Nurse Fatou
     private const DOCTOR   = '00000000-0000-0000-0000-200000000001'; // Dr. Amara Diallo
 
@@ -48,8 +53,10 @@ class DemoPatientVitalsSeeder extends Seeder
             return;
         }
 
-        if (! DB::table('facilities')->where('id', self::FACILITY)->exists()) {
-            $this->command?->warn('DemoPatientVitalsSeeder skipped: demo facility not present.');
+        $this->facility = DemoFacilityResolver::primaryHospital() ?? self::FACILITY_FALLBACK;
+
+        if (! DB::table('facilities')->where('id', $this->facility)->exists()) {
+            $this->command?->warn('DemoPatientVitalsSeeder skipped: no resolvable facility.');
             return;
         }
 
@@ -78,7 +85,7 @@ class DemoPatientVitalsSeeder extends Seeder
         DB::table('visits')->insert([
             'id'          => self::VISIT,
             'patient_id'  => self::PATIENT,
-            'facility_id' => self::FACILITY,
+            'facility_id' => $this->facility,
             'provider_id' => DB::table('users')->where('id', self::DOCTOR)->exists() ? self::DOCTOR : null,
             'visit_type'  => 'outpatient',
             'status'      => 'closed',
@@ -172,7 +179,7 @@ class DemoPatientVitalsSeeder extends Seeder
             DB::table('lab_orders')->insert([
                 'id'                  => self::LAB_ORDER,
                 'patient_id'          => self::PATIENT,
-                'facility_id'         => self::FACILITY,
+                'facility_id'         => $this->facility,
                 'visit_id'            => self::VISIT,
                 'ordered_by'          => $doctor,
                 'test_name'           => 'DEMO DATA — Random blood glucose',
