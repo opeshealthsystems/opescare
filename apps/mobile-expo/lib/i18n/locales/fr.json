@@ -31,5 +31,25 @@
     "verify": "Vérifier",
     "invalidEmail": "Entrez un e-mail ou identifiant santé valide",
     "invalidPassword": "Le mot de passe est requis"
+  },
+  "notifications": {
+    "title": "Centre de notifications",
+    "subtitle": "Restez informé de votre santé, vos rendez-vous et vos messages.",
+    "markAllRead": "Tout marquer comme lu",
+    "filterAll": "Toutes",
+    "filterAppointments": "Rendez-vous",
+    "filterHealth": "Santé",
+    "filterMessages": "Messages",
+    "filterSystem": "Système",
+    "sectionToday": "Aujourd'hui",
+    "sectionYesterday": "Hier",
+    "sectionEarlier": "Plus tôt",
+    "emptyTitle": "Vous êtes à jour",
+    "emptySubtitle": "Les mises à jour sur votre santé, vos rendez-vous et vos messages s'afficheront ici.",
+    "errorTitle": "Impossible de charger vos notifications",
+    "retry": "Réessayer",
+    "viewDetails": "Voir les détails",
+    "privacyTitle": "Vos notifications sont privées et sécurisées",
+    "privacySubtitle": "Vous seul pouvez consulter vos notifications de santé."
   }
 }

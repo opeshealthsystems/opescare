@@ -31,5 +31,25 @@
     "verify": "Verify",
     "invalidEmail": "Enter a valid email or Health ID",
     "invalidPassword": "Password is required"
+  },
+  "notifications": {
+    "title": "Notification Center",
+    "subtitle": "Stay updated with your health, appointments, and messages.",
+    "markAllRead": "Mark all as read",
+    "filterAll": "All",
+    "filterAppointments": "Appointments",
+    "filterHealth": "Health",
+    "filterMessages": "Messages",
+    "filterSystem": "System",
+    "sectionToday": "Today",
+    "sectionYesterday": "Yesterday",
+    "sectionEarlier": "Earlier",
+    "emptyTitle": "You're all caught up",
+    "emptySubtitle": "Updates about your health, appointments, and messages will show up here.",
+    "errorTitle": "Couldn't load your notifications",
+    "retry": "Try again",
+    "viewDetails": "View details",
+    "privacyTitle": "Your notifications are private and secure",
+    "privacySubtitle": "Only you can view your health notifications."
   }
 }

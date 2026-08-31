@@ -222,6 +222,7 @@ return [
     'notification_acknowledged'     => 'Notification acknowledged',
     'all_notifications_read'        => 'All notifications marked as read',
     'notification_archived'         => 'Notification archived',
+    'notif_title_appointment_reminder' => 'Appointment Reminder',
     'task_acknowledged'             => 'Task acknowledged',
     'task_completed'                => 'Task completed',
     'task_assigned'                 => 'Task assigned',
