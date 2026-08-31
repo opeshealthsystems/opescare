@@ -131,4 +131,13 @@ export const endpoints = {
   // `provider` takes a users.id — the exact value carried on a slot's provider_id.
   facilityProviders: (id: string) => `/mobile/facilities/${id}/providers`,
   provider: (id: string) => `/mobile/providers/${id}`,
+
+  // Limited encrypted offline mode — served by
+  // App\Http\Controllers\Api\Mobile\OfflineSyncController (see routes/api.php,
+  // "Limited encrypted offline mode"). `offlinePolicies` registers a
+  // scope-limited local cache policy for this device;
+  // `offlinePolicyQueue` hands locally-made changes to
+  // App\Modules\Offline\Services\SyncService for later reconciliation.
+  offlinePolicies: '/mobile/offline/policies',
+  offlinePolicyQueue: (policyId: string) => `/mobile/offline/policies/${policyId}/queue`,
 } as const;

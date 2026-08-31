@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { apiClient, setSessionExpiredHandler } from '../api/client';
 import { endpoints } from '../api/endpoints';
 import { tokenStorage } from '../api/tokenStorage';
+import { getCachedDemographics, isNetworkError } from '../offline/cache';
 import type { AuthTokenResponse, Patient } from '../api/types';
 
 // 'permissions_pending' is a deliberately non-'authenticated' status so the
@@ -100,7 +101,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       await get().fetchMe();
       set({ status: 'authenticated' });
-    } catch {
+    } catch (err) {
+      // A dropped connection is not an expired session. If the patient has
+      // opted into offline access and this device holds their saved profile,
+      // boot straight into the app on the cached copy instead of wiping a
+      // perfectly valid token — the whole point of offline mode is that
+      // launching with no signal still works. Any answer from the server
+      // (401 included) still ends the session as before.
+      if (isNetworkError(err)) {
+        const cached = await getCachedDemographics();
+        if (cached) {
+          set({ patient: cached, status: 'authenticated' });
+          return;
+        }
+      }
       await tokenStorage.clear();
       set({ status: 'unauthenticated' });
     }
