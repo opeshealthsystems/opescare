@@ -164,7 +164,7 @@ class PatientPortalController extends Controller
                 ->whereIn('status', ['scheduled', 'confirmed', 'rescheduled'])
                 ->whereNotNull('scheduled_at')
                 ->where('scheduled_at', '>=', now())
-                ->with(['facility:id,name', 'provider:id,first_name,last_name,name'])
+                ->with(['facility:id,name', 'provider:id,name'])
                 ->orderBy('scheduled_at')
                 ->limit(5)
                 ->get()
@@ -381,7 +381,7 @@ class PatientPortalController extends Controller
 
         $appointments = $patient
             ? Appointment::where('patient_id', $patient->id)
-                ->with(['facility:id,name', 'provider:id,first_name,last_name,name'])
+                ->with(['facility:id,name', 'provider:id,name'])
                 ->orderByDesc('scheduled_at')
                 ->paginate(20)
             : collect([]);
