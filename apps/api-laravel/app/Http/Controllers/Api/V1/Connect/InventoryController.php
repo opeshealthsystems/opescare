@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Api\V1\Connect;
 
 use App\Http\Controllers\Controller;
+use App\Enums\BloodGroup;
 use App\Enums\OpesCareErrorCode;
 use App\Events\AuditEventCreated;
+use App\Modules\CareMap\Services\BloodAvailabilityProjector;
+use App\Modules\Inventory\Services\BloodInventoryService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 /**
  * InventoryController
@@ -29,6 +33,11 @@ use Illuminate\Http\Request;
  */
 class InventoryController extends Controller
 {
+    public function __construct(
+        private readonly BloodInventoryService $bloodInventory,
+    ) {
+    }
+
     public function syncPharmacyStock(Request $request)
     {
         // [H-1 FIX] facility_id from middleware only — never from body
@@ -111,10 +120,21 @@ class InventoryController extends Controller
             ], 403);
         }
 
+        // A blood inventory row is keyed on (facility_id, blood_group, component),
+        // so the payload has to carry the group. It previously did not, which is
+        // why this endpoint could validate, audit, answer "synced" and still
+        // store nothing — there was no way to express what to store.
+        //
+        // blood_group is a new required field. Safe to add: blood-stock/sync
+        // appears only in the generated public/openapi.json, never in the
+        // hand-authored contracts/openapi/opescare-connect-v1.yaml, and no SDK
+        // references it. Overloading component_code to encode the group was the
+        // alternative and would have been a hack.
         $validated = $request->validate([
             'facility_reference'        => ['required', 'string', 'max:100'],
             'items'                     => ['required', 'array', 'min:1'],
-            'items.*.component_code'    => ['required', 'string'],
+            'items.*.blood_group'       => ['required', 'string', Rule::in(BloodGroup::values())],
+            'items.*.component_code'    => ['required', 'string', Rule::in(BloodAvailabilityProjector::operationalComponents())],
             'items.*.units'             => ['required', 'integer', 'min:0'],
             'items.*.screening_status'  => ['required', 'string'],
         ]);
@@ -144,6 +164,21 @@ class InventoryController extends Controller
             ], 422);
         }
 
+        // Persist through the service, not a raw write: upsertUnit() re-publishes
+        // the patient-facing blood_availability row via BloodAvailabilityProjector,
+        // so the Blood Finder stays in step with what the bank actually holds.
+        // Every item here passed the screening gate above, so none is unsafe.
+        $stored = 0;
+        foreach ($validated['items'] as $item) {
+            $this->bloodInventory->upsertUnit($facilityId, [
+                'blood_group'     => $item['blood_group'],
+                'component'       => $item['component_code'],
+                'available_units' => $item['units'],
+                'is_unsafe'       => false,
+            ]);
+            $stored++;
+        }
+
         event(new AuditEventCreated(
             'blood_stock_synced',
             $clientId,
@@ -152,6 +187,7 @@ class InventoryController extends Controller
             $correlationId,
             [
                 'components_count'   => count($validated['items']),
+                'stored_rows'        => $stored,
                 'facility_reference' => $validated['facility_reference'],
             ]
         ));
@@ -161,6 +197,7 @@ class InventoryController extends Controller
             'facility_id'               => $facilityId,
             'facility_reference'        => $validated['facility_reference'],
             'synced_components_count'   => count($validated['items']),
+            'stored_rows'               => $stored,
             'timestamp'                 => time(),
             'correlation_id'            => $correlationId,
         ], 200);
