@@ -16,10 +16,20 @@
     <meta property="og:site_name" content="OpesCare">
     <meta property="og:title" content="@yield('title', 'OpesCare | One Health ID. One Trusted Medical History.')">
     <meta property="og:description" content="@yield('meta_description', 'OpesCare is a digital Health ID and healthcare interoperability platform built to connect patients, hospitals, labs, pharmacies, and insurers.')">
-    <meta property="og:image" content="{{ asset('favicon.svg') }}">
-    <meta name="twitter:card" content="summary">
+    {{-- A real 1200x630 raster card. og:image pointed at favicon.svg, and
+         most social and preview fetchers cannot render SVG at all — the
+         result was a link with no image anywhere it was shared. --}}
+    <meta property="og:image" content="{{ asset('og-image.png') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="OpesCare — one Health ID, connected across healthcare">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="{{ asset('og-image.png') }}">
     <meta name="twitter:title" content="@yield('title', 'OpesCare | One Health ID. One Trusted Medical History.')">
     <meta name="twitter:description" content="@yield('meta_description', 'OpesCare is a digital Health ID and healthcare interoperability platform.')">
+
+    {{-- Canonical, hreflang and schema.org — see partials/seo_head --}}
+    @include('partials.seo_head')
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

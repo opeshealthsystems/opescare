@@ -3,6 +3,36 @@
 @section('title', __('public.faq.page_title'))
 @section('meta_description', __('public.faq.meta_description'))
 
+{{--
+    FAQPage schema. This is the single highest-value structured-data block
+    on the site for answer engines: ChatGPT, Perplexity and AI Overviews
+    lift Q&A pairs almost verbatim when they are marked up, and infer them
+    unreliably when they are not. Built from the same lang array the page
+    renders, so the markup can never drift from the visible answers.
+--}}
+@push('schema')
+@php
+    $faqEntities = [];
+    foreach (__('public.faq.categories', [], app()->getLocale()) as $faqCat) {
+        foreach ($faqCat['items'] ?? [] as $faqItem) {
+            $faqEntities[] = [
+                '@type'          => 'Question',
+                'name'           => $faqItem['q'],
+                'acceptedAnswer' => ['@type' => 'Answer', 'text' => $faqItem['a']],
+            ];
+        }
+    }
+@endphp
+<script type="application/ld+json">
+{!! json_encode([
+    '@context'   => 'https://schema.org',
+    '@type'      => 'FAQPage',
+    'inLanguage' => app()->getLocale(),
+    'mainEntity' => $faqEntities,
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+</script>
+@endpush
+
 @section('content')
 
 <section class="content-header" style="background:linear-gradient(135deg,#0F2744 0%,#0F4C81 100%);padding:4rem 0 3rem;color:#fff;">

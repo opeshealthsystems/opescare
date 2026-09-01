@@ -3,6 +3,33 @@
 @section('title', __('public.network_medicine.page_title'))
 @section('meta_description', __('public.network_medicine.meta_description'))
 
+{{--
+    Service schema. These two pages target the highest-intent queries the
+    platform can answer — 'find medicine near me', 'where can I get blood' —
+    and an answer engine needs to know this is a real service with a defined
+    area and provider, not an article about one.
+--}}
+@push('schema')
+<script type="application/ld+json">
+{!! json_encode([
+    '@context'      => 'https://schema.org',
+    '@type'         => 'Service',
+    '@id'           => rtrim(url('/'), '/') . '/#MedicineFinder',
+    'name'          => __('public.network_medicine.hero_title'),
+    'description'   => __('public.network_medicine.meta_description'),
+    'serviceType'   => 'Health information network service',
+    'provider'      => ['@id' => rtrim(url('/'), '/') . '/#organization'],
+    'areaServed'    => ['@type' => 'Country', 'name' => 'Cameroon'],
+    'availableChannel' => [
+        '@type'          => 'ServiceChannel',
+        'serviceUrl'     => url()->current(),
+        'availableLanguage' => ['en', 'fr'],
+    ],
+    'inLanguage'    => app()->getLocale(),
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+</script>
+@endpush
+
 @section('content')
     <header class="content-header">
         <div class="container">

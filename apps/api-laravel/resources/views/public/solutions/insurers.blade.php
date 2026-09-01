@@ -1,6 +1,7 @@
 @extends('layouts.public')
 
 @section('title', 'OpesCare for Insurers | Controlled Access & Claims Support')
+@section('meta_description', __('seo.meta.sol_insurers'))
 
 @section('content')
     <header class="content-header">

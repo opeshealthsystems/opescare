@@ -1,6 +1,7 @@
 @extends('layouts.public')
 
 @section('title', __('public.sol_pharmacies.page_title'))
+@section('meta_description', __('seo.meta.sol_pharmacies'))
 
 @section('content')
     <header class="content-header">

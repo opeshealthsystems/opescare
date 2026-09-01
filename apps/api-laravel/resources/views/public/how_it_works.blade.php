@@ -1,6 +1,7 @@
 @extends('layouts.public')
 
 @section('title', __('public.how_page.page_title'))
+@section('meta_description', __('seo.meta.how_it_works'))
 
 @section('content')
     <header class="content-header">

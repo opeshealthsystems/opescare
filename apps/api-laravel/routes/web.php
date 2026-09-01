@@ -36,6 +36,13 @@ Route::get('/.well-known/jwks.json', [\App\Http\Controllers\WellKnownController:
 Route::get('/.well-known/oauth-authorization-server', [\App\Http\Controllers\WellKnownController::class, 'authorizationServerMetadata'])
     ->name('well-known.oauth-metadata');
 
+// ── Machine-facing discovery: robots, sitemap, llms.txt ─────────────────────
+// Generated from the live route table, so they cannot drift out of date the
+// way a hand-written sitemap does. See App\Http\Controllers\SeoController.
+Route::get('/robots.txt',  [\App\Http\Controllers\SeoController::class, 'robots'])->name('seo.robots');
+Route::get('/sitemap.xml', [\App\Http\Controllers\SeoController::class, 'sitemap'])->name('seo.sitemap');
+Route::get('/llms.txt',    [\App\Http\Controllers\SeoController::class, 'llms'])->name('seo.llms');
+
 // Root / Landing
 Route::get('/', [PublicPageController::class, 'index'])->name('public.landing');
 

@@ -1,6 +1,7 @@
 @extends('layouts.public')
 
 @section('title', __('public.sol_labs.page_title'))
+@section('meta_description', __('seo.meta.sol_laboratories'))
 
 @section('content')
     <header class="content-header">
