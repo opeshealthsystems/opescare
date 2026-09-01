@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 return [
     'about' => [
@@ -6278,4 +6278,9 @@ return [
     'pat_nav_surveys'    => 'Surveys',
     'pat_nav_settings'   => 'Settings',
     'pat_nav_account'    => 'Account',
+
+    'care_map_emergency' => [
+        'meta_description' => 'Find emergency care near you in Cameroon — hospitals with emergency departments, blood banks and 24-hour pharmacies, on one map.',
+        'h1' => 'Emergency care access in Cameroon',
+    ],
 ];

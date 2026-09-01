@@ -22,7 +22,7 @@ return [
 
     // Public "Request a demo" page
     'demo' => [
-        'page_title'        => 'Request a demo',
+        'page_title' => 'Request a demo | OpesCare',
         'meta_description'  => 'Book a personalized OpesCare demo for your facility, insurer, laboratory, pharmacy, or developer team.',
         'nav_label'         => 'Request a demo',
         'badge'             => 'For organizations',

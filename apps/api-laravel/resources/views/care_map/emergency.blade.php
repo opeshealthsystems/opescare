@@ -1,10 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{{ $locale ?? 'en' }}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0C0A0A">
 <title>Emergency Care Access — OpesCare</title>
+<meta name="description" content="{{ __('public.care_map_emergency.meta_description') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
@@ -221,8 +222,16 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
   :root{--panel-w:440px}
 }
 </style>
+{{-- Canonical, hreflang, Open Graph and schema.org --}}
+@include('partials.seo_head')
+
+<style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}</style>
 </head>
 <body>
+
+{{-- The page is a map, so its heading is for screen readers and crawlers
+     rather than the layout. It had no h1 at all before. --}}
+<h1 class="sr-only">{{ __('public.care_map_emergency.h1') }}</h1>
 
 {{-- ── Nav ──────────────────────────────────────────────────────────────── --}}
 <nav class="nav">

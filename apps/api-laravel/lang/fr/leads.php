@@ -22,7 +22,7 @@ return [
 
     // Page publique « Demander une démo »
     'demo' => [
-        'page_title'        => 'Demander une démo',
+        'page_title' => 'Demander une démo | OpesCare',
         'meta_description'  => 'Réservez une démo personnalisée d\'OpesCare pour votre établissement, assureur, laboratoire, pharmacie ou équipe de développement.',
         'nav_label'         => 'Demander une démo',
         'badge'             => 'Pour les organisations',

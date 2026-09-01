@@ -1,5 +1,5 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,6 +20,9 @@
     <link rel="stylesheet" href="{{ asset('css/docs.css') }}">
 
     @yield('head')
+{{-- Canonical, hreflang, Open Graph and schema.org --}}
+@include('partials.seo_head')
+
 </head>
 <body class="docs-body">
 

@@ -57,64 +57,80 @@ class SeoController extends Controller
      * rule cannot silently remove AI visibility. It also points at the sitemap,
      * which the old file did not.
      */
+    /**
+     * robots.txt
+     *
+     * Every group repeats the full Disallow list, which looks redundant and is
+     * not. A crawler uses the single most specific group matching its own
+     * user-agent and IGNORES `User-agent: *` entirely — so a GPTBot group
+     * containing only `Allow: /` grants GPTBot the run of /portals/, /api/ and
+     * /admin/ no matter what the wildcard group says. Naming a crawler to
+     * welcome it therefore means restating what it may not touch.
+     */
     public function robots(Request $request): Response
     {
         $sitemap = url('/sitemap.xml');
 
         $aiCrawlers = [
-            'GPTBot'            => 'OpenAI — ChatGPT browsing and indexing',
-            'OAI-SearchBot'     => 'OpenAI — ChatGPT search',
-            'ChatGPT-User'      => 'OpenAI — user-initiated fetches',
-            'PerplexityBot'     => 'Perplexity',
-            'Perplexity-User'   => 'Perplexity — user-initiated fetches',
-            'ClaudeBot'         => 'Anthropic — Claude',
-            'anthropic-ai'      => 'Anthropic — alternate identifier',
-            'Claude-Web'        => 'Anthropic — web surface',
-            'Google-Extended'   => 'Google — AI Overviews and Gemini grounding',
-            'Applebot-Extended' => 'Apple Intelligence',
-            'cohere-ai'         => 'Cohere',
+            'GPTBot'             => 'OpenAI — ChatGPT browsing and indexing',
+            'OAI-SearchBot'      => 'OpenAI — ChatGPT search',
+            'ChatGPT-User'       => 'OpenAI — user-initiated fetches',
+            'PerplexityBot'      => 'Perplexity',
+            'Perplexity-User'    => 'Perplexity — user-initiated fetches',
+            'ClaudeBot'          => 'Anthropic — Claude',
+            'anthropic-ai'       => 'Anthropic — alternate identifier',
+            'Claude-Web'         => 'Anthropic — web surface',
+            'Google-Extended'    => 'Google — AI Overviews and Gemini grounding',
+            'Applebot-Extended'  => 'Apple Intelligence',
+            'cohere-ai'          => 'Cohere',
             'meta-externalagent' => 'Meta AI',
-            'Bingbot'           => 'Microsoft Bing and Copilot',
+            'Bingbot'            => 'Microsoft Bing and Copilot',
         ];
 
-        $lines = [
-            '# OpesCare — https://opescare.cloud',
-            '# A patient-centred health identity and interoperability platform.',
-            '# Machine-readable summary for AI systems: ' . url('/llms.txt'),
-            '',
-            '# ── Search and AI crawlers are welcome on the public site ──',
-            'User-agent: *',
-            'Allow: /',
-            '',
-        ];
-
-        foreach ($aiCrawlers as $bot => $why) {
-            $lines[] = "# {$why}";
-            $lines[] = "User-agent: {$bot}";
-            $lines[] = 'Allow: /';
-            $lines[] = '';
-        }
-
-        $lines[] = '# ── Never index: authenticated surfaces and machine APIs ──';
-        $lines[] = '# These hold patient data, sessions or credentials. Blocking them';
-        $lines[] = '# is a privacy control, not an SEO preference.';
-        $lines[] = 'User-agent: *';
-
-        foreach ([
+        // Authenticated surfaces and machine APIs. These hold patient data,
+        // sessions or credentials — keeping them out of an index is a privacy
+        // control, not an SEO preference.
+        $disallow = [
             '/portals/', '/api/', '/v1/', '/fhir/', '/admin/', '/horizon/',
             '/login', '/logout', '/signup', '/register', '/verify/', '/mfa/',
             '/forgot-password', '/reset-password', '/invite/', '/select-facility',
             '/pending-approval', '/account-suspended', '/portal-unavailable',
             '/document-preview', '/demo-access', '/lang/', '/up',
-        ] as $path) {
-            $lines[] = "Disallow: {$path}";
+        ];
+
+        $group = function (string $agent) use ($disallow): array {
+            $out = ["User-agent: {$agent}", 'Allow: /'];
+            foreach ($disallow as $path) {
+                $out[] = "Disallow: {$path}";
+            }
+            $out[] = '';
+
+            return $out;
+        };
+
+        $lines = [
+            '# OpesCare — ' . url('/'),
+            '# A patient-centred health identity and interoperability platform.',
+            '# Machine-readable summary for AI systems: ' . url('/llms.txt'),
+            '#',
+            '# The public site is open to search and AI crawlers alike. The',
+            '# Disallow list below is repeated in every group on purpose: a',
+            '# crawler that matches its own User-agent ignores the * group.',
+            '',
+        ];
+
+        $lines = array_merge($lines, $group('*'));
+
+        foreach ($aiCrawlers as $bot => $why) {
+            $lines[] = "# {$why}";
+            $lines = array_merge($lines, $group($bot));
         }
 
-        $lines[] = '';
         $lines[] = "Sitemap: {$sitemap}";
         $lines[] = '';
 
-        return response(implode("\n", $lines), 200)
+        return response(implode("
+", $lines), 200)
             ->header('Content-Type', 'text/plain; charset=UTF-8')
             ->header('Cache-Control', 'public, max-age=86400');
     }

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 return [
     'about' => [
@@ -6301,4 +6301,9 @@ return [
     'pat_nav_surveys'    => 'Questionnaires',
     'pat_nav_settings'   => 'Paramètres',
     'pat_nav_account'    => 'Compte',
+
+    'care_map_emergency' => [
+        'meta_description' => 'Trouvez des soins d\'urgence près de chez vous au Cameroun — hôpitaux avec service d\'urgence, banques de sang et pharmacies ouvertes 24 h, sur une seule carte.',
+        'h1' => 'Accès aux soins d\'urgence au Cameroun',
+    ],
 ];

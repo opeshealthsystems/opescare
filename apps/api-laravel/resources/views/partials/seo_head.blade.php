@@ -27,7 +27,54 @@
                     . ($seoLocale === 'en' ? '' : '?lang=' . $seoLocale);
     $seoEnUrl     = $seoBase . ($seoPath === '/' ? '' : $seoPath);
     $seoFrUrl     = $seoEnUrl . '?lang=fr';
+
+    /*
+     * A Service node for the audience pages.
+     *
+     * The WebPage node above says a page exists; it does not say what is being
+     * offered or to whom. Answer engines lean on Service + audience to decide
+     * whether OpesCare belongs in "how do Cameroonian pharmacies share stock
+     * data" rather than only in a query that names OpesCare already.
+     *
+     * Scoped to /solutions/* deliberately — the /network/* pages already push
+     * their own Service, and two nodes for one page would just compete.
+     */
+    $seoAudiences = [
+        'hospitals'     => 'Hospitals and clinics',
+        'laboratories'  => 'Diagnostic laboratories',
+        'pharmacies'    => 'Pharmacies',
+        'insurers'      => 'Health insurers',
+        'patients'      => 'Patients',
+        'public-health' => 'Public health authorities',
+    ];
+    $seoSegment = str_starts_with($seoPath, '/solutions/')
+        ? substr($seoPath, strlen('/solutions/'))
+        : null;
+    $seoAudience = $seoAudiences[$seoSegment] ?? null;
 @endphp
+
+{{--
+    Open Graph and Twitter cards.
+
+    These live here rather than in one layout because they were in exactly one
+    layout: every /docs/* page, the legal pages and the emergency care map
+    shipped with no card at all, so sharing any of them produced a bare link.
+--}}
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="OpesCare">
+<meta property="og:title" content="@yield('title', 'OpesCare | One Health ID. One Trusted Medical History.')">
+<meta property="og:description" content="@yield('meta_description', 'OpesCare is a digital Health ID and healthcare interoperability platform built to connect patients, hospitals, labs, pharmacies, and insurers.')">
+{{-- A real 1200x630 raster card. og:image pointed at favicon.svg, and most
+     social and preview fetchers cannot render SVG at all — the result was a
+     link with no image anywhere it was shared. --}}
+<meta property="og:image" content="{{ asset('og-image.png') }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="OpesCare — one Health ID, connected across healthcare">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{ asset('og-image.png') }}">
+<meta name="twitter:title" content="@yield('title', 'OpesCare | One Health ID. One Trusted Medical History.')">
+<meta name="twitter:description" content="@yield('meta_description', 'OpesCare is a digital Health ID and healthcare interoperability platform.')">
 
 <link rel="canonical" href="{{ $seoCanonical }}">
 
@@ -49,7 +96,7 @@
 <script type="application/ld+json">
 {!! json_encode([
     '@context' => 'https://schema.org',
-    '@graph'   => [
+    '@graph'   => array_merge([
         [
             '@type'       => 'MedicalOrganization',
             '@id'         => $seoBase . '/#organization',
@@ -94,7 +141,22 @@
             'about'         => ['@id' => $seoBase . '/#organization'],
             'inLanguage'    => $seoLocale,
         ],
-    ],
+    ], $seoAudience === null ? [] : [[
+        '@type'       => 'Service',
+        '@id'         => $seoEnUrl . '#service',
+        'name'        => trim($__env->yieldContent('title', 'OpesCare')),
+        'description' => trim($__env->yieldContent('meta_description', __('seo.org_description'))),
+        'serviceType' => 'Health information exchange',
+        'provider'    => ['@id' => $seoBase . '/#organization'],
+        'areaServed'  => ['@type' => 'Country', 'name' => 'Cameroon'],
+        'audience'    => ['@type' => 'Audience', 'audienceType' => $seoAudience],
+        'availableChannel' => [
+            '@type'             => 'ServiceChannel',
+            'serviceUrl'        => $seoEnUrl,
+            'availableLanguage' => ['en', 'fr'],
+        ],
+        'inLanguage'  => $seoLocale,
+    ]]),
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
 </script>
 

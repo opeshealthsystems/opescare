@@ -25,6 +25,9 @@
         .legal-footer { text-align:center; padding:24px; font-size:0.8rem; color:#94a3b8; }
         .no-content { text-align:center; padding:60px; color:#94a3b8; }
     </style>
+{{-- Canonical, hreflang, Open Graph and schema.org --}}
+@include('partials.seo_head')
+
 </head>
 <body>
 <div class="legal-topbar">
