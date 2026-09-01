@@ -28,9 +28,28 @@ class DashboardProfileService
 
         $url = $profile ? $profile->landingUrl() : url('/portals/patient');
 
-        return \App\Support\Features::pathIsFrozen($url)
-            ? route('portal.unavailable')
-            : $url;
+        if (! \App\Support\Features::pathIsFrozen($url)) {
+            return $url;
+        }
+
+        // The configured landing page is frozen, but that does not mean the
+        // user has nowhere to go — only that this particular page is gone. The
+        // pharmacy dashboards are configured to open on
+        // /portals/staff/inventory/pharmacy, which inventory_ops freezes, while
+        // their portal itself is perfectly alive. Fall back to the portal root
+        // before concluding there is nothing for them.
+        $portal = $profile?->portal_prefix;
+
+        if ($portal) {
+            $root = url('/portals/' . ltrim($portal, '/'));
+
+            if (! \App\Support\Features::pathIsFrozen($root)) {
+                return $root;
+            }
+        }
+
+        // Portal root frozen too — the whole surface is out of this release.
+        return route('portal.unavailable');
     }
 
     public function landingUrlForCurrent(): string

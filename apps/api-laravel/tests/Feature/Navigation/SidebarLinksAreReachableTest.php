@@ -146,6 +146,29 @@ class SidebarLinksAreReachableTest extends TestCase
         $this->actingAs($user)->get('/portal-unavailable')->assertOk();
     }
 
+    public function test_a_frozen_landing_page_falls_back_to_the_portal_not_a_dead_end(): void
+    {
+        // The pharmacy dashboards are configured to open on
+        // /portals/staff/inventory/pharmacy, which inventory_ops freezes — while
+        // /portals/staff itself is alive and is their own portal. Sending them
+        // to 'portal unavailable' would be technically true of that one page
+        // and completely wrong about the user, who has a working portal.
+        config(['features.flags.inventory_ops' => false]);
+
+        $user = $this->userForRole('pharmacist');
+        if (! $user) {
+            $this->markTestSkipped('pharmacist role is not seeded');
+        }
+
+        $landing = app(\App\Services\Dashboard\DashboardProfileService::class)->landingUrlForUser($user);
+
+        $this->assertStringNotContainsString('portal-unavailable', $landing,
+            'a frozen landing page sent a user with a working portal to a dead end');
+        $this->assertStringContainsString('/portals/', $landing);
+
+        $this->actingAs($user)->get(parse_url($landing, PHP_URL_PATH))->assertOk();
+    }
+
     public function test_freezing_a_module_still_conceals_it_completely(): void
     {
         // The redirect above must not have softened the 404. A frozen path has
