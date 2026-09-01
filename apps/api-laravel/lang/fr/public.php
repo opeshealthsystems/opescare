@@ -5098,9 +5098,11 @@ return [
     'adm_users_show_badge_active'       => 'Actif',
     'adm_users_show_badge_suspended'    => 'Suspendu',
     'adm_users_show_modal_suspend_title' => 'Suspendre le compte',
+    'adm_users_show_modal_suspend_body' => 'Suspendre :name ? La personne sera déconnectée et ne pourra plus accéder à la plateforme jusqu\'au rétablissement du compte. Ses dossiers et son historique d\'audit sont conservés.',
     'adm_users_show_modal_suspend_btn_cancel' => 'Annuler',
     'adm_users_show_modal_suspend_btn_suspend' => 'Suspendre',
     'adm_users_show_modal_delete_title' => 'Supprimer le compte',
+    'adm_users_show_modal_delete_body' => 'Supprimer :name ? Cette action est irréversible. Les dossiers cliniques et les entrées d\'audit créés par cette personne sont conservés pour conformité, mais le compte lui-même est définitivement supprimé.',
     'adm_users_show_modal_delete_btn_cancel' => 'Annuler',
     'adm_users_show_modal_delete_btn_delete' => 'Supprimer',
 

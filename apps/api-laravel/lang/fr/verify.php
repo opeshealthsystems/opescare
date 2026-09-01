@@ -61,4 +61,7 @@ return [
     'footer_help'          => 'Visiter le Centre d\'Aide',
     'footer_contact'       => 'Contacter le Support',
     'footer_manual_verify' => 'Recherche Manuelle d\'ID',
+
+    // Erreurs
+    'error_not_found'      => 'Aucun ID de Santé vérifié ne correspond à l\'identifiant fourni. Veuillez vérifier l\'ID et réessayer.',
 ];

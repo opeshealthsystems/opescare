@@ -61,4 +61,7 @@ return [
     'footer_help'          => 'Visit Help Center',
     'footer_contact'       => 'Contact Support',
     'footer_manual_verify' => 'Manual ID Lookup',
+
+    // Errors
+    'error_not_found'      => 'No verified Health ID found for the provided identifier. Please check the ID and try again.',
 ];

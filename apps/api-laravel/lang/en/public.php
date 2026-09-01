@@ -5085,9 +5085,11 @@ return [
     'adm_users_show_badge_active'       => 'Active',
     'adm_users_show_badge_suspended'    => 'Suspended',
     'adm_users_show_modal_suspend_title' => 'Suspend Account',
+    'adm_users_show_modal_suspend_body' => 'Suspend :name? They will be signed out and unable to access the platform until the account is reinstated. Their records and audit history are kept.',
     'adm_users_show_modal_suspend_btn_cancel' => 'Cancel',
     'adm_users_show_modal_suspend_btn_suspend' => 'Suspend',
     'adm_users_show_modal_delete_title' => 'Delete Account',
+    'adm_users_show_modal_delete_body' => 'Delete :name? This cannot be undone. Clinical records and audit entries they created are retained for compliance, but the account itself is permanently removed.',
     'adm_users_show_modal_delete_btn_cancel' => 'Cancel',
     'adm_users_show_modal_delete_btn_delete' => 'Delete',
 
