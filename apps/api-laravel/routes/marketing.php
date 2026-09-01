@@ -28,7 +28,7 @@ Route::middleware(['auth', 'mfa.verified', 'portal.access', 'platform.admin', 'f
 
 // ── Public "Request a demo" funnel (B2B lead capture) ──────────────────────
 Route::get('/request-demo',  [RequestDemoController::class, 'show'])->name('public.request-demo');
-Route::post('/request-demo', [RequestDemoController::class, 'store'])->name('public.request-demo.store');
+Route::post('/request-demo', [RequestDemoController::class, 'store'])->middleware('throttle:signup')->name('public.request-demo.store');
 
 // ── Admin leads inbox ──────────────────────────────────────────────────────
 // Wrapped inline in the full portal/admin middleware stack so it does not need

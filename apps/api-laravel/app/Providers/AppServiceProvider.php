@@ -124,10 +124,40 @@ class AppServiceProvider extends ServiceProvider
         Route::middleware('api')
             ->group(base_path('routes/mobile_vitals.php'));
 
-        // Account creation. Public, unauthenticated, and it writes a user row —
-        // so it needs a limit of its own. The burst limit stops scripted
-        // registration floods; the daily cap stops the slow drip that would
-        // otherwise walk under it.
+        /*
+         * Second-factor and one-time codes.
+         *
+         * The MFA challenge verifies a 6-digit TOTP and, on success, logs the
+         * user in. It had no limit at all, so anyone holding a stolen password
+         * could sit on /mfa/challenge and walk the whole 000000-999999 space
+         * against a code that stays valid for a minute or two. Keyed by the
+         * account under challenge as well as the IP, so rotating source
+         * addresses does not reset the budget.
+         */
+        RateLimiter::for('auth-code', function (Request $request) {
+            $subject = $request->session()->get('mfa.user_id') ?: $request->ip();
+
+            return [
+                Limit::perMinute(5)->by('authcode|' . $subject),
+                Limit::perHour(20)->by('authcode|' . $subject),
+                Limit::perMinute(20)->by('authcode-ip|' . $request->ip()),
+            ];
+        });
+
+        // Password reset. Unauthenticated and it sends mail to an address the
+        // caller chooses, so an open endpoint is both an email cannon and a
+        // way to probe which addresses exist by timing.
+        RateLimiter::for('password-reset', function (Request $request) {
+            return [
+                Limit::perMinute(3)->by('pwreset|' . $request->ip()),
+                Limit::perDay(15)->by('pwreset|' . $request->ip()),
+            ];
+        });
+
+        // Public unauthenticated writes: sign-up, contact, demo requests. Each
+        // creates a row on request from anyone at all, so they need a limit of
+        // their own. The burst limit stops scripted floods; the daily cap stops
+        // the slow drip that would otherwise walk under it.
         RateLimiter::for('signup', function (Request $request) {
             return [
                 Limit::perMinute(5)->by('signup|' . $request->ip()),

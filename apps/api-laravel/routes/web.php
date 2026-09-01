@@ -82,7 +82,7 @@ Route::get('/consent', [PublicPageController::class, 'consent'])->name('public.c
 Route::get('/faq', [PublicPageController::class, 'faq'])->name('public.faq');
 Route::get('/help', [PublicPageController::class, 'help'])->name('public.help');
 Route::get('/contact', [PublicPageController::class, 'contact'])->name('public.contact');
-Route::post('/contact', [PublicPageController::class, 'contactSubmit'])->name('public.contact.submit');
+Route::post('/contact', [PublicPageController::class, 'contactSubmit'])->middleware('throttle:signup')->name('public.contact.submit');
 Route::get('/status', [PublicPageController::class, 'status'])->name('public.status');
 Route::get('/sla', [PublicPageController::class, 'sla'])->name('public.sla');
 
@@ -114,14 +114,14 @@ Route::post('/invite/{token}', [PublicPageController::class, 'submitStaffInvite'
 
 // Password Recovery & Credential Update
 Route::get('/forgot-password', [PublicPageController::class, 'showForgotPassword'])->name('password.request');
-Route::post('/forgot-password', [PublicPageController::class, 'submitForgotPassword'])->name('password.email');
+Route::post('/forgot-password', [PublicPageController::class, 'submitForgotPassword'])->middleware('throttle:password-reset')->name('password.email');
 Route::get('/reset-password/{token}', [PublicPageController::class, 'showResetPassword'])->name('password.reset');
 Route::post('/reset-password/{token}', [PublicPageController::class, 'submitResetPassword'])->name('password.update');
 
 // OTP Screen Challenge
 Route::get('/verify/otp', [PublicPageController::class, 'showVerifyOtp'])->name('otp.verify');
-Route::post('/verify/otp', [PublicPageController::class, 'submitVerifyOtp'])->name('otp.verify.submit');
-Route::post('/verify/otp/resend', [PublicPageController::class, 'resendOtp'])->name('otp.resend');
+Route::post('/verify/otp', [PublicPageController::class, 'submitVerifyOtp'])->middleware('throttle:auth-code')->name('otp.verify.submit');
+Route::post('/verify/otp/resend', [PublicPageController::class, 'resendOtp'])->middleware('throttle:auth-code')->name('otp.resend');
 
 // Verification & Restriction Status Displays
 // Where EnsurePortalAccess sends an authenticated user whose own portal is
@@ -141,7 +141,7 @@ Route::get('/login', [PublicPageController::class, 'showLogin'])->name('login');
 // (the API login is throttled; the web form was not).
 Route::post('/login', [PublicPageController::class, 'submitLogin'])->middleware('throttle:5,1')->name('login.submit');
 Route::get('/mfa/challenge', [PublicPageController::class, 'showMfaChallenge'])->name('mfa.challenge');
-Route::post('/mfa/challenge', [PublicPageController::class, 'submitMfaChallenge'])->name('mfa.challenge.submit');
+Route::post('/mfa/challenge', [PublicPageController::class, 'submitMfaChallenge'])->middleware('throttle:auth-code')->name('mfa.challenge.submit');
 
 // Session / Logout
 Route::post('/logout', function () {
