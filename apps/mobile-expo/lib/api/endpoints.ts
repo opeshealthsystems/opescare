@@ -63,9 +63,6 @@ export const endpoints = {
   referrals: '/mobile/referrals',
 
   insurance: '/mobile/insurance',
-  insuranceMarketplace: '/mobile/insurance/marketplace',
-  insuranceMarketplacePlan: (id: string) => `/mobile/insurance/marketplace/plans/${id}`,
-  insurancePurchasePlan: (id: string) => `/mobile/insurance/marketplace/plans/${id}/purchase`,
 
   family: '/mobile/family',
   familyInvitations: '/mobile/family/invitations',

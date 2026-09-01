@@ -500,46 +500,8 @@ export function useInsurancePolicies() {
   });
 }
 
-export function useInsuranceMarketplace() {
-  return useQuery({
-    queryKey: ['insurance', 'marketplace'],
-    queryFn: async () =>
-      (
-        await apiClient.get<{ data: InsuranceMarketplaceProvider[] }>(
-          endpoints.insuranceMarketplace,
-        )
-      ).data,
-  });
-}
 
-export function useInsurancePlanDetail(planId: string | undefined) {
-  return useQuery({
-    queryKey: ['insurance', 'marketplace', 'plan', planId],
-    queryFn: async () =>
-      (
-        await apiClient.get<{ data: InsurancePlanDetail }>(
-          endpoints.insuranceMarketplacePlan(planId as string),
-        )
-      ).data,
-    enabled: !!planId,
-  });
-}
 
-export function usePurchaseInsurancePlan(planId: string | undefined) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (payload: PurchaseInsurancePlanPayload) =>
-      (
-        await apiClient.post<PurchaseInsurancePlanResponse>(
-          endpoints.insurancePurchasePlan(planId as string),
-          payload,
-        )
-      ).data,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['insurance', 'policies'] });
-    },
-  });
-}
 // ── Family: members + invitations ──────────────────────────────────────────
 // Backend: App\Http\Controllers\Api\Mobile\MobileFamilyController.
 

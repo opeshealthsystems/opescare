@@ -6,15 +6,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import {
   ArrowLeft,
   BadgeCheck,
-  ChevronRight,
   Hourglass,
   ShieldAlert,
   ShieldCheck,
-  Store,
   TriangleAlert,
 } from 'lucide-react-native';
 import { Screen } from '../../components/ui/Screen';
-import { Button } from '../../components/ui/Button';
 import {
   useInsurancePolicies,
   type InsurancePolicy,
@@ -77,7 +74,7 @@ function daysUntil(value: string | null): number | null {
 }
 
 /** "My Coverage" — the patient's own policies (GET /mobile/insurance), rendered
- * as insurance credentials, plus the way into the marketplace. */
+ * as insurance credentials. */
 export default function InsurancePoliciesScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
@@ -97,8 +94,6 @@ export default function InsurancePoliciesScreen() {
     return { live, awaiting, dormant };
   }, [policies]);
 
-  const openMarketplace = () => router.push('/insurance/marketplace');
-
   return (
     <Screen className="px-0">
       <View className="flex-row items-center justify-between px-6 pt-2">
@@ -110,15 +105,6 @@ export default function InsurancePoliciesScreen() {
           className="h-11 w-11 items-center justify-center rounded-full border border-brand-300"
         >
           <ArrowLeft size={18} color={colors.brand[600]} />
-        </Pressable>
-        <Pressable
-          onPress={openMarketplace}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel={t('insurance.marketplace.title')}
-          className="h-11 w-11 items-center justify-center rounded-full border border-brand-300"
-        >
-          <Store size={18} color={colors.brand[600]} />
         </Pressable>
       </View>
 
@@ -166,7 +152,7 @@ export default function InsurancePoliciesScreen() {
             </Pressable>
           </View>
         ) : policies.length === 0 ? (
-          <EmptyState onBrowse={openMarketplace} />
+          <EmptyState />
         ) : (
           <>
             <View className="mt-5 flex-row flex-wrap">
@@ -205,27 +191,6 @@ export default function InsurancePoliciesScreen() {
         )}
 
         {!isLoading && !isError && policies.length > 0 ? (
-          <Pressable
-            onPress={openMarketplace}
-            accessibilityRole="button"
-            className="mt-2 flex-row items-center rounded-3xl border border-brand-300 bg-brand-50 p-4"
-          >
-            <View className="h-11 w-11 items-center justify-center rounded-full bg-white">
-              <Store size={18} color={colors.brand[600]} />
-            </View>
-            <View className="ml-4 flex-1">
-              <Text className="text-sm font-bold text-navy-text">
-                {t('insurance.browseTitle')}
-              </Text>
-              <Text className="mt-0.5 text-xs text-navy-secondary">
-                {t('insurance.browseBody')}
-              </Text>
-            </View>
-            <ChevronRight size={18} color={colors.brand[600]} />
-          </Pressable>
-        ) : null}
-
-        {!isLoading && !isError && policies.length > 0 ? (
           <Text className="mt-6 text-center text-[11px] text-navy-muted">
             {t('insurance.privacyNote')}
           </Text>
@@ -261,7 +226,7 @@ function SummaryChip({
   );
 }
 
-function EmptyState({ onBrowse }: { onBrowse: () => void }) {
+function EmptyState() {
   const { t } = useTranslation();
   return (
     <View className="mt-8 rounded-3xl bg-white p-6">
@@ -275,10 +240,6 @@ function EmptyState({ onBrowse }: { onBrowse: () => void }) {
         <Text className="mt-2 text-center text-sm leading-5 text-navy-secondary">
           {t('insurance.emptyBody')}
         </Text>
-      </View>
-
-      <View className="mt-6">
-        <Button label={t('insurance.emptyCta')} onPress={onBrowse} leftIcon={Store} />
       </View>
 
       <View className="mt-5 flex-row items-start rounded-2xl bg-brand-50 p-4">
