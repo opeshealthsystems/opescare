@@ -8,6 +8,49 @@
 @section('sidebar_user_role', __('public.staff_portal.cdss_sidebar_role'))
 
 @section('sidebar_nav')
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_overview') }}</div>
+    <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i><span>{{ __('public.portal.nav_dashboard') }}</span></a>
+    @feature('analytics_dashboards')
+    @endfeature
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_operations') }}</div>
+    @feature('billing')
+    <a href="{{ route('portals.staff.billing') }}" class="sidebar-link"><i data-lucide="receipt"></i><span>{{ __('public.portal.nav_billing') }}</span></a>
+    @endfeature
+    <a href="{{ route('portals.staff.support') }}" class="sidebar-link"><i data-lucide="headset"></i><span>{{ __('public.portal.nav_support') }}</span></a>
+    <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active"><i data-lucide="upload-cloud"></i><span>{{ __('public.portal.nav_data_import') }}</span></a>
+</div>
+    @feature('clinical_decision_support')
+    @endfeature
+    @feature('inventory_ops')
+    <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+        <i data-lucide="package"></i> {{ __('public.portal.nav_supply') }}</a>
+    @endfeature
+@endsection
+
+@section('breadcrumb_home', __('staff_data.bc_home', [], app()->getLocale()) ?: 'Staff Portal')
+@section('breadcrumb_home_url', route('portals.staff'))
+@section('breadcrumb_section', __('staff_data.bc_section', [], app()->getLocale()) ?: 'Data Import')
+
+@section('content')
+
+{{-- Wizard Progress --}}
+@include('portals.staff.data_import._wizard_steps', ['step' => 1])
+
+<div style="max-width:640px;margin:0 auto;">
+    <div class="panel">
+        <div class="panel-body" style="padding:2rem;">
+            <h2 class="panel-heading">{{ __('public.stf_import_upload_title') }}</h2>
+            <p class="text-sm text-muted" style="margin:0 0 1.5rem;">
+                {{ __('public.stf_import_upload_desc') }}
+            </p>
+
+            @if(session('error'))
+                <div class="auth-alert auth-alert-danger" style="margin-bottom:1rem;">
+                    <i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div>
+                </div>
             @endif
 
             <form method="POST" action="{{ route('portals.staff.data_import.store') }}" enctype="multipart/form-data">

@@ -8,6 +8,63 @@
 @section('sidebar_user_role', __('public.staff_portal.cdss_sidebar_role'))
 
 @section('sidebar_nav')
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_overview') }}</div>
+    <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i><span>{{ __('public.portal.nav_dashboard') }}</span></a>
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.cdss_sidebar_operations') }}</div>
+    <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active"><i data-lucide="upload-cloud"></i><span>{{ __('public.portal.nav_data_import') }}</span></a>
+</div>
+    @feature('clinical_decision_support')
+    @endfeature
+    @feature('inventory_ops')
+    <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+        <i data-lucide="package"></i> {{ __('public.portal.nav_supply') }}</a>
+    @endfeature
+@endsection
+
+@section('breadcrumb_home', __('staff_data.bc_home', [], app()->getLocale()) ?: 'Staff Portal')
+@section('breadcrumb_home_url', route('portals.staff'))
+@section('breadcrumb_section', __('staff_data.bc_section', [], app()->getLocale()) ?: 'Data Import')
+
+@section('content')
+
+@include('portals.staff.data_import._wizard_steps', ['step' => 3])
+
+    @if(session('success'))
+        <div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger mb-6"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
+    @endif
+
+    {{-- Summary panel --}}
+    <div class="panel mb-6">
+        <div class="panel-header">
+            <h3 class="panel-title">{{ __('public.stf_import_validation_summary') }}</h3>
+            <span class="badge {{ $job->status === 'validated' ? 'badge-success' : 'badge-danger' }}">
+                @enum($job->status)
+            </span>
+        </div>
+        <div class="panel-body">
+            <p class="td-muted mb-6">
+                {{ $job->original_filename }} · {{ $importTypes[$job->import_type]['label'] ?? $job->import_type }}
+            </p>
+            @php
+                $cards = [
+                    [__('public.stf_import_total_rows'), $job->total_rows,   '',                                                  'rows-height'],
+                    [__('public.stf_import_valid'),      $job->valid_rows,   'stat-card--success',                                'check-circle'],
+                    [__('public.stf_import_invalid'),    $job->invalid_rows, $job->invalid_rows > 0 ? 'stat-card--danger' : '',   'alert-triangle'],
+                ];
+            @endphp
+            <div class="stat-grid">
+                @foreach($cards as [$label, $value, $mod, $icon])
+                <div class="stat-card {{ $mod }}">
+                    <div class="stat-card__head"><i data-lucide="{{ $icon }}"></i></div>
+                    <div class="stat-card__value">{{ number_format($value) }}</div>
+                    <div class="stat-card__label">{{ $label }}</div>
+                </div>
                 @endforeach
             </div>
         </div>

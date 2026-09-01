@@ -29,6 +29,8 @@
         <i data-lucide="syringe"></i>
         <span>{{ __('public.portal.nav_immunizations', [], $l) ?: 'Immunizations' }}</span>
     </a>
+    @feature('clinical_decision_support')
+    @endfeature
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_operations', [], $l) ?: 'Operations' }}</div>

@@ -10,7 +10,9 @@ _Consolidated 2026-06-11. All project documentation and specifications live unde
 - [audits/SPEC_VS_CODE_GAP_AUDIT.md](audits/SPEC_VS_CODE_GAP_AUDIT.md) — what the specs promise that the code doesn't yet deliver.
 - [security/threat-model.md](security/threat-model.md) — consolidated STRIDE threat model.
 
-> Older differing versions are preserved in `docs/_older-versions/`. Exact duplicates are quarantined in `docs/_superseded/` (safe to delete). See `_CONSOLIDATION_MANIFEST.md` for the full move log.
+> The `docs/_older-versions/` and `docs/_superseded/` archives were deleted in the
+> 2026-09-01 V1 cut (1.2 MB, 16 files). Everything they held remains in git
+> history. `_CONSOLIDATION_MANIFEST.md` still records the original move log.
 
 
 ## specs-core  

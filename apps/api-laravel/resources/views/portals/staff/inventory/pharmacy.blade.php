@@ -8,6 +8,123 @@
 @section('sidebar_user_role', __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff')
 
 @section('sidebar_nav')
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+    <a href="{{ route('portals.staff') }}" class="sidebar-link">
+        <i data-lucide="layout-dashboard"></i>
+        <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+    <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+        <i data-lucide="calendar-check-2"></i>
+        <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.queue') }}" class="sidebar-link">
+        <i data-lucide="list-ordered"></i>
+        <span>{{ __('public.portal.nav_queue', [], app()->getLocale()) ?: 'Patient Queue' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.visits') }}" class="sidebar-link">
+        <i data-lucide="stethoscope"></i>
+        <span>{{ __('public.portal.nav_visits', [], app()->getLocale()) ?: 'Visits' }}</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_hr', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
+    <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
+        <i data-lucide="users"></i>
+        <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.hr.roster') }}" class="sidebar-link">
+        <i data-lucide="calendar-range"></i>
+        <span>{{ __('public.portal.nav_staff_roster', [], app()->getLocale()) ?: 'Duty Roster' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.hr.shifts') }}" class="sidebar-link">
+        <i data-lucide="clock"></i>
+        <span>{{ __('public.portal.nav_staff_shifts', [], app()->getLocale()) ?: 'Shifts' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.hr.leave') }}" class="sidebar-link">
+        <i data-lucide="plane-takeoff"></i>
+        <span>{{ __('public.portal.nav_staff_leave', [], app()->getLocale()) ?: 'Leave' }}</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+    <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link active">
+        <i data-lucide="pill"></i>
+        <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.inventory.blood') }}" class="sidebar-link">
+        <i data-lucide="droplets"></i>
+        <span>{{ __('public.portal.nav_inventory_blood', [], app()->getLocale()) ?: 'Blood Bank' }}</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
+    <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+        <i data-lucide="package"></i>
+        <span>{{ __('staff_inv.nav_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
+    </a>
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+    <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
+        <i data-lucide="receipt"></i>
+        <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.support') }}" class="sidebar-link">
+        <i data-lucide="headset"></i>
+        <span>{{ __('public.portal.nav_support', [], app()->getLocale()) ?: 'Support' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link">
+        <i data-lucide="upload-cloud"></i>
+        <span>{{ __('public.portal.nav_data_import', [], app()->getLocale()) ?: 'Data Import' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.search') }}" class="sidebar-link {{ request()->routeIs('portals.staff.search') ? 'active' : '' }}">
+        <i data-lucide="search"></i>
+        <span>{{ __('public.portal.nav_search', [], app()->getLocale()) ?: 'Global Search' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.files.index') }}" class="sidebar-link {{ request()->routeIs('portals.staff.files*') ? 'active' : '' }}">
+        <i data-lucide="paperclip"></i>
+        <span>{{ __('public.portal.nav_files', [], app()->getLocale()) ?: 'Files & Attachments' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.wards') }}" class="sidebar-link {{ request()->routeIs('portals.staff.wards*') ? 'active' : '' }}">
+        <i data-lucide="bed"></i>
+        <span>{{ __('public.portal.nav_wards', [], app()->getLocale()) ?: 'Wards & Beds' }}</span>
+    </a>
+</div>
+@endsection
+
+@section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
+@section('breadcrumb_home_url', route('portals.staff'))
+@section('breadcrumb_section', __('staff_inv.breadcrumb_pharmacy', [], app()->getLocale()) ?: 'Pharmacy Inventory')
+
+@section('content')
+
+<div class="page-head">
+    <h2>{{ __('public.stf_inv_pharm_title') }}</h2>
+    <div class="page-head__spacer"></div>
+    <button type="button" class="btn btn-primary btn-sm" onclick="openAddModal()">
+        <i data-lucide="plus-circle"></i>
+        {{ __('public.stf_inv_pharm_add_btn') }}
+    </button>
+</div>
+<p class="page-subtitle mb-6">{{ __('public.stf_inv_pharm_subtitle') }}</p>
+
+@if(session('success'))
+    <div class="alert alert-success mb-6"><i data-lucide="check-circle"></i><div>{{ session('success') }}</div></div>
+@endif
+@if(session('error'))
+    <div class="alert alert-danger mb-6"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
+@endif
+
+{{-- Summary Cards --}}
+<div class="stat-grid mb-6">
+    <div class="stat-card stat-card--primary">
+        <div class="stat-card__value">{{ $summary['total'] }}</div>
+        <div class="stat-card__label">{{ __('public.stf_inv_pharm_stat_total') }}</div>
+    </div>
     <div class="stat-card stat-card--success">
         <div class="stat-card__value">{{ $summary['in_stock'] }}</div>
         <div class="stat-card__label">{{ __('public.stf_inv_pharm_stat_in_stock') }}</div>

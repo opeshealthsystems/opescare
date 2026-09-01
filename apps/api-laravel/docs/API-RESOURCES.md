@@ -187,7 +187,7 @@ hotspots before picking a batch.
 `V1/Admin/AccessControlController`, `V1/Admin/CountryExpansionController`,
 `V1/Admin/PartnerGovernanceController`, `V1/AppointmentController`,
 `V1/Connect/ConnectGovernanceController`, `V1/FileStorageController`,
-`V1/IntegrationController`, `V1/OfflineSyncController`,
+`V1/OfflineSyncController`,
 `V1/PrescriptionController`, `V1/Reports/SurveyReportController`,
 `V1/SubscriptionController`, `V1/TelemedicineController`,
 `V1/TriageController`.

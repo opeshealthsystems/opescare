@@ -8,6 +8,170 @@
 @section('sidebar_user_role', __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff')
 
 @section('sidebar_nav')
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+    <a href="{{ route('portals.staff') }}" class="sidebar-link">
+        <i data-lucide="layout-dashboard"></i>
+        <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
+    </a>
+    @feature('analytics_dashboards')
+    @endfeature
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+    <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+        <i data-lucide="calendar-check-2"></i>
+        <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.queue') }}" class="sidebar-link">
+        <i data-lucide="list-ordered"></i>
+        <span>{{ __('public.portal.nav_queue', [], app()->getLocale()) ?: 'Patient Queue' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.visits') }}" class="sidebar-link active">
+        <i data-lucide="stethoscope"></i>
+        <span>{{ __('public.portal.nav_visits', [], app()->getLocale()) ?: 'Visits' }}</span>
+    </a>
+    @feature('clinical_decision_support')
+    @endfeature
+</div>
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_hr', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
+    <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
+        <i data-lucide="users"></i>
+        <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.hr.shifts') }}" class="sidebar-link">
+        <i data-lucide="clock"></i>
+        <span>{{ __('public.portal.nav_staff_shifts', [], app()->getLocale()) ?: 'Shifts' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.hr.roster') }}" class="sidebar-link">
+        <i data-lucide="calendar-range"></i>
+        <span>{{ __('public.portal.nav_staff_roster', [], app()->getLocale()) ?: 'Duty Roster' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.hr.leave') }}" class="sidebar-link">
+        <i data-lucide="plane-takeoff"></i>
+        <span>{{ __('public.portal.nav_staff_leave', [], app()->getLocale()) ?: 'Leave' }}</span>
+    </a>
+</div>
+@feature('inventory_ops')
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+    <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
+        <i data-lucide="pill"></i>
+        <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.inventory.blood') }}" class="sidebar-link">
+        <i data-lucide="droplets"></i>
+        <span>{{ __('public.portal.nav_inventory_blood', [], app()->getLocale()) ?: 'Blood Bank' }}</span>
+    </a>
+</div>
+@endfeature
+@feature('inventory_ops')
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_supply', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
+    <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+        <i data-lucide="package"></i>
+        <span>{{ __('public.staff_portal.nav_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
+    </a>
+</div>
+@endfeature
+<div class="sidebar-nav-section">
+    <div class="sidebar-nav-label">{{ __('public.staff_portal.nav_section_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+    @feature('billing')
+    <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
+        <i data-lucide="receipt"></i>
+        <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
+    </a>
+    @endfeature
+    <a href="{{ route('portals.staff.support') }}" class="sidebar-link">
+        <i data-lucide="headset"></i>
+        <span>{{ __('public.portal.nav_support', [], app()->getLocale()) ?: 'Support' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link">
+        <i data-lucide="upload"></i>
+        <span>{{ __('public.portal.nav_data_import', [], app()->getLocale()) ?: 'Data Import' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.search') }}" class="sidebar-link {{ request()->routeIs('portals.staff.search') ? 'active' : '' }}">
+        <i data-lucide="search"></i>
+        <span>{{ __('public.portal.nav_search', [], app()->getLocale()) ?: 'Global Search' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.files.index') }}" class="sidebar-link {{ request()->routeIs('portals.staff.files*') ? 'active' : '' }}">
+        <i data-lucide="paperclip"></i>
+        <span>{{ __('public.portal.nav_files', [], app()->getLocale()) ?: 'Files & Attachments' }}</span>
+    </a>
+    <a href="{{ route('portals.staff.wards') }}" class="sidebar-link {{ request()->routeIs('portals.staff.wards*') ? 'active' : '' }}">
+        <i data-lucide="bed"></i>
+        <span>{{ __('public.portal.nav_wards', [], app()->getLocale()) ?: 'Wards & Beds' }}</span>
+    </a>
+</div>
+@endsection
+
+@section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
+@section('breadcrumb_home_url', route('portals.staff'))
+@section('breadcrumb_section', __('public.staff_portal.breadcrumb_section_triage', [], app()->getLocale()) ?: 'Triage')
+
+@php $l = app()->getLocale(); @endphp
+
+@section('content')
+
+@php
+    use App\Modules\Triage\Services\TriageService;
+    $lastTriage = $visit->triageRecords->sortByDesc('created_at')->first();
+    $isCritical = $lastTriage && in_array($lastTriage->acuity_score, ['critical', 'resuscitation']);
+    $isEmergency = $visit->status === 'emergency';
+
+    $vitalAlerts = [];
+    if ($lastTriage && $lastTriage->vitalSigns->isNotEmpty()) {
+        $v = $lastTriage->vitalSigns->first();
+        $vitalAlerts = TriageService::assessVitals([
+            'temperature'             => $v->temperature,
+            'blood_pressure_systolic' => $v->blood_pressure_systolic,
+            'pulse'                   => $v->pulse,
+            'respiratory_rate'        => $v->respiratory_rate,
+            'oxygen_saturation'       => $v->oxygen_saturation,
+        ]);
+    }
+@endphp
+
+<div class="page-head">
+    <h2>
+        @if($isEmergency)<i data-lucide="siren"></i> @endif
+        {{ __('public.staff_portal.page_heading_triage', [], $l) ?: 'Triage Assessment' }}
+    </h2>
+    <div class="page-head__spacer"></div>
+    @if(!$isEmergency)
+        <button type="button" class="btn btn-danger btn-sm" onclick="openEscalateModal()">
+            <i data-lucide="siren"></i> {{ __('public.staff_portal.btn_declare_emergency', [], $l) ?: 'Declare Emergency' }}
+        </button>
+    @endif
+    <a href="{{ route('portals.staff.visits') }}" class="btn btn-ghost btn-sm">
+        <i data-lucide="arrow-left"></i> {{ __('public.staff_portal.btn_back', [], $l) ?: 'Back' }}
+    </a>
+</div>
+
+<p class="page-subtitle mb-4">
+    {{ __('public.staff_portal.lbl_patient', [], $l) ?: 'Patient' }}: <strong class="mono">{{ $visit->patient?->health_id ?? $visit->patient_id }}</strong>
+    &nbsp;·&nbsp; {{ __('public.staff_portal.lbl_visit_id', [], $l) ?: 'Visit ID' }}: <span class="mono">{{ substr($visit->id, 0, 8) }}…</span>
+    &nbsp;·&nbsp;
+    @php
+        $statusBadge = match($visit->status) {
+            'emergency' => 'badge-danger',
+            'in_triage' => 'badge-warning',
+            'completed' => 'badge-success',
+            default     => 'badge-neutral',
+        };
+    @endphp
+    <span class="badge {{ $statusBadge }}">@enum($visit->status)</span>
+</p>
+
+{{-- Emergency Banner --}}
+@if($isEmergency)
+<div class="alert alert-danger mb-4">
+    <i data-lucide="siren"></i>
+    <div>
+        <strong>{{ __('public.staff_portal.alert_emergency_banner', [], $l) ?: 'EMERGENCY — Resuscitation Level' }}</strong>
+        <div>{{ __('public.staff_portal.alert_emergency_desc', [], $l) ?: 'This visit has been declared an emergency. Acuity: Resuscitation (Level 1).' }}</div>
+    </div>
 </div>
 @elseif($isCritical)
 <div class="alert alert-danger mb-4">

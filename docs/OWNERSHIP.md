@@ -19,7 +19,7 @@ For PR review routing, see `CODEOWNERS` at the repo root.
 | Audit logs | `/docs/audit/`, `/docs/audits/` | @makkowens24 | Immutable — append only |
 | Agent protocols | `/docs/agent-protocols/` | @makkowens24 | Bridge and AI agent specs |
 | Plans (active) | `/docs/plans/` | @makkowens24 | Delete or archive when complete |
-| Superseded / archived | `/docs/_superseded/`, `/docs/_older-versions/` | @makkowens24 | Do not edit; archive only |
+| Superseded / archived | *(removed 2026-09-01 — recover from git history)* | @makkowens24 | — |
 
 ## Rules
 
@@ -30,7 +30,9 @@ For PR review routing, see `CODEOWNERS` at the repo root.
    must never be edited or deleted after merge.
 
 3. **Plans lifecycle** — files in `/docs/plans/` that are fully implemented
-   should be moved to `/docs/_superseded/` rather than deleted.
+   should be deleted; git history is the archive. The `_superseded/` quarantine
+   folder was itself removed on 2026-09-01 for having become exactly the kind of
+   weight it was meant to prevent.
 
 4. **OpenAPI must match routes** — any PR touching `routes/api.php` or adding
    a new API controller must also update the relevant OpenAPI spec in
