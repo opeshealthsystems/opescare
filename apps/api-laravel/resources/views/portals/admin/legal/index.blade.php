@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', __('public.adm_legal_page_title'))
 @section('sidebar') @include('portals.admin.control_center._sidebar') @endsection
 

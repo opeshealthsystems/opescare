@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', __('public.adm_dev_acc_title'))
 @section('sidebar') @include('portals.admin.connect._sidebar') @endsection
 

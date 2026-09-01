@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 
 @section('title', __('public.adm_connect_clients_title'))
 

@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', 'User: ' . $user->name)
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', 'Admin')

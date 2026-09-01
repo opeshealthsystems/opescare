@@ -1,4 +1,4 @@
-﻿@extends('layouts.portal')
+@extends('layouts.portal')
 @section('title', __('public.adm_cc_mod_title'))
 @include('portals.admin.control_center._sidebar')
 @section('breadcrumb_home', __('public.adm_cc_mod_breadcrumb_home'))

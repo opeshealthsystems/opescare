@@ -1,4 +1,4 @@
-﻿{{ $bodyText }}
+{{ $bodyText }}
 
 --
 OpesCare Health Platform

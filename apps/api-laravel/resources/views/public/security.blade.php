@@ -1,4 +1,4 @@
-﻿@extends('layouts.public')
+@extends('layouts.public')
 
 @section('title', __('public.sec_page.page_title'))
 @section('meta_description', __('public.sec_page.meta_description'))
