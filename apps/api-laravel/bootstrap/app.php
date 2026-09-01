@@ -223,6 +223,7 @@ return Application::configure(basePath: dirname(__DIR__))
             // subscription plan).
             'feature'                   => \App\Http\Middleware\EnforceFeatureFlag::class,
             'patient.feature'           => \App\Http\Middleware\EnsurePatientFeature::class,
+            'patient.profile'           => \App\Http\Middleware\RequireCompletePatientProfile::class,
             'api.deprecated'            => \App\Http\Middleware\MarkDeprecated::class,
             'api.quota'                 => \App\Http\Middleware\EnforceApiQuota::class,
         ]);

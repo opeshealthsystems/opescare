@@ -39,11 +39,17 @@ class PatientPortalDemoRemovalTest extends TestCase
 
         $this->actingAs($user);
 
+        // A patient account with no linked Patient no longer reaches the
+        // dashboard at all: RequireCompletePatientProfile sends it to the
+        // profile-completion step. The guarantee this test exists for is
+        // unchanged and now stricter — the portal never renders, so the seeded
+        // demo patient cannot be shown in place of a missing one.
         $response = $this->get(route('portals.patient'));
-        $response->assertStatus(200);
-        $response->assertViewHas('patient', null);
-        // Must NOT expose the demo patient
-        $response->assertDontSee('OC-DEMO-001');
+        $response->assertRedirect(route('portals.patient.complete-profile'));
+
+        $this->followingRedirects()
+            ->get(route('portals.patient'))
+            ->assertDontSee('OC-DEMO-001');
     }
 
     public function test_dashboard_shows_real_patient_when_linked(): void

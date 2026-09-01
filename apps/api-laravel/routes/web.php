@@ -92,21 +92,21 @@ Route::get('/register', function() { return redirect()->route('register'); });
 
 // Patient Onboarding
 Route::get('/signup/patient', [PublicPageController::class, 'showPatientRegister'])->name('register.patient');
-Route::post('/signup/patient', [PublicPageController::class, 'submitPatientRegister'])->name('register.patient.submit');
+Route::post('/signup/patient', [PublicPageController::class, 'submitPatientRegister'])->middleware('throttle:signup')->name('register.patient.submit');
 Route::get('/register/patient', function() { return redirect()->route('register.patient'); });
 
 // Guardian Caregiver Requests
 Route::get('/signup/guardian', [PublicPageController::class, 'showGuardianRegister'])->name('register.guardian');
-Route::post('/signup/guardian', [PublicPageController::class, 'submitGuardianRegister'])->name('register.guardian.submit');
+Route::post('/signup/guardian', [PublicPageController::class, 'submitGuardianRegister'])->middleware('throttle:signup')->name('register.guardian.submit');
 
 // Organization Onboarding Form
 Route::get('/signup/organization', [PublicPageController::class, 'showOrganizationRegister'])->name('register.organization');
-Route::post('/signup/organization', [PublicPageController::class, 'submitOrganizationRegister'])->name('register.organization.submit');
+Route::post('/signup/organization', [PublicPageController::class, 'submitOrganizationRegister'])->middleware('throttle:signup')->name('register.organization.submit');
 Route::get('/register/hospital', function() { return redirect()->route('register.organization'); });
 
 // Developer API Requests
 Route::get('/signup/developer', [PublicPageController::class, 'showDeveloperRegister'])->name('register.developer');
-Route::post('/signup/developer', [PublicPageController::class, 'submitDeveloperRegister'])->name('register.developer.submit');
+Route::post('/signup/developer', [PublicPageController::class, 'submitDeveloperRegister'])->middleware('throttle:signup')->name('register.developer.submit');
 
 // Staff Invitation Activation
 Route::get('/invite/{token}', [PublicPageController::class, 'showStaffInvite'])->name('invite.accept');
@@ -178,7 +178,16 @@ Route::middleware(['web', 'throttle:verify'])->group(function () {
 });
 
 // Portal Routes — require authentication, correct portal for role, and facility context
-Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.admin', 'facility.context', 'throttle:portal'])->group(function () {
+// ── Patient profile completion ──────────────────────────────────────────────
+// Sign-up stops at email + password; this is where identity is collected and
+// the Health ID is minted. Deliberately OUTSIDE the patient.profile gate below,
+// or the gate would redirect to itself forever.
+Route::middleware(['web', 'auth', 'mfa.verified', 'throttle:portal'])->group(function () {
+    Route::get('/portals/patient/complete-profile',  [\App\Http\Controllers\MedicalId\PatientProfileCompletionController::class, 'show'])->name('portals.patient.complete-profile');
+    Route::post('/portals/patient/complete-profile', [\App\Http\Controllers\MedicalId\PatientProfileCompletionController::class, 'store'])->name('portals.patient.complete-profile.store');
+});
+
+Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.admin', 'facility.context', 'patient.profile', 'throttle:portal'])->group(function () {
     Route::get('/portals/patient', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'index'])->name('portals.patient');
     // QR generation has its own tighter rate limit (10/min) on top of the portal limit
     Route::post('/portals/patient/generate-qr', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'generateTemporaryQr'])

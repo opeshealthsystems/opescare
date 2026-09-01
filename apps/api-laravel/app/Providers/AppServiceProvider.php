@@ -124,6 +124,17 @@ class AppServiceProvider extends ServiceProvider
         Route::middleware('api')
             ->group(base_path('routes/mobile_vitals.php'));
 
+        // Account creation. Public, unauthenticated, and it writes a user row —
+        // so it needs a limit of its own. The burst limit stops scripted
+        // registration floods; the daily cap stops the slow drip that would
+        // otherwise walk under it.
+        RateLimiter::for('signup', function (Request $request) {
+            return [
+                Limit::perMinute(5)->by('signup|' . $request->ip()),
+                Limit::perDay(20)->by('signup|' . $request->ip()),
+            ];
+        });
+
         RateLimiter::for('verify', function (Request $request) {
             return Limit::perMinute(30)->by($request->ip());
         });

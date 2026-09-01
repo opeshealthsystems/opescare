@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\OpesCareNotificationMail;
 use App\Models\Facility;
+use App\Models\Lead;
 use App\Models\Patient;
 use App\Models\Role;
 use App\Models\User;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class PublicPageController extends Controller
 {
@@ -303,72 +305,43 @@ class PublicPageController extends Controller
         return view('auth.register.patient');
     }
 
+    /**
+     * Patient sign-up: email and password, nothing else.
+     *
+     * It used to demand nine fields — names, date of birth, sex, phone and a
+     * full emergency contact — before anyone could create an account. Everything
+     * except the credentials now moves to profile completion, after login.
+     *
+     * No Patient row and no Health ID are created here, deliberately. A Health
+     * ID is a *verified identity*; minting one against a blank record would put
+     * unidentifiable rows into the Master Patient Index that later have to be
+     * reconciled, which is exactly what the no-auto-merge invariant exists to
+     * avoid. Identity is created once there is an identity to bind it to.
+     *
+     * The account is also created ACTIVE. It used to be 'pending', while
+     * submitLogin() rejects 'pending' and redirects to the approval screen — so
+     * every self-registered patient was locked out of the account they had just
+     * made. Patients are self-service; there is nobody to approve them.
+     */
     public function submitPatientRegister(Request $request)
     {
         $data = $request->validate([
-            'first_name'           => 'required|string|max:100',
-            'last_name'            => 'required|string|max:100',
-            'middle_name'          => 'nullable|string|max:100',
-            'dob'                  => 'required|date|before:today',
-            'sex'                  => 'required|in:male,female',
-            'phone'                => 'required|string|max:30',
-            'email'                => 'nullable|email|max:180|unique:users,email',
-            'country'              => 'nullable|string|max:80',
-            'city'                 => 'nullable|string|max:80',
-            'national_id'          => 'nullable|string|max:60',
-            'emergency_name'       => 'required|string|max:120',
-            'emergency_relationship' => 'required|string|max:80',
-            'emergency_phone'      => 'required|string|max:30',
-            'password'             => 'required|string|min:8|confirmed',
+            'email'    => 'required|email|max:180|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+        ], [
+            'email.unique' => __('onboarding.patient.email_taken'),
         ]);
 
-        // Duplicate name+dob check (not a hard block — surfaces warning)
-        $duplicate = Patient::where('first_name', $data['first_name'])
-            ->where('last_name', $data['last_name'])
-            ->where('date_of_birth', $data['dob'])
-            ->exists();
-
-        if ($duplicate) {
-            return redirect()->back()->withInput()
-                ->with('error', __('flash.patient_identity_duplicate'));
-        }
-
-        $patient = DB::transaction(function () use ($data) {
-            $healthIdSvc = app(HealthIdGeneratorService::class);
-            $countryCode = strtoupper(substr($data['country'] ?? 'CM', 0, 2));
-            $healthId    = $healthIdSvc->generate($countryCode);
-
-            $patient = Patient::create([
-                'health_id'           => $healthId,
-                'first_name'          => $data['first_name'],
-                'last_name'           => $data['last_name'],
-                'middle_name'         => $data['middle_name'] ?? null,
-                'date_of_birth'       => $data['dob'],
-                'sex'                 => $data['sex'],
-                'phone_number'        => $data['phone'],
-                'email'               => $data['email'] ?? null,
-                'national_id_number'  => $data['national_id'] ?? null,
-                'country_code'        => $countryCode,
-                'address'             => trim(($data['city'] ?? '') . ', ' . ($data['country'] ?? '')),
-                'emergency_contact'   => json_encode([
-                    'name'         => $data['emergency_name'],
-                    'relationship' => $data['emergency_relationship'],
-                    'phone'        => $data['emergency_phone'],
-                ]),
-                'identity_status'     => 'provisional',
-                'verification_status' => 'unverified',
-            ]);
-
-            // Create portal user linked to this patient
-            $role  = Role::where('name', 'patient')->first();
-            $email = $data['email'] ?? ($data['phone'] . '@patients.opescare.local');
+        $user = DB::transaction(function () use ($data) {
+            $role = Role::where('name', 'patient')->first();
 
             $user = User::create([
-                'name'       => $data['first_name'] . ' ' . $data['last_name'],
-                'email'      => $email,
-                'password'   => Hash::make($data['password']),
-                'patient_id' => $patient->id,
-                'status'     => 'pending',
+                // A display name is NOT NULL on users; the local-part is a
+                // placeholder replaced by the real name at profile completion.
+                'name'     => Str::before($data['email'], '@'),
+                'email'    => $data['email'],
+                'password' => Hash::make($data['password']),
+                'status'   => 'active',
             ]);
 
             if ($role) {
@@ -376,40 +349,21 @@ class PublicPageController extends Controller
                 $user->save();
             }
 
-            return $patient;
+            return $user;
         });
 
-        // "Refer & Earn" capture — MUST NEVER break signup. Wrapped so any failure
-        // (bad code, missing plan, DB error) is logged and swallowed; the new
-        // patient still completes registration successfully.
+        // Referral capture must never break sign-up.
         $refCode = trim((string) $request->input('ref', ''));
         if ($refCode !== '') {
-            try {
-                $rewards = app(\App\Modules\Subscription\Services\ReferralRewardService::class);
-                $invite  = $rewards->recordSignup($patient, $refCode);
-                if ($invite !== null) {
-                    $rewards->grantRewards($invite);
-                }
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('referral_signup_capture_failed', [
-                    'patient_id' => $patient->id,
-                    'error'      => $e->getMessage(),
-                ]);
-            }
+            $request->session()->put('pending_referral_code', $refCode);
         }
 
-        // Welcome email
-        if ($patient->email) {
-            Mail::to($patient->email)->queue(new OpesCareNotificationMail(
-                mailSubject: 'Welcome to OpesCare — Your Health ID is ready',
-                bodyText: "Hello {$patient->first_name},\n\nYour OpesCare account has been created.\nYour Health ID: {$patient->health_id}\n\nPlease visit a registered facility to complete identity verification.\n\nOpesCare Team",
-            ));
-        }
+        Auth::login($user);
+        $request->session()->regenerate();
+        $request->session()->put('mfa.verified', true);
 
-        return view('auth.register.patient', [
-            'success_profile' => true,
-            'health_id'       => $patient->health_id,
-        ]);
+        return redirect()->route('portals.patient.complete-profile')
+            ->with('success', __('onboarding.patient.account_created'));
     }
 
     public function showGuardianRegister()
@@ -417,9 +371,76 @@ class PublicPageController extends Controller
         return view('auth.register.guardian');
     }
 
+    /**
+     * Caregiver access request.
+     *
+     * This is a request, not a sign-up: guardian access to another person's
+     * record needs institutional verification before it can be granted, which
+     * is what the success message has always said. It previously said it
+     * without recording anything, so every request was silently discarded.
+     *
+     * The form asks for a password because it used to promise an account. The
+     * password is deliberately NOT stored — an account is created later, by
+     * the reviewer, once the relationship is verified.
+     */
     public function submitGuardianRegister(Request $request)
     {
+        $data = $request->validate([
+            'first_name'         => 'required|string|max:100',
+            'last_name'          => 'required|string|max:100',
+            'email'              => 'required|email|max:180',
+            'phone'              => 'nullable|string|max:30',
+            'dob'                => 'nullable|date|before:today',
+            'preferred_language' => 'nullable|string|max:10',
+            'dep_name'           => 'required|string|max:200',
+            'dep_dob'            => 'nullable|date|before:today',
+            'dep_relationship'   => 'required|string|max:80',
+            'dep_sex'            => 'nullable|string|max:20',
+            'dep_health_id'      => 'nullable|string|max:40',
+            'access_reason'      => 'nullable|string|max:2000',
+        ]);
+
+        Lead::create([
+            'name'              => trim($data['first_name'] . ' ' . $data['last_name']),
+            'email'             => $data['email'],
+            'phone'             => $data['phone'] ?? null,
+            'organization_name' => null,
+            'organization_type' => 'other',
+            'message'           => $this->guardianSummary($data),
+            'source'            => 'guardian_signup',
+            'status'            => 'new',
+        ]);
+
         return redirect()->route('register.guardian')->with('success', __('onboarding.guardian.success'));
+    }
+
+    /** Everything a reviewer needs, as text — never the password. */
+    private function guardianSummary(array $data): string
+    {
+        $lines = [
+            'Dependant: ' . $data['dep_name'],
+            'Relationship: ' . $data['dep_relationship'],
+        ];
+
+        foreach ([
+            'Dependant DOB'       => $data['dep_dob'] ?? null,
+            'Dependant sex'       => $data['dep_sex'] ?? null,
+            'Dependant Health ID' => $data['dep_health_id'] ?? null,
+            'Guardian DOB'        => $data['dob'] ?? null,
+            'Preferred language'  => $data['preferred_language'] ?? null,
+        ] as $label => $value) {
+            if (! empty($value)) {
+                $lines[] = $label . ': ' . $value;
+            }
+        }
+
+        if (! empty($data['access_reason'])) {
+            $lines[] = '';
+            $lines[] = 'Reason given: ' . $data['access_reason'];
+        }
+
+        return implode("
+", $lines);
     }
 
     public function showOrganizationRegister()
@@ -456,10 +477,41 @@ class PublicPageController extends Controller
             . "Main: {$data['main_email']} / {$data['main_phone']}\n"
             . "Contact: {$data['contact_name']} ({$data['contact_role']}) — {$data['contact_email']} / {$data['contact_phone']}\n";
 
-        Mail::to($adminEmail)->queue(new OpesCareNotificationMail(
-            mailSubject: "OpesCare Organisation Application: {$data['legal_name']} [{$refCode}]",
-            bodyText: $body,
-        ));
+        /*
+         * Record the application BEFORE sending anything.
+         *
+         * The email used to be its only trace. Production has no SMTP host
+         * configured, so a queued mail that never leaves took the whole
+         * application with it — and the reference code below was handed to the
+         * applicant for a record that existed nowhere. The lead IS the record;
+         * the email is only a notification about it.
+         */
+        Lead::create([
+            'name'              => $data['contact_name'],
+            'email'             => $data['contact_email'],
+            'phone'             => $data['contact_phone'],
+            'organization_name' => $data['legal_name'],
+            'organization_type' => in_array($data['org_type'], Lead::ORGANIZATION_TYPES, true)
+                ? $data['org_type']
+                : 'other',
+            'message'           => $body,
+            'source'            => 'organization_application',
+            'status'            => 'new',
+        ]);
+
+        // A mail transport failure must not lose an application that is
+        // already safely recorded.
+        try {
+            Mail::to($adminEmail)->queue(new OpesCareNotificationMail(
+                mailSubject: "OpesCare Organisation Application: {$data['legal_name']} [{$refCode}]",
+                bodyText: $body,
+            ));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('organisation_application_mail_failed', [
+                'ref'   => $refCode,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return view('auth.register.organization', [
             'success_application' => true,
@@ -473,8 +525,57 @@ class PublicPageController extends Controller
         return view('auth.register.developer');
     }
 
+    /**
+     * Connect API access request — reviewed by the interoperability panel,
+     * exactly as the success message says. It used to say so and record
+     * nothing, so no request ever reached the panel.
+     */
     public function submitDeveloperRegister(Request $request)
     {
+        $data = $request->validate([
+            'name'                => 'required|string|max:120',
+            'email'               => 'required|email|max:180',
+            'phone'               => 'nullable|string|max:30',
+            'organization'        => 'required|string|max:200',
+            'role'                => 'nullable|string|max:100',
+            'country'             => 'nullable|string|max:80',
+            'system_type'         => 'nullable|string|max:120',
+            'integration_purpose' => 'nullable|string|max:2000',
+            'data_flow'           => 'nullable|string|max:60',
+            'sandbox'             => 'nullable',
+            'production'          => 'nullable',
+        ]);
+
+        $lines = [];
+        foreach ([
+            'Role'         => $data['role'] ?? null,
+            'Country'      => $data['country'] ?? null,
+            'System type'  => $data['system_type'] ?? null,
+            'Data flow'    => $data['data_flow'] ?? null,
+            'Sandbox'      => $request->boolean('sandbox') ? 'yes' : null,
+            'Production'   => $request->boolean('production') ? 'yes' : null,
+        ] as $label => $value) {
+            if (! empty($value)) {
+                $lines[] = $label . ': ' . $value;
+            }
+        }
+        if (! empty($data['integration_purpose'])) {
+            $lines[] = '';
+            $lines[] = 'Integration purpose: ' . $data['integration_purpose'];
+        }
+
+        Lead::create([
+            'name'              => $data['name'],
+            'email'             => $data['email'],
+            'phone'             => $data['phone'] ?? null,
+            'organization_name' => $data['organization'],
+            'organization_type' => 'developer',
+            'message'           => implode("
+", $lines),
+            'source'            => 'developer_signup',
+            'status'            => 'new',
+        ]);
+
         return redirect()->route('register.developer')->with('success', __('flash.developer_request_submitted'));
     }
 

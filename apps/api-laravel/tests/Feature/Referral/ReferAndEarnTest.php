@@ -88,24 +88,24 @@ class ReferAndEarnTest extends TestCase
     {
         \App\Models\Role::firstOrCreate(['name' => 'patient']);
 
-        $payload = [
-            'first_name'             => 'Ada',
-            'last_name'              => 'Lovelace',
-            'dob'                    => '1990-12-10',
-            'sex'                    => 'female',
-            'phone'                  => '+237600000001',
-            'email'                  => 'ada.referral@example.test',
-            'emergency_name'         => 'Charles Babbage',
-            'emergency_relationship' => 'Friend',
-            'emergency_phone'        => '+237600000002',
-            'password'               => 'password1234',
-            'password_confirmation'  => 'password1234',
-            'ref'                    => 'TOTALLY-INVALID-CODE!!',
-        ];
+        // Sign-up is two steps now. The referral code is captured here and only
+        // redeemed at profile completion, once a Patient actually exists — so a
+        // garbage code has to survive the hand-off without breaking either step.
+        $this->post(route('register.patient.submit'), [
+            'email'                 => 'ada.referral@example.test',
+            'password'              => 'password1234',
+            'password_confirmation' => 'password1234',
+            'ref'                   => 'TOTALLY-INVALID-CODE!!',
+        ])->assertRedirect(route('portals.patient.complete-profile'));
 
-        $response = $this->post(route('register.patient.submit'), $payload);
+        $this->post(route('portals.patient.complete-profile.store'), [
+            'first_name' => 'Ada',
+            'last_name'  => 'Lovelace',
+            'dob'        => '1990-12-10',
+            'sex'        => 'female',
+            'phone'      => '+237600000001',
+        ])->assertRedirect(route('portals.patient'));
 
-        $response->assertStatus(200);
         $this->assertDatabaseHas('patients', ['first_name' => 'Ada', 'last_name' => 'Lovelace']);
         // No invite should have been created from a garbage code.
         $this->assertSame(0, ReferralInvite::count());
