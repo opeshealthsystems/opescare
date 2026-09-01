@@ -184,9 +184,16 @@ return Application::configure(basePath: dirname(__DIR__))
             // so those four 500 rather than 404. Broaden this list to
             // 'api/v1/telemedicine' + 'api/v1/telemedicine/*' to close that gap.
             'telemedicine_full' => [
-                'api/v1/telemedicine/consultations/*/call',
-                'api/v1/telemedicine/consultations/*/waiting-room',
-                'api/v1/telemedicine/sessions/*',
+                // The whole v1 telemedicine surface. This used to cover only the
+                // call/waiting-room/session paths, which left four routes —
+                // consultations create/show, consent, cancel — matched but
+                // unfrozen. Their controller was deleted with the rest of the
+                // module, so an AUTHENTICATED partner hitting them got a fatal
+                // "class not found" rather than a clean 404. Unauthenticated
+                // callers were always fine: auth middleware runs first, which is
+                // what kept this quiet.
+                'api/v1/telemedicine',
+                'api/v1/telemedicine/*',
             ],
 
         ]);

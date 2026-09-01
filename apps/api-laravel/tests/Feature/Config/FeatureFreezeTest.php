@@ -200,7 +200,12 @@ class FeatureFreezeTest extends TestCase
             'mobile blood finder'     => ['/api/mobile/blood/search'],
             'appointments'            => ['/api/v1/appointments'],
             'partner stock ingest'    => ['/api/v1/connect/inventory/pharmacy-stock/sync'],
-            'thin teleconsult path'   => ['/api/v1/telemedicine/consultations'],
+            // Teleconsult was in the first V1 cut as a "thin book -> consult"
+            // path, then dropped when the scope settled on five products:
+            // Health ID, drugs finder, blood finder, appointments,
+            // interoperability. The module and its controllers are deleted, so
+            // the whole api/v1/telemedicine surface is frozen and must NOT be
+            // asserted live here.
             'statutory MINSANTE reports' => ['/api/v1/public-health/reports'],
         ];
     }
