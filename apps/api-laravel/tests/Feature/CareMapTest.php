@@ -123,6 +123,12 @@ class CareMapTest extends TestCase
             'currency' => 'EUR',
             'freshness_status' => 'fresh',
             'last_updated_at' => now(),
+            // Provenance, as a real report carries it. The public search
+            // withholds rows whose source is unknown or synthetic, so a
+            // fixture without this is not a pharmacy report — it is an
+            // unattributed row, and a patient must not be sent to a shop on
+            // the strength of one. PharmacyStockReportService::SOURCE_PORTAL.
+            'source_system' => 'portal',
         ]);
 
         // Search for Paracetamol

@@ -21,6 +21,22 @@ class MedicinePharmacyStock extends Model
 
     protected $table = 'medicine_pharmacy_stocks';
 
+    /**
+     * `source_system` values that mark a row as SYNTHETIC — written by a
+     * seeder, never reported by a pharmacy.
+     *
+     * `demo_seed` comes from PharmacyFinderCoverageSeeder, `seed` from
+     * PharmacyCatalogSeeder; between them they account for essentially every
+     * row in this table today. They exist so the finder has something to
+     * render in demos and so real coverage can be measured against them
+     * (PharmacyStockReportService::coverage()) — they are NOT statements about
+     * what any pharmacy actually has on its shelf.
+     *
+     * Keep in sync with PharmacyStockAvailability::SYNTHETIC_SOURCE_SYSTEMS
+     * and with the takeover rule in PharmacyStockReportService::report().
+     */
+    public const SYNTHETIC_SOURCE_SYSTEMS = ['demo_seed', 'seed'];
+
     protected $fillable = [
         'medicine_id',
         'care_facility_id',
@@ -61,6 +77,37 @@ class MedicinePharmacyStock extends Model
             PharmacyStockStatus::InStock->value,
             PharmacyStockStatus::LowStock->value,
         ]);
+    }
+
+    /**
+     * Rows a PATIENT may be shown. Seeded fiction is excluded here, once, so a
+     * future public call site cannot forget to do it.
+     *
+     * Telling somebody a medicine is waiting for them at a pharmacy on the
+     * strength of a seeder is a safety failure, not a cosmetic one: they may
+     * travel for it, or stop looking elsewhere. Any query that feeds a public
+     * surface MUST go through this scope.
+     *
+     * NULL `source_system` is deliberately KEPT. "Unstamped" is not the same as
+     * "seeded", and the column is nullable by design. It is spelled out rather
+     * than left to `whereNotIn` because SQL three-valued logic would otherwise
+     * drop NULL rows silently — an accidental policy instead of a decided one.
+     */
+    public function scopeReportedByRealSource(Builder $query): Builder
+    {
+        $column = $this->getTable() . '.source_system';
+
+        /*
+         * NULL provenance is withheld too, deliberately.
+         *
+         * Every legitimate write stamps a source: the pharmacy portal writes
+         * 'portal', the seeders write 'seed'/'demo_seed'. A row with no source
+         * is one nobody has claimed, so it is not evidence that a medicine is
+         * on a shelf — and this is the query a patient's search runs before
+         * deciding whether to travel. Allow-list, not blacklist.
+         */
+        return $query->whereNotNull($column)
+            ->whereNotIn($column, self::SYNTHETIC_SOURCE_SYSTEMS);
     }
 
     /** Whether this listing may back a new reservation right now. */
