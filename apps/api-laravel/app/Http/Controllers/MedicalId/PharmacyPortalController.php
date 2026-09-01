@@ -2,16 +2,26 @@
 
 namespace App\Http\Controllers\MedicalId;
 
+use App\Enums\PharmacyStockStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Facility;
+use App\Models\Medicine;
+use App\Models\MedicinePharmacyStock;
 use App\Models\Patient;
 use App\Models\PharmacyInventory;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
+use App\Modules\Pharmacy\Services\PharmacyStockReportService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PharmacyPortalController extends Controller
 {
+    public function __construct(
+        private readonly PharmacyStockReportService $stockReports,
+    ) {
+    }
+
     /**
      * INN / keyword list for identifying controlled substances. OpesCare has no
      * dedicated drug-schedule column yet, so the controlled-substances register
@@ -31,6 +41,20 @@ class PharmacyPortalController extends Controller
         return session('active_facility_id')
             ?? auth()->user()?->primary_facility_id
             ?? Facility::value('id');
+    }
+
+    /**
+     * The facility a stock report may be written against.
+     *
+     * Deliberately narrower than facilityId(): the `Facility::value('id')`
+     * fallback there resolves to "whatever facility happens to be first in the
+     * table", which is harmless for an empty read but would let a user with no
+     * facility context publish stock in a stranger's name.
+     */
+    private function writableFacilityId(): ?string
+    {
+        return session('active_facility_id')
+            ?? auth()->user()?->primary_facility_id;
     }
 
     // ------------------------------------------------------------------
@@ -126,36 +150,141 @@ class PharmacyPortalController extends Controller
     }
 
     // ------------------------------------------------------------------
-    // Drug Inventory
+    // Public medicine availability — the rows the patient finder reads
     // ------------------------------------------------------------------
 
+    /**
+     * Legacy path (`/portals/pharmacy/inventory`).
+     *
+     * Repointed at `medicine_pharmacy_stocks`. It used to read
+     * `pharmacy_inventories`, which no patient query has ever touched — a
+     * pharmacist updating stock here changed nothing anybody could see.
+     * `pharmacy_inventories` is untouched and still backs the dashboard
+     * counters and the controlled-substances register (expiry, recall and
+     * quarantine live there and have no equivalent on the public listing).
+     */
     public function inventory(Request $req)
     {
-        $facilityId = $this->facilityId();
+        return $this->stock($req);
+    }
 
-        $q = PharmacyInventory::where('facility_id', $facilityId);
+    /**
+     * Reported public availability for this pharmacy's directory listing.
+     *
+     * This is the table `MedicineFinderService` queries, so what is edited
+     * here is exactly what a patient searching nearby pharmacies sees.
+     */
+    public function stock(Request $req)
+    {
+        $listing = $this->stockReports->listingFor($this->writableFacilityId());
+        $issues  = $this->stockReports->listingIssues($listing);
 
-        if ($search = $req->input('search')) {
-            $q->where(function ($sq) use ($search) {
-                $sq->where('medicine_name', 'like', "%{$search}%")
-                   ->orWhere('generic_name', 'like', "%{$search}%");
-            });
-        }
+        $search = trim((string) $req->input('search'));
+        $status = (string) $req->input('stock_status');
 
-        if ($status = $req->input('stock_status')) {
-            // "expired" is tracked on the is_expired boolean, not the stock_status
-            // enum (in_stock / low_stock / out_of_stock) — special-case it so the
-            // dashboard "Expired" stat card links to a filter that actually matches.
-            if ($status === 'expired') {
-                $q->where('is_expired', true);
-            } else {
+        $stocks   = null;
+        $catalog  = collect();
+        $coverage = ['total' => 0, 'reported' => 0, 'seeded' => 0];
+
+        if ($listing) {
+            $q = MedicinePharmacyStock::query()
+                ->where('care_facility_id', $listing->id)
+                ->with('medicine');
+
+            if ($search !== '') {
+                $q->whereHas('medicine', function ($m) use ($search) {
+                    $m->where('name', 'ilike', "%{$search}%")
+                      ->orWhere('generic_name', 'ilike', "%{$search}%")
+                      ->orWhere('brand_name', 'ilike', "%{$search}%");
+                });
+            }
+
+            if ($status !== '' && in_array($status, PharmacyStockStatus::values(), true)) {
                 $q->where('stock_status', $status);
             }
+
+            $stocks = $q
+                ->orderBy(Medicine::select('name')
+                    ->whereColumn('medicines.id', 'medicine_pharmacy_stocks.medicine_id'))
+                ->paginate(30)
+                ->withQueryString();
+
+            // Catalog entries this pharmacy has never reported on — the
+            // "add a medicine" picker. Capped so a 419-row catalog cannot
+            // grow into an unbounded <select>.
+            $catalog = Medicine::query()
+                ->active()
+                ->whereNotIn('id', MedicinePharmacyStock::query()
+                    ->where('care_facility_id', $listing->id)
+                    ->select('medicine_id'))
+                ->orderBy('name')
+                ->limit(500)
+                ->get(['id', 'name', 'strength', 'form', 'default_pack_size', 'currency']);
+
+            $coverage = $this->stockReports->coverage($listing);
         }
 
-        $drugs = $q->orderBy('medicine_name')->paginate(30)->withQueryString();
+        return view('portals.pharmacy.inventory', [
+            'listing'      => $listing,
+            'issues'       => $issues,
+            'stocks'       => $stocks,
+            'catalog'      => $catalog,
+            'coverage'     => $coverage,
+            'statuses'     => PharmacyStockStatus::cases(),
+            'portalSource' => PharmacyStockReportService::SOURCE_PORTAL,
+        ]);
+    }
 
-        return view('portals.pharmacy.inventory', compact('drugs'));
+    /**
+     * Report one medicine's availability into `medicine_pharmacy_stocks`.
+     *
+     * Insert vs. update, the `last_reported_at` stamp, the `source_system`
+     * marker and the overwrite audit all live in PharmacyStockReportService —
+     * this method only resolves who is writing and validates what they sent.
+     */
+    public function reportStock(Request $req)
+    {
+        $listing = $this->stockReports->listingFor($this->writableFacilityId());
+
+        if (! $listing) {
+            return back()->with('error', __('public.pharmacy_portal.stock_err_unlinked'));
+        }
+
+        $validated = $req->validate([
+            'medicine_id'         => ['required', 'uuid'],
+            'stock_status'        => ['required', Rule::in(PharmacyStockStatus::values())],
+            'packs_available'     => ['nullable', 'integer', 'min:0', 'max:1000000'],
+            'pack_size'           => ['nullable', 'string', 'max:60'],
+            'unit_price'          => ['nullable', 'numeric', 'min:0', 'max:99999999.99'],
+            'reservation_enabled' => ['nullable', 'boolean'],
+        ]);
+
+        $medicine = Medicine::query()->active()->find($validated['medicine_id']);
+
+        if (! $medicine) {
+            return back()->with('error', __('public.pharmacy_portal.stock_err_medicine'));
+        }
+
+        $this->stockReports->report($listing, $medicine, [
+            'stock_status'        => $validated['stock_status'],
+            'packs_available'     => $validated['packs_available'] ?? null,
+            'pack_size'           => $validated['pack_size'] ?? null,
+            'unit_price'          => $validated['unit_price'] ?? null,
+            'reservation_enabled' => $req->boolean('reservation_enabled'),
+        ], auth()->id());
+
+        $this->stockReports->touchListingFreshness($listing);
+
+        // `stock_status` in the body is the NEW status being reported; the list
+        // filter travels separately so the pharmacist lands back where they were.
+        return redirect()
+            ->route('portals.pharmacy.stock', array_filter([
+                'search'       => $req->input('search'),
+                'stock_status' => $req->input('stock_status_filter'),
+            ]))
+            ->with('success', __('public.pharmacy_portal.stock_flash_reported', [
+                'medicine' => $medicine->name,
+            ]));
     }
 
     // ------------------------------------------------------------------

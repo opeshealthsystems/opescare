@@ -8,7 +8,7 @@
 **Database:** PostgreSQL  
 **Queue/Cache:** Redis  
 **PDF Generation:** Server-side PDF rendering required  
-**Mobile App:** Flutter recommended  
+**Mobile App:** Expo / React Native (`apps/mobile-expo`)  
 **Verification:** QR code + secure verification code + signed/tamper-evident document hash  
 **Interoperability Direction:** HL7 FHIR-aligned document metadata and clinical resource mapping  
 **Coding Direction:** LOINC/SNOMED/ICD/ATC/RxNorm/local codes where applicable  

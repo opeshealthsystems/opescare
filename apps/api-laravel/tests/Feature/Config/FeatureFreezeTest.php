@@ -66,7 +66,8 @@ class FeatureFreezeTest extends TestCase
         // Guard against a vacuous pass: if bootstrap/app.php ever stops calling
         // Features::freeze(), every frozen module silently goes live again.
         $this->assertNotEmpty($paths, 'bootstrap/app.php must declare the frozen URI surface.');
-        $this->assertCount(7, $paths, 'All seven V1-frozen modules must be gated by URI pattern.');
+        $this->assertCount(8, $paths, 'Every declared feature flag must be gated by URI pattern. '
+            . 'Seven are frozen; insurance_coverage is gated but ships ON, so it is listed here too.');
 
         foreach (array_keys($paths) as $gatedKey) {
             $this->assertContains(

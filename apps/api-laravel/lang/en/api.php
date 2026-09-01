@@ -121,7 +121,6 @@ return [
     'facility_id_required'          => 'facility_id is required.',
     'facility_id_mismatch'          => 'facility_id mismatch.',
     'facility_id_mismatch_auth'     => 'facility_id in body does not match your authenticated facility.',
-    'facility_id_mismatch_cds'      => 'facility_id does not match your authenticated facility.',
     'forbidden_facility_mismatch'   => 'Forbidden: facility_id mismatch.',
     'actor_unresolved'              => 'Actor could not be resolved.',
     'actor_unresolved_request'      => 'Actor identity could not be resolved from request context.',
@@ -154,9 +153,6 @@ return [
     // Appointments
     'added_to_waitlist'             => 'Added to waitlist.',
     'appointment_booked'           => 'Appointment booked.',
-    // Billing / cashier
-    'no_consent_billing'            => 'You do not have a consent grant to access billing records for this patient.',
-    'cashier_session_closed'        => 'This cashier session is already closed and reconciled.',
     // Care map
     'facility_listing_inactive'     => 'This facility listing is not currently active.',
     'caremap_report_submitted'      => 'Report submitted successfully. We will review the listing information.',
@@ -186,6 +182,10 @@ return [
     'candidate_confirmed_duplicate' => 'Candidate confirmed as duplicate. Proceed to merge via /connect/admin/merge-cases.',
     'candidate_rejected_distinct'   => 'Candidate rejected — records marked as distinct patients.',
     'identifier_linked'             => 'Identifier linked successfully.',
+    // Blood bank queue — the facility side of a patient's blood request
+    'blood_request_not_found'           => 'Blood request not found for this facility.',
+    'blood_request_decision_recorded'   => 'Blood request updated.',
+    'blood_request_transition_not_allowed' => 'This blood request can no longer move to that status.',
     // Blood inventory
     'blood_inventory_updated'       => 'Blood inventory updated.',
     'safety_flag_required'          => 'At least one flag (is_expired, is_quarantined, is_unsafe) is required.',
@@ -279,8 +279,6 @@ return [
     'search_query_missing'          => 'Missing required parameter: query.',
     'search_type_unsupported'       => 'Unsupported search_type. Accepted: health_id, cnamgs_id, national_id, phone, demographic.',
     'no_patient_matching'           => 'No patient matching these parameters was found on OpesCare.',
-    // Telemedicine
-    'telemedicine_consent_required' => 'Telemedicine consent must be recorded before joining the waiting room.',
     // Encounter
     'clinical_note_amended'         => 'Clinical note amended. Original note preserved with status "amended".',
     'allergy_recorded'              => 'Allergy recorded.',
@@ -323,12 +321,6 @@ return [
     'export_created_suppression'    => 'Export successfully created with Small-Cell Suppression.',
     'file_not_found'                => 'File not found.',
     'export_file_expired'           => 'Export file has expired.',
-    // CDS
-    'alert_acknowledged'            => 'Alert acknowledged.',
-    'alert_overridden'              => 'Alert overridden with documented reason.',
-    'alert_dismissed'               => 'Alert dismissed.',
-    'override_not_found'            => 'Override not found.',
-    'override_qa_reviewed'          => 'Override marked as QA reviewed.',
     // Reconciliation
     'reconciliation_case_not_found' => 'Reconciliation case not found or does not belong to your facility.',
     'reconciliation_resolved'       => 'Reconciliation case marked resolved. Sync timeline events queued.',

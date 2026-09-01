@@ -31,12 +31,12 @@ Changes landed locally this session that the **next production deploy must accou
   is reachable from the `mobile-api` subdomain.
 
 **Patient mobile app — NOT yet shippable (do not publish the build):**
-- Backend mobile API is complete & verified (20/20 mobile tests green). But the Flutter app still needs
-  A1 (l10n codegen — won't compile without it), C (EN/FR across 32 screens), D1/D2/D4/D6 (app-lock,
-  cert pinning, root detection, session timeout), E (Firebase), and F (release build/signing/store).
-  Full task list + status: `apps/mobile-patient/docs/superpowers/plans/2026-06-13-mobile-patient-production-readiness.md`.
-- Code-complete this session (unverified — no Flutter SDK here): production HTTPS URL guard, force-update
-  wiring, iOS privacy blur, PHI-safe logger. These need `flutter analyze` before relying on them.
+- Backend mobile API is complete & verified (20/20 mobile tests green).
+- **2026-08-31:** the app was rebuilt on Expo / React Native (`apps/mobile-expo`); the previous Flutter app
+  (`apps/mobile-patient`) is retired and removed, and its readiness plan went with it. The readiness items
+  still outstanding for the new app: EN/FR across all screens, app-lock / cert pinning / root detection /
+  session timeout, push credentials, and release build + signing + store submission
+  (see `qa-release/store-submission-checklist.md`).
 - ⇒ **Deploy the web/API platform independently of the mobile app.** The app is a fast-follow, not a blocker.
 
 ---
@@ -58,7 +58,7 @@ Changes landed locally this session that the **next production deploy must accou
 - [x] **A1 — Test suite green.** ✅ Run 2026-06-13: `php artisan test` → **735 tests, 730 passed, 5 skipped, 0 failed** (1954 assertions, ~143s, against the dedicated Postgres `opescare_test` DB). The biggest unknown is closed — the code is green.
 - [ ] **A2 — Migrations applied.** `php artisan migrate:status` against the Postgres `opescare` DB → any **Pending** = not run. Back up, then `php artisan migrate`. (177 migrations; newest 2026-06-09.)
 - [ ] **A3 — Authoritative route-auth sweep.** `php artisan route:list --json > routes.json && python docs/audits/route_auth_check.py routes.json`. Confirm no PHI route is unauthenticated. (Spot-checks were clean; full sweep pending.)
-- [ ] **A4 — Dependency vulnerability scans.** `composer audit` · `pip-audit` (bridge-agent, sdk/python) · Flutter `pana`. (`npm audit` on api-laravel already = 0 vulnerabilities.)
+- [ ] **A4 — Dependency vulnerability scans.** `composer audit` · `pip-audit` (bridge-agent, sdk/python) · `npm audit` (apps/mobile-expo). (`npm audit` on api-laravel already = 0 vulnerabilities.)
 - [ ] **A5 — Working tree committed.** `git status` / `git log --oneline -15`. Expect many doc renames (the consolidation) + new docs + the mobile-manifest fix — review and commit.
 
 ## B. P0 — fix before deploy (safety / correctness / security)
@@ -74,7 +74,7 @@ Changes landed locally this session that the **next production deploy must accou
 - [ ] **C1 — GAP-007** Wire the interactive public-health `submitReport` to the real `Dhis2Service` (the batch DHIS2 path already works).
 - [ ] **C2 — GAP-015** Schedule appointment reminders/confirmations (service exists; no cron wired).
 - [ ] **C3 — GAP-012** Enforce device AES-256 encryption before offline EMR caching.
-- [ ] **C4 — GAP-002** Configure Firebase for the mobile app (`flutterfire configure` + Gradle plugins) — needs the owner's Firebase project.
+- [ ] **C4 — GAP-002** Configure push notifications for the Expo app (EAS push credentials + device-token registration) — needs the owner's Firebase/APNs accounts.
 - [ ] **C5 — GAP-011** Real telemedicine call provider (WebRTC/Twilio/Agora) — only if telemedicine is in launch scope.
 - [ ] **C6 — TD-001/002/003** Remove duplicate service folders (`Payment/` vs `Payments/`, two DHIS2 services, etc.), loose debug scripts (`patch_diagnosis.php`, `col_check.php`, `fid_check.php`, `seal_check.php`, `scratch/*`), and the stray nested `apps/api-laravel/apps/` directory.
 

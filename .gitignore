@@ -55,3 +55,10 @@ bridge-agent/config.json
 /Mobile app screens/*.png
 /Mobile app screens/*.csv
 !/Mobile app screens/_archive/
+
+# SDK dependency directories. Reproducible from each SDK's own lockfile —
+# sdk/php/vendor alone was 1,887 tracked files and 12 MB of committed
+# dependencies, which is repo weight nobody reads and every clone pays for.
+sdk/*/vendor/
+sdk/*/node_modules/
+sdk/*/.phpunit.result.cache

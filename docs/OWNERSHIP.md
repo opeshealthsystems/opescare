@@ -12,7 +12,7 @@ For PR review routing, see `CODEOWNERS` at the repo root.
 | Security | `/docs/security/` | @makkowens24 | Threat model, hardening checklist, WAF |
 | Deployment & runbooks | `/docs/deployment/`, `/docs/runbooks/` | @makkowens24 | CloudPanel, DR, secrets rotation |
 | SOPs | `/docs/sops/` | @makkowens24 | Operational procedures |
-| Mobile | `/docs/mobile/` | @jiencestonmorningstar | Flutter app docs |
+| Mobile | `/docs/mobile/` | @jiencestonmorningstar | Patient app (Expo) docs |
 | Clinical specs | `/docs/specs-core/` | @makkowens24 | Operational modules, governance |
 | Design specs | `/docs/design-specs/`, `/docs/ui-ux/` | @makkowens24 | Helix v2, portal layouts |
 | QA & release | `/docs/qa-release/` | @makkowens24 | Go-live readiness, sign-off |

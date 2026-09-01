@@ -36,8 +36,8 @@ pip install pip-audit
 pip-audit -r ../../bridge-agent/requirements.txt   # or: cd ../../bridge-agent && pip-audit
 cd ../../sdk/python && pip-audit
 
-# Flutter / Dart (mobile app)
-cd ../../apps/mobile-patient && flutter pub outdated && dart pub global activate pana && pana .
+# JavaScript (Expo patient app)
+cd ../../apps/mobile-expo && npm audit && npx expo-doctor
 ```
 
 > In-sandbox result already obtained: **`npm audit` on `apps/api-laravel` = 0 vulnerabilities** (info/low/moderate/high/critical all 0). Treat as preliminary; re-run locally.

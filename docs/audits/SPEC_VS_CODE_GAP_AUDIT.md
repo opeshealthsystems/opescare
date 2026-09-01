@@ -4,7 +4,9 @@
 **What this is:** every capability the specs promise that the code does not yet fully deliver, written so Claude Code can act on each item directly — stable ID, exact file path(s), the precise gap, and an acceptance criterion ("Done when…").
 **Companion docs:** `../AS_BUILT_IMPLEMENTATION_REGISTER.md` (current state), `../security/threat-model.md`, `../CLAUDE.md` (entry point).
 
-> **All paths are relative to `apps/api-laravel/` unless prefixed** (`apps/mobile-patient/`, `sdk/`, `widget/`, `bridge-agent/`).
+> **All paths are relative to `apps/api-laravel/` unless prefixed** (`apps/mobile-expo/`, `sdk/`, `widget/`, `bridge-agent/`).
+>
+> **2026-08-31:** the Flutter patient app (`apps/mobile-patient`) was retired in favour of the Expo app (`apps/mobile-expo`). Gaps that only existed against Flutter files are marked **WITHDRAWN**; re-open them against `apps/mobile-expo` if they still apply there.
 
 ---
 
@@ -23,15 +25,14 @@ A new **tech-debt** section (bottom) flags duplicate service folders and loose s
 
 ## Tier 1 — Blockers
 
-### GAP-001 — Mobile release build missing INTERNET permission — ✅ RESOLVED 2026-06-11
-- **File:** `apps/mobile-patient/android/app/src/main/AndroidManifest.xml`
-- **Was:** no permissions in the main manifest (INTERNET only in debug/profile) → release app could not reach the API.
-- **Fixed:** added `INTERNET` + `POST_NOTIFICATIONS`; app label set to "OpesCare". Verified well-formed.
+### GAP-001 — Mobile release build missing INTERNET permission — ✅ RESOLVED 2026-06-11 (app since retired)
+- Was fixed in the Flutter app's release manifest; that app was removed on 2026-08-31. The Expo app declares its Android permissions in `apps/mobile-expo/app.json`.
 
-### GAP-002 — Firebase not configured (push/Crashlytics/Analytics inert) — 🔴
-- **Files:** `apps/mobile-patient/lib/firebase_options.dart` (throws `UnimplementedError`); `apps/mobile-patient/android/app/build.gradle.kts` (no `google-services`/`crashlytics` plugins); missing `apps/mobile-patient/android/app/google-services.json` and `apps/mobile-patient/ios/Runner/GoogleService-Info.plist`; `lib/main.dart` swallows the init exception.
-- **Done when:** `flutterfire configure` has generated real config; the Gradle plugins are applied; a release build initializes Firebase and a forced test crash appears in the Crashlytics console; `main.dart` logs (not swallows) init failures.
-- **Note:** requires the owner's Firebase project — hand off (see `CLAUDE.md`).
+### GAP-002 — Push notifications not configured end-to-end — 🔴
+- **Was:** Firebase never configured in the Flutter app (stub `firebase_options.dart`, no Gradle plugins, no `google-services.json`/plist) → push/Crashlytics/Analytics inert.
+- **Now:** carried over to the Expo app. `apps/mobile-expo/app.json` declares the `expo-notifications` plugin, but no credentials/project are wired.
+- **Done when:** push credentials are configured for the Expo project (EAS), a device registers its token against the mobile API, and a test push arrives on a release build on both platforms.
+- **Note:** requires the owner's Firebase/APNs accounts — hand off (see `CLAUDE.md`).
 
 ### GAP-003 — Connect Widget not implemented; session tokens validate nothing — 🔴
 - **Files:** `widget/connect-widget.html` (40-line demo iframe to an external host); `app/Http/Controllers/Api/V1/Connect/AuthController.php` → `createWidgetSession` (returns a random `wgt_session_*` string; no `WidgetSession` model, no validator anywhere in `app/`).
@@ -110,10 +111,10 @@ A new **tech-debt** section (bottom) flags duplicate service folders and loose s
 
 ## Tier 3 — Low (polish)
 
-- **GAP-020** Mobile accessibility `Semantics` labels missing on Home/Login key widgets (`apps/mobile-patient/lib/.../home_screen.dart`, `login_screen.dart`).
-- **GAP-021** Mobile `appointment_booked` analytics event not logged (`book_appointment_screen.dart`).
-- **GAP-022** Health-ID `idCard` icon swap not done; bottom nav uses `heart` (`main_shell.dart`).
-- **GAP-023** App icon/splash config blocks absent in `apps/mobile-patient/pubspec.yaml`; `assets/icon/` has no `icon.png`.
+- **GAP-020** — **WITHDRAWN 2026-08-31.** Was: accessibility labels missing on the retired Flutter Home/Login screens. Re-audit accessibility on `apps/mobile-expo` before store submission.
+- **GAP-021** Mobile `appointment_booked` analytics event not logged (still open — re-scope to `apps/mobile-expo/app/appointments/book.tsx`).
+- **GAP-022** — **WITHDRAWN 2026-08-31.** Was: Health-ID icon/bottom-nav swap in the retired Flutter shell.
+- **GAP-023** — **WITHDRAWN 2026-08-31.** Was: missing icon/splash config in the Flutter `pubspec.yaml`. The Expo app ships icons/adaptive icons in `apps/mobile-expo/app.json`.
 - **GAP-024** Backup cadence daily vs SOP-020 hourly (`routes/console.php`).
 - **GAP-025** SDK pagination helpers and `ReconciliationRequiredError`/`FacilitySuspendedError` types missing (`sdk/*`).
 - **GAP-026** KMS per-facility AAD domain separation not implemented; AAD empty (`app/Services/Security/KmsEncryptionService.php`).

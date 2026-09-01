@@ -11,7 +11,7 @@
 **Queue/Cache:** Redis  
 **Search:** PostgreSQL full-text search initially; optional Meilisearch/Typesense/Elasticsearch later  
 **Maps:** Provider-agnostic map layer; support Google Maps, Mapbox, OpenStreetMap, or other provider through abstraction  
-**Mobile App:** Flutter recommended  
+**Mobile App:** Expo / React Native (`apps/mobile-expo`)  
 **Important Rule:** Do not use OpesHIS OS. Do not copy OpesHIS OS map, facility, directory, database, UI, or listing assumptions.  
 **Safety Rule:** The map must not guarantee clinical service availability. It must show verified and recently updated information with clear safety disclaimers.
 

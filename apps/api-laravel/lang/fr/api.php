@@ -108,7 +108,6 @@ return [
     'facility_id_required'          => 'facility_id est requis.',
     'facility_id_mismatch'          => 'IncohÃ©rence de facility_id.',
     'facility_id_mismatch_auth'     => 'Le facility_id dans le corps de la requÃªte ne correspond pas Ã  votre Ã©tablissement authentifiÃ©.',
-    'facility_id_mismatch_cds'      => 'facility_id ne correspond pas Ã  votre Ã©tablissement authentifiÃ©.',
     'forbidden_facility_mismatch'   => 'Interdit : incohÃ©rence de facility_id.',
     'actor_unresolved'              => 'L\'acteur n\'a pas pu Ãªtre dÃ©terminÃ©.',
     'actor_unresolved_request'      => 'L\'identitÃ© de l\'acteur n\'a pas pu Ãªtre dÃ©terminÃ©e Ã  partir du contexte de la requÃªte.',
@@ -141,9 +140,6 @@ return [
     // Appointments
     'added_to_waitlist'             => 'AjoutÃ© Ã  la liste d\'attente.',
     'appointment_booked'           => 'Rendez-vous rÃ©servÃ©.',
-    // Billing / cashier
-    'no_consent_billing'            => 'Vous n\'avez pas d\'autorisation de consentement pour accÃ©der aux dossiers de facturation de ce patient.',
-    'cashier_session_closed'        => 'Cette session de caisse est dÃ©jÃ  clÃ´turÃ©e et rÃ©conciliÃ©e.',
     // Care map
     'facility_listing_inactive'     => 'Cette fiche d\'Ã©tablissement n\'est pas actuellement active.',
     'caremap_report_submitted'      => 'Signalement soumis avec succÃ¨s. Nous examinerons les informations de la fiche.',
@@ -173,6 +169,10 @@ return [
     'candidate_confirmed_duplicate' => 'Candidat confirmÃ© comme doublon. ProcÃ©dez Ã  la fusion via /connect/admin/merge-cases.',
     'candidate_rejected_distinct'   => 'Candidat rejetÃ© â€” dossiers marquÃ©s comme patients distincts.',
     'identifier_linked'             => 'Identifiant liÃ© avec succÃ¨s.',
+    // Blood bank queue — the facility side of a patient's blood request
+    'blood_request_not_found'           => 'Demande de sang introuvable pour cet établissement.',
+    'blood_request_decision_recorded'   => 'Demande de sang mise à jour.',
+    'blood_request_transition_not_allowed' => 'Cette demande de sang ne peut plus passer à ce statut.',
     // Blood inventory
     'blood_inventory_updated'       => 'Inventaire de sang mis Ã  jour.',
     'safety_flag_required'          => 'Au moins un indicateur (is_expired, is_quarantined, is_unsafe) est requis.',
@@ -266,8 +266,6 @@ return [
     'search_query_missing'          => 'ParamÃ¨tre requis manquant : query.',
     'search_type_unsupported'       => 'search_type non pris en charge. AcceptÃ©s : health_id, cnamgs_id, national_id, phone, demographic.',
     'no_patient_matching'           => 'Aucun patient correspondant Ã  ces paramÃ¨tres n\'a Ã©tÃ© trouvÃ© sur OpesCare.',
-    // Telemedicine
-    'telemedicine_consent_required' => 'Le consentement de tÃ©lÃ©mÃ©decine doit Ãªtre enregistrÃ© avant de rejoindre la salle d\'attente.',
     // Encounter
     'clinical_note_amended'         => 'Note clinique modifiÃ©e. Note originale conservÃ©e avec le statut Â« modifiÃ©e Â».',
     'allergy_recorded'              => 'Allergie enregistrÃ©e.',
@@ -310,12 +308,6 @@ return [
     'export_created_suppression'    => 'Export crÃ©Ã© avec succÃ¨s avec suppression des petites cellules.',
     'file_not_found'                => 'Fichier introuvable.',
     'export_file_expired'           => 'Le fichier d\'export a expirÃ©.',
-    // CDS
-    'alert_acknowledged'            => 'Alerte accusÃ©e de rÃ©ception.',
-    'alert_overridden'              => 'Alerte ignorÃ©e avec raison documentÃ©e.',
-    'alert_dismissed'               => 'Alerte rejetÃ©e.',
-    'override_not_found'            => 'DÃ©rogation introuvable.',
-    'override_qa_reviewed'          => 'DÃ©rogation marquÃ©e comme examinÃ©e par l\'AQ.',
     // Reconciliation
     'reconciliation_case_not_found' => 'Cas de rÃ©conciliation introuvable ou n\'appartenant pas Ã  votre Ã©tablissement.',
     'reconciliation_resolved'       => 'Cas de rÃ©conciliation marquÃ© comme rÃ©solu. Ã‰vÃ©nements de chronologie de synchronisation mis en file d\'attente.',

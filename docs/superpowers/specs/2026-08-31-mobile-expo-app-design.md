@@ -3,6 +3,12 @@
 **Date:** 2026-08-31
 **Status:** Approved to build (user directive, 2026-08-31 — proceeding autonomously overnight)
 
+> **Follow-up (2026-08-31, same day):** the "later cleanup" anticipated in decision 1
+> and §8 has since happened — **`apps/mobile-patient` was deleted** and every reference
+> to it across `docs/`, `.github/` and the root config was removed or repointed at
+> `apps/mobile-expo`. The Flutter references below are kept as the historical record of
+> why the rebuild happened; they are not a description of the current repo.
+
 ## 1. Problem & context
 
 OpesCare has a Flutter patient app (`apps/mobile-patient`) with 19 working feature
@@ -19,8 +25,9 @@ mixed in.
 ## 2. Decisions locked in this session
 
 1. **Expo replaces Flutter.** One shipped patient app going forward. Flutter
-   (`apps/mobile-patient`) stays in the repo, frozen, as a UI/feature reference —
-   no renaming/deletion yet; that's a later cleanup once Expo reaches parity.
+   (`apps/mobile-patient`) was to stay in the repo, frozen, as a UI/feature reference —
+   with renaming/deletion deferred to a later cleanup once Expo reached parity.
+   *(That cleanup was carried out on 2026-08-31: the Flutter app has been deleted.)*
 2. **Brand: gold/cream.** Canonical OpesCare visual language is the warm
    ivory-background, gold/amber-accent style with the heartbeat-in-ring logo and
    "One Health ID. Connected Care." tagline (seen in login, onboarding, splash-light,
@@ -137,6 +144,6 @@ that didn't exist — that capability is implemented and tested, not stubbed.
 
 ## 8. Explicitly out of scope for this spec
 
-Renaming/removing the Flutter app, creating any login/demo account, and any
-action requiring the assistant to send messages, publish content, or handle
-credentials on the user's behalf.
+Renaming/removing the Flutter app *(done separately later the same day)*, creating
+any login/demo account, and any action requiring the assistant to send messages,
+publish content, or handle credentials on the user's behalf.

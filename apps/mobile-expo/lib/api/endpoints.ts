@@ -92,13 +92,6 @@ export const endpoints = {
   messageThread: (id: string | number) => `/mobile/messages/threads/${id}`,
   sendThreadMessage: (id: string | number) => `/mobile/messages/threads/${id}/messages`,
 
-  // Telemedicine — patient-facing entry point (see routes/mobile_telehealth.php).
-  teleconsultations: '/mobile/telemedicine/consultations',
-  teleconsultation: (id: string) => `/mobile/telemedicine/consultations/${id}`,
-  teleconsultationConsent: (id: string) => `/mobile/telemedicine/consultations/${id}/consent`,
-  teleconsultationJoin: (id: string) => `/mobile/telemedicine/consultations/${id}/join`,
-  teleconsultationEnd: (id: string) => `/mobile/telemedicine/consultations/${id}/end`,
-
   // Pharmacy / Medicine Finder (design spec §6, Phase 2) — served by
   // App\Http\Controllers\Api\Mobile\MobilePharmacyController.
   pharmacyCategories: '/mobile/pharmacy/categories',

@@ -51,10 +51,6 @@ return [
         'validated'   => 'Validé',
         'released'    => 'Libéré',
     ],
-    'cdss' => [
-        'advisory_only' => 'Cette suggestion est uniquement indicative. Le jugement clinique prévaut.',
-        'alert_override_reason' => 'Veuillez indiquer votre raison clinique pour ignorer cette alerte.',
-    ],
     'visit' => [
         'start'    => 'Démarrer la visite',
         'close'    => 'Clôturer la visite',

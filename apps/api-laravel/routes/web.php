@@ -9,9 +9,7 @@ use App\Http\Controllers\MedicalId\AdminUserManagementController;
 use App\Http\Controllers\MedicalId\AdminFacilityManagementController;
 use App\Http\Controllers\MedicalId\AdminPatientManagementController;
 use App\Http\Controllers\MedicalId\AdminStaffManagementController;
-use App\Http\Controllers\MedicalId\AdminCdssRulesController;
 use App\Http\Controllers\MedicalId\AdminSupportController;
-use App\Http\Controllers\MedicalId\AdminFinancialController;
 use App\Http\Controllers\MedicalId\AdminAppointmentsController;
 use App\Http\Controllers\MedicalId\AdminRolesController;
 use App\Http\Controllers\MedicalId\AdminOrganizationsController;
@@ -286,13 +284,6 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
     Route::get('/portals/staff/visits/{id}/consult', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'consult'])->name('portals.staff.visits.consult');
     Route::post('/portals/staff/visits/{id}/consult', [\App\Http\Controllers\MedicalId\VisitPortalController::class, 'consultStore'])->name('portals.staff.visits.consult.store');
 
-    // --- Analytics Dashboard ---
-    Route::get('/portals/staff/analytics',                  [\App\Http\Controllers\MedicalId\AnalyticsDashboardController::class, 'index'])->name('portals.staff.analytics');
-    Route::get('/portals/staff/analytics/queue',            [\App\Http\Controllers\MedicalId\AnalyticsDashboardController::class, 'queue'])->name('portals.staff.analytics.queue');
-    Route::get('/portals/staff/analytics/ward',             [\App\Http\Controllers\MedicalId\AnalyticsDashboardController::class, 'ward'])->name('portals.staff.analytics.ward');
-    Route::get('/portals/staff/analytics/financial',        [\App\Http\Controllers\MedicalId\AnalyticsDashboardController::class, 'financial'])->name('portals.staff.analytics.financial');
-    Route::get('/portals/staff/analytics/data-quality',     [\App\Http\Controllers\MedicalId\AnalyticsDashboardController::class, 'dataQuality'])->name('portals.staff.analytics.data_quality');
-
     // --- Inventory Portal ---
     Route::get('/portals/staff/inventory/pharmacy', [\App\Http\Controllers\MedicalId\InventoryPortalController::class, 'pharmacy'])->name('portals.staff.inventory.pharmacy');
     Route::post('/portals/staff/inventory/pharmacy', [\App\Http\Controllers\MedicalId\InventoryPortalController::class, 'pharmacyStore'])->name('portals.staff.inventory.pharmacy.store');
@@ -379,18 +370,6 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
     Route::post('/portals/staff/wards/admissions/{id}/discharge', [\App\Http\Controllers\MedicalId\WardController::class, 'dischargeStore'])->name('portals.staff.wards.discharge');
     Route::post('/portals/staff/wards/admissions/{id}/transfer',  [\App\Http\Controllers\MedicalId\WardController::class, 'transferStore'])->name('portals.staff.wards.transfer');
 
-    // --- Telemedicine ---
-    Route::get('/portals/staff/telemedicine',                                              [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'index'])->name('portals.staff.telemedicine.index');
-    Route::get('/portals/staff/telemedicine/create',                                       [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'create'])->name('portals.staff.telemedicine.create');
-    Route::post('/portals/staff/telemedicine',                                             [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'store'])->name('portals.staff.telemedicine.store');
-    Route::get('/portals/staff/telemedicine/waiting-room',                                 [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'waitingRoom'])->name('portals.staff.telemedicine.waiting_room');
-    Route::post('/portals/staff/telemedicine/waiting-room/call-next',                      [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'callNext'])->name('portals.staff.telemedicine.call_next');
-    Route::get('/portals/staff/telemedicine/{id}',                                         [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'show'])->name('portals.staff.telemedicine.show');
-    Route::post('/portals/staff/telemedicine/{id}/consent',                                [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'recordConsent'])->name('portals.staff.telemedicine.consent');
-    Route::post('/portals/staff/telemedicine/{id}/start',                                  [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'startCall'])->name('portals.staff.telemedicine.start');
-    Route::post('/portals/staff/telemedicine/{id}/end',                                    [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'endCall'])->name('portals.staff.telemedicine.end');
-    Route::post('/portals/staff/telemedicine/{id}/cancel',                                 [\App\Http\Controllers\MedicalId\TelemedicineController::class, 'cancel'])->name('portals.staff.telemedicine.cancel');
-
     // --- File Storage & Medical Attachments ---
     Route::get('/portals/staff/files',              [\App\Http\Controllers\MedicalId\FileStorageController::class, 'index'])->name('portals.staff.files.index');
     Route::get('/portals/staff/files/upload',       [\App\Http\Controllers\MedicalId\FileStorageController::class, 'create'])->name('portals.staff.files.create');
@@ -413,18 +392,6 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
     Route::get('/portals/staff/supply/goods-receipts',                      [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'goodsReceipts'])->name('portals.staff.supply.goods_receipts');
     Route::post('/portals/staff/supply/goods-receipts',                     [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'goodsReceiptsStore'])->name('portals.staff.supply.goods_receipts.store');
     Route::get('/portals/staff/supply/movements',                           [\App\Http\Controllers\MedicalId\SupplyChainController::class, 'movements'])->name('portals.staff.supply.movements');
-
-    // --- CDSS / Clinical Alerts ---
-    Route::get('/portals/staff/cdss',                                        [\App\Http\Controllers\MedicalId\CdssController::class, 'index'])->name('portals.staff.cdss');
-    Route::get('/portals/staff/cdss/rules',                                  [\App\Http\Controllers\MedicalId\CdssController::class, 'rules'])->name('portals.staff.cdss.rules');
-    Route::get('/portals/staff/cdss/lab-rules',                              [\App\Http\Controllers\MedicalId\CdssController::class, 'labRules'])->name('portals.staff.cdss.lab_rules');
-    Route::get('/portals/staff/cdss/drug-interactions',                      [\App\Http\Controllers\MedicalId\CdssController::class, 'drugInteractions'])->name('portals.staff.cdss.drug_interactions');
-    Route::get('/portals/staff/cdss/patients/{patientId}/alerts',            [\App\Http\Controllers\MedicalId\CdssController::class, 'patientAlerts'])->name('portals.staff.cdss.patient_alerts');
-    Route::get('/portals/staff/cdss/visits/{visitId}/alerts',                [\App\Http\Controllers\MedicalId\CdssController::class, 'visitAlerts'])->name('portals.staff.cdss.visit_alerts');
-    Route::post('/portals/staff/cdss/run-checks',                            [\App\Http\Controllers\MedicalId\CdssController::class, 'runChecks'])->name('portals.staff.cdss.run_checks');
-    Route::post('/portals/staff/cdss/alerts/{alertId}/acknowledge',          [\App\Http\Controllers\MedicalId\CdssController::class, 'acknowledge'])->name('portals.staff.cdss.acknowledge');
-    Route::post('/portals/staff/cdss/alerts/{alertId}/override',             [\App\Http\Controllers\MedicalId\CdssController::class, 'override'])->name('portals.staff.cdss.override');
-    Route::post('/portals/staff/cdss/alerts/{alertId}/dismiss',              [\App\Http\Controllers\MedicalId\CdssController::class, 'dismiss'])->name('portals.staff.cdss.dismiss');
 
     // --- Insurance Portal ---
     Route::get('/portals/insurance', [\App\Http\Controllers\MedicalId\InsurancePortalController::class, 'dashboard'])->name('portals.insurance.dashboard');
@@ -592,20 +559,6 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
         Route::post('{id}/activate', [AdminStaffManagementController::class, 'activate'])->name('activate');
     });
 
-    // ── CDSS Rules ──────────────────────────────────────────────────────────
-    Route::prefix('portals/admin/cdss')->name('portals.admin.cdss.')->group(function () {
-        Route::get('/',                              [AdminCdssRulesController::class, 'index'])->name('index');
-        Route::get('drug-interactions',              [AdminCdssRulesController::class, 'drugInteractions'])->name('drug-interactions');
-        Route::post('drug-interactions',             [AdminCdssRulesController::class, 'storeDrugInteraction'])->name('store-drug');
-        Route::post('drug-interactions/{id}/delete', [AdminCdssRulesController::class, 'destroyDrugInteraction'])->name('destroy-drug');
-        Route::get('allergy-alerts',                 [AdminCdssRulesController::class, 'allergyAlerts'])->name('allergy-alerts');
-        Route::post('allergy-alerts',                [AdminCdssRulesController::class, 'storeAllergyAlert'])->name('store-allergy');
-        Route::post('allergy-alerts/{id}/delete',    [AdminCdssRulesController::class, 'destroyAllergyAlert'])->name('destroy-allergy');
-        Route::get('lab-alerts',                     [AdminCdssRulesController::class, 'labAlerts'])->name('lab-alerts');
-        Route::post('lab-alerts',                    [AdminCdssRulesController::class, 'storeLabAlert'])->name('store-lab');
-        Route::post('lab-alerts/{id}/delete',        [AdminCdssRulesController::class, 'destroyLabAlert'])->name('destroy-lab');
-    });
-
     // ── Support Admin ───────────────────────────────────────────────────────
     Route::prefix('portals/admin/support')->name('portals.admin.support.')->group(function () {
         Route::get('/',              [AdminSupportController::class, 'index'])->name('index');
@@ -614,17 +567,6 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
         Route::post('{id}/close',    [AdminSupportController::class, 'close'])->name('close');
         Route::post('{id}/reopen',   [AdminSupportController::class, 'reopen'])->name('reopen');
         Route::post('{id}/delete',   [AdminSupportController::class, 'destroy'])->name('destroy');
-    });
-
-    // ── Financial Overview ──────────────────────────────────────────────────
-    Route::prefix('portals/admin/financial')->name('portals.admin.financial.')->group(function () {
-        Route::get('/',                       [AdminFinancialController::class, 'index'])->name('index');
-        Route::get('payments',                [AdminFinancialController::class, 'payments'])->name('payments');
-        Route::get('payments/{id}',           [AdminFinancialController::class, 'paymentDetail'])->name('payment.detail');
-        Route::get('invoices',                [AdminFinancialController::class, 'invoices'])->name('invoices');
-        Route::post('invoices/{id}/mark-paid',[AdminFinancialController::class, 'markPaid'])->name('mark-paid');
-        Route::post('invoices/{id}/void',     [AdminFinancialController::class, 'voidInvoice'])->name('void-invoice');
-        Route::get('reports/by-service',      [AdminFinancialController::class, 'reportByService'])->name('report.by_service');
     });
 
     // ── Appointments Overview ───────────────────────────────────────────────
@@ -727,6 +669,13 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access'])->group(funct
     Route::get('/portals/pharmacy/prescriptions',               [\App\Http\Controllers\MedicalId\PharmacyPortalController::class, 'prescriptions'])->name('portals.pharmacy.prescriptions');
     Route::post('/portals/pharmacy/prescriptions/{id}/dispense',[\App\Http\Controllers\MedicalId\PharmacyPortalController::class, 'dispense'])->name('portals.pharmacy.dispense');
     Route::get('/portals/pharmacy/inventory',                   [\App\Http\Controllers\MedicalId\PharmacyPortalController::class, 'inventory'])->name('portals.pharmacy.inventory');
+    // Public medicine availability — the medicine_pharmacy_stocks rows the
+    // patient Medicine Finder reads. Deliberately NOT under the
+    // /portals/pharmacy/inventory path, which the inventory_ops V1 freeze
+    // 404s (bootstrap/app.php): the finders ship in V1, facility-internal
+    // inventory ops do not.
+    Route::get('/portals/pharmacy/stock',                       [\App\Http\Controllers\MedicalId\PharmacyPortalController::class, 'stock'])->name('portals.pharmacy.stock');
+    Route::post('/portals/pharmacy/stock',                      [\App\Http\Controllers\MedicalId\PharmacyPortalController::class, 'reportStock'])->name('portals.pharmacy.stock.report');
     Route::get('/portals/pharmacy/controlled',                  [\App\Http\Controllers\MedicalId\PharmacyPortalController::class, 'controlled'])->name('portals.pharmacy.controlled');
 });
 

@@ -7,7 +7,7 @@
 **Core Backend:** Laravel  
 **Database:** PostgreSQL  
 **Queue/Cache:** Redis  
-**Mobile App:** Flutter recommended  
+**Mobile App:** Expo / React Native (`apps/mobile-expo`)  
 **Specialist Services:** Python/FastAPI later for duplicate detection, identity risk scoring, OCR, anomaly detection, and analytics  
 **Important Rule:** Do not use OpesHIS OS. Do not copy OpesHIS OS code, database structure, UI, ID format, QR logic, module structure, or assumptions.
 

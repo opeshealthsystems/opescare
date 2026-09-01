@@ -72,9 +72,22 @@ return Application::configure(basePath: dirname(__DIR__))
             'insurance' => [
                 'api/v1/insurance',
                 'api/v1/insurance/*',
-                'api/mobile/insurance',          // exact — marketplace is separate, below
                 'portals/insurance',
                 'portals/insurance/*',
+            ],
+
+            // The patient's read-only view of their OWN coverage. Defaults ON in
+            // config/features.php, unlike everything else in this map: coverage is
+            // Health-ID identity data ("who covers this person, until when"), not the
+            // claims money workflow above. It is the same fact FHIR R4 Coverage already
+            // exposes to partners, so freezing it left the patient unable to see their
+            // own cover while a partner system could read it — backwards.
+            //
+            // This MUST be its own key. featureForRequest() returns the FIRST matching
+            // pattern, so while 'insurance' owned 'api/mobile/insurance' the endpoint
+            // 404'd on the claims flag and the coverage flag was never consulted.
+            'insurance_coverage' => [
+                'api/mobile/insurance',          // exact — marketplace is a separate key below
             ],
 
             // Patient-facing plan shopping / purchase.
@@ -86,10 +99,14 @@ return Application::configure(basePath: dirname(__DIR__))
             ],
 
             // Facility-internal patient billing.
-            // NOT frozen: portals/admin/financial/*, portals/admin/subscription/*
-            // and api/payments/mobile-money/*/callback — that is OpesCare's own
+            // Every pattern below still matches a live route — the api/v1 ones
+            // in the SEALED routes/api.php, the portal ones in routes/web.php —
+            // so none of them may be removed from this list.
+            // NOT frozen: portals/admin/subscription/* and
+            // api/payments/mobile-money/*/callback — that is OpesCare's own
             // platform revenue plus live gateway webhooks. 404-ing a payment
-            // provider's callback loses money.
+            // provider's callback loses money. (portals/admin/financial/* was
+            // deleted outright from routes/web.php.)
             'billing' => [
                 'api/v1/billing',
                 'api/v1/billing/*',
@@ -123,16 +140,21 @@ return Application::configure(basePath: dirname(__DIR__))
             ],
 
             // Drug-interaction / allergy / lab-rule alerting.
+            // The portal surfaces (portals/staff/cdss/*, portals/admin/cdss/*)
+            // were deleted from routes/web.php, so their patterns are gone from
+            // this list. The api/v1/cdss group still exists in the SEALED
+            // routes/api.php and this freeze is the only thing 404-ing it — do
+            // not remove these two patterns.
             'clinical_decision_support' => [
                 'api/v1/cdss',
                 'api/v1/cdss/*',
-                'portals/staff/cdss',
-                'portals/staff/cdss/*',
-                'portals/admin/cdss',
-                'portals/admin/cdss/*',
             ],
 
             // Analytics + public-health dashboards.
+            // portals/staff/analytics/* was deleted from routes/web.php, so its
+            // patterns are gone from this list. The api/v1 patterns below still
+            // match live routes in the SEALED routes/api.php and this freeze is
+            // the only thing 404-ing them — do not remove them.
             // NOT frozen: the rest of api/v1/public-health/* — statutory
             // MINSANTE report generation, review and submission is a legal
             // obligation, not a dashboard. portals/developer/analytics is the
@@ -143,24 +165,28 @@ return Application::configure(basePath: dirname(__DIR__))
                 'api/v1/public-health/dashboard',
                 'api/v1/public-health/facility-dashboard/*',
                 'api/v1/public-health/intelligence/*',
-                'portals/staff/analytics',
-                'portals/staff/analytics/*',
             ],
 
             // Full telehealth platform: waiting-room queue + video session
             // orchestration.
-            // NOT frozen — the thin book -> consult path stays IN:
+            // The whole portals/staff/telemedicine/* surface was deleted from
+            // routes/web.php, so its patterns are gone from this list. The three
+            // api/v1 patterns below still match live routes in the SEALED
+            // routes/api.php and this freeze is the only thing 404-ing them —
+            // do not remove them.
+            // api/mobile/telemedicine/* is gone too — its controller was deleted,
+            // so those routes were removed from routes/mobile_telehealth.php.
+            // STILL LIVE and NOT gated by this flag (sealed routes/api.php):
             //   POST   api/v1/telemedicine/consultations
             //   GET    api/v1/telemedicine/consultations/{id}
             //   POST   api/v1/telemedicine/consultations/{id}/consent|cancel
-            //   api/mobile/telemedicine/*
-            //   portals/staff/telemedicine (+ create/show/start/end/consent/cancel)
+            // Their controller (Api\V1\TelemedicineController) has been deleted,
+            // so those four 500 rather than 404. Broaden this list to
+            // 'api/v1/telemedicine' + 'api/v1/telemedicine/*' to close that gap.
             'telemedicine_full' => [
                 'api/v1/telemedicine/consultations/*/call',
                 'api/v1/telemedicine/consultations/*/waiting-room',
                 'api/v1/telemedicine/sessions/*',
-                'portals/staff/telemedicine/waiting-room',
-                'portals/staff/telemedicine/waiting-room/*',
             ],
 
         ]);

@@ -13,17 +13,25 @@ use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 /**
- * Creates and cancels patient blood-unit requests.
+ * Creates, answers and cancels patient blood-unit requests.
  *
  * Mirrors App\Modules\Pharmacy\Services\MedicineReservationService: a request
  * is a *hold of intent* the patient shows at the counter. It takes no payment,
  * dispenses nothing, and performs no cross-match — the blood bank confirms and
- * issues. Statuses are append-forward so facility-side confirmation can be
- * added later without rewriting history.
+ * issues. Statuses are append-forward and nothing here ever deletes a row.
  *
- * Availability is read from the existing `blood_availability` table (the same
- * one BloodAvailabilitySearchService queries) — this service never writes to
- * it. Decrementing stock is the facility's own act, through its own surface.
+ * Three actors move a request, and only these three:
+ *   - the patient      → cancel()
+ *   - the scheduler    → expireLapsed()   (blood:expire-requests, hourly)
+ *   - the blood bank   → decide()          (the facility-side receiver)
+ *
+ * Availability is read from `blood_availability` (the same table
+ * BloodAvailabilitySearchService queries) — this service never writes to it.
+ * For a facility with an operational blood-bank record that table is itself a
+ * projection of `blood_inventories`, maintained by
+ * App\Modules\CareMap\Services\BloodAvailabilityProjector, so the gate below
+ * tests the same number the staff portal shows. Decrementing stock stays the
+ * facility's own act, through its own surface.
  */
 class BloodRequestService
 {
@@ -39,6 +47,7 @@ class BloodRequestService
     public const ERR_TOO_MANY_OPEN   = 'TOO_MANY_OPEN_REQUESTS';
     public const ERR_DUPLICATE       = 'REQUEST_ALREADY_OPEN';
     public const ERR_NOT_CANCELLABLE = 'REQUEST_NOT_CANCELLABLE';
+    public const ERR_BAD_TRANSITION  = 'REQUEST_TRANSITION_NOT_ALLOWED';
 
     public function request(
         string $patientId,
@@ -151,6 +160,72 @@ class BloodRequestService
             'status'     => BloodRequestStatus::Expired->value,
             'updated_at' => now(),
         ]);
+    }
+
+    /**
+     * The blood bank's answer — the missing receiver.
+     *
+     * A patient could raise a request and nothing on the platform could act on
+     * it: `confirmed`, `ready`, `fulfilled` and `rejected` were unreachable, so
+     * a request only ever left `pending` by the patient cancelling or the
+     * hourly sweep retiring it. This is the one write that moves it.
+     *
+     * Deliberately not a workflow engine — a status transition, an actor and a
+     * timestamp. The legal moves live in
+     * App\Enums\BloodRequestStatus::facilityTransitions() and are forward-only;
+     * a terminal request is never reopened and NOTHING here deletes a row, the
+     * same rule expireLapsed() follows.
+     *
+     * Stock is not decremented: issuing a unit is the facility's own act
+     * through its own surface (BloodInventoryService), and that write
+     * re-publishes availability on its own.
+     *
+     * @param  string  $actor  The integration client id from middleware
+     *                         attributes — never a caller-supplied value.
+     *
+     * @throws RuntimeException  self::ERR_BAD_TRANSITION
+     */
+    public function decide(
+        BloodRequest $request,
+        BloodRequestStatus $target,
+        string $actor,
+        ?string $facilityNote = null,
+    ): BloodRequest {
+        if (! $request->status->canTransitionTo($target)) {
+            throw new RuntimeException(self::ERR_BAD_TRANSITION);
+        }
+
+        $now = now();
+
+        $attributes = [
+            'status'     => $target->value,
+            'decided_by' => $actor,
+            'decided_at' => $now,
+        ];
+
+        if ($facilityNote !== null) {
+            $attributes['facility_note'] = $facilityNote;
+        }
+
+        // The dedicated columns are stamped once, the first time the request
+        // reaches that point — a `ready` after a `confirmed` must not rewrite
+        // when the bank confirmed.
+        if ($target === BloodRequestStatus::Confirmed && $request->confirmed_at === null) {
+            $attributes['confirmed_at'] = $now;
+        }
+
+        if ($target === BloodRequestStatus::Ready && $request->confirmed_at === null) {
+            // Straight from pending to ready — the bank confirmed implicitly.
+            $attributes['confirmed_at'] = $now;
+        }
+
+        if ($target === BloodRequestStatus::Fulfilled) {
+            $attributes['fulfilled_at'] = $now;
+        }
+
+        $request->update($attributes);
+
+        return $request->refresh();
     }
 
     /**

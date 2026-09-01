@@ -23,7 +23,7 @@ single-hospital CRUD app.
 | Path | What it is | Deployed to prod? |
 |---|---|---|
 | `apps/api-laravel/` | **The platform** — Laravel 13 / PHP 8.3: REST/FHIR API **and** server-rendered Blade portals | ✅ this is the deployed app |
-| `apps/mobile-patient/` | Flutter patient app | built/shipped separately |
+| `apps/mobile-expo/` | **Patient app** — Expo / React Native (TypeScript, expo-router, NativeWind) | built/shipped separately via EAS |
 | `sdk/{php,typescript,python}/` | Connect SDKs for integration partners | no |
 | `widget/` | Embeddable Connect widget | no |
 | `bridge-agent/` | On-prem facility data-sync agent | deployed to facilities, not the API host |

@@ -9,7 +9,7 @@
 **Core Backend:** Laravel  
 **Database:** PostgreSQL  
 **Queue/Cache:** Redis  
-**Mobile App:** Flutter recommended  
+**Mobile App:** Expo / React Native (`apps/mobile-expo`)  
 **Verification:** QR-verifiable certificates  
 **Important Rule:** Do not use OpesHIS OS. Do not copy OpesHIS OS code, database structure, UI, training model, certificate format, or assumptions.  
 **Regulatory Safety Rule:** OpesCare certification must never claim to license doctors, nurses, pharmacists, lab scientists, or any clinical professional. It certifies digital health workflow competency, EMR use, data privacy, Health ID workflows, interoperability basics, and safe platform operation only.

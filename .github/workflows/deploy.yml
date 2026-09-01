@@ -11,7 +11,7 @@ on:
       - 'docs/**'
       - 'sdk/**'
       - 'widget/**'
-      - 'apps/mobile-patient/**'
+      - 'apps/mobile-expo/**'
       - 'bridge-agent/**'
       - '.gstack/**'
       - '.claude/**'

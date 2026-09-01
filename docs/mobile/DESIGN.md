@@ -1,10 +1,19 @@
 # Design System — OpesCare Patient
 
+> **Status (2026-08-31):** this is the design *language* of the patient mobile app —
+> the rationale, type scale, semantic palette, spacing and component decisions below
+> still stand as product design. It was originally written for the Flutter app
+> (`apps/mobile-patient`), which has since been retired. The patient app is now
+> **`apps/mobile-expo`** (Expo / React Native), and its **live token values are
+> `apps/mobile-expo/theme/tokens.js`** — that file, not this document, is the source
+> of truth for what the shipping app actually renders. Where the two disagree, the
+> code wins.
+
 ## Product Context
-- **What this is:** A Flutter mobile health app for patients in Cameroon — digital health ID, medical records, insurance marketplace, labs, prescriptions, appointments, and consent management.
+- **What this is:** The OpesCare patient mobile app for Cameroon — digital health ID, medical records, insurance marketplace, labs, prescriptions, appointments, and consent management.
 - **Who it's for:** Patients in Cameroon of all ages and backgrounds; both urban professionals and rural patients.
 - **Space/industry:** Healthcare / digital health / patient-facing medical apps
-- **Project type:** Flutter mobile app (Android primary)
+- **Project type:** Cross-platform mobile app (Android primary)
 - **Memorable thing:** "This is MY health, not the hospital's."
 
 ## Aesthetic Direction
@@ -20,19 +29,19 @@
 - **Weight:** 700–800
 - **Letter-spacing:** −0.2 to −0.5 em
 - **Rationale:** More character than Inter while staying geometric and clean. Not on the overused list. Works at large sizes on mobile.
-- **Loading:** `GoogleFonts.plusJakartaSans()`
+- **Family:** Plus Jakarta Sans (Google Fonts)
 
 ### Body / UI — DM Sans
 - **Role:** All body text, descriptions, labels, captions, buttons
 - **Weight:** 400 (body), 600–700 (labels/buttons)
 - **Rationale:** Clean, slightly warmer than Inter, great legibility on small mobile screens.
-- **Loading:** `GoogleFonts.dmSans()`
+- **Family:** DM Sans (Google Fonts)
 
 ### Data / Numbers — JetBrains Mono
 - **Role:** Health ID numbers, lab values, prices (XAF), policy numbers, timestamps
 - **Weight:** 500–700
 - **Rationale:** Crisp monospace for numbers that patients need to read accurately. Tabular numbers prevent layout shifting.
-- **Loading:** `GoogleFonts.jetBrainsMono()`
+- **Family:** JetBrains Mono (Google Fonts)
 
 ### Type Scale
 | Style | Font | Size | Weight | Use |

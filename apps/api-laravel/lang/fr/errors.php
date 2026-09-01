@@ -14,6 +14,5 @@ return [
     'phi_blocked'         => 'L\'accès à ces informations nécessite une autorisation supplémentaire.',
     'offline'             => 'Vous semblez être hors ligne. Certaines fonctionnalités peuvent être indisponibles.',
     'sync_conflict'       => 'Un conflit de données a été détecté lors de la synchronisation. Veuillez vérifier.',
-    'cdss_advisory_only'  => 'Les suggestions cliniques sont uniquement indicatives. Votre jugement clinique prévaut.',
     'availability_not_guaranteed' => 'La disponibilité des médicaments, du sang et des services affichée est indicative et non garantie.',
 ];

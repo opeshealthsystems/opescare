@@ -146,7 +146,7 @@ OpesCare is a **national-grade digital health platform** designed for Africa. It
 │                            CLIENT LAYER                                  │
 │  ┌──────────────┐  ┌─────────────────┐  ┌──────────────────────────┐  │
 │  │ Patient App  │  │  Web Portals     │  │  B2B Partner Systems     │  │
-│  │ (Flutter)    │  │  (Blade/Laravel) │  │  Connect Widget / SDK    │  │
+│  │ (Expo / RN)  │  │  (Blade/Laravel) │  │  Connect Widget / SDK    │  │
 │  └──────┬───────┘  └────────┬─────────┘  └──────────────┬───────────┘  │
 └─────────┼────────────────────┼────────────────────────────┼─────────────┘
           │                    │                            │
@@ -239,10 +239,10 @@ Partner System
 ### Request Flow — Mobile Patient
 
 ```
-Flutter App
+Patient app (Expo / React Native)
   1. POST /api/mobile/auth/login-email    (email + password, throttle:5,1)
      or POST /api/mobile/auth/login → /auth/otp/verify (phone+PIN+OTP)
-  2. Bearer token stored in Flutter Secure Storage
+  2. Bearer token stored in expo-secure-store
   3. GET  /api/mobile/health-id-card      (auth.mobile middleware)
   4. GET  /api/mobile/timeline
   5. POST /api/mobile/consent-requests/{id}/approve
@@ -265,14 +265,11 @@ Flutter App
 | **Backup** | spatie/laravel-backup ^10.2 | Encrypted automated backups |
 | **Web frontend** | Blade + Alpine.js / Livewire | Server-rendered portals |
 | **Frontend build** | Vite + npm | `vite.config.js` |
-| **Mobile app** | Flutter 3.3+ (Dart 3.3+) | iOS + Android + Web targets |
-| **Mobile state** | Riverpod 2.5.1 | Feature-based modular providers |
-| **Mobile HTTP** | Dio 5.4.3 | Interceptors, token injection |
-| **Mobile routing** | GoRouter 13.2.0 | Declarative navigation |
-| **Mobile storage** | Flutter Secure Storage 9.0.0 | Tokens never in SharedPreferences |
-| **Mobile icons** | Lucide Icons ^0.257.0 | |
-| **Mobile fonts** | Google Fonts ^6.2.1 | |
-| **Mobile shimmer** | shimmer ^3.0.0 | Loading skeletons |
+| **Mobile app** | Expo / React Native (TypeScript) | iOS + Android; built via EAS |
+| **Mobile routing** | expo-router (file-based) | `apps/mobile-expo/app/` |
+| **Mobile styling** | NativeWind + `theme/tokens.js` | Shared design tokens |
+| **Mobile storage** | expo-secure-store | Tokens never in plain AsyncStorage |
+| **Mobile icons** | Lucide (React Native) | |
 | **Mobile i18n** | intl ^0.19.0 | |
 | **API standards** | REST + FHIR R4 | Interoperability layer |
 | **HL7 messaging** | Custom (`config/hl7.php`) | Legacy HIS sync via Bridge |
@@ -1205,41 +1202,48 @@ Additional notification infrastructure:
 
 ## 13. Mobile App — Patient
 
-**Location:** `apps/mobile-patient`
+**Location:** `apps/mobile-expo` — Expo / React Native (TypeScript).
+*(The earlier Flutter app, `apps/mobile-patient`, was retired and removed on 2026-08-31.)*
 
 ### Architecture
-Clean Architecture, feature-based modular structure. Each feature:
+File-based routing with `expo-router`: every file under `app/` is a route, and the
+parenthesised folders are layout groups. Shared code sits beside it:
 ```
-lib/features/{feature}/
-  data/          — API calls, local storage, repositories
-  models/        — Data models
-  presentation/  — Screens, widgets
-  providers/     — Riverpod state providers
+apps/mobile-expo/
+  app/          — routes (screens); (auth) and (tabs) are layout groups
+  components/   — reusable UI
+  lib/          — API client, auth/session, storage helpers
+  theme/        — design tokens (tokens.js) consumed via NativeWind
 ```
 
-### Screen map (15 screens across 11 features)
+### Screen map
 
 ```
-/ (root)
-├── /login          — email+password or phone+PIN+OTP
-├── /otp            — OTP verification step
-└── /home (shell — bottom nav)
-      ├── /home                     — Dashboard / timeline feed
-      ├── /health-id                — Digital Health ID card + QR
-      ├── /appointments
-      │     ├── /appointments       — List (upcoming + past)
-      │     └── /appointments/:id  — Detail
-      ├── /labs
-      │     ├── /labs               — List
-      │     └── /labs/:id          — Detail (results)
-      ├── /prescriptions
-      │     ├── /prescriptions      — List
-      │     └── /prescriptions/:id — Detail
-      ├── /consent                  — Pending consent requests
-      ├── /documents                — Official documents
-      ├── /access-logs              — Who accessed my data
-      ├── /timeline                 — Clinical event history
-      └── /settings                 — User preferences + push tokens
+app/
+├── index                        — launch / session bootstrap
+├── (auth)/
+│     ├── welcome · login · signup
+│     ├── otp                    — OTP verification step
+│     ├── forgot-password
+│     └── permissions            — location / notification prompts
+├── (tabs)/                      — bottom nav
+│     ├── home                   — Dashboard / timeline feed
+│     ├── health-id              — Digital Health ID card + QR
+│     ├── records                — Clinical record hub
+│     ├── messages
+│     └── profile
+├── appointments/ index · [id] · book
+├── labs/ index · [id]           — results
+├── prescriptions/ index · [id]
+├── surveys/ index · [id]
+├── insurance/ index · marketplace · [id]
+├── privacy/ index · access-logs · export
+├── pharmacy · pharmacy/[medicineId]
+├── blood-finder · blood-finder/request
+├── care-map · facility/[id] · doctor/[id]
+├── family/index · care-plans · referrals · telemedicine/index
+├── documents · export-records · offline-access
+└── notifications · settings · edit-profile · help
 ```
 
 ### API calls by screen
@@ -1567,7 +1571,7 @@ Patient phones *XXX#  (Africa's Talking)
 
 ### P1 — High value, clear path
 
-8. **Provider mobile app** — The entire `Api/ProviderMobile/` API is built. Scaffold a new Flutter app using `apps/mobile-patient` as the template. Screens needed: login, facility select, queue (call + complete), patient scan, patient clinical profile.
+8. **Provider mobile app** — The entire `Api/ProviderMobile/` API is built. Scaffold a second Expo app using `apps/mobile-expo` as the template. Screens needed: login, facility select, queue (call + complete), patient scan, patient clinical profile.
 9. **Telemedicine video integration** — Pick Jitsi Meet (free, self-host) or Daily.co. The session model (`TelemedicineController`) is complete; wire in the room URL.
 10. **Radiology portal UI** — Create blade views under `resources/views/portals/staff/radiology/`. The API (`RadiologyReportController`) is 100% done.
 11. **Web patient portal** — Build out pages for patients who don't have smartphones (appointment booking, consent approval, document download, access logs).
@@ -1575,7 +1579,7 @@ Patient phones *XXX#  (Africa's Talking)
 
 ### P2 — Important, more complex
 
-13. **Mobile offline mode** — Add local SQLite with `sqflite` Flutter package. Use existing `/mobile/offline/policies` + `/offline/policies/{id}/queue` API.
+13. **Mobile offline mode** — Add local SQLite (`expo-sqlite`). Use existing `/mobile/offline/policies` + `/offline/policies/{id}/queue` API.
 14. **FHIR write operations** — Add POST/PUT on Patient, Encounter, Observation. Needed for government interoperability.
 15. **USSD session tree** — Build full menu state machine in `UssdController`: patient lookup by phone, Health ID display, nearest facility, appointment status.
 16. **French translations** — Wrap all blade views in `__('...')`, create `lang/fr/` files.
@@ -1584,7 +1588,7 @@ Patient phones *XXX#  (Africa's Talking)
 
 17. **Advance directives patient view** — Add screen in mobile app, call `GET /mobile/` directives endpoint.
 18. **Care plan goal check-off** — Allow patients to mark goals complete from mobile.
-19. **Biometric auth** — Add `local_auth` Flutter package to `apps/mobile-patient`.
+19. **Biometric auth** — Add `expo-local-authentication` to `apps/mobile-expo`.
 20. **Survey prompt UX** — Auto-show survey after appointment completion in mobile.
 21. **Multi-facility provider switching** — The API supports `POST /provider-mobile/facilities/{id}/switch`. Wire it in the future provider app's facility selector.
 22. **Academy mobile access** — Add course catalogue + quiz screens to patient (or provider) app.
@@ -1613,9 +1617,11 @@ Patient phones *XXX#  (Africa's Talking)
 | `apps/api-laravel/config/data_retention.php` | Data retention policies |
 | `apps/api-laravel/app/Modules/` | Service layer (40+ modules) |
 | `apps/api-laravel/app/Console/Commands/` | 11 Artisan commands |
-| `apps/mobile-patient/lib/` | Flutter patient app |
-| `apps/mobile-patient/lib/core/router/` | Navigation config |
-| `apps/mobile-patient/pubspec.yaml` | Flutter dependencies |
+| `apps/mobile-expo/app/` | Patient app screens (expo-router) |
+| `apps/mobile-expo/lib/` | Patient app API client / auth / storage |
+| `apps/mobile-expo/theme/tokens.js` | Patient app design tokens |
+| `apps/mobile-expo/package.json` | Patient app dependencies |
+| `apps/mobile-expo/eas.json` | Patient app build profiles (EAS) |
 | `contracts/openapi/opescare-connect-v1.yaml` | Connect API OpenAPI spec |
 | `contracts/openapi/opescare-mobile-v1.yaml` | Mobile API OpenAPI spec |
 | `sdk/php/src/Client.php` | PHP SDK client |

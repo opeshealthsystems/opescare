@@ -97,7 +97,7 @@
 
 **Web portals (Blade): READY.** Fresh scan verified 100% form→route alignment, controller→view variable binding, full en/fr lang parity, no lorem/coming-soon. Only items: contact-form email dispatch is a TODO, a few untranslated `<select>` labels, demo credentials in login view (must hide in prod).
 
-**Flutter app: NOT READY.** `firebase_options.dart` throws `UnimplementedError`; **platform-detection bug** in `auth_repository.dart:86` (uses `dart.library.html` and inverts it — iOS reports 'android', breaking push); token-refresh race (no request queue); OTP "resend" doesn't resend; Health-ID share button is a no-op; weak email validation; keystore/signing not set up; default API URL is `opescare.test`.
+**Patient mobile app: NOT READY.** *(Updated 2026-08-31 — the Flutter app assessed here was retired and removed; the patient app is now `apps/mobile-expo`, Expo / React Native.)* Outstanding for the new app: push credentials, release signing, store listing, and a security pass (app-lock, cert pinning, session timeout).
 
 ---
 
@@ -115,4 +115,4 @@
 
 **P1 — before real patients:** drug/disease lists → DB; transactions in Governance/Referral/PublicHealth/Partners/Lite sync; real legal documents; webhook HMAC; DataImport real executor; SQLite-incompatible CHECK constraints fixed (restores test suite); notification provider implementations + template seeding.
 
-**Flutter app:** separate track (Firebase config, platform-detection fix, signing) — several days + store review.
+**Patient mobile app:** separate track (push credentials, signing, store submission) — several days + store review.

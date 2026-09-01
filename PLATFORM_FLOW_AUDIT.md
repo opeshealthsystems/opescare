@@ -67,7 +67,7 @@
 
 ## TIER 3 — NOT READY / NOT BUILT (honest list)
 
-1. **Flutter patient app** — backend endpoints for all 18 screens exist and work, but the app itself ships blockers: `firebase_options.dart` throws `UnimplementedError`; platform-detection inversion (`auth_repository.dart:86` — iOS registers as Android, breaking push); OTP resend just navigates back; Health-ID share button is an empty `onTap`; no signing keystore/icons. **2–3 days + store review.**
+1. **Patient mobile app** — backend endpoints for all 18 screens exist and work. The client was rebuilt on Expo / React Native (`apps/mobile-expo`) on 2026-08-31; the Flutter app this audit originally flagged was retired and removed, and its blockers (Firebase config, platform-detection bug, signing/icons) went with it. Remaining work is push credentials, release signing and store submission — see `docs/qa-release/store-submission-checklist.md`. **Store review still applies.**
 2. **Voice notification channel** — empty placeholder class. (SMS/Email/Push/WhatsApp are real.)
 3. **DHIS2 push** — config framework + scheduled job exist; actual data-element UIDs are placeholders and push is effectively inert until MINSANTE credentials/UIDs configured.
 4. **Bridge agent (legacy HIS sync)** — config schema, auth middleware, and admin pages exist, but sync semantics (ack/retry/conflict on the agent side) are incomplete. PHP SDK is real; the old mock paths remain in `sdk/php/src/Client.php` legacy file; TypeScript SDK newly committed (untested in CI).

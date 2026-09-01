@@ -46,8 +46,6 @@ class RolesSeeder extends Seeder
         // Front Desk & Operations
         ['receptionist',         'front_desk_operations',   'receptionist',         'Receptionist / Front Desk'],
         ['front_desk',           'front_desk_operations',   'receptionist',         'Front Desk Officer'],
-        ['appointment_coordinator','front_desk_operations', 'appointment_coordinator','Appointment Coordinator'],
-        ['queue_manager',        'front_desk_operations',   'queue_manager',        'Queue Manager'],
         ['records_officer',      'front_desk_operations',   'records_officer',      'Records Officer'],
 
         // Laboratory
@@ -65,11 +63,9 @@ class RolesSeeder extends Seeder
         ['dispensing_officer',   'pharmacy',                'pharmacist',           'Dispensing Officer'],
 
         // Billing & Finance
-        ['cashier',              'billing_finance',         'cashier',              'Cashier'],
-        ['billing_officer',      'billing_finance',         'billing_officer',      'Billing Officer'],
-        ['finance_manager',      'billing_finance',         'finance_manager',      'Finance Manager'],
-        ['refund_approver',      'billing_finance',         'finance_manager',      'Refund Approver'],
-        ['wallet_ops',           'billing_finance',         'billing_officer',      'Wallet / Payment Operations'],
+        ['cashier',              'billing_finance',         'receptionist',         'Cashier'],
+        ['billing_officer',      'billing_finance',         'receptionist',         'Billing Officer'],
+        ['finance_manager',      'billing_finance',         'receptionist',         'Finance Manager'],
 
         // Insurance
         ['insurance_reviewer',   'insurance',               'insurance_reviewer',   'Insurance Reviewer'],
@@ -83,9 +79,8 @@ class RolesSeeder extends Seeder
         ['clinic_admin',         'facility_administration', 'facility_admin',       'Clinic Admin'],
         ['hospital_admin',       'facility_administration', 'facility_admin',       'Hospital Admin'],
         ['facility_ceo',         'facility_administration', 'facility_executive',   'Hospital Director / Facility Executive'],
-        ['department_manager',   'facility_administration', 'department_manager',   'Department Manager'],
         ['branch_admin',         'facility_administration', 'multi_facility_admin', 'Branch / Multi-Facility Admin'],
-        ['finance',              'billing_finance',         'billing_officer',      'Facility Finance Role'],
+        ['finance',              'billing_finance',         'receptionist',      'Facility Finance Role'],
 
         // Health Organization / NGO
         ['ngo_admin',            'health_org_ngo',          'ngo_health_org',       'Health Organization / NGO Admin'],
@@ -94,11 +89,6 @@ class RolesSeeder extends Seeder
         ['mobile_clinic_team',   'health_org_ngo',          'outreach_mobile',      'Mobile Clinic Team'],
 
         // Public Health
-        ['public_health_officer','public_health_government','public_health_officer','Public Health Officer'],
-        ['public_health_reviewer','public_health_government','public_health_officer','Public Health Data Reviewer'],
-        ['public_health_admin',  'public_health_government','public_health_admin',  'Public Health Admin'],
-        ['government_supervisor','public_health_government','public_health_admin',  'Ministry / Government Supervisor'],
-        ['disease_surveillance', 'public_health_government','disease_surveillance', 'Disease Surveillance Officer'],
         ['public_health_api',    'developer_api_partner',   'developer',            'Public Health Reporting API Client'],
 
         // Developer / API Partner
@@ -123,11 +113,6 @@ class RolesSeeder extends Seeder
         ['lite_offline_sync',    'opescare_lite',           'lite',                 'OpesCare Lite Offline Sync Account'],
 
         // Support & Customer Success
-        ['support_agent',        'support_customer_success','support_agent',        'Support Agent'],
-        ['support_manager',      'support_customer_success','support_manager',      'Support Manager'],
-        ['customer_success',     'support_customer_success','support_manager',      'Customer Success'],
-        ['implementation_lead',  'support_customer_success','implementation_lead',  'Implementation Lead'],
-        ['training_support',     'support_customer_success','support_agent',        'Training Support'],
 
         // Privacy, Security & Compliance
         ['privacy_officer',      'privacy_security',        'privacy_officer',      'Privacy Officer'],
@@ -140,13 +125,9 @@ class RolesSeeder extends Seeder
         // Data Quality / Reconciliation
         ['data_steward',         'data_quality',            'data_steward',         'Data Steward'],
         ['reconciliation_officer','data_quality',           'data_steward',         'Reconciliation Officer'],
-        ['data_import_officer',  'data_quality',            'data_import',          'Data Import Officer'],
         ['data_quality_reviewer','data_quality',            'data_steward',         'Data Quality Reviewer'],
 
         // Partner Governance
-        ['partner_admin',        'partner_governance',      'partner_admin',        'Partner Admin'],
-        ['partner_reviewer',     'partner_governance',      'partner_review',       'Partner Reviewer'],
-        ['partner_compliance',   'partner_governance',      'partner_review',       'Partner Compliance Reviewer'],
         ['partner_technical',    'partner_governance',      'developer',            'Partner Technical Contact'],
 
         // Platform / Super Admin
@@ -155,8 +136,6 @@ class RolesSeeder extends Seeder
         ['system_admin',         'platform_super_admin',    'super_admin',          'System Administrator'],
         ['product_admin',        'platform_super_admin',    'super_admin',          'Product Admin'],
         ['legal_admin',          'platform_super_admin',    'super_admin',          'Legal Document Admin'],
-        ['country_admin',        'platform_super_admin',    'country_regional_admin','Country Admin'],
-        ['regional_admin',       'platform_super_admin',    'country_regional_admin','Regional Admin'],
     ];
 
     public function run(): void

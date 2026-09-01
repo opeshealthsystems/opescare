@@ -3290,7 +3290,7 @@ tests pass
 
 ## 25.1 Purpose
 
-Patient mobile app readiness ensures all required APIs exist for a Flutter app or other mobile client without rebuilding backend logic.
+Patient mobile app readiness ensures all required APIs exist for the Expo patient app or any other mobile client without rebuilding backend logic.
 
 ## 25.2 Required API Capabilities
 

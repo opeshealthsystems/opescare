@@ -4,7 +4,7 @@ This folder holds all OpesCare project documentation. If you are Claude Code wor
 
 ## What OpesCare is (1 paragraph)
 
-A patient-centered digital health **identity, interoperability, and care-operations** platform (not a single-hospital CRUD app). A patient owns a portable **Health ID** and a longitudinal, event-based record that travels across facilities under consent. Laravel modular monolith (`apps/api-laravel`), PostgreSQL system-of-record, Redis for queues/cache/webhooks, FHIR R4 at the boundary, OAuth2/PKCE for the partner surface; Flutter patient app (`apps/mobile-patient`); Connect SDKs (`sdk/`), embeddable widget (`widget/`), and on-prem Bridge agent (`bridge-agent/`). Multi-facility, multi-country (Gabon first). See the full thesis and invariants in the register below.
+A patient-centered digital health **identity, interoperability, and care-operations** platform (not a single-hospital CRUD app). A patient owns a portable **Health ID** and a longitudinal, event-based record that travels across facilities under consent. Laravel modular monolith (`apps/api-laravel`), PostgreSQL system-of-record, Redis for queues/cache/webhooks, FHIR R4 at the boundary, OAuth2/PKCE for the partner surface; Expo / React Native patient app (`apps/mobile-expo`); Connect SDKs (`sdk/`), embeddable widget (`widget/`), and on-prem Bridge agent (`bridge-agent/`). Multi-facility, multi-country (Gabon first). See the full thesis and invariants in the register below.
 
 ## The three documents that matter
 

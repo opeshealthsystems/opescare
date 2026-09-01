@@ -53,7 +53,7 @@ We have performed a comprehensive, read-only code audit of the OpesCare reposito
 ## P2 Production-Readiness Gaps (Must Fix Before Full Production)
 
 1. **Staff Shift Schedules & Duty Rosters (`PARTIAL`):** Active invite flows are ready, but roster calendars are missing.
-2. **Patient Mobile App client-side codebase (`PARTIAL`):** Private B2C backend APIs are ready, but the Flutter/React Native application repository is absent.
+2. **Patient Mobile App client-side codebase (`PARTIAL`):** Private B2C backend APIs are ready, but the client application was absent at audit time. *(Since built: `apps/mobile-expo`, Expo / React Native.)*
 3. **Provider Mobile App client-side & API (`NOT_STARTED`):** Handheld EMR access, QR scanning, and emergency bypass from mobile are missing.
 4. **File Storage & Medical Attachment Expansion (`PARTIAL`):** Message attachments are secured via Whitelisting, but linking DICOM or lab attachments to the EMR timeline is missing.
 5. **Advanced Facility Analytics & Dashboards (`PARTIAL`):** Public health dashboard snapshots exist, but patient volume and stock-out analytics are stubbed.
@@ -185,7 +185,7 @@ We have performed a comprehensive, read-only code audit of the OpesCare reposito
   - *Controllers:* `app/Http/Controllers/Api/Mobile/` ([MobileAuthController.php](file:///c:/laragon/www/opescare/apps/api-laravel/app/Http/Controllers/Api/Mobile/MobileAuthController.php), [MobilePatientController.php](file:///c:/laragon/www/opescare/apps/api-laravel/app/Http/Controllers/Api/Mobile/MobilePatientController.php), [MobileGovernanceController.php](file:///c:/laragon/www/opescare/apps/api-laravel/app/Http/Controllers/Api/Mobile/MobileGovernanceController.php)).
 - **Implemented Flows:** Private B2C patient mobile routes (Timeline extraction, consent request approvals/denials, data exports).
 - **Missing Flows:** Client-side handheld mobile app code.
-- **Recommendation:** Build handheld client app using Flutter.
+- **Recommendation:** Build a handheld client app. *(Built as `apps/mobile-expo` on Expo / React Native.)*
 
 ### 12. Provider Mobile App
 - **Status:** `NOT_STARTED`

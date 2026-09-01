@@ -22,8 +22,8 @@
 /apps/api-laravel/lang/             @makkowens24
 /apps/api-laravel/resources/        @makkowens24
 
-# ── Mobile patient app ──
-/apps/mobile-patient/               @makkowens24 @jiencestonmorningstar
+# ── Mobile patient app (Expo / React Native) ──
+/apps/mobile-expo/                  @makkowens24 @jiencestonmorningstar
 
 # ── Connect Suite SDK ──
 /sdk/                               @makkowens24

@@ -51,10 +51,6 @@ return [
         'validated'   => 'Validated',
         'released'    => 'Released',
     ],
-    'cdss' => [
-        'advisory_only' => 'This suggestion is advisory only. Clinical judgment takes precedence.',
-        'alert_override_reason' => 'Please state your clinical reason for overriding this alert.',
-    ],
     'visit' => [
         'start'    => 'Start Visit',
         'close'    => 'Close Visit',

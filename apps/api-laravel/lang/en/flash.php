@@ -46,21 +46,12 @@ return [
     'org_updated'                          => 'Organisation updated.',
     'org_deleted'                          => 'Organisation deleted.',
     // Billing / Financial
-    'invoice_created'                      => 'Invoice created.',
     'invoice_paid'                         => 'Invoice marked as paid.',
-    'invoice_cancelled'                    => 'Invoice cancelled.',
-    'payment_recorded'                     => 'Payment recorded.',
     'subscription_updated'                 => 'Subscription updated.',
     // Data import
     'import_queued'                        => 'Import job queued. You will be notified when complete.',
     'import_failed'                        => 'Import failed. Please check the file and try again.',
     'import_complete'                      => 'Import completed successfully.',
-    // CDSS rules
-    'rule_created'                         => 'Clinical decision rule created.',
-    'rule_updated'                         => 'Clinical decision rule updated.',
-    'rule_deleted'                         => 'Clinical decision rule deleted.',
-    'rule_activated'                       => 'Rule activated.',
-    'rule_deactivated'                     => 'Rule deactivated.',
     // Settings / Config
     'settings_saved'                       => 'Settings saved.',
     'settings_reset'                       => 'Settings reset to defaults.',
@@ -87,22 +78,6 @@ return [
     'exported'                             => 'Data exported.',
     'printed'                              => 'Sent to printer.',
     'action_completed'                     => 'Action completed.',
-    // CDSS rules (drug/allergy/lab)
-    'drug_rule_load_failed'                => 'Unable to load drug interaction rules: :error',
-    'drug_rule_create_failed'             => 'Failed to create drug interaction rule: :error',
-    'drug_rule_created'                    => 'Drug interaction rule created successfully.',
-    'drug_rule_delete_failed'             => 'Failed to delete drug interaction rule: :error',
-    'drug_rule_deleted'                   => 'Drug interaction rule deleted.',
-    'allergy_rule_load_failed'            => 'Unable to load allergy alert rules: :error',
-    'allergy_rule_create_failed'          => 'Failed to create allergy alert rule: :error',
-    'allergy_rule_created'                => 'Allergy alert rule created successfully.',
-    'allergy_rule_delete_failed'          => 'Failed to delete allergy alert rule: :error',
-    'allergy_rule_deleted'                => 'Allergy alert rule deleted.',
-    'lab_rule_load_failed'                => 'Unable to load lab alert rules: :error',
-    'lab_rule_create_failed'              => 'Failed to create lab alert rule: :error',
-    'lab_rule_created'                    => 'Lab alert rule created successfully.',
-    'lab_rule_delete_failed'              => 'Failed to delete lab alert rule: :error',
-    'lab_rule_deleted'                    => 'Lab alert rule deleted.',
     // Appointments (admin)
     'appointment_cancel_failed_reason'    => 'Failed to cancel appointment: :error',
     // Control center
@@ -117,8 +92,6 @@ return [
     'facility_rejected'                   => 'Facility rejected.',
     'facility_delete_active_records'      => 'Cannot delete facility with active records.',
     'facility_delete_active'              => 'Cannot delete an active facility. Suspend it first.',
-    // Financial
-    'invoice_void_only_draft_unpaid'      => 'Only draft or unpaid invoices can be voided.',
     // Patients (extended)
     'patient_suspended'                   => 'Patient has been suspended.',
     'patient_activated'                   => 'Patient has been activated.',
@@ -145,10 +118,6 @@ return [
     // Bridge
     'bridge_agent_registered'             => 'Bridge Agent registered.',
     'bridge_agent_status_updated'         => 'Bridge Agent status updated.',
-    // CDSS alerts
-    'alert_acknowledged'                  => 'Alert acknowledged.',
-    'alert_overridden'                    => 'Alert overridden and reason recorded.',
-    'alert_dismissed'                     => 'Alert dismissed.',
     // Code system mapping
     'mapping_created_pending'             => 'Mapping created and pending approval.',
     'mapping_only_pending_approvable'     => 'Only pending mappings can be approved.',
@@ -318,15 +287,6 @@ return [
     'stock_received'                      => 'Stock received successfully.',
     'stock_adjusted'                      => 'Stock adjusted.',
     'goods_receipt_posted'                => 'Goods receipt :number posted.',
-    // Telemedicine
-    'teleconsultation_scheduled'          => 'Teleconsultation scheduled successfully.',
-    'tele_consent_required'               => 'Patient consent must be obtained before starting the call.',
-    'tele_call_started'                   => 'Call started.',
-    'tele_no_active_call'                 => 'No active call session found.',
-    'tele_consultation_completed'         => 'Consultation completed.',
-    'tele_consultation_cancelled'         => 'Consultation cancelled.',
-    'tele_consent_recorded'               => 'Consent recorded.',
-    'tele_no_waiting_patients'            => 'No patients in the waiting room.',
     // Visit portal
     'visit_created'                       => 'Visit #:id created.',
     'visit_create_failed'                 => 'Failed to create visit: :error',
@@ -365,13 +325,10 @@ return [
     'facility_select_required' => 'Please select a facility to continue.',
     'clinical_session_established' => 'Active clinical session established.',
     'import_approved_queued' => 'Import approved and queued. :count valid records will be processed shortly.',
-    'invoice_voided' => 'Invoice #:number voided.',
-    'invoice_marked_paid' => 'Invoice #:number marked as paid.',
     'legal_version_published' => 'Version :version published as current.',
     'legal_document_created' => 'Legal document \':title\' created.',
     'closure_request_approved' => 'Closure request approved.',
     'closure_request_rejected' => 'Closure request rejected.',
-    'tele_patient_called' => 'Called patient from waiting room.',
     'plan_activated' => 'Plan activated.',
     'plan_deactivated' => 'Plan deactivated.',
     'purchase_order_created' => 'Purchase Order :number created.',

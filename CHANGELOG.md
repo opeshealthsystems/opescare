@@ -11,6 +11,18 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ### In Progress
 - Codex production-hardening branch (argon2id bridge agents, health-ID lookup hashing)
 
+### Changed
+- **Patient mobile app rebuilt on Expo / React Native** (`apps/mobile-expo`) —
+  file-based routing (expo-router), NativeWind + `theme/tokens.js`, EAS build profiles.
+
+### Removed
+- **Flutter patient app (`apps/mobile-patient`) retired and deleted.** Expo is the
+  patient app going forward. Its build/readiness plans and design specs were removed
+  with it (`docs/plans/2026-05-29-patient-flutter-app-phase{1..4}.md`,
+  `docs/plans/2026-05-30-{design-system-hardening,missing-feature-modules,mobile-production-readiness}.md`
+  and the three matching `docs/design-specs/2026-05-30-*-design.md`). All remaining
+  docs, the CI paths-ignore list and CODEOWNERS now point at `apps/mobile-expo`.
+
 ---
 
 ## [0.9.0-rc1] — 2026-06-16

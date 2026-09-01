@@ -2,7 +2,7 @@
 
 _Consolidated 2026-06-11. All project documentation and specifications live under `docs/`._
 
-**136 documents** across 19 categories.
+**126 documents** across 19 categories.
 
 **Start here:**
 
@@ -67,7 +67,7 @@ _Product overview, color & icon systems_  (4)
 - [PRODUCT.pdf](docs/product/PRODUCT.pdf)
 
 ## plans  
-_Superpowers implementation plans (waves/phases)_  (47)
+_Superpowers implementation plans (waves/phases)_  (40)
 
 - [2026-05-20-developer-docs-portal.md](docs/plans/2026-05-20-developer-docs-portal.md)
 - [2026-05-21-wave1-security-rate-limiting.md](docs/plans/2026-05-21-wave1-security-rate-limiting.md)
@@ -109,23 +109,13 @@ _Superpowers implementation plans (waves/phases)_  (47)
 - [2026-05-28-phase8-infrastructure.md](docs/plans/2026-05-28-phase8-infrastructure.md)
 - [2026-05-28-phase9-security.md](docs/plans/2026-05-28-phase9-security.md)
 - [2026-05-28-production-readiness-master.md](docs/plans/2026-05-28-production-readiness-master.md)
-- [2026-05-29-patient-flutter-app-phase1.md](docs/plans/2026-05-29-patient-flutter-app-phase1.md)
-- [2026-05-29-patient-flutter-app-phase2.md](docs/plans/2026-05-29-patient-flutter-app-phase2.md)
-- [2026-05-29-patient-flutter-app-phase3.md](docs/plans/2026-05-29-patient-flutter-app-phase3.md)
-- [2026-05-29-patient-flutter-app-phase4.md](docs/plans/2026-05-29-patient-flutter-app-phase4.md)
-- [2026-05-30-design-system-hardening.md](docs/plans/2026-05-30-design-system-hardening.md)
-- [2026-05-30-missing-feature-modules.md](docs/plans/2026-05-30-missing-feature-modules.md)
-- [2026-05-30-mobile-production-readiness.md](docs/plans/2026-05-30-mobile-production-readiness.md)
 
 ## design-specs  
-_Superpowers design specs_  (6)
+_Superpowers design specs_  (3)
 
 - [2026-05-20-developer-docs-portal-design.md](docs/design-specs/2026-05-20-developer-docs-portal-design.md)
 - [2026-05-25-family-accounts-design.md](docs/design-specs/2026-05-25-family-accounts-design.md)
 - [2026-05-26-cameroon-facility-registry-design.md](docs/design-specs/2026-05-26-cameroon-facility-registry-design.md)
-- [2026-05-30-design-system-hardening-design.md](docs/design-specs/2026-05-30-design-system-hardening-design.md)
-- [2026-05-30-missing-feature-modules-design.md](docs/design-specs/2026-05-30-missing-feature-modules-design.md)
-- [2026-05-30-mobile-production-readiness-design.md](docs/design-specs/2026-05-30-mobile-production-readiness-design.md)
 
 ## audits  
 _Implementation audit checklists & results_  (6)
@@ -221,6 +211,6 @@ _Demo/staff account references_  (3)
 - [staf accounts.md](docs/accounts/staf accounts.md)
 
 ## mobile  
-_Mobile patient app design_  (1)
+_Patient app (Expo) design language_  (1)
 
 - [DESIGN.md](docs/mobile/DESIGN.md)

@@ -7,7 +7,7 @@
 **Core Backend:** Laravel  
 **Database:** PostgreSQL  
 **Queue/Cache:** Redis  
-**Mobile App:** Flutter recommended  
+**Mobile App:** Expo / React Native (`apps/mobile-expo`)  
 **Channels:** Email, WhatsApp, SMS fallback, in-app/dashboard notifications, push notifications, voice calls, internal messaging, broadcasts/announcements  
 **Important Rule:** Do not use OpesHIS OS. Do not copy OpesHIS OS notification code, templates, UI, database structure, messaging model, or assumptions.  
 **Privacy Rule:** External messages must not expose sensitive medical information. Clinical details must stay inside secure authenticated OpesCare views.

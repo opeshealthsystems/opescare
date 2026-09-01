@@ -98,6 +98,11 @@ class AppServiceProvider extends ServiceProvider
         Route::middleware('api')
             ->group(base_path('routes/mobile_blood.php'));
 
+        // Blood bank queue routes — the facility side of the Blood Finder, so a
+        // patient's request has a receiver. Same rationale as mobile_blood.php.
+        Route::middleware('api')
+            ->group(base_path('routes/blood_bank.php'));
+
         // Mobile patient Clinician/Specialist directory routes — same rationale.
         Route::middleware('api')
             ->group(base_path('routes/mobile_providers.php'));

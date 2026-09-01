@@ -14,6 +14,5 @@ return [
     'phi_blocked'         => 'Access to this information requires additional authorization.',
     'offline'             => 'You appear to be offline. Some features may be unavailable.',
     'sync_conflict'       => 'A data conflict was detected during synchronization. Please review.',
-    'cdss_advisory_only'  => 'Clinical suggestions are advisory only. Your clinical judgment takes precedence.',
     'availability_not_guaranteed' => 'Medicine, blood, and service availability shown is indicative only and not guaranteed.',
 ];

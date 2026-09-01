@@ -4458,7 +4458,7 @@ This module is complete only when every required flow has persistence, service l
 
 ## Purpose
 
-API endpoints and security contract for a future Flutter patient app.
+API endpoints and security contract for the patient mobile app.
 
 ## Required Models / Tables
 

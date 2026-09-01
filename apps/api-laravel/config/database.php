@@ -106,6 +106,19 @@ return [
             'port'           => env('DB_PORT', '5432'),
             'search_path'    => 'public',
             'sslmode'        => env('DB_SSLMODE', 'prefer'),
+
+            // Pin the session to the app's timezone. Without this the server's
+            // zone wins — locally Africa/Lagos against a UTC app — so PHP and
+            // PostgreSQL disagree by an hour about what time it is, every day.
+            //
+            // That is not cosmetic. Any column defaulting to CURRENT_TIMESTAMP
+            // (api_usage_logs.logged_at among them) is stamped by the database
+            // while the query bounding it is computed by PHP, so for one hour
+            // each night the two sit in different days — and at month end, in
+            // different months, which silently zeroes API usage billing. The
+            // same skew duplicated 2,043 appointment slots when a seeder
+            // deduplicated on a wall-clock timestamp.
+            'timezone'       => env('DB_TIMEZONE', 'UTC'),
         ],
 
         'sqlsrv' => [

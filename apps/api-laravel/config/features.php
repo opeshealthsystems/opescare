@@ -36,6 +36,11 @@
  *
  * A test that needs to assert frozen behaviour overrides the flag directly:
  *   config(['features.flags.insurance' => false]);
+ *
+ * NOT every flag in this file freezes. A flag whose default is a literal `true`
+ * rather than $frozenDefault describes a surface that SHIPS and merely keeps a
+ * kill switch — 'insurance_coverage' is the one such flag today. The mechanism
+ * is identical (fail closed, 404); only the default differs.
  */
 $frozenDefault = env('APP_ENV', 'production') === 'testing';
 
@@ -46,17 +51,59 @@ return [
     | Flags
     |----------------------------------------------------------------------
     |
-    | One explicit env-driven boolean per frozen module. A key that is absent
+    | One explicit env-driven boolean per gated module. A key that is absent
     | from this list is treated as frozen by Features::enabled() — unknown
     | keys never grant access.
+    |
+    | Most keys here default OFF ($frozenDefault) because the module is frozen
+    | out of V1. 'insurance_coverage' defaults ON because that surface ships;
+    | the flag exists so it can still be killed without a deploy.
     |
     */
     'flags' => [
 
-        // Manual claims ledger. 15 real insurers seeded; every other insurance
-        // table is empty and the claim lifecycle has never run once in prod.
+        /*
+         * INSURANCE IS SPLIT IN TWO. Read this before flipping either flag.
+         *
+         *   COVERAGE  = identity data.  "Is this patient covered, by whom,
+         *               until when." It is an attribute of the Health ID, it
+         *               is read-only, and it travels with the patient across
+         *               facilities. That is the interoperability product, so
+         *               it ships: 'insurance_coverage' below defaults ON.
+         *
+         *   CLAIMS    = a money workflow.  policy -> preauth -> claim ->
+         *               adjudication -> payment. It is a manual ledger with a
+         *               human in every loop, and the Cameroonian payers it
+         *               would have to settle against (CNPS, Activa, Chanas,
+         *               Saham) expose no APIs to settle with. Shipping it means
+         *               shipping data entry, not exchange. So it stays frozen:
+         *               'insurance' below defaults OFF.
+         *
+         * The asymmetry is deliberate, not an oversight. A patient being able
+         * to read their own coverage does not imply OpesCare can process a
+         * claim against it, and the flags must be able to say so separately.
+         */
+
+        // CLAIMS — frozen. Manual claims ledger: claims, preauths, policies,
+        // provider admin. 15 real insurers seeded; every other insurance table
+        // is empty and the claim lifecycle has never run once in prod.
         // Cameroonian payers have no APIs — this is a sales problem, not code.
+        // Freezes: api/v1/insurance/*, portals/insurance/*.
         'insurance' => (bool) env('FEATURE_INSURANCE', $frozenDefault),
+
+        // COVERAGE — LIVE. The patient's read-only view of their own policies
+        // (GET api/mobile/insurance -> MobileInsuranceController::index):
+        // policy number, status, effective/expiry dates, plan and provider
+        // name. No write path, no claim, no money. This is the same fact the
+        // FHIR R4 Coverage resource already exposes to partner systems on
+        // api/fhir/R4/Coverage (never frozen) — leaving it off meant a partner
+        // could read a patient's coverage while the patient could not.
+        //
+        // NOT $frozenDefault: this defaults ON in every environment, including
+        // production. Set FEATURE_INSURANCE_COVERAGE=false to kill it; that
+        // does NOT unfreeze claims, and FEATURE_INSURANCE=true does not gate
+        // this — the two flags are independent on purpose.
+        'insurance_coverage' => (bool) env('FEATURE_INSURANCE_COVERAGE', true),
 
         // Facility-internal patient billing (invoices, cashier sessions,
         // wallets, payment plans). Internal ops, not cross-system exchange.
@@ -83,8 +130,11 @@ return [
         // only the dashboard/intelligence read surface is frozen.
         'analytics_dashboards' => (bool) env('FEATURE_ANALYTICS_DASHBOARDS', $frozenDefault),
 
-        // Patient-facing plan shopping and purchase. Commercial ambiguity and
-        // zero insurance_plans rows in the database.
+        // MARKETPLACE — frozen. Patient-facing plan shopping and purchase
+        // (api/mobile/insurance/marketplace/*, portals/patient/insurance/*).
+        // Commercial ambiguity and zero insurance_plans rows in the database.
+        // Selling a policy is a money workflow like claims; reading one you
+        // already hold is not. See the coverage/claims note above.
         'insurance_marketplace' => (bool) env('FEATURE_INSURANCE_MARKETPLACE', $frozenDefault),
 
         // Full telehealth platform — waiting-room queue management and video

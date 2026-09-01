@@ -11,9 +11,14 @@
     <a href="{{ route('portals.pharmacy.prescriptions') }}" class="sidebar-link {{ request()->routeIs('portals.pharmacy.prescriptions') ? 'active' : '' }}">
         <i data-lucide="clipboard-list"></i><span>{{ __('public.pharmacy_portal.nav_rx_queue', [], $l) ?: 'Prescription queue' }}</span>
     </a>
+    {{-- Public availability: what patients see in the Medicine Finder. Not
+         gated by inventory_ops — the finders ship in V1. --}}
+    <a href="{{ route('portals.pharmacy.stock') }}" class="sidebar-link {{ request()->routeIs('portals.pharmacy.stock') ? 'active' : '' }}">
+        <i data-lucide="package"></i><span>{{ __('public.pharmacy_portal.nav_public_stock', [], $l) ?: 'Public availability' }}</span>
+    </a>
     @feature('inventory_ops')
     <a href="{{ route('portals.pharmacy.inventory') }}" class="sidebar-link {{ request()->routeIs('portals.pharmacy.inventory') ? 'active' : '' }}">
-        <i data-lucide="package"></i><span>{{ __('public.pharmacy_portal.nav_inventory', [], $l) ?: 'Drug inventory' }}</span>
+        <i data-lucide="boxes"></i><span>{{ __('public.pharmacy_portal.nav_inventory', [], $l) ?: 'Drug inventory' }}</span>
     </a>
     @endfeature
     <a href="{{ route('portals.pharmacy.controlled') }}" class="sidebar-link {{ request()->routeIs('portals.pharmacy.controlled') ? 'active' : '' }}">

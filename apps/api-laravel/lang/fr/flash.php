@@ -46,21 +46,12 @@ return [
     'org_updated'                          => 'Organisation mise à jour.',
     'org_deleted'                          => 'Organisation supprimée.',
     // Billing / Financial
-    'invoice_created'                      => 'Facture créée.',
     'invoice_paid'                         => 'Facture marquée comme payée.',
-    'invoice_cancelled'                    => 'Facture annulée.',
-    'payment_recorded'                     => 'Paiement enregistré.',
     'subscription_updated'                 => 'Abonnement mis à jour.',
     // Data import
     'import_queued'                        => 'Tâche d\'importation mise en file d\'attente. Vous serez notifié à la fin.',
     'import_failed'                        => 'Importation échouée. Vérifiez le fichier et réessayez.',
     'import_complete'                      => 'Importation terminée avec succès.',
-    // CDSS rules
-    'rule_created'                         => 'Règle de décision clinique créée.',
-    'rule_updated'                         => 'Règle de décision clinique mise à jour.',
-    'rule_deleted'                         => 'Règle de décision clinique supprimée.',
-    'rule_activated'                       => 'Règle activée.',
-    'rule_deactivated'                     => 'Règle désactivée.',
     // Settings / Config
     'settings_saved'                       => 'Paramètres enregistrés.',
     'settings_reset'                       => 'Paramètres réinitialisés par défaut.',
@@ -87,22 +78,6 @@ return [
     'exported'                             => 'Données exportées.',
     'printed'                              => 'Envoyé à l\'imprimante.',
     'action_completed'                     => 'Action effectuée.',
-    // CDSS rules (drug/allergy/lab)
-    'drug_rule_load_failed'                => 'Impossible de charger les règles d\'interaction médicamenteuse : :error',
-    'drug_rule_create_failed'             => 'Échec de la création de la règle d\'interaction médicamenteuse : :error',
-    'drug_rule_created'                    => 'Règle d\'interaction médicamenteuse créée avec succès.',
-    'drug_rule_delete_failed'             => 'Échec de la suppression de la règle d\'interaction médicamenteuse : :error',
-    'drug_rule_deleted'                   => 'Règle d\'interaction médicamenteuse supprimée.',
-    'allergy_rule_load_failed'            => 'Impossible de charger les règles d\'alerte d\'allergie : :error',
-    'allergy_rule_create_failed'          => 'Échec de la création de la règle d\'alerte d\'allergie : :error',
-    'allergy_rule_created'                => 'Règle d\'alerte d\'allergie créée avec succès.',
-    'allergy_rule_delete_failed'          => 'Échec de la suppression de la règle d\'alerte d\'allergie : :error',
-    'allergy_rule_deleted'                => 'Règle d\'alerte d\'allergie supprimée.',
-    'lab_rule_load_failed'                => 'Impossible de charger les règles d\'alerte de laboratoire : :error',
-    'lab_rule_create_failed'              => 'Échec de la création de la règle d\'alerte de laboratoire : :error',
-    'lab_rule_created'                    => 'Règle d\'alerte de laboratoire créée avec succès.',
-    'lab_rule_delete_failed'              => 'Échec de la suppression de la règle d\'alerte de laboratoire : :error',
-    'lab_rule_deleted'                    => 'Règle d\'alerte de laboratoire supprimée.',
     // Appointments (admin)
     'appointment_cancel_failed_reason'    => 'Échec de l\'annulation du rendez-vous : :error',
     // Control center
@@ -117,8 +92,6 @@ return [
     'facility_rejected'                   => 'Établissement rejeté.',
     'facility_delete_active_records'      => 'Impossible de supprimer un établissement ayant des enregistrements actifs.',
     'facility_delete_active'              => 'Impossible de supprimer un établissement actif. Suspendez-le d\'abord.',
-    // Financial
-    'invoice_void_only_draft_unpaid'      => 'Seules les factures provisoires ou impayées peuvent être annulées.',
     // Patients (extended)
     'patient_suspended'                   => 'Le patient a été suspendu.',
     'patient_activated'                   => 'Le patient a été activé.',
@@ -145,10 +118,6 @@ return [
     // Bridge
     'bridge_agent_registered'             => 'Agent Bridge enregistré.',
     'bridge_agent_status_updated'         => 'Statut de l\'agent Bridge mis à jour.',
-    // CDSS alerts
-    'alert_acknowledged'                  => 'Alerte prise en compte.',
-    'alert_overridden'                    => 'Alerte contournée et motif enregistré.',
-    'alert_dismissed'                     => 'Alerte ignorée.',
     // Code system mapping
     'mapping_created_pending'             => 'Correspondance créée et en attente d\'approbation.',
     'mapping_only_pending_approvable'     => 'Seules les correspondances en attente peuvent être approuvées.',
@@ -318,15 +287,6 @@ return [
     'stock_received'                      => 'Stock reçu avec succès.',
     'stock_adjusted'                      => 'Stock ajusté.',
     'goods_receipt_posted'                => 'Bon de réception :number comptabilisé.',
-    // Telemedicine
-    'teleconsultation_scheduled'          => 'Téléconsultation planifiée avec succès.',
-    'tele_consent_required'               => 'Le consentement du patient doit être obtenu avant de démarrer l\'appel.',
-    'tele_call_started'                   => 'Appel démarré.',
-    'tele_no_active_call'                 => 'Aucune session d\'appel active trouvée.',
-    'tele_consultation_completed'         => 'Consultation terminée.',
-    'tele_consultation_cancelled'         => 'Consultation annulée.',
-    'tele_consent_recorded'               => 'Consentement enregistré.',
-    'tele_no_waiting_patients'            => 'Aucun patient dans la salle d\'attente.',
     // Visit portal
     'visit_created'                       => 'Visite n° :id créée.',
     'visit_create_failed'                 => 'Échec de la création de la visite : :error',
@@ -365,13 +325,10 @@ return [
     'facility_select_required' => 'Veuillez sélectionner un établissement pour continuer.',
     'clinical_session_established' => 'Session clinique active établie.',
     'import_approved_queued' => 'Importation approuvée et mise en file d\'attente. :count enregistrements valides seront traités sous peu.',
-    'invoice_voided' => 'Facture n° :number annulée.',
-    'invoice_marked_paid' => 'Facture n° :number marquée comme payée.',
     'legal_version_published' => 'Version :version publiée comme version actuelle.',
     'legal_document_created' => 'Document juridique « :title » créé.',
     'closure_request_approved' => 'Demande de clôture approuvée.',
     'closure_request_rejected' => 'Demande de clôture rejetée.',
-    'tele_patient_called' => 'Patient appelé depuis la salle d\'attente.',
     'plan_activated' => 'Plan activé.',
     'plan_deactivated' => 'Plan désactivé.',
     'purchase_order_created' => 'Bon de commande :number créé.',

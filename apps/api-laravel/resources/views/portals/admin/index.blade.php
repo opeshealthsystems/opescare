@@ -58,11 +58,6 @@
     <div class="stat-card__value">{{ $platformStats['pending_onboarding'] ?? '—' }}</div>
     <div class="stat-card__label">{{ __('public.admin_governance.stat_pending_onboarding', [], app()->getLocale()) ?: 'Pending Onboardings' }}</div>
   </a>
-  <a href="{{ route('portals.admin.financial.index') }}" class="stat-card">
-    <div class="stat-card__icon"><i data-lucide="banknote"></i></div>
-    <div class="stat-card__value">{{ number_format($platformStats['monthly_revenue'] ?? 0) }} XAF</div>
-    <div class="stat-card__label">{{ __('public.admin_governance.stat_monthly_revenue', [], app()->getLocale()) ?: 'This Month Revenue' }}</div>
-  </a>
 </div>
 
 <!-- KPI Cards -->

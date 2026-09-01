@@ -170,10 +170,6 @@
                     {{ __('public.portal.nav_visits', [], app()->getLocale()) ?: 'Visits' }}
                 </a>
                 @feature('clinical_decision_support')
-                <a href="{{ route('portals.staff.cdss') }}" class="btn btn-secondary">
-                    <i data-lucide="brain-circuit"></i>
-                    {{ __('public.staff_portal.nav_clinical_alerts', [], app()->getLocale()) ?: 'CDSS Alerts' }}
-                </a>
                 @endfeature
                 <a href="{{ route('portals.staff.files.index') }}" class="btn btn-secondary">
                     <i data-lucide="folder"></i>
@@ -209,19 +205,11 @@
                 {{-- Analytics: hospital_admin, clinic_admin, doctor --}}
                 @if(in_array($roleSlug, ['hospital_admin', 'clinic_admin', 'doctor']))
                 @feature('analytics_dashboards')
-                <a href="{{ route('portals.staff.analytics') }}" class="btn btn-secondary">
-                    <i data-lucide="bar-chart-3"></i>
-                    {{ __('public.portal.nav_analytics', [], app()->getLocale()) ?: 'Analytics' }}
-                </a>
                 @endfeature
                 @endif
 
                 {{-- Telemedicine: doctor only --}}
                 @if($roleSlug === 'doctor')
-                <a href="{{ route('portals.staff.telemedicine.index') }}" class="btn btn-secondary">
-                    <i data-lucide="video"></i>
-                    {{ __('public.portal.nav_telemedicine', [], app()->getLocale()) ?: 'Telemedicine' }}
-                </a>
                 @endif
 
                 {{-- HR Directory: hospital_admin, clinic_admin --}}

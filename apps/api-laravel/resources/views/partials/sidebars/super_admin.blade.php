@@ -40,9 +40,6 @@
   <a href="{{ route('portals.admin.subscription') }}" class="nav-item {{ request()->routeIs('portals.admin.subscription*') ? 'active' : '' }}">
     <i data-lucide="credit-card"></i><span>{{ __('public.portal.nav_subscriptions', [], $l) ?: 'Subscriptions' }}</span>
   </a>
-  <a href="{{ route('portals.admin.financial.index') }}" class="nav-item {{ request()->routeIs('portals.admin.financial.*') ? 'active' : '' }}">
-    <i data-lucide="banknote"></i><span>{{ __('public.portal.nav_finance', [], $l) ?: 'Finance' }}</span>
-  </a>
 
   {{-- People --}}
   <div class="nav-section-label">{{ __('public.portal.nav_people', [], $l) ?: 'People' }}</div>
@@ -61,11 +58,6 @@
 
   {{-- Clinical --}}
   <div class="nav-section-label">{{ __('public.portal.nav_clinical', [], $l) ?: 'Clinical' }}</div>
-  @feature('clinical_decision_support')
-  <a href="{{ route('portals.admin.cdss.index') }}" class="nav-item {{ request()->routeIs('portals.admin.cdss.*') ? 'active' : '' }}">
-    <i data-lucide="brain"></i><span>{{ __('public.portal.nav_cdss_rules', [], $l) ?: 'CDSS Rules' }}</span>
-  </a>
-  @endfeature
   <a href="{{ route('portals.admin.code_mappings.index') }}" class="nav-item {{ request()->routeIs('portals.admin.code_mappings.*') ? 'active' : '' }}">
     <i data-lucide="tags"></i><span>{{ __('public.portal.nav_code_mappings', [], $l) ?: 'Code Mappings' }}</span>
   </a>

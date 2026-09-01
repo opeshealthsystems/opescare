@@ -56,6 +56,52 @@ enum BloodRequestStatus: string
         return ! $this->isOpen();
     }
 
+    /**
+     * Where the blood bank may move a request from here. Forward-only.
+     *
+     * These four were unreachable until the blood-bank queue existed: nothing
+     * anywhere could move a request out of `pending` except the patient
+     * cancelling or the hourly expiry sweep, so a request was a message into a
+     * void. App\Http\Controllers\Api\V1\BloodRequestQueueController is the
+     * receiver, and this map is the only rule it enforces.
+     *
+     * A terminal status transitions to nothing — a request is never reopened
+     * and never deleted, exactly as BloodRequestService::expireLapsed treats
+     * expiry.
+     *
+     * @return list<self>
+     */
+    public function facilityTransitions(): array
+    {
+        return match ($this) {
+            self::Pending   => [self::Confirmed, self::Ready, self::Rejected],
+            self::Confirmed => [self::Ready, self::Fulfilled, self::Rejected],
+            self::Ready     => [self::Fulfilled, self::Rejected],
+            self::Fulfilled, self::Rejected, self::Cancelled, self::Expired => [],
+        };
+    }
+
+    /** Is this a legal blood-bank move from the current status? */
+    public function canTransitionTo(self $target): bool
+    {
+        return in_array($target, $this->facilityTransitions(), true);
+    }
+
+    /**
+     * Every status a blood bank may ever set, for request validation.
+     *
+     * @return list<string>
+     */
+    public static function facilityDecisions(): array
+    {
+        return [
+            self::Confirmed->value,
+            self::Ready->value,
+            self::Fulfilled->value,
+            self::Rejected->value,
+        ];
+    }
+
     /** Can the patient still cancel it themselves? */
     public function isCancellableByPatient(): bool
     {

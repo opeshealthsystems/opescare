@@ -3,10 +3,27 @@
 namespace App\Modules\Inventory\Services;
 
 use App\Models\BloodInventory;
+use App\Modules\CareMap\Services\BloodAvailabilityProjector;
 use Illuminate\Support\Collection;
 
+/**
+ * The operational blood-bank record: integer units and safety flags per
+ * (blood_group, component), keyed on the tenant `facilities.id`.
+ *
+ * This table is the SOURCE OF TRUTH for "how much O+ does this facility have".
+ * The patient-facing `blood_availability` row is a projection of it, refreshed
+ * by BloodAvailabilityProjector after every write here — so the number a clerk
+ * types into the staff portal is the number the Blood Finder shows, and the one
+ * BloodRequestService gates a patient's request against. Nothing else may write
+ * availability for a facility that has an operational record.
+ */
 class BloodInventoryService
 {
+    public function __construct(
+        private readonly BloodAvailabilityProjector $projector = new BloodAvailabilityProjector(),
+    ) {
+    }
+
     public function list(string $facilityId, array $filters = []): Collection
     {
         $query = BloodInventory::where('facility_id', $facilityId)
@@ -35,18 +52,30 @@ class BloodInventoryService
             $existing->update(array_merge($data, [
                 'last_stock_update' => now(),
             ]));
+            $this->projector->projectFacility($facilityId);
+
             return $existing;
         }
 
-        return BloodInventory::create(array_merge($data, [
+        $created = BloodInventory::create(array_merge($data, [
             'facility_id'       => $facilityId,
             'last_stock_update' => now(),
         ]));
+
+        $this->projector->projectFacility($facilityId);
+
+        return $created;
     }
 
-    public function adjustUnits(string $itemId, int $delta, string $direction = 'add'): BloodInventory
+    /**
+     * @param  string|null  $facilityId  When given, the item must belong to it.
+     *                                   The API passes the middleware-resolved
+     *                                   facility so one client can never adjust
+     *                                   another blood bank's shelf.
+     */
+    public function adjustUnits(string $itemId, int $delta, string $direction = 'add', ?string $facilityId = null): BloodInventory
     {
-        $item = BloodInventory::findOrFail($itemId);
+        $item = $this->findScoped($itemId, $facilityId);
 
         if ($direction === 'add') {
             $item->available_units = max(0, $item->available_units + $delta);
@@ -56,16 +85,45 @@ class BloodInventoryService
 
         $item->last_stock_update = now();
         $item->save();
+
+        $this->projector->projectFacility((string) $item->facility_id);
+
         return $item;
     }
 
-    public function setFlags(string $itemId, array $flags): BloodInventory
+    /** @param  string|null  $facilityId  See adjustUnits(). */
+    public function setFlags(string $itemId, array $flags, ?string $facilityId = null): BloodInventory
     {
         $allowed = ['is_expired', 'is_quarantined', 'is_unsafe'];
         $update  = array_intersect_key($flags, array_flip($allowed));
-        $item    = BloodInventory::findOrFail($itemId);
+        $item    = $this->findScoped($itemId, $facilityId);
         $item->update($update);
+
+        // Flagging a unit expired/quarantined/unsafe pulls it out of the
+        // published band immediately — an unsafe unit must never be advertised.
+        $this->projector->projectFacility((string) $item->facility_id);
+
         return $item;
+    }
+
+    /**
+     * Look an item up, optionally pinned to one facility.
+     *
+     * Without the pin this was a cross-facility IDOR on the API: the routes
+     * carry only an item id, so any authenticated integration client could
+     * adjust or flag another blood bank's units.
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     */
+    private function findScoped(string $itemId, ?string $facilityId): BloodInventory
+    {
+        $query = BloodInventory::query()->whereKey($itemId);
+
+        if ($facilityId !== null) {
+            $query->where('facility_id', $facilityId);
+        }
+
+        return $query->firstOrFail();
     }
 
     public function summary(string $facilityId): array

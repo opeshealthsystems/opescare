@@ -145,6 +145,9 @@ return [
         'low_stock'    => 'Low Stock',
         'out_of_stock' => 'Out of Stock',
         'expired'      => 'Expired',
+        // PharmacyStockStatus::Unknown — reported stock has a real "not known"
+        // state and must never render as available.
+        'unknown'      => 'Stock Unknown',
     ],
 
     'level' => [

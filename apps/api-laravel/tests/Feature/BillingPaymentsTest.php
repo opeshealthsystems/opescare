@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\BillingAccount;
-use App\Models\ConsentGrant;
 use App\Models\Facility;
 use App\Models\Invoice;
 use App\Models\Patient;
@@ -155,44 +154,6 @@ class BillingPaymentsTest extends TestCase
         ]);
     }
 
-    public function test_patient_invoice_api_scope_excludes_other_patients()
-    {
-        [$patient, $facility] = $this->billingActors();
-        $otherPatient = Patient::create(['health_id' => 'OC-BILL-OTHER', 'first_name' => 'Other', 'last_name' => 'Patient']);
-        $this->invoiceFor($patient, $facility, 3000);
-        $this->invoiceFor($otherPatient, $facility, 4000);
-
-        // Security: a valid consent grant scoped to $patient is required.
-        $grant = ConsentGrant::create([
-            'patient_id'       => $patient->id,
-            'facility_id'      => $facility->id,
-            'authorizing_actor' => $patient->id,
-            'status'           => 'active',
-            'scope'            => ['billing:read'],
-            'expires_at'       => now()->addDay(),
-        ]);
-
-        $response = $this->withHeaders($this->clientHeadersFor($facility) + [
-            'X-Consent-Grant-Id'  => $grant->id,
-        ])->getJson('/api/v1/billing/invoices?scope=patient&patient_id='.$patient->id);
-
-        $response->assertOk()->assertJsonCount(1, 'data');
-        $this->assertSame($patient->id, $response->json('data.0.patient_id'));
-    }
-
-    public function test_patient_invoice_api_rejects_request_without_consent_grant()
-    {
-        [$patient, $facility] = $this->billingActors();
-        $this->invoiceFor($patient, $facility, 3000);
-
-        $response = $this->withHeaders([
-            'X-Client-ID'     => 'test_client_id',
-            'X-Client-Secret' => 'test_client_secret',
-        ])->getJson('/api/v1/billing/invoices?scope=patient&patient_id='.$patient->id);
-
-        $response->assertForbidden();
-    }
-
     public function test_cashier_session_closes_with_cash_totals()
     {
         [$patient, $facility, $cashier] = $this->billingActors();
@@ -209,22 +170,6 @@ class BillingPaymentsTest extends TestCase
 
         $this->assertEquals('closed', $closed->status);
         $this->assertEquals(3000, (int) $closed->cash_total_amount);
-    }
-
-    /**
-     * Create an active IntegrationClient bound to the given facility so
-     * VerifyIntegrationClient resolves facility_id to the test's facility.
-     */
-    private function clientHeadersFor(Facility $facility): array
-    {
-        $clientId = 'client_' . \Illuminate\Support\Str::lower(\Illuminate\Support\Str::random(12));
-        \App\Models\IntegrationClient::factory()->create([
-            'client_id'     => $clientId,
-            'client_secret' => hash('sha256', 'integration_secret'),
-            'facility_id'   => $facility->id,
-        ]);
-
-        return ['X-Client-ID' => $clientId, 'X-Client-Secret' => 'integration_secret'];
     }
 
     private function billingActors(): array

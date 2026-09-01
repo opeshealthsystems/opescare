@@ -1908,7 +1908,7 @@ responsive web app mode
 progressive web app mode
 tablet-first mode
 local-lite appliance later
-Flutter app later
+native mobile app later
 ```
 
 Recommended first version:

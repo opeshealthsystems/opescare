@@ -26,7 +26,7 @@ opescare/                        ← repo root (one git repo)
 ├── LARAGON_SETUP.md             ← this file
 ├── apps/
 │   ├── api-laravel/             ← Laravel 13 API + web portals
-│   └── mobile-patient/          ← Flutter patient app
+│   └── mobile-expo/             ← Expo / React Native patient app
 ├── sdk/
 │   ├── php/                     ← Connect Suite PHP SDK
 │   ├── python/                  ← Connect Suite Python SDK
@@ -52,7 +52,8 @@ never be committed:
 | `apps/api-laravel/storage/framework/cache/` | Framework cache |
 | `apps/api-laravel/storage/framework/sessions/` | Session files |
 | `apps/api-laravel/.env` | Environment secrets — copy from `.env.example` |
-| `apps/mobile-patient/build/` | Flutter build output |
+| `apps/mobile-expo/node_modules/` | npm dependencies — run `npm install` |
+| `apps/mobile-expo/.expo/` | Expo local build/dev cache |
 | `bridge-agent/venv/` | Python virtualenv |
 
 ---
@@ -113,13 +114,16 @@ cp bridge_config.example.json config.json
 python -m opescare_bridge
 ```
 
-### 5. Flutter patient app (optional)
+### 5. Expo patient app (optional)
 
 ```powershell
-cd apps\mobile-patient
-flutter pub get
-flutter run
+cd apps\mobile-expo
+npm install
+npx expo start
 ```
+
+Device builds go through EAS — see `apps/mobile-expo/eas.json` for the
+`local-api` / `preview` / `production` profiles.
 
 ---
 

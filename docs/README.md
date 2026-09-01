@@ -95,20 +95,16 @@ The product knowledge base. **Start here.**
 ### Product, Plans & Specs
 - [Cameroon Healthcare Facility Registry — Design Spec](design-specs/2026-05-26-cameroon-facility-registry-design.md) — Feature design spec for a pre-seeded national facility/insurer registry (MINSANTE/ONPC/WHO data), claim flow, and re-importable CSV seeding for fac…
 - [Family Accounts — Design Spec](design-specs/2026-05-25-family-accounts-design.md) — Feature design spec for guardian/dependent linking, guardian-context middleware, consent-on-behalf, and multi-channel notifications (purely additiv…
-- [Missing Feature Modules (Mobile) — Sub-project B Design Spec](design-specs/2026-05-30-missing-feature-modules-design.md) — Design spec to build 4 Flutter feature modules (care-plans, surveys, records export) with backend auth-middleware fix (auth.mobile vs sanctum) and …
 - [OpesCare Design System & Redesign Spec](../apps/api-laravel/docs/redesign/OPESCARE_DESIGN_SYSTEM.md) — Authoritative UI design system: brand tokens (navy/blue palette), --p-* token rules, retiring hardcoded hex/inline styles. Product/design source of…
-- [Patient App Production Readiness — Design Spec](design-specs/2026-05-30-mobile-production-readiness-design.md) — Design spec taking the Flutter patient app to production across Android/iOS/Web: app ID, release signing, push, booking screen, env config, crash r…
-- [Patient Mobile — Components](../apps/mobile-patient/docs/design-system/02_COMPONENTS.md) — Reusable Flutter widget specs (StatusPill etc.) with exact CSS-derived values and Lucide icons. Stays with lib/core/ui code.
-- [Patient Mobile — Design System Spec (Index)](../apps/mobile-patient/docs/design-system/00_README.md) — Index/intro for the Flutter patient-app design system transcribed from design-preview.html; points to tokens/components/screens parts. Stays beside…
-- [Patient Mobile — Screen Blueprints](../apps/mobile-patient/docs/design-system/03_SCREENS.md) — Per-screen composition blueprints mapping each Dart file to components and the preview mockups; bottom-nav resolution notes. Implementation-coupled.
-- [Patient Mobile — Tokens & Theme](../apps/mobile-patient/docs/design-system/01_TOKENS_AND_THEME.md) — Exact Flutter token/theme values (fonts, colors, radii) transcribed from the HTML preview. Implementation-coupled to the mobile app.
+- [Patient App (Expo) — Design Spec](superpowers/specs/2026-08-31-mobile-expo-app-design.md) — The decision to move the patient app to Expo / React Native, the API surface it consumes, and the screen inventory it has to cover.
+- [Patient App (Expo) — App Brief](../apps/mobile-expo/CLAUDE.md) — Conventions for `apps/mobile-expo`: expo-router layout, NativeWind, `theme/tokens.js`, EAS build profiles. Stays beside the code.
 - [Pilot Plan](qa-release/PILOT_PLAN.md) — v1.0 facility-pilot plan: objectives, in/out-of-scope workflows, success criteria, and champion training; a product rollout/plan artifact rather th…
 
 ### Development
 - [Laragon Local Development Setup](../LARAGON_SETUP.md) — Windows/Laragon quick-start: PHP 8.3, PostgreSQL 15, Node 20, Composer, repo layout — local dev environment guide.
 - [OpesCare API — AI Model Instruction Override / Sealed Modules](../apps/api-laravel/CLAUDE.md) — Authoritative AI-assistant guardrails: sealed Health-ID module, sealed-file list, 10 absolute prohibitions, verification checklist. Must stay besid…
 - [OpesCare Platform Changelog](../CHANGELOG.md) — Keep-a-Changelog / SemVer release log; current line is 0.9.0-rc1 plus an in-progress production-hardening entry. Belongs at repo root by convention.
-- [Patient App Store Submission Checklist](qa-release/store-submission-checklist.md) — Pre-flight + per-platform (Play Store / App Store) submission checklist for the Flutter patient app: versioning, privacy policy, builds, icons/spla…
+- [Patient App Store Submission Checklist](qa-release/store-submission-checklist.md) — Pre-flight + per-platform (Play Store / App Store) submission checklist for the Expo patient app: versioning, privacy policy, EAS builds, icons/spla…
 - [QA Checklist](qa-release/QA_CHECKLIST.md) — v1.0 manual QA checklist organized by core module (identity, appointments, queue, pharmacy, lab, billing, ...); standing pre-release QA test refere…
 - [Release Checklist](qa-release/RELEASE_CHECKLIST.md) — v1.0 phased release checklist (T-48h / T-2h / cutover) covering merges, tests, migrations, staging smoke, security review, CVE scans, and backups; …
 
@@ -143,18 +139,6 @@ Historical: completed one-off implementation plans (the May 2026 wave/phase seri
 
 </details>
 
-<details><summary><strong>../apps/mobile-patient/docs/superpowers/plans/</strong> — 1 docs</summary>
-
-- [Mobile Patient App — Production Readiness Plan](../apps/mobile-patient/docs/superpowers/plans/2026-06-13-mobile-patient-production-readiness.md)
-
-</details>
-
-<details><summary><strong>../apps/mobile-patient/docs/superpowers/specs/</strong> — 1 docs</summary>
-
-- [Mobile Patient App — Production Readiness Design](../apps/mobile-patient/docs/superpowers/specs/2026-06-13-mobile-patient-production-readiness-design.md)
-
-</details>
-
 <details><summary><strong>audits/</strong> — 6 docs</summary>
 
 - [Codex Local Baseline Safety Review](audits/CODEX_LOCAL_BASELINE_REVIEW.md)
@@ -166,12 +150,6 @@ Historical: completed one-off implementation plans (the May 2026 wave/phase seri
 
 </details>
 
-<details><summary><strong>design-specs/</strong> — 1 docs</summary>
-
-- [Design System Hardening (Mobile) — Sub-project A Design Spec](design-specs/2026-05-30-design-system-hardening-design.md)
-
-</details>
-
 <details><summary><strong>integration/</strong> — 2 docs</summary>
 
 - [OpesCare Connect Platform API/SDK/Bridge/Widget/Webhooks Blueprint](integration/OPESCARE_CONNECT_PLATFORM_API_SDK_BRIDGE_WIDGET_WEBHOOKS.md)
@@ -179,7 +157,7 @@ Historical: completed one-off implementation plans (the May 2026 wave/phase seri
 
 </details>
 
-<details><summary><strong>plans/</strong> — 46 docs</summary>
+<details><summary><strong>plans/</strong> — 39 docs</summary>
 
 - [Developer Documentation Portal Implementation Plan](plans/2026-05-20-developer-docs-portal.md)
 - [Wave 1 - Security & Rate Limiting Plan](plans/2026-05-21-wave1-security-rate-limiting.md)
@@ -220,13 +198,6 @@ Historical: completed one-off implementation plans (the May 2026 wave/phase seri
 - [Phase 8: Multi-Region Config + Tenant Isolation](plans/2026-05-28-phase8-infrastructure.md)
 - [Phase 9: Dependabot, Snyk, Threat Model](plans/2026-05-28-phase9-security.md)
 - [Production Readiness - Master Roadmap (May 28)](plans/2026-05-28-production-readiness-master.md)
-- [Patient Flutter App - Phase 1: Foundation](plans/2026-05-29-patient-flutter-app-phase1.md)
-- [Patient Flutter App - Phase 2: Shell + Home + Health ID](plans/2026-05-29-patient-flutter-app-phase2.md)
-- [Patient Flutter App - Phase 3: Consent/Timeline/Labs/Rx](plans/2026-05-29-patient-flutter-app-phase3.md)
-- [Patient Flutter App - Phase 4: Appointments/Logs/Docs/Settings](plans/2026-05-29-patient-flutter-app-phase4.md)
-- [Design System Hardening (Flutter)](plans/2026-05-30-design-system-hardening.md)
-- [Missing Feature Modules (Flutter)](plans/2026-05-30-missing-feature-modules.md)
-- [Mobile App Production Readiness (Flutter)](plans/2026-05-30-mobile-production-readiness.md)
 
 </details>
 

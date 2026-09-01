@@ -251,10 +251,11 @@
 
 ## 9. Client deliverables & sub-products
 
-### Patient mobile app (Flutter, `apps/mobile-patient`) — 🟡 → 🟢 after Firebase
-**Built:** auth (email/password + legacy phone/OTP), token-refresh interceptor, Health ID + QR, profile, care plans, surveys, medical export, appointment booking, insurance marketplace, family members, care map, referrals, documents, labs, prescriptions, timeline, access logs, offline UX banners, dark mode, FCM/local-notification plumbing.
-**Fixed (2026-06-11):** release `AndroidManifest.xml` now declares `INTERNET` + `POST_NOTIFICATIONS`; app label set to "OpesCare".
-**Remaining gaps:** Firebase not configured (`firebase_options.dart` stub, no `google-services.json`/plist, Gradle plugins not applied) → push/crash/analytics inert; app icon/splash assets + config; a few accessibility `Semantics` labels and one analytics event. → gap audit Tier 1 #1–2 / Tier 3.
+### Patient mobile app (Expo / React Native, `apps/mobile-expo`) — 🟡
+**Stack:** Expo + TypeScript, `expo-router` file-based routing, NativeWind, design tokens in `theme/tokens.js`, secrets in `expo-secure-store`, builds via EAS (`eas.json`: `local-api` / `preview` / `production`).
+**Built:** auth stack (welcome/login/signup/OTP/forgot-password/permissions), tab shell (home, Health ID, records, messages, profile), appointments + booking, labs, prescriptions, documents, care plans, insurance marketplace, family members, care map, pharmacy + blood finder, record export, privacy/access logs, offline access, notifications.
+**API contract:** talks to the `/api/*` mobile surface with `EXPO_PUBLIC_API_BASE_URL`. Mobile patient routes authenticate with the **`auth.mobile`** middleware (a `PatientAccessToken` bearer, `patient_id` on `$request->attributes`) — *not* `auth:sanctum`, and `$request->user()` is not populated on them.
+**History (2026-08-31):** the previous Flutter app (`apps/mobile-patient`) was retired and removed; Expo is the patient app going forward. Its build/readiness plans and design specs were removed with it.
 
 ### Connect SDKs (`sdk/php`, `sdk/python`, `sdk/typescript`) — 🟡
 Plumbing complete (token cache, retry/backoff, HMAC webhook verify, idempotency, typed errors, sandbox/prod). Only 6 of ~24 method groups implemented. → gap audit Tier 2.

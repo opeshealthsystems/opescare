@@ -6,7 +6,7 @@
 
 **Architecture:** Fix authorization at the route/middleware boundary first, then harden public callback/auth surfaces, then close subscription/MFA/config gaps. Each task adds tests before implementation and includes a verification command so we can prove the blocker is closed before pushing.
 
-**Tech Stack:** Laravel 13, PHP 8.3, PostgreSQL, PHPUnit/Pest via `php artisan test`, Composer audit, npm audit/build, Flutter patient app.
+**Tech Stack:** Laravel 13, PHP 8.3, PostgreSQL, PHPUnit/Pest via `php artisan test`, Composer audit, npm audit/build.
 
 ---
 
@@ -46,10 +46,6 @@
   - Restrict CORS via environment-configured allowed origins.
 - Modify: `apps/api-laravel/app/Providers/ProductionSafetyServiceProvider.php`
   - Fail fast in production for dangerous configuration, not just log.
-- Modify: `apps/mobile-patient/lib/firebase_options.dart`
-  - Replace stub with real FlutterFire output before mobile production build.
-- Modify: `apps/mobile-patient/lib/features/auth/data/auth_repository.dart`
-  - Fix platform detection.
 - Modify: `apps/api-laravel/composer.json` and `apps/api-laravel/composer.lock`
   - Update vulnerable Composer packages to advisory-safe versions.
 - Test: add focused feature tests under `apps/api-laravel/tests/Feature/Security/`
@@ -1018,97 +1014,14 @@ git commit -m "fix: harden production configuration"
 
 ---
 
-### Task 9: Fix Mobile Patient Release Blockers
+### Task 9: Fix Mobile Patient Release Blockers — WITHDRAWN 2026-08-31
 
-**Files:**
-- Modify: `apps/mobile-patient/lib/firebase_options.dart`
-- Modify: `apps/mobile-patient/lib/features/auth/data/auth_repository.dart`
-- Test: `apps/mobile-patient/test/production_readiness_test.dart`
-
-- [ ] **Step 1: Write mobile readiness tests**
-
-Create `apps/mobile-patient/test/production_readiness_test.dart`:
-
-```dart
-import 'dart:io';
-
-import 'package:flutter_test/flutter_test.dart';
-
-void main() {
-  test('firebase options are not the generated stub', () {
-    final file = File('lib/firebase_options.dart');
-    final source = file.readAsStringSync();
-
-    expect(source, isNot(contains('throw UnimplementedError')));
-    expect(source, isNot(contains('STUB')));
-  });
-
-  test('auth repository does not use dart.library.html as android detection', () {
-    final file = File('lib/features/auth/data/auth_repository.dart');
-    final source = file.readAsStringSync();
-
-    expect(source, isNot(contains("bool.fromEnvironment('dart.library.html')")));
-  });
-}
-```
-
-- [ ] **Step 2: Run test and confirm it fails**
-
-Run:
-
-```powershell
-cd C:\laragon\www\opescare\apps\mobile-patient
-flutter test test/production_readiness_test.dart
-```
-
-Expected: FAIL until Firebase options are generated and platform detection is fixed.
-
-- [ ] **Step 3: Generate Firebase options**
-
-Run from `apps/mobile-patient`:
-
-```powershell
-flutterfire configure --project=opescare-patient
-```
-
-Expected: `lib/firebase_options.dart` contains real `FirebaseOptions`.
-
-- [ ] **Step 4: Fix platform detection**
-
-In `auth_repository.dart`, replace `_platform()` with:
-
-```dart
-String _platform() {
-  if (kIsWeb) return 'web';
-  if (Platform.isIOS) return 'ios';
-  return 'android';
-}
-```
-
-Also import:
-
-```dart
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
-```
-
-- [ ] **Step 5: Verify mobile tests pass**
-
-Run:
-
-```powershell
-cd C:\laragon\www\opescare\apps\mobile-patient
-flutter test test/production_readiness_test.dart
-```
-
-Expected: PASS.
-
-- [ ] **Step 6: Commit**
-
-```powershell
-git add apps/mobile-patient/lib/firebase_options.dart apps/mobile-patient/lib/features/auth/data/auth_repository.dart apps/mobile-patient/test/production_readiness_test.dart
-git commit -m "fix: clear mobile patient release blockers"
-```
+This task targeted the Flutter patient app (`apps/mobile-patient`): regenerating the
+stub `firebase_options.dart` and fixing an inverted platform check in
+`auth_repository.dart`. That app was retired and removed; the patient app is now
+`apps/mobile-expo` (Expo / React Native) and neither defect exists there. Push
+credentials for the new app are tracked as **GAP-002**, and release steps live in
+`docs/qa-release/store-submission-checklist.md`.
 
 ---
 

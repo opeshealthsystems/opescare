@@ -39,10 +39,6 @@
     </a>
     @endfeature
     @feature('analytics_dashboards')
-    <a href="{{ route('portals.staff.analytics') }}" class="sidebar-link">
-        <i data-lucide="bar-chart-2"></i>
-        <span>{{ __('public.portal.nav_analytics', [], $l) ?: 'Analytics' }}</span>
-    </a>
     @endfeature
     <a href="{{ route('portals.staff.support') }}" class="sidebar-link">
         <i data-lucide="headset"></i>

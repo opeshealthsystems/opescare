@@ -230,7 +230,7 @@ Scheduler (cron):
 
 | Deployed (runtime) | NOT deployed |
 |---|---|
-| `app/ bootstrap/ config/ database/migrations+seeders/ lang/ public/ resources/views routes/ vendor/(--no-dev) public/build/` | `tests/ .git/ node_modules/ .env.example README.md phpunit.xml .editorconfig docs/ .github/ other monorepo apps (sdk, widget, bridge-agent, contracts, upgradeplans) the Flutter app` |
+| `app/ bootstrap/ config/ database/migrations+seeders/ lang/ public/ resources/views routes/ vendor/(--no-dev) public/build/` | `tests/ .git/ node_modules/ .env.example README.md phpunit.xml .editorconfig docs/ .github/ other monorepo apps (sdk, widget, bridge-agent, contracts, upgradeplans) the Expo patient app` |
 
-The Flutter mobile app and SDK/widget are **separate deliverables** — they are not
-part of the API server deploy.
+The Expo patient app (`apps/mobile-expo`) and the SDK/widget are **separate
+deliverables** — they are not part of the API server deploy.

@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BloodInventoryResource;
+use App\Modules\CareMap\Services\BloodAvailabilityProjector;
 use App\Modules\Inventory\Services\BloodInventoryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 /**
  * BloodInventoryController — Blood Bank Inventory API.
@@ -17,6 +19,13 @@ use Illuminate\Http\Request;
  * SAFETY RULE: Units flagged is_expired, is_quarantined, or is_unsafe
  * must never be allocated to a patient. Flags should trigger notifications
  * to the responsible clinician/blood bank manager.
+ *
+ * SOURCE OF TRUTH: `blood_inventories` is the operational record; the
+ * patient-facing `blood_availability` row is projected from it by
+ * App\Modules\CareMap\Services\BloodAvailabilityProjector after every write
+ * below. A number changed here is the number the Blood Finder shows and the
+ * one a patient's blood request is gated against — there is no second answer
+ * to maintain.
  *
  * Routes protected by VerifyIntegrationClient middleware.
  * facility_id always from middleware attributes.
@@ -74,10 +83,17 @@ class BloodInventoryController extends Controller
      *
      * Body: {
      *   blood_group: A+|A-|B+|B-|AB+|AB-|O+|O-,
-     *   component: whole_blood|packed_cells|plasma|platelets|cryoprecipitate,
+     *   component: see BloodAvailabilityProjector::operationalComponents(),
      *   available_units: integer,
      *   expiry_date?: date
      * }
+     *
+     * The old `in:` list here accepted `packed_cells` and `plasma` while the
+     * rows actually in the table are `packed_red_cells` and
+     * `fresh_frozen_plasma` — the API rejected the very vocabulary the seeder
+     * and the bridge agent write. The allowed list is now the one canonical
+     * set of operational spellings, and the projector collapses the aliases
+     * onto a single published component.
      */
     public function upsert(Request $request): JsonResponse
     {
@@ -88,7 +104,7 @@ class BloodInventoryController extends Controller
 
         $validated = $request->validate([
             'blood_group'     => ['required', 'string', 'in:A+,A-,B+,B-,AB+,AB-,O+,O-'],
-            'component'       => ['required', 'string', 'in:whole_blood,packed_cells,plasma,platelets,cryoprecipitate'],
+            'component'       => ['required', 'string', Rule::in(BloodAvailabilityProjector::operationalComponents())],
             'available_units' => ['required', 'integer', 'min:0'],
             'expiry_date'     => ['nullable', 'date'],
         ]);
@@ -102,16 +118,25 @@ class BloodInventoryController extends Controller
      * Adjust available unit count (add or subtract).
      *
      * Body: { delta: integer (>=1), direction: add|subtract }
+     *
+     * Scoped to the middleware-resolved facility: the route carries only an
+     * item id, so without the scope any authenticated client could adjust
+     * another blood bank's shelf (OWASP API1).
      */
     public function adjust(string $itemId, Request $request): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['message' => __('api.facility_unresolved_id')], 422);
+        }
+
         $validated = $request->validate([
             'delta'     => ['required', 'integer', 'min:1'],
             'direction' => ['required', 'in:add,subtract'],
         ]);
 
         try {
-            $item = $this->service->adjustUnits($itemId, $validated['delta'], $validated['direction']);
+            $item = $this->service->adjustUnits($itemId, $validated['delta'], $validated['direction'], $facilityId);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['message' => __('api.inventory_item_not_found')], 404);
         }
@@ -131,6 +156,11 @@ class BloodInventoryController extends Controller
      */
     public function setFlags(string $itemId, Request $request): JsonResponse
     {
+        $facilityId = $request->attributes->get('facility_id');
+        if (!$facilityId) {
+            return response()->json(['message' => __('api.facility_unresolved_id')], 422);
+        }
+
         $validated = $request->validate([
             'is_expired'     => ['nullable', 'boolean'],
             'is_quarantined' => ['nullable', 'boolean'],
@@ -142,7 +172,7 @@ class BloodInventoryController extends Controller
         }
 
         try {
-            $item = $this->service->setFlags($itemId, $validated);
+            $item = $this->service->setFlags($itemId, $validated, $facilityId);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['message' => __('api.inventory_item_not_found')], 404);
         }

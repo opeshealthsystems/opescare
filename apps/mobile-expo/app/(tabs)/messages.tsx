@@ -166,8 +166,6 @@ export default function MessagesScreen() {
         </Pressable>
       </View>
 
-      <VideoVisitsCard onPress={() => router.push('/telemedicine')} />
-
       {hasThreads ? (
         <>
           <View
@@ -318,40 +316,6 @@ export default function MessagesScreen() {
 }
 
 /* ── Inbox pieces ─────────────────────────────────────────────────────── */
-
-function VideoVisitsCard({ onPress }: { onPress: () => void }) {
-  const { t } = useTranslation();
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={t('messages.videoVisits')}
-      className="mx-6 mb-4"
-    >
-      <LinearGradient
-        colors={[colors.brand[600], colors.brand[500]]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        // Inline style: NativeWind's className never reaches LinearGradient.
-        style={{ borderRadius: 20, padding: 16, flexDirection: 'row', alignItems: 'center' }}
-      >
-        <View
-          className="h-11 w-11 items-center justify-center rounded-full"
-          style={{ backgroundColor: 'rgba(255,255,255,0.22)' }}
-        >
-          <Video size={20} color={colors.white} />
-        </View>
-        <View className="ml-3 flex-1">
-          <Text className="text-sm font-bold text-white">{t('messages.videoVisits')}</Text>
-          <Text className="mt-0.5 text-xs" style={{ color: 'rgba(255,255,255,0.85)' }}>
-            {t('messages.videoVisitsBody')}
-          </Text>
-        </View>
-        <ChevronRight size={18} color={colors.white} />
-      </LinearGradient>
-    </Pressable>
-  );
-}
 
 function FilterChip({
   label,
@@ -570,16 +534,6 @@ function ConversationView({ threadId, onBack }: { threadId: number; onBack: () =
             </Text>
           </View>
         </View>
-        <Pressable
-          onPress={() => router.push('/telemedicine')}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel={t('messages.videoVisits')}
-          className="h-11 w-11 items-center justify-center rounded-full"
-          style={{ backgroundColor: colors.brand[50], borderWidth: 1, borderColor: colors.brand[100] }}
-        >
-          <Video size={18} color={colors.brand[600]} />
-        </Pressable>
       </View>
 
       <View

@@ -41,10 +41,12 @@ class BloodRequest extends Model
         'contact_phone',
         'patient_note',
         'facility_note',
+        'decided_by',
         'cancelled_reason',
         'needed_by',
         'expires_at',
         'confirmed_at',
+        'decided_at',
         'fulfilled_at',
         'cancelled_at',
     ];
@@ -58,6 +60,7 @@ class BloodRequest extends Model
         'needed_by'      => 'datetime',
         'expires_at'     => 'datetime',
         'confirmed_at'   => 'datetime',
+        'decided_at'     => 'datetime',
         'fulfilled_at'   => 'datetime',
         'cancelled_at'   => 'datetime',
     ];

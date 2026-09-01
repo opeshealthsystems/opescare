@@ -219,17 +219,43 @@ class BridgeSyncController extends Controller
         return $updated ? 'updated' : 'skipped';
     }
 
+    /**
+     * Blood stock pushed by a facility's on-prem bridge agent.
+     *
+     * This wrote to `blood_inventory` / `units_available` — neither the table
+     * nor the column exists (they are `blood_inventories` / `available_units`),
+     * so every blood_stock batch threw and was recorded as an error. The
+     * facility feed into the operational blood record was dead on arrival.
+     *
+     * A blood row is (group × component), so `component` is part of the key;
+     * an agent that does not send one is reporting whole blood. Once written,
+     * the patient-facing availability is re-published from it — the bridge and
+     * the Blood Finder now answer with the same number.
+     */
     private function upsertBloodStock(string $facilityId, array $record): string
     {
         if (empty($record['blood_group']) || !isset($record['units_available'])) return 'skipped';
 
-        $updated = DB::table('blood_inventory')
+        $component = $record['component'] ?? 'whole_blood';
+
+        if (\App\Modules\CareMap\Services\BloodAvailabilityProjector::publishedComponent($component) === null
+            && $component !== 'cryoprecipitate') {
+            return 'skipped';   // unknown component vocabulary — do not guess
+        }
+
+        $updated = DB::table('blood_inventories')
             ->where('facility_id', $facilityId)
             ->where('blood_group', $record['blood_group'])
+            ->where('component', $component)
             ->update([
-                'units_available' => (int) $record['units_available'],
-                'updated_at'      => now(),
+                'available_units'   => max(0, (int) $record['units_available']),
+                'last_stock_update' => now(),
+                'updated_at'        => now(),
             ]);
+
+        if ($updated) {
+            app(\App\Modules\CareMap\Services\BloodAvailabilityProjector::class)->projectFacility($facilityId);
+        }
 
         return $updated ? 'updated' : 'skipped';
     }

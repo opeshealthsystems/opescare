@@ -981,7 +981,7 @@ offline-limited access
 ```text
 Are mobile API endpoints defined?
 Are patient mobile screens designed?
-Is Flutter app repo/module present?
+Is the patient mobile app (`apps/mobile-expo`) present?
 Is authentication mobile-ready?
 Are push notifications supported?
 Are QR display/scanning flows supported?

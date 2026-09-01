@@ -143,6 +143,7 @@ return [
         'low_stock'    => 'Stock faible',
         'out_of_stock' => 'Rupture de stock',
         'expired'      => 'Expiré',
+        'unknown'      => 'Stock inconnu',
     ],
 
     'level' => [

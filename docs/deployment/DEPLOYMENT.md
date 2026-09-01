@@ -98,7 +98,7 @@ Every subdomain below points to the **same document root**: `/var/www/opescare/p
 | `api.opescare.com` | Core REST API for internal use | `/v1/*` (excl. connect, fhir) |
 | `connect.opescare.com` | B2B interoperability — HIS integrations | `/v1/connect/*` |
 | `fhir.opescare.com` | FHIR R4 healthcare standard | `/fhir/R4/*` |
-| `mobile-api.opescare.com` | Flutter patient + provider mobile apps | `/mobile/*`, `/provider-mobile/*` |
+| `mobile-api.opescare.com` | Patient (Expo) + provider mobile apps | `/mobile/*`, `/provider-mobile/*` |
 | `lite.opescare.com` | OpesCare Lite portal + sync API | `/portals/lite/*`, `/api/v1/lite/*` |
 | `academy.opescare.com` | Learning management system | `/v1/academy/*`, `/academy/*`, `/verify/certificate/*` |
 | `developer.opescare.com` | External developer self-service | `/portals/developer/*`, `/signup/developer` |
@@ -278,7 +278,7 @@ server {
     }
 }
 
-# ── mobile-api.opescare.com — Flutter Mobile Apps ───────────────────────────
+# ── mobile-api.opescare.com — Patient / Provider Mobile Apps ────────────────
 server {
     listen 443 ssl http2;
     server_name mobile-api.opescare.com;
@@ -664,7 +664,7 @@ After Go-Live
   □ php artisan config:cache
   □ Test each subdomain with curl
   □ Register ussd.opescare.com with Africa's Talking dashboard
-  □ Register mobile-api.opescare.com in Flutter app .env
+  □ Point the Expo app at mobile-api.opescare.com (`EXPO_PUBLIC_API_BASE_URL` in `apps/mobile-expo/eas.json`)
 ```
 
 ---
@@ -721,7 +721,7 @@ See [Lite Hosting Architecture](#) for full details. Summary:
 | **Hosted SaaS** | `lite.opescare.com` subdomain (this document) | Default. No hospital server needed |
 | **Hospital-hosted** | Extracted thin Laravel + same DB connection | Hospital has a server and IT team |
 | **Electron Desktop** | PHP + Laravel + SQLite bundled in Electron | No internet, Windows PC at facility |
-| **Flutter Mobile** | Consumes `/api/v1/lite/*` directly | Android tablet, offline-capable |
+| **Native Mobile** | Consumes `/api/v1/lite/*` directly | Android tablet, offline-capable |
 
 ---
 

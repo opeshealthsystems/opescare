@@ -14,10 +14,6 @@
         <i data-lucide="trending-up"></i>
         <span>{{ __('public.portal.nav_kpi', [], $l) ?: 'KPI Dashboard' }}</span>
     </a>
-    <a href="{{ route('portals.admin.financial.index') }}" class="sidebar-link">
-        <i data-lucide="banknote"></i>
-        <span>{{ __('public.portal.nav_finance', [], $l) ?: 'Finance' }}</span>
-    </a>
     <a href="{{ route('portals.admin.subscription') }}" class="sidebar-link">
         <i data-lucide="credit-card"></i>
         <span>{{ __('public.portal.nav_subscriptions', [], $l) ?: 'Subscriptions' }}</span>

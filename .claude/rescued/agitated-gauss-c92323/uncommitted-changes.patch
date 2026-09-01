@@ -1,0 +1,1731 @@
+diff --git a/apps/api-laravel/resources/views/portals/admin/bridge/batches.blade.php b/apps/api-laravel/resources/views/portals/admin/bridge/batches.blade.php
+index 7053c9fa..293176f7 100644
+--- a/apps/api-laravel/resources/views/portals/admin/bridge/batches.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/bridge/batches.blade.php
+@@ -37,7 +37,7 @@
+                             <td><code style="font-size:0.75rem;color:#6b7280;">{{ substr($batch->id, 0, 8) }}…</code></td>
+                             <td>
+                                 <span class="badge badge--info" style="font-size:0.73rem;">
+-                                    {{ str_replace('_',' ', $batch->sync_type) }}
++                                    @enum($batch->sync_type)
+                                 </span>
+                             </td>
+                             <td>
+diff --git a/apps/api-laravel/resources/views/portals/admin/certifications/index.blade.php b/apps/api-laravel/resources/views/portals/admin/certifications/index.blade.php
+index 558d6460..59619a2d 100644
+--- a/apps/api-laravel/resources/views/portals/admin/certifications/index.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/certifications/index.blade.php
+@@ -105,7 +105,7 @@
+                         <td style="font-size:0.82rem;color:#6b7280;">{{ $cert->vendor_name ?? '—' }}</td>
+                         <td>
+                             <span class="badge {{ $cert->statusBadgeClass() }}" style="font-size:0.72rem;">
+-                                {{ ucfirst(str_replace('_', ' ', $cert->status)) }}
++                                @enum($cert->status)
+                             </span>
+                         </td>
+                         <td>
+diff --git a/apps/api-laravel/resources/views/portals/admin/certifications/show.blade.php b/apps/api-laravel/resources/views/portals/admin/certifications/show.blade.php
+index a26f5fb6..bf87c032 100644
+--- a/apps/api-laravel/resources/views/portals/admin/certifications/show.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/certifications/show.blade.php
+@@ -10,7 +10,7 @@
+             <a href="{{ route('portals.admin.certifications.index') }}" style="font-size:0.83rem;color:#6b7280;text-decoration:none;">← Integration Certifications</a>
+             <h1 class="portal-page-title" style="margin-top:4px;">{{ $certification->integration_name }}</h1>
+             <p class="portal-page-subtitle" style="display:flex;align-items:center;gap:8px;">
+-                <span class="badge {{ $certification->statusBadgeClass() }}">{{ ucfirst(str_replace('_', ' ', $certification->status)) }}</span>
++                <span class="badge {{ $certification->statusBadgeClass() }}">@enum($certification->status)</span>
+                 <span class="badge badge--info" style="font-size:0.7rem;">{{ strtoupper($certification->integration_type) }}</span>
+                 @if($certification->certification_level)
+                 <span class="badge {{ $certification->levelBadgeClass() }}" style="text-transform:capitalize;">{{ $certification->certification_level }}</span>
+@@ -185,7 +185,7 @@
+                                 {{ $run->passRate() }}%
+                                 <span style="color:#9ca3af;font-weight:400;">({{ $run->passed_count }}/{{ $run->total_requirements }})</span>
+                             </td>
+-                            <td><span class="badge {{ $run->statusBadgeClass() }}" style="font-size:0.68rem;">{{ ucfirst($run->status) }}</span></td>
++                            <td><span class="badge {{ $run->statusBadgeClass() }}" style="font-size:0.68rem;">@enum($run->status)</span></td>
+                             <td style="color:#9ca3af;">{{ $run->started_at?->format('d M Y') }}</td>
+                         </tr>
+                         @endforeach
+diff --git a/apps/api-laravel/resources/views/portals/admin/code_mappings/index.blade.php b/apps/api-laravel/resources/views/portals/admin/code_mappings/index.blade.php
+index 3b80fe2f..f4196867 100644
+--- a/apps/api-laravel/resources/views/portals/admin/code_mappings/index.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/code_mappings/index.blade.php
+@@ -123,7 +123,7 @@
+                         <td style="font-size:0.78rem;color:#6b7280;">{{ $mapping->resource_type }}</td>
+                         <td style="font-size:0.78rem;color:#6b7280;text-transform:capitalize;">{{ $mapping->mapping_confidence }}</td>
+                         <td>
+-                            <span class="badge {{ $mapping->statusBadgeClass() }}" style="font-size:0.7rem;">{{ ucfirst($mapping->status) }}</span>
++                            <span class="badge {{ $mapping->statusBadgeClass() }}" style="font-size:0.7rem;">@enum($mapping->status)</span>
+                         </td>
+                         <td style="text-align:right;">
+                             <div style="display:flex;gap:6px;justify-content:flex-end;">
+diff --git a/apps/api-laravel/resources/views/portals/admin/developer/accounts.blade.php b/apps/api-laravel/resources/views/portals/admin/developer/accounts.blade.php
+index d5fe470f..0e961ea9 100644
+--- a/apps/api-laravel/resources/views/portals/admin/developer/accounts.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/developer/accounts.blade.php
+@@ -79,7 +79,7 @@
+                     </td>
+                     <td>
+                         <span class="{{ $account->statusBadgeClass() }}" style="font-size:0.72rem;">
+-                            {{ ucfirst($account->status) }}
++                            @enum($account->status)
+                         </span>
+                         @if($account->status === 'suspended' && $account->suspend_reason)
+                         <div style="font-size:0.7rem;color:#dc2626;margin-top:2px;">{{ Str::limit($account->suspend_reason, 30) }}</div>
+diff --git a/apps/api-laravel/resources/views/portals/admin/developer/production_requests.blade.php b/apps/api-laravel/resources/views/portals/admin/developer/production_requests.blade.php
+index be469144..fdb13ffd 100644
+--- a/apps/api-laravel/resources/views/portals/admin/developer/production_requests.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/developer/production_requests.blade.php
+@@ -94,7 +94,7 @@
+                     </td>
+                     <td>
+                         <span class="{{ $req->statusBadgeClass() }}" style="font-size:0.72rem;">
+-                            {{ ucfirst(str_replace('_',' ',$req->status)) }}
++                            @enum($req->status)
+                         </span>
+                         @if($req->reviewed_at)
+                         <div style="font-size:0.7rem;color:#9ca3af;">{{ $req->reviewed_at->format('d M Y') }}</div>
+diff --git a/apps/api-laravel/resources/views/portals/admin/kpi/index.blade.php b/apps/api-laravel/resources/views/portals/admin/kpi/index.blade.php
+index 9862176d..dab004b2 100644
+--- a/apps/api-laravel/resources/views/portals/admin/kpi/index.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/kpi/index.blade.php
+@@ -91,7 +91,7 @@ class="btn {{ $category === $cat ? 'btn--primary' : 'btn--outline' }} btn--sm" s
+                         {{ $def->name }}
+                     </span>
+                     <span class="badge {{ $snapshot->statusBadgeClass() }}" style="font-size:0.68rem;">
+-                        {{ ucfirst($snapshot->status) }}
++                        @enum($snapshot->status)
+                     </span>
+                 </div>
+                 <div style="font-size:1.7rem;font-weight:800;color:#111827;line-height:1.1;margin-bottom:4px;">
+@@ -168,7 +168,7 @@ class="btn {{ $category === $cat ? 'btn--primary' : 'btn--outline' }} btn--sm" s
+                         <td>{{ $exp->requested_at->format('d M Y H:i') }}</td>
+                         <td>{{ strtoupper($exp->export_type) }}</td>
+                         <td>{{ $exp->period_from->format('d M') }} – {{ $exp->period_to->format('d M Y') }}</td>
+-                        <td><span class="badge badge--{{ $exp->status === 'ready' ? 'success' : ($exp->status === 'failed' ? 'danger' : 'warning') }}" style="font-size:0.7rem;">{{ ucfirst($exp->status) }}</span></td>
++                        <td><span class="badge badge--{{ $exp->status === 'ready' ? 'success' : ($exp->status === 'failed' ? 'danger' : 'warning') }}" style="font-size:0.7rem;">@enum($exp->status)</span></td>
+                     </tr>
+                     @endforeach
+                     </tbody>
+diff --git a/apps/api-laravel/resources/views/portals/admin/kpi/trend.blade.php b/apps/api-laravel/resources/views/portals/admin/kpi/trend.blade.php
+index 4621998e..ae562b66 100644
+--- a/apps/api-laravel/resources/views/portals/admin/kpi/trend.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/kpi/trend.blade.php
+@@ -15,7 +15,7 @@
+             @if($definition)
+             <p class="portal-page-subtitle">
+                 {{ $definition->description }}
+-                <span class="badge badge--info" style="margin-left:8px;font-size:0.72rem;">{{ ucfirst($definition->category) }}</span>
++                <span class="badge badge--info" style="margin-left:8px;font-size:0.72rem;">@enum($definition->category)</span>
+             </p>
+             @endif
+         </div>
+diff --git a/apps/api-laravel/resources/views/portals/admin/legal/closures.blade.php b/apps/api-laravel/resources/views/portals/admin/legal/closures.blade.php
+index 6e6f9a85..7ad34800 100644
+--- a/apps/api-laravel/resources/views/portals/admin/legal/closures.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/legal/closures.blade.php
+@@ -34,7 +34,7 @@
+                                 {{ $req->data_export_requested ? 'Yes' : 'No' }}
+                             </td>
+                             <td>
+-                                <span class="badge badge--{{ $req->statusColor() }}" style="font-size:0.72rem;">{{ ucfirst($req->status) }}</span>
++                                <span class="badge badge--{{ $req->statusColor() }}" style="font-size:0.72rem;">@enum($req->status)</span>
+                             </td>
+                             <td style="font-size:0.79rem;color:#6b7280;">{{ $req->created_at->format('d M Y') }}</td>
+                             <td>
+diff --git a/apps/api-laravel/resources/views/portals/admin/legal/complaints.blade.php b/apps/api-laravel/resources/views/portals/admin/legal/complaints.blade.php
+index e66b6196..76b1c724 100644
+--- a/apps/api-laravel/resources/views/portals/admin/legal/complaints.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/legal/complaints.blade.php
+@@ -30,12 +30,12 @@
+                             </td>
+                             <td>
+                                 <span class="badge badge--warning" style="font-size:0.72rem;">
+-                                    {{ ucwords(str_replace('_', ' ', $c->complaint_type)) }}
++                                    @enum($c->complaint_type)
+                                 </span>
+                             </td>
+                             <td style="font-size:0.82rem;max-width:220px;">{{ \Illuminate\Support\Str::limit($c->description, 80) }}</td>
+                             <td>
+-                                <span class="badge badge--{{ $c->statusColor() }}" style="font-size:0.72rem;">{{ ucfirst(str_replace('_', ' ', $c->status)) }}</span>
++                                <span class="badge badge--{{ $c->statusColor() }}" style="font-size:0.72rem;">@enum($c->status)</span>
+                             </td>
+                             <td style="font-size:0.79rem;color:#6b7280;">{{ $c->created_at->format('d M Y') }}</td>
+                             <td>
+diff --git a/apps/api-laravel/resources/views/portals/admin/legal/index.blade.php b/apps/api-laravel/resources/views/portals/admin/legal/index.blade.php
+index 19d0b4a8..f5a68a78 100644
+--- a/apps/api-laravel/resources/views/portals/admin/legal/index.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/legal/index.blade.php
+@@ -62,7 +62,7 @@
+                             <td style="font-weight:600;font-size:0.88rem;">{{ $doc->title }}</td>
+                             <td>
+                                 <span class="badge badge--info" style="font-size:0.72rem;">
+-                                    {{ str_replace('_', ' ', ucfirst($doc->document_type)) }}
++                                    @enum($doc->document_type)
+                                 </span>
+                             </td>
+                             <td style="font-size:0.82rem;text-transform:uppercase;">{{ $doc->language }}</td>
+diff --git a/apps/api-laravel/resources/views/portals/admin/legal/minor_transitions.blade.php b/apps/api-laravel/resources/views/portals/admin/legal/minor_transitions.blade.php
+index ed1ade80..4dff674b 100644
+--- a/apps/api-laravel/resources/views/portals/admin/legal/minor_transitions.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/legal/minor_transitions.blade.php
+@@ -33,7 +33,7 @@
+                                 @if($days < 0) Overdue @elseif($days === 0) Today @else {{ $days }} days @endif
+                             </td>
+                             <td>
+-                                <span class="badge badge--{{ $t->statusColor() }}" style="font-size:0.72rem;">{{ ucfirst($t->status) }}</span>
++                                <span class="badge badge--{{ $t->statusColor() }}" style="font-size:0.72rem;">@enum($t->status)</span>
+                             </td>
+                         </tr>
+                     @empty
+diff --git a/apps/api-laravel/resources/views/portals/admin/legal/show.blade.php b/apps/api-laravel/resources/views/portals/admin/legal/show.blade.php
+index c6d617c6..feb06d21 100644
+--- a/apps/api-laravel/resources/views/portals/admin/legal/show.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/legal/show.blade.php
+@@ -10,7 +10,7 @@
+             <a href="{{ route('portals.admin.legal') }}" style="font-size:0.83rem;color:#6b7280;text-decoration:none;">← Legal Documents</a>
+             <h1 class="portal-page-title" style="margin-top:4px;">{{ $document->title }}</h1>
+             <p class="portal-page-subtitle">
+-                <span class="badge badge--info" style="font-size:0.72rem;">{{ str_replace('_', ' ', ucfirst($document->document_type)) }}</span>
++                <span class="badge badge--info" style="font-size:0.72rem;">@enum($document->document_type)</span>
+                 <span style="margin-left:8px;font-size:0.8rem;color:#6b7280;">{{ strtoupper($document->language) }}</span>
+             </p>
+         </div>
+diff --git a/apps/api-laravel/resources/views/portals/admin/onboarding/index.blade.php b/apps/api-laravel/resources/views/portals/admin/onboarding/index.blade.php
+index f627a0a2..5e9aab30 100644
+--- a/apps/api-laravel/resources/views/portals/admin/onboarding/index.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/onboarding/index.blade.php
+@@ -80,7 +80,7 @@
+                                     };
+                                 @endphp
+                                 <span class="badge badge--{{ $color }}" style="font-size:0.72rem;">
+-                                    {{ str_replace('_', ' ', ucfirst($r->status)) }}
++                                    @enum($r->status)
+                                 </span>
+                             </td>
+                             <td style="font-size:0.79rem;color:#6b7280;">
+diff --git a/apps/api-laravel/resources/views/portals/admin/onboarding/show.blade.php b/apps/api-laravel/resources/views/portals/admin/onboarding/show.blade.php
+index 33aa0762..f8abee2d 100644
+--- a/apps/api-laravel/resources/views/portals/admin/onboarding/show.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/onboarding/show.blade.php
+@@ -15,7 +15,7 @@
+                         'approved' => 'success', 'ready_for_approval' => 'info', default => 'warning',
+                     };
+                 @endphp
+-                <span class="badge badge--{{ $statusColor }}">{{ str_replace('_', ' ', ucfirst($readiness->status)) }}</span>
++                <span class="badge badge--{{ $statusColor }}">@enum($readiness->status)</span>
+                 <span style="font-size:0.8rem;color:#6b7280;">{{ $completedCount }}/{{ $totalCount }} items completed</span>
+             </p>
+         </div>
+diff --git a/apps/api-laravel/resources/views/portals/admin/security_ops/incidents.blade.php b/apps/api-laravel/resources/views/portals/admin/security_ops/incidents.blade.php
+index a0be1481..3e57d617 100644
+--- a/apps/api-laravel/resources/views/portals/admin/security_ops/incidents.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/security_ops/incidents.blade.php
+@@ -74,8 +74,8 @@
+                     @endphp
+                     <tr>
+                         <td style="font-weight:500;font-size:.85rem;">{{ $inc->incident_type }}</td>
+-                        <td><span class="badge {{ $sevBadge }}" style="font-size:.72rem;">{{ ucfirst($inc->severity) }}</span></td>
+-                        <td><span class="badge {{ $stBadge }}" style="font-size:.72rem;">{{ ucfirst($inc->status) }}</span></td>
++                        <td><span class="badge {{ $sevBadge }}" style="font-size:.72rem;">@enum($inc->severity, 'severity')</span></td>
++                        <td><span class="badge {{ $stBadge }}" style="font-size:.72rem;">@enum($inc->status)</span></td>
+                         <td style="font-size:.8rem;max-width:240px;">{{ Str::limit($inc->summary, 80) }}</td>
+                         <td style="font-size:.78rem;color:var(--p-text-muted);">{{ \Carbon\Carbon::parse($inc->detected_at)->format('M d, Y') }}</td>
+                         <td style="font-size:.78rem;color:var(--p-text-muted);">
+diff --git a/apps/api-laravel/resources/views/portals/admin/security_ops/index.blade.php b/apps/api-laravel/resources/views/portals/admin/security_ops/index.blade.php
+index 28d8ac05..89eee50e 100644
+--- a/apps/api-laravel/resources/views/portals/admin/security_ops/index.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/security_ops/index.blade.php
+@@ -67,8 +67,8 @@ class="btn btn-danger btn-sm" style="margin-left:auto;">View Now</a>
+                 @php $sevBadge = match($inc->severity) { 'critical'=>'badge-danger', 'high'=>'badge-warning', 'medium'=>'badge-primary', default=>'badge-neutral' }; @endphp
+                 <tr>
+                     <td style="font-size:.8rem;">{{ $inc->incident_type }}</td>
+-                    <td><span class="badge {{ $sevBadge }}" style="font-size:.7rem;">{{ ucfirst($inc->severity) }}</span></td>
+-                    <td><span class="badge badge-neutral" style="font-size:.7rem;">{{ ucfirst($inc->status) }}</span></td>
++                    <td><span class="badge {{ $sevBadge }}" style="font-size:.7rem;">@enum($inc->severity, 'severity')</span></td>
++                    <td><span class="badge badge-neutral" style="font-size:.7rem;">@enum($inc->status)</span></td>
+                     <td style="font-size:.75rem;color:var(--p-text-muted);">{{ \Carbon\Carbon::parse($inc->detected_at)->diffForHumans() }}</td>
+                 </tr>
+                 @endforeach
+diff --git a/apps/api-laravel/resources/views/portals/admin/subscription/detail.blade.php b/apps/api-laravel/resources/views/portals/admin/subscription/detail.blade.php
+index 43f253ea..1dc412e6 100644
+--- a/apps/api-laravel/resources/views/portals/admin/subscription/detail.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/subscription/detail.blade.php
+@@ -11,7 +11,7 @@
+             <p class="portal-page-subtitle">
+                 {{ $subscription->plan->name ?? '—' }} ·
+                 <span class="badge badge--{{ $subscription->statusColor() }}" style="font-size:0.75rem;">
+-                    {{ ucfirst(str_replace('_',' ',$subscription->status)) }}
++                    @enum($subscription->status)
+                 </span>
+             </p>
+         </div>
+@@ -38,7 +38,7 @@
+                 <table style="width:100%;font-size:0.84rem;border-collapse:collapse;">
+                     <tr><td style="padding:5px 0;color:#6b7280;width:40%;">Organization</td><td style="font-weight:600;">{{ $subscription->organization_name }}</td></tr>
+                     <tr><td style="padding:5px 0;color:#6b7280;">Plan</td><td style="font-weight:600;">{{ $subscription->plan->name ?? '—' }}</td></tr>
+-                    <tr><td style="padding:5px 0;color:#6b7280;">Billing Cycle</td><td>{{ ucfirst($subscription->plan->billing_cycle ?? '—') }}</td></tr>
++                    <tr><td style="padding:5px 0;color:#6b7280;">Billing Cycle</td><td>@enum($subscription->plan->billing_cycle ?? '—')</td></tr>
+                     <tr><td style="padding:5px 0;color:#6b7280;">Price</td><td style="font-weight:600;">{{ $subscription->plan->priceFormatted() ?? '—' }}</td></tr>
+                     <tr><td style="padding:5px 0;color:#6b7280;">Discount</td><td>{{ $subscription->discount_percent }}%</td></tr>
+                     <tr><td style="padding:5px 0;color:#6b7280;">Period</td><td>{{ $subscription->current_period_start->format('d M Y') }} → {{ $subscription->current_period_end->format('d M Y') }}</td></tr>
+@@ -114,7 +114,7 @@
+                             <td style="font-size:0.82rem;color:{{ $inv->isOverdue() ? '#dc2626' : '#6b7280' }};">{{ $inv->due_date->format('d M Y') }}</td>
+                             <td style="font-weight:600;font-size:0.85rem;">{{ $inv->totalFormatted() }}</td>
+                             <td>
+-                                <span class="badge badge--{{ $inv->statusColor() }}" style="font-size:0.72rem;">{{ ucfirst($inv->status) }}</span>
++                                <span class="badge badge--{{ $inv->statusColor() }}" style="font-size:0.72rem;">@enum($inv->status)</span>
+                             </td>
+                             <td>
+                                 @if(in_array($inv->status, ['sent','overdue']))
+diff --git a/apps/api-laravel/resources/views/portals/admin/subscription/invoices.blade.php b/apps/api-laravel/resources/views/portals/admin/subscription/invoices.blade.php
+index 25b820f6..55704eaf 100644
+--- a/apps/api-laravel/resources/views/portals/admin/subscription/invoices.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/subscription/invoices.blade.php
+@@ -91,7 +91,7 @@
+                             </td>
+                             <td style="font-weight:700;font-size:0.88rem;">{{ $inv->totalFormatted() }}</td>
+                             <td>
+-                                <span class="badge badge--{{ $inv->statusColor() }}" style="font-size:0.72rem;">{{ ucfirst($inv->status) }}</span>
++                                <span class="badge badge--{{ $inv->statusColor() }}" style="font-size:0.72rem;">@enum($inv->status)</span>
+                             </td>
+                             <td>
+                                 @if(in_array($inv->status, ['sent','overdue']))
+diff --git a/apps/api-laravel/resources/views/portals/admin/subscription/plans.blade.php b/apps/api-laravel/resources/views/portals/admin/subscription/plans.blade.php
+index fafdf1b9..04bc4063 100644
+--- a/apps/api-laravel/resources/views/portals/admin/subscription/plans.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/subscription/plans.blade.php
+@@ -63,7 +63,7 @@
+                                 @endif
+                             </td>
+                             <td>
+-                                <span class="badge badge--info" style="font-size:0.72rem;">{{ ucfirst($plan->billing_cycle) }}</span>
++                                <span class="badge badge--info" style="font-size:0.72rem;">@enum($plan->billing_cycle)</span>
+                             </td>
+                             <td style="font-weight:700;font-size:0.88rem;">{{ $plan->priceFormatted() }}</td>
+                             <td>
+diff --git a/apps/api-laravel/resources/views/portals/admin/subscription/subscriptions.blade.php b/apps/api-laravel/resources/views/portals/admin/subscription/subscriptions.blade.php
+index 75f1042a..42dec93f 100644
+--- a/apps/api-laravel/resources/views/portals/admin/subscription/subscriptions.blade.php
++++ b/apps/api-laravel/resources/views/portals/admin/subscription/subscriptions.blade.php
+@@ -91,12 +91,12 @@
+                             <td>
+                                 <span style="font-size:0.83rem;font-weight:600;">{{ $sub->plan->name ?? '—' }}</span>
+                                 @if($sub->plan)
+-                                    <div style="font-size:0.72rem;color:#9ca3af;">{{ ucfirst($sub->plan->billing_cycle) }}</div>
++                                    <div style="font-size:0.72rem;color:#9ca3af;">@enum($sub->plan->billing_cycle)</div>
+                                 @endif
+                             </td>
+                             <td>
+                                 <span class="badge badge--{{ $sub->statusColor() }}" style="font-size:0.72rem;">
+-                                    {{ ucfirst(str_replace('_',' ',$sub->status)) }}
++                                    @enum($sub->status)
+                                 </span>
+                             </td>
+                             <td style="font-size:0.79rem;color:#6b7280;">
+diff --git a/apps/api-laravel/resources/views/portals/staff/analytics/data_quality.blade.php b/apps/api-laravel/resources/views/portals/staff/analytics/data_quality.blade.php
+index 6c8e6231..7dcf168d 100644
+--- a/apps/api-laravel/resources/views/portals/staff/analytics/data_quality.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/analytics/data_quality.blade.php
+@@ -1,5 +1,5 @@
+ @extends('layouts.portal')
+-@section('title', 'Data Quality Analytics')
++@section('title', __('staff_nav.title_data_quality_analytics', [], app()->getLocale()) ?: 'Data Quality Analytics')
+ @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
+ 
+ @section('content')
+diff --git a/apps/api-laravel/resources/views/portals/staff/analytics/financial.blade.php b/apps/api-laravel/resources/views/portals/staff/analytics/financial.blade.php
+index cf726f80..e89de6d3 100644
+--- a/apps/api-laravel/resources/views/portals/staff/analytics/financial.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/analytics/financial.blade.php
+@@ -1,5 +1,5 @@
+ @extends('layouts.portal')
+-@section('title', 'Financial Analytics')
++@section('title', __('staff_nav.title_financial_analytics', [], app()->getLocale()) ?: 'Financial Analytics')
+ @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
+ 
+ @section('content')
+diff --git a/apps/api-laravel/resources/views/portals/staff/analytics/index.blade.php b/apps/api-laravel/resources/views/portals/staff/analytics/index.blade.php
+index 11445058..511e3220 100644
+--- a/apps/api-laravel/resources/views/portals/staff/analytics/index.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/analytics/index.blade.php
+@@ -1,6 +1,6 @@
+ @extends('layouts.portal')
+ 
+-@section('title', 'Analytics Dashboard')
++@section('title', __('staff_nav.title_analytics_dashboard', [], app()->getLocale()) ?: 'Analytics Dashboard')
+ 
+ @section('sidebar_role_badge')
+ <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
+@@ -9,7 +9,7 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link">
+         <i data-lucide="layout-dashboard"></i>
+         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
+@@ -20,7 +20,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Clinical</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+         <i data-lucide="calendar-check-2"></i>
+         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
+@@ -35,11 +35,11 @@
+     </a>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+         <i data-lucide="brain-circuit"></i>
+-        <span>Clinical Alerts</span>
++        <span>{{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">HR & Staff</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_hr_staff', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
+     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
+         <i data-lucide="users"></i>
+         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
+@@ -54,7 +54,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Inventory</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
+         <i data-lucide="pill"></i>
+         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
+@@ -65,14 +65,14 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Supply Chain</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+         <i data-lucide="package"></i>
+-        <span>Supply Chain</span>
++        <span>{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
+         <i data-lucide="receipt"></i>
+         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
+diff --git a/apps/api-laravel/resources/views/portals/staff/analytics/queue.blade.php b/apps/api-laravel/resources/views/portals/staff/analytics/queue.blade.php
+index 8a4e7bfe..94b97b07 100644
+--- a/apps/api-laravel/resources/views/portals/staff/analytics/queue.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/analytics/queue.blade.php
+@@ -1,5 +1,5 @@
+ @extends('layouts.portal')
+-@section('title', 'Queue Analytics')
++@section('title', __('staff_nav.title_queue_analytics', [], app()->getLocale()) ?: 'Queue Analytics')
+ 
+ @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
+ 
+diff --git a/apps/api-laravel/resources/views/portals/staff/analytics/ward.blade.php b/apps/api-laravel/resources/views/portals/staff/analytics/ward.blade.php
+index 25e40fd8..0ed87223 100644
+--- a/apps/api-laravel/resources/views/portals/staff/analytics/ward.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/analytics/ward.blade.php
+@@ -1,5 +1,5 @@
+ @extends('layouts.portal')
+-@section('title', 'Ward & Bed Analytics')
++@section('title', __('staff_nav.title_ward_analytics', [], app()->getLocale()) ?: 'Ward & Bed Analytics')
+ @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
+ 
+ @section('content')
+diff --git a/apps/api-laravel/resources/views/portals/staff/appointments_create.blade.php b/apps/api-laravel/resources/views/portals/staff/appointments_create.blade.php
+index 84d0590d..7dc46a14 100644
+--- a/apps/api-laravel/resources/views/portals/staff/appointments_create.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/appointments_create.blade.php
+@@ -9,7 +9,7 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link">
+         <i data-lucide="layout-dashboard"></i>
+         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
+@@ -20,7 +20,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Clinical</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link active">
+         <i data-lucide="calendar-check-2"></i>
+         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
+@@ -35,11 +35,11 @@
+     </a>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+         <i data-lucide="brain-circuit"></i>
+-        <span>Clinical Alerts</span>
++        <span>{{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">HR & Staff</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_hr_staff', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
+     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
+         <i data-lucide="users"></i>
+         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
+@@ -58,7 +58,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Inventory</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
+         <i data-lucide="pill"></i>
+         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
+@@ -69,14 +69,14 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Supply Chain</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+         <i data-lucide="package"></i>
+-        <span>Supply Chain</span>
++        <span>{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
+         <i data-lucide="receipt"></i>
+         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
+diff --git a/apps/api-laravel/resources/views/portals/staff/billing_create.blade.php b/apps/api-laravel/resources/views/portals/staff/billing_create.blade.php
+index 56c597ba..d441c78f 100644
+--- a/apps/api-laravel/resources/views/portals/staff/billing_create.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/billing_create.blade.php
+@@ -9,7 +9,7 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link">
+         <i data-lucide="layout-dashboard"></i>
+         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
+@@ -20,7 +20,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Clinical</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+         <i data-lucide="calendar-check-2"></i>
+         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
+@@ -35,11 +35,11 @@
+     </a>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+         <i data-lucide="brain-circuit"></i>
+-        <span>Clinical Alerts</span>
++        <span>{{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">HR & Staff</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_hr_staff', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
+     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
+         <i data-lucide="users"></i>
+         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
+@@ -58,7 +58,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Inventory</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
+         <i data-lucide="pill"></i>
+         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
+@@ -69,14 +69,14 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Supply Chain</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+         <i data-lucide="package"></i>
+-        <span>Supply Chain</span>
++        <span>{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link active">
+         <i data-lucide="receipt"></i>
+         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
+diff --git a/apps/api-laravel/resources/views/portals/staff/cdss/_sidebar.blade.php b/apps/api-laravel/resources/views/portals/staff/cdss/_sidebar.blade.php
+index 7c6e29a2..7484eb30 100644
+--- a/apps/api-laravel/resources/views/portals/staff/cdss/_sidebar.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/cdss/_sidebar.blade.php
+@@ -5,7 +5,7 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link">
+         <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
+     </a>
+@@ -14,7 +14,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Clinical</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+         <i data-lucide="calendar-check-2"></i><span>Appointments</span>
+     </a>
+@@ -25,7 +25,7 @@
+         <i data-lucide="stethoscope"></i><span>Visits</span>
+     </a>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+-        <i data-lucide="brain-circuit"></i><span>Clinical Alerts</span>
++        <i data-lucide="brain-circuit"></i><span>{{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
+         @php
+             $activeCdssAlerts = \App\Models\ClinicalAlert::where('severity','critical')->where('status','active')->count();
+         @endphp
+@@ -41,7 +41,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">HR & Staff</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_hr_staff', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
+     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
+         <i data-lucide="users"></i><span>Directory</span>
+     </a>
+@@ -56,7 +56,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Inventory</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
+         <i data-lucide="pill"></i><span>Pharmacy</span>
+     </a>
+@@ -65,13 +65,13 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Supply Chain</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+-        <i data-lucide="package"></i><span>Supply Chain</span>
++        <i data-lucide="package"></i><span>{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
+         <i data-lucide="receipt"></i><span>Billing</span>
+     </a>
+diff --git a/apps/api-laravel/resources/views/portals/staff/cdss/drug_interactions.blade.php b/apps/api-laravel/resources/views/portals/staff/cdss/drug_interactions.blade.php
+index 913dbebd..1da03589 100644
+--- a/apps/api-laravel/resources/views/portals/staff/cdss/drug_interactions.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/cdss/drug_interactions.blade.php
+@@ -1,5 +1,5 @@
+ @extends('layouts.portal')
+-@section('title', 'Drug Interactions — CDSS')
++@section('title', __('staff_nav.title_drug_interactions', [], app()->getLocale()) ?: 'Drug Interactions — CDSS')
+ @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
+ 
+ @section('content')
+diff --git a/apps/api-laravel/resources/views/portals/staff/cdss/index.blade.php b/apps/api-laravel/resources/views/portals/staff/cdss/index.blade.php
+index 148814ae..08d70c2f 100644
+--- a/apps/api-laravel/resources/views/portals/staff/cdss/index.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/cdss/index.blade.php
+@@ -1,5 +1,5 @@
+ @extends('layouts.portal')
+-@section('title', 'Clinical Decision Support — Alerts')
++@section('title', __('staff_nav.title_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Decision Support — Alerts')
+ @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
+ 
+ @section('content')
+diff --git a/apps/api-laravel/resources/views/portals/staff/cdss/lab_rules.blade.php b/apps/api-laravel/resources/views/portals/staff/cdss/lab_rules.blade.php
+index b5c871ee..63f47db1 100644
+--- a/apps/api-laravel/resources/views/portals/staff/cdss/lab_rules.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/cdss/lab_rules.blade.php
+@@ -1,5 +1,5 @@
+ @extends('layouts.portal')
+-@section('title', 'Lab Alert Ranges — CDSS')
++@section('title', __('staff_nav.title_lab_alert_ranges', [], app()->getLocale()) ?: 'Lab Alert Ranges — CDSS')
+ @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
+ 
+ @section('content')
+diff --git a/apps/api-laravel/resources/views/portals/staff/cdss/rules.blade.php b/apps/api-laravel/resources/views/portals/staff/cdss/rules.blade.php
+index e1102875..409aa869 100644
+--- a/apps/api-laravel/resources/views/portals/staff/cdss/rules.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/cdss/rules.blade.php
+@@ -1,5 +1,5 @@
+ @extends('layouts.portal')
+-@section('title', 'Clinical Rules — CDSS')
++@section('title', __('staff_nav.title_clinical_rules', [], app()->getLocale()) ?: 'Clinical Rules — CDSS')
+ @section('sidebar') @include('portals.staff.cdss._sidebar') @endsection
+ 
+ @section('content')
+diff --git a/apps/api-laravel/resources/views/portals/staff/data_import/audit.blade.php b/apps/api-laravel/resources/views/portals/staff/data_import/audit.blade.php
+index 6716d8ac..d87ce30b 100644
+--- a/apps/api-laravel/resources/views/portals/staff/data_import/audit.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/data_import/audit.blade.php
+@@ -1,6 +1,6 @@
+ @extends('layouts.portal')
+ 
+-@section('title', 'Import Audit Log')
++@section('title', __('staff_nav.title_import_audit', [], app()->getLocale()) ?: 'Import Audit Log')
+ 
+ @section('sidebar_role_badge')
+ <div class="sidebar-role-badge">Clinical Staff</div>
+@@ -9,17 +9,17 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active"><i data-lucide="upload-cloud"></i><span>Data Import</span></a>
+ </div>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+-        <i data-lucide="brain-circuit"></i> Clinical Alerts</a>
++        <i data-lucide="brain-circuit"></i> {{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</a>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+-        <i data-lucide="package"></i> Supply Chain</a>
++        <i data-lucide="package"></i> {{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</a>
+ @endsection
+ 
+ @section('breadcrumb_home', 'Staff Portal')
+diff --git a/apps/api-laravel/resources/views/portals/staff/data_import/index.blade.php b/apps/api-laravel/resources/views/portals/staff/data_import/index.blade.php
+index fea7fff9..11d433c4 100644
+--- a/apps/api-laravel/resources/views/portals/staff/data_import/index.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/data_import/index.blade.php
+@@ -1,6 +1,6 @@
+ @extends('layouts.portal')
+ 
+-@section('title', 'Data Import')
++@section('title', __('staff_nav.title_data_import', [], app()->getLocale()) ?: 'Data Import')
+ 
+ @section('sidebar_role_badge')
+ <div class="sidebar-role-badge">Clinical Staff</div>
+@@ -9,7 +9,7 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link">
+         <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
+     </a>
+@@ -18,7 +18,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Clinical</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+         <i data-lucide="calendar-check-2"></i><span>Appointments</span>
+     </a>
+@@ -29,11 +29,11 @@
+         <i data-lucide="stethoscope"></i><span>Visits</span>
+     </a>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+-        <i data-lucide="brain-circuit"></i><span>Clinical Alerts</span>
++        <i data-lucide="brain-circuit"></i><span>{{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">HR & Staff</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_hr_staff', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
+     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
+         <i data-lucide="users"></i><span>Directory</span>
+     </a>
+@@ -48,7 +48,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Inventory</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
+         <i data-lucide="pill"></i><span>Pharmacy</span>
+     </a>
+@@ -57,14 +57,14 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Supply Chain</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+         <i data-lucide="package"></i>
+-        <span>Supply Chain</span>
++        <span>{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
+         <i data-lucide="receipt"></i><span>Billing</span>
+     </a>
+diff --git a/apps/api-laravel/resources/views/portals/staff/data_import/mapping.blade.php b/apps/api-laravel/resources/views/portals/staff/data_import/mapping.blade.php
+index 082cf4e0..08ef5944 100644
+--- a/apps/api-laravel/resources/views/portals/staff/data_import/mapping.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/data_import/mapping.blade.php
+@@ -1,6 +1,6 @@
+ @extends('layouts.portal')
+ 
+-@section('title', 'Import — Map Columns')
++@section('title', __('staff_nav.title_import_mapping', [], app()->getLocale()) ?: 'Import — Map Columns')
+ 
+ @section('sidebar_role_badge')
+ <div class="sidebar-role-badge">Clinical Staff</div>
+@@ -9,17 +9,17 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active"><i data-lucide="upload-cloud"></i><span>Data Import</span></a>
+ </div>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+-        <i data-lucide="brain-circuit"></i> Clinical Alerts</a>
++        <i data-lucide="brain-circuit"></i> {{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</a>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+-        <i data-lucide="package"></i> Supply Chain</a>
++        <i data-lucide="package"></i> {{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</a>
+ @endsection
+ 
+ @section('breadcrumb_home', 'Staff Portal')
+@@ -53,7 +53,7 @@
+                 <label class="form-label" style="margin-bottom:.4rem;">Load a saved mapping template:</label>
+                 <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+                     <select id="saved-mapping-picker" class="form-control" style="max-width:280px;">
+-                        <option value="">— select —</option>
++                        <option value="">{{ __('staff_nav.opt_select_lower', [], app()->getLocale()) ?: '— select —' }}</option>
+                         @foreach($saved as $sm)
+                             <option value="{{ htmlspecialchars(json_encode($sm['mapping']), ENT_QUOTES) }}">{{ $sm['name'] }}</option>
+                         @endforeach
+diff --git a/apps/api-laravel/resources/views/portals/staff/data_import/preview.blade.php b/apps/api-laravel/resources/views/portals/staff/data_import/preview.blade.php
+index 656d8963..6252aaa7 100644
+--- a/apps/api-laravel/resources/views/portals/staff/data_import/preview.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/data_import/preview.blade.php
+@@ -1,6 +1,6 @@
+ @extends('layouts.portal')
+ 
+-@section('title', 'Import — Preview & Validate')
++@section('title', __('staff_nav.title_import_preview', [], app()->getLocale()) ?: 'Import — Preview & Validate')
+ 
+ @section('sidebar_role_badge')
+ <div class="sidebar-role-badge">Clinical Staff</div>
+@@ -9,17 +9,17 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active"><i data-lucide="upload-cloud"></i><span>Data Import</span></a>
+ </div>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+-        <i data-lucide="brain-circuit"></i> Clinical Alerts</a>
++        <i data-lucide="brain-circuit"></i> {{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</a>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+-        <i data-lucide="package"></i> Supply Chain</a>
++        <i data-lucide="package"></i> {{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</a>
+ @endsection
+ 
+ @section('breadcrumb_home', 'Staff Portal')
+diff --git a/apps/api-laravel/resources/views/portals/staff/data_import/upload.blade.php b/apps/api-laravel/resources/views/portals/staff/data_import/upload.blade.php
+index 6c4f6cd2..fb060c40 100644
+--- a/apps/api-laravel/resources/views/portals/staff/data_import/upload.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/data_import/upload.blade.php
+@@ -1,6 +1,6 @@
+ @extends('layouts.portal')
+ 
+-@section('title', 'New Import — Upload File')
++@section('title', __('staff_nav.title_import_upload', [], app()->getLocale()) ?: 'New Import — Upload File')
+ 
+ @section('sidebar_role_badge')
+ <div class="sidebar-role-badge">Clinical Staff</div>
+@@ -9,20 +9,20 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a>
+     <a href="{{ route('portals.staff.analytics') }}" class="sidebar-link"><i data-lucide="bar-chart-2"></i><span>Analytics</span></a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link"><i data-lucide="receipt"></i><span>Billing</span></a>
+     <a href="{{ route('portals.staff.support') }}" class="sidebar-link"><i data-lucide="headset"></i><span>Support</span></a>
+     <a href="{{ route('portals.staff.data_import.index') }}" class="sidebar-link active"><i data-lucide="upload-cloud"></i><span>Data Import</span></a>
+ </div>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+-        <i data-lucide="brain-circuit"></i> Clinical Alerts</a>
++        <i data-lucide="brain-circuit"></i> {{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</a>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+-        <i data-lucide="package"></i> Supply Chain</a>
++        <i data-lucide="package"></i> {{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</a>
+ @endsection
+ 
+ @section('breadcrumb_home', 'Staff Portal')
+@@ -54,7 +54,7 @@
+                 <div class="form-group" style="margin-bottom:1rem;">
+                     <label class="form-label">Import Type *</label>
+                     <select name="import_type" class="form-control" required onchange="updateFieldHint(this.value)">
+-                        <option value="">— select type —</option>
++                        <option value="">{{ __('staff_nav.opt_select_type', [], app()->getLocale()) ?: '— select type —' }}</option>
+                         @foreach($importTypes as $key => $def)
+                             <option value="{{ $key }}" {{ old('import_type') === $key ? 'selected' : '' }}>{{ $def['label'] }}</option>
+                         @endforeach
+@@ -105,8 +105,8 @@ function updateFieldHint(type) {
+     }
+ 
+     var fields = importTypeFields[type];
+-    req.innerHTML = '<strong>Required:</strong> ' + fields.required.join(', ');
+-    opt.innerHTML = fields.optional.length ? '<strong>Optional:</strong> ' + fields.optional.join(', ') : '';
++    req.innerHTML = '<strong>' + @json(__('staff_nav.js_required', [], app()->getLocale()) ?: 'Required:') + '</strong> ' + fields.required.join(', ');
++    opt.innerHTML = fields.optional.length ? '<strong>' + @json(__('staff_nav.js_optional', [], app()->getLocale()) ?: 'Optional:') + '</strong> ' + fields.optional.join(', ') : '';
+     hint.style.display = 'block';
+ }
+ // Trigger on page load if old value set
+diff --git a/apps/api-laravel/resources/views/portals/staff/files/index.blade.php b/apps/api-laravel/resources/views/portals/staff/files/index.blade.php
+index 5047cb88..20cb3eb5 100644
+--- a/apps/api-laravel/resources/views/portals/staff/files/index.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/files/index.blade.php
+@@ -1,5 +1,5 @@
+ @extends('layouts.portal')
+-@section('title', 'Medical Attachments')
++@section('title', __('staff_nav.title_medical_attachments', [], app()->getLocale()) ?: 'Medical Attachments')
+ @section('breadcrumb_home', 'Staff Portal')
+ @section('breadcrumb_home_url', route('portals.staff'))
+ @section('breadcrumb_section', 'Files & Attachments')
+@@ -90,7 +90,7 @@ class="btn btn-ghost btn-xs" style="margin-right:4px;">
+                                 <i data-lucide="download" style="width:11px;height:11px;"></i> Download
+                             </a>
+                             <form method="POST" action="{{ route('portals.staff.files.destroy', $att->id) }}" style="display:inline;"
+-                                  onsubmit="return confirm('Remove this attachment?');">
++                                  onsubmit="return confirm('{{ __('staff_nav.confirm_remove_attachment', [], app()->getLocale()) ?: 'Remove this attachment?' }}');">
+                                 @csrf @method('DELETE')
+                                 <button type="submit" class="btn btn-ghost btn-xs" style="color:var(--p-danger);">
+                                     <i data-lucide="trash-2" style="width:11px;height:11px;"></i>
+diff --git a/apps/api-laravel/resources/views/portals/staff/files/upload.blade.php b/apps/api-laravel/resources/views/portals/staff/files/upload.blade.php
+index b15379bc..3dbe1207 100644
+--- a/apps/api-laravel/resources/views/portals/staff/files/upload.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/files/upload.blade.php
+@@ -1,5 +1,5 @@
+ @extends('layouts.portal')
+-@section('title', 'Upload File')
++@section('title', __('staff_nav.title_upload_file', [], app()->getLocale()) ?: 'Upload File')
+ @section('breadcrumb_home', 'Staff Portal')
+ @section('breadcrumb_home_url', route('portals.staff'))
+ @section('breadcrumb_section', 'Upload File')
+@@ -48,7 +48,7 @@ class="form-control" required placeholder="Paste UUID of the resource">
+                     <i data-lucide="upload-cloud" style="width:32px;height:32px;color:var(--p-text-muted);margin:0 auto .5rem;display:block;"></i>
+                     <div style="font-size:.85rem;font-weight:500;">Click to browse or drag file here</div>
+                     <div id="file-name" style="font-size:.75rem;color:var(--p-text-muted);margin-top:.25rem;">
+-                        Max {{ $maxSizeMb }} MB · PDF, Images, Word, Excel, CSV
++                        Max {{ $maxSizeMb }} MB · {{ __('staff_nav.files_accepted_types', [], app()->getLocale()) ?: 'PDF, Images, Word, Excel, CSV' }}
+                     </div>
+                 </div>
+                 <input type="file" id="file-input" name="file" required style="display:none;"
+@@ -61,7 +61,7 @@ class="form-control" required placeholder="Paste UUID of the resource">
+                 <div class="form-group">
+                     <label class="form-label">Category</label>
+                     <select name="category" class="form-control">
+-                        <option value="">— Select category —</option>
++                        <option value="">{{ __('staff_nav.opt_select_category', [], app()->getLocale()) ?: '— Select category —' }}</option>
+                         @foreach($categories as $val => $label)
+                             <option value="{{ $val }}" {{ old('category') === $val ? 'selected' : '' }}>{{ $label }}</option>
+                         @endforeach
+diff --git a/apps/api-laravel/resources/views/portals/staff/hr/directory.blade.php b/apps/api-laravel/resources/views/portals/staff/hr/directory.blade.php
+index a0dec512..e65c2ede 100644
+--- a/apps/api-laravel/resources/views/portals/staff/hr/directory.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/hr/directory.blade.php
+@@ -1,6 +1,6 @@
+ @extends('layouts.portal')
+ 
+-@section('title', 'Staff Directory')
++@section('title', __('staff_nav.title_staff_directory', [], app()->getLocale()) ?: 'Staff Directory')
+ 
+ @section('sidebar_role_badge')
+ <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
+@@ -9,7 +9,7 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link">
+         <i data-lucide="layout-dashboard"></i>
+         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
+@@ -20,7 +20,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Clinical</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+         <i data-lucide="calendar-check-2"></i>
+         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
+@@ -35,11 +35,11 @@
+     </a>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+         <i data-lucide="brain-circuit"></i>
+-        <span>Clinical Alerts</span>
++        <span>{{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">HR & Staff</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_hr_staff', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
+     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link active">
+         <i data-lucide="users"></i>
+         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
+@@ -58,7 +58,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Inventory</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
+         <i data-lucide="pill"></i>
+         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
+@@ -69,14 +69,14 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Supply Chain</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+         <i data-lucide="package"></i>
+-        <span>Supply Chain</span>
++        <span>{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
+         <i data-lucide="receipt"></i>
+         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
+diff --git a/apps/api-laravel/resources/views/portals/staff/hr/leave.blade.php b/apps/api-laravel/resources/views/portals/staff/hr/leave.blade.php
+index 13571472..1edcb951 100644
+--- a/apps/api-laravel/resources/views/portals/staff/hr/leave.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/hr/leave.blade.php
+@@ -1,6 +1,6 @@
+ @extends('layouts.portal')
+ 
+-@section('title', 'Leave Management')
++@section('title', __('staff_nav.title_leave_management', [], app()->getLocale()) ?: 'Leave Management')
+ 
+ @section('sidebar_role_badge')
+ <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
+@@ -9,7 +9,7 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link">
+         <i data-lucide="layout-dashboard"></i>
+         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
+@@ -20,7 +20,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Clinical</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+         <i data-lucide="calendar-check-2"></i>
+         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
+@@ -35,11 +35,11 @@
+     </a>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+         <i data-lucide="brain-circuit"></i>
+-        <span>Clinical Alerts</span>
++        <span>{{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">HR & Staff</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_hr_staff', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
+     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
+         <i data-lucide="users"></i>
+         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
+@@ -58,7 +58,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Inventory</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
+         <i data-lucide="pill"></i>
+         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
+@@ -69,14 +69,14 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Supply Chain</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+         <i data-lucide="package"></i>
+-        <span>Supply Chain</span>
++        <span>{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
+         <i data-lucide="receipt"></i>
+         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
+@@ -249,7 +249,7 @@
+             <div class="form-group" style="margin-bottom:.75rem;">
+                 <label class="form-label">Staff Member *</label>
+                 <select name="staff_profile_id" class="form-control" required>
+-                    <option value="">— Select —</option>
++                    <option value="">{{ __('staff_nav.opt_select', [], app()->getLocale()) ?: '— Select —' }}</option>
+                     @foreach($staff as $member)
+                         <option value="{{ $member->id }}">{{ $member->full_name }} ({{ $member->job_title ?? $member->staff_category }})</option>
+                     @endforeach
+@@ -319,7 +319,7 @@ function closeLeaveModal() { document.getElementById('leave-modal').style.displa
+     function openReviewModal(requestId, action) {
+         var base = '{{ url('/portals/staff/hr/leave') }}';
+         document.getElementById('review-form').action = base + '/' + requestId + '/' + action;
+-        document.getElementById('review-modal-title').textContent = action === 'approve' ? 'Approve Leave' : 'Reject Leave';
++        document.getElementById('review-modal-title').textContent = action === 'approve' ? @json(__('staff_nav.js_approve_leave', [], app()->getLocale()) ?: 'Approve Leave') : @json(__('staff_nav.js_reject_leave', [], app()->getLocale()) ?: 'Reject Leave');
+         var btn = document.getElementById('review-submit-btn');
+         btn.className = action === 'approve' ? 'btn btn-success btn-sm' : 'btn btn-danger btn-sm';
+         btn.textContent = action === 'approve' ? 'Approve' : 'Reject';
+diff --git a/apps/api-laravel/resources/views/portals/staff/hr/roster.blade.php b/apps/api-laravel/resources/views/portals/staff/hr/roster.blade.php
+index fa8b18b2..43636729 100644
+--- a/apps/api-laravel/resources/views/portals/staff/hr/roster.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/hr/roster.blade.php
+@@ -1,6 +1,6 @@
+ @extends('layouts.portal')
+ 
+-@section('title', 'Duty Roster')
++@section('title', __('staff_nav.title_duty_roster', [], app()->getLocale()) ?: 'Duty Roster')
+ 
+ @section('sidebar_role_badge')
+ <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
+@@ -9,7 +9,7 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link">
+         <i data-lucide="layout-dashboard"></i>
+         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
+@@ -20,7 +20,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Clinical</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+         <i data-lucide="calendar-check-2"></i>
+         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
+@@ -35,11 +35,11 @@
+     </a>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+         <i data-lucide="brain-circuit"></i>
+-        <span>Clinical Alerts</span>
++        <span>{{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">HR & Staff</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_hr_staff', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
+     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
+         <i data-lucide="users"></i>
+         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
+@@ -58,7 +58,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Inventory</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
+         <i data-lucide="pill"></i>
+         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
+@@ -69,14 +69,14 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Supply Chain</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+         <i data-lucide="package"></i>
+-        <span>Supply Chain</span>
++        <span>{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
+         <i data-lucide="receipt"></i>
+         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
+@@ -281,7 +281,7 @@
+             <div class="form-group" style="margin-bottom:.75rem;">
+                 <label class="form-label">Staff Member *</label>
+                 <select name="staff_profile_id" class="form-control" required>
+-                    <option value="">— Select —</option>
++                    <option value="">{{ __('staff_nav.opt_select', [], app()->getLocale()) ?: '— Select —' }}</option>
+                     @foreach($staff as $member)
+                         <option value="{{ $member->id }}">{{ $member->full_name }} ({{ $member->job_title ?? $member->staff_category }})</option>
+                     @endforeach
+@@ -290,7 +290,7 @@
+             <div class="form-group" style="margin-bottom:.75rem;">
+                 <label class="form-label">Shift *</label>
+                 <select name="staff_shift_id" class="form-control" required>
+-                    <option value="">— Select —</option>
++                    <option value="">{{ __('staff_nav.opt_select', [], app()->getLocale()) ?: '— Select —' }}</option>
+                     @foreach($shifts as $shift)
+                         <option value="{{ $shift->id }}">{{ $shift->name }} ({{ $shift->start_time }}–{{ $shift->end_time }})</option>
+                     @endforeach
+@@ -326,7 +326,7 @@ function closeRosterModal() { document.getElementById('roster-modal').style.disp
+     });
+ 
+     function openAssignModal(rosterId, dept) {
+-        document.getElementById('assign-dept-label').textContent = 'Department: ' + dept;
++        document.getElementById('assign-dept-label').textContent = @json(__('staff_nav.js_department', [], app()->getLocale()) ?: 'Department: ') + dept;
+         document.getElementById('assign-form').action = '{{ url('/portals/staff/hr/roster') }}/' + rosterId + '/assign';
+         document.getElementById('assign-modal').style.display = 'flex';
+     }
+diff --git a/apps/api-laravel/resources/views/portals/staff/hr/shifts.blade.php b/apps/api-laravel/resources/views/portals/staff/hr/shifts.blade.php
+index 2250e75b..759efe8c 100644
+--- a/apps/api-laravel/resources/views/portals/staff/hr/shifts.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/hr/shifts.blade.php
+@@ -1,6 +1,6 @@
+ @extends('layouts.portal')
+ 
+-@section('title', 'Shift Management')
++@section('title', __('staff_nav.title_shift_management', [], app()->getLocale()) ?: 'Shift Management')
+ 
+ @section('sidebar_role_badge')
+ <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
+@@ -9,7 +9,7 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link">
+         <i data-lucide="layout-dashboard"></i>
+         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
+@@ -20,7 +20,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Clinical</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+         <i data-lucide="calendar-check-2"></i>
+         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
+@@ -35,11 +35,11 @@
+     </a>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+         <i data-lucide="brain-circuit"></i>
+-        <span>Clinical Alerts</span>
++        <span>{{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">HR & Staff</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_hr_staff', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
+     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
+         <i data-lucide="users"></i>
+         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
+@@ -58,7 +58,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Inventory</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
+         <i data-lucide="pill"></i>
+         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
+@@ -69,14 +69,14 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Supply Chain</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+         <i data-lucide="package"></i>
+-        <span>Supply Chain</span>
++        <span>{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
+         <i data-lucide="receipt"></i>
+         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
+diff --git a/apps/api-laravel/resources/views/portals/staff/immunizations/record.blade.php b/apps/api-laravel/resources/views/portals/staff/immunizations/record.blade.php
+index 2f80b1be..f9b6da0b 100644
+--- a/apps/api-laravel/resources/views/portals/staff/immunizations/record.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/immunizations/record.blade.php
+@@ -1,6 +1,6 @@
+ @extends('layouts.portal')
+ 
+-@section('title', 'Record Immunization — OpesCare Staff Portal')
++@section('title', __('staff_nav.title_record_immunization', [], app()->getLocale()) ?: 'Record Immunization — OpesCare Staff Portal')
+ 
+ @section('breadcrumb_home', __('public.staff_portal.title', [], app()->getLocale()) ?: 'Staff Portal')
+ @section('breadcrumb_home_url', route('portals.staff'))
+@@ -112,12 +112,12 @@
+                 <div class="form-group">
+                     <label class="form-label" for="route">Route</label>
+                     <select id="route" name="route" class="form-control">
+-                        <option value="">— Select —</option>
+-                        <option value="IM"          @selected(old('route')==='IM')>IM (Intramuscular)</option>
+-                        <option value="SC"          @selected(old('route')==='SC')>SC (Subcutaneous)</option>
+-                        <option value="oral"        @selected(old('route')==='oral')>Oral</option>
+-                        <option value="intradermal" @selected(old('route')==='intradermal')>Intradermal</option>
+-                        <option value="IN"          @selected(old('route')==='IN')>Intranasal</option>
++                        <option value="">{{ __('staff_nav.opt_select', [], app()->getLocale()) ?: '— Select —' }}</option>
++                        <option value="IM"          @selected(old('route')==='IM')>{{ __('staff_nav.opt_route_im', [], app()->getLocale()) ?: 'IM (Intramuscular)' }}</option>
++                        <option value="SC"          @selected(old('route')==='SC')>{{ __('staff_nav.opt_route_sc', [], app()->getLocale()) ?: 'SC (Subcutaneous)' }}</option>
++                        <option value="oral"        @selected(old('route')==='oral')>{{ __('staff_nav.opt_route_oral', [], app()->getLocale()) ?: 'Oral' }}</option>
++                        <option value="intradermal" @selected(old('route')==='intradermal')>{{ __('staff_nav.opt_route_intradermal', [], app()->getLocale()) ?: 'Intradermal' }}</option>
++                        <option value="IN"          @selected(old('route')==='IN')>{{ __('staff_nav.opt_route_intranasal', [], app()->getLocale()) ?: 'Intranasal' }}</option>
+                     </select>
+                 </div>
+                 <div class="form-group">
+@@ -134,8 +134,8 @@
+                 <div class="form-group">
+                     <label class="form-label form-label-required" for="status">Status</label>
+                     <select id="status" name="status" class="form-control" required aria-required="true">
+-                        <option value="completed" @selected(old('status','completed')==='completed')>Completed</option>
+-                        <option value="not_done"  @selected(old('status')==='not_done')>Not Done</option>
++                        <option value="completed" @selected(old('status','completed')==='completed')>{{ __('staff_nav.opt_status_completed', [], app()->getLocale()) ?: 'Completed' }}</option>
++                        <option value="not_done"  @selected(old('status')==='not_done')>{{ __('staff_nav.opt_status_not_done', [], app()->getLocale()) ?: 'Not Done' }}</option>
+                     </select>
+                 </div>
+                 <div class="form-group">
+diff --git a/apps/api-laravel/resources/views/portals/staff/inventory/blood.blade.php b/apps/api-laravel/resources/views/portals/staff/inventory/blood.blade.php
+index d69b2a6b..db069e64 100644
+--- a/apps/api-laravel/resources/views/portals/staff/inventory/blood.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/inventory/blood.blade.php
+@@ -1,6 +1,6 @@
+ @extends('layouts.portal')
+ 
+-@section('title', 'Blood Bank Inventory')
++@section('title', __('staff_nav.title_blood_bank_inventory', [], app()->getLocale()) ?: 'Blood Bank Inventory')
+ 
+ @section('sidebar_role_badge')
+ <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
+@@ -9,7 +9,7 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link">
+         <i data-lucide="layout-dashboard"></i>
+         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
+@@ -20,7 +20,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Clinical</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+         <i data-lucide="calendar-check-2"></i>
+         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
+@@ -35,11 +35,11 @@
+     </a>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+         <i data-lucide="brain-circuit"></i>
+-        <span>Clinical Alerts</span>
++        <span>{{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">HR & Staff</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_hr_staff', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
+     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
+         <i data-lucide="users"></i>
+         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
+@@ -54,7 +54,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Inventory</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
+         <i data-lucide="pill"></i>
+         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
+@@ -65,14 +65,14 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Supply Chain</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+         <i data-lucide="package"></i>
+-        <span>Supply Chain</span>
++        <span>{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
+         <i data-lucide="receipt"></i>
+         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
+diff --git a/apps/api-laravel/resources/views/portals/staff/inventory/pharmacy.blade.php b/apps/api-laravel/resources/views/portals/staff/inventory/pharmacy.blade.php
+index fd8c7d1e..025b78a3 100644
+--- a/apps/api-laravel/resources/views/portals/staff/inventory/pharmacy.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/inventory/pharmacy.blade.php
+@@ -1,6 +1,6 @@
+ @extends('layouts.portal')
+ 
+-@section('title', 'Pharmacy Inventory')
++@section('title', __('staff_nav.title_pharmacy_inventory', [], app()->getLocale()) ?: 'Pharmacy Inventory')
+ 
+ @section('sidebar_role_badge')
+ <div class="sidebar-role-badge">{{ __('public.staff_portal.role_clinical_staff', [], app()->getLocale()) ?: 'Clinical Staff' }}</div>
+@@ -9,7 +9,7 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link">
+         <i data-lucide="layout-dashboard"></i>
+         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
+@@ -20,7 +20,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Clinical</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+         <i data-lucide="calendar-check-2"></i>
+         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
+@@ -35,11 +35,11 @@
+     </a>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+         <i data-lucide="brain-circuit"></i>
+-        <span>Clinical Alerts</span>
++        <span>{{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">HR & Staff</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_hr_staff', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
+     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
+         <i data-lucide="users"></i>
+         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
+@@ -54,7 +54,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Inventory</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link active">
+         <i data-lucide="pill"></i>
+         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
+@@ -65,14 +65,14 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Supply Chain</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+         <i data-lucide="package"></i>
+-        <span>Supply Chain</span>
++        <span>{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
+         <i data-lucide="receipt"></i>
+         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
+@@ -173,7 +173,7 @@
+     </select>
+     @endif
+     <select name="is_expired" class="form-control">
+-        <option value="">All</option>
++        <option value="">{{ __('staff_nav.opt_all', [], app()->getLocale()) ?: 'All' }}</option>
+         <option value="1" {{ request('is_expired') === '1' ? 'selected' : '' }}>Expired Only</option>
+         <option value="0" {{ request('is_expired') === '0' ? 'selected' : '' }}>Not Expired</option>
+     </select>
+diff --git a/apps/api-laravel/resources/views/portals/staff/queue_display.blade.php b/apps/api-laravel/resources/views/portals/staff/queue_display.blade.php
+index 75db3b04..8e53bb64 100644
+--- a/apps/api-laravel/resources/views/portals/staff/queue_display.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/queue_display.blade.php
+@@ -347,8 +347,8 @@ function updateClock() {
+             const el = document.getElementById('clock');
+             if (el) el.textContent = h + ':' + m + ':' + s;
+ 
+-            const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+-            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
++            const days = @json(__('staff_nav.days', [], app()->getLocale()) ?: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']);
++            const months = @json(__('staff_nav.months', [], app()->getLocale()) ?: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']);
+             const dateEl = document.getElementById('date-display');
+             if (dateEl) dateEl.textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+         }
+diff --git a/apps/api-laravel/resources/views/portals/staff/visits/consult.blade.php b/apps/api-laravel/resources/views/portals/staff/visits/consult.blade.php
+index 079f2682..902e2d44 100644
+--- a/apps/api-laravel/resources/views/portals/staff/visits/consult.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/visits/consult.blade.php
+@@ -9,7 +9,7 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link">
+         <i data-lucide="layout-dashboard"></i>
+         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
+@@ -20,7 +20,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Clinical</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+         <i data-lucide="calendar-check-2"></i>
+         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
+@@ -35,11 +35,11 @@
+     </a>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+         <i data-lucide="brain-circuit"></i>
+-        <span>Clinical Alerts</span>
++        <span>{{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">HR & Staff</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_hr_staff', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
+     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
+         <i data-lucide="users"></i>
+         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
+@@ -58,7 +58,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Inventory</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
+         <i data-lucide="pill"></i>
+         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
+@@ -69,14 +69,14 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Supply Chain</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+         <i data-lucide="package"></i>
+-        <span>Supply Chain</span>
++        <span>{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
+         <i data-lucide="receipt"></i>
+         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
+diff --git a/apps/api-laravel/resources/views/portals/staff/visits/index.blade.php b/apps/api-laravel/resources/views/portals/staff/visits/index.blade.php
+index b74ce54e..0130a8f3 100644
+--- a/apps/api-laravel/resources/views/portals/staff/visits/index.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/visits/index.blade.php
+@@ -9,7 +9,7 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link">
+         <i data-lucide="layout-dashboard"></i>
+         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
+@@ -20,7 +20,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Clinical</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+         <i data-lucide="calendar-check-2"></i>
+         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
+@@ -35,7 +35,7 @@
+     </a>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+         <i data-lucide="brain-circuit"></i>
+-        <span>Clinical Alerts</span>
++        <span>{{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
+     </a>
+     <a href="{{ route('portals.staff.immunizations') }}" class="sidebar-link">
+         <i data-lucide="syringe"></i>
+@@ -47,7 +47,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">HR & Staff</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_hr_staff', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
+     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
+         <i data-lucide="users"></i>
+         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
+@@ -66,7 +66,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Inventory</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
+         <i data-lucide="pill"></i>
+         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
+@@ -77,14 +77,14 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Supply Chain</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+         <i data-lucide="package"></i>
+-        <span>Supply Chain</span>
++        <span>{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
+         <i data-lucide="receipt"></i>
+         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
+diff --git a/apps/api-laravel/resources/views/portals/staff/visits/triage.blade.php b/apps/api-laravel/resources/views/portals/staff/visits/triage.blade.php
+index 9e354abc..abb3ca33 100644
+--- a/apps/api-laravel/resources/views/portals/staff/visits/triage.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/visits/triage.blade.php
+@@ -9,7 +9,7 @@
+ 
+ @section('sidebar_nav')
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Overview</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_overview', [], app()->getLocale()) ?: 'Overview' }}</div>
+     <a href="{{ route('portals.staff') }}" class="sidebar-link">
+         <i data-lucide="layout-dashboard"></i>
+         <span>{{ __('public.portal.nav_dashboard', [], app()->getLocale()) ?: 'Dashboard' }}</span>
+@@ -20,7 +20,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Clinical</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_clinical', [], app()->getLocale()) ?: 'Clinical' }}</div>
+     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">
+         <i data-lucide="calendar-check-2"></i>
+         <span>{{ __('public.portal.nav_appointments', [], app()->getLocale()) ?: 'Appointments' }}</span>
+@@ -35,11 +35,11 @@
+     </a>
+     <a href="{{ route('portals.staff.cdss') }}" class="sidebar-link {{ request()->routeIs('portals.staff.cdss*') ? 'active' : '' }}">
+         <i data-lucide="brain-circuit"></i>
+-        <span>Clinical Alerts</span>
++        <span>{{ __('staff_nav.sidebar_clinical_alerts', [], app()->getLocale()) ?: 'Clinical Alerts' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">HR & Staff</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_hr_staff', [], app()->getLocale()) ?: 'HR & Staff' }}</div>
+     <a href="{{ route('portals.staff.hr.directory') }}" class="sidebar-link">
+         <i data-lucide="users"></i>
+         <span>{{ __('public.portal.nav_staff_directory', [], app()->getLocale()) ?: 'Directory' }}</span>
+@@ -58,7 +58,7 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Inventory</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
+         <i data-lucide="pill"></i>
+         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
+@@ -69,14 +69,14 @@
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Supply Chain</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
+     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
+         <i data-lucide="package"></i>
+-        <span>Supply Chain</span>
++        <span>{{ __('staff_nav.sidebar_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
+     </a>
+ </div>
+ <div class="sidebar-nav-section">
+-    <div class="sidebar-nav-label">Operations</div>
++    <div class="sidebar-nav-label">{{ __('staff_nav.sidebar_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
+         <i data-lucide="receipt"></i>
+         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
+@@ -412,11 +412,11 @@ function closeEscalateModal() { document.getElementById('escalate-modal').style.
+ 
+ // Live vital sign range feedback + auto-acuity suggestion
+ const ranges = {
+-    v_spo2:  { critical: [0, 90],  warning: [90, 95],  label: 'SpO₂',       criticalNote: 'Severe hypoxia — suggest Resuscitation', warningNote: 'Low O₂ — suggest Critical' },
+-    v_pulse: { critical: [[0,50],[150,400]], warning: [[50,60],[100,150]], label: 'Pulse', criticalNote: 'Extreme HR — suggest Critical', warningNote: 'Abnormal HR' },
+-    v_sys:   { critical: [0, 90],  warning: [90, 100], label: 'BP Systolic', criticalNote: 'Hypotension — suggest Critical', warningNote: 'Low blood pressure' },
+-    v_temp:  { critical: [[0,35],[40,50]], warning: [[35,36],[38.5,40]], label: 'Temp', criticalNote: 'Extreme temperature', warningNote: 'Abnormal temperature' },
+-    v_rr:    { critical: [0, 8],   warning: [8, 12],   label: 'Resp. Rate',  criticalNote: 'Respiratory failure risk', warningNote: 'Abnormal breathing rate' },
++    v_spo2:  { critical: [0, 90],  warning: [90, 95],  label: @json(__('staff_nav.vital_label_spo2', [], app()->getLocale()) ?: 'SpO₂'),       criticalNote: @json(__('staff_nav.vital_crit_hypoxia', [], app()->getLocale()) ?: 'Severe hypoxia — suggest Resuscitation'), warningNote: @json(__('staff_nav.vital_warn_low_o2', [], app()->getLocale()) ?: 'Low O₂ — suggest Critical') },
++    v_pulse: { critical: [[0,50],[150,400]], warning: [[50,60],[100,150]], label: @json(__('staff_nav.vital_label_pulse', [], app()->getLocale()) ?: 'Pulse'), criticalNote: @json(__('staff_nav.vital_crit_extreme_hr', [], app()->getLocale()) ?: 'Extreme HR — suggest Critical'), warningNote: @json(__('staff_nav.vital_warn_abnormal_hr', [], app()->getLocale()) ?: 'Abnormal HR') },
++    v_sys:   { critical: [0, 90],  warning: [90, 100], label: @json(__('staff_nav.vital_label_bp_systolic', [], app()->getLocale()) ?: 'BP Systolic'), criticalNote: @json(__('staff_nav.vital_crit_hypotension', [], app()->getLocale()) ?: 'Hypotension — suggest Critical'), warningNote: @json(__('staff_nav.vital_warn_low_bp', [], app()->getLocale()) ?: 'Low blood pressure') },
++    v_temp:  { critical: [[0,35],[40,50]], warning: [[35,36],[38.5,40]], label: @json(__('staff_nav.vital_label_temp', [], app()->getLocale()) ?: 'Temp'), criticalNote: @json(__('staff_nav.vital_crit_extreme_temp', [], app()->getLocale()) ?: 'Extreme temperature'), warningNote: @json(__('staff_nav.vital_warn_abnormal_temp', [], app()->getLocale()) ?: 'Abnormal temperature') },
++    v_rr:    { critical: [0, 8],   warning: [8, 12],   label: @json(__('staff_nav.vital_label_resp_rate', [], app()->getLocale()) ?: 'Resp. Rate'),  criticalNote: @json(__('staff_nav.vital_crit_resp_failure', [], app()->getLocale()) ?: 'Respiratory failure risk'), warningNote: @json(__('staff_nav.vital_warn_abnormal_resp', [], app()->getLocale()) ?: 'Abnormal breathing rate') },
+ };
+ 
+ function checkRange(id) {
+diff --git a/apps/api-laravel/resources/views/portals/staff/wards/index.blade.php b/apps/api-laravel/resources/views/portals/staff/wards/index.blade.php
+index 2c7a4aba..cdaa4cf2 100644
+--- a/apps/api-laravel/resources/views/portals/staff/wards/index.blade.php
++++ b/apps/api-laravel/resources/views/portals/staff/wards/index.blade.php
+@@ -1,5 +1,5 @@
+ @extends('layouts.portal')
+-@section('title', 'Ward & Bed Management')
++@section('title', __('staff_nav.title_ward_management', [], app()->getLocale()) ?: 'Ward & Bed Management')
+ @section('breadcrumb_home', 'Staff Portal')
+ @section('breadcrumb_home_url', route('portals.staff'))
+ @section('breadcrumb_section', 'Wards')
+@@ -67,7 +67,7 @@
+     <div style="padding:.75rem 1.25rem;border-bottom:1px solid var(--p-border);display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+         <span style="font-weight:600;font-size:.95rem;">{{ $ward->name }}</span>
+         <span class="badge badge-neutral" style="font-size:.7rem;">{{ \App\Models\Ward::wardTypes()[$ward->ward_type] ?? $ward->ward_type }}</span>
+-        @if($ward->floor)<span style="font-size:.78rem;color:var(--p-text-muted);">Floor {{ $ward->floor }}</span>@endif
++        @if($ward->floor)<span style="font-size:.78rem;color:var(--p-text-muted);">{{ __('staff_nav.js_floor', [], app()->getLocale()) ?: 'Floor ' }}{{ $ward->floor }}</span>@endif
+         <div style="margin-left:auto;display:flex;align-items:center;gap:.75rem;">
+             <span style="font-size:.8rem;color:var(--p-text-muted);">{{ $occupied }}/{{ $total }} occupied</span>
+             <div style="width:100px;height:7px;background:var(--p-border);border-radius:4px;overflow:hidden;">
