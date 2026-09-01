@@ -143,6 +143,8 @@ return [
         'last_name' => 'Last Name',
         'dob' => 'Date of Birth',
         'sex' => 'Biological Sex',
+        'sex_male' => 'Male',
+        'sex_female' => 'Female',
         'preferred_lang' => 'Preferred Language',
         'country' => 'Country',
         'city' => 'City / Town',

@@ -145,9 +145,12 @@
                             <select id="sex" name="sex"
                                     class="auth-input{{ $errors->has('sex') ? ' auth-input-error' : '' }}" required>
                                 <option value="" disabled selected>{{ __('onboarding.common.select_option') }}</option>
-                                <option value="M" {{ old('sex') == 'M' ? 'selected' : '' }}>Male</option>
-                                <option value="F" {{ old('sex') == 'F' ? 'selected' : '' }}>Female</option>
-                                <option value="O" {{ old('sex') == 'O' ? 'selected' : '' }}>Other</option>
+                                {{-- Values must be the strings the controller validates
+                                     (in:male,female) and the DB constraint accepts.
+                                     They were M/F/O, so every submission failed
+                                     validation and no patient could register. --}}
+                                <option value="male" {{ old('sex') == 'male' ? 'selected' : '' }}>{{ __('onboarding.patient.sex_male') }}</option>
+                                <option value="female" {{ old('sex') == 'female' ? 'selected' : '' }}>{{ __('onboarding.patient.sex_female') }}</option>
                             </select>
                             @error('sex')<div class="auth-field-error">{{ $message }}</div>@enderror
                         </div>

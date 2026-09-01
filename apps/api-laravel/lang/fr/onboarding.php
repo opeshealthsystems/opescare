@@ -143,6 +143,8 @@ return [
         'last_name' => 'Nom de famille',
         'dob' => 'Date de naissance',
         'sex' => 'Sexe biologique',
+        'sex_male' => 'Masculin',
+        'sex_female' => 'Féminin',
         'preferred_lang' => 'Langue préférée',
         'country' => 'Pays',
         'city' => 'Ville / Localité',
