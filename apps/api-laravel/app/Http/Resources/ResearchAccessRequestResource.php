@@ -25,6 +25,15 @@ class ResearchAccessRequestResource extends ApiResource
             'expires_at'                   => $this->expires_at?->toISOString(),
             'created_at'                   => $this->created_at?->toISOString(),
             'updated_at'                   => $this->updated_at?->toISOString(),
+
+            // show() eager-loads these; index() does not. whenLoaded keeps the
+            // key absent rather than emitting null or firing an N+1 per row.
+            'dac_reviews'                  => DataAccessCommitteeReviewResource::collection(
+                $this->whenLoaded('dacReviews')
+            ),
+            'data_agreements'              => ResearchDataAgreementResource::collection(
+                $this->whenLoaded('dataAgreements')
+            ),
         ];
     }
 }
