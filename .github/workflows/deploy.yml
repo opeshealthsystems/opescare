@@ -69,9 +69,14 @@ jobs:
           path: apps/api-laravel/vendor
           key: composer-${{ hashFiles('apps/api-laravel/composer.lock') }}
 
+      # Dev dependencies are REQUIRED here: phpunit and nunomaduro/collision are
+      # require-dev, and `php artisan test` is registered by Collision. With
+      # --no-dev this step could never run a test — it failed before collecting
+      # one, and because `deploy` needs this job, no deploy has ever run from
+      # this workflow. The production install on the server stays --no-dev.
       - name: Install dependencies
         working-directory: apps/api-laravel
-        run: composer install --no-dev --optimize-autoloader --no-interaction
+        run: composer install --optimize-autoloader --no-interaction
 
       - name: Setup .env
         working-directory: apps/api-laravel
