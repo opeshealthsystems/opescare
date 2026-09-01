@@ -36,10 +36,30 @@ class CareMapSearchService
             $builder->where('facility_type', $type);
         }
 
-        // 4. Emergency (hospitals with an emergency contact)
+        // 4. Emergency finder: hospitals the user can actually reach by phone.
+        //
+        //    This is deliberately NOT a filter on "has an emergency department" —
+        //    we hold no data that would let us assert that. `emergency_contact` is
+        //    unpopulated across the whole estate and `verification_status` is
+        //    'unverified' for every row, so filtering on either returns nothing
+        //    and claiming A&E capability from either would be a fabrication.
+        //
+        //    The old filter was `where('emergency_contact', '!=', '')`, which is
+        //    also NULL-unsafe: in SQL `NULL != ''` evaluates to NULL (not true),
+        //    so every hospital was excluded. We now match on any reachable number,
+        //    preferring the emergency line where one exists and falling back to the
+        //    main line — with explicit NULL checks on both sides.
         if ($emergency) {
             $builder->where('facility_type', 'hospital')
-                    ->where('emergency_contact', '!=', '');
+                    ->where(function ($q) {
+                        $q->where(function ($inner) {
+                            $inner->whereNotNull('emergency_contact')
+                                  ->where('emergency_contact', '!=', '');
+                        })->orWhere(function ($inner) {
+                            $inner->whereNotNull('phone_primary')
+                                  ->where('phone_primary', '!=', '');
+                        });
+                    });
         }
 
         // 5. Insurance network
@@ -113,12 +133,49 @@ class CareMapSearchService
     }
 
     /**
-     * Emergency specific search - prioritizes 24/7 emergency centers
+     * Emergency finder.
+     *
+     * Returns nearby HOSPITALS that have a callable phone number, ordered by
+     * distance. It does NOT return "24/7 emergency centres": no field in
+     * care_facilities records whether a facility runs a functioning emergency
+     * department, so callers must present these as hospitals to phone ahead of
+     * travelling — never as confirmed emergency care.
      */
     public function searchEmergency(array $params)
     {
         $params['emergency'] = true;
-        return $this->searchNearby($params);
+
+        $results = $this->searchNearby($params);
+
+        // Resolve one callable number per facility so the API and the web view
+        // agree on what is actually dialable. The emergency line wins where it
+        // exists; otherwise the main line. Placeholder values such as 'N/A' —
+        // which is what phone_primary holds for most hospitals — resolve to null
+        // so no caller renders a dead `tel:` link.
+        foreach ($results as $facility) {
+            $facility->callable_phone = $this->dialableNumber($facility->emergency_contact)
+                ?? $this->dialableNumber($facility->phone_primary);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Return the number only if it can actually be dialled.
+     *
+     * Guards against NULL, empty strings and placeholder text ('N/A', 'none',
+     * '-', …) that would otherwise be rendered as a `tel:` link the caller
+     * cannot complete. Requires at least four digits to count as a number.
+     */
+    private function dialableNumber(?string $number): ?string
+    {
+        $number = trim((string) $number);
+
+        if ($number === '') {
+            return null;
+        }
+
+        return preg_match_all('/\d/', $number) >= 4 ? $number : null;
     }
 }
 

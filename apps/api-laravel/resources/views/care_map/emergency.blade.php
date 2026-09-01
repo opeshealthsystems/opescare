@@ -105,6 +105,8 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
 }
 .panel-title{font-family:'Outfit',sans-serif;font-size:.875rem;font-weight:700;color:var(--em-text);flex:1}
 .panel-sub{font-size:.72rem;color:var(--em-muted)}
+.panel-note{padding:.6rem 1rem;font-size:.72rem;line-height:1.5;color:var(--muted);background:rgba(220,38,38,.04);border-bottom:1px solid rgba(220,38,38,.14);flex-shrink:0}
+.ec-nophone{color:var(--subtle);font-style:italic}
 .cards{flex:1;overflow-y:auto;padding:.625rem;display:flex;flex-direction:column;gap:.5rem}
 .cards::-webkit-scrollbar{width:3px}
 .cards::-webkit-scrollbar-thumb{background:rgba(220,38,38,.2);border-radius:2px}
@@ -276,7 +278,9 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
     <strong>Life-threatening emergency?</strong>
     Call <a href="tel:112" class="alert-link">112</a> or go directly to the nearest A&amp;E — do not rely solely on this page.
   </div>
-  <div class="alert-count" id="facCount">{{ count($facilities) }} emergency {{ count($facilities) === 1 ? 'centre' : 'centres' }}</div>
+  <div class="alert-count" id="facCount">{{ count($facilities) === 1
+       ? __('public.care_map_emergency.count_hospitals_one')
+       : __('public.care_map_emergency.count_hospitals', ['count' => count($facilities)]) }}</div>
 </div>
 
 {{-- ── Main Layout ──────────────────────────────────────────────────────── --}}
@@ -285,14 +289,22 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
   {{-- Panel --}}
   <aside class="panel">
     <div class="panel-hdr">
-      <div class="panel-title">24/7 Emergency Facilities</div>
-      <div class="panel-sub">Sorted by distance</div>
+      <div class="panel-title">{{ __('public.care_map_emergency.panel_title') }}</div>
+      <div class="panel-sub">{{ __('public.care_map_emergency.panel_sub') }}</div>
     </div>
+
+    {{-- Nothing in care_facilities records whether a hospital runs a working
+         emergency department, so this page lists hospitals by distance and
+         says plainly that emergency capability is unconfirmed. --}}
+    <p class="panel-note">{{ __('public.care_map_emergency.capability_unknown') }}</p>
 
     <div class="cards" id="cardsList">
       @forelse($facilities as $f)
         @php
-          $phone = $f->emergency_contact ?: $f->phone_primary;
+          // Resolved by CareMapSearchService: the emergency line when one
+          // exists, else the main line, and null when neither is dialable
+          // (most rows hold the placeholder 'N/A').
+          $phone = $f->callable_phone ?? null;
           $dist  = isset($f->distance) ? round($f->distance, 1) : null;
           $addr  = collect([$f->address, $f->city, $f->region])->filter()->implode(', ');
           $dirUrl = ($f->latitude && $f->longitude)
@@ -317,14 +329,14 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
               <div class="ec-meta">
                 <div class="ec-name">{{ $f->facility_name }}</div>
                 <div class="ec-badges">
-                  @if($f->verification_status === 'government_verified')
-                    <span class="ec-badge">Gov. Verified</span>
-                  @elseif($verified)
-                    <span class="ec-badge">Verified</span>
-                  @endif
-                  <span class="ec-badge">24/7 A&amp;E</span>
+                  {{-- No verification badge here. Every facility in the registry
+                       is verification_status = 'unverified', and appearing in the
+                       national registry is a listing, not an OpesCare inspection —
+                       so there is no badge this page could honestly show. --}}
+                  <span class="ec-badge">{{ __('public.care_map_emergency.badge_hospital') }}</span>
+                  <span class="ec-badge">{{ __('public.care_map_emergency.call_before_travelling') }}</span>
                   @if($f->emergency_contact)
-                    <span class="ec-badge">Emergency Line</span>
+                    <span class="ec-badge">{{ __('public.care_map_emergency.badge_emergency_line') }}</span>
                   @endif
                 </div>
               </div>
@@ -339,29 +351,31 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
                   {{ $addr }}
                 </div>
               @endif
-              @if($phone)
-                <div class="ec-row">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <div class="ec-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                @if($phone)
                   {{ $phone }}
-                </div>
-              @endif
+                @else
+                  <span class="ec-nophone">{{ __('public.care_map_emergency.no_phone_on_record') }}</span>
+                @endif
+              </div>
             </div>
             <div class="ec-acts">
               @if($phone)
                 <a href="tel:{{ $phone }}" class="ebtn ebtn-call" onclick="event.stopPropagation()">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                  Call Now
+                  {{ __('public.care_map_emergency.action_call') }}
                 </a>
               @endif
               @if($dirUrl)
                 <a href="{{ $dirUrl }}" target="_blank" rel="noopener" class="ebtn ebtn-dir" onclick="event.stopPropagation()">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-                  Directions
+                  {{ __('public.care_map_emergency.action_directions') }}
                 </a>
               @endif
               <a href="{{ route('public.care-map.profile', $f->id) }}" class="ebtn ebtn-view" onclick="event.stopPropagation()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
-                Profile
+                {{ __('public.care_map_emergency.action_profile') }}
               </a>
             </div>
           </div>
@@ -369,8 +383,8 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
       @empty
         <div class="em-empty">
           <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(220,38,38,.3)" stroke-width="1.5" class="em-empty-icon"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <p class="em-empty-title">No emergency facilities found</p>
-          <p class="em-empty-sub">Enable location or broaden your search area to find 24/7 centres.</p>
+          <p class="em-empty-title">{{ __('public.care_map_emergency.empty_title') }}</p>
+          <p class="em-empty-sub">{{ __('public.care_map_emergency.empty_sub') }}</p>
         </div>
       @endforelse
     </div>
@@ -378,7 +392,7 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
 
   {{-- Desktop Map --}}
   <div class="map-area" id="mapArea">
-    <div id="map" role="application" aria-label="Emergency facility map"></div>
+    <div id="map" role="application" aria-label="{{ __('public.care_map_emergency.map_title') }}"></div>
     <div class="map-ctrls">
       <button class="map-ctrl" onclick="fitAll()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6m-6 0 6-6M9 21H3v-6m6 0-6 6"/></svg>
@@ -402,7 +416,7 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
 <div class="map-overlay" id="mapOverlay">
   <div class="map-overlay-hdr">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--em)" stroke-width="2.5"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/></svg>
-    <span>Emergency Map</span>
+    <span>{{ __('public.care_map_emergency.map_title') }}</span>
     <button onclick="closeMobileMap()" class="btn-close-map">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
       Close
@@ -418,7 +432,7 @@ $_emFacilitiesJson = json_encode($facilities->map(function ($f) {
     'name'  => $f->facility_name,
     'lat'   => (float)($f->latitude ?? 0),
     'lng'   => (float)($f->longitude ?? 0),
-    'phone' => $f->emergency_contact ?: $f->phone_primary,
+    'phone' => $f->callable_phone ?? null,
     'city'  => $f->city,
     'url'   => route('public.care-map.profile', $f->id),
     'dist'  => isset($f->distance) ? round($f->distance, 1) : null,
@@ -428,6 +442,13 @@ $_emFacilitiesJson = json_encode($facilities->map(function ($f) {
 
 <script>
 const FACILITIES = {!! $_emFacilitiesJson !!};
+const EM_LABELS = {
+  hospital:   @json(__('public.care_map_emergency.badge_hospital')),
+  caution:    @json(__('public.care_map_emergency.call_before_travelling')),
+  call:       @json(__('public.care_map_emergency.action_call')),
+  directions: @json(__('public.care_map_emergency.action_directions')),
+  noPhone:    @json(__('public.care_map_emergency.no_phone_on_record')),
+};
 
 // ── Map state ────────────────────────────────────────────────────────────
 let mapDesktop = null, mapMobile = null;
@@ -449,10 +470,10 @@ function popupHtml(f) {
   const dir = f.lat && f.lng ? `https://www.google.com/maps/dir/?api=1&destination=${f.lat},${f.lng}` : null;
   return `<div class="popup-top"></div>
     <div class="popup-name">${f.name}</div>
-    <div class="popup-sub">Hospital · A&amp;E · ${f.city ?? ''}${f.dist ? ' · ' + f.dist + ' km' : ''}</div>
+    <div class="popup-sub">${EM_LABELS.hospital}${f.city ? ' · ' + f.city : ''}${f.dist ? ' · ' + f.dist + ' km' : ''}<br>${f.phone ? EM_LABELS.caution : EM_LABELS.noPhone}</div>
     <div class="popup-btns">
-      ${f.phone ? `<a href="tel:${f.phone}" class="popup-btn popup-btn-call">Call Now</a>` : ''}
-      ${dir ? `<a href="${dir}" target="_blank" rel="noopener" class="popup-btn popup-btn-dir">Directions</a>` : ''}
+      ${f.phone ? `<a href="tel:${f.phone}" class="popup-btn popup-btn-call">${EM_LABELS.call}</a>` : ''}
+      ${dir ? `<a href="${dir}" target="_blank" rel="noopener" class="popup-btn popup-btn-dir">${EM_LABELS.directions}</a>` : ''}
     </div>`;
 }
 
