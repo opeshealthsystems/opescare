@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#0F4C81">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    @include('partials.favicons')
     <link rel="manifest" href="{{ asset('site.webmanifest') }}">
 
     <!-- Fonts -->

@@ -6,7 +6,7 @@
     <title>{{ __('verify.health_id_title', [], app()->getLocale()) ?: 'Health ID Verification — OpesCare' }}</title>
     <meta name="description" content="Verify a patient's OpesCare Health ID. For authorised healthcare providers only.">
     <meta name="theme-color" content="#0F4C81">
-    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    @include('partials.favicons')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -245,7 +245,7 @@
 
 <header class="topbar">
     <a href="{{ url('/') }}" class="topbar-brand">
-        <img src="{{ asset('favicon.svg') }}" alt="OpesCare">
+        <img src="{{ asset('brand/opescare-favicon.png') }}" alt="OpesCare">
         OpesCare
     </a>
     <div class="topbar-badge">

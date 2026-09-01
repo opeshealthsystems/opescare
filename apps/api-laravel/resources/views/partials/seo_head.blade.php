@@ -56,7 +56,7 @@
             'name'        => 'OpesCare',
             'legalName'   => 'Opes Health Systems Sarl',
             'url'         => $seoBase,
-            'logo'        => $seoBase . '/favicon.svg',
+            'logo'        => $seoBase . '/brand/opescare-logo-512.png',
             'description' => __('seo.org_description'),
             'areaServed'  => [
                 '@type' => 'Country',

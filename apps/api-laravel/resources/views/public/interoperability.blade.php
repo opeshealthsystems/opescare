@@ -78,7 +78,7 @@
                             </div>
                             {{-- Right: OpesCare --}}
                             <div style="background:rgba(15,76,129,.4);border:1px solid rgba(99,179,237,.3);border-radius:1rem;padding:1.25rem;text-align:center;">
-                                <img src="{{ asset('favicon.svg') }}" width="28" height="28" style="display:block;margin:0 auto .5rem;" alt="">
+                                <img src="{{ asset('brand/opescare-favicon.png') }}" width="28" height="28" style="display:block;margin:0 auto .5rem;" alt="">
                                 <div style="font-size:.8125rem;font-weight:600;">OpesCare</div>
                                 <div style="font-size:.6875rem;color:#94a3b8;margin-top:.25rem;">{{ __('public.interop_page.platform_role') }}</div>
                             </div>

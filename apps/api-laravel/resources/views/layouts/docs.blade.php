@@ -6,7 +6,7 @@
     <title>@yield('title', 'Developer Docs') — OpesCare</title>
     <meta name="description" content="@yield('meta_description', 'OpesCare Developer Documentation — Connect API, SDK, Bridge Agent, Widget, Webhooks.')">
 
-    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    @include('partials.favicons')
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

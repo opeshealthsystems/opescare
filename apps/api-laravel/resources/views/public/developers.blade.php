@@ -138,7 +138,7 @@
                 <div class="hero-visual">
                     <div style="border:1px solid #e2e8f0;border-radius:1.25rem;overflow:hidden;box-shadow:0 20px 40px rgba(15,76,129,.08);">
                         <div style="background:#0F4C81;padding:1rem 1.5rem;display:flex;align-items:center;gap:.75rem;">
-                            <img src="{{ asset('favicon.svg') }}" width="20" height="20" alt="">
+                            <img src="{{ asset('brand/opescare-favicon.png') }}" width="20" height="20" alt="">
                             <span style="font-weight:700;font-size:.875rem;color:#fff;">OpesCare Connect Widget</span>
                         </div>
                         <div style="padding:1.5rem;background:#F8FAFC;">

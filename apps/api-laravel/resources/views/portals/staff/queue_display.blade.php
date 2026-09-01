@@ -6,7 +6,7 @@
     <meta http-equiv="refresh" content="30">
     <title>{{ __('public.stf_queue_title') }}</title>
     <meta name="theme-color" content="#0F2744">
-    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    @include('partials.favicons')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -253,7 +253,7 @@
     {{-- Top bar --}}
     <div class="topbar">
         <div class="topbar-brand">
-            <img src="{{ asset('favicon.svg') }}" alt="OpesCare">
+            <img src="{{ asset('brand/opescare-favicon.png') }}" alt="OpesCare">
             <div>
                 <div class="topbar-brand-name">OpesCare</div>
                 <div class="topbar-facility">{{ __('public.stf_queue_header') }}</div>
