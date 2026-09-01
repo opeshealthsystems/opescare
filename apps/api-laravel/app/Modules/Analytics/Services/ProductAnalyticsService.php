@@ -339,8 +339,11 @@ class ProductAnalyticsService
 
     private function computeAppointmentNoShowRate(string $facilityId, Carbon $from, Carbon $to): float
     {
+        // The column is scheduled_at. There has never been an appointment_date
+        // column or accessor, so both queries below threw SQLSTATE[42703] and
+        // took the whole admin KPI page down with a 500 on every request.
         $total = Appointment::where('facility_id', $facilityId)
-            ->whereBetween('appointment_date', [$from, $to])
+            ->whereBetween('scheduled_at', [$from, $to])
             ->count();
 
         if ($total === 0) {
@@ -348,7 +351,7 @@ class ProductAnalyticsService
         }
 
         $noShow = Appointment::where('facility_id', $facilityId)
-            ->whereBetween('appointment_date', [$from, $to])
+            ->whereBetween('scheduled_at', [$from, $to])
             ->where('status', 'no_show')
             ->count();
 
