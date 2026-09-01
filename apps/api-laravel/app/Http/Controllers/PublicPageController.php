@@ -159,10 +159,39 @@ class PublicPageController extends Controller
         $org     = $request->input('organisation') ?? $request->input('organization', '');
         $body    = "From: {$name} <{$email}>" . ($org ? "\nOrganisation: {$org}" : '') . "\n\n" . $request->input('message');
 
-        Mail::to($supportEmail)->queue(new OpesCareNotificationMail(
-            mailSubject: "OpesCare Contact: {$subject}",
-            bodyText: $body,
-        ));
+        /*
+         * Record the enquiry BEFORE sending anything.
+         *
+         * This used to queue an email and nothing else, to an address on a
+         * domain that accepts no inbound mail — so every message a visitor
+         * sent through the contact form was discarded while the page thanked
+         * them for it. The lead is the record; the email is a notification.
+         */
+        Lead::create([
+            'name'              => $name,
+            'email'             => $email,
+            'phone'             => $request->input('phone'),
+            'organization_name' => $org ?: null,
+            'organization_type' => in_array($request->input('organization_type'), Lead::ORGANIZATION_TYPES, true)
+                ? $request->input('organization_type')
+                : 'other',
+            'message'           => trim(($subject ? "Subject: {$subject}
+" : '') . $body),
+            'source'            => 'contact',
+            'status'            => 'new',
+        ]);
+
+        // A mail transport failure must not lose an enquiry already recorded.
+        try {
+            Mail::to($supportEmail)->queue(new OpesCareNotificationMail(
+                mailSubject: "OpesCare Contact: {$subject}",
+                bodyText: $body,
+            ));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('contact_enquiry_mail_failed', [
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         // Redirect back to the originating page with success flag
         $back = url()->previous();

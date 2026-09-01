@@ -196,6 +196,30 @@ class SignupRequestCaptureTest extends TestCase
         $this->assertStringContainsString($ref, (string) $lead->message);
     }
 
+    /**
+     * The contact form only queued an email, to an address on a domain that
+     * accepts no inbound mail — so every message was discarded while the page
+     * thanked the sender for it.
+     */
+    public function test_a_contact_enquiry_is_recorded(): void
+    {
+        $this->post('/contact', [
+            'name'    => 'Paul Mbarga',
+            'email'   => 'paul@clinique.test',
+            'subject' => 'Integration question',
+            'message' => 'Does the Connect API expose Coverage?',
+            'organisation' => 'Clinique du Centre',
+        ])->assertRedirect();
+
+        $lead = Lead::where('source', 'contact')->first();
+
+        $this->assertNotNull($lead, 'the enquiry must be recorded, not only emailed');
+        $this->assertSame('Paul Mbarga', $lead->name);
+        $this->assertSame('paul@clinique.test', $lead->email);
+        $this->assertStringContainsString('Coverage', (string) $lead->message);
+        $this->assertSame('Clinique du Centre', $lead->organization_name);
+    }
+
     public function test_request_forms_reject_incomplete_submissions(): void
     {
         $this->post('/signup/guardian', ['email' => 'not-an-email'])
