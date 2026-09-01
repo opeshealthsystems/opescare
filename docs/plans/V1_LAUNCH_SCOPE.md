@@ -108,9 +108,20 @@ it is recorded, `source = 'manual'`. `ClaimPaymentService::recordPayment()` is
 bookkeeping entered after money moved elsewhere.
 
 **It is a manual claims ledger with a state machine, not an insurance system.**
+
 The blocker is not code — Cameroonian payers (CNPS, Activa, Chanas, Saham,
 Beneficial, Zenithe) have no APIs. Shipping this means asking insurers to staff
 a data-entry portal. That is a sales problem, not an engineering one.
+
+> **Superseded 2026-09-01.** Insurance is no longer frozen whole — it is split.
+> **Coverage** ("who covers this patient, until when") ships ON: it is an
+> attribute of the Health ID, it is the same fact FHIR R4 `Coverage` already
+> exposed to partners, and freezing it had left the patient unable to see their
+> own cover while a partner system could read it. **Claims** — policies,
+> preauthorisation, adjudication, payment — stays frozen for the reason above.
+> The two are separate flags (`insurance_coverage`, `insurance`), so neither
+> gates the other. The mobile marketplace and purchase screens were deleted;
+> the coverage screen remains.
 
 ---
 
