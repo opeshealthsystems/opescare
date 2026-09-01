@@ -301,7 +301,7 @@
 
 {{-- Biometrics --}}
 @php
-    $neonSex = strtolower($payload['neonate_sex'] ?? 'unknown');
+    $neonSex = strtolower($payload['neonate_sex'] ?? '');
     $apgar1  = $payload['apgar_1min'] ?? 0;
     $apgar5  = $payload['apgar_5min'] ?? 0;
     $apgarClass = ($apgar5 >= 7) ? 'apgar-badge-good' : 'apgar-badge-moderate';
@@ -336,7 +336,10 @@
             @elseif($neonSex === 'male')
                 <span class="sex-badge-male">♂ MALE / MASCULIN</span>
             @else
-                <span>{{ strtoupper($neonSex) }}</span>
+                {{-- The platform records two sexes. Anything else here means the
+                     field was not supplied, so it renders as the same em dash
+                     every other missing biometric on this document uses. --}}
+                <span>&mdash;</span>
             @endif
         </div>
     </div>
