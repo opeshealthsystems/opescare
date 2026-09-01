@@ -58,6 +58,12 @@ class DatabaseSeeder extends Seeder
             // matches how the data was built.
             BookableFacilitySlotsSeeder::class,
             BookableFacilityNetworkSeeder::class,
+            // Gives geocoded pharmacies an operational tenant. Without it the
+            // stock write path is unreachable: PharmacyStockReportService
+            // resolves a pharmacy through care_facilities.facility_id, and on a
+            // fresh install nothing sets that link — so a pharmacist can log in
+            // and still not be able to report stock a patient can see.
+            PharmacyOperationalLinkSeeder::class,
         ]);
 
         // When demo mode is enabled, seed all demo data automatically so that
