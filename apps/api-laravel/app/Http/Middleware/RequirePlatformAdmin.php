@@ -67,27 +67,12 @@ class RequirePlatformAdmin
 
     public function handle(Request $request, Closure $next): Response
     {
-        $path = ltrim($request->path(), '/');
-
         // The bare facility-admin dashboard (/portals/admin) IS facility-scoped
         // and shared by facility admins; everything UNDER /portals/admin/* is
         // platform god-mode (Control Center, Onboarding, Security, KPI, Legal,
         // Subscriptions, god-mode data, …) and must be platform-tier only.
-        $isPlatformOnly = ($path !== 'portals/admin')
-            && str_starts_with($path, 'portals/admin/');
-
-        // Plus the bare /admin/* god-mode data routes and any other explicitly
-        // listed platform-only prefixes.
-        if (! $isPlatformOnly) {
-            foreach (self::PLATFORM_ONLY_PREFIXES as $prefix) {
-                if ($path === $prefix || str_starts_with($path, $prefix . '/')) {
-                    $isPlatformOnly = true;
-                    break;
-                }
-            }
-        }
-
-        if (! $isPlatformOnly) {
+        // The predicate lives in isPlatformOnlyPath() so the nav can ask it too.
+        if (! self::isPlatformOnlyPath($request->path())) {
             return $next($request);
         }
 
@@ -95,20 +80,56 @@ class RequirePlatformAdmin
             return redirect()->route('login');
         }
 
-        $user = Auth::user();
+        if (! self::isPlatformTier(Auth::user())) {
+            abort(403, 'This area is restricted to OpesCare platform administrators.');
+        }
 
-        // Resolve role with the same facility-aware logic as EnsurePortalAccess,
-        // falling back to the user's global role (platform admins have no facility).
+        return $next($request);
+    }
+
+    /**
+     * Is this user in the platform-owner role tier?
+     *
+     * Public and static because the NAVIGATION has to ask the same question.
+     * A sidebar that links to a platform-only page for a facility-tier user is
+     * a guaranteed 403, and the only way that cannot drift back is for the nav
+     * and this middleware to read the same list through the same resolver —
+     * hence @platformadmin in AppServiceProvider calls straight into here.
+     */
+    public static function isPlatformTier(?\Illuminate\Contracts\Auth\Authenticatable $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        // Facility-aware, matching EnsurePortalAccess: a user can hold a
+        // different role at the facility they are currently acting in. Falls
+        // back to the global role, which is what platform admins have (they
+        // belong to no facility).
         $facilityId = session('active_facility_id') ?? $user->primary_facility_id ?? null;
         $role = ($facilityId && method_exists($user, 'roleAtFacility'))
             ? $user->roleAtFacility($facilityId)
             : null;
         $roleName = ($role?->name) ?? ($user->role?->name);
 
-        if (! in_array($roleName, self::PLATFORM_ROLES, true)) {
-            abort(403, 'This area is restricted to OpesCare platform administrators.');
+        return in_array($roleName, self::PLATFORM_ROLES, true);
+    }
+
+    /** Does this path require the platform tier? Shared with the nav layer. */
+    public static function isPlatformOnlyPath(string $path): bool
+    {
+        $path = ltrim($path, '/');
+
+        if ($path !== 'portals/admin' && str_starts_with($path, 'portals/admin/')) {
+            return true;
         }
 
-        return $next($request);
+        foreach (self::PLATFORM_ONLY_PREFIXES as $prefix) {
+            if ($path === $prefix || str_starts_with($path, $prefix . '/')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

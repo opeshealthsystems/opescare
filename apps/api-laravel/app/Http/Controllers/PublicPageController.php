@@ -39,6 +39,16 @@ class PublicPageController extends Controller
         return view('public.network.blood_finder');
     }
 
+    /**
+     * Shown to a signed-in user whose portal is frozen out of this release.
+     * Reached only by redirect from EnsurePortalAccess — the frozen URL
+     * itself still 404s, unchanged.
+     */
+    public function showPortalUnavailable()
+    {
+        return view('auth.portal_unavailable');
+    }
+
     public function about()
     {
         return view('public.about');

@@ -13,15 +13,24 @@ class DashboardProfileService
         return $user->role?->dashboardProfile;
     }
 
+    /**
+     * Where to send this user after sign-in.
+     *
+     * Must never return a portal that the V1 launch-scope freeze has switched
+     * off. EnforceFeatureFlag 404s those paths — deliberately and
+     * byte-identically to a nonexistent route — so returning one here means the
+     * user completes a successful login and lands on a dead page. That is
+     * exactly what happened to every insurance account.
+     */
     public function landingUrlForUser(User $user): string
     {
         $profile = $this->profileForUser($user);
 
-        if ($profile) {
-            return $profile->landingUrl();
-        }
+        $url = $profile ? $profile->landingUrl() : url('/portals/patient');
 
-        return url('/portals/patient');
+        return \App\Support\Features::pathIsFrozen($url)
+            ? route('portal.unavailable')
+            : $url;
     }
 
     public function landingUrlForCurrent(): string

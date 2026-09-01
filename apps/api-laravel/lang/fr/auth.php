@@ -48,4 +48,14 @@ return [
             'submit' => 'Soumettre la demande',
         ],
     ],
+    /* ── Portail gelé hors de la version actuelle ───── */
+    'portal_unavailable' => [
+        'page_title'    => 'Portail indisponible | OpesCare',
+        'title'         => 'Ce portail ne fait pas partie de la version actuelle.',
+        'body'          => 'Votre compte est actif et votre connexion a réussi. Le portail correspondant à votre rôle n\x27est pas activé dans cette version d\x27OpesCare : il n\x27y a donc rien à ouvrir pour le moment.',
+        'next'          => 'Votre compte n\x27a aucun problème et aucune donnée n\x27a été perdue. Votre accès reprendra dès l\x27activation du module.',
+        'cta_contact'   => 'Contacter le support',
+        'cta_signout'   => 'Se déconnecter',
+        'signed_in_as'  => 'Connecté en tant que :email',
+    ],
 ];

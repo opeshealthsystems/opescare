@@ -24,6 +24,12 @@
     </div>
 </div>
 
+{{-- Platform overview stats.
+     Platform-wide totals, and every card links into a platform-tier page.
+     A facility admin is 403'd on all six by RequirePlatformAdmin, so for
+     them this whole block was six dead links AND a set of cross-tenant
+     counts they have no business seeing. --}}
+@platformadmin
 {{-- Platform overview stats --}}
 <div class="stat-grid mb-6" style="--cols:4">
   <a href="{{ route('portals.admin.facilities.index') }}" class="stat-card">
@@ -59,6 +65,7 @@
     <div class="stat-card__label">{{ __('public.admin_governance.stat_pending_onboarding', [], app()->getLocale()) ?: 'Pending Onboardings' }}</div>
   </a>
 </div>
+@endplatformadmin
 
 <!-- KPI Cards -->
 <div class="kpi-grid">

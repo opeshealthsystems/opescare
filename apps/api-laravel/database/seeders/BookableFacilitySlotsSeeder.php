@@ -67,13 +67,28 @@ class BookableFacilitySlotsSeeder extends Seeder
         $linked = 0;
         $slotsCreated = 0;
 
-        // A real clinician to attribute slots to, when one exists. Nullable:
-        // appointment_slots.provider_id is optional and the booking flow copies
-        // whatever is on the locked slot onto the appointment.
+        // A real clinician to attribute slots to.
+        //
+        // This block used to describe provider_id as nullable and pass null
+        // when no clinician existed. The column is NOT NULL, so on a freshly
+        // migrated database — where DatabaseSeeder reaches this seeder before
+        // anything has created users — the insert threw and aborted the entire
+        // 'db:seed' run partway through. Degrade the way the sibling
+        // BookableFacilityNetworkSeeder already does: say so and skip.
         $providerId = DB::table('users')
             ->join('roles', 'roles.id', '=', 'users.role_id')
             ->whereIn('roles.name', ['doctor', 'specialist', 'multi_doctor'])
             ->value('users.id');
+
+        if ($providerId === null) {
+            $this->command?->warn(
+                'BookableFacilitySlotsSeeder: no clinician users found — '
+                . 'appointment_slots.provider_id is NOT NULL, so no slots can be opened. '
+                . 'Seed users/roles first, then re-run this seeder.'
+            );
+
+            return;
+        }
 
         foreach (self::BOOKABLE as $name) {
             $directory = DB::table('care_facilities')

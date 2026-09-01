@@ -43,6 +43,18 @@ class AppServiceProvider extends ServiceProvider
             return \App\Support\Features::enabled($key);
         });
 
+        // @platformadmin … @endplatformadmin — the role-tier twin of @feature.
+        //
+        // Same principle: a page gated by RequirePlatformAdmin must be absent
+        // from the nav of anyone who cannot open it, or the sidebar is just a
+        // list of 403s. This delegates to the middleware's own predicate rather
+        // than repeating the role list, so the two cannot drift apart — that
+        // drift is exactly what left facility admins staring at Subscription,
+        // Staff, Patients and KPI links they had been locked out of.
+        \Illuminate\Support\Facades\Blade::if('platformadmin', function () {
+            return \App\Http\Middleware\RequirePlatformAdmin::isPlatformTier(auth()->user());
+        });
+
         // @patientfeature('teleconsult') … @endpatientfeature — gate UI by patient
         // subscription feature (honours family-sharing coverage). False when not
         // authenticated as a patient.

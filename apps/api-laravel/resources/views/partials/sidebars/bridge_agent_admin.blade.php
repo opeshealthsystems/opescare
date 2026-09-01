@@ -10,17 +10,21 @@
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], $l) ?: 'Dashboard' }}</span>
     </a>
+    @platformadmin
     <a href="{{ route('portals.admin.kpi.index') }}" class="sidebar-link">
         <i data-lucide="trending-up"></i>
         <span>{{ __('public.portal.nav_kpi', [], $l) ?: 'KPI Dashboard' }}</span>
     </a>
+    @endplatformadmin
 </div>
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_bridge', [], $l) ?: 'Bridge Agents' }}</div>
+    @platformadmin
     <a href="{{ route('portals.admin.bridge') }}" class="sidebar-link">
         <i data-lucide="link-2"></i>
         <span>{{ __('public.portal.nav_bridge', [], $l) ?: 'Bridge Agents' }}</span>
     </a>
+    @endplatformadmin
     <a href="{{ route('public.help') }}" class="sidebar-link">
         <i data-lucide="help-circle"></i>
         <span>{{ __('public.portal.nav_help', [], $l) ?: 'Help' }}</span>

@@ -48,4 +48,14 @@ return [
             'submit' => 'Submit Onboarding Request',
         ],
     ],
+    /* ── Portal frozen out of the current release ───── */
+    'portal_unavailable' => [
+        'page_title'    => 'Portal unavailable | OpesCare',
+        'title'         => 'This portal is not part of the current release.',
+        'body'          => 'Your account is active and your sign-in worked. The portal for your role is not switched on in this version of OpesCare, so there is nothing for you to open yet.',
+        'next'          => 'Nothing is wrong with your account and no data has been lost. Your access will resume the moment the module is enabled.',
+        'cta_contact'   => 'Contact support',
+        'cta_signout'   => 'Sign out',
+        'signed_in_as'  => 'Signed in as :email',
+    ],
 ];

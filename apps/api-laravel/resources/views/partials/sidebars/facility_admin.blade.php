@@ -10,19 +10,33 @@
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], $l) ?: 'Dashboard' }}</span>
     </a>
+    @platformadmin
     <a href="{{ route('portals.admin.kpi.index') }}" class="sidebar-link">
         <i data-lucide="trending-up"></i>
         <span>{{ __('public.portal.nav_kpi', [], $l) ?: 'KPI Dashboard' }}</span>
     </a>
+    @endplatformadmin
+    @platformadmin
     <a href="{{ route('portals.admin.subscription') }}" class="sidebar-link">
         <i data-lucide="credit-card"></i>
         <span>{{ __('public.portal.nav_subscriptions', [], $l) ?: 'Subscriptions' }}</span>
     </a>
+    @endplatformadmin
     <a href="{{ route('select-facility') }}" class="sidebar-link">
         <i data-lucide="repeat"></i>
         <span>{{ __('public.portal.nav_switch_facility', [], $l) ?: 'Switch Facility' }}</span>
     </a>
 </div>
+{{-- Every link in this section is platform-tier, so the section is guarded
+     as a whole: leaving the heading outside the guard renders a bare
+     'People' label with nothing beneath it for a facility admin.
+
+     Worth flagging for product: this means a facility admin has no staff or
+     patient management of their own, because those pages are platform-only
+     under RequirePlatformAdmin. Hiding the links is correct given that
+     gate; whether the gate should have a facility-scoped equivalent is a
+     separate decision. --}}
+@platformadmin
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_people', [], $l) ?: 'People' }}</div>
     <a href="{{ route('portals.admin.staff.index') }}" class="sidebar-link">
@@ -34,6 +48,7 @@
         <span>{{ __('public.portal.nav_patients', [], $l) ?: 'Patients' }}</span>
     </a>
 </div>
+@endplatformadmin
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('public.portal.nav_operations', [], $l) ?: 'Operations' }}</div>
     <a href="{{ route('portals.staff.appointments') }}" class="sidebar-link">

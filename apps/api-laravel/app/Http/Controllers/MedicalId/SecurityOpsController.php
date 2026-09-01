@@ -38,11 +38,17 @@ class SecurityOpsController extends Controller
 
     public function incidents(Request $request)
     {
-        $facilityId = session('active_facility_id') ?? auth()->user()?->primary_facility_id ?? null;
-        $isPlatformAdmin = in_array(auth()->user()?->role?->name, ['super_admin', 'platform_admin', 'security_officer']);
-
-        $q = SecurityIncident::orderByDesc('detected_at')
-            ->when($facilityId && !$isPlatformAdmin, fn ($q) => $q->where('facility_id', $facilityId));
+        // security_incidents has no facility_id column and never has — this
+        // used to filter on one, so the page threw SQLSTATE[42703] for any user
+        // holding a facility who was not in a hardcoded list of three roles.
+        // privacy_officer, compliance_officer, audit_reviewer and the rest of
+        // the platform compliance tier all 500'd here.
+        //
+        // No scoping is lost by removing it. The whole /portals/admin/security
+        // surface is platform-tier only (RequirePlatformAdmin), incidents are
+        // platform-global rather than facility-owned, and a filter on a column
+        // that does not exist never scoped anything in the first place.
+        $q = SecurityIncident::orderByDesc('detected_at');
 
         if ($request->filled('severity')) {
             $q->where('severity', $request->severity);

@@ -179,13 +179,50 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
         if (e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar();
     });
 
-    // Mark active sidebar link
-    var currentPath = window.location.pathname;
-    document.querySelectorAll('.sidebar-link').forEach(function(link) {
-        if (link.getAttribute('href') === currentPath) {
-            link.classList.add('active');
+    // Mark the active sidebar link.
+    //
+    // This compared getAttribute('href') against location.pathname. route()
+    // emits ABSOLUTE urls, so it was comparing 'https://host/portals/staff'
+    // with '/portals/staff' — never equal, and the whole block was dead. Only
+    // the handful of links carrying a Blade routeIs() guard ever highlighted.
+    //
+    // Now: compare paths to paths, and fall back to the longest matching
+    // prefix so a detail page (/portals/staff/visits/123) still lights up its
+    // section (/portals/staff/visits) instead of leaving the user with no
+    // indication of where they are.
+    var currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+    var best = null, bestLen = -1;
+
+    document.querySelectorAll('.sidebar-link').forEach(function (link) {
+        var href = link.getAttribute('href') || '';
+        var path;
+        try {
+            path = new URL(href, window.location.origin).pathname;
+        } catch (e) {
+            return;
+        }
+        path = path.replace(/\/+$/, '') || '/';
+
+        if (path === currentPath) {
+            best = link; bestLen = Infinity;               // exact wins outright
+        } else if (
+            bestLen !== Infinity &&
+            path !== '/' &&
+            currentPath.indexOf(path + '/') === 0 &&    // real segment boundary
+            path.length > bestLen
+        ) {
+            best = link; bestLen = path.length;             // deepest prefix wins
         }
     });
+
+    // Blade routeIs() guards already mark some links server-side; clear those
+    // so exactly one item is highlighted rather than two.
+    if (best) {
+        document.querySelectorAll('.sidebar-link.active').forEach(function (l) {
+            if (l !== best) l.classList.remove('active');
+        });
+        best.classList.add('active');
+    }
 })();
 </script>
 

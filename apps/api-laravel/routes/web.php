@@ -117,6 +117,10 @@ Route::post('/verify/otp', [PublicPageController::class, 'submitVerifyOtp'])->na
 Route::post('/verify/otp/resend', [PublicPageController::class, 'resendOtp'])->name('otp.resend');
 
 // Verification & Restriction Status Displays
+// Where EnsurePortalAccess sends an authenticated user whose own portal is
+// frozen out of the launch scope. Without it they were redirected onto a
+// 404 and left with no working page at all.
+Route::middleware(['web', 'auth'])->get('/portal-unavailable', [PublicPageController::class, 'showPortalUnavailable'])->name('portal.unavailable');
 Route::get('/pending-approval', [PublicPageController::class, 'showPendingApproval'])->name('account.pending');
 Route::get('/account-suspended', [PublicPageController::class, 'showAccountSuspended'])->name('account.suspended');
 

@@ -153,7 +153,27 @@ class EnsurePortalAccess
         return null;
     }
 
+    /**
+     * Where does this role belong?
+     *
+     * Anything this returns is passed straight to redirect(), so it must be a
+     * destination that actually answers. A portal frozen out of the launch
+     * scope does not: EnforceFeatureFlag 404s it, correctly and deliberately,
+     * which used to mean insurance staff signed in and landed on a dead page
+     * with a sidebar of dead links. The freeze check below is generic rather
+     * than an insurance special case, so the next module to be frozen cannot
+     * reintroduce the same dead end.
+     */
     private function correctPortalFor(string $role): string
+    {
+        $portal = $this->portalForRole($role);
+
+        return \App\Support\Features::pathIsFrozen($portal)
+            ? route('portal.unavailable', absolute: false)
+            : $portal;
+    }
+
+    private function portalForRole(string $role): string
     {
         return match (true) {
             in_array($role, self::PORTAL_ROLES['portals/patient'])    => '/portals/patient',

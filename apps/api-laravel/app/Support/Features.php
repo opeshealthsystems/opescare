@@ -96,4 +96,24 @@ final class Features
 
         return null;
     }
+
+    /**
+     * Is this PATH switched off by the freeze?
+     *
+     * For code that holds a url or a path rather than a Request — chiefly the
+     * two places that decide where a signed-in user is sent (EnsurePortalAccess
+     * and DashboardProfileService). Both must refuse to redirect anyone onto a
+     * frozen portal, because EnforceFeatureFlag 404s it and the user lands on a
+     * dead page after a perfectly successful login.
+     *
+     * Accepts a full url or a bare path; only the path is considered.
+     */
+    public static function pathIsFrozen(string $pathOrUrl): bool
+    {
+        $path = parse_url($pathOrUrl, PHP_URL_PATH) ?: '/';
+
+        $feature = self::featureForRequest(Request::create($path, 'GET'));
+
+        return $feature !== null && ! self::enabled($feature);
+    }
 }
