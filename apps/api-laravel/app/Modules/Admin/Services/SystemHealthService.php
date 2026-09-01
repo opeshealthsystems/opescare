@@ -5,6 +5,7 @@ namespace App\Modules\Admin\Services;
 use App\Models\SystemHealthSnapshot;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Carbon;
 
 /**
  * SystemHealthService — Captures and reports system health metrics.
@@ -86,7 +87,7 @@ class SystemHealthService
      */
     public function currentHealth(): array
     {
-        return Cache::remember('public_status_health', 30, function (): array {
+        $data = Cache::remember('public_status_health', 30, function (): array {
             $metrics = $this->gatherMetrics();
             $dbOk    = (bool) $metrics['db_connected'];
             $cacheOk = (bool) $metrics['cache_connected'];
@@ -98,7 +99,7 @@ class SystemHealthService
 
             return [
                 'status'     => $this->deriveStatus($metrics),
-                'checked_at' => now(),
+                'checked_at' => now()->toIso8601String(),
                 'components' => [
                     'core'         => $derive($dbOk, $cacheOk),
                     'clinical'     => $derive($dbOk),
@@ -108,5 +109,23 @@ class SystemHealthService
                 ],
             ];
         });
+
+        /*
+         * Rehydrate outside the cache boundary.
+         *
+         * config('cache.serializable_classes') is false — Laravel's default,
+         * which stops a leaked APP_KEY from turning the cache into a gadget
+         * chain. Every store therefore unserializes with allowed_classes:false,
+         * so an object put into the cache comes back as __PHP_Incomplete_Class
+         * on the FIRST cache HIT, not on the miss. Caching a Carbon here meant
+         * the public status page rendered once and then returned 500 for the
+         * rest of the 30-second TTL.
+         *
+         * The cache holds an ISO-8601 string; callers still get a Carbon.
+         */
+        $checkedAt = $data['checked_at'] ?? null;
+        $data['checked_at'] = is_string($checkedAt) ? Carbon::parse($checkedAt) : now();
+
+        return $data;
     }
 }
