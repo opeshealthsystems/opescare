@@ -372,76 +372,49 @@ class PublicPageController extends Controller
     }
 
     /**
-     * Caregiver access request.
+     * Caregiver sign-up — an email and a password, like every other account.
      *
-     * This is a request, not a sign-up: guardian access to another person's
-     * record needs institutional verification before it can be granted, which
-     * is what the success message has always said. It previously said it
-     * without recording anything, so every request was silently discarded.
-     *
-     * The form asks for a password because it used to promise an account. The
-     * password is deliberately NOT stored — an account is created later, by
-     * the reviewer, once the relationship is verified.
+     * What used to be one 16-field form is now two steps. Guardian access to
+     * somebody else's record still requires institutional verification before
+     * it becomes active, which is what the success message has always said;
+     * the identity and dependant details that a reviewer needs are collected
+     * after login, at /portals/guardian/complete-profile.
      */
     public function submitGuardianRegister(Request $request)
     {
         $data = $request->validate([
-            'first_name'         => 'required|string|max:100',
-            'last_name'          => 'required|string|max:100',
-            'email'              => 'required|email|max:180',
-            'phone'              => 'nullable|string|max:30',
-            'dob'                => 'nullable|date|before:today',
-            'preferred_language' => 'nullable|string|max:10',
-            'dep_name'           => 'required|string|max:200',
-            'dep_dob'            => 'nullable|date|before:today',
-            'dep_relationship'   => 'required|string|max:80',
-            'dep_sex'            => 'nullable|string|max:20',
-            'dep_health_id'      => 'nullable|string|max:40',
-            'access_reason'      => 'nullable|string|max:2000',
+            'email'    => 'required|email|max:180|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+        ], [
+            'email.unique' => __('onboarding.guardian.email_taken'),
         ]);
 
-        Lead::create([
-            'name'              => trim($data['first_name'] . ' ' . $data['last_name']),
-            'email'             => $data['email'],
-            'phone'             => $data['phone'] ?? null,
-            'organization_name' => null,
-            'organization_type' => 'other',
-            'message'           => $this->guardianSummary($data),
-            'source'            => 'guardian_signup',
-            'status'            => 'new',
-        ]);
+        $user = DB::transaction(function () use ($data) {
+            $role = Role::where('name', 'guardian')->first();
 
-        return redirect()->route('register.guardian')->with('success', __('onboarding.guardian.success'));
-    }
+            $user = User::create([
+                'name'     => Str::before($data['email'], '@'),
+                'email'    => $data['email'],
+                'password' => Hash::make($data['password']),
+                'status'   => 'active',
+            ]);
 
-    /** Everything a reviewer needs, as text — never the password. */
-    private function guardianSummary(array $data): string
-    {
-        $lines = [
-            'Dependant: ' . $data['dep_name'],
-            'Relationship: ' . $data['dep_relationship'],
-        ];
-
-        foreach ([
-            'Dependant DOB'       => $data['dep_dob'] ?? null,
-            'Dependant sex'       => $data['dep_sex'] ?? null,
-            'Dependant Health ID' => $data['dep_health_id'] ?? null,
-            'Guardian DOB'        => $data['dob'] ?? null,
-            'Preferred language'  => $data['preferred_language'] ?? null,
-        ] as $label => $value) {
-            if (! empty($value)) {
-                $lines[] = $label . ': ' . $value;
+            if ($role) {
+                $user->role_id = $role->id;
+                $user->save();
             }
-        }
 
-        if (! empty($data['access_reason'])) {
-            $lines[] = '';
-            $lines[] = 'Reason given: ' . $data['access_reason'];
-        }
+            return $user;
+        });
 
-        return implode("
-", $lines);
+        Auth::login($user);
+        $request->session()->regenerate();
+        $request->session()->put('mfa.verified', true);
+
+        return redirect()->route('portals.guardian.complete-profile')
+            ->with('success', __('onboarding.guardian.account_created'));
     }
+
 
     public function showOrganizationRegister()
     {

@@ -187,7 +187,16 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'throttle:portal'])->group(fun
     Route::post('/portals/patient/complete-profile', [\App\Http\Controllers\MedicalId\PatientProfileCompletionController::class, 'store'])->name('portals.patient.complete-profile.store');
 });
 
-Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.admin', 'facility.context', 'patient.profile', 'throttle:portal'])->group(function () {
+// ── Caregiver profile completion ────────────────────────────────────────────
+// Same shape as the patient step above, and outside the guardian.profile gate
+// for the same reason: the gate redirects here, so it must not guard itself.
+Route::middleware(['web', 'auth', 'mfa.verified', 'throttle:portal'])->group(function () {
+    Route::get('/portals/guardian/complete-profile',  [\App\Http\Controllers\MedicalId\GuardianProfileCompletionController::class, 'show'])->name('portals.guardian.complete-profile');
+    Route::post('/portals/guardian/complete-profile', [\App\Http\Controllers\MedicalId\GuardianProfileCompletionController::class, 'store'])->name('portals.guardian.complete-profile.store');
+    Route::get('/portals/guardian/pending',           [\App\Http\Controllers\MedicalId\GuardianProfileCompletionController::class, 'pending'])->name('portals.guardian.pending');
+});
+
+Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.admin', 'facility.context', 'patient.profile', 'guardian.profile', 'throttle:portal'])->group(function () {
     Route::get('/portals/patient', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'index'])->name('portals.patient');
     // QR generation has its own tighter rate limit (10/min) on top of the portal limit
     Route::post('/portals/patient/generate-qr', [\App\Http\Controllers\MedicalId\PatientPortalController::class, 'generateTemporaryQr'])

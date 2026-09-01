@@ -3,7 +3,10 @@
 namespace Tests\Feature\Public;
 
 use App\Models\Lead;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
@@ -30,46 +33,109 @@ class SignupRequestCaptureTest extends TestCase
         Mail::fake();
     }
 
-    public function test_a_guardian_request_is_recorded(): void
+    private function guardianUser(): User
     {
+        return User::factory()->create([
+            'status'  => 'active',
+            'role_id' => Role::firstOrCreate(['name' => 'guardian'], ['display_name' => 'Guardian'])->id,
+        ]);
+    }
+
+    public function test_a_guardian_signs_up_with_only_an_email_and_a_password(): void
+    {
+        Role::firstOrCreate(['name' => 'guardian'], ['display_name' => 'Guardian']);
+
         $this->post('/signup/guardian', [
-            'first_name'         => 'Marie',
-            'last_name'          => 'Fotso',
-            'email'              => 'marie.fotso@example.test',
-            'phone'              => '+237670000010',
-            'dob'                => '1988-04-02',
-            'preferred_language' => 'fr',
-            'dep_name'           => 'Jean Fotso',
-            'dep_dob'            => '2016-09-11',
-            'dep_relationship'   => 'child',
-            'dep_sex'            => 'male',
-            'access_reason'      => 'I manage my son\'s care.',
+            'email'                 => 'marie.fotso@example.test',
             'password'              => 'correct-horse-8',
-            'confirm_password'      => 'correct-horse-8',
-        ])->assertRedirect(route('register.guardian'));
+            'password_confirmation' => 'correct-horse-8',
+        ])->assertRedirect(route('portals.guardian.complete-profile'));
+
+        $user = User::where('email', 'marie.fotso@example.test')->first();
+
+        $this->assertNotNull($user, 'the account should exist');
+        $this->assertSame('active', $user->status, "status 'pending' would lock the account out of login");
+        $this->assertNull($user->profile_completed_at, 'nothing is submitted for review at sign-up');
+        $this->assertSame(0, Lead::count());
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_the_caregiver_request_is_recorded_after_login(): void
+    {
+        $user = $this->guardianUser();
+
+        $this->actingAs($user)->withSession(['mfa.verified' => true])
+            ->post('/portals/guardian/complete-profile', [
+                'first_name'       => 'Marie',
+                'last_name'        => 'Fotso',
+                'phone'            => '+237670000010',
+                'dep_name'         => 'Jean Fotso',
+                'dep_relationship' => 'child',
+                'dep_dob'          => '2016-09-11',
+                'dep_sex'          => 'male',
+                'access_reason'    => "I manage my son's care.",
+            ])->assertRedirect(route('portals.guardian.pending'));
 
         $lead = Lead::where('source', 'guardian_signup')->first();
 
         $this->assertNotNull($lead, 'the caregiver request must be recorded, not discarded');
         $this->assertSame('Marie Fotso', $lead->name);
-        $this->assertSame('marie.fotso@example.test', $lead->email);
+        $this->assertSame($user->email, $lead->email);
         $this->assertStringContainsString('Jean Fotso', (string) $lead->message);
-        $this->assertSame('new', $lead->status);
+        $this->assertNotNull($user->fresh()->profile_completed_at);
     }
 
-    /** A password typed into a request form must never be persisted. */
-    public function test_a_guardian_request_never_stores_the_password(): void
+    /** Nothing is granted here — verification stays with a human. */
+    public function test_completing_the_caregiver_request_grants_no_access(): void
     {
+        $user = $this->guardianUser();
+
+        $this->actingAs($user)->withSession(['mfa.verified' => true])
+            ->post('/portals/guardian/complete-profile', [
+                'first_name' => 'Marie', 'last_name' => 'Fotso', 'phone' => '+237670000010',
+                'dep_name'   => 'Jean Fotso', 'dep_relationship' => 'child',
+            ]);
+
+        $this->assertSame(0, DB::table('guardian_relationships')->count(),
+            'a relationship row is written by the reviewer, never by the request');
+        $this->assertNull($user->fresh()->patient_id);
+    }
+
+    public function test_a_guardian_is_held_at_the_pending_screen_until_verified(): void
+    {
+        $user = $this->guardianUser();
+
+        // Before submitting: pinned to the completion step.
+        $this->actingAs($user)->withSession(['mfa.verified' => true])
+            ->get('/portals/patient')
+            ->assertRedirect(route('portals.guardian.complete-profile'));
+
+        $user->forceFill(['profile_completed_at' => now()])->save();
+
+        // After submitting: pinned to the pending screen, not an empty portal.
+        $this->actingAs($user->fresh())->withSession(['mfa.verified' => true])
+            ->get('/portals/patient')
+            ->assertRedirect(route('portals.guardian.pending'));
+    }
+
+    /** A password typed into sign-up must never reach the review queue. */
+    public function test_the_review_queue_never_holds_a_password(): void
+    {
+        Role::firstOrCreate(['name' => 'guardian'], ['display_name' => 'Guardian']);
+
         $this->post('/signup/guardian', [
-            'first_name'       => 'Marie',
-            'last_name'        => 'Fotso',
-            'email'            => 'marie2@example.test',
-            'phone'            => '+237670000011',
-            'dep_name'         => 'Jean Fotso',
-            'dep_relationship' => 'child',
-            'password'             => 'super-secret-value',
-            'confirm_password'     => 'super-secret-value',
+            'email'                 => 'marie2@example.test',
+            'password'              => 'super-secret-value',
+            'password_confirmation' => 'super-secret-value',
         ]);
+
+        $user = User::where('email', 'marie2@example.test')->firstOrFail();
+
+        $this->actingAs($user)->withSession(['mfa.verified' => true])
+            ->post('/portals/guardian/complete-profile', [
+                'first_name' => 'Marie', 'last_name' => 'Fotso', 'phone' => '+237670000011',
+                'dep_name'   => 'Jean Fotso', 'dep_relationship' => 'child',
+            ]);
 
         foreach (Lead::all() as $lead) {
             $blob = strtolower(json_encode($lead->toArray()));
@@ -132,8 +198,8 @@ class SignupRequestCaptureTest extends TestCase
 
     public function test_request_forms_reject_incomplete_submissions(): void
     {
-        $this->post('/signup/guardian', ['first_name' => 'Marie'])
-            ->assertSessionHasErrors(['last_name', 'email']);
+        $this->post('/signup/guardian', ['email' => 'not-an-email'])
+            ->assertSessionHasErrors(['email', 'password']);
 
         $this->post('/signup/developer', ['name' => 'Ada'])
             ->assertSessionHasErrors(['email', 'organization']);
