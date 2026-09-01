@@ -110,10 +110,10 @@ return [
         'subtitle' => 'Two things a patient needs to find urgently, answered by the network instead of by phoning around.',
 
         'medicine_title' => 'Medicine Finder',
-        'medicine_desc'  => 'See which verified pharmacies hold a medicine, and when they last said so.',
+        'medicine_desc'  => 'See which pharmacies on the network hold a medicine, and when they last said so.',
         'medicine_cta'   => 'How the Medicine Finder works',
         'blood_title'    => 'Blood Finder',
-        'blood_desc'     => 'Find available blood by group and component across verified hospitals and blood banks.',
+        'blood_desc'     => 'Find available blood by group and component across connected hospitals and blood banks.',
         'blood_cta'      => 'How the Blood Finder works',
 
         'note' => 'Availability is published by the facility that holds it and timestamped. It is information to act on, not a reservation.',
@@ -203,7 +203,7 @@ return [
         'how_it_works_link' => 'How OpesCare Works',
         'health_id'         => 'Health ID',
         'consent_access'    => 'Consent & Access',
-        'care_map'          => 'Verified Care Map',
+        'care_map'          => 'Care Map',
         'emergency_access'  => 'Emergency Access',
         'for_patients'      => 'For Patients',
         'for_hospitals'     => 'For Hospitals & Clinics',

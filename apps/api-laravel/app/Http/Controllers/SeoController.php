@@ -238,9 +238,9 @@ class SeoController extends Controller
 
         ## Network services
 
-        - **Medicine Finder** — search verified pharmacies for medicine availability, with the timestamp of the last report shown on every listing.
-        - **Blood Finder** — search verified hospitals and blood banks by blood group and component.
-        - **Care Map** — a directory of verified healthcare facilities.
+        - **Medicine Finder** — search pharmacies on the network for medicine availability, with the timestamp of the last report shown on every listing.
+        - **Blood Finder** — search connected hospitals and blood banks by blood group and component.
+        - **Care Map** — a directory of healthcare facilities listed in Cameroon's national health facility registry (MINSANTE).
         - **Appointments** — cross-facility booking and referral-linked scheduling.
 
         ## Key facts
@@ -248,6 +248,7 @@ class SeoController extends Controller
         - Operates in Cameroon first, aligned with MINSANTE regulations, and designed for multi-country expansion.
         - Every screen, notification and document exists in both English and French.
         - Standards: HL7 FHIR R4, OAuth 2.0, SMART-style scopes.
+        - The Care Map directory is sourced from Cameroon's national health facility registry (MINSANTE). Listing in the directory records that a facility appears in that registry; it is not an OpesCare accreditation, inspection or licence check.
         - Availability information is reported by facilities and timestamped. It is information to act on, never a guarantee of physical stock.
         - OpesCare never makes clinical decisions. It does not determine transfusion compatibility, diagnose, or recommend treatment.
 
@@ -258,7 +259,7 @@ class SeoController extends Controller
         - [Interoperability]({$base}/interoperability): FHIR, API, SDKs, Bridge Agent, OpesCare Lite
         - [Medicine Finder]({$base}/network/medicine-finder): how medicine availability works
         - [Blood Finder]({$base}/network/blood-finder): how blood availability works
-        - [Care Map]({$base}/care-map): verified facility directory
+        - [Care Map]({$base}/care-map): national facility directory
         - [Security]({$base}/security): security, privacy and regulatory posture
         - [FAQ]({$base}/faq): common questions
         - [Developers]({$base}/developers): API documentation and SDKs

@@ -110,10 +110,10 @@ return [
         'subtitle' => 'Deux choses qu\'un patient doit trouver dans l\'urgence, résolues par le réseau plutôt qu\'au téléphone.',
 
         'medicine_title' => 'Recherche de médicaments',
-        'medicine_desc'  => 'Voyez quelles pharmacies vérifiées détiennent un médicament, et quand elles l\'ont déclaré.',
+        'medicine_desc'  => 'Voyez quelles pharmacies du réseau détiennent un médicament, et quand elles l\'ont déclaré.',
         'medicine_cta'   => 'Comment fonctionne la recherche de médicaments',
         'blood_title'    => 'Recherche de sang',
-        'blood_desc'     => 'Trouvez du sang disponible par groupe et composant dans les hôpitaux et banques de sang vérifiés.',
+        'blood_desc'     => 'Trouvez du sang disponible par groupe et composant dans les hôpitaux et banques de sang connectés.',
         'blood_cta'      => 'Comment fonctionne la recherche de sang',
 
         'note' => 'La disponibilité est publiée par l\'établissement qui la détient, et horodatée. C\'est une information pour agir, pas une réservation.',
@@ -203,7 +203,7 @@ return [
         'how_it_works_link' => 'Comment fonctionne OpesCare',
         'health_id'         => 'ID Santé',
         'consent_access'    => 'Consentement & Accès',
-        'care_map'          => 'Carte de soins vérifiée',
+        'care_map'          => 'Carte de soins',
         'emergency_access'  => "Accès d'urgence",
         'for_patients'      => 'Pour les patients',
         'for_hospitals'     => 'Pour les hôpitaux et cliniques',

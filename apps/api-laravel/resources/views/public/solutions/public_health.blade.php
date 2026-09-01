@@ -51,7 +51,7 @@
                 <div class="card">
                     <div class="card-icon" style="background:rgba(15,76,129,.08);color:#0F4C81;"><i data-lucide="droplets"></i></div>
                     <h3>Blood Supply Monitoring</h3>
-                    <p>Track blood availability and compatibility across verified blood banks and hospitals. Coordinate responses to shortages in real time.</p>
+                    <p>Track blood availability and compatibility across registered blood banks and hospitals. Coordinate responses to shortages in real time.</p>
                 </div>
                 <div class="card">
                     <div class="card-icon" style="background:rgba(15,76,129,.08);color:#0F4C81;"><i data-lucide="shield-check"></i></div>

@@ -181,7 +181,7 @@ return [
         
         'success' => [
             'title' => 'Your OpesCare account has been created',
-            'desc' => 'Your profile is currently provisional. A verified healthcare facility will confirm your identity when you next receive care.',
+            'desc' => 'Your profile is currently provisional. A registered healthcare facility will confirm your identity when you next receive care.',
             'cta' => 'View My Health ID',
         ],
     ],
