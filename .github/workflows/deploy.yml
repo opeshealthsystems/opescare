@@ -92,9 +92,20 @@ jobs:
         working-directory: apps/api-laravel
         run: php artisan migrate --force
 
+      # Serial, deliberately. `--parallel` was the gate here and it could never
+      # have passed: brianium/paratest was not a dependency, so the step died
+      # with Collision's RequirementsException before running a single test —
+      # and `deploy` needs this job, so no deploy has run from this workflow.
+      #
+      # Paratest is installed now, but parallel still is not viable: it gives
+      # each worker its own database and RefreshDatabase then drops all 523
+      # tables in one transaction, which blows past Postgres's default
+      # max_locks_per_transaction (64) with "out of shared memory". Tuning the
+      # service container for a marginal speed win is not worth the fragility
+      # in the one job that gates production.
       - name: Run tests
         working-directory: apps/api-laravel
-        run: php artisan test --parallel
+        run: php artisan test
 
   deploy:
     name: Rolling Deploy

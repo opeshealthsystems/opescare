@@ -3,11 +3,18 @@
 namespace Tests\Feature\Security;
 
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
 use Tests\TestCase;
 
 class HorizonGateTest extends TestCase
 {
+    // Creates users on fixed emails ('ops@opescare.test') with no isolation,
+    // so it wrote into whatever state it found and left the rows behind.
+    // Serial ordering hid that; `--parallel` — which CI runs — surfaced it
+    // as a duplicate-key violation on users_email_unique.
+    use RefreshDatabase;
+
     public function test_email_allowlist_grants_and_denies(): void
     {
         config(['horizon.admin_emails' => 'ops@opescare.test, lead@opescare.test']);
