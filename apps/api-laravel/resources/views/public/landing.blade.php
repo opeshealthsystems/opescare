@@ -4,970 +4,347 @@
 @section('meta_description', __('landing.page_desc_home'))
 
 @section('content')
-    <!-- Hero Section — 4-slide carousel -->
-    <section class="hs-section">
-        <div class="hs-slider">
-            <div class="hs-slides" id="hs-slides">
 
-                {{-- Slide 1: Health ID --}}
-                <div class="hs-slide hs-s1">
-                    <div class="container hs-inner">
-                        <div class="hs-content">
-                            <div class="hs-badge"><i data-lucide="id-card"></i> {{ __('landing.hero.badge') }}</div>
-                            <h1>{{ __('landing.hero.title') }}</h1>
-                            <p class="hs-sub">{{ __('landing.hero.subtitle') }}</p>
-                            <p class="hs-desc">{{ __('landing.hero.desc') }}</p>
-                            <div class="hs-btn-grid">
-                                <a href="#partner-form" class="hs-btn-primary"><i data-lucide="building-2"></i> {{ __('landing.hero.cta_primary') }}</a>
-                                <a href="#how-it-works" class="hs-btn-secondary"><i data-lucide="play-circle"></i> {{ __('landing.hero.cta_secondary') }}</a>
-                            </div>
-                            <div class="hs-trust-row">
-                                <div class="hs-trust-item"><i data-lucide="shield-check"></i> <span>{{ __('landing.hero.trust1') }}</span></div>
-                                <div class="hs-trust-item"><i data-lucide="siren"></i> <span>{{ __('landing.hero.trust2') }}</span></div>
-                                <div class="hs-trust-item"><i data-lucide="cable"></i> <span>{{ __('landing.hero.trust3') }}</span></div>
-                                <div class="hs-trust-item"><i data-lucide="languages"></i> <span>{{ __('landing.hero.trust4') }}</span></div>
-                            </div>
-                        </div>
-                        <div class="hs-visual">
-                            <div class="hs-card-id">
-                                <div class="hs-card-top">
-                                    <div class="hs-logo-grp"><div class="hs-mini-logo"></div><span>OpesCare</span></div>
-                                    <div class="hs-vbadge">✓ {{ __('landing.hero_card.label_verified') }}</div>
-                                </div>
-                                <div class="hs-qr-row">
-                                    <div class="hs-qr-box"><i data-lucide="qr-code"></i></div>
-                                    <div class="hs-hid-body">
-                                        <div class="hs-hid-label">{{ __('landing.hero_card.label_health_id') }}</div>
-                                        <div class="hs-hid-val">{{ __('landing.hero_card.demo_id') }}</div>
-                                        <div class="hs-bar hs-bar-w"></div>
-                                        <div class="hs-bar hs-bar-s"></div>
-                                    </div>
-                                </div>
-                                <div class="hs-lock-row"><i data-lucide="lock-keyhole"></i> {{ __('landing.hero_card.secure_label') }}</div>
-                            </div>
-                            <div class="hs-fc">
-                                <i data-lucide="shield-check" class="hs-fc-icon-success"></i>
-                                <div><strong>{{ __('landing.consent.requests_title') }}</strong><span>{{ __('landing.hero_card.consent_approved') }}</span></div>
-                            </div>
-                            <div class="hs-fc">
-                                <i data-lucide="pill" class="hs-fc-icon-info"></i>
-                                <div><strong>{{ __('landing.hero_card.pharmacy_label') }}</strong><span class="hs-text-success">{{ __('landing.hero_card.pharmacy_status') }}</span></div>
-                            </div>
-                        </div>
-                    </div>
+    {{--
+        The homepage answers five questions and nothing else: what OpesCare is,
+        why it matters, how it works, what you can connect, and what to do next.
+        Everything that teaches a workflow, documents a module or sells a
+        stakeholder now lives on its own page and is linked from here.
+    --}}
+
+    {{-- 01 ─────────────────────────────────────────── Hero: the thesis --}}
+    <section class="lp-hero">
+        <div class="container lp-hero-inner">
+            <div class="lp-hero-copy">
+                <div class="lp-badge"><i data-lucide="id-card"></i> {{ __('landing.hero.badge') }}</div>
+                <h1>{{ __('landing.hero.title') }}</h1>
+                <p class="lp-hero-sub">{{ __('landing.hero.subtitle') }}</p>
+
+                {{-- The single most misread thing about OpesCare, said early. --}}
+                <p class="lp-positioning">
+                    <i data-lucide="quote"></i>
+                    <span>{{ __('landing.hero.positioning') }}</span>
+                </p>
+
+                <div class="lp-hero-actions">
+                    <a href="{{ route('public.request-demo') }}" class="btn btn-primary btn-lg">
+                        <i data-lucide="cable"></i> {{ __('landing.hero.cta_primary') }}
+                    </a>
+                    <a href="{{ route('register.patient') }}" class="btn btn-secondary btn-lg">
+                        <i data-lucide="id-card"></i> {{ __('landing.hero.cta_secondary') }}
+                    </a>
                 </div>
 
-                {{-- Slide 2: Consent & Access --}}
-                <div class="hs-slide hs-s2">
-                    <div class="container hs-inner">
-                        <div class="hs-content">
-                            <div class="hs-badge"><i data-lucide="lock-keyhole"></i> {{ __('landing.consent_badge') }}</div>
-                            <h1>{{ __('landing.consent_h1') }}</h1>
-                            <p class="hs-sub">{{ __('landing.consent_sub') }}</p>
-                            <p class="hs-desc">{{ __('landing.consent_desc_slide') }}</p>
-                            <div class="hs-btn-grid">
-                                <a href="#partner-form" class="hs-btn-primary"><i data-lucide="building-2"></i> {{ __('landing.slide_cta_primary') }}</a>
-                                <a href="#how-it-works" class="hs-btn-secondary"><i data-lucide="play-circle"></i> {{ __('landing.slide_cta_secondary') }}</a>
-                            </div>
-                            <div class="hs-trust-row">
-                                <div class="hs-trust-item"><i data-lucide="sliders-horizontal"></i> <span>{{ __('landing.consent_trust1') }}</span></div>
-                                <div class="hs-trust-item"><i data-lucide="history"></i> <span>{{ __('landing.consent_trust2') }}</span></div>
-                                <div class="hs-trust-item"><i data-lucide="ban"></i> <span>{{ __('landing.consent_trust3') }}</span></div>
-                                <div class="hs-trust-item"><i data-lucide="bell"></i> <span>{{ __('landing.consent_trust4') }}</span></div>
-                            </div>
-                        </div>
-                        <div class="hs-visual">
-                            <div class="hs-consent-card">
-                                <div class="hs-consent-header"><i data-lucide="building"></i> {{ __('landing.consent_card_header') }}</div>
-                                <div class="hs-crow"><span>{{ __('landing.consent_row_demo') }}</span><span class="hs-cal">{{ __('landing.consent_status_allowed') }}</span></div>
-                                <div class="hs-crow"><span>{{ __('landing.consent_row_rx') }}</span><span class="hs-cal">{{ __('landing.consent_status_allowed') }}</span></div>
-                                <div class="hs-crow"><span>{{ __('landing.consent_row_lab') }}</span><span class="hs-cal">{{ __('landing.consent_status_allowed') }}</span></div>
-                                <div class="hs-crow"><span>{{ __('landing.consent_row_surgery') }}</span><span class="hs-cdn">{{ __('landing.consent_status_denied') }}</span></div>
-                                <div class="hs-crow hs-crow-last"><span>{{ __('landing.consent_row_mental') }}</span><span class="hs-cdn">{{ __('landing.consent_status_denied') }}</span></div>
-                            </div>
-                            <div class="hs-fc">
-                                <i data-lucide="clock" class="hs-fc-icon-warn"></i>
-                                <div><strong>{{ __('landing.consent_fc1_title') }}</strong><span>{{ __('landing.consent_fc1_desc') }}</span></div>
-                            </div>
-                            <div class="hs-fc">
-                                <i data-lucide="check-circle" class="hs-fc-icon-success"></i>
-                                <div><strong>{{ __('landing.consent_fc2_title') }}</strong><span>{{ __('landing.consent_fc2_desc') }}</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Slide 3: Emergency Access --}}
-                <div class="hs-slide hs-s3">
-                    <div class="container hs-inner">
-                        <div class="hs-content">
-                            <div class="hs-badge"><i data-lucide="siren"></i> {{ __('landing.em_badge') }}</div>
-                            <h1>{{ __('landing.em_h1') }}</h1>
-                            <p class="hs-sub">{{ __('landing.em_sub') }}</p>
-                            <p class="hs-desc">{{ __('landing.em_desc_slide') }}</p>
-                            <div class="hs-btn-grid">
-                                <a href="#partner-form" class="hs-btn-primary"><i data-lucide="building-2"></i> {{ __('landing.slide_cta_primary') }}</a>
-                                <a href="#how-it-works" class="hs-btn-secondary"><i data-lucide="play-circle"></i> {{ __('landing.slide_cta_secondary') }}</a>
-                            </div>
-                            <div class="hs-trust-row">
-                                <div class="hs-trust-item"><i data-lucide="heart-pulse"></i> <span>{{ __('landing.em_trust1') }}</span></div>
-                                <div class="hs-trust-item"><i data-lucide="file-badge"></i> <span>{{ __('landing.em_trust2') }}</span></div>
-                                <div class="hs-trust-item"><i data-lucide="user-check"></i> <span>{{ __('landing.em_trust3') }}</span></div>
-                                <div class="hs-trust-item"><i data-lucide="mail"></i> <span>{{ __('landing.em_trust4') }}</span></div>
-                            </div>
-                        </div>
-                        <div class="hs-visual">
-                            <div class="hs-emr-card">
-                                <div class="hs-emr-head"><i data-lucide="siren"></i><span>{{ __('landing.em_card_header') }}</span></div>
-                                <div class="hs-erow"><div class="hs-edot hs-edot-danger"></div><div class="hs-econtent"><strong>{{ __('landing.em_row1_label') }}</strong><span>{{ __('landing.em_row1_val') }}</span></div><span class="hs-etime">{{ __('landing.em_row1_status') }}</span></div>
-                                <div class="hs-erow"><div class="hs-edot hs-edot-warn"></div><div class="hs-econtent"><strong>{{ __('landing.em_row2_label') }}</strong><span>{{ __('landing.em_row2_val') }}</span></div><span class="hs-etime">{{ __('landing.em_row2_status') }}</span></div>
-                                <div class="hs-erow"><div class="hs-edot hs-edot-info"></div><div class="hs-econtent"><strong>{{ __('landing.em_row3_label') }}</strong><span>{{ __('landing.em_row3_val') }}</span></div><span class="hs-etime">{{ __('landing.em_row3_status') }}</span></div>
-                                <div class="hs-erow hs-erow-last"><div class="hs-edot hs-edot-success"></div><div class="hs-econtent"><strong>{{ __('landing.em_row4_label') }}</strong><span>{{ __('landing.em_row4_val') }}</span></div><span class="hs-etime">{{ __('landing.em_row4_status') }}</span></div>
-                            </div>
-                            <div class="hs-fc">
-                                <i data-lucide="history" class="hs-fc-icon-muted"></i>
-                                <div><strong>{{ __('landing.em_fc1_title') }}</strong><span>{{ __('landing.em_fc1_desc') }}</span></div>
-                            </div>
-                            <div class="hs-fc">
-                                <i data-lucide="mail" class="hs-fc-icon-muted"></i>
-                                <div><strong>{{ __('landing.em_fc2_title') }}</strong><span>{{ __('landing.em_fc2_desc') }}</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Slide 4: Connected Care Network --}}
-                <div class="hs-slide hs-s4">
-                    <div class="container hs-inner">
-                        <div class="hs-content">
-                            <div class="hs-badge"><i data-lucide="network"></i> {{ __('landing.network_badge') }}</div>
-                            <h1>{{ __('landing.network_h1') }}</h1>
-                            <p class="hs-sub">{{ __('landing.network_sub') }}</p>
-                            <p class="hs-desc">{{ __('landing.network_desc_slide') }}</p>
-                            <div class="hs-btn-grid">
-                                <a href="#partner-form" class="hs-btn-primary"><i data-lucide="building-2"></i> {{ __('landing.slide_cta_primary') }}</a>
-                                <a href="#how-it-works" class="hs-btn-secondary"><i data-lucide="play-circle"></i> {{ __('landing.slide_cta_secondary') }}</a>
-                            </div>
-                            <div class="hs-trust-row">
-                                <div class="hs-trust-item"><i data-lucide="cable"></i> <span>{{ __('landing.network_trust1') }}</span></div>
-                                <div class="hs-trust-item"><i data-lucide="plug"></i> <span>{{ __('landing.network_trust2') }}</span></div>
-                                <div class="hs-trust-item"><i data-lucide="refresh-cw"></i> <span>{{ __('landing.network_trust3') }}</span></div>
-                                <div class="hs-trust-item"><i data-lucide="webhook"></i> <span>{{ __('landing.network_trust4') }}</span></div>
-                            </div>
-                        </div>
-                        <div class="hs-visual">
-                            <div class="hs-net-center">
-                                <strong>{{ __('landing.network_center_title') }}</strong>
-                                <span>{{ __('landing.network_center_sub') }}</span>
-                            </div>
-                            <div class="hs-net-nodes">
-                                <div class="hs-nn"><i data-lucide="building-2"></i><span>{{ __('landing.network_node_hospitals') }}</span></div>
-                                <div class="hs-nn"><i data-lucide="microscope"></i><span>{{ __('landing.network_node_labs') }}</span></div>
-                                <div class="hs-nn"><i data-lucide="pill"></i><span>{{ __('landing.network_node_pharmacies') }}</span></div>
-                                <div class="hs-nn"><i data-lucide="heart-handshake"></i><span>{{ __('landing.network_node_insurers') }}</span></div>
-                                <div class="hs-nn"><i data-lucide="stethoscope"></i><span>{{ __('landing.network_node_clinics') }}</span></div>
-                                <div class="hs-nn"><i data-lucide="landmark"></i><span>{{ __('landing.network_node_public') }}</span></div>
-                            </div>
-                            <div class="hs-fc" style="margin-top:.5rem;">
-                                <i data-lucide="check-circle" class="hs-fc-icon-success"></i>
-                                <div><strong>{{ __('landing.hero_card.timeline_title') }}</strong><span>{{ __('landing.hero_card.timeline_desc') }} · {{ __('landing.hero_card.timeline_ago') }}</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>{{-- /hs-slides --}}
-
-            {{-- Carousel nav --}}
-            <div class="hs-nav">
-                <button class="hs-nav-btn" id="hs-prev" onclick="hsPrev()" aria-label="{{ __('landing.aria_prev_slide') }}" disabled>
-                    <i data-lucide="arrow-left"></i>
-                </button>
-                <div class="hs-dots-wrap">
-                    <div class="hs-dots">
-                        <button class="hs-dot hs-dot-1 hs-dot-active" onclick="hsGo(0)" aria-label="{{ __('landing.aria_dot_1') }}"></button>
-                        <button class="hs-dot hs-dot-2" onclick="hsGo(1)" aria-label="{{ __('landing.aria_dot_2') }}"></button>
-                        <button class="hs-dot hs-dot-3" onclick="hsGo(2)" aria-label="{{ __('landing.aria_dot_3') }}"></button>
-                        <button class="hs-dot hs-dot-4" onclick="hsGo(3)" aria-label="{{ __('landing.aria_dot_4') }}"></button>
-                    </div>
-                    <div class="hs-slide-label" id="hs-label">{{ __('landing.slide_label_default') }}</div>
-                </div>
-                <button class="hs-nav-btn" id="hs-next" onclick="hsNext()" aria-label="{{ __('landing.aria_next_slide') }}">
-                    <i data-lucide="arrow-right"></i>
-                </button>
-            </div>
-        </div>
-    </section>
-
-    @section('footer_scripts')
-    <script>
-    (function(){
-        var cur = 0;
-        var total = 4;
-        var labels = @json(__('landing.slide_labels'));
-        function hsUpdate(){
-            document.getElementById('hs-slides').style.transform = 'translateX(-' + (cur * 100) + '%)';
-            document.querySelectorAll('.hs-dot').forEach(function(d,i){ d.classList.toggle('hs-dot-active', i === cur); });
-            document.getElementById('hs-label').textContent = labels[cur];
-            document.getElementById('hs-prev').disabled = cur === 0;
-            document.getElementById('hs-next').disabled = cur === total - 1;
-        }
-        window.hsPrev = function(){ if(cur > 0){ cur--; hsUpdate(); } };
-        window.hsNext = function(){ if(cur < total-1){ cur++; hsUpdate(); } };
-        window.hsGo   = function(i){ cur = i; hsUpdate(); };
-
-        var startX = 0;
-        var el = document.getElementById('hs-slides');
-        el.addEventListener('touchstart', function(e){ startX = e.touches[0].clientX; }, {passive:true});
-        el.addEventListener('touchend',   function(e){
-            var diff = startX - e.changedTouches[0].clientX;
-            if(Math.abs(diff) > 50){ diff > 0 ? hsNext() : hsPrev(); }
-        });
-    })();
-    </script>
-    @endsection
-
-    <!-- Trust Strip / Key Outcome Bar -->
-    <section class="trust-strip">
-        <div class="container strip-grid">
-            <div class="strip-item">
-                <div class="strip-icon"><i data-lucide="id-card"></i></div>
-                <div class="strip-text">
-                    <strong>{{ __('landing.trust_strip.item1_title') }}</strong>
-                    <span>{{ __('landing.trust_strip.item1_desc') }}</span>
+                <div class="lp-hero-facts">
+                    <span><i data-lucide="languages"></i> {{ __('landing.hero.fact_bilingual') }}</span>
+                    <span><i data-lucide="git-merge"></i> {{ __('landing.hero.fact_standards') }}</span>
+                    <span><i data-lucide="shield-check"></i> {{ __('landing.hero.fact_consent') }}</span>
                 </div>
             </div>
-            <div class="strip-item">
-                <div class="strip-icon"><i data-lucide="history"></i></div>
-                <div class="strip-text">
-                    <strong>{{ __('landing.trust_strip.item2_title') }}</strong>
-                    <span>{{ __('landing.trust_strip.item2_desc') }}</span>
-                </div>
-            </div>
-            <div class="strip-item">
-                <div class="strip-icon"><i data-lucide="shield-check"></i></div>
-                <div class="strip-text">
-                    <strong>{{ __('landing.trust_strip.item3_title') }}</strong>
-                    <span>{{ __('landing.trust_strip.item3_desc') }}</span>
-                </div>
-            </div>
-            <div class="strip-item">
-                <div class="strip-icon"><i data-lucide="heart-pulse"></i></div>
-                <div class="strip-text">
-                    <strong>{{ __('landing.trust_strip.item4_title') }}</strong>
-                    <span>{{ __('landing.trust_strip.item4_desc') }}</span>
+
+            {{--
+                Deliberately not a plastic ID card. The Health ID is an identity
+                object at the centre of a network, because that is what it is.
+            --}}
+            <div class="lp-hero-visual" aria-hidden="true">
+                <div class="lp-identity">
+                    <div class="lp-identity-core">
+                        <div class="lp-identity-pulse"></div>
+                        <i data-lucide="id-card"></i>
+                        <strong>{{ __('landing.hero_card.label_health_id') }}</strong>
+                        <span class="lp-identity-id">{{ __('landing.hero_card.demo_id') }}</span>
+                        <span class="lp-identity-verified"><i data-lucide="badge-check"></i> {{ __('landing.hero_card.label_verified') }}</span>
+                    </div>
+                    <div class="lp-identity-ring">
+                        <span class="lp-node n1"><i data-lucide="hospital"></i><em>{{ __('landing.ecosystem.chip_hospitals') }}</em></span>
+                        <span class="lp-node n2"><i data-lucide="flask-conical"></i><em>{{ __('landing.ecosystem.chip_labs') }}</em></span>
+                        <span class="lp-node n3"><i data-lucide="pill"></i><em>{{ __('landing.ecosystem.chip_pharmacies') }}</em></span>
+                        <span class="lp-node n4"><i data-lucide="heart-handshake"></i><em>{{ __('landing.ecosystem.chip_insurers') }}</em></span>
+                        <span class="lp-node n5"><i data-lucide="landmark"></i><em>{{ __('landing.ecosystem.chip_public_health') }}</em></span>
+                        <span class="lp-node n6"><i data-lucide="stethoscope"></i><em>{{ __('landing.ecosystem.chip_providers') }}</em></span>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Problem Section -->
+    {{-- 02 ─────────────────────────────────── The problem: fragmentation --}}
     <section class="section section-muted">
         <div class="container text-center mb-12">
             <h2>{{ __('landing.problem.title') }}</h2>
             <p class="section-subtitle">{{ __('landing.problem.subtitle') }}</p>
         </div>
-        <div class="container grid-3">
+        <div class="container lp-grid-4">
             <div class="card card-problem">
-                <div class="problem-header">
-                    <i data-lucide="file-x"></i>
-                    <h3>{{ __('landing.problem.lost_books_title') }}</h3>
-                </div>
-                <p>{{ __('landing.problem.lost_books_desc') }}</p>
+                <div class="problem-header"><i data-lucide="users"></i><h3>{{ __('landing.problem.identity_title') }}</h3></div>
+                <p>{{ __('landing.problem.identity_desc') }}</p>
             </div>
             <div class="card card-problem">
-                <div class="problem-header">
-                    <i data-lucide="flask-conical"></i>
-                    <h3>{{ __('landing.problem.repeated_tests_title') }}</h3>
-                </div>
-                <p>{{ __('landing.problem.repeated_tests_desc') }}</p>
+                <div class="problem-header"><i data-lucide="unlink"></i><h3>{{ __('landing.problem.records_title') }}</h3></div>
+                <p>{{ __('landing.problem.records_desc') }}</p>
             </div>
             <div class="card card-problem">
-                <div class="problem-header">
-                    <i data-lucide="badge-alert"></i>
-                    <h3>{{ __('landing.problem.blind_treatment_title') }}</h3>
-                </div>
-                <p>{{ __('landing.problem.blind_treatment_desc') }}</p>
+                <div class="problem-header"><i data-lucide="clock-alert"></i><h3>{{ __('landing.problem.delay_title') }}</h3></div>
+                <p>{{ __('landing.problem.delay_desc') }}</p>
             </div>
             <div class="card card-problem">
-                <div class="problem-header">
-                    <i data-lucide="cable"></i>
-                    <h3>{{ __('landing.problem.disconnected_title') }}</h3>
-                </div>
-                <p>{{ __('landing.problem.disconnected_desc') }}</p>
-            </div>
-            <div class="card card-problem">
-                <div class="problem-header">
-                    <i data-lucide="siren"></i>
-                    <h3>{{ __('landing.problem.availability_title') }}</h3>
-                </div>
-                <p>{{ __('landing.problem.availability_desc') }}</p>
-            </div>
-            <div class="card card-problem">
-                <div class="problem-header">
-                    <i data-lucide="clipboard-check"></i>
-                    <h3>{{ __('landing.problem.weak_audit_title') }}</h3>
-                </div>
-                <p>{{ __('landing.problem.weak_audit_desc') }}</p>
+                <div class="problem-header"><i data-lucide="eye-off"></i><h3>{{ __('landing.problem.visibility_title') }}</h3></div>
+                <p>{{ __('landing.problem.visibility_desc') }}</p>
             </div>
         </div>
     </section>
 
-    <!-- Solution Section -->
+    {{-- 03 ──────────────────────────── The answer: the signature diagram --}}
     <section class="section">
-        <div class="container grid-2 items-center">
-            <div>
-                <h2>{{ __('landing.solution.title') }}</h2>
-                <p class="text-lg text-muted mb-8">{{ __('landing.solution.desc') }}</p>
-                <ul class="solution-list">
-                    <li><i data-lucide="check-circle-2"></i> <span>{{ __('landing.solution.pill1') }}</span></li>
-                    <li><i data-lucide="check-circle-2"></i> <span>{{ __('landing.solution.pill2') }}</span></li>
-                    <li><i data-lucide="check-circle-2"></i> <span>{{ __('landing.solution.pill3') }}</span></li>
-                    <li><i data-lucide="check-circle-2"></i> <span>{{ __('landing.solution.pill4') }}</span></li>
-                </ul>
-            </div>
-            <div class="solution-visual">
-                <!-- Connected Hub Diagram -->
-                <div class="hub-container">
-                    <div class="hub-center">
-                        <div class="hub-pulse"></div>
-                        <i data-lucide="id-card"></i>
-                        <span>OpesCare</span>
-                    </div>
-                    <div class="hub-line l1"></div>
-                    <div class="hub-line l2"></div>
-                    <div class="hub-line l3"></div>
-                    <div class="hub-line l4"></div>
-                    <div class="hub-line l5"></div>
-                    <div class="hub-line l6"></div>
-                    
-                    <div class="hub-node node-hosp" data-label="Hospital"><i data-lucide="hospital"></i></div>
-                    <div class="hub-node node-clinic" data-label="Clinic"><i data-lucide="activity"></i></div>
-                    <div class="hub-node node-lab" data-label="Laboratory"><i data-lucide="flask-conical"></i></div>
-                    <div class="hub-node node-pharma" data-label="Pharmacy"><i data-lucide="pill"></i></div>
-                    <div class="hub-node node-insure" data-label="Insurer"><i data-lucide="shield-check"></i></div>
-                    <div class="hub-node node-public" data-label="Public Health"><i data-lucide="globe"></i></div>
-                </div>
-            </div>
+        <div class="container text-center mb-12">
+            <h2>{{ __('landing.answer.title') }}</h2>
+            <p class="section-subtitle">{{ __('landing.answer.subtitle') }}</p>
+        </div>
+        <div class="container">
+            <ol class="lp-chain">
+                @foreach (['identity' => 'id-card', 'index' => 'git-merge', 'trust' => 'shield-check', 'interop' => 'cable', 'care' => 'heart-pulse'] as $key => $icon)
+                    <li class="lp-chain-step">
+                        <div class="lp-chain-icon"><i data-lucide="{{ $icon }}"></i></div>
+                        <h3>{{ __("landing.answer.{$key}_title") }}</h3>
+                        <p>{{ __("landing.answer.{$key}_desc") }}</p>
+                    </li>
+                @endforeach
+            </ol>
         </div>
     </section>
 
-    <!-- How OpesCare Works -->
+    {{-- 04 ───────────────────────────────────── How information moves --}}
     <section class="section section-muted" id="how-it-works">
         <div class="container text-center mb-12">
-            <h2>{{ __('landing.how_it_works.title') }}</h2>
-            <p class="section-subtitle">{{ __('landing.how_it_works.subtitle') }}</p>
+            <h2>{{ __('landing.exchange.title') }}</h2>
+            <p class="section-subtitle">{{ __('landing.exchange.subtitle') }}</p>
         </div>
-        <div class="container stepper-container">
-            <div class="stepper">
-                <div class="step-card">
-                    <div class="step-num">1</div>
-                    <div class="step-icon"><i data-lucide="user-plus"></i></div>
-                    <h3>{{ __('landing.how_it_works.step1_title') }}</h3>
-                    <p>{{ __('landing.how_it_works.step1_desc') }}</p>
+
+        <div class="container">
+            {{-- Existing system → OpesCare → another authorised system. --}}
+            <div class="lp-exchange" aria-hidden="true">
+                <div class="lp-exchange-end">
+                    <i data-lucide="hospital"></i>
+                    <strong>{{ __('landing.exchange.source_title') }}</strong>
+                    <span>{{ __('landing.exchange.source_desc') }}</span>
                 </div>
-                <div class="step-card">
-                    <div class="step-num">2</div>
-                    <div class="step-icon"><i data-lucide="clipboard-list"></i></div>
-                    <h3>{{ __('landing.how_it_works.step2_title') }}</h3>
-                    <p>{{ __('landing.how_it_works.step2_desc') }}</p>
+                <div class="lp-exchange-flow"><i data-lucide="arrow-left-right"></i></div>
+                <div class="lp-exchange-core">
+                    <i data-lucide="network"></i>
+                    <strong>{{ __('landing.exchange.core_title') }}</strong>
+                    <span>{{ __('landing.exchange.core_desc') }}</span>
                 </div>
-                <div class="step-card">
-                    <div class="step-num">3</div>
-                    <div class="step-icon"><i data-lucide="shield-question"></i></div>
-                    <h3>{{ __('landing.how_it_works.step3_title') }}</h3>
-                    <p>{{ __('landing.how_it_works.step3_desc') }}</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-num">4</div>
-                    <div class="step-icon"><i data-lucide="lock-keyhole"></i></div>
-                    <h3>{{ __('landing.how_it_works.step4_title') }}</h3>
-                    <p>{{ __('landing.how_it_works.step4_desc') }}</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-num">5</div>
-                    <div class="step-icon"><i data-lucide="refresh-cw"></i></div>
-                    <h3>{{ __('landing.how_it_works.step5_title') }}</h3>
-                    <p>{{ __('landing.how_it_works.step5_desc') }}</p>
+                <div class="lp-exchange-flow"><i data-lucide="arrow-left-right"></i></div>
+                <div class="lp-exchange-end">
+                    <i data-lucide="building-2"></i>
+                    <strong>{{ __('landing.exchange.target_title') }}</strong>
+                    <span>{{ __('landing.exchange.target_desc') }}</span>
                 </div>
             </div>
-            <div class="stepper-footer">
-                <p class="text-sm"><i data-lucide="info"></i> {{ __('landing.how_it_works.footer_note') }}</p>
+
+            {{-- The five steps are a real sequence, so they are numbered. --}}
+            <ol class="lp-steps">
+                @foreach (['identify' => 'user-search', 'match' => 'git-merge', 'authorize' => 'shield-check', 'exchange' => 'refresh-cw', 'record' => 'history'] as $key => $icon)
+                    <li class="lp-step">
+                        <span class="lp-step-num">{{ $loop->iteration }}</span>
+                        <i data-lucide="{{ $icon }}"></i>
+                        <h4>{{ __("landing.exchange.step_{$key}_title") }}</h4>
+                        <p>{{ __("landing.exchange.step_{$key}_desc") }}</p>
+                    </li>
+                @endforeach
+            </ol>
+
+            <div class="lp-transports">
+                <span class="lp-transports-label">{{ __('landing.exchange.transports_label') }}</span>
+                <div class="lp-transport-chips">
+                    <span>FHIR R4</span><span>Connect API</span><span>SDK</span>
+                    <span>Widget</span><span>Bridge Agent</span><span>OpesCare Lite</span><span>Webhooks</span>
+                </div>
+                <a href="{{ route('public.interoperability') }}" class="lp-arrow-link">
+                    {{ __('landing.exchange.cta') }} <i data-lucide="arrow-right"></i>
+                </a>
             </div>
         </div>
     </section>
 
-    <!-- Core Platform Modules -->
+    {{-- 05 ───────────────────────── What OpesCare gives the ecosystem --}}
     <section class="section">
         <div class="container text-center mb-12">
-            <h2>{{ __('landing.modules.title') }}</h2>
-            <p class="section-subtitle">{{ __('landing.modules.subtitle') }}</p>
+            <h2>{{ __('landing.pillars.title') }}</h2>
+            <p class="section-subtitle">{{ __('landing.pillars.subtitle') }}</p>
         </div>
-        <div class="container grid-3">
-            @foreach([
-                'identity' => 'id-card',
-                'consent' => 'shield-check',
-                'timeline' => 'history',
-                'lab' => 'flask-conical',
-                'pharmacy' => 'pill',
-                'billing' => 'receipt',
-                'referrals' => 'send',
-                'integrations' => 'cable',
-                'availability' => 'droplets'
-            ] as $key => $icon)
-                <div class="card module-card">
-                    <div class="module-icon"><i data-lucide="{{ $icon }}"></i></div>
-                    <h3>{{ __("landing.modules.{$key}_title") }}</h3>
-                    <p>{{ __("landing.modules.{$key}_desc") }}</p>
-                </div>
+        <div class="container lp-pillars">
+            {{--
+                Each pillar links to the page that actually explains it. The
+                Patient Index has no page of its own yet, so it points at the
+                Match step above rather than at a page that never mentions it.
+            --}}
+            @foreach ([
+                'identity' => ['icon' => 'id-card',       'href' => route('public.solutions.patients')],
+                'index'    => ['icon' => 'git-merge',     'href' => '#how-it-works'],
+                'record'   => ['icon' => 'history',       'href' => route('public.solutions.patients') . '#timeline'],
+                'trust'    => ['icon' => 'shield-check',  'href' => route('public.consent')],
+                'interop'  => ['icon' => 'cable',         'href' => route('public.interoperability')],
+            ] as $key => $meta)
+                <a href="{{ $meta['href'] }}" class="card lp-pillar">
+                    <div class="lp-pillar-icon"><i data-lucide="{{ $meta['icon'] }}"></i></div>
+                    <h3>{{ __("landing.pillars.{$key}_title") }}</h3>
+                    <p>{{ __("landing.pillars.{$key}_desc") }}</p>
+                    <span class="lp-pillar-more"><i data-lucide="arrow-right"></i></span>
+                </a>
             @endforeach
         </div>
-    </section>
 
-    <!-- Interoperability Section -->
-    <section class="section section-muted">
-        <div class="container grid-2 items-center">
-            <div class="visual-container">
-                <!-- Interop System Grid -->
-                <div class="interop-grid">
-                    <div class="interop-circle main-circle">
-                        <i data-lucide="network"></i>
-                        <span>Interoperability Core</span>
-                    </div>
-                    <div class="interop-circle c1" data-label="Direct API"><i data-lucide="braces"></i></div>
-                    <div class="interop-circle c2" data-label="Connect Widget"><i data-lucide="panel-top"></i></div>
-                    <div class="interop-circle c3" data-label="Bridge Agent"><i data-lucide="cpu"></i></div>
-                    <div class="interop-circle c4" data-label="Connect SDK"><i data-lucide="code-2"></i></div>
-                </div>
-            </div>
-            <div>
-                <h2>{{ __('landing.interop.title') }}</h2>
-                <p class="text-lg text-muted mb-8">{{ __('landing.interop.subtitle') }}</p>
-                <div class="interop-list">
-                    <div class="interop-item">
-                        <i data-lucide="braces"></i>
-                        <div>
-                            <h4>{{ __('landing.interop.api_title') }}</h4>
-                            <p>{{ __('landing.interop.api_desc') }}</p>
-                        </div>
-                    </div>
-                    <div class="interop-item">
-                        <i data-lucide="code-2"></i>
-                        <div>
-                            <h4>{{ __('landing.interop.sdk_title') }}</h4>
-                            <p>{{ __('landing.interop.sdk_desc') }}</p>
-                        </div>
-                    </div>
-                    <div class="interop-item">
-                        <i data-lucide="panel-top"></i>
-                        <div>
-                            <h4>{{ __('landing.interop.widget_title') }}</h4>
-                            <p>{{ __('landing.interop.widget_desc') }}</p>
-                        </div>
-                    </div>
-                    <div class="interop-item">
-                        <i data-lucide="cpu"></i>
-                        <div>
-                            <h4>{{ __('landing.interop.bridge_title') }}</h4>
-                            <p>{{ __('landing.interop.bridge_desc') }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        {{--
+            Laboratory, pharmacy, referral and insurance connectivity are real
+            and they matter — but they are consequences of the layer above, not
+            products of their own. One line each, then the detail page.
+        --}}
+        <div class="container lp-also">
+            <span class="lp-also-label">{{ __('landing.pillars.also_label') }}</span>
+            <ul>
+                <li><i data-lucide="send"></i> {{ __('landing.pillars.also_referrals') }} <a href="{{ route('public.interoperability') }}">{{ __('landing.pillars.also_more') }}</a></li>
+                <li><i data-lucide="flask-conical"></i> {{ __('landing.pillars.also_labs') }} <a href="{{ route('public.solutions.laboratories') }}">{{ __('landing.pillars.also_more') }}</a></li>
+                <li><i data-lucide="pill"></i> {{ __('landing.pillars.also_pharmacy') }} <a href="{{ route('public.solutions.pharmacies') }}">{{ __('landing.pillars.also_more') }}</a></li>
+                <li><i data-lucide="heart-handshake"></i> {{ __('landing.pillars.also_insurance') }} <a href="{{ route('public.solutions.insurers') }}">{{ __('landing.pillars.also_more') }}</a></li>
+            </ul>
         </div>
     </section>
 
-    <!-- Patient Control and Consent -->
-    <section class="section">
-        <div class="container grid-2 items-center">
-            <div>
-                <h2>{{ __('landing.consent.title') }}</h2>
-                <p class="text-lg text-muted mb-8">{{ __('landing.consent.desc') }}</p>
-                <div class="consent-grid-mini">
-                    <div class="card mini-card">
-                        <i data-lucide="shield-question"></i>
-                        <h4>{{ __('landing.consent.requests_title') }}</h4>
-                        <p>{{ __('landing.consent.requests_desc') }}</p>
-                    </div>
-                    <div class="card mini-card">
-                        <i data-lucide="list-checks"></i>
-                        <h4>{{ __('landing.consent.logs_title') }}</h4>
-                        <p>{{ __('landing.consent.logs_desc') }}</p>
-                    </div>
-                    <div class="card mini-card">
-                        <i data-lucide="lock"></i>
-                        <h4>{{ __('landing.consent.scoped_title') }}</h4>
-                        <p>{{ __('landing.consent.scoped_desc') }}</p>
-                    </div>
-                    <div class="card mini-card">
-                        <i data-lucide="shield-x"></i>
-                        <h4>{{ __('landing.consent.revocation_title') }}</h4>
-                        <p>{{ __('landing.consent.revocation_desc') }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="solution-visual">
-                <!-- Consent Security Interface Simulator -->
-                <div class="simulator-card">
-                    <div class="sim-header">
-                        <div class="sim-dot red"></div>
-                        <div class="sim-dot yellow"></div>
-                        <div class="sim-dot green"></div>
-                        <span class="sim-title">{{ __('landing.consent_sim.window_title') }}</span>
-                    </div>
-                    <div class="sim-body">
-                        <div class="sim-alert">
-                            <i data-lucide="shield-alert" class="text-warning"></i>
-                            <div>
-                                <strong>{{ __('landing.consent_sim.alert_title') }}</strong>
-                                <span>{{ __('landing.consent_sim.alert_desc') }}</span>
-                            </div>
-                        </div>
-                        <div class="sim-scope-box">
-                            <div class="scope-row">
-                                <span>{{ __('landing.consent_sim.scope_demographics') }}</span>
-                                <div class="toggle active"></div>
-                            </div>
-                            <div class="scope-row">
-                                <span>{{ __('landing.consent_sim.scope_prescriptions') }}</span>
-                                <div class="toggle active"></div>
-                            </div>
-                            <div class="scope-row">
-                                <span>{{ __('landing.consent_sim.scope_lab') }}</span>
-                                <div class="toggle inactive"></div>
-                            </div>
-                        </div>
-                        <div class="sim-actions">
-                            <button class="btn btn-secondary btn-sm">{{ __('landing.consent_sim.btn_deny') }}</button>
-                            <button class="btn btn-primary btn-sm">{{ __('landing.consent_sim.btn_approve') }}</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Emergency Access Section -->
-    <section class="section section-dark bg-dark-elite">
-        <div class="container grid-2 items-center">
-            <div class="emergency-visual">
-                <!-- Simulated Emergency Profile View -->
-                <div class="simulator-card emergency-sim">
-                    <div class="sim-header">
-                        <i data-lucide="siren" class="text-danger animate-pulse"></i>
-                        <span class="sim-title text-danger uppercase tracking-widest font-black">{{ __('landing.emergency_sim.override_label') }}</span>
-                    </div>
-                    <div class="sim-body">
-                        <div class="emergency-profile-box">
-                            <div class="profile-header-sim">
-                                <div class="profile-avatar-sim"><i data-lucide="user"></i></div>
-                                <div>
-                                    <h3>{{ __('landing.emergency_sim.demo_name') }}</h3>
-                                    <span class="font-mono text-muted">ID: {{ __('landing.emergency_sim.demo_id') }}</span>
-                                </div>
-                            </div>
-                            <div class="profile-details-grid">
-                                <div class="detail-sim-item">
-                                    <span class="lbl"><i data-lucide="droplet" class="text-danger"></i> {{ __('landing.emergency_sim.lbl_blood') }}</span>
-                                    <strong class="text-danger">{{ __('landing.emergency_sim.demo_blood') }}</strong>
-                                </div>
-                                <div class="detail-sim-item">
-                                    <span class="lbl"><i data-lucide="shield-alert" class="text-warning"></i> {{ __('landing.emergency_sim.lbl_allergies') }}</span>
-                                    <strong class="text-warning">{{ __('landing.emergency_sim.demo_allergies') }}</strong>
-                                </div>
-                                <div class="detail-sim-item">
-                                    <span class="lbl"><i data-lucide="heart-pulse"></i> {{ __('landing.emergency_sim.lbl_conditions') }}</span>
-                                    <strong>{{ __('landing.emergency_sim.demo_conditions') }}</strong>
-                                </div>
-                                <div class="detail-sim-item">
-                                    <span class="lbl"><i data-lucide="phone"></i> {{ __('landing.emergency_sim.lbl_contact') }}</span>
-                                    <strong>{{ __('landing.emergency_sim.demo_contact') }}</strong>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="emergency-audit-warn">
-                            <i data-lucide="info"></i>
-                            <span>{{ __('landing.emergency.audit_notice') }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div>
-                <h2 class="text-white">{{ __('landing.emergency.title') }}</h2>
-                <p class="text-lg text-muted-light mb-8">{{ __('landing.emergency.desc') }}</p>
-                <div class="emergency-points text-muted-light">
-                    <div class="pt"><i data-lucide="check-circle-2" class="text-danger"></i> <span>{{ __('landing.emergency.patient_identity') }}</span></div>
-                    <div class="pt"><i data-lucide="check-circle-2" class="text-danger"></i> <span>{{ __('landing.emergency.blood_group') }}</span></div>
-                    <div class="pt"><i data-lucide="check-circle-2" class="text-danger"></i> <span>{{ __('landing.emergency.allergies') }}</span></div>
-                    <div class="pt"><i data-lucide="check-circle-2" class="text-danger"></i> <span>{{ __('landing.emergency.conditions') }}</span></div>
-                    <div class="pt"><i data-lucide="check-circle-2" class="text-danger"></i> <span>{{ __('landing.emergency.meds') }}</span></div>
-                    <div class="pt"><i data-lucide="check-circle-2" class="text-danger"></i> <span>{{ __('landing.emergency.contacts') }}</span></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Medication and Blood Availability Section -->
-    <section class="section">
+    {{-- 06 ──────────────────────────────────────────── Network services --}}
+    <section class="section section-muted" id="network">
         <div class="container text-center mb-12">
-            <h2>{{ __('landing.med_blood.title') }}</h2>
-            <p class="section-subtitle">{{ __('landing.med_blood.subtitle') }}</p>
+            <h2>{{ __('landing.network.title') }}</h2>
+            <p class="section-subtitle">{{ __('landing.network.subtitle') }}</p>
         </div>
         <div class="container grid-2">
-            <!-- Medication Column -->
-            <div class="card avail-card">
-                <div class="avail-header">
-                    <i data-lucide="map-pin"></i>
-                    <h3>{{ __('landing.med_blood.med.title') }}</h3>
-                </div>
-                <p class="avail-desc">{{ __('landing.med_blood.med.desc') }}</p>
-                <ul class="avail-list">
-                    <li><i data-lucide="check" class="text-teal"></i> <span>{{ __('landing.med_blood.med.b1') }}</span></li>
-                    <li><i data-lucide="check" class="text-teal"></i> <span>{{ __('landing.med_blood.med.b2') }}</span></li>
-                    <li><i data-lucide="check" class="text-teal"></i> <span>{{ __('landing.med_blood.med.b3') }}</span></li>
-                    <li><i data-lucide="check" class="text-teal"></i> <span>{{ __('landing.med_blood.med.b4') }}</span></li>
-                    <li><i data-lucide="check" class="text-teal"></i> <span>{{ __('landing.med_blood.med.b5') }}</span></li>
-                    <li><i data-lucide="check" class="text-teal"></i> <span>{{ __('landing.med_blood.med.b6') }}</span></li>
-                </ul>
-            </div>
-
-            <!-- Blood Column -->
-            <div class="card avail-card">
-                <div class="avail-header">
-                    <i data-lucide="droplet" class="text-danger"></i>
-                    <h3>{{ __('landing.med_blood.blood.title') }}</h3>
-                </div>
-                <p class="avail-desc">{{ __('landing.med_blood.blood.desc') }}</p>
-                <ul class="avail-list">
-                    <li><i data-lucide="check" class="text-danger"></i> <span>{{ __('landing.med_blood.blood.b1') }}</span></li>
-                    <li><i data-lucide="check" class="text-danger"></i> <span>{{ __('landing.med_blood.blood.b2') }}</span></li>
-                    <li><i data-lucide="check" class="text-danger"></i> <span>{{ __('landing.med_blood.blood.b3') }}</span></li>
-                    <li><i data-lucide="check" class="text-danger"></i> <span>{{ __('landing.med_blood.blood.b4') }}</span></li>
-                    <li><i data-lucide="check" class="text-danger"></i> <span>{{ __('landing.med_blood.blood.b5') }}</span></li>
-                    <li><i data-lucide="check" class="text-danger"></i> <span>{{ __('landing.med_blood.blood.b6') }}</span></li>
-                </ul>
-            </div>
+            <a href="{{ route('public.network.medicine-finder') }}" class="card lp-service lp-service-med">
+                <div class="lp-service-icon"><i data-lucide="map-pin"></i></div>
+                <h3>{{ __('landing.network.medicine_title') }}</h3>
+                <p>{{ __('landing.network.medicine_desc') }}</p>
+                <span class="lp-arrow-link">{{ __('landing.network.medicine_cta') }} <i data-lucide="arrow-right"></i></span>
+            </a>
+            <a href="{{ route('public.network.blood-finder') }}" class="card lp-service lp-service-blood">
+                <div class="lp-service-icon"><i data-lucide="droplet"></i></div>
+                <h3>{{ __('landing.network.blood_title') }}</h3>
+                <p>{{ __('landing.network.blood_desc') }}</p>
+                <span class="lp-arrow-link">{{ __('landing.network.blood_cta') }} <i data-lucide="arrow-right"></i></span>
+            </a>
         </div>
-        <div class="container text-center mt-8">
-            <div class="safety-banner">
-                <strong><i data-lucide="alert-triangle" class="text-warning"></i> {{ __('landing.med_blood.safety_title') }}:</strong>
-                <span>{{ __('landing.med_blood.safety_desc') }}</span>
-            </div>
+        <div class="container text-center" style="margin-top:1.75rem;">
+            <p class="lp-note"><i data-lucide="info"></i> {{ __('landing.network.note') }}</p>
         </div>
     </section>
 
-    <!-- Role-Based Benefits Section -->
-    <section class="section section-muted" id="audience-benefits">
+    {{-- 07 ────────────────────────────────── Who connects to OpesCare --}}
+    <section class="section" id="ecosystem">
         <div class="container text-center mb-12">
-            <h2>{{ __('landing.roles.title') }}</h2>
-            <p class="section-subtitle">{{ __('landing.roles.subtitle') }}</p>
+            <h2>{{ __('landing.ecosystem.title') }}</h2>
+            <p class="section-subtitle">{{ __('landing.ecosystem.subtitle') }}</p>
         </div>
-        
-        <div class="container roles-tab-container">
-            <!-- Tabs Navigation -->
-            <div class="roles-tabs" id="rolesTabList">
-                <button class="role-tab active" data-target="patients"><i data-lucide="user"></i> {{ __('landing.roles.patients_title') }}</button>
-                <button class="role-tab" data-target="hospitals"><i data-lucide="hospital"></i> {{ __('landing.roles.hospitals_title') }}</button>
-                <button class="role-tab" data-target="doctors"><i data-lucide="stethoscope"></i> {{ __('landing.roles.doctors_title') }}</button>
-                <button class="role-tab" data-target="labs"><i data-lucide="flask-conical"></i> {{ __('landing.roles.labs_title') }}</button>
-                <button class="role-tab" data-target="pharmacies"><i data-lucide="pill"></i> {{ __('landing.roles.pharmacies_title') }}</button>
-                <button class="role-tab" data-target="insurers"><i data-lucide="shield-check"></i> {{ __('landing.roles.insurers_title') }}</button>
-                <button class="role-tab" data-target="public-health"><i data-lucide="globe"></i> {{ __('landing.roles.public_health_title') }}</button>
-                <button class="role-tab" data-target="developers"><i data-lucide="code-2"></i> {{ __('landing.roles.developers_title') }}</button>
-            </div>
 
-            <!-- Tab Contents -->
-            <div class="roles-tab-content" id="rolesTabContent">
-                <div class="role-panel active" id="panel-patients">
-                    <div class="panel-inner">
-                        <i data-lucide="user"></i>
-                        <h3>{{ __('landing.roles.patients_title') }}</h3>
-                        <p>{{ __('landing.roles.patients_desc') }}</p>
-                    </div>
-                </div>
-                <div class="role-panel" id="panel-hospitals">
-                    <div class="panel-inner">
-                        <i data-lucide="hospital"></i>
-                        <h3>{{ __('landing.roles.hospitals_title') }}</h3>
-                        <p>{{ __('landing.roles.hospitals_desc') }}</p>
-                    </div>
-                </div>
-                <div class="role-panel" id="panel-doctors">
-                    <div class="panel-inner">
-                        <i data-lucide="stethoscope"></i>
-                        <h3>{{ __('landing.roles.doctors_title') }}</h3>
-                        <p>{{ __('landing.roles.doctors_desc') }}</p>
-                    </div>
-                </div>
-                <div class="role-panel" id="panel-labs">
-                    <div class="panel-inner">
-                        <i data-lucide="flask-conical"></i>
-                        <h3>{{ __('landing.roles.labs_title') }}</h3>
-                        <p>{{ __('landing.roles.labs_desc') }}</p>
-                    </div>
-                </div>
-                <div class="role-panel" id="panel-pharmacies">
-                    <div class="panel-inner">
-                        <i data-lucide="pill"></i>
-                        <h3>{{ __('landing.roles.pharmacies_title') }}</h3>
-                        <p>{{ __('landing.roles.pharmacies_desc') }}</p>
-                    </div>
-                </div>
-                <div class="role-panel" id="panel-insurers">
-                    <div class="panel-inner">
-                        <i data-lucide="shield-check"></i>
-                        <h3>{{ __('landing.roles.insurers_title') }}</h3>
-                        <p>{{ __('landing.roles.insurers_desc') }}</p>
-                    </div>
-                </div>
-                <div class="role-panel" id="panel-public-health">
-                    <div class="panel-inner">
-                        <i data-lucide="globe"></i>
-                        <h3>{{ __('landing.roles.public_health_title') }}</h3>
-                        <p>{{ __('landing.roles.public_health_desc') }}</p>
-                    </div>
-                </div>
-                <div class="role-panel" id="panel-developers">
-                    <div class="panel-inner">
-                        <i data-lucide="code-2"></i>
-                        <h3>{{ __('landing.roles.developers_title') }}</h3>
-                        <p>{{ __('landing.roles.developers_desc') }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Security, Audit, and Privacy Section -->
-    <section class="section">
-        <div class="container text-center mb-12">
-            <h2>{{ __('landing.security_section.title') }}</h2>
-            <p class="section-subtitle">{{ __('landing.security_section.subtitle') }}</p>
-        </div>
-        <div class="container grid-3">
-            <div class="card security-card">
-                <i data-lucide="key-round"></i>
-                <h3>{{ __('landing.security_section.role_title') }}</h3>
-                <p>{{ __('landing.security_section.role_desc') }}</p>
-            </div>
-            <div class="card security-card">
-                <i data-lucide="shield-check"></i>
-                <h3>{{ __('landing.security_section.consent_title') }}</h3>
-                <p>{{ __('landing.security_section.consent_desc') }}</p>
-            </div>
-            <div class="card security-card">
-                <i data-lucide="clipboard-check"></i>
-                <h3>{{ __('landing.security_section.audit_title') }}</h3>
-                <p>{{ __('landing.security_section.audit_desc') }}</p>
-            </div>
-            <div class="card security-card">
-                <i data-lucide="file-search"></i>
-                <h3>{{ __('landing.security_section.source_title') }}</h3>
-                <p>{{ __('landing.security_section.source_desc') }}</p>
-            </div>
-            <div class="card security-card">
-                <i data-lucide="siren"></i>
-                <h3>{{ __('landing.security_section.emergency_title') }}</h3>
-                <p>{{ __('landing.security_section.emergency_desc') }}</p>
-            </div>
-            <div class="card security-card">
-                <i data-lucide="lock-keyhole"></i>
-                <h3>{{ __('landing.security_section.integrations_title') }}</h3>
-                <p>{{ __('landing.security_section.integrations_desc') }}</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Integration Products Section -->
-    <section class="section section-muted" id="integrations">
-        <div class="container text-center mb-12">
-            <h2>{{ __('landing.integration_products.title') }}</h2>
-            <p class="section-subtitle">{{ __('landing.integration_products.desc') }}</p>
-        </div>
-        <div class="container grid-3">
-            <div class="card integration-card">
-                <i data-lucide="braces"></i>
-                <h3>{{ __('landing.integration_products.api_title') }}</h3>
-                <p>{{ __('landing.integration_products.api_desc') }}</p>
-            </div>
-            <div class="card integration-card">
-                <i data-lucide="code-2"></i>
-                <h3>{{ __('landing.integration_products.sdk_title') }}</h3>
-                <p>{{ __('landing.integration_products.sdk_desc') }}</p>
-            </div>
-            <div class="card integration-card">
-                <i data-lucide="panel-top"></i>
-                <h3>{{ __('landing.integration_products.widget_title') }}</h3>
-                <p>{{ __('landing.integration_products.widget_desc') }}</p>
-            </div>
-            <div class="card integration-card">
-                <i data-lucide="cpu"></i>
-                <h3>{{ __('landing.integration_products.bridge_title') }}</h3>
-                <p>{{ __('landing.integration_products.bridge_desc') }}</p>
-            </div>
-            <div class="card integration-card">
-                <i data-lucide="layout-dashboard"></i>
-                <h3>{{ __('landing.integration_products.lite_title') }}</h3>
-                <p>{{ __('landing.integration_products.lite_desc') }}</p>
-            </div>
-            <div class="card integration-card">
-                <i data-lucide="radio-tower"></i>
-                <h3>{{ __('landing.integration_products.webhooks_title') }}</h3>
-                <p>{{ __('landing.integration_products.webhooks_desc') }}</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Bilingual Platform Section -->
-    <section class="section">
-        <div class="container grid-2 items-center">
-            <div>
-                <h2>{{ __('landing.bilingual.title') }}</h2>
-                <p class="text-lg text-muted mb-8">{{ __('landing.bilingual.desc') }}</p>
-                <div class="bilingual-checklist">
-                    <div class="chk-item"><i data-lucide="languages" class="text-teal"></i> <span>{{ __('landing.bilingual.b1') }}</span></div>
-                    <div class="chk-item"><i data-lucide="message-square" class="text-teal"></i> <span>{{ __('landing.bilingual.b2') }}</span></div>
-                    <div class="chk-item"><i data-lucide="smartphone" class="text-teal"></i> <span>{{ __('landing.bilingual.b3') }}</span></div>
-                    <div class="chk-item"><i data-lucide="monitor" class="text-teal"></i> <span>{{ __('landing.bilingual.b4') }}</span></div>
-                </div>
-            </div>
-            <div class="bilingual-visual">
-                <!-- Dual Language Interface Visualizer -->
-                <div class="lang-visualizer-box">
-                    <div class="visual-panel en-panel">
-                        <div class="panel-header-mini">{{ __('landing.bilingual_vis.en_panel_title') }}</div>
-                        <div class="panel-body-mini">
-                            <strong class="text-teal">{{ __('landing.bilingual_vis.en_heading') }}</strong>
-                            <p class="text-sm text-muted">{{ __('landing.bilingual_vis.en_desc') }}</p>
-                        </div>
-                    </div>
-                    <div class="visual-panel fr-panel">
-                        <div class="panel-header-mini">{{ __('landing.bilingual_vis.fr_panel_title') }}</div>
-                        <div class="panel-body-mini">
-                            <strong class="text-teal">{{ __('landing.bilingual_vis.fr_heading') }}</strong>
-                            <p class="text-sm text-muted">{{ __('landing.bilingual_vis.fr_desc') }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Implementation / Partner CTA Section -->
-    <section class="section section-muted" id="partner-form">
-        <div class="container grid-2">
-            <div>
-                <h2>{{ __('landing.partner_cta.title') }}</h2>
-                <p class="text-lg text-muted mb-8">{{ __('landing.partner_cta.desc') }}</p>
-                <div class="cta-direct-actions">
-                    <a href="#integrations" class="btn btn-secondary">{{ __('landing.partner_cta.cta_secondary') }}</a>
-                </div>
-            </div>
-            <div class="card partner-form-card">
-                <h3>{{ __('landing.partner_cta.form.title') }}</h3>
-                @if (session('success'))
-                    <div class="alert alert-success mt-4">
-                        <i data-lucide="check-circle-2"></i>
-                        <span>{{ session('success') }}</span>
-                    </div>
-                @else
-                    @if($errors->any())
-                        <div class="form-alert-danger mt-4">
-                            <i data-lucide="triangle-alert" style="width:1.125rem;height:1.125rem;flex-shrink:0;"></i>
-                            <ul>
-                                @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    <form action="{{ route('public.contact.submit') }}" method="POST" class="partner-inquiry-form mt-4">
-                        @csrf
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="form-name">{{ __('landing.partner_cta.form.name') }} *</label>
-                                <input type="text" id="form-name" name="name" required class="form-control{{ $errors->has('name') ? ' form-control-error' : '' }}" value="{{ old('name') }}">
-                                @error('name')<span class="form-field-error">{{ $message }}</span>@enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="form-org">{{ __('landing.partner_cta.form.org') }} *</label>
-                                <input type="text" id="form-org" name="organization" required class="form-control{{ $errors->has('organization') ? ' form-control-error' : '' }}" value="{{ old('organization') }}">
-                                @error('organization')<span class="form-field-error">{{ $message }}</span>@enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="form-role">{{ __('landing.partner_cta.form.role') }} *</label>
-                                <input type="text" id="form-role" name="role" required class="form-control{{ $errors->has('role') ? ' form-control-error' : '' }}" value="{{ old('role') }}">
-                                @error('role')<span class="form-field-error">{{ $message }}</span>@enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="form-email">{{ __('landing.partner_cta.form.email') }} *</label>
-                                <input type="email" id="form-email" name="email" required class="form-control{{ $errors->has('email') ? ' form-control-error' : '' }}" value="{{ old('email') }}">
-                                @error('email')<span class="form-field-error">{{ $message }}</span>@enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="form-phone">{{ __('landing.partner_cta.form.phone') }}</label>
-                                <input type="text" id="form-phone" name="phone" class="form-control{{ $errors->has('phone') ? ' form-control-error' : '' }}" value="{{ old('phone') }}">
-                                @error('phone')<span class="form-field-error">{{ $message }}</span>@enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="form-type">{{ __('landing.partner_cta.form.type') }} *</label>
-                                <select id="form-type" name="organization_type" required class="form-control{{ $errors->has('organization_type') ? ' form-control-error' : '' }}">
-                                    <option value="">{{ __('landing.form_select_placeholder') }}</option>
-                                    @foreach(__('landing.partner_cta.form.options') as $value => $label)
-                                        <option value="{{ $value }}" {{ old('organization_type') == $value ? 'selected' : '' }}>{{ $label }}</option>
-                                    @endforeach
-                                </select>
-                                @error('organization_type')<span class="form-field-error">{{ $message }}</span>@enderror
-                            </div>
-                            <div class="form-group full-width">
-                                <label for="form-country">{{ __('landing.partner_cta.form.country') }} *</label>
-                                <input type="text" id="form-country" name="country" required class="form-control{{ $errors->has('country') ? ' form-control-error' : '' }}" value="{{ old('country') }}">
-                                @error('country')<span class="form-field-error">{{ $message }}</span>@enderror
-                            </div>
-                            <div class="form-group full-width">
-                                <label for="form-message">{{ __('landing.partner_cta.form.message') }} *</label>
-                                <textarea id="form-message" name="message" required rows="4" class="form-control{{ $errors->has('message') ? ' form-control-error' : '' }}">{{ old('message') }}</textarea>
-                                @error('message')<span class="form-field-error">{{ $message }}</span>@enderror
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-full mt-4">{{ __('landing.partner_cta.form.submit') }}</button>
-                    </form>
-                @endif
-            </div>
-        </div>
-    </section>
-
-    <!-- FAQ Section -->
-    <section class="section" id="faq">
-        <div class="container text-center mb-12">
-            <h2>{{ __('landing.faq.title') }}</h2>
-            <p class="section-subtitle">{{ __('landing.faq.subtitle') }}</p>
-        </div>
-        <div class="container faq-container">
-            <div class="faq-accordion">
-                @for ($i = 1; $i <= 8; $i++)
-                    <details class="faq-item">
-                        <summary class="faq-question">
-                            <span>{{ __("landing.faq.q{$i}") }}</span>
-                            <i data-lucide="chevron-down" class="icon-chevron"></i>
-                        </summary>
-                        <div class="faq-answer">
-                            <p>{{ __("landing.faq.a{$i}") }}</p>
-                        </div>
-                    </details>
-                @endfor
-            </div>
-        </div>
-    </section>
-
-    <!-- Final CTA -->
-    <section class="section section-dark text-center">
         <div class="container">
-            <h2 class="text-white">{{ __('landing.footer_cta.title') }}</h2>
-            <p class="text-muted-light mb-8 text-lg" style="max-width: 800px; margin: 0 auto 2.5rem;">{{ __('landing.footer_cta.subtitle') }}</p>
-            <div style="display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
-                <a href="#partner-form" class="btn btn-primary btn-lg">{{ __('landing.footer_cta.cta_primary') }}</a>
-                <a href="#integrations" class="btn btn-secondary btn-lg">{{ __('landing.footer_cta.cta_secondary') }}</a>
+            <div class="lp-chips">
+                <a href="{{ route('public.solutions.patients') }}"><i data-lucide="user"></i> {{ __('landing.ecosystem.chip_patients') }}</a>
+                <a href="{{ route('public.solutions.hospitals') }}"><i data-lucide="stethoscope"></i> {{ __('landing.ecosystem.chip_providers') }}</a>
+                <a href="{{ route('public.solutions.hospitals') }}"><i data-lucide="hospital"></i> {{ __('landing.ecosystem.chip_hospitals') }}</a>
+                <a href="{{ route('public.solutions.laboratories') }}"><i data-lucide="flask-conical"></i> {{ __('landing.ecosystem.chip_labs') }}</a>
+                <a href="{{ route('public.solutions.pharmacies') }}"><i data-lucide="pill"></i> {{ __('landing.ecosystem.chip_pharmacies') }}</a>
+                <a href="{{ route('public.solutions.insurers') }}"><i data-lucide="heart-handshake"></i> {{ __('landing.ecosystem.chip_insurers') }}</a>
+                <a href="{{ route('public.solutions.public-health') }}"><i data-lucide="landmark"></i> {{ __('landing.ecosystem.chip_public_health') }}</a>
+                <a href="{{ route('public.developers') }}"><i data-lucide="code-2"></i> {{ __('landing.ecosystem.chip_developers') }}</a>
             </div>
+
+            <div class="lp-destinations">
+                <a href="{{ route('public.solutions.patients') }}" class="card lp-destination">
+                    <i data-lucide="user"></i>
+                    <h3>{{ __('landing.ecosystem.card_patients_title') }}</h3>
+                    <p>{{ __('landing.ecosystem.card_patients_desc') }}</p>
+                </a>
+                <a href="{{ route('public.solutions.hospitals') }}" class="card lp-destination">
+                    <i data-lucide="hospital"></i>
+                    <h3>{{ __('landing.ecosystem.card_facilities_title') }}</h3>
+                    <p>{{ __('landing.ecosystem.card_facilities_desc') }}</p>
+                </a>
+                <a href="{{ route('public.solutions.insurers') }}" class="card lp-destination">
+                    <i data-lucide="landmark"></i>
+                    <h3>{{ __('landing.ecosystem.card_orgs_title') }}</h3>
+                    <p>{{ __('landing.ecosystem.card_orgs_desc') }}</p>
+                </a>
+                <a href="{{ route('public.developers') }}" class="card lp-destination">
+                    <i data-lucide="code-2"></i>
+                    <h3>{{ __('landing.ecosystem.card_devs_title') }}</h3>
+                    <p>{{ __('landing.ecosystem.card_devs_desc') }}</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    {{-- 08 ──────────────────────────────────────────────────────── Trust --}}
+    <section class="section section-dark" id="trust">
+        <div class="container grid-2 items-center">
+            <div>
+                <h2 class="text-white">{{ __('landing.trust.title') }}</h2>
+                <p class="text-lg text-muted-light mb-8">{{ __('landing.trust.desc') }}</p>
+
+                {{-- The consent question, reduced to the five things it decides. --}}
+                <ul class="lp-consent-questions">
+                    <li><i data-lucide="user-search"></i> {{ __('landing.trust.q_who') }}</li>
+                    <li><i data-lucide="help-circle"></i> {{ __('landing.trust.q_why') }}</li>
+                    <li><i data-lucide="layers"></i> {{ __('landing.trust.q_what') }}</li>
+                    <li><i data-lucide="clock"></i> {{ __('landing.trust.q_how_long') }}</li>
+                    <li><i data-lucide="toggle-right"></i> {{ __('landing.trust.q_control') }}</li>
+                </ul>
+
+                <a href="{{ route('public.consent') }}" class="lp-arrow-link lp-arrow-light">
+                    {{ __('landing.trust.consent_cta') }} <i data-lucide="arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="lp-trust-side">
+                {{-- Break-glass gets a teaser, not a product page on the homepage. --}}
+                <div class="lp-breakglass">
+                    <div class="lp-breakglass-head">
+                        <i data-lucide="siren"></i>
+                        <strong>{{ __('landing.trust.emergency_title') }}</strong>
+                    </div>
+                    <p>{{ __('landing.trust.emergency_desc') }}</p>
+                    <a href="{{ route('public.care-map.emergency') }}" class="lp-arrow-link lp-arrow-light">
+                        {{ __('landing.trust.emergency_cta') }} <i data-lucide="arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="lp-trust-pillars">
+                    <div><i data-lucide="lock-keyhole"></i><strong>{{ __('landing.trust.pillar_private_title') }}</strong><span>{{ __('landing.trust.pillar_private_desc') }}</span></div>
+                    <div><i data-lucide="clipboard-check"></i><strong>{{ __('landing.trust.pillar_audit_title') }}</strong><span>{{ __('landing.trust.pillar_audit_desc') }}</span></div>
+                    <div><i data-lucide="git-merge"></i><strong>{{ __('landing.trust.pillar_standards_title') }}</strong><span>{{ __('landing.trust.pillar_standards_desc') }}</span></div>
+                    <div><i data-lucide="languages"></i><strong>{{ __('landing.trust.pillar_local_title') }}</strong><span>{{ __('landing.trust.pillar_local_desc') }}</span></div>
+                </div>
+
+                <a href="{{ route('public.security') }}" class="btn btn-secondary lp-trust-cta">
+                    {{ __('landing.trust.security_cta') }} <i data-lucide="arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    {{-- 09 ────────────────────────────────────────────────── Final CTA --}}
+    <section class="section lp-final">
+        <div class="container text-center">
+            <h2>{{ __('landing.footer_cta.title') }}</h2>
+            <p class="section-subtitle" style="margin-bottom:2.5rem;">{{ __('landing.footer_cta.subtitle') }}</p>
+            <div class="lp-final-actions">
+                <a href="{{ route('public.request-demo') }}" class="btn btn-primary btn-lg">
+                    <i data-lucide="cable"></i> {{ __('landing.footer_cta.cta_primary') }}
+                </a>
+                <a href="{{ route('register.patient') }}" class="btn btn-secondary btn-lg">
+                    <i data-lucide="id-card"></i> {{ __('landing.footer_cta.cta_secondary') }}
+                </a>
+            </div>
+            <p class="lp-faq-prompt">
+                {{ __('landing.footer_cta.faq_prompt') }}
+                <a href="{{ route('public.faq') }}">{{ __('landing.footer_cta.faq_cta') }} <i data-lucide="arrow-right"></i></a>
+            </p>
         </div>
     </section>
 @endsection

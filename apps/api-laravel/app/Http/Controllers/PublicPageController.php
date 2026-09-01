@@ -23,9 +23,20 @@ class PublicPageController extends Controller
         return view('public.landing');
     }
 
-    public function home2()
+    /*
+     * Network services — the destination pages for the medicine and blood
+     * availability detail that used to occupy two full sections of the
+     * homepage. They are network capabilities, not the definition of OpesCare,
+     * so the homepage carries a card each and the substance lives here.
+     */
+    public function networkMedicineFinder()
     {
-        return view('public.landing2');
+        return view('public.network.medicine_finder');
+    }
+
+    public function networkBloodFinder()
+    {
+        return view('public.network.blood_finder');
     }
 
     public function about()

@@ -112,6 +112,9 @@ h4 { font-size: 1.1rem; }
     display: flex;
     align-items: center;
     justify-content: space-between;
+    /* space-between alone gave zero separation once the nav filled the row —
+       the logo sat flush against the first nav item. */
+    gap: 2rem;
     height: 4.5rem;
 }
 
@@ -128,10 +131,12 @@ h4 { font-size: 1.1rem; }
 .nav {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1.75rem;
+    flex-wrap: nowrap;
 }
 
 .nav-link {
+    white-space: nowrap;
     color: var(--color-text-secondary);
     text-decoration: none;
     font-weight: 600;
@@ -159,7 +164,12 @@ h4 { font-size: 1.1rem; }
 .header-actions {
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 }
+
+/* A two-line "Create Health / ID" button reads as a layout bug. */
+.header-actions .btn,
+.header-actions a { white-space: nowrap; }
 
 .lang-switcher a {
     text-decoration: none;
@@ -1861,4 +1871,330 @@ html, body {
 @media (max-width: 380px) {
     .hs-btn-grid { grid-template-columns: 1fr; }
     .hs-btn-primary, .hs-btn-secondary { padding: 0.7rem 0.75rem; font-size: 0.875rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Homepage — nine-section rebuild
+   ═══════════════════════════════════════════════════════════════════════
+   The homepage answers what OpesCare is, why it matters, how it works,
+   what connects, and what to do next. These styles serve those nine
+   sections only; everything prefixed .lp- is homepage-scoped.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── 01 Hero ─────────────────────────────────────────────────────────── */
+.lp-hero {
+    padding: calc(var(--space-xl) * 1.15) 0;
+    background:
+        radial-gradient(120% 90% at 82% 12%, rgba(15, 76, 129, .10) 0%, rgba(15, 76, 129, 0) 58%),
+        linear-gradient(180deg, #FFFFFF 0%, var(--color-bg) 100%);
+    border-bottom: 1px solid var(--color-border);
+    overflow: hidden;
+}
+.lp-hero-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: var(--space-xl);
+    align-items: center;
+}
+.lp-badge {
+    display: inline-flex; align-items: center; gap: .45rem;
+    background: var(--color-primary-light); color: var(--color-primary);
+    font-size: .75rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    padding: .4rem .85rem; border-radius: 2rem; margin-bottom: 1.25rem;
+}
+.lp-badge svg { width: .875rem; height: .875rem; }
+.lp-hero-copy h1 {
+    font-size: clamp(2.1rem, 4.4vw, 3.35rem);
+    line-height: 1.08; letter-spacing: -.022em; text-wrap: balance;
+    margin-bottom: 1.15rem;
+}
+.lp-hero-sub {
+    font-size: 1.1875rem; line-height: 1.6; color: var(--color-text-secondary);
+    max-width: 34em; margin-bottom: 1.5rem;
+}
+/* The positioning line is the thesis, so it gets a rule rather than a card. */
+.lp-positioning {
+    display: flex; gap: .75rem; align-items: flex-start;
+    border-left: 3px solid var(--color-primary);
+    padding: .1rem 0 .1rem 1rem; margin-bottom: 2rem;
+    font-size: 1rem; font-weight: 600; line-height: 1.5;
+    color: var(--color-text-primary); max-width: 34em;
+}
+.lp-positioning svg { width: 1rem; height: 1rem; color: var(--color-primary); flex-shrink: 0; margin-top: .28rem; }
+.lp-hero-actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
+.lp-hero-actions .btn { display: inline-flex; align-items: center; gap: .5rem; }
+.lp-hero-actions svg { width: 1.05rem; height: 1.05rem; }
+.lp-hero-facts { display: flex; flex-wrap: wrap; gap: .5rem 1.75rem; }
+.lp-hero-facts span {
+    display: inline-flex; align-items: center; gap: .45rem;
+    font-size: .8125rem; font-weight: 600; color: var(--color-text-secondary);
+}
+.lp-hero-facts svg { width: .95rem; height: .95rem; color: var(--color-primary); }
+
+/* The Health ID as an identity object inside a network, not a plastic card. */
+.lp-hero-visual { display: flex; justify-content: center; }
+.lp-identity { position: relative; width: 100%; max-width: 420px; aspect-ratio: 1; }
+.lp-identity-core {
+    position: absolute; inset: 26%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: .3rem; text-align: center;
+    background: linear-gradient(155deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: #fff; border-radius: 50%;
+    box-shadow: 0 22px 45px -14px rgba(15, 76, 129, .55);
+    padding: 1rem;
+}
+.lp-identity-core > svg { width: 1.7rem; height: 1.7rem; }
+.lp-identity-core strong { font-size: .8125rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.lp-identity-id {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .625rem; letter-spacing: .02em; color: rgba(255, 255, 255, .82);
+}
+.lp-identity-verified {
+    display: inline-flex; align-items: center; gap: .25rem;
+    font-size: .625rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+    background: rgba(255, 255, 255, .16); border-radius: 1rem; padding: .15rem .5rem; margin-top: .15rem;
+}
+.lp-identity-verified svg { width: .7rem; height: .7rem; }
+.lp-identity-pulse {
+    position: absolute; inset: -14%; border-radius: 50%;
+    border: 1px solid rgba(15, 76, 129, .28);
+    animation: lp-pulse 3.6s ease-out infinite;
+}
+@keyframes lp-pulse {
+    0%   { transform: scale(.9);  opacity: .85; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+.lp-identity-ring { position: absolute; inset: 0; }
+.lp-node {
+    position: absolute; display: flex; flex-direction: column; align-items: center; gap: .3rem;
+    width: 5.25rem; text-align: center;
+    transform: translate(-50%, -50%);
+}
+.lp-node i, .lp-node svg {
+    width: 2.6rem; height: 2.6rem; padding: .65rem;
+    background: #fff; color: var(--color-primary);
+    border: 1px solid var(--color-border); border-radius: 50%;
+    box-shadow: 0 6px 16px -6px rgba(15, 23, 42, .18);
+}
+.lp-node em {
+    font-style: normal; font-size: .625rem; font-weight: 700;
+    color: var(--color-text-secondary); line-height: 1.2;
+}
+.lp-node.n1 { top: 6%;  left: 50%; }
+.lp-node.n2 { top: 28%; left: 92%; }
+.lp-node.n3 { top: 72%; left: 92%; }
+.lp-node.n4 { top: 94%; left: 50%; }
+.lp-node.n5 { top: 72%; left: 8%; }
+.lp-node.n6 { top: 28%; left: 8%; }
+@media (prefers-reduced-motion: reduce) { .lp-identity-pulse { animation: none; } }
+
+/* ── 02 Problem ──────────────────────────────────────────────────────── */
+.lp-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+.lp-grid-4 .problem-header { display: flex; align-items: flex-start; gap: .75rem; margin-bottom: .75rem; }
+.lp-grid-4 .problem-header svg { width: 1.6rem; height: 1.6rem; }
+.lp-grid-4 .problem-header h3 { font-size: 1.0625rem; line-height: 1.3; }
+
+/* ── 03 The answer: an ordered chain, because the order is the argument ─ */
+.lp-chain {
+    list-style: none; padding: 0; margin: 0;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem;
+}
+.lp-chain-step {
+    position: relative; text-align: center; padding: 1.75rem 1rem;
+    background: #fff; border: 1px solid var(--color-border); border-radius: 1rem;
+}
+/* The connector reads left-to-right as a dependency, not as decoration. */
+.lp-chain-step:not(:last-child)::after {
+    content: ""; position: absolute; top: 50%; right: -1rem; width: 1rem;
+    border-top: 2px dashed var(--color-border);
+}
+.lp-chain-icon {
+    width: 3rem; height: 3rem; margin: 0 auto 1rem;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--color-primary-light); color: var(--color-primary); border-radius: .875rem;
+}
+.lp-chain-icon svg { width: 1.4rem; height: 1.4rem; }
+.lp-chain-step h3 { font-size: 1rem; margin-bottom: .5rem; }
+.lp-chain-step p { font-size: .875rem; line-height: 1.5; color: var(--color-text-secondary); margin: 0; }
+
+/* ── 04 How information moves ────────────────────────────────────────── */
+.lp-exchange {
+    display: grid; grid-template-columns: 1fr auto 1.15fr auto 1fr;
+    align-items: stretch; gap: .75rem; margin-bottom: 3rem;
+}
+.lp-exchange-end, .lp-exchange-core {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: .4rem; text-align: center; padding: 1.75rem 1.25rem; border-radius: 1rem;
+}
+.lp-exchange-end { background: #fff; border: 1px solid var(--color-border); }
+.lp-exchange-core {
+    background: linear-gradient(150deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: #fff; box-shadow: 0 18px 36px -18px rgba(15, 76, 129, .6);
+}
+.lp-exchange-end svg, .lp-exchange-core svg { width: 1.6rem; height: 1.6rem; margin-bottom: .2rem; }
+.lp-exchange-end svg { color: var(--color-primary); }
+.lp-exchange-end strong, .lp-exchange-core strong { font-size: .9375rem; }
+.lp-exchange-end span { font-size: .8125rem; color: var(--color-text-secondary); line-height: 1.4; }
+.lp-exchange-core span { font-size: .8125rem; color: rgba(255, 255, 255, .8); line-height: 1.4; }
+.lp-exchange-flow { display: flex; align-items: center; justify-content: center; color: var(--color-text-muted); }
+.lp-exchange-flow svg { width: 1.3rem; height: 1.3rem; }
+
+.lp-steps {
+    list-style: none; padding: 0; margin: 0 0 2.5rem;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.25rem;
+}
+.lp-step { position: relative; padding: 1.5rem 1.25rem; background: #fff; border: 1px solid var(--color-border); border-radius: 1rem; }
+.lp-step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.6rem; height: 1.6rem; border-radius: 50%;
+    background: var(--color-primary); color: #fff;
+    font-size: .75rem; font-weight: 800; margin-bottom: .85rem;
+    font-variant-numeric: tabular-nums;
+}
+.lp-step > svg { display: block; width: 1.3rem; height: 1.3rem; color: var(--color-primary); margin-bottom: .6rem; }
+.lp-step h4 { font-size: .9375rem; font-weight: 700; margin: 0 0 .4rem; }
+.lp-step p { font-size: .8125rem; line-height: 1.5; color: var(--color-text-secondary); margin: 0; }
+
+.lp-transports { text-align: center; }
+.lp-transports-label {
+    display: block; font-size: .6875rem; font-weight: 800; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 1rem;
+}
+.lp-transport-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: .625rem; margin-bottom: 1.5rem; }
+.lp-transport-chips span {
+    background: #fff; border: 1px solid var(--color-border); border-radius: 2rem;
+    padding: .4rem 1rem; font-size: .8125rem; font-weight: 700; color: var(--color-text-primary);
+}
+.lp-arrow-link {
+    display: inline-flex; align-items: center; gap: .4rem;
+    font-size: .9375rem; font-weight: 700; color: var(--color-primary); text-decoration: none;
+}
+.lp-arrow-link svg { width: 1rem; height: 1rem; transition: transform .18s ease; }
+.lp-arrow-link:hover svg { transform: translateX(3px); }
+.lp-arrow-light { color: #93C5FD; }
+
+/* ── 05 Pillars ──────────────────────────────────────────────────────── */
+.lp-pillars { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.25rem; }
+.lp-pillar { position: relative; text-decoration: none; color: inherit; display: block; }
+.lp-pillar-icon {
+    width: 2.75rem; height: 2.75rem; margin-bottom: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--color-primary-light); color: var(--color-primary); border-radius: .75rem;
+}
+.lp-pillar-icon svg { width: 1.3rem; height: 1.3rem; }
+.lp-pillar h3 { font-size: 1rem; margin-bottom: .5rem; }
+.lp-pillar p { font-size: .875rem; line-height: 1.5; color: var(--color-text-secondary); margin: 0 0 1.5rem; }
+.lp-pillar-more { position: absolute; bottom: 1.25rem; left: 1.5rem; color: var(--color-primary); }
+.lp-pillar-more svg { width: 1rem; height: 1rem; transition: transform .18s ease; }
+.lp-pillar:hover .lp-pillar-more svg { transform: translateX(3px); }
+
+/* "Also connected" — real capabilities, deliberately given one line each. */
+.lp-also {
+    margin-top: 3rem; padding: 1.75rem 2rem;
+    background: var(--color-primary-light); border-radius: 1rem;
+}
+.lp-also-label {
+    display: block; font-size: .6875rem; font-weight: 800; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--color-primary); margin-bottom: 1rem;
+}
+.lp-also ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: .875rem 2rem; }
+.lp-also li {
+    display: flex; align-items: flex-start; gap: .625rem;
+    font-size: .875rem; line-height: 1.5; color: var(--color-text-secondary);
+}
+.lp-also li svg { width: 1rem; height: 1rem; color: var(--color-primary); flex-shrink: 0; margin-top: .2rem; }
+.lp-also li a { color: var(--color-primary); font-weight: 700; text-decoration: none; white-space: nowrap; }
+.lp-also li a:hover { text-decoration: underline; }
+
+/* ── 06 Network services ─────────────────────────────────────────────── */
+.lp-service { display: block; text-decoration: none; color: inherit; padding: 2rem; }
+.lp-service-icon {
+    width: 3rem; height: 3rem; margin-bottom: 1.25rem;
+    display: flex; align-items: center; justify-content: center; border-radius: .875rem;
+    background: var(--color-primary-light); color: var(--color-primary);
+}
+.lp-service-blood .lp-service-icon { background: #FEE2E2; color: #B91C1C; }
+.lp-service-icon svg { width: 1.5rem; height: 1.5rem; }
+.lp-service h3 { font-size: 1.375rem; margin-bottom: .625rem; }
+.lp-service p { font-size: .9375rem; line-height: 1.55; color: var(--color-text-secondary); margin-bottom: 1.25rem; }
+.lp-note {
+    display: inline-flex; align-items: flex-start; gap: .5rem;
+    font-size: .875rem; color: var(--color-text-secondary); max-width: 46em; text-align: left; margin: 0 auto;
+}
+.lp-note svg { width: 1rem; height: 1rem; flex-shrink: 0; margin-top: .18rem; }
+
+/* ── 07 Ecosystem ────────────────────────────────────────────────────── */
+.lp-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: .625rem; margin-bottom: 3rem; }
+.lp-chips a {
+    display: inline-flex; align-items: center; gap: .45rem;
+    background: #fff; border: 1px solid var(--color-border); border-radius: 2rem;
+    padding: .5rem 1.1rem; font-size: .875rem; font-weight: 700;
+    color: var(--color-text-primary); text-decoration: none;
+    transition: border-color .18s ease, color .18s ease;
+}
+.lp-chips a:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.lp-chips svg { width: .95rem; height: .95rem; color: var(--color-primary); }
+.lp-destinations { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+.lp-destination { text-decoration: none; color: inherit; }
+.lp-destination > svg { width: 1.75rem; height: 1.75rem; color: var(--color-primary); margin-bottom: 1rem; }
+.lp-destination h3 { font-size: 1.0625rem; margin-bottom: .5rem; }
+.lp-destination p { font-size: .875rem; line-height: 1.5; color: var(--color-text-secondary); margin: 0; }
+
+/* ── 08 Trust ────────────────────────────────────────────────────────── */
+.lp-consent-questions { list-style: none; padding: 0; margin: 0 0 2rem; display: flex; flex-direction: column; gap: .875rem; }
+.lp-consent-questions li {
+    display: flex; align-items: center; gap: .75rem;
+    font-size: 1rem; font-weight: 600; color: rgba(255, 255, 255, .92);
+}
+.lp-consent-questions svg { width: 1.1rem; height: 1.1rem; color: #93C5FD; flex-shrink: 0; }
+.lp-trust-side { display: flex; flex-direction: column; gap: 1.5rem; }
+.lp-breakglass {
+    background: rgba(239, 68, 68, .09); border: 1px solid rgba(239, 68, 68, .3);
+    border-radius: 1rem; padding: 1.5rem;
+}
+.lp-breakglass-head { display: flex; align-items: center; gap: .625rem; margin-bottom: .75rem; }
+.lp-breakglass-head svg { width: 1.2rem; height: 1.2rem; color: #FCA5A5; }
+.lp-breakglass-head strong { color: #fff; font-size: 1rem; }
+.lp-breakglass p { font-size: .875rem; line-height: 1.55; color: rgba(255, 255, 255, .72); margin: 0 0 1rem; }
+.lp-trust-pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.lp-trust-pillars > div { display: flex; flex-direction: column; gap: .3rem; }
+.lp-trust-pillars svg { width: 1.15rem; height: 1.15rem; color: #93C5FD; margin-bottom: .2rem; }
+.lp-trust-pillars strong { color: #fff; font-size: .9375rem; }
+.lp-trust-pillars span { font-size: .8125rem; line-height: 1.45; color: rgba(255, 255, 255, .66); }
+.lp-trust-cta { align-self: flex-start; display: inline-flex; align-items: center; gap: .5rem; }
+.lp-trust-cta svg { width: 1rem; height: 1rem; }
+
+/* ── 09 Final CTA ────────────────────────────────────────────────────── */
+.lp-final { background: linear-gradient(180deg, var(--color-bg) 0%, #EEF4FA 100%); }
+.lp-final h2 { max-width: 20em; margin-left: auto; margin-right: auto; }
+.lp-final .section-subtitle { max-width: 44em; margin-left: auto; margin-right: auto; }
+.lp-final-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; }
+.lp-final-actions .btn { display: inline-flex; align-items: center; gap: .5rem; }
+.lp-final-actions svg { width: 1.05rem; height: 1.05rem; }
+.lp-faq-prompt { margin-top: 2.5rem; font-size: .9375rem; color: var(--color-text-secondary); }
+.lp-faq-prompt a {
+    display: inline-flex; align-items: center; gap: .35rem;
+    color: var(--color-primary); font-weight: 700; text-decoration: none; margin-left: .35rem;
+}
+.lp-faq-prompt svg { width: .95rem; height: .95rem; }
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .lp-hero-inner { grid-template-columns: 1fr; }
+    .lp-hero-visual { order: -1; }
+    .lp-identity { max-width: 340px; }
+    .lp-grid-4, .lp-destinations { grid-template-columns: 1fr 1fr; }
+    .lp-chain, .lp-steps { grid-template-columns: repeat(2, 1fr); }
+    .lp-chain-step:not(:last-child)::after { display: none; }
+    .lp-pillars { grid-template-columns: repeat(2, 1fr); }
+    .lp-exchange { grid-template-columns: 1fr; }
+    .lp-exchange-flow { transform: rotate(90deg); }
+}
+@media (max-width: 640px) {
+    .lp-grid-4, .lp-destinations, .lp-chain, .lp-steps, .lp-pillars,
+    .lp-also ul, .lp-trust-pillars { grid-template-columns: 1fr; }
+    .lp-hero-actions .btn, .lp-final-actions .btn { width: 100%; justify-content: center; }
+    .lp-identity { max-width: 290px; }
+    .lp-node { width: 4.25rem; }
+    .lp-node i, .lp-node svg { width: 2.1rem; height: 2.1rem; padding: .5rem; }
 }

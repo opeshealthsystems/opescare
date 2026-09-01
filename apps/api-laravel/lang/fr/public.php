@@ -1616,6 +1616,71 @@ return [
     ],
 
     /* ── FAQ Page ────────────────────────────────────── */
+    /* ── Réseau → Recherche de médicaments ──────────── */
+    'network_medicine' => [
+        'page_title'       => 'Recherche de médicaments | Réseau OpesCare',
+        'meta_description' => 'Sachez quelles pharmacies vérifiées détiennent un médicament avant de vous déplacer. Stocks publiés par les pharmacies du réseau OpesCare, avec leur date de mise à jour.',
+        'badge'            => 'Service du réseau',
+        'hero_title'       => 'Trouvez des médicaments près de chez vous.',
+        'hero_subtitle'    => 'Les pharmacies et pharmacies hospitalières vérifiées publient leur stock sur le réseau OpesCare : un patient trouve son médicament avant de se déplacer, et non après.',
+
+        'b1_title' => 'Uniquement des pharmacies vérifiées',
+        'b1_desc'  => 'Seules les pharmacies dont la licence est enregistrée et l\'inscription active peuvent publier un stock. Un point de vente non vérifié n\'apparaît jamais dans les résultats.',
+        'b2_title' => 'Chaque annonce est horodatée',
+        'b2_desc'  => 'Chaque résultat indique la dernière mise à jour de l\'article par la pharmacie : vous jugez vous-même de la confiance à lui accorder.',
+        'b3_title' => 'Le statut d\'ordonnance est annoncé',
+        'b3_desc'  => 'Les médicaments soumis à ordonnance sont signalés avant votre déplacement, et non au comptoir.',
+        'b4_title' => 'Réservation lorsque la pharmacie la propose',
+        'b4_desc'  => 'Certaines pharmacies acceptent une mise de côté temporaire. Lorsque c\'est activé, vous pouvez la demander depuis le résultat.',
+        'b5_title' => 'Distance et heures d\'ouverture',
+        'b5_desc'  => 'Les résultats sont classés par distance et indiquent si la pharmacie est ouverte : une correspondance est une correspondance exploitable.',
+        'b6_title' => 'Un stock obsolète est retiré, pas affiché',
+        'b6_desc'  => 'Lorsqu\'une pharmacie cesse de mettre un article à jour, celui-ci disparaît des résultats au lieu d\'y subsister comme faux positif.',
+
+        'safety_title' => 'Ce qu\'une annonce signifie — et ne signifie pas',
+        'safety_desc'  => 'Une annonce est la déclaration d\'une pharmacie sur ce qu\'elle détenait à un instant donné : ce n\'est ni une réservation ni une garantie. Les stocks bougent. Vérifiez toujours la date de mise à jour, et téléphonez pour toute urgence.',
+
+        'publish_label' => 'Pour les pharmacies',
+        'publish_body'  => 'Les pharmacies publient leur stock depuis le portail pharmacie OpesCare, ou l\'envoient directement depuis un système existant via l\'API Connect. Aucun système d\'inventaire supplémentaire à faire tourner, aucune saisie au-delà de ce que vous suivez déjà.',
+
+        'cta_title'      => 'La recherche de médicaments se fait depuis l\'application patient.',
+        'cta_body'       => 'Consultez l\'annuaire des établissements vérifiés sur le web, ou créez un identifiant de santé pour chercher un stock depuis votre téléphone.',
+        'btn_care_map'   => 'Ouvrir la carte des soins',
+        'btn_pharmacies' => 'Pour les pharmacies',
+    ],
+
+    /* ── Réseau → Recherche de sang ─────────────────── */
+    'network_blood' => [
+        'page_title'       => 'Recherche de sang | Réseau OpesCare',
+        'meta_description' => 'Trouvez du sang disponible par groupe et composant dans les hôpitaux et banques de sang vérifiés du réseau OpesCare, et signalez un besoin urgent sans exposer l\'identité du patient.',
+        'badge'            => 'Service du réseau',
+        'hero_title'       => 'Trouvez du sang disponible sur le réseau connecté.',
+        'hero_subtitle'    => 'Les hôpitaux et banques de sang vérifiés publient leur disponibilité par groupe et par composant : un clinicien qui cherche du sang compatible consulte le réseau au lieu d\'enchaîner les appels.',
+
+        'b1_title' => 'Uniquement hôpitaux et banques de sang vérifiés',
+        'b1_desc'  => 'La publication est réservée aux établissements dont la licence est enregistrée. Aucune source informelle ou non vérifiée dans ces résultats.',
+        'b2_title' => 'Recherche par groupe et composant',
+        'b2_desc'  => 'Sang total, culots globulaires, plasma et plaquettes se cherchent séparément : une unité de l\'un ne remplace pas l\'autre.',
+        'b3_title' => 'Signaler un besoin urgent',
+        'b3_desc'  => 'Un établissement peut publier un besoin urgent sur le réseau sans exposer l\'identité du patient concerné.',
+        'b4_title' => 'Réservation et transfert',
+        'b4_desc'  => 'L\'établissement détenteur peut réserver des unités face à une demande et enregistrer le transfert : deux établissements ne comptent plus la même unité.',
+        'b5_title' => 'Chaîne de traçabilité',
+        'b5_desc'  => 'Chaque réservation, libération et transfert est enregistré sur l\'unité : son parcours reste vérifiable après coup.',
+        'b6_title' => 'Unités non dépistées ou périmées exclues',
+        'b6_desc'  => 'Une unité non dépistée, ou dont l\'établissement a cessé de déclarer, est retirée des résultats au lieu d\'être affichée comme disponible.',
+
+        'safety_title' => 'La responsabilité clinique reste au clinicien',
+        'safety_desc'  => 'OpesCare rapporte ce qu\'un établissement a publié. La plateforme ne réalise aucun test de compatibilité, ne valide aucune unité pour la transfusion et ne remplace aucune décision clinique. Les tests de compatibilité, la manipulation et la transfusion demeurent la responsabilité de professionnels de santé qualifiés.',
+
+        'publish_label' => 'Pour les hôpitaux et banques de sang',
+        'publish_body'  => 'Les établissements publient leur disponibilité depuis le portail OpesCare, ou la synchronisent depuis un système de banque de sang existant via l\'API Connect. Les quantités publiées actualisent automatiquement le réseau côté patient.',
+
+        'cta_title'     => 'La recherche de sang est réservée aux prestataires habilités.',
+        'cta_body'      => 'Consultez les établissements vérifiés sur la carte des soins, ou parlons du raccordement de votre hôpital ou banque de sang au réseau.',
+        'btn_care_map'  => 'Ouvrir la carte des soins',
+        'btn_hospitals' => 'Pour les hôpitaux et cliniques',
+    ],
     'faq' => [
         'page_title'  => 'Foire Aux Questions | OpesCare',
         'meta_description' => 'Réponses aux questions les plus fréquentes sur l\'Identifiant de Santé OpesCare, la confidentialité des données, l\'intégration de la plateforme et l\'accès clinique.',
@@ -1627,12 +1692,21 @@ return [
         'cta_button'  => 'Contacter le Support',
         'categories'  => [
             [
+                'icon'  => 'network',
+                'title' => "Ce qu'est OpesCare",
+                'items' => [
+                    ['q' => "OpesCare est-il un logiciel de gestion hospitalière ?", 'a' => "Non. OpesCare relie les systèmes de santé ; il ne demande pas à chaque établissement d'utiliser le même logiciel. C'est une couche d'identité et d'interopérabilité — un identifiant de santé, un index patient, et un échange sous consentement entre les systèmes déjà en place."],
+                    ['q' => 'OpesCare est-il bilingue ?', 'a' => "Oui. Chaque écran, notification et document existe en anglais et en français, et les deux versions sont tenues strictement à parité. Un patient ou un clinicien peut changer de langue à tout moment sans perdre le fil."],
+                ],
+            ],
+            [
                 'icon'  => 'id-card',
                 'title' => 'Identifiant de Santé',
                 'items' => [
                     ['q' => "Qu'est-ce qu'un identifiant de santé OpesCare ?",          'a' => "Un identifiant de santé OpesCare est un identifiant numérique unique qui vous permet de porter votre historique médical approuvé avec vous dans tous les établissements de santé partenaires. Il regroupe vos dossiers — consultations, analyses, ordonnances, vaccinations — dans une chronologie vérifiée et unifiée."],
                     ['q' => 'Comment obtenir mon identifiant de santé ?',               'a' => "Créez un compte OpesCare sur la page d'inscription. Votre identifiant est généré automatiquement et lié à votre profil vérifié. Vous pouvez le consulter et le partager depuis votre portail patient."],
                     ['q' => "Mon identifiant de santé peut-il être utilisé hors ligne ?", 'a' => "Oui. Votre identifiant de santé génère un code QR que les prestataires peuvent scanner même sans connexion internet, sous réserve d'une vérification en ligne ultérieure."],
+                    ['q' => "Le code QR contient-il tout mon dossier médical ?", 'a' => "Non. Le code QR ne porte qu'un identifiant sécurisé. Il ne donne accès au dossier qu'au terme d'une consultation autorisée et consentie — le scanner seul n'expose aucun historique médical."],
                 ],
             ],
             [
@@ -1642,6 +1716,7 @@ return [
                     ['q' => 'Qui peut voir mes dossiers médicaux ?',                    'a' => "Uniquement les prestataires que vous avez explicitement autorisés. Chaque accès est enregistré dans votre journal d'accès, visible dans votre portail patient. Vous pouvez révoquer l'accès à tout moment."],
                     ['q' => 'Comment OpesCare protège-t-il mes données ?',              'a' => "OpesCare utilise le chiffrement AES-256 au repos et TLS 1.3 en transit. Toutes les données cliniques sont stockées dans des centres de données conformes à la HIPAA avec des sauvegardes redondantes. Nous procédons régulièrement à des audits de sécurité par des tiers."],
                     ['q' => 'OpesCare vend-il mes données ?',                           'a' => "Non. OpesCare ne vend jamais, ne loue pas et ne partage pas vos données personnelles ou médicales avec des tiers à des fins commerciales. Vos données vous appartiennent."],
+                    ['q' => "Que se passe-t-il en cas d'urgence ?", 'a' => "Lorsque le consentement ne peut être obtenu, un prestataire habilité peut ouvrir un profil d'urgence restreint — identité, groupe sanguin, allergies, pathologies actives, traitements en cours et contact d'urgence. Cet accès exceptionnel exige un motif, est enregistré, vous est notifié, et fait l'objet d'une revue."],
                 ],
             ],
             [
@@ -1650,6 +1725,14 @@ return [
                 'items' => [
                     ['q' => 'Comment un hôpital peut-il rejoindre OpesCare ?',          'a' => "Contactez notre équipe partenariats via partners@opescare.com ou utilisez le formulaire de contact. Notre équipe d'intégration vous accompagnera dans le processus d'onboarding, notamment la configuration de l'API et la formation du personnel."],
                     ['q' => 'Quels systèmes OpesCare prend-il en charge ?',             'a' => "OpesCare s'intègre avec les principaux systèmes HIS/EMR via HL7 FHIR R4, notre API REST, ou le Bridge Agent pour les systèmes legacy. Nous prenons également en charge l'import de fichiers CSV pour l'intégration des dossiers historiques."],
+                ],
+            ],
+            [
+                'icon'  => 'map-pin',
+                'title' => 'Services du réseau',
+                'items' => [
+                    ['q' => "Les pharmacies peuvent-elles publier la disponibilité des médicaments ?", 'a' => "Oui. Les pharmacies et pharmacies hospitalières vérifiées publient leur stock sur le réseau : un patient voit qui détient un médicament avant de se déplacer. Chaque annonce indique sa date de mise à jour, et un stock devenu obsolète est retiré plutôt qu'affiché comme disponible."],
+                    ['q' => "Les hôpitaux peuvent-ils publier la disponibilité du sang ?", 'a' => "Oui. Les hôpitaux et banques de sang vérifiés publient la disponibilité par groupe et par composant, et peuvent signaler un besoin urgent sans exposer aucune identité de patient. Les unités non dépistées ou périmées sont exclues, et tout transfert reste entre les mains de professionnels qualifiés."],
                 ],
             ],
             [

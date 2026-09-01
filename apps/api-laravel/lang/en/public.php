@@ -1602,6 +1602,71 @@ return [
     ],
 
     /* ── FAQ Page ────────────────────────────────────── */
+    /* ── Network → Medicine Finder ──────────────────── */
+    'network_medicine' => [
+        'page_title'       => 'Medicine Finder | OpesCare Network',
+        'meta_description' => 'Find which verified pharmacies hold a medicine before you travel. Stock published by pharmacies across the OpesCare network, with the time it was last updated.',
+        'badge'            => 'Network service',
+        'hero_title'       => 'Find medicines near you.',
+        'hero_subtitle'    => 'Verified pharmacies and hospital pharmacies publish what they hold to the OpesCare network, so a patient can find a medicine before travelling rather than after.',
+
+        'b1_title' => 'Verified pharmacies only',
+        'b1_desc'  => 'Only pharmacies with a licence on record and an active listing can publish stock. An unverified outlet never appears in a result.',
+        'b2_title' => 'Every listing is timestamped',
+        'b2_desc'  => 'Each result shows when the pharmacy last updated that item, so you can judge for yourself how much to trust it.',
+        'b3_title' => 'Prescription status is shown up front',
+        'b3_desc'  => 'Medicines that require a prescription are marked as such before you set out, not at the counter.',
+        'b4_title' => 'Reservation where the pharmacy offers it',
+        'b4_desc'  => 'Some pharmacies accept a short hold on an item. Where that is enabled, you can ask for one from the result itself.',
+        'b5_title' => 'Distance and opening hours',
+        'b5_desc'  => 'Results are ordered by how far away they are and show whether the pharmacy is open, so a match is an actionable one.',
+        'b6_title' => 'Stale stock is withheld, not shown',
+        'b6_desc'  => 'When a pharmacy stops updating an item, it drops out of results rather than lingering as a false positive.',
+
+        'safety_title' => 'What a listing does and does not mean',
+        'safety_desc'  => 'A listing is a pharmacy\'s own report of what it held at a moment in time — it is not a reservation and not a guarantee. Stock moves. Always check the update time, and call ahead for anything urgent.',
+
+        'publish_label' => 'For pharmacies',
+        'publish_body'  => 'Pharmacies publish stock from the OpesCare pharmacy portal, or push it directly from an existing system through the Connect API. There is no separate inventory system to run and no data-entry burden beyond what you already track.',
+
+        'cta_title'     => 'Medicines are searched from the patient app.',
+        'cta_body'      => 'Browse the verified facility directory on the web, or create a Health ID to search stock from your phone.',
+        'btn_care_map'  => 'Open the Care Map',
+        'btn_pharmacies'=> 'For pharmacies',
+    ],
+
+    /* ── Network → Blood Finder ─────────────────────── */
+    'network_blood' => [
+        'page_title'       => 'Blood Finder | OpesCare Network',
+        'meta_description' => 'Find available blood by group and component across verified hospitals and blood banks on the OpesCare network, and raise an urgent need without exposing patient identity.',
+        'badge'            => 'Network service',
+        'hero_title'       => 'Find available blood through the connected network.',
+        'hero_subtitle'    => 'Verified hospitals and blood banks publish availability by group and component, so a clinician searching for compatible blood is reading the network rather than working the phone.',
+
+        'b1_title' => 'Verified hospitals and blood banks only',
+        'b1_desc'  => 'Publishing is limited to facilities with a licence on record. There is no informal or unverified supply in these results.',
+        'b2_title' => 'Search by group and component',
+        'b2_desc'  => 'Whole blood, red cells, plasma and platelets are searched separately, because a unit of one is not a substitute for another.',
+        'b3_title' => 'Raise an urgent need',
+        'b3_desc'  => 'A facility can publish an urgent requirement to the network without exposing the identity of the patient it is for.',
+        'b4_title' => 'Reservation and transfer',
+        'b4_desc'  => 'A holding facility can reserve units against a request and record the transfer, so two facilities are not counting the same unit.',
+        'b5_title' => 'Chain of custody',
+        'b5_desc'  => 'Every reservation, release and transfer is recorded against the unit, so where it went is answerable afterwards.',
+        'b6_title' => 'Unscreened and stale units are excluded',
+        'b6_desc'  => 'A unit that has not passed screening, or whose facility has stopped reporting, is withheld from results rather than shown as available.',
+
+        'safety_title' => 'Clinical responsibility stays with the clinician',
+        'safety_desc'  => 'OpesCare reports what a facility has published. It does not cross-match, does not clear a unit for transfusion, and does not replace a clinical decision. Compatibility testing, handling and transfusion remain the responsibility of qualified healthcare professionals.',
+
+        'publish_label' => 'For hospitals and blood banks',
+        'publish_body'  => 'Facilities publish availability from the OpesCare portal, or sync it from an existing blood-bank system through the Connect API. Published counts refresh the patient-facing network automatically.',
+
+        'cta_title'     => 'Blood search is for authorised providers.',
+        'cta_body'      => 'Browse verified facilities on the Care Map, or talk to us about connecting your hospital or blood bank to the network.',
+        'btn_care_map'  => 'Open the Care Map',
+        'btn_hospitals' => 'For hospitals & clinics',
+    ],
     'faq' => [
         'page_title'  => 'Frequently Asked Questions | OpesCare',
         'meta_description' => 'Answers to the most common questions about OpesCare Health ID, data privacy, platform integration, and clinical access.',
@@ -1613,12 +1678,21 @@ return [
         'cta_button'  => 'Contact Support',
         'categories'  => [
             [
+                'icon'  => 'network',
+                'title' => 'What OpesCare Is',
+                'items' => [
+                    ['q' => 'Is OpesCare a hospital management system?', 'a' => 'No. OpesCare connects health systems; it does not ask every facility to run the same software. It is a health identity and interoperability layer — one Health ID, one patient index, and a consented exchange between the systems a facility already uses.'],
+                    ['q' => 'Is OpesCare bilingual?', 'a' => 'Yes. Every screen, notification and document exists in English and French, and the two are kept strictly in step. A patient or clinician can switch language at any point without losing where they were.'],
+                ],
+            ],
+            [
                 'icon'  => 'id-card',
                 'title' => 'Health ID',
                 'items' => [
                     ['q' => 'What is an OpesCare Health ID?',              'a' => 'An OpesCare Health ID is a unique digital identifier that lets you carry your approved medical history with you across all partner healthcare facilities. It links your records — visits, labs, prescriptions, immunisations — into a single verified timeline.'],
                     ['q' => 'How do I get my Health ID?',                  'a' => 'Create an OpesCare account on the registration page. Your Health ID is generated automatically and linked to your verified profile. You can view and share it from your patient portal.'],
                     ['q' => 'Can my Health ID be used offline?',           'a' => 'Yes. Your Health ID generates a QR code that providers can scan even without an internet connection, subject to later online verification.'],
+                    ['q' => 'Does the QR code contain my full medical record?', 'a' => 'No. The QR code carries only a secure identifier. It resolves to your record through an authorised, consented lookup — scanning it on its own exposes no medical history.'],
                 ],
             ],
             [
@@ -1628,6 +1702,7 @@ return [
                     ['q' => 'Who can see my medical records?',             'a' => 'Only providers you have explicitly authorised. Every access is recorded in your access log, visible in your patient portal. You can revoke access at any time.'],
                     ['q' => 'How does OpesCare protect my data?',          'a' => 'OpesCare uses AES-256 encryption at rest and TLS 1.3 in transit. All clinical data is stored in HIPAA-compliant data centres with redundant backups. We undergo regular third-party security audits.'],
                     ['q' => 'Does OpesCare sell my data?',                 'a' => 'Absolutely not. OpesCare never sells, rents, or shares your personal or medical data with third parties for commercial purposes. Your data belongs to you.'],
+                    ['q' => 'What happens in an emergency?', 'a' => 'When consent cannot be obtained, an approved provider can open a limited emergency profile — identity, blood group, allergies, active conditions, current medication and an emergency contact. Break-glass access requires a stated reason, is recorded, alerts your account, and is reviewed afterwards.'],
                 ],
             ],
             [
@@ -1636,6 +1711,14 @@ return [
                 'items' => [
                     ['q' => 'How can a hospital join OpesCare?',           'a' => 'Contact our partnerships team via partners@opescare.com or use the contact form. Our integration team will guide you through the onboarding process, including API setup and staff training.'],
                     ['q' => 'Which systems does OpesCare integrate with?', 'a' => 'OpesCare integrates with major HIS/EMR systems via HL7 FHIR R4, our REST API, or the Bridge Agent for legacy systems. We also support flat-file and CSV imports for onboarding historical records.'],
+                ],
+            ],
+            [
+                'icon'  => 'map-pin',
+                'title' => 'Network Services',
+                'items' => [
+                    ['q' => 'Can pharmacies show medicine availability?', 'a' => 'Yes. Verified pharmacies and hospital pharmacies publish stock to the network, so a patient can see who holds a medicine before travelling. Every listing shows when it was last updated, and stock that has gone stale is withheld rather than shown as available.'],
+                    ['q' => 'Can hospitals show blood availability?', 'a' => 'Yes. Verified hospitals and blood banks publish availability by blood group and component, and can raise an urgent need without exposing any patient identity. Unscreened or stale units are excluded, and every transfer stays in the hands of qualified professionals.'],
                 ],
             ],
             [

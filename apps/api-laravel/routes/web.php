@@ -38,7 +38,13 @@ Route::get('/.well-known/oauth-authorization-server', [\App\Http\Controllers\Wel
 
 // Root / Landing
 Route::get('/', [PublicPageController::class, 'index'])->name('public.landing');
-Route::get('/home2', [PublicPageController::class, 'home2'])->name('public.home2');
+
+// Network services — the patient-facing discovery layer. These pages carry the
+// medicine and blood availability detail that used to be homepage sections.
+Route::prefix('network')->group(function () {
+    Route::get('/medicine-finder', [PublicPageController::class, 'networkMedicineFinder'])->name('public.network.medicine-finder');
+    Route::get('/blood-finder', [PublicPageController::class, 'networkBloodFinder'])->name('public.network.blood-finder');
+});
 
 // Core Institutional Pages
 Route::get('/about', [PublicPageController::class, 'about'])->name('public.about');

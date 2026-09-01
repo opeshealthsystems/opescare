@@ -48,15 +48,40 @@
                 <span>OpesCare</span>
             </a>
 
+            {{--
+                Five groups, mirroring how the product actually divides:
+                CORE (Platform) · NETWORK · CONNECT (Interoperability) ·
+                who it is for (Solutions) · and the developer surface.
+            --}}
             <nav class="nav">
                 <div class="nav-dropdown">
-                    <a href="{{ route('public.how-it-works') }}" class="nav-link dropdown-trigger">{{ __('landing.nav.product', [], app()->getLocale()) ?: 'Product' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
+                    <a href="{{ route('public.how-it-works') }}" class="nav-link dropdown-trigger">{{ __('landing.nav.platform', [], app()->getLocale()) ?: 'Platform' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
                     <div class="dropdown-menu">
-                        <a href="{{ route('public.how-it-works') }}" class="dropdown-item"><i data-lucide="git-branch-plus" class="nav-icon"></i>{{ __('landing.nav.how_it_works_link', [], app()->getLocale()) ?: 'How OpesCare Works' }}</a>
                         <a href="{{ route('public.solutions.patients') }}" class="dropdown-item"><i data-lucide="id-card" class="nav-icon"></i>{{ __('landing.nav.health_id', [], app()->getLocale()) ?: 'Health ID' }}</a>
-                        <a href="{{ route('public.solutions.patients') }}#timeline" class="dropdown-item"><i data-lucide="history" class="nav-icon"></i>{{ __('landing.footer.link_timeline', [], app()->getLocale()) ?: 'Patient Timeline' }}</a>
-                        <a href="{{ route('public.consent') }}" class="dropdown-item"><i data-lucide="shield-check" class="nav-icon"></i>{{ __('landing.nav.consent_access', [], app()->getLocale()) ?: 'Consent & Access' }}</a>
-                        <a href="{{ route('public.care-map') }}" class="dropdown-item"><i data-lucide="map-pin" class="nav-icon"></i>{{ __('landing.nav.care_map', [], app()->getLocale()) ?: 'Verified Care Map' }}</a>
+                        <a href="{{ route('public.how-it-works') }}" class="dropdown-item"><i data-lucide="git-branch-plus" class="nav-icon"></i>{{ __('landing.nav.how_it_works_link', [], app()->getLocale()) ?: 'How OpesCare Works' }}</a>
+                        <a href="{{ route('public.solutions.patients') }}#timeline" class="dropdown-item"><i data-lucide="history" class="nav-icon"></i>{{ __('landing.nav.health_record', [], app()->getLocale()) ?: 'Health Record' }}</a>
+                        <a href="{{ route('public.consent') }}" class="dropdown-item"><i data-lucide="shield-check" class="nav-icon"></i>{{ __('landing.nav.trust_access', [], app()->getLocale()) ?: 'Trust & Access' }}</a>
+                        <a href="{{ route('public.care-map.emergency') }}" class="dropdown-item"><i data-lucide="siren" class="nav-icon"></i>{{ __('landing.nav.emergency_access', [], app()->getLocale()) ?: 'Emergency Access' }}</a>
+                        <a href="{{ route('public.security') }}" class="dropdown-item"><i data-lucide="lock-keyhole" class="nav-icon"></i>{{ __('landing.nav.security_page', [], app()->getLocale()) ?: 'Security Standards' }}</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <a href="{{ route('public.care-map') }}" class="nav-link dropdown-trigger">{{ __('landing.nav.network', [], app()->getLocale()) ?: 'Network' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="{{ route('public.network.medicine-finder') }}" class="dropdown-item"><i data-lucide="map-pin" class="nav-icon"></i>{{ __('landing.nav.medicine_finder', [], app()->getLocale()) ?: 'Medicine Finder' }}</a>
+                        <a href="{{ route('public.network.blood-finder') }}" class="dropdown-item"><i data-lucide="droplet" class="nav-icon"></i>{{ __('landing.nav.blood_finder', [], app()->getLocale()) ?: 'Blood Finder' }}</a>
+                        <a href="{{ route('public.care-map') }}" class="dropdown-item"><i data-lucide="hospital" class="nav-icon"></i>{{ __('landing.nav.connected_facilities', [], app()->getLocale()) ?: 'Connected Facilities' }}</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <a href="{{ route('public.interoperability') }}" class="nav-link dropdown-trigger">{{ __('landing.nav.interop', [], app()->getLocale()) ?: 'Interoperability' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="{{ route('public.interoperability') }}" class="dropdown-item"><i data-lucide="network" class="nav-icon"></i>{{ __('landing.nav.interop_overview', [], app()->getLocale()) ?: 'Overview' }}</a>
+                        <a href="{{ route('docs.api') }}" class="dropdown-item"><i data-lucide="braces" class="nav-icon"></i>Connect API</a>
+                        <a href="{{ route('docs.sdk') }}" class="dropdown-item"><i data-lucide="code-2" class="nav-icon"></i>SDK</a>
+                        <a href="{{ route('docs.widget') }}" class="dropdown-item"><i data-lucide="panel-top" class="nav-icon"></i>Widget</a>
+                        <a href="{{ route('docs.bridge') }}" class="dropdown-item"><i data-lucide="cpu" class="nav-icon"></i>Bridge Agent</a>
+                        <a href="{{ route('docs.webhooks') }}" class="dropdown-item"><i data-lucide="radio-tower" class="nav-icon"></i>Webhooks</a>
                     </div>
                 </div>
                 <div class="nav-dropdown">
@@ -64,38 +89,30 @@
                     <div class="dropdown-menu">
                         <a href="{{ route('public.solutions.patients') }}" class="dropdown-item"><i data-lucide="user" class="nav-icon"></i>{{ __('landing.nav.for_patients', [], app()->getLocale()) ?: 'For Patients' }}</a>
                         <a href="{{ route('public.solutions.hospitals') }}" class="dropdown-item"><i data-lucide="hospital" class="nav-icon"></i>{{ __('landing.nav.for_hospitals', [], app()->getLocale()) ?: 'For Hospitals &amp; Clinics' }}</a>
-                        <a href="{{ route('public.solutions.pharmacies') }}" class="dropdown-item"><i data-lucide="pill" class="nav-icon"></i>{{ __('landing.nav.for_pharmacies', [], app()->getLocale()) ?: 'For Pharmacies' }}</a>
                         <a href="{{ route('public.solutions.laboratories') }}" class="dropdown-item"><i data-lucide="flask-conical" class="nav-icon"></i>{{ __('landing.nav.for_labs', [], app()->getLocale()) ?: 'For Laboratories' }}</a>
-                        <a href="{{ route('public.solutions.insurers') }}" class="dropdown-item"><i data-lucide="shield" class="nav-icon"></i>{{ __('landing.nav.for_insurers', [], app()->getLocale()) ?: 'For Insurers' }}</a>
-                        <a href="{{ route('public.solutions.public-health') }}" class="dropdown-item"><i data-lucide="globe" class="nav-icon"></i>{{ __('landing.nav.for_public_health', [], app()->getLocale()) ?: 'For Public Health' }}</a>
+                        <a href="{{ route('public.solutions.pharmacies') }}" class="dropdown-item"><i data-lucide="pill" class="nav-icon"></i>{{ __('landing.nav.for_pharmacies', [], app()->getLocale()) ?: 'For Pharmacies' }}</a>
+                        <a href="{{ route('public.solutions.insurers') }}" class="dropdown-item"><i data-lucide="heart-handshake" class="nav-icon"></i>{{ __('landing.nav.for_insurers', [], app()->getLocale()) ?: 'For Insurers' }}</a>
+                        <a href="{{ route('public.solutions.public-health') }}" class="dropdown-item"><i data-lucide="landmark" class="nav-icon"></i>{{ __('landing.nav.for_public_health', [], app()->getLocale()) ?: 'For Public Health' }}</a>
                     </div>
                 </div>
                 <div class="nav-dropdown">
-                    <a href="{{ route('public.interoperability') }}" class="nav-link dropdown-trigger">{{ __('landing.nav.interop', [], app()->getLocale()) ?: 'Interoperability' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
+                    <a href="{{ route('public.developers') }}" class="nav-link dropdown-trigger">{{ __('landing.nav.developers', [], app()->getLocale()) ?: 'Developers' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
                     <div class="dropdown-menu">
-                        <a href="{{ route('public.interoperability') }}" class="dropdown-item"><i data-lucide="network" class="nav-icon"></i>{{ __('landing.nav.interop_overview', [], app()->getLocale()) ?: 'Overview' }}</a>
-                        <a href="{{ route('docs.index') }}" class="dropdown-item" style="font-weight:600;color:var(--color-primary,#4F46E5);"><i data-lucide="book-open" class="nav-icon"></i>Developer Docs</a>
-                        <a href="{{ route('docs.api') }}" class="dropdown-item"><i data-lucide="braces" class="nav-icon"></i>Connect API</a>
-                        <a href="{{ route('docs.sdk') }}" class="dropdown-item"><i data-lucide="code-2" class="nav-icon"></i>SDK</a>
-                        <a href="{{ route('docs.widget') }}" class="dropdown-item"><i data-lucide="panel-top" class="nav-icon"></i>Widget</a>
-                        <a href="{{ route('docs.bridge') }}" class="dropdown-item"><i data-lucide="cpu" class="nav-icon"></i>Bridge Agent</a>
-                        <a href="{{ route('docs.webhooks') }}" class="dropdown-item"><i data-lucide="radio-tower" class="nav-icon"></i>Webhooks</a>
+                        <a href="{{ route('docs.index') }}" class="dropdown-item"><i data-lucide="book-open" class="nav-icon"></i>Developer Docs</a>
                         <a href="{{ route('docs.playground') }}" class="dropdown-item"><i data-lucide="play-circle" class="nav-icon"></i>API Playground</a>
+                        <a href="{{ route('public.pricing') }}" class="dropdown-item"><i data-lucide="receipt" class="nav-icon"></i>{{ __('pricing.nav_label', [], app()->getLocale()) ?: 'Pricing' }}</a>
                     </div>
                 </div>
-                <a href="{{ route('public.security') }}" class="nav-link">{{ __('landing.nav.security', [], app()->getLocale()) ?: 'Security' }}</a>
-                <a href="{{ route('public.pricing') }}" class="nav-link">{{ __('pricing.nav_label', [], app()->getLocale()) ?: 'Pricing' }}</a>
-                <a href="{{ route('public.request-demo') }}" class="nav-link">{{ __('leads.demo.nav_label', [], app()->getLocale()) ?: 'Request a demo' }}</a>
                 <div class="nav-dropdown">
                     <a href="{{ route('public.help') }}" class="nav-link dropdown-trigger">{{ __('landing.nav.resources', [], app()->getLocale()) ?: 'Resources' }} <i data-lucide="chevron-down" class="icon-xs"></i></a>
                     <div class="dropdown-menu">
                         <a href="{{ route('public.faq') }}" class="dropdown-item"><i data-lucide="help-circle" class="nav-icon"></i>{{ __('landing.nav.faq', [], app()->getLocale()) ?: 'FAQ' }}</a>
                         <a href="{{ route('public.help') }}" class="dropdown-item"><i data-lucide="book-open" class="nav-icon"></i>{{ __('landing.nav.help_center', [], app()->getLocale()) ?: 'Help Center' }}</a>
                         <a href="{{ route('public.status') }}" class="dropdown-item"><i data-lucide="activity" class="nav-icon"></i>{{ __('landing.nav.system_status', [], app()->getLocale()) ?: 'System Status' }}</a>
+                        <a href="{{ route('public.request-demo') }}" class="dropdown-item"><i data-lucide="presentation" class="nav-icon"></i>{{ __('leads.demo.nav_label', [], app()->getLocale()) ?: 'Request a demo' }}</a>
                         <a href="{{ route('public.contact') }}" class="dropdown-item"><i data-lucide="headset" class="nav-icon"></i>{{ __('landing.nav.contact_support', [], app()->getLocale()) ?: 'Contact Support' }}</a>
                     </div>
                 </div>
-                <a href="{{ route('public.contact') }}" class="nav-link">{{ __('landing.nav.contact', [], app()->getLocale()) ?: 'Contact' }}</a>
             </nav>
             
             <div class="header-actions">
@@ -132,21 +149,19 @@
                 </div>
                 <nav class="mobile-nav">
                     <div class="mobile-nav-group">
-                        <span class="mobile-nav-label">{{ __('landing.nav.product', [], app()->getLocale()) ?: 'Product' }}</span>
-                        <a href="{{ route('public.how-it-works') }}" class="mobile-nav-link">{{ __('landing.nav.how_it_works_link', [], app()->getLocale()) ?: 'How OpesCare Works' }}</a>
+                        <span class="mobile-nav-label">{{ __('landing.nav.platform', [], app()->getLocale()) ?: 'Platform' }}</span>
                         <a href="{{ route('public.solutions.patients') }}" class="mobile-nav-link">{{ __('landing.nav.health_id', [], app()->getLocale()) ?: 'Health ID' }}</a>
-                        <a href="{{ route('public.consent') }}" class="mobile-nav-link">{{ __('landing.nav.consent_access', [], app()->getLocale()) ?: 'Consent &amp; Access' }}</a>
-                        <a href="{{ route('public.care-map') }}" class="mobile-nav-link">{{ __('landing.nav.care_map', [], app()->getLocale()) ?: 'Verified Care Map' }}</a>
+                        <a href="{{ route('public.how-it-works') }}" class="mobile-nav-link">{{ __('landing.nav.how_it_works_link', [], app()->getLocale()) ?: 'How OpesCare Works' }}</a>
+                        <a href="{{ route('public.solutions.patients') }}#timeline" class="mobile-nav-link">{{ __('landing.nav.health_record', [], app()->getLocale()) ?: 'Health Record' }}</a>
+                        <a href="{{ route('public.consent') }}" class="mobile-nav-link">{{ __('landing.nav.trust_access', [], app()->getLocale()) ?: 'Trust &amp; Access' }}</a>
                         <a href="{{ route('public.care-map.emergency') }}" class="mobile-nav-link">{{ __('landing.nav.emergency_access', [], app()->getLocale()) ?: 'Emergency Access' }}</a>
+                        <a href="{{ route('public.security') }}" class="mobile-nav-link">{{ __('landing.nav.security_page', [], app()->getLocale()) ?: 'Security Standards' }}</a>
                     </div>
                     <div class="mobile-nav-group">
-                        <span class="mobile-nav-label">{{ __('landing.nav.solutions', [], app()->getLocale()) ?: 'Solutions' }}</span>
-                        <a href="{{ route('public.solutions.patients') }}" class="mobile-nav-link">{{ __('landing.nav.for_patients', [], app()->getLocale()) ?: 'For Patients' }}</a>
-                        <a href="{{ route('public.solutions.hospitals') }}" class="mobile-nav-link">{{ __('landing.nav.for_hospitals', [], app()->getLocale()) ?: 'For Hospitals &amp; Clinics' }}</a>
-                        <a href="{{ route('public.solutions.pharmacies') }}" class="mobile-nav-link">{{ __('landing.nav.for_pharmacies', [], app()->getLocale()) ?: 'For Pharmacies' }}</a>
-                        <a href="{{ route('public.solutions.laboratories') }}" class="mobile-nav-link">{{ __('landing.nav.for_labs', [], app()->getLocale()) ?: 'For Laboratories' }}</a>
-                        <a href="{{ route('public.solutions.insurers') }}" class="mobile-nav-link">{{ __('landing.nav.for_insurers', [], app()->getLocale()) ?: 'For Insurers' }}</a>
-                        <a href="{{ route('public.solutions.public-health') }}" class="mobile-nav-link">{{ __('landing.nav.for_public_health', [], app()->getLocale()) ?: 'For Public Health' }}</a>
+                        <span class="mobile-nav-label">{{ __('landing.nav.network', [], app()->getLocale()) ?: 'Network' }}</span>
+                        <a href="{{ route('public.network.medicine-finder') }}" class="mobile-nav-link">{{ __('landing.nav.medicine_finder', [], app()->getLocale()) ?: 'Medicine Finder' }}</a>
+                        <a href="{{ route('public.network.blood-finder') }}" class="mobile-nav-link">{{ __('landing.nav.blood_finder', [], app()->getLocale()) ?: 'Blood Finder' }}</a>
+                        <a href="{{ route('public.care-map') }}" class="mobile-nav-link">{{ __('landing.nav.connected_facilities', [], app()->getLocale()) ?: 'Connected Facilities' }}</a>
                     </div>
                     <div class="mobile-nav-group">
                         <span class="mobile-nav-label">{{ __('landing.nav.interop', [], app()->getLocale()) ?: 'Interoperability' }}</span>
@@ -154,10 +169,20 @@
                         <a href="{{ route('public.developers') }}" class="mobile-nav-link">{{ __('landing.nav.api_sdk', [], app()->getLocale()) ?: 'Connect API &amp; SDK' }}</a>
                     </div>
                     <div class="mobile-nav-group">
+                        <span class="mobile-nav-label">{{ __('landing.nav.solutions', [], app()->getLocale()) ?: 'Solutions' }}</span>
+                        <a href="{{ route('public.solutions.patients') }}" class="mobile-nav-link">{{ __('landing.nav.for_patients', [], app()->getLocale()) ?: 'For Patients' }}</a>
+                        <a href="{{ route('public.solutions.hospitals') }}" class="mobile-nav-link">{{ __('landing.nav.for_hospitals', [], app()->getLocale()) ?: 'For Hospitals &amp; Clinics' }}</a>
+                        <a href="{{ route('public.solutions.laboratories') }}" class="mobile-nav-link">{{ __('landing.nav.for_labs', [], app()->getLocale()) ?: 'For Laboratories' }}</a>
+                        <a href="{{ route('public.solutions.pharmacies') }}" class="mobile-nav-link">{{ __('landing.nav.for_pharmacies', [], app()->getLocale()) ?: 'For Pharmacies' }}</a>
+                        <a href="{{ route('public.solutions.insurers') }}" class="mobile-nav-link">{{ __('landing.nav.for_insurers', [], app()->getLocale()) ?: 'For Insurers' }}</a>
+                        <a href="{{ route('public.solutions.public-health') }}" class="mobile-nav-link">{{ __('landing.nav.for_public_health', [], app()->getLocale()) ?: 'For Public Health' }}</a>
+                    </div>
+                    <div class="mobile-nav-group">
                         <span class="mobile-nav-label">{{ __('landing.nav.resources', [], app()->getLocale()) ?: 'Resources' }}</span>
                         <a href="{{ route('public.faq') }}" class="mobile-nav-link">{{ __('landing.nav.faq', [], app()->getLocale()) ?: 'FAQ' }}</a>
                         <a href="{{ route('public.help') }}" class="mobile-nav-link">{{ __('landing.nav.help_center', [], app()->getLocale()) ?: 'Help Center' }}</a>
                         <a href="{{ route('public.status') }}" class="mobile-nav-link">{{ __('landing.nav.system_status', [], app()->getLocale()) ?: 'System Status' }}</a>
+                        <a href="{{ route('public.request-demo') }}" class="mobile-nav-link">{{ __('leads.demo.nav_label', [], app()->getLocale()) ?: 'Request a demo' }}</a>
                         <a href="{{ route('public.contact') }}" class="mobile-nav-link">{{ __('landing.nav.contact_support', [], app()->getLocale()) ?: 'Contact Support' }}</a>
                     </div>
                     <div class="mobile-nav-group">
@@ -209,8 +234,8 @@
                     <li><a href="{{ route('public.solutions.patients') }}#timeline" class="footer-link">{{ __('landing.footer.link_timeline', [], app()->getLocale()) ?: 'Patient Timeline' }}</a></li>
                     <li><a href="{{ route('public.consent') }}" class="footer-link">{{ __('landing.footer.link_consent', [], app()->getLocale()) ?: 'Consent Control' }}</a></li>
                     <li><a href="{{ route('public.care-map.emergency') }}" class="footer-link">{{ __('landing.footer.link_emergency', [], app()->getLocale()) ?: 'Emergency Access' }}</a></li>
-                    <li><a href="{{ route('public.solutions.pharmacies') }}" class="footer-link">{{ __('landing.footer.link_medication', [], app()->getLocale()) ?: 'Medication Availability' }}</a></li>
-                    <li><a href="{{ route('public.care-map') }}" class="footer-link">{{ __('landing.footer.link_blood', [], app()->getLocale()) ?: 'Blood Network' }}</a></li>
+                    <li><a href="{{ route('public.network.medicine-finder') }}" class="footer-link">{{ __('landing.footer.link_medication', [], app()->getLocale()) ?: 'Medicine Finder' }}</a></li>
+                    <li><a href="{{ route('public.network.blood-finder') }}" class="footer-link">{{ __('landing.footer.link_blood', [], app()->getLocale()) ?: 'Blood Finder' }}</a></li>
                 </ul>
             </div>
 

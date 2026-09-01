@@ -5,10 +5,10 @@
 @section('content')
     <header class="content-header">
         <div class="container">
-            <div class="badge" style="background-color: var(--color-primary-light); color: var(--color-primary); margin-bottom: 1rem;">{{ __(‘public.sol_labs.badge’) }}</div>
-            <h1>{{ __(‘public.sol_labs.hero_title’) }}</h1>
+            <div class="badge" style="background-color: var(--color-primary-light); color: var(--color-primary); margin-bottom: 1rem;">{{ __('public.sol_labs.badge') }}</div>
+            <h1>{{ __('public.sol_labs.hero_title') }}</h1>
             <p class="text-muted" style="max-width: 800px; margin: 0 auto; font-size: 1.25rem;">
-                {{ __(‘public.sol_labs.hero_subtitle’) }}
+                {{ __('public.sol_labs.hero_subtitle') }}
             </p>
         </div>
     </header>

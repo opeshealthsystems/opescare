@@ -82,7 +82,7 @@
                         </td>
                         <td data-label="{{ __('public.adm_sub_idx_col_period') }}">
                             <div>{{ $sub->current_period_start->format('d M Y') }}</div>
-                            <div class="td-muted">â†’ {{ $sub->current_period_end->format('d M Y') }}</div>
+                            <div class="td-muted">→ {{ $sub->current_period_end->format('d M Y') }}</div>
                         </td>
                         <td data-label="{{ __('public.adm_sub_idx_col_days_left') }}">
                             @php $days = $sub->daysUntilExpiry(); $dc = $days < 7 ? 'danger' : ($days < 30 ? 'warning' : 'success'); @endphp
