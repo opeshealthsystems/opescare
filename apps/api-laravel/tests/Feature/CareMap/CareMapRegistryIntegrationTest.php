@@ -158,7 +158,7 @@ class CareMapRegistryIntegrationTest extends TestCase
             registryEntryId: $registryEntry->id,
         );
 
-        $this->assertEquals('submitted',        $claim->claim_status);
+        $this->assertEquals('submitted',        $claim->claim_status->value);
         $this->assertEquals($registryEntry->id, $claim->registry_entry_id);
 
         $this->service->approveClaim($claim->id, $admin->id);
@@ -173,7 +173,11 @@ class CareMapRegistryIntegrationTest extends TestCase
         $careFacility = CareFacility::where('facility_id', $facility->id)->first();
         $this->assertNotNull($careFacility, 'care_facilities entry should be created on approval');
         $this->assertEquals('active',            $careFacility->listing_status);
-        $this->assertEquals('partner_verified',  $careFacility->verification_status);
+        // A claim is not a verification. Approval marks the listing claimed and
+        // leaves verification_status exactly where it was.
+        $this->assertEquals('unverified',        $careFacility->verification_status);
+        $this->assertEquals($claimant->id,       $careFacility->claimed_by_user_id);
+        $this->assertNotNull($careFacility->claimed_at);
         $this->assertEquals($registryEntry->name, $careFacility->facility_name);
         $this->assertEqualsWithDelta(
             (float) $registryEntry->gps_lat,
@@ -269,7 +273,9 @@ class CareMapRegistryIntegrationTest extends TestCase
         $stub->refresh();
         $this->assertEquals($facility->id,     $stub->facility_id,
             'Stub facility_id must be set to the operational Facility on approval');
-        $this->assertEquals('partner_verified', $stub->verification_status);
+        $this->assertEquals('unverified',       $stub->verification_status,
+            'Approving a claim must never mark a listing verified');
+        $this->assertEquals($claimant->id,      $stub->claimed_by_user_id);
         $this->assertEquals('active',           $stub->listing_status);
     }
 
@@ -306,6 +312,8 @@ class CareMapRegistryIntegrationTest extends TestCase
 
         $careFacility->refresh();
         $this->assertEquals($claimant->id,      $careFacility->partner_id);
-        $this->assertEquals('partner_verified',  $careFacility->verification_status);
+        $this->assertEquals($claimant->id,      $careFacility->claimed_by_user_id);
+        $this->assertEquals('unverified',       $careFacility->verification_status,
+            'Approving a claim must never mark a listing verified');
     }
 }

@@ -118,12 +118,12 @@ html,body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:va
         @forelse($pendingClaims as $claim)
           <div class="list-row">
             <div class="list-row__main">
-              <div class="list-row__name">{{ $claim->facility->facility_name }}</div>
+              <div class="list-row__name">{{ $claim->careFacility?->facility_name ?? $claim->facility?->name ?? '—' }}</div>
               <div class="list-row__sub">Claimant: {{ $claim->claimant->name ?? 'User Request' }}</div>
             </div>
             <div class="list-row__actions">
               <span class="badge-pill badge-pill--warn">SUBMITTED</span>
-              <button class="btn-action"><i data-lucide="shield-check"></i> Review</button>
+              <a href="{{ route('admin.care-map.review') }}" class="btn-action"><i data-lucide="shield-check"></i> Review</a>
             </div>
           </div>
         @empty

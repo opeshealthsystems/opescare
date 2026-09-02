@@ -362,6 +362,13 @@
   $typeLabel = ucwords(str_replace('_', ' ', $type));
   $verified = in_array($facility->verification_status ?? '', ['license_verified','government_verified']);
   $govVerified = ($facility->verification_status ?? '') === 'government_verified';
+  // 'N/A' sits in phone_primary on 1,571 of 1,863 rows — a NOT NULL placeholder
+  // from the registry extract, not a number. Never render it, and never offer a
+  // tel: link to it.
+  $phone      = \App\Models\CareFacility::realValue($facility->phone_primary);
+  $phone2     = \App\Models\CareFacility::realValue($facility->phone_secondary);
+  // Claimed is its own, weaker fact than verified — see CareFacility::isClaimed().
+  $claimed    = $facility->isClaimed();
   $typeColors = [
     'hospital'   => '#0891B2','clinic'=>'#059669','pharmacy'=>'#D97706',
     'laboratory' => '#7C3AED','blood_bank'=>'#DC2626','diagnostic'=>'#0F4C81','other'=>'#64748B',
@@ -405,6 +412,7 @@
 .hero-badge-gov{display:inline-flex;align-items:center;gap:.25rem;padding:.22rem .65rem;border-radius:50px;font-size:.7rem;font-weight:700;background:rgba(253,224,71,.15);border:1px solid rgba(253,224,71,.3);color:#FDE047}
 .hero-badge-verified{display:inline-flex;align-items:center;gap:.25rem;padding:.22rem .65rem;border-radius:50px;font-size:.7rem;font-weight:700;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);color:#6EE7B7}
 .hero-badge-emergency{display:inline-flex;align-items:center;gap:.25rem;padding:.22rem .65rem;border-radius:50px;font-size:.7rem;font-weight:800;background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.35);color:#FCA5A5}
+.hero-badge-claimed{display:inline-flex;align-items:center;gap:.25rem;padding:.22rem .65rem;border-radius:50px;font-size:.7rem;font-weight:700;background:rgba(255,255,255,.12);border:1px dashed rgba(255,255,255,.4);color:rgba(255,255,255,.9)}
 .hero-badge-live{display:inline-flex;align-items:center;gap:.25rem;padding:.22rem .65rem;border-radius:50px;font-size:.7rem;font-weight:700;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.85)}
 .hero-badges-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem}
 .hero-icon-wrap{width:62px;height:62px;border-radius:15px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(8px)}
@@ -481,10 +489,10 @@
               {{ collect([$facility->address, $facility->city, $facility->region])->filter()->implode(', ') }}
             </div>
           @endif
-          @if($facility->phone_primary)
+          @if($phone)
             <div class="hero-meta-item">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-              {{ $facility->phone_primary }}
+              {{ $phone }}
             </div>
           @endif
           @if($facility->license_number)
@@ -505,6 +513,11 @@
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Verified
             </span>
           @endif
+          @if($claimed)
+            <span class="hero-badge-claimed" title="{{ __('caremap_claim.not_verified_note') }}">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>{{ __('caremap_claim.badge_claimed') }}
+            </span>
+          @endif
           @if($facility->emergency_contact)
             <span class="hero-badge-emergency">24 / 7 Emergency</span>
           @endif
@@ -517,8 +530,8 @@
 
     {{-- Hero action buttons --}}
     <div class="action-bar hero-actions-col">
-      @if($facility->phone_primary)
-        <a href="tel:{{ $facility->phone_primary }}" class="action-btn btn-call-hero">
+      @if($phone)
+        <a href="tel:{{ $phone }}" class="action-btn btn-call-hero">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           Call facility
         </a>
@@ -610,12 +623,12 @@
           <div class="section-title">Contact & Location</div>
           <div class="card">
             <div class="card-body">
-              @if($facility->phone_primary)
+              @if($phone)
                 <div class="info-row">
                   <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                   <span class="info-label">Phone</span>
-                  <span class="info-value"><a href="tel:{{ $facility->phone_primary }}">{{ $facility->phone_primary }}</a>
-                    @if($facility->phone_secondary) · <a href="tel:{{ $facility->phone_secondary }}">{{ $facility->phone_secondary }}</a>@endif
+                  <span class="info-value"><a href="tel:{{ $phone }}">{{ $phone }}</a>
+                    @if($phone2) · <a href="tel:{{ $phone2 }}">{{ $phone2 }}</a>@endif
                   </span>
                 </div>
               @endif
@@ -899,10 +912,12 @@
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             Report inaccurate information
           </button>
-          <button onclick="showClaim()" class="sidebar-action-btn claim-btn">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            Claim this facility
-          </button>
+          @unless($claimed)
+            <a href="{{ route('public.care-map.claim', $facility->id) }}" class="sidebar-action-btn claim-btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              {{ __('caremap_claim.claim_heading') }}
+            </a>
+          @endunless
         </div>
       </div>
 
@@ -954,7 +969,7 @@ function closeModal(id) {
 }
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    ['modalReport','modalClaim'].forEach(closeModal);
+    closeModal('modalReport');
   }
 });
 
@@ -992,41 +1007,7 @@ document.getElementById('formReport').addEventListener('submit', async function(
   }
 });
 
-// ── Claim ─────────────────────────────────────────────────────────────────
-function showClaim() { openModal('modalClaim'); }
-
-@auth
-document.getElementById('formClaim')?.addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const btn  = document.getElementById('claimSubmitBtn');
-  const data = Object.fromEntries(new FormData(this));
-  btn.disabled = true; btn.textContent = 'Submitting…';
-
-  try {
-    const res = await fetch('/api/v1/facilities/{{ $facility->id }}/claim', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '', 'Accept': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    const json = await res.json();
-    if (res.ok) {
-      document.getElementById('claimFormBody').innerHTML = `
-        <div style="text-align:center;padding:2rem 0">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#0F4C81" stroke-width="1.5" style="margin:0 auto 1rem;display:block"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <p style="font-weight:700;color:#0F172A;margin-bottom:.375rem">Claim submitted</p>
-          <p style="font-size:.82rem;color:#64748B">We&rsquo;ll review your request and contact you within 2–3 business days. You may be asked to provide proof of authority.</p>
-        </div>`;
-      setTimeout(() => closeModal('modalClaim'), 3000);
-    } else {
-      btn.disabled = false; btn.textContent = @json(__('public.care_map_js_submit_claim', [], app()->getLocale()) ?: 'Submit claim');
-      alert(json.message ?? @json(__('public.care_map_js_generic_error', [], app()->getLocale()) ?: 'Something went wrong. Please try again.'));
-    }
-  } catch {
-    btn.disabled = false; btn.textContent = @json(__('public.care_map_js_submit_claim', [], app()->getLocale()) ?: 'Submit claim');
-    alert(@json(__('public.care_map_js_network_error', [], app()->getLocale()) ?: 'Network error. Please check your connection and try again.'));
-  }
-});
-@endauth
+// Claim is now a page, not a modal — see route('public.care-map.claim').
 
 // Map
 let facilityMap;
@@ -1205,78 +1186,6 @@ window.addEventListener('load', () => {
   </div>
 </div>
 
-{{-- ── Claim Modal ──────────────────────────────────────────────────────── --}}
-<div id="modalClaim" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="claimModalTitle"
-     onclick="if(event.target===this)closeModal('modalClaim')">
-  <div class="modal-box">
-    <div class="modal-hdr">
-      <div class="modal-hdr-icon modal-hdr-icon--claim">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      </div>
-      <h2 class="modal-title" id="claimModalTitle">Claim this listing</h2>
-      <button class="modal-close" onclick="closeModal('modalClaim')" aria-label="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>
-    </div>
-
-    <div id="claimFormBody">
-      @auth
-        {{-- Signed-in: show the claim form --}}
-        <form id="formClaim">
-          @csrf
-          <div class="modal-body">
-            <p style="font-size:.82rem;color:#64748B;margin-bottom:1rem;line-height:1.55">
-              Claiming <strong style="color:#0F172A">{{ $facility->facility_name }}</strong> lets you
-              manage its profile, update hours and services, and respond to reports.
-              You may be asked to provide proof of authority (e.g., business registration).
-            </p>
-
-            <div class="modal-field">
-              <label class="modal-label" for="claim_reason">Why are you claiming this listing?</label>
-              <select id="claim_reason_type" name="claim_reason_type" class="modal-select" required
-                      onchange="document.getElementById('claim_reason').value=this.options[this.selectedIndex].text!=='Select…'?this.options[this.selectedIndex].text:''">
-                <option value="">Select…</option>
-                <option value="owner">I am the owner or operator</option>
-                <option value="manager">I manage this facility on behalf of the owner</option>
-                <option value="authorized_rep">I am an authorised representative</option>
-              </select>
-            </div>
-
-            <div class="modal-field">
-              <label class="modal-label" for="claim_reason">Additional context <span style="font-weight:400;color:#94A3B8">(optional)</span></label>
-              <textarea id="claim_reason" name="claim_reason" class="modal-textarea"
-                        placeholder="Describe your role and any context that will help us verify your claim…"></textarea>
-              <div class="modal-hint">Submitting a false claim is a violation of OpesCare Terms of Service.</div>
-            </div>
-          </div>
-          <div class="modal-ftr">
-            <button type="button" class="modal-btn modal-btn-cancel" onclick="closeModal('modalClaim')">Cancel</button>
-            <button type="submit" id="claimSubmitBtn" class="modal-btn modal-btn-claim">Submit claim</button>
-          </div>
-        </form>
-      @else
-        {{-- Not signed in: gate --}}
-        <div class="modal-auth-gate">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#0F4C81" stroke-width="1.5">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          </svg>
-          <h3>Sign in to claim this listing</h3>
-          <p>
-            To claim <strong>{{ $facility->facility_name }}</strong> you need an OpesCare account.
-            Once signed in, you can submit your claim and manage this facility's profile.
-          </p>
-          <div class="auth-btns">
-            <a href="{{ route('login') }}?redirect={{ urlencode(url()->current()) }}" class="auth-btn auth-btn-primary">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-              Sign in
-            </a>
-            <a href="{{ route('register.organization') }}" class="auth-btn auth-btn-secondary">Create account</a>
-          </div>
-        </div>
-      @endauth
-    </div>
-  </div>
-</div>
 
 </body>
 </html>

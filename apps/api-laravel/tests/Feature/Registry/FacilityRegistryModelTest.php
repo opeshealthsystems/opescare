@@ -51,7 +51,11 @@ class FacilityRegistryModelTest extends TestCase
         $claim    = \App\Models\FacilityClaim::create([
             'facility_id'      => $facility->id,
             'claimant_user_id' => null,
-            'claim_status'     => 'pending',
+            // 'pending' was never one of this column's states — the migration
+            // documents submitted|under_review|approved|rejected|revoked and the
+            // column defaults to 'submitted'. App\Enums\FacilityClaimStatus now
+            // says so in code.
+            'claim_status'     => \App\Enums\FacilityClaimStatus::Submitted->value,
             'submitted_at'     => now(),
         ]);
 

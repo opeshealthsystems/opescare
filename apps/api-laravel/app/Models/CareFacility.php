@@ -117,11 +117,30 @@ class CareFacility extends Model
         'last_verified_at',
         'last_profile_update_at',
         'last_availability_update_at',
+        'claimed_by_user_id',
+        'claimed_at',
+        // Import provenance. Without these, a listing created from an approved
+        // import review carries no source_ref, and the next importer run — whose
+        // partial UNIQUE index on source_ref is the only thing stopping a second
+        // copy — would insert the same facility again.
+        'source_system',
+        'source_ref',
+        'source_attribution',
+        'source_synced_at',
     ];
+
+    /**
+     * The registry extract left this literal string in a NOT NULL column when
+     * it had no number. It is on 1,571 of 1,863 rows. It is not a phone number
+     * anyone can dial, so nothing may render it and no edit form may present it
+     * to a claimant as though it were theirs.
+     */
+    public const PHONE_PLACEHOLDER = 'N/A';
 
     protected $casts = [
         'latitude' => 'float',
         'longitude' => 'float',
+        'claimed_at' => 'datetime',
         'last_verified_at' => 'datetime',
         'last_profile_update_at' => 'datetime',
         'last_availability_update_at' => 'datetime',
@@ -164,6 +183,51 @@ class CareFacility extends Model
     public function claims()
     {
         return $this->hasMany(FacilityClaim::class, 'facility_id');
+    }
+
+    /** Claims made against this *listing* (as opposed to the operational tenant). */
+    public function listingClaims()
+    {
+        return $this->hasMany(FacilityClaim::class, 'care_facility_id');
+    }
+
+    public function claimedBy()
+    {
+        return $this->belongsTo(User::class, 'claimed_by_user_id');
+    }
+
+    /**
+     * The phone number, or null. `'N/A'` is a placeholder, not a number —
+     * see PHONE_PLACEHOLDER. Every caller that shows a phone to a human should
+     * go through here rather than reading the column.
+     */
+    public function dialablePhone(): ?string
+    {
+        return self::realValue($this->phone_primary);
+    }
+
+    /** Null out placeholder/blank values so a form shows an empty field. */
+    public static function realValue(?string $value): ?string
+    {
+        $value = trim((string) $value);
+
+        if ($value === '' || strcasecmp($value, self::PHONE_PLACEHOLDER) === 0) {
+            return null;
+        }
+
+        return $value;
+    }
+
+    /**
+     * Somebody has been approved to maintain this listing.
+     *
+     * Deliberately independent of `verification_status`: a claim is a person
+     * saying "this is mine", and that is not the same fact as OpesCare having
+     * verified the institution. Nothing in this directory is verified yet.
+     */
+    public function isClaimed(): bool
+    {
+        return $this->claimed_by_user_id !== null;
     }
 
     public function reports()
