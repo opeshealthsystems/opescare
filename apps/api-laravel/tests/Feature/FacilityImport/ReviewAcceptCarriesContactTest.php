@@ -117,4 +117,70 @@ class ReviewAcceptCarriesContactTest extends TestCase
         $this->assertSame(CareFacility::PHONE_PLACEHOLDER, $listing->phone_primary);
         $this->assertSame('Douala, Cameroon', $listing->address);
     }
+
+    /**
+     * Merging says "this is the row we already list" -- so the candidate's
+     * details must fill that row's gaps, not sit unused in the payload.
+     */
+    public function test_merging_fills_gaps_on_the_existing_listing(): void
+    {
+        $listing = \App\Models\CareFacility::forceCreate([
+            'facility_name'       => 'Pharmacie du Temple',
+            'facility_type'       => 'pharmacy',
+            'country_code'        => 'CM',
+            'region'              => 'Littoral',
+            'city'                => 'Douala',
+            'address'             => 'Douala',                       // just the town
+            'phone_primary'       => CareFacility::PHONE_PLACEHOLDER, // not a number
+            'verification_status' => 'unverified',
+            'listing_status'      => 'active',
+            'integration_status'  => 'none',
+        ]);
+
+        $review = $this->review([
+            'name'    => 'Pharmacie du Temple',
+            'phone'   => '+237233491615',
+            'address' => 'XW5P+54F, Nkongsamba',
+        ], 'gplaces:test-merge-gaps');
+        $review->forceFill(['matched_facility_id' => $listing->id])->save();
+
+        $merged = app(FacilityImportReviewService::class)->merge($review, (string) $this->admin()->id);
+
+        $this->assertSame('+237233491615', $merged->phone_primary);
+        $this->assertSame('XW5P+54F, Nkongsamba', $merged->address);
+        $this->assertNotNull($merged->latitude, 'the listing had no coordinates and the candidate did');
+        $this->assertSame('gplaces:test-merge-gaps', $merged->source_ref);
+    }
+
+    /** A real value on the existing row always wins. */
+    public function test_merging_never_overwrites_a_real_value(): void
+    {
+        $listing = \App\Models\CareFacility::forceCreate([
+            'facility_name'       => 'Pharmacie du Temple',
+            'facility_type'       => 'pharmacy',
+            'country_code'        => 'CM',
+            'region'              => 'Littoral',
+            'city'                => 'Douala',
+            'address'             => '92 Rue 1227, Akwa',
+            'phone_primary'       => '+237699000111',
+            'latitude'            => 4.05,
+            'longitude'           => 9.70,
+            'verification_status' => 'unverified',
+            'listing_status'      => 'active',
+            'integration_status'  => 'none',
+        ]);
+
+        $review = $this->review([
+            'name'    => 'Pharmacie du Temple',
+            'phone'   => '+237233491615',
+            'address' => 'XW5P+54F, Nkongsamba',
+        ], 'gplaces:test-merge-nooverwrite');
+        $review->forceFill(['matched_facility_id' => $listing->id])->save();
+
+        $merged = app(FacilityImportReviewService::class)->merge($review, (string) $this->admin()->id);
+
+        $this->assertSame('+237699000111', $merged->phone_primary, 'an existing real phone must survive');
+        $this->assertSame('92 Rue 1227, Akwa', $merged->address);
+        $this->assertEqualsWithDelta(4.05, (float) $merged->latitude, 0.0000001, 'existing coordinates must not move');
+    }
 }

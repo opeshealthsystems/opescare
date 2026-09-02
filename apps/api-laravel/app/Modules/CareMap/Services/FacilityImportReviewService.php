@@ -102,6 +102,70 @@ class FacilityImportReviewService
     }
 
     /**
+     * Fill empty fields on the merged-into listing from the candidate.
+     *
+     * Writes only where the existing row has nothing usable, and records each
+     * field it touches in `facility_update_audits` so the change is traceable
+     * to the review that caused it.
+     */
+    private function fillGapsFromCandidate(
+        CareFacility $listing,
+        FacilityImportReview $review,
+        string $adminId
+    ): void {
+        $changes = [];
+
+        if (CareFacility::realValue($listing->phone_primary) === null) {
+            $phone = $this->payloadPhone($review);
+
+            if ($phone !== null) {
+                $changes['phone_primary'] = $phone;
+            }
+        }
+
+        // An address that merely repeats the town carries no more information
+        // than the city column already does.
+        $currentAddress = CareFacility::realValue($listing->address);
+        $addressIsJustTheTown = $currentAddress === null
+            || mb_strtolower(trim($currentAddress)) === mb_strtolower(trim((string) $listing->city));
+
+        if ($addressIsJustTheTown) {
+            $address = $this->payloadAddress($review);
+
+            if ($address !== null) {
+                $changes['address'] = $address;
+            }
+        }
+
+        if ($listing->latitude === null && $review->latitude !== null) {
+            $changes['latitude']  = $review->latitude;
+            $changes['longitude'] = $review->longitude;
+        }
+
+        if ($changes === []) {
+            return;
+        }
+
+        $before = $listing->only(array_keys($changes));
+        $listing->forceFill($changes)->save();
+
+        foreach ($changes as $field => $value) {
+            DB::table('facility_update_audits')->insert([
+                'id'              => (string) Str::uuid(),
+                'facility_id'     => $listing->id,
+                'actor_id'        => $adminId,
+                'actor_type'      => 'admin',
+                'field_changed'   => $field,
+                'old_value'       => $before[$field] === null ? null : (string) $before[$field],
+                'new_value'       => (string) $value,
+                'source'          => self::SOURCE,
+                'requires_review' => false,
+                'created_at'      => now(),
+            ]);
+        }
+    }
+
+    /**
      * A usable phone number from the candidate's payload, or null.
      *
      * Two payload shapes reach here: the national master records use `phone`,
@@ -165,6 +229,20 @@ class FacilityImportReviewService
         }
 
         return DB::transaction(function () use ($review, $listing, $adminId, $notes) {
+            // A merge says "this is the facility we already list, under another
+            // name" -- so the candidate's details should fill the gaps on that
+            // row. Stamping the reference alone left the phone number sitting
+            // in the payload until some later import run happened to pick it
+            // up, which is a strange outcome for an action whose entire purpose
+            // is to improve the row it points at.
+            //
+            // Gaps only. An existing real value always wins; the exceptions are
+            // the literal 'N/A' placeholder in phone_primary and an address
+            // that is only the town name, neither of which is data. Same rule
+            // the importers apply, for the same reason: a human or a partner
+            // may have edited this row, and an import must not overwrite them.
+            $this->fillGapsFromCandidate($listing, $review, $adminId);
+
             // Only claim the source_ref if the row does not already carry one —
             // the partial UNIQUE index allows exactly one row per upstream element.
             if ($listing->source_ref === null) {
