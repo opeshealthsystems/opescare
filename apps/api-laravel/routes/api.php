@@ -691,7 +691,25 @@ Route::prefix('v1/care-map')->group(function () {
     Route::get('/blood/search', [\App\Http\Controllers\Api\V1\CareMapController::class, 'searchBlood']);
     Route::get('/emergency', [\App\Http\Controllers\Api\V1\CareMapController::class, 'searchEmergency']);
     
-    Route::middleware('auth:sanctum')->group(function () {
+    // SEAL BREAK, 2026-09-02, on the project owner's explicit instruction.
+    //
+    // This group was `auth:sanctum`. laravel/sanctum has never been installed
+    // in this application -- absent from composer.json, absent from vendor/,
+    // and config/auth.php declares only the `web` guard. Every request to all
+    // four routes died with "Auth guard [sanctum] is not defined" and returned
+    // a 500. The guard arrived via a 2026-05-25 hardening plan; the package
+    // never did.
+    //
+    // `web` and not bare `auth`: routes/api.php is registered through the api
+    // middleware group, which has no StartSession. `auth` alone resolves the
+    // web guard but that guard has no session to read, so every browser call
+    // would 401. Applying the web group brings session, encrypted cookies and
+    // CSRF -- correct here, because all four are browser POSTs from the public
+    // listing page. Nothing that works today can break: they return 500 now.
+    //
+    // Note the sibling admin group below uses bare `auth` and has the same
+    // sessionless problem; it is left alone because it is outside this change.
+    Route::middleware(['web', 'auth'])->group(function () {
         Route::post('/facilities/{id}/save', [\App\Http\Controllers\Api\V1\CareMapController::class, 'saveFacility']);
         Route::post('/facilities/{id}/report', [\App\Http\Controllers\Api\V1\CareMapController::class, 'reportFacility']);
         Route::post('/facilities/{id}/claim', [\App\Http\Controllers\Api\V1\CareMapController::class, 'claimFacility']);

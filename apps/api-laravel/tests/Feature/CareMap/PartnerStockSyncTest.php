@@ -25,11 +25,12 @@ use Tests\TestCase;
  * NULL, and on 2026-09-02 every one of the 1,863 production listings was NULL —
  * so any authenticated caller could stamp any facility in the country.
  *
- * These tests call the controller directly rather than the route. The route sits
- * behind `auth:sanctum`, and Sanctum is not installed in this application at all
- * (see `test_the_sanctum_guard_the_route_depends_on_still_does_not_exist`), so
- * an HTTP test would assert the 500 that guard produces and never reach the
- * method under test.
+ * These tests call the controller method directly. The route is reachable again
+ * as of 2026-09-02 -- it was moved off the never-installed `auth:sanctum` guard
+ * onto `['web','auth']` -- but it now carries CSRF, so driving it over HTTP would
+ * be a test of the session stack rather than of this method's decision.
+ * `test_the_route_no_longer_depends_on_a_guard_that_does_not_exist` covers the
+ * wiring.
  */
 class PartnerStockSyncTest extends TestCase
 {
@@ -115,36 +116,48 @@ class PartnerStockSyncTest extends TestCase
     }
 
     /**
-     * Records a live production defect that is NOT this controller's fault.
+     * The four care-map routes were behind `auth:sanctum` while laravel/sanctum
+     * was never installed -- absent from composer.json and vendor/, with
+     * config/auth.php declaring only the `web` guard. Every request returned a
+     * 500. Moved to `['web','auth']` on 2026-09-02 on the owner's instruction.
      *
-     * `routes/api.php` puts four routes behind `auth:sanctum` — facility save,
-     * report, claim, and this stock sync — but Sanctum is not a dependency, is
-     * not in vendor/, and `config/auth.php` declares only the `web` guard. Every
-     * request to those four routes therefore dies with
-     * "Auth guard [sanctum] is not defined" and returns a 500.
-     *
-     * `routes/api.php` is a SEALED file, so the fix is a human decision: install
-     * Sanctum, or move those routes onto the `web` guard. This test asserts the
-     * broken state deliberately, so that whoever fixes it is forced to come back
-     * and re-point these tests at the real HTTP route.
+     * This asserts the fix stays fixed: no route may depend on a guard this
+     * application does not define.
      */
-    public function test_the_sanctum_guard_the_route_depends_on_still_does_not_exist(): void
+    public function test_the_route_no_longer_depends_on_a_guard_that_does_not_exist(): void
     {
-        $this->assertArrayNotHasKey(
-            'sanctum',
-            config('auth.guards'),
-            'Sanctum now exists — re-point the tests above at the real HTTP route and delete this test.'
-        );
+        $guards = array_keys(config('auth.guards'));
 
+        foreach (Route::getRoutes() as $route) {
+            foreach ($route->gatherMiddleware() as $middleware) {
+                if (! is_string($middleware) || ! str_starts_with($middleware, 'auth:')) {
+                    continue;
+                }
+
+                foreach (explode(',', substr($middleware, 5)) as $guard) {
+                    $this->assertContains(
+                        $guard,
+                        $guards,
+                        "Route [{$route->uri()}] requires the '{$guard}' guard, which config/auth.php does not define. "
+                        . 'Every request to it will return a 500.'
+                    );
+                }
+            }
+        }
+    }
+
+    /** The stock-sync route specifically is session-authenticated now. */
+    public function test_the_stock_sync_route_is_session_authenticated(): void
+    {
         $route = collect(Route::getRoutes())->first(
             fn ($r) => str_contains($r->uri(), 'partner/facilities/{id}/stock-sync')
         );
 
         $this->assertNotNull($route, 'the partner stock-sync route should still be registered');
-        $this->assertContains(
-            'auth:sanctum',
-            $route->gatherMiddleware(),
-            'this route depends on a guard the application does not define'
-        );
+
+        $middleware = $route->gatherMiddleware();
+
+        $this->assertContains('web', $middleware, 'it needs the web group for a session to exist at all');
+        $this->assertContains('auth', $middleware);
     }
 }
