@@ -45,6 +45,18 @@ class EnsurePortalAccess
             // Data quality
             'data_steward', 'reconciliation_officer', 'data_import_officer', 'data_quality_reviewer',
         ],
+        // Facility-tier administration of one's OWN facility (team management).
+        //
+        // This exists as its own prefix because the two neighbouring options are
+        // both wrong: everything under portals/admin/* is platform god-mode
+        // (RequirePlatformAdmin), so a facility admin gets 403 there, and adding
+        // the facility-admin roles to portals/staff would hand them the entire
+        // clinical portal. Only the five real facility-administration roles are
+        // listed; platform roles are deliberately absent, since they have no
+        // facility context to scope a team page to.
+        'portals/facility' => [
+            'facility_admin', 'clinic_admin', 'hospital_admin', 'facility_ceo', 'branch_admin',
+        ],
         'portals/insurance' => [
             'insurance_reviewer', 'insurance_claims', 'insurance_preauth',
             'insurance_admin', 'insurance_finance',

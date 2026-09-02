@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\Mobile;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\AppointmentSlot;
+use App\Models\CareFacility;
+use App\Models\Facility;
 use App\Modules\Notifications\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,6 +20,13 @@ use Illuminate\Support\Facades\DB;
  */
 class MobileAppointmentController extends Controller
 {
+    /**
+     * Facility statuses that may take a patient booking. `active_demo` is the
+     * demo estate's equivalent of `active`; demo and real rows never meet in
+     * one query (Facility carries the IsDemoRecord global scope).
+     */
+    private const BOOKABLE_FACILITY_STATUSES = ['active', 'active_demo'];
+
     public function __construct(private NotificationService $notificationService) {}
 
     /**
@@ -93,6 +102,18 @@ class MobileAppointmentController extends Controller
      *   appointment_slot_id string  UUID of appointment_slots row
      *   appointment_type    string  e.g. "consultation", "follow_up"
      *   reason              string  optional
+     *
+     * `facility_id` legitimately comes from the request here — a patient is the
+     * one who decides which facility to attend, and the mobile client echoes
+     * back the id MobileFacilityController::slots() handed it. What it must not
+     * do is *decide* where the appointment lands: the booked slot belongs to
+     * exactly one facility, and the row is written from the locked slot, never
+     * from the body. A body value naming a different facility used to file the
+     * appointment into that facility's register while consuming this one's
+     * capacity — one field edit, a booking in a hospital across the country.
+     * So the body value is now checked against the slot rather than trusted,
+     * and the facility it resolves to has to be one that is actually open for
+     * booking.
      */
     public function book(Request $request): JsonResponse
     {
@@ -105,9 +126,39 @@ class MobileAppointmentController extends Controller
             'reason'              => 'nullable|string|max:1000',
         ]);
 
-        $appointment = DB::transaction(function () use ($patientId, $validated) {
+        // 404 (not 422) if it vanished between validation and here.
+        $slot = AppointmentSlot::findOrFail($validated['appointment_slot_id']);
+
+        // The slot is the authority on which facility this appointment belongs
+        // to. A body value that disagrees is either a stale client or someone
+        // trying to write across facilities.
+        if ($slot->facility_id !== $validated['facility_id']) {
+            return response()->json([
+                'error_code' => 'FACILITY_SLOT_MISMATCH',
+                'message'    => __('api.appointment_facility_slot_mismatch'),
+            ], 422);
+        }
+
+        // Same bookability rules the patient-facing slot listing applies, so a
+        // slot that is closed or in the past cannot be booked by replaying an
+        // id the app saw earlier.
+        if ($slot->status !== 'open' || $slot->starts_at?->isPast()) {
+            return response()->json([
+                'error_code' => 'SLOT_NOT_BOOKABLE',
+                'message'    => __('api.appointment_slot_not_bookable'),
+            ], 422);
+        }
+
+        if (! $this->facilityAcceptsBookings($slot->facility_id)) {
+            return response()->json([
+                'error_code' => 'FACILITY_NOT_BOOKABLE',
+                'message'    => __('api.appointment_facility_not_bookable'),
+            ], 422);
+        }
+
+        $appointment = DB::transaction(function () use ($patientId, $validated, $slot) {
             // Pessimistic lock prevents concurrent double-booking of the same slot
-            $slot = AppointmentSlot::lockForUpdate()->findOrFail($validated['appointment_slot_id']);
+            $slot = AppointmentSlot::lockForUpdate()->findOrFail($slot->id);
 
             if ($slot->booked_count >= $slot->capacity) {
                 throw new \App\Exceptions\SlotFullException('This slot is fully booked.');
@@ -117,7 +168,10 @@ class MobileAppointmentController extends Controller
 
             return Appointment::create([
                 'patient_id'          => $patientId,
-                'facility_id'         => $validated['facility_id'],
+                // From the locked slot, not the request body — see the method
+                // docblock. The two are already proven equal above; taking it
+                // from the slot is what keeps them that way.
+                'facility_id'         => $slot->facility_id,
                 // Carry the slot's clinician onto the appointment. The slot has
                 // always known its provider, but this create dropped it — which
                 // left every patient-booked appointment with provider_name null
@@ -125,7 +179,7 @@ class MobileAppointmentController extends Controller
                 // provider) unreachable from the patient app. Taken from the
                 // locked slot row, never from request input.
                 'provider_id'         => $slot->provider_id,
-                'appointment_slot_id' => $validated['appointment_slot_id'],
+                'appointment_slot_id' => $slot->id,
                 'appointment_type'    => $validated['appointment_type'],
                 'status'              => 'booked',
                 'scheduled_at'        => $slot->starts_at,
@@ -204,6 +258,34 @@ class MobileAppointmentController extends Controller
     }
 
     // -------------------------------------------------------------------------
+
+    /**
+     * Is this facility one a patient may book into right now?
+     *
+     * Two gates, because a facility can be reachable two ways:
+     *   - the `facilities` row itself must be live, not pending or suspended;
+     *   - if it is published in the public directory the patient browsed, that
+     *     listing must still be active — a suspended listing disappears from
+     *     the finder and must stop taking bookings with it.
+     * A facility with no directory listing (integration-only, seeded fixtures)
+     * is still bookable on the strength of its own status.
+     */
+    private function facilityAcceptsBookings(string $facilityId): bool
+    {
+        $facility = Facility::find($facilityId);
+
+        if (! $facility || ! in_array($facility->status, self::BOOKABLE_FACILITY_STATUSES, true)) {
+            return false;
+        }
+
+        $listings = CareFacility::where('facility_id', $facilityId);
+
+        if (! (clone $listings)->exists()) {
+            return true;
+        }
+
+        return (clone $listings)->where('listing_status', 'active')->exists();
+    }
 
     private function formatAppointment(Appointment $a): array
     {

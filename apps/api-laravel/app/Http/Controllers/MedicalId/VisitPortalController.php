@@ -12,13 +12,38 @@ use App\Models\VitalSign;
 use App\Modules\EncounterManagement\Services\ConsultationService;
 use App\Modules\OperationalFlow\Services\VisitManagementService;
 use App\Modules\Triage\Services\TriageService;
+use App\Services\Portal\PortalContextService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Throwable;
 
+/**
+ * VisitPortalController — the front-desk-to-consultation flow for ONE facility.
+ *
+ * This controller was the widest hole of the set. `index()` listed every visit
+ * in the country and handed the staff member a picker containing the first 200
+ * patients in the patients table, and every action below it took a visit id
+ * straight off the URL into `Visit::findOrFail()` — so triage, consultation
+ * notes, cancellation and status transitions could all be performed on another
+ * facility's encounter simply by pasting its id.
+ *
+ * So: the facility comes from the session, never from `Facility::value('id')`;
+ * every visit is fetched through `visitAtFacility()`, which 404s a visit that
+ * is not ours; and the patient picker is limited to people this facility has
+ * actually registered or seen. Reads and writes of the clinical record are
+ * audited through PortalContextService.
+ *
+ * The free-text patient_id field the view falls back to is deliberately left
+ * open: a national Health ID is portable, and a patient who has never been here
+ * before must still be admissible. What is closed is the *listing* of patients
+ * this facility has no relationship with.
+ */
 class VisitPortalController extends Controller
 {
+    public function __construct(private readonly PortalContextService $context) {}
+
     // -----------------------------------------------------------------
-    // Demo helpers
+    // Context helpers
     // -----------------------------------------------------------------
 
     private function demoActorId(): string
@@ -26,9 +51,46 @@ class VisitPortalController extends Controller
         return session('auth_email') ?: 'demo-staff';
     }
 
-    private function demoFacilityId(): ?string
+    /**
+     * The facility this request acts for — session-resolved, fails closed.
+     *
+     * The single-facility fallback holds only when there is exactly one
+     * facility. With 345 and no resolved context there is no safe guess, so
+     * this 409s rather than opening someone else's waiting room.
+     */
+    private function facilityId(): string
     {
-        return Facility::value('id');
+        $resolved = $this->context->facilityId();
+
+        if ($resolved !== null && $resolved !== '') {
+            return $resolved;
+        }
+
+        abort_unless(
+            Facility::count() === 1,
+            409,
+            'No facility is selected for this session, so there is no way to tell '
+            . 'whose visit this is. Select a facility first.'
+        );
+
+        return (string) Facility::value('id');
+    }
+
+    /** A malformed id is a 404, not a Postgres 22P02 cast error surfacing as a 500. */
+    private function assertUuid(string $id): string
+    {
+        abort_unless(Str::isUuid($id), 404);
+
+        return $id;
+    }
+
+    /** A visit, only if it belongs to the acting facility. */
+    private function visitAtFacility(string $id, array $with = []): Visit
+    {
+        return Visit::with($with)
+            ->where('id', $this->assertUuid($id))
+            ->where('facility_id', $this->facilityId())
+            ->firstOrFail();
     }
 
     // -----------------------------------------------------------------
@@ -37,7 +99,10 @@ class VisitPortalController extends Controller
 
     public function index(Request $req)
     {
+        $facilityId = $this->facilityId();
+
         $q = Visit::with(['patient'])
+            ->where('facility_id', $facilityId)
             ->orderByDesc('started_at');
 
         if ($status = $req->input('status')) {
@@ -54,7 +119,22 @@ class VisitPortalController extends Controller
         }
 
         $visits = $q->limit(100)->get();
-        $patients = Patient::limit(200)->get();
+
+        // The picker used to be `Patient::limit(200)` — the national patient
+        // list, name and health ID, shown to every front desk in the country.
+        // It is now the people this facility registered or has already seen.
+        $patients = Patient::query()
+            ->where(function ($sub) use ($facilityId) {
+                $sub->where('facility_id', $facilityId)
+                    ->orWhereIn('id', Visit::where('facility_id', $facilityId)->select('patient_id'));
+            })
+            ->limit(200)
+            ->get();
+
+        $this->context->auditPatientAccess(
+            actionType:   'visit_list_view',
+            resourceType: 'Visit',
+        );
 
         return view('portals.staff.visits.index', compact('visits', 'patients'));
     }
@@ -72,9 +152,16 @@ class VisitPortalController extends Controller
 
         try {
             $visit = $svc->createVisit(array_merge($data, [
-                'facility_id' => $this->demoFacilityId(),
+                'facility_id' => $this->facilityId(),
                 'provider_id' => null,
             ]));
+
+            $this->context->auditPatientAccess(
+                actionType:   'visit_created',
+                resourceType: 'Visit',
+                resourceId:   $visit->id,
+                patientId:    $visit->patient_id,
+            );
 
             return redirect()->route('portals.staff.visits')
                 ->with('success', __('flash.visit_created', ['id' => substr($visit->id, 0, 8)]));
@@ -93,8 +180,10 @@ class VisitPortalController extends Controller
             'status' => 'required|string',
         ]);
 
+        $visit = $this->visitAtFacility($id);
+
         try {
-            $svc->transition($id, $data['status'], $this->demoActorId());
+            $svc->transition($visit->id, $data['status'], $this->demoActorId());
 
             return back()->with('success', __('flash.visit_status_updated', ['status' => ucwords(str_replace('_', ' ', $data['status']))]));
         } catch (Throwable $e) {
@@ -104,8 +193,10 @@ class VisitPortalController extends Controller
 
     public function complete(string $id, VisitManagementService $svc)
     {
+        $visit = $this->visitAtFacility($id);
+
         try {
-            $svc->complete($id, $this->demoActorId());
+            $svc->complete($visit->id, $this->demoActorId());
 
             return back()->with('success', __('flash.visit_completed'));
         } catch (Throwable $e) {
@@ -115,8 +206,10 @@ class VisitPortalController extends Controller
 
     public function cancel(string $id, VisitManagementService $svc)
     {
+        $visit = $this->visitAtFacility($id);
+
         try {
-            $svc->cancel($id, $this->demoActorId());
+            $svc->cancel($visit->id, $this->demoActorId());
 
             return back()->with('success', __('flash.visit_cancelled'));
         } catch (Throwable $e) {
@@ -130,7 +223,14 @@ class VisitPortalController extends Controller
 
     public function triage(string $id)
     {
-        $visit = Visit::with(['patient', 'triageRecords.vitalSigns'])->findOrFail($id);
+        $visit = $this->visitAtFacility($id, ['patient', 'triageRecords.vitalSigns']);
+
+        $this->context->auditPatientAccess(
+            actionType:   'visit_triage_view',
+            resourceType: 'Visit',
+            resourceId:   $visit->id,
+            patientId:    $visit->patient_id,
+        );
 
         return view('portals.staff.visits.triage', compact('visit'));
     }
@@ -139,9 +239,19 @@ class VisitPortalController extends Controller
     {
         $req->validate(['reason' => 'required|string|max:500']);
 
+        $visit = $this->visitAtFacility($id);
+
         try {
-            $svc->escalateEmergency($id, $req->reason, $this->demoActorId());
-            return redirect()->route('portals.staff.visits.triage', $id)
+            $svc->escalateEmergency($visit->id, $req->reason, $this->demoActorId());
+
+            $this->context->auditPatientAccess(
+                actionType:   'visit_triage_escalated',
+                resourceType: 'Visit',
+                resourceId:   $visit->id,
+                patientId:    $visit->patient_id,
+            );
+
+            return redirect()->route('portals.staff.visits.triage', $visit->id)
                 ->with('success', __('flash.visit_escalated_emergency'));
         } catch (Throwable $e) {
             return back()->with('error', __('flash.visit_escalation_failed', ['error' => $e->getMessage()]));
@@ -166,7 +276,7 @@ class VisitPortalController extends Controller
             'height'                   => 'nullable|numeric|min:20|max:250',
         ]);
 
-        $visit = Visit::findOrFail($id);
+        $visit = $this->visitAtFacility($id);
 
         try {
             $vitals = array_filter([
@@ -197,6 +307,13 @@ class VisitPortalController extends Controller
                 $visit->update(['status' => 'in_triage']);
             }
 
+            $this->context->auditPatientAccess(
+                actionType:   'visit_triage_recorded',
+                resourceType: 'Visit',
+                resourceId:   $visit->id,
+                patientId:    $visit->patient_id,
+            );
+
             return redirect()->route('portals.staff.visits')
                 ->with('success', __('flash.visit_triage_recorded'));
         } catch (Throwable $e) {
@@ -210,7 +327,14 @@ class VisitPortalController extends Controller
 
     public function consult(string $id)
     {
-        $visit = Visit::with(['patient', 'clinicalNotes', 'triageRecords.vitalSigns'])->findOrFail($id);
+        $visit = $this->visitAtFacility($id, ['patient', 'clinicalNotes', 'triageRecords.vitalSigns']);
+
+        $this->context->auditPatientAccess(
+            actionType:   'visit_consultation_view',
+            resourceType: 'Visit',
+            resourceId:   $visit->id,
+            patientId:    $visit->patient_id,
+        );
 
         return view('portals.staff.visits.consult', compact('visit'));
     }
@@ -224,7 +348,7 @@ class VisitPortalController extends Controller
             'status'                     => 'required|in:draft,signed',
         ]);
 
-        $visit = Visit::findOrFail($id);
+        $visit = $this->visitAtFacility($id);
 
         try {
             $svc->saveClinicalNote(array_merge($data, [
@@ -236,6 +360,13 @@ class VisitPortalController extends Controller
             if (in_array($visit->status, ['open', 'in_triage', 'in_queue'])) {
                 $visit->update(['status' => 'in_consultation']);
             }
+
+            $this->context->auditPatientAccess(
+                actionType:   'visit_clinical_note_saved',
+                resourceType: 'Visit',
+                resourceId:   $visit->id,
+                patientId:    $visit->patient_id,
+            );
 
             $msg = $data['status'] === 'signed' ? 'Clinical note signed.' : 'Clinical note saved as draft.';
 

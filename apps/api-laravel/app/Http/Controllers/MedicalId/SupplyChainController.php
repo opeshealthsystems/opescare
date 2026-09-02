@@ -12,14 +12,84 @@ use App\Models\StockLocation;
 use App\Models\StockMovement;
 use App\Models\Supplier;
 use App\Modules\Inventory\Services\SupplyChainService;
+use App\Services\Portal\PortalContextService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Throwable;
 
+/**
+ * SupplyChainController — one facility's stores: items, suppliers, stock,
+ * purchase orders, goods receipts.
+ *
+ * This surface is frozen out of V1 (`inventory_ops` covers
+ * `portals/staff/supply*`, so EnforceFeatureFlag 404s every route here). It is
+ * hardened anyway: a freeze is a kill switch, not a fix, and the day it is
+ * lifted the routes must not come back carrying a cross-facility write.
+ *
+ * The facility is resolved from the session, never from `Facility::value('id')`
+ * — whichever row Postgres returns first — and every id that arrives from
+ * outside is re-fetched scoped to it. `SupplyChainService` already scopes
+ * `receiveStock()` and `adjustStock()`; the ids it does NOT check (a purchase
+ * order's supplier and line items, a goods receipt's purchase order) are
+ * checked here before they are handed over, since a PO or GR is otherwise a
+ * way to bind another facility's records into ours.
+ */
 class SupplyChainController extends Controller
 {
-    private function demoFacilityId(): string
+    public function __construct(private readonly PortalContextService $context) {}
+
+    /**
+     * The facility this request acts for — session-resolved, fails closed.
+     *
+     * The single-facility fallback is honoured only when there is exactly one
+     * facility. Production has 345; with no resolved context there is no safe
+     * guess, so this 409s rather than picking a store room at random.
+     */
+    private function facilityId(): string
     {
-        return Facility::value('id') ?? '';
+        $resolved = $this->context->facilityId();
+
+        if ($resolved !== null && $resolved !== '') {
+            return $resolved;
+        }
+
+        abort_unless(
+            Facility::count() === 1,
+            409,
+            'No facility is selected for this session, so there is no way to tell '
+            . 'whose stores this is. Select a facility first.'
+        );
+
+        return (string) Facility::value('id');
+    }
+
+    /** A malformed id is a 404, not a Postgres 22P02 cast error surfacing as a 500. */
+    private function assertUuid(string $id): string
+    {
+        abort_unless(Str::isUuid($id), 404);
+
+        return $id;
+    }
+
+    /**
+     * An id submitted in a form body must name a row of THIS facility.
+     *
+     * A null/blank id is left alone — those columns are genuinely optional and
+     * the service already treats them as such. Anything present must resolve
+     * inside the facility or the request 404s.
+     *
+     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $model
+     */
+    private function assertBelongsToFacility(string $model, ?string $id, string $facilityId): void
+    {
+        if ($id === null || $id === '') {
+            return;
+        }
+
+        abort_unless(
+            $model::where('id', $this->assertUuid($id))->where('facility_id', $facilityId)->exists(),
+            404
+        );
     }
 
     private function demoActorId(): string
@@ -31,7 +101,7 @@ class SupplyChainController extends Controller
 
     public function index(SupplyChainService $svc)
     {
-        $facilityId = $this->demoFacilityId();
+        $facilityId = $this->facilityId();
         $stats      = $svc->dashboardStats($facilityId);
         $lowStock   = $svc->getLowStockItems($facilityId)->take(10);
         $expiring   = $svc->getExpiringSoonBatches($facilityId, 30)->take(10);
@@ -50,7 +120,7 @@ class SupplyChainController extends Controller
 
     public function items(Request $request)
     {
-        $facilityId = $this->demoFacilityId();
+        $facilityId = $this->facilityId();
         $q = InventoryItem::where('facility_id', $facilityId);
 
         if ($request->filled('category')) $q->where('category', $request->category);
@@ -78,7 +148,7 @@ class SupplyChainController extends Controller
         ]);
 
         try {
-            $svc->createItem($this->demoFacilityId(), $request->validated(), $this->demoActorId());
+            $svc->createItem($this->facilityId(), $request->validated(), $this->demoActorId());
             return redirect()->route('portals.staff.supply.items')
                 ->with('success', __('flash.supply_item_created'));
         } catch (Throwable $e) {
@@ -90,7 +160,7 @@ class SupplyChainController extends Controller
 
     public function suppliers(Request $request)
     {
-        $facilityId = $this->demoFacilityId();
+        $facilityId = $this->facilityId();
         $suppliers  = Supplier::where('facility_id', $facilityId)
             ->orderBy('name')
             ->paginate(20)->withQueryString();
@@ -110,7 +180,7 @@ class SupplyChainController extends Controller
         ]);
 
         try {
-            $svc->createSupplier($this->demoFacilityId(), $request->validated(), $this->demoActorId());
+            $svc->createSupplier($this->facilityId(), $request->validated(), $this->demoActorId());
             return redirect()->route('portals.staff.supply.suppliers')
                 ->with('success', __('flash.supplier_added'));
         } catch (Throwable $e) {
@@ -122,7 +192,7 @@ class SupplyChainController extends Controller
 
     public function stock(Request $request)
     {
-        $facilityId = $this->demoFacilityId();
+        $facilityId = $this->facilityId();
         $q = StockBatch::where('facility_id', $facilityId)->with(['item', 'location']);
 
         if ($request->filled('item')) $q->where('inventory_item_id', $request->item);
@@ -149,8 +219,15 @@ class SupplyChainController extends Controller
             'supplier_id'       => 'nullable|uuid',
         ]);
 
+        $facilityId = $this->facilityId();
+
+        // receiveStock() checks the item, but not the shelf it lands on or the
+        // supplier it is credited to. Both are ids off the form.
+        $this->assertBelongsToFacility(StockLocation::class, $request->input('location_id'), $facilityId);
+        $this->assertBelongsToFacility(Supplier::class, $request->input('supplier_id'), $facilityId);
+
         try {
-            $svc->receiveStock($this->demoFacilityId(), $request->validated(), $this->demoActorId());
+            $svc->receiveStock($facilityId, $request->validated(), $this->demoActorId());
             return redirect()->route('portals.staff.supply.stock')
                 ->with('success', __('flash.stock_received'));
         } catch (Throwable $e) {
@@ -165,8 +242,11 @@ class SupplyChainController extends Controller
             'reason'       => 'required|string|max:500',
         ]);
 
+        $facilityId = $this->facilityId();
+        $batchId    = $this->assertUuid($batchId);
+
         try {
-            $svc->adjustStock($this->demoFacilityId(), $batchId, $request->validated(), $this->demoActorId());
+            $svc->adjustStock($facilityId, $batchId, $request->validated(), $this->demoActorId());
             return redirect()->route('portals.staff.supply.stock')
                 ->with('success', __('flash.stock_adjusted'));
         } catch (Throwable $e) {
@@ -178,7 +258,7 @@ class SupplyChainController extends Controller
 
     public function purchaseOrders(Request $request)
     {
-        $facilityId = $this->demoFacilityId();
+        $facilityId = $this->facilityId();
         $q = PurchaseOrder::where('facility_id', $facilityId)->with('supplier');
 
         if ($request->filled('status')) $q->where('status', $request->status);
@@ -203,8 +283,19 @@ class SupplyChainController extends Controller
             'items.*.unit_price'             => 'nullable|numeric|min:0',
         ]);
 
+        $facilityId = $this->facilityId();
+
+        // createPurchaseOrder() writes supplier_id and every line's
+        // inventory_item_id straight through. Unchecked, a PO here could name a
+        // neighbouring facility's supplier and order against their catalogue.
+        $this->assertBelongsToFacility(Supplier::class, $request->input('supplier_id'), $facilityId);
+
+        foreach ((array) $request->input('items', []) as $line) {
+            $this->assertBelongsToFacility(InventoryItem::class, $line['inventory_item_id'] ?? null, $facilityId);
+        }
+
         try {
-            $po = $svc->createPurchaseOrder($this->demoFacilityId(), $request->validated(), $this->demoActorId());
+            $po = $svc->createPurchaseOrder($facilityId, $request->validated(), $this->demoActorId());
             return redirect()->route('portals.staff.supply.purchase_orders')
                 ->with('success', __('flash.purchase_order_created', ['number' => $po->po_number]));
         } catch (Throwable $e) {
@@ -214,8 +305,8 @@ class SupplyChainController extends Controller
 
     public function purchaseOrderApprove(string $id, SupplyChainService $svc)
     {
-        $facilityId = $this->demoFacilityId();
-        $po = PurchaseOrder::where('id', $id)->where('facility_id', $facilityId)->firstOrFail();
+        $facilityId = $this->facilityId();
+        $po = PurchaseOrder::where('id', $this->assertUuid($id))->where('facility_id', $facilityId)->firstOrFail();
 
         try {
             $svc->approvePurchaseOrder($po, $this->demoActorId());
@@ -230,7 +321,7 @@ class SupplyChainController extends Controller
 
     public function goodsReceipts(Request $request)
     {
-        $facilityId = $this->demoFacilityId();
+        $facilityId = $this->facilityId();
         $goodsReceipts = GoodsReceipt::where('facility_id', $facilityId)
             ->with(['purchaseOrder.supplier', 'items'])
             ->orderByDesc('created_at')
@@ -262,6 +353,16 @@ class SupplyChainController extends Controller
             'lines.*.expiry_date'       => 'nullable|date',
         ]);
 
+        $facilityId = $this->facilityId();
+
+        // receiveGoodsReceipt() stores purchase_order_id, supplier_id and
+        // location_id verbatim and only the per-line item is re-checked (inside
+        // receiveStock). Receiving goods against another facility's purchase
+        // order would silently close out their order line.
+        $this->assertBelongsToFacility(PurchaseOrder::class, $request->input('purchase_order_id'), $facilityId);
+        $this->assertBelongsToFacility(Supplier::class, $request->input('supplier_id'), $facilityId);
+        $this->assertBelongsToFacility(StockLocation::class, $request->input('location_id'), $facilityId);
+
         try {
             $payload = $request->validated();
             // Service expects 'items' with 'quantity' key; view sends 'lines' with 'quantity_received'
@@ -272,7 +373,7 @@ class SupplyChainController extends Controller
             }, $payload['lines']);
             unset($payload['lines']);
 
-            $gr = $svc->receiveGoodsReceipt($this->demoFacilityId(), $payload, $this->demoActorId());
+            $gr = $svc->receiveGoodsReceipt($facilityId, $payload, $this->demoActorId());
             return redirect()->route('portals.staff.supply.goods_receipts')
                 ->with('success', __('flash.goods_receipt_posted', ['number' => ($gr->receipt_number ?: '')]));
         } catch (Throwable $e) {
@@ -284,7 +385,7 @@ class SupplyChainController extends Controller
 
     public function movements(Request $request)
     {
-        $facilityId = $this->demoFacilityId();
+        $facilityId = $this->facilityId();
         $q = StockMovement::where('facility_id', $facilityId)->with('item');
 
         if ($request->filled('type')) $q->where('movement_type', $request->type);

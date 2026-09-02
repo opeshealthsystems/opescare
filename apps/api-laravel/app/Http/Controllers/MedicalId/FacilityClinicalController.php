@@ -7,6 +7,7 @@ use App\Models\Facility;
 use App\Models\LabOrder;
 use App\Models\Patient;
 use App\Models\Prescription;
+use App\Services\Portal\PortalContextService;
 use Illuminate\Http\Request;
 
 /**
@@ -18,11 +19,38 @@ use Illuminate\Http\Request;
  */
 class FacilityClinicalController extends Controller
 {
-    private function facilityId(): ?string
+    public function __construct(private readonly PortalContextService $ctx) {}
+
+    /**
+     * The facility whose clinical register is being read.
+     *
+     * Both pages list identified patients' prescriptions and lab orders, so the
+     * facility has to be the one the reader is actually signed in to. The old
+     * `?? Facility::value('id')` tail answered "which facility?" with whichever
+     * row Postgres returned first out of 345 — an admin whose session had no
+     * facility read a stranger hospital's clinical register, and /portals/admin
+     * is explicitly exempted from RequireFacilityContext's redirect, so the
+     * path was reachable in normal use.
+     *
+     * The single-facility fallback holds only where it is unambiguous. Anything
+     * else fails closed rather than guessing.
+     */
+    private function facilityId(): string
     {
-        return session('active_facility_id')
-            ?? auth()->user()?->primary_facility_id
-            ?? Facility::value('id');
+        $resolved = $this->ctx->facilityId();
+
+        if ($resolved !== null && $resolved !== '') {
+            return $resolved;
+        }
+
+        abort_unless(
+            Facility::count() === 1,
+            409,
+            'No facility is selected for this session, so there is no way to tell '
+            . 'whose clinical register to show. Select a facility first.'
+        );
+
+        return (string) Facility::value('id');
     }
 
     // ------------------------------------------------------------------
@@ -59,6 +87,11 @@ class FacilityClinicalController extends Controller
             'partially_dispensed' => Prescription::where('facility_id', $facilityId)->where('status', 'partially_dispensed')->count(),
             'expired'             => Prescription::where('facility_id', $facilityId)->where('status', 'expired')->count(),
         ];
+
+        $this->ctx->auditPatientAccess(
+            actionType:   'facility_prescription_register_view',
+            resourceType: 'Prescription',
+        );
 
         return view('portals.admin.clinical.prescriptions', compact('prescriptions', 'summary'));
     }
@@ -97,6 +130,11 @@ class FacilityClinicalController extends Controller
             'resulted'   => LabOrder::where('facility_id', $facilityId)->where('status', 'resulted')->whereDate('resulted_at', today())->count(),
             'urgent'     => LabOrder::where('facility_id', $facilityId)->where('urgency', 'urgent')->whereNotIn('status', ['resulted', 'cancelled'])->count(),
         ];
+
+        $this->ctx->auditPatientAccess(
+            actionType:   'facility_lab_order_register_view',
+            resourceType: 'LabOrder',
+        );
 
         return view('portals.admin.clinical.lab_orders', compact('orders', 'summary'));
     }

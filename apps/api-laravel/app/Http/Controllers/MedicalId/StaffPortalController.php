@@ -125,16 +125,33 @@ class StaffPortalController extends Controller
     {
         $request->validate([
             'patient_id'       => 'required|string',
-            'facility_id'      => 'required|string',
             'appointment_type' => 'required|string',
             'scheduled_at'     => 'required|date',
             'reason'           => 'nullable|string|max:500',
         ]);
 
+        /*
+         * The facility comes from the signed-in session, never from the request.
+         *
+         * This used to validate and trust `facility_id` from the body, so a
+         * clerk could book an appointment into any facility in the country by
+         * changing one form field. Taking a facility id from user input is the
+         * cross-facility IDOR this codebase already calls out as a categorical
+         * prohibition; the same rule applies here as on the API.
+         */
+        $facilityId = $this->ctx->facilityId();
+
+        abort_unless(
+            $facilityId !== null && $facilityId !== '',
+            409,
+            'No facility is selected for this session, so there is no way to tell which '
+            . 'facility this appointment belongs to. Select a facility first.'
+        );
+
         try {
             $appointment = Appointment::create([
                 'patient_id'            => $request->patient_id,
-                'facility_id'           => $request->facility_id,
+                'facility_id'           => $facilityId,
                 'appointment_type'      => $request->appointment_type,
                 'status'                => 'scheduled',
                 'scheduled_at'          => $request->scheduled_at,
@@ -154,8 +171,19 @@ class StaffPortalController extends Controller
 
     public function appointmentsConfirm(Request $request, string $id)
     {
-        $appointment = Appointment::findOrFail($id);
+        // Scoped to this session's facility. findOrFail($id) alone let any
+        // staff user confirm any appointment in the country — the record is
+        // another facility's patient data, and confirming it tells a patient
+        // somewhere else that their slot is booked.
+        $appointment = $this->ctx->scopeToFacility(Appointment::query())->findOrFail($id);
         $appointment->update(['status' => 'confirmed']);
+
+        $this->ctx->auditPatientAccess(
+            actionType:   'staff_appointment_confirmed',
+            resourceType: 'Appointment',
+            resourceId:   $appointment->id,
+            patientId:    $appointment->patient_id,
+        );
 
         return redirect()->route('portals.staff.appointments')
             ->with('success', __('public.staff_portal.appointment_confirmed', [], app()->getLocale()) ?: 'Appointment confirmed.');
@@ -166,8 +194,17 @@ class StaffPortalController extends Controller
         $request->validate(['reason' => 'required|string|min:5|max:500']);
 
         try {
-            $appointment = Appointment::findOrFail($id);
+            // Same scoping as confirm: cancelling another facility's
+            // appointment silently cancels a real patient's real slot.
+            $appointment = $this->ctx->scopeToFacility(Appointment::query())->findOrFail($id);
             $svc->cancel($appointment, $request->reason, $this->ctx->actorId());
+
+            $this->ctx->auditPatientAccess(
+                actionType:   'staff_appointment_cancelled',
+                resourceType: 'Appointment',
+                resourceId:   $appointment->id,
+                patientId:    $appointment->patient_id,
+            );
 
             return redirect()->route('portals.staff.appointments')
                 ->with('success', __('public.staff_portal.appointment_cancelled', [], app()->getLocale()) ?: 'Appointment cancelled.');

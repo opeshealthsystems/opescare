@@ -7,15 +7,45 @@ use App\Models\Facility;
 use App\Models\LabOrder;
 use App\Models\LabResult;
 use App\Models\Patient;
+use App\Services\Portal\PortalContextService;
 use Illuminate\Http\Request;
 
 class LabPortalController extends Controller
 {
-    private function facilityId(): ?string
+    public function __construct(private readonly PortalContextService $ctx) {}
+
+    /**
+     * The laboratory this request belongs to.
+     *
+     * Resolution comes from the signed-in session only — the resolution
+     * RequireFacilityContext already guarantees for every route in this group.
+     * The previous `?? Facility::value('id')` tail read like a safe default but
+     * returned whichever row Postgres handed back first out of 345, so a lab
+     * tech whose session had lost its facility silently read — and resulted —
+     * another hospital's specimens.
+     *
+     * The single-facility fallback is honoured only when there genuinely is
+     * exactly one facility, the condition that made it safe. With more than one
+     * and no resolved context there is no correct guess, and
+     * RequireFacilityContext is bypassed for platform-admin roles so this path
+     * is reachable; it fails closed instead.
+     */
+    private function facilityId(): string
     {
-        return session('active_facility_id')
-            ?? auth()->user()?->primary_facility_id
-            ?? Facility::value('id');
+        $resolved = $this->ctx->facilityId();
+
+        if ($resolved !== null && $resolved !== '') {
+            return $resolved;
+        }
+
+        abort_unless(
+            Facility::count() === 1,
+            409,
+            'No facility is selected for this session, so there is no way to tell '
+            . 'which laboratory these orders belong to. Select a facility first.'
+        );
+
+        return (string) Facility::value('id');
     }
 
     // ------------------------------------------------------------------
@@ -170,6 +200,13 @@ class LabPortalController extends Controller
         $order->collected_at = now();
         $order->save();
 
+        $this->ctx->auditPatientAccess(
+            actionType:   'lab_sample_collected',
+            resourceType: 'LabOrder',
+            resourceId:   $order->id,
+            patientId:    $order->patient_id,
+        );
+
         return back()->with('success', __('flash.sample_collected'));
     }
 
@@ -185,6 +222,13 @@ class LabPortalController extends Controller
         $order->status = 'processing';
         $order->save();
 
+        $this->ctx->auditPatientAccess(
+            actionType:   'lab_order_processing',
+            resourceType: 'LabOrder',
+            resourceId:   $order->id,
+            patientId:    $order->patient_id,
+        );
+
         return back()->with('success', __('flash.order_moved_processing'));
     }
 
@@ -199,6 +243,13 @@ class LabPortalController extends Controller
         $order = LabOrder::with('patient')->where('facility_id', $facilityId)->findOrFail($id);
 
         abort_if(!in_array($order->status, ['collected', 'processing', 'resulted']), 422, 'This order is not ready for results.');
+
+        $this->ctx->auditPatientAccess(
+            actionType:   'lab_result_entry_view',
+            resourceType: 'LabOrder',
+            resourceId:   $order->id,
+            patientId:    $order->patient_id,
+        );
 
         return view('portals.lab.result_entry', compact('order'));
     }
@@ -220,8 +271,9 @@ class LabPortalController extends Controller
             'notes'           => 'nullable|string|max:1000',
         ]);
 
-        LabResult::create([
+        $result = LabResult::create([
             'lab_order_id'    => $order->id,
+            // The patient comes off the facility-scoped order, never from input.
             'patient_id'      => $order->patient_id,
             'parameter_name'  => $data['parameter_name'],
             'value'           => $data['value'],
@@ -234,6 +286,13 @@ class LabPortalController extends Controller
         ]);
 
         $order->update(['status' => 'resulted', 'resulted_at' => now()]);
+
+        $this->ctx->auditPatientAccess(
+            actionType:   'lab_result_entered',
+            resourceType: 'LabResult',
+            resourceId:   $result->id,
+            patientId:    $order->patient_id,
+        );
 
         return redirect()->route('portals.lab.results')->with('success', __('flash.lab_result_entered'));
     }

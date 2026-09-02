@@ -10,17 +10,84 @@ use App\Models\Patient;
 use App\Models\PublicHealthReport;
 use App\Models\PublicHealthSignal;
 use App\Models\SignalReview;
+use App\Services\Portal\PortalContextService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class HealthOrgPortalController extends Controller
 {
+    public function __construct(private readonly PortalContextService $ctx) {}
+
+    /**
+     * The health organisation acting on this request, or null for a
+     * platform-level role that legitimately has no facility.
+     *
+     * Null means "unscoped" for reads only — the same contract
+     * PortalContextService::scopeToFacility() already implements for every
+     * other portal. Writes never accept null; see requireFacilityId().
+     */
     private function facilityId(): ?string
     {
-        return session('active_facility_id')
-            ?? auth()->user()?->primary_facility_id
-            ?? Facility::value('id');
+        return $this->ctx->facilityId();
+    }
+
+    /**
+     * The facility a new program / outreach event / report is filed under.
+     *
+     * This used to end in `?? Facility::value('id')`, which answered the
+     * question with whichever row Postgres returned first out of 345 — so an
+     * NGO admin whose session had lost its facility filed its programs and its
+     * MINSANTE reports under a hospital it had never heard of, and the record
+     * carried that hospital's name from then on. There is no safe guess: a
+     * write with no facility fails closed.
+     *
+     * The single-facility fallback is honoured only where it is genuinely
+     * unambiguous, matching InventoryPortalController::bloodFacilityId().
+     */
+    private function requireFacilityId(): string
+    {
+        $resolved = $this->facilityId();
+
+        if ($resolved !== null && $resolved !== '') {
+            return $resolved;
+        }
+
+        abort_unless(
+            Facility::count() === 1,
+            409,
+            'No facility is selected for this session, so there is no way to tell '
+            . 'which organisation this record belongs to. Select a facility first.'
+        );
+
+        return (string) Facility::value('id');
+    }
+
+    /**
+     * Signals are scoped a little wider than the rest of this portal.
+     *
+     * A signal carries `facility_id = null` when its scope_type is district or
+     * region (see SignalDetectionService) — those are not another facility's
+     * records and stay visible. A signal that names a *different* facility is,
+     * and does not.
+     *
+     * The two conditions MUST stay grouped: left un-nested, the trailing
+     * orWhereNull escapes every other constraint on the query and every
+     * facility's signals come back.
+     */
+    private function scopeSignals(Builder $query): Builder
+    {
+        $facilityId = $this->facilityId();
+
+        if (! $facilityId) {
+            return $query;
+        }
+
+        return $query->where(function ($sub) use ($facilityId) {
+            $sub->where('public_health_signals.facility_id', $facilityId)
+                ->orWhereNull('public_health_signals.facility_id');
+        });
     }
 
     private function actorId(): ?string
@@ -35,13 +102,17 @@ class HealthOrgPortalController extends Controller
     public function dashboard()
     {
         $stats = [
-            'patients'      => Patient::count(),
+            // Patient counts are patient data: scoped to the signed-in
+            // organisation, not the national register.
+            'patients'      => $this->ctx->scopeToFacility(Patient::query())->count(),
+            // Facility count is registry metadata (the same number the public
+            // network pages publish), so it stays national on purpose.
             'facilities'    => Facility::where('status', 'active')->count(),
-            'programs'      => HealthOrgProgram::where('status', 'active')->count(),
-            'outreach'      => HealthOrgOutreachEvent::whereIn('status', ['planned', 'in_progress'])->count(),
-            'reports_draft' => PublicHealthReport::where('status', 'draft')->count(),
-            'reports_sent'  => PublicHealthReport::where('status', 'submitted')->count(),
-            'signals_open'  => PublicHealthSignal::whereNull('resolved_at')->count(),
+            'programs'      => $this->ctx->scopeToFacility(HealthOrgProgram::query())->where('status', 'active')->count(),
+            'outreach'      => $this->ctx->scopeToFacility(HealthOrgOutreachEvent::query())->whereIn('status', ['planned', 'in_progress'])->count(),
+            'reports_draft' => $this->ctx->scopeToFacility(PublicHealthReport::query())->where('status', 'draft')->count(),
+            'reports_sent'  => $this->ctx->scopeToFacility(PublicHealthReport::query())->where('status', 'submitted')->count(),
+            'signals_open'  => $this->scopeSignals(PublicHealthSignal::query())->whereNull('resolved_at')->count(),
         ];
 
         return view('portals.healthorg.dashboard', compact('stats'));
@@ -53,7 +124,8 @@ class HealthOrgPortalController extends Controller
 
     public function programs()
     {
-        $programs = HealthOrgProgram::withCount('outreachEvents')
+        $programs = $this->ctx->scopeToFacility(HealthOrgProgram::query())
+            ->withCount('outreachEvents')
             ->orderByDesc('created_at')
             ->paginate(20);
 
@@ -75,7 +147,7 @@ class HealthOrgPortalController extends Controller
 
         HealthOrgProgram::create([
             ...$data,
-            'facility_id' => $this->facilityId(),
+            'facility_id' => $this->requireFacilityId(),
             'status'      => 'active',
             'created_by'  => $this->actorId(),
         ]);
@@ -89,12 +161,16 @@ class HealthOrgPortalController extends Controller
 
     public function outreach()
     {
-        $events = HealthOrgOutreachEvent::with('program:id,name')
+        $events = $this->ctx->scopeToFacility(HealthOrgOutreachEvent::query())
+            ->with('program:id,name')
             ->orderByDesc('scheduled_at')
             ->orderByDesc('created_at')
             ->paginate(20);
 
-        $programs = HealthOrgProgram::where('status', 'active')->orderBy('name')->get(['id', 'name']);
+        $programs = $this->ctx->scopeToFacility(HealthOrgProgram::query())
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get(['id', 'name']);
 
         return view('portals.healthorg.outreach', compact('events', 'programs'));
     }
@@ -110,9 +186,23 @@ class HealthOrgPortalController extends Controller
             'notes'             => 'nullable|string|max:1000',
         ]);
 
+        $facilityId = $this->requireFacilityId();
+
+        // `exists:health_org_programs,id` proves the program is real, not that
+        // it is ours — without this an event could be hung off another
+        // organisation's program and show up in their register.
+        if (! empty($data['program_id'])) {
+            abort_unless(
+                HealthOrgProgram::where('id', $data['program_id'])
+                    ->where('facility_id', $facilityId)
+                    ->exists(),
+                404
+            );
+        }
+
         HealthOrgOutreachEvent::create([
             ...$data,
-            'facility_id' => $this->facilityId(),
+            'facility_id' => $facilityId,
             'status'      => 'planned',
             'created_by'  => $this->actorId(),
         ]);
@@ -122,7 +212,11 @@ class HealthOrgPortalController extends Controller
 
     public function completeOutreach(Request $request, string $id): RedirectResponse
     {
-        $event = HealthOrgOutreachEvent::findOrFail($id);
+        // Scoped lookup, not a bare findOrFail: the route carries only an id,
+        // so an unscoped find lets one organisation close out — and restate the
+        // reach figures of — another's outreach event.
+        $event = $this->ctx->scopeToFacility(HealthOrgOutreachEvent::query())->findOrFail($id);
+
         $data = $request->validate(['people_reached' => 'nullable|integer|min:0|max:1000000']);
 
         $event->update([
@@ -139,7 +233,8 @@ class HealthOrgPortalController extends Controller
 
     public function reports()
     {
-        $reports = PublicHealthReport::with('reportType:id,name')
+        $reports = $this->ctx->scopeToFacility(PublicHealthReport::query())
+            ->with('reportType:id,name')
             ->orderByDesc('created_at')
             ->paginate(25);
 
@@ -164,7 +259,7 @@ class HealthOrgPortalController extends Controller
 
         PublicHealthReport::create([
             'report_type_id'         => $data['report_type_id'],
-            'facility_id'            => $this->facilityId(),
+            'facility_id'            => $this->requireFacilityId(),
             'reporting_period_start' => $data['reporting_period_start'],
             'reporting_period_end'   => $data['reporting_period_end'],
             'status'                 => 'draft',
@@ -182,7 +277,10 @@ class HealthOrgPortalController extends Controller
 
     public function submitReport(Request $request, string $id): RedirectResponse
     {
-        $report = PublicHealthReport::findOrFail($id);
+        // A submitted report goes to MINSANTE under the reporting facility's
+        // name. Scoped so one organisation cannot submit another's draft.
+        $report = $this->ctx->scopeToFacility(PublicHealthReport::query())->findOrFail($id);
+
         abort_if($report->status !== 'draft', 422, 'Only draft reports can be submitted.');
 
         $report->update(['status' => 'submitted', 'updated_by' => $this->actorId()]);
@@ -196,7 +294,8 @@ class HealthOrgPortalController extends Controller
 
     public function signals()
     {
-        $signals = PublicHealthSignal::with('facility:id,name')
+        $signals = $this->scopeSignals(PublicHealthSignal::query())
+            ->with('facility:id,name')
             ->orderByDesc('detected_at')
             ->orderByDesc('created_at')
             ->paginate(25);
@@ -206,7 +305,9 @@ class HealthOrgPortalController extends Controller
 
     public function reviewSignal(Request $request, string $id): RedirectResponse
     {
-        $signal = PublicHealthSignal::findOrFail($id);
+        // Same scoping the list uses: a signal raised against another facility
+        // cannot be confirmed, dismissed or resolved from here.
+        $signal = $this->scopeSignals(PublicHealthSignal::query())->findOrFail($id);
 
         $data = $request->validate([
             'action'  => 'required|in:confirm,dismiss,escalate,resolve',
