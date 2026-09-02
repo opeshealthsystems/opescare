@@ -46,16 +46,28 @@ class FacilityImportReviewService
         return DB::transaction(function () use ($review, $adminId, $notes, $name) {
             $city = $review->candidate_city ?: '';
 
+            // The candidate's own contact details, when it brought any. This
+            // used to be dropped: every accepted row was written with the 'N/A'
+            // phone placeholder and an address that was only the town, even
+            // when the payload held a real number and a real street. Harmless
+            // while the queue was all OpenStreetMap (8 of those 439 rows carry
+            // a phone) and expensive afterwards -- the national master records
+            // carry a phone two times in three, and a phone number is the whole
+            // point of a directory entry for someone who needs a pharmacy.
+            $phone   = $this->payloadPhone($review);
+            $address = $this->payloadAddress($review)
+                ?? ($city !== '' ? $city . ', Cameroon' : 'Cameroon');
+
             $listing = CareFacility::create([
                 'facility_name'       => $name,
                 'facility_type'       => $review->candidate_type ?: 'clinic',
                 'country_code'        => 'CM',
                 'region'              => $review->candidate_region,
                 'city'                => $city,
-                'address'             => $city !== '' ? $city . ', Cameroon' : 'Cameroon',
+                'address'             => $address,
                 'latitude'            => $review->latitude,
                 'longitude'           => $review->longitude,
-                'phone_primary'       => CareFacility::PHONE_PLACEHOLDER,
+                'phone_primary'       => $phone ?? CareFacility::PHONE_PLACEHOLDER,
                 'listing_status'      => 'active',
                 // Untouched on purpose. An import is not a verification.
                 'verification_status' => 'unverified',
@@ -87,6 +99,52 @@ class FacilityImportReviewService
 
             return $listing;
         });
+    }
+
+    /**
+     * A usable phone number from the candidate's payload, or null.
+     *
+     * Two payload shapes reach here: the national master records use `phone`,
+     * while OpenStreetMap candidates carry raw OSM tags (`contact:phone`).
+     * `CareFacility::realValue()` nulls blanks and the literal 'N/A', and the
+     * digit floor rejects fragments -- an unusable string in `phone_primary` is
+     * exactly the placeholder problem this is meant to avoid, so anything that
+     * does not look dialable falls back to the placeholder rather than becoming
+     * a Call button that dials nothing.
+     */
+    private function payloadPhone(FacilityImportReview $review): ?string
+    {
+        foreach (['phone', 'contact:phone', 'phone_raw'] as $key) {
+            $value = CareFacility::realValue(data_get($review->payload, $key));
+
+            if ($value !== null && strlen((string) preg_replace('/\D/', '', $value)) >= 8) {
+                return $value;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * A street address from the payload, or null to fall back to the town.
+     *
+     * Master records carry a single `address`; OSM candidates carry the
+     * `addr:street` / `addr:city` tag pair.
+     */
+    private function payloadAddress(FacilityImportReview $review): ?string
+    {
+        $direct = CareFacility::realValue(data_get($review->payload, 'address'));
+
+        if ($direct !== null) {
+            return $direct;
+        }
+
+        $parts = array_filter([
+            CareFacility::realValue(data_get($review->payload, 'addr:street')),
+            CareFacility::realValue(data_get($review->payload, 'addr:city')),
+        ]);
+
+        return $parts === [] ? null : implode(', ', $parts);
     }
 
     /**
