@@ -16,6 +16,22 @@ use Illuminate\Support\Collection;
  * arithmetic, portable) followed by an exact haversine in PHP. Doing the
  * trigonometry in SQL would tie the query to a specific database's math
  * function set for no accuracy gain at this row count.
+ *
+ * Provenance
+ * ----------
+ * Every stock read here goes through `MedicinePharmacyStock::reportedByRealSource()`,
+ * which withholds `demo_seed` / `seed` AND rows with a NULL `source_system`.
+ * This is the same allow-list the public CareMap finder uses, and it is not
+ * optional: the two services answer the same question for the same person, and
+ * this one feeds the mobile app a patient uses to decide whether to travel
+ * across a city for a drug. Until 2026-09-02 these two queries had no scope at
+ * all, so `GET /api/mobile/pharmacy/nearby` published seeded stock as fact
+ * while the web finder correctly showed nothing.
+ *
+ * NULL is withheld deliberately, not incidentally: the only two writers in the
+ * application (`PharmacyStockReportService`, `PartnerStockIngestService`) both
+ * stamp a source, so a NULL row is one nobody claimed. If a test fails here for
+ * want of provenance, stamp the fixture `'portal'` -- never widen the scope.
  */
 class MedicineFinderService
 {
@@ -65,6 +81,7 @@ class MedicineFinderService
         $stocksByFacility = collect();
         if ($medicine) {
             $stocksByFacility = MedicinePharmacyStock::query()
+                ->reportedByRealSource()
                 ->where('medicine_id', $medicine->id)
                 ->whereIn('care_facility_id', $candidates->pluck('id'))
                 ->get()
@@ -116,6 +133,7 @@ class MedicineFinderService
         }
 
         $rows = MedicinePharmacyStock::query()
+            ->reportedByRealSource()
             ->whereIn('medicine_id', $medicineIds)
             ->available()
             ->whereHas('careFacility', fn ($q) => $q->where('listing_status', 'active'))

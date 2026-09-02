@@ -128,6 +128,10 @@ class BloodBankCoherenceTest extends TestCase
             'units_available_range' => '20+',
             'availability_status'   => 'available',
             'freshness_status'      => 'fresh',
+            // A published row is one somebody claimed. Unattributed rows are
+            // withheld by BloodAvailability::scopeReportedByRealSource(), so an
+            // unstamped fixture is invisible to the very search this asserts on.
+            'source_system'         => 'portal',
             'last_updated_at'       => now(),
         ]);
 
@@ -168,6 +172,9 @@ class BloodBankCoherenceTest extends TestCase
             'units_available_range' => '20+',
             'availability_status'   => 'available',
             'freshness_status'      => 'fresh',
+            // Previously published by the facility itself — a real source, so
+            // it is a row patients could see before the projector retires it.
+            'source_system'         => 'portal',
             'last_updated_at'       => now(),
         ]);
 
@@ -188,6 +195,9 @@ class BloodBankCoherenceTest extends TestCase
             'units_available_range' => '6-20',
             'availability_status'   => 'available',
             'freshness_status'      => 'fresh',
+            // Self-reported by a facility with no operational record — still a
+            // real source, and the row this test proves the projector leaves be.
+            'source_system'         => 'portal',
             'last_updated_at'       => now(),
         ]);
 
@@ -403,6 +413,11 @@ class BloodBankCoherenceTest extends TestCase
             'units_available_range' => '6-20',
             'availability_status'   => 'available',
             'freshness_status'      => 'fresh',
+            // BloodRequestService::request() reads through
+            // reportedByRealSource(), so an unattributed row cannot be ordered
+            // against at all — this fixture has to be a publishable one or the
+            // tests using it exercise the ERR_NOT_AVAILABLE path instead.
+            'source_system'         => 'portal',
             'last_updated_at'       => now(),
         ]);
 

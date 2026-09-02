@@ -22,7 +22,13 @@ class FacilityFreshnessService
                 continue;
             }
 
-            $hoursDiff = now()->diffInHours($record->last_updated_at);
+            // Arguments in this order, and absolute. Carbon 3 returns a SIGNED
+            // diff, so now()->diffInHours($past) is NEGATIVE — which made
+            // "<= 24" true for every past timestamp and stamped every record
+            // 'fresh' no matter how old. On the blood branch below, where the
+            // window is 2 hours, that is the difference between a usable answer
+            // and a dangerous one.
+            $hoursDiff = $record->last_updated_at->diffInHours(now(), true);
             
             if ($hoursDiff <= 24) {
                 $status = 'fresh';
@@ -49,7 +55,13 @@ class FacilityFreshnessService
                 continue;
             }
 
-            $hoursDiff = now()->diffInHours($record->last_updated_at);
+            // Arguments in this order, and absolute. Carbon 3 returns a SIGNED
+            // diff, so now()->diffInHours($past) is NEGATIVE — which made
+            // "<= 24" true for every past timestamp and stamped every record
+            // 'fresh' no matter how old. On the blood branch below, where the
+            // window is 2 hours, that is the difference between a usable answer
+            // and a dangerous one.
+            $hoursDiff = $record->last_updated_at->diffInHours(now(), true);
             
             if ($hoursDiff <= 2) {
                 $status = 'fresh';

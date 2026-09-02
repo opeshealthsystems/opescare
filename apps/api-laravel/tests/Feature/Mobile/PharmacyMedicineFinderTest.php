@@ -110,6 +110,7 @@ class PharmacyMedicineFinderTest extends TestCase
             'unit_price'          => 250,
             'currency'            => 'XAF',
             'reservation_enabled' => true,
+            'source_system' => 'portal',
         ]);
 
         MedicinePharmacyStock::create([
@@ -121,6 +122,7 @@ class PharmacyMedicineFinderTest extends TestCase
             'unit_price'          => 400,
             'currency'            => 'XAF',
             'reservation_enabled' => true,
+            'source_system' => 'portal',
         ]);
     }
 
@@ -370,6 +372,7 @@ class PharmacyMedicineFinderTest extends TestCase
             'pack_size'           => '15 capsules',
             'unit_price'          => 2200,
             'reservation_enabled' => true,
+            'source_system' => 'portal',
         ]);
 
         $this->mobilePostJson($this->patient, '/api/mobile/pharmacy/reservations', [
@@ -390,6 +393,7 @@ class PharmacyMedicineFinderTest extends TestCase
             'pack_size'           => '15 capsules',
             'unit_price'          => 2200,
             'reservation_enabled' => true,
+            'source_system' => 'portal',
         ]);
 
         $stranger = Patient::create([
@@ -427,6 +431,7 @@ class PharmacyMedicineFinderTest extends TestCase
             'pack_size'           => '15 capsules',
             'unit_price'          => 2200,
             'reservation_enabled' => true,
+            'source_system' => 'portal',
         ]);
 
         $prescription = Prescription::create([

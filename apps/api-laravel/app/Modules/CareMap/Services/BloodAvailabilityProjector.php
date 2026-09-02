@@ -348,7 +348,7 @@ class BloodAvailabilityProjector
             return 'stale';
         }
 
-        $hours = $updatedAt->diffInHours(now());
+        $hours = $updatedAt->diffInHours(now(), true);
 
         return match (true) {
             $hours <= 2 => 'fresh',

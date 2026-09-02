@@ -36,7 +36,10 @@ use Illuminate\Support\Facades\DB;
  *    only trust signal; a write that does not refresh it is worse than no
  *    write at all.
  *  - A portal write stamps `source_system = 'portal'`, so real pharmacy
- *    coverage can be counted apart from seeded fiction.
+ *    coverage can be counted apart from seeded fiction. 'portal' is one real
+ *    source among several, not the definition of one: coverage() asks
+ *    `MedicinePharmacyStock::scopeReportedByRealSource()` — the same scope the
+ *    public finder queries through — so partner and Bridge syncs count too.
  *  - Taking a row over from another source (`demo_seed`, a Bridge agent, a
  *    partner sync) is recorded in `facility_update_audits` before it happens.
  *    Nothing is ever silently overwritten.
@@ -206,7 +209,15 @@ class PharmacyStockReportService
                     $now,
                     // A pharmacy overriding a partner/Bridge feed is worth a
                     // human look; overriding demo seed data is the whole point.
-                    requiresReview: $previousSource !== 'demo_seed' && $previousSource !== 'seed',
+                    // Asked through the model's allow-list rather than a second
+                    // literal list — the same reason coverage() does. This read
+                    // 'demo_seed' && 'seed' inline, which would have silently
+                    // stopped agreeing the day that constant gained a value.
+                    requiresReview: ! in_array(
+                        $previousSource,
+                        MedicinePharmacyStock::SYNTHETIC_SOURCE_SYSTEMS,
+                        true,
+                    ),
                 );
             }
 
@@ -237,21 +248,40 @@ class PharmacyStockReportService
         $listing->forceFill(['last_availability_update_at' => Carbon::now()])->save();
     }
 
-    /** How many of this listing's rows a real pharmacy reported, vs. seeded. */
+    /**
+     * How many of this listing's rows the public finder actually publishes,
+     * vs. how many it withholds.
+     *
+     * "Reported" is decided by exactly ONE rule: the allow-list in
+     * `MedicinePharmacyStock::scopeReportedByRealSource()`, which is the scope
+     * every public surface queries through. Counting through the same scope is
+     * the point — it makes the widget structurally incapable of disagreeing
+     * with what a patient is shown, instead of agreeing by coincidence until
+     * one of the two lists is edited.
+     *
+     * It used to count only `source_system = 'portal'`. A pharmacy syncing its
+     * shelf through the Connect API (`partner`) or a Bridge agent was therefore
+     * told its own live stock was seeded fiction, while the Medicine Finder was
+     * simultaneously publishing that exact stock to patients. Provenance is
+     * about whether a row is REAL, not about which door it came through.
+     *
+     * The complement keeps the `seeded` key: 'demo_seed'/'seed' rows, plus
+     * NULL-provenance rows that nobody has claimed. The finder withholds both,
+     * and both mean the same thing to a pharmacist — patients are not seeing
+     * this. NULL must never land in `reported`; see the scope's docblock.
+     */
     public function coverage(CareFacility $listing): array
     {
-        $counts = MedicinePharmacyStock::query()
-            ->where('care_facility_id', $listing->id)
-            ->selectRaw('source_system, COUNT(*) AS total')
-            ->groupBy('source_system')
-            ->pluck('total', 'source_system');
+        $forListing = fn () => MedicinePharmacyStock::query()
+            ->where('care_facility_id', $listing->id);
 
-        $total = (int) $counts->sum();
+        $total    = (int) $forListing()->count();
+        $reported = (int) $forListing()->reportedByRealSource()->count();
 
         return [
             'total'    => $total,
-            'reported' => (int) ($counts[self::SOURCE_PORTAL] ?? 0),
-            'seeded'   => $total - (int) ($counts[self::SOURCE_PORTAL] ?? 0),
+            'reported' => $reported,
+            'seeded'   => $total - $reported,
         ];
     }
 

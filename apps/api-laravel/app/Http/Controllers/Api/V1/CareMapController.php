@@ -267,7 +267,17 @@ class CareMapController extends Controller
     }
 
     /**
-     * Claim listing ownership profile
+     * Claim listing ownership profile.
+     *
+     * `$id` is a `care_facilities.id` — this endpoint is reached from the public
+     * listing page. It used to be handed to submitClaim(), which writes it to
+     * `facility_claims.facility_id`, a column whose foreign key points at
+     * `facilities`. That could never have inserted for the 1,395 listings with
+     * no operational tenant, and `facility_claims` holds 0 rows. It now goes
+     * through the directory-claim path, which anchors on `care_facility_id`.
+     *
+     * The claim is created in `submitted` and confers nothing. Approval is a
+     * decision an administrator makes at /admin/care-map/review.
      */
     public function claimFacility(Request $request, $id)
     {
@@ -280,7 +290,13 @@ class CareMapController extends Controller
         }
 
         try {
-            $claim = $this->claimService->submitClaim($id, $user->id, $request->input('claim_reason', 'Listing management'));
+            $claim = $this->claimService->submitDirectoryClaim($id, $user->id, [
+                'claim_reason'   => $request->input('claim_reason', 'Listing management'),
+                'claimant_name'  => $request->input('claimant_name', $user->name),
+                'claimant_role'  => $request->input('claimant_role'),
+                'claimant_email' => $request->input('claimant_email', $user->email),
+                'claimant_phone' => $request->input('claimant_phone'),
+            ]);
             return response()->json([
                 'status' => 'success',
                 'data' => $claim,
@@ -342,25 +358,43 @@ class CareMapController extends Controller
     }
 
     /**
-     * Sync pharmacy stock level
+     * Partner pharmacy stock sync -- NOT a stock ingest. Refuses, deliberately.
+     *
+     * This endpoint stored no stock. It validated nothing, wrote no rows, and
+     * then stamped `last_availability_update_at = now()` before answering
+     * "success". That timestamp is what the directory renders as freshness, so
+     * a partner calling this made a listing *look* freshly reported while its
+     * stock stayed empty or stale -- the one claim this platform must never
+     * fabricate, on the surface a patient uses to decide whether to travel.
+     *
+     * The ownership check was also inert. `$facility->partner_id &&` short
+     * circuits whenever `partner_id` is NULL, and on 2026-09-02 that was ALL
+     * 1,863 rows -- so any authenticated user could stamp any facility in the
+     * country as freshly updated.
+     *
+     * Real partner ingest lives at `POST /api/v1/connect/inventory/pharmacy`
+     * (`Connect\\InventoryController::syncPharmacyStock`), which resolves drug
+     * codes, persists rows, stamps provenance, and is idempotent. Rather than
+     * grow a second, weaker ingest path here, this one now says what it is.
      */
     public function partnerStockSync(Request $request, $id)
     {
         $facility = CareFacility::findOrFail($id);
         $user = Auth::user();
 
-        // Safe mock partner credentials check
-        if ($facility->partner_id && $facility->partner_id !== $user->id) {
-            return response()->json(['status' => 'error', 'message' => __('api.unauthorized_facility_owner')], 403);
+        // Fail closed: an unowned facility is not an open one.
+        if ($facility->partner_id === null || $facility->partner_id !== $user?->id) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => __('api.unauthorized_facility_owner'),
+            ], 403);
         }
 
-        // Just mock a sync update
-        $facility->update(['last_availability_update_at' => now()]);
-
         return response()->json([
-            'status' => 'success',
-            'message' => __('api.pharmacy_stock_synced')
-        ]);
+            'status'     => 'error',
+            'error_code' => 'STOCK_SYNC_NOT_IMPLEMENTED_HERE',
+            'message'    => __('api.pharmacy_stock_sync_moved'),
+        ], 501);
     }
 
     /**
@@ -408,7 +442,9 @@ class CareMapController extends Controller
      */
     public function adminGovernance()
     {
-        $pendingClaims = \App\Models\FacilityClaim::with(['facility', 'claimant'])->where('claim_status', 'submitted')->get();
+        $pendingClaims = \App\Models\FacilityClaim::with(['careFacility', 'facility', 'claimant'])
+            ->open()
+            ->get();
         $reports = \App\Models\FacilityReport::with(['facility', 'reporter'])->where('status', 'new')->get();
         $staleStock = \App\Models\PharmacyStockAvailability::where('freshness_status', 'stale')->with('facility')->get();
 

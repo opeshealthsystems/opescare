@@ -88,10 +88,20 @@ class MedicinePharmacyStock extends Model
      * travel for it, or stop looking elsewhere. Any query that feeds a public
      * surface MUST go through this scope.
      *
-     * NULL `source_system` is deliberately KEPT. "Unstamped" is not the same as
-     * "seeded", and the column is nullable by design. It is spelled out rather
-     * than left to `whereNotIn` because SQL three-valued logic would otherwise
-     * drop NULL rows silently — an accidental policy instead of a decided one.
+     * NULL `source_system` is deliberately WITHHELD, not kept. Every legitimate
+     * write stamps a source — the pharmacy portal writes 'portal' via
+     * PharmacyStockReportService::SOURCE_PORTAL, the seeders write
+     * 'seed'/'demo_seed' — so an unstamped row is one nobody has claimed. That
+     * is not evidence a medicine is on a shelf, and this is the query a patient
+     * runs before deciding whether to travel. Allow-list, not blacklist.
+     *
+     * It is `whereNotNull` plus `whereNotIn` rather than `whereNotIn` alone
+     * because SQL three-valued logic would drop NULL rows anyway — spelling it
+     * out makes that a decided policy instead of an accident of the dialect.
+     *
+     * If a future reader finds this comment disagreeing with the code, the CODE
+     * is right: do not "correct" it to admit NULL rows. That would publish
+     * unattributed stock to patients.
      */
     public function scopeReportedByRealSource(Builder $query): Builder
     {

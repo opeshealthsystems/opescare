@@ -1041,12 +1041,16 @@ html, body {
               </div>
             @endif
 
-            @if($f->phone_primary)
+            {{-- dialablePhone() nulls the literal 'N/A' the registry extract left
+                 behind. Guarding on phone_primary is true for that string, which
+                 rendered `tel:N/A` and a dead Call button on 1,680 of 2,465 rows. --}}
+            @php($facPhone = $f->dialablePhone())
+            @if($facPhone)
               <div class="fac-row">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
                 </svg>
-                <a href="tel:{{ $f->phone_primary }}" onclick="event.stopPropagation()">{{ $f->phone_primary }}</a>
+                <a href="tel:{{ $facPhone }}" onclick="event.stopPropagation()">{{ $facPhone }}</a>
               </div>
             @endif
 
@@ -1061,8 +1065,8 @@ html, body {
           </div>
 
           <div class="fac-footer">
-            @if($f->phone_primary)
-              <a href="tel:{{ $f->phone_primary }}" class="btn-sm btn-call" onclick="event.stopPropagation()" aria-label="Call {{ $f->facility_name }}">
+            @if($facPhone)
+              <a href="tel:{{ $facPhone }}" class="btn-sm btn-call" onclick="event.stopPropagation()" aria-label="Call {{ $f->facility_name }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.61-.61a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
                 </svg>
@@ -1162,7 +1166,7 @@ $_facilitiesJson = json_encode($facilities->map(function ($f) {
     'type'     => strtolower(str_replace(' ', '_', $f->facility_type ?? 'other')),
     'city'     => $f->city,
     'address'  => $f->address,
-    'phone'    => $f->phone_primary,
+    'phone'    => $f->dialablePhone(),
     'lat'      => (float)($f->latitude  ?? 0),
     'lng'      => (float)($f->longitude ?? 0),
     'verified' => in_array($f->verification_status ?? '', ['license_verified','government_verified']),
