@@ -154,6 +154,38 @@ class AppServiceProvider extends ServiceProvider
             ];
         });
 
+        /*
+         * The reset LINK — /reset-password/{token}, both verbs.
+         *
+         * Both were unthrottled, and both are oracles. The POST sets a password
+         * from a token in the URL, so a successful guess is an account takeover
+         * with no credential involved; the GET answers just as well, because it
+         * renders a form for a live token and a "link expired" card for a dead
+         * one, letting a caller find the live token for free and spend the POST
+         * only once.
+         *
+         * A sibling of 'password-reset' rather than a reuse of it: 3/minute is
+         * the right budget for an endpoint that sends mail, and the wrong one
+         * for a page a genuine user hits three or four times in a row — land,
+         * submit, fail the eight-character rule, submit again — from behind a
+         * shared clinic or office NAT. Locking a user out of the recovery flow
+         * they came to for being locked out is the failure mode to avoid here.
+         *
+         * Keyed by IP for the same reason 'invite' is: an enumerating caller
+         * supplies a DIFFERENT token on every request, so a per-token counter
+         * would never fill. The per-token limit is there as well, to cap
+         * hammering on a link that has actually leaked.
+         */
+        RateLimiter::for('password-reset-token', function (Request $request) {
+            $token = (string) $request->route('token');
+
+            return [
+                Limit::perMinute(10)->by('pwresetlink|' . $request->ip()),
+                Limit::perHour(40)->by('pwresetlink|' . $request->ip()),
+                Limit::perMinute(5)->by('pwresetlink-token|' . hash('sha256', $token)),
+            ];
+        });
+
         // Public unauthenticated writes: sign-up, contact, demo requests. Each
         // creates a row on request from anyone at all, so they need a limit of
         // their own. The burst limit stops scripted floods; the daily cap stops
@@ -162,6 +194,35 @@ class AppServiceProvider extends ServiceProvider
             return [
                 Limit::perMinute(5)->by('signup|' . $request->ip()),
                 Limit::perDay(20)->by('signup|' . $request->ip()),
+            ];
+        });
+
+        /*
+         * Staff invitation links.
+         *
+         * The token in the URL is the ONLY thing between a stranger and a real
+         * staff account at a real facility — the POST creates that account, with
+         * the facility and the role taken from the invite row. Both verbs were
+         * unthrottled, so the token space could be walked at full line rate, and
+         * the GET enumerates just as well as the POST: it distinguishes a live
+         * token from a dead one by what it renders.
+         *
+         * Keyed by IP rather than by token, because an enumerating caller
+         * supplies a DIFFERENT token on every request — a per-token counter
+         * would never reach its limit. The per-token limit is there as well, to
+         * cap hammering on a link that has actually leaked.
+         *
+         * Deliberately looser than 'auth-code' (5/min): a shared office NAT can
+         * legitimately have several new staff accepting invites at once, and a
+         * single person costs 2-3 requests (land, fail validation, resubmit).
+         */
+        RateLimiter::for('invite', function (Request $request) {
+            $token = (string) $request->route('token');
+
+            return [
+                Limit::perMinute(10)->by('invite|' . $request->ip()),
+                Limit::perHour(60)->by('invite|' . $request->ip()),
+                Limit::perMinute(5)->by('invite-token|' . hash('sha256', $token)),
             ];
         });
 

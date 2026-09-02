@@ -9,13 +9,18 @@ use App\Models\Patient;
 use App\Models\Role;
 use App\Models\User;
 use App\Modules\Auth\Services\TwoFactorService;
+use App\Notifications\PasswordChangedNotification;
+use App\Notifications\PasswordResetLinkNotification;
 use App\Services\Dashboard\DashboardProfileService;
 use App\Services\Identity\HealthIdGeneratorService;
+use Illuminate\Auth\Events\PasswordReset as PasswordResetEvent;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
 class PublicPageController extends Controller
@@ -581,80 +586,532 @@ class PublicPageController extends Controller
         return redirect()->route('register.developer')->with('success', __('flash.developer_request_submitted'));
     }
 
+    /**
+     * Staff invitation — landing page.
+     *
+     * This used to render five hardcoded strings ("Metro Clinical Diagnostics
+     * Lab", "Dr. Elizabeth Blackwell") for ANY token, including nonsense ones,
+     * and its POST twin wrote nothing at all. It now resolves a real
+     * FacilityStaffInvite by the sha256 of the token in the URL.
+     *
+     * An unknown token renders the same 'expired' page as a genuinely expired
+     * one — deliberately, so the page cannot be used to test whether a token
+     * exists.
+     */
     public function showStaffInvite($token)
     {
-        if ($token === 'expired') {
+        $invite = \App\Models\FacilityStaffInvite::findByToken((string) $token);
+
+        if (! $invite) {
             return view('auth.invite', ['error' => 'expired']);
         }
-        if ($token === 'used') {
-            return view('auth.invite', ['error' => 'used']);
-        }
-        if ($token === 'revoked') {
-            return view('auth.invite', ['error' => 'revoked']);
+
+        if ($reason = $invite->failureReason()) {
+            return view('auth.invite', ['error' => $reason]);
         }
 
+        $invite->loadMissing(['facility', 'role', 'inviter']);
+
         return view('auth.invite', [
-            'token' => $token,
-            'org_name' => 'Metro Clinical Diagnostics Lab',
-            'facility_name' => 'Down-Town Collection Center Branch',
-            'role_name' => 'Senior Laboratory Technologist',
-            'invited_by' => 'Dr. Elizabeth Blackwell',
-            'expiry' => now()->addDays(3)->format('Y-m-d H:i')
+            'token'         => $token,
+            'email'         => $invite->email,
+            'facility_name' => $invite->facility?->name ?? '—',
+            'role_name'     => $this->inviteRoleLabel($invite->role?->name),
+            'invited_by'    => $invite->inviter?->name ?? '—',
+            'expiry'        => $invite->expires_at?->isoFormat('LLL') ?? '—',
         ]);
     }
 
+    /**
+     * Staff invitation — acceptance.
+     *
+     * Creates the account the invite describes and links it to the INVITING
+     * facility. Everything that decides privilege — the facility and the role —
+     * is read from the invite row, never from the submitted form, so a crafted
+     * POST cannot redirect the account at another facility or escalate it to a
+     * platform role.
+     *
+     * Single-use is enforced by re-reading the invite under a row lock inside
+     * the transaction: two simultaneous submissions of the same link serialise,
+     * and the second one finds accepted_at already set.
+     */
     public function submitStaffInvite(Request $request, $token)
     {
+        $invite = \App\Models\FacilityStaffInvite::findByToken((string) $token);
+
+        if (! $invite || $invite->failureReason() !== null) {
+            return view('auth.invite', ['error' => $invite?->failureReason() ?? 'expired']);
+        }
+
+        $validated = $request->validate([
+            'name'             => ['required', 'string', 'max:255'],
+            'phone'            => ['nullable', 'string', 'max:30'],
+            'password'         => ['required', 'string', 'min:8', 'same:confirm_password'],
+            'confirm_password' => ['required', 'string'],
+            'accept_terms'     => ['accepted'],
+        ]);
+
+        try {
+            $user = DB::transaction(function () use ($invite, $validated) {
+                /** @var \App\Models\FacilityStaffInvite $locked */
+                $locked = \App\Models\FacilityStaffInvite::whereKey($invite->id)->lockForUpdate()->first();
+
+                if (! $locked || ! $locked->isUsable()) {
+                    throw new \RuntimeException('INVITE_NOT_USABLE');
+                }
+
+                $role = Role::find($locked->role_id);
+
+                // Belt and braces: the allow-list is enforced when the invite is
+                // issued, and again here. A role that was renamed out of the
+                // allow-list between issue and acceptance must not be granted.
+                if (! $role || ! in_array($role->name, \App\Models\FacilityStaffInvite::INVITABLE_ROLES, true)) {
+                    throw new \RuntimeException('INVITE_ROLE_NOT_ALLOWED');
+                }
+
+                if (User::where('email', $locked->email)->exists()) {
+                    throw new \RuntimeException('INVITE_EMAIL_TAKEN');
+                }
+
+                $user = User::create([
+                    'name'                => $validated['name'],
+                    'email'               => $locked->email,
+                    'password'            => Hash::make($validated['password']),
+                    // The whole point of the invite: the new account is bound to
+                    // the inviting facility, so RequireFacilityContext resolves
+                    // and the user never lands on the empty /select-facility page.
+                    'primary_facility_id' => $locked->facility_id,
+                    'status'              => 'active',
+                ]);
+
+                $user->role_id = $role->id;
+                $user->email_verified_at = now();
+                $user->save();
+
+                \App\Models\FacilityRoleAssignment::create([
+                    'user_id'     => $user->id,
+                    'facility_id' => $locked->facility_id,
+                    'role_id'     => $role->id,
+                    'is_active'   => true,
+                    'assigned_by' => $locked->invited_by,
+                    'assigned_at' => now(),
+                ]);
+
+                $locked->forceFill([
+                    'accepted_at'      => now(),
+                    'accepted_user_id' => $user->id,
+                ])->save();
+
+                return $user;
+            });
+        } catch (\Throwable $e) {
+            $reason = match ($e->getMessage()) {
+                'INVITE_NOT_USABLE'       => 'used',
+                'INVITE_ROLE_NOT_ALLOWED' => 'revoked',
+                default                   => null,
+            };
+
+            if ($reason !== null) {
+                return view('auth.invite', ['error' => $reason]);
+            }
+
+            \Illuminate\Support\Facades\Log::error('staff_invite_acceptance_failed', [
+                'invite_id' => $invite->id,
+                'error'     => $e->getMessage(),
+            ]);
+
+            return redirect()
+                ->route('invite.accept', $token)
+                ->with('error', __('team.accept_failed'));
+        }
+
+        try {
+            \App\Models\AuditEvent::create([
+                'actor_id'           => $user->id,
+                'actor_role'         => $user->role?->name,
+                'facility_id'        => $invite->facility_id,
+                'action_type'        => 'facility_staff_invite_accepted',
+                'resource_type'      => 'FacilityStaffInvite',
+                'resource_id'        => $invite->id,
+                'source_system'      => 'portal',
+                'ip_address'         => $request->ip(),
+                'emergency_override' => false,
+                'created_at'         => now(),
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('audit_event_failed', [
+                'action' => 'facility_staff_invite_accepted',
+                'error'  => $e->getMessage(),
+            ]);
+        }
+
         return redirect()->route('login')->with('success', __('flash.staff_account_activated'));
     }
+
+    /** Human label for an invited role, bilingual, with the role name as last resort. */
+    private function inviteRoleLabel(?string $roleName): string
+    {
+        if (! $roleName) {
+            return '—';
+        }
+
+        $label = __('team.roles.' . $roleName);
+
+        return is_string($label) && $label !== 'team.roles.' . $roleName ? $label : $roleName;
+    }
+
+    /*
+     * ── Password recovery — the web half ────────────────────────────────────
+     *
+     * All four of these methods used to be decorative. submitForgotPassword()
+     * took a Request it never read, issued no token, sent no mail, and flashed
+     * "instructions have been sent". submitResetPassword() took a token and a
+     * password it never read, wrote nothing, and redirected to /login with
+     * "your password has been securely updated". showResetPassword() rendered
+     * a working form for any string in the URL. A user who forgot their
+     * password was told twice that it had worked and stayed locked out for
+     * good.
+     *
+     * The mechanism here is Laravel's own password broker, not a new one.
+     * Checked 2026-09-02: password_reset_tokens is migrated (in
+     * 2026_05_14_215752_alter_users_table_for_foundation), config/auth.php
+     * defines the 'users' broker over it with a 60-minute expiry, and
+     * App\Models\User extends Illuminate\Foundation\Auth\User, so it already
+     * satisfies CanResetPassword. The broker gives all four properties this
+     * flow needs without a line of custom crypto: the token is
+     * hash_hmac('sha256', Str::random(40), appKey) — cryptographically
+     * random; it is persisted as Hash::make($token) — never in the clear; it
+     * is deleted the moment a reset succeeds — single use; and it is checked
+     * against created_at + expire — time-limited. It also wraps both legs in a
+     * fixed 200 ms Timebox, which is exactly the enumeration defence
+     * requirement 1 asks for.
+     *
+     * The mobile flow (MobileAuthController + PasswordResetCode) is a
+     * DIFFERENT mechanism on purpose and stays as it is: it mails a 6-digit
+     * code because an in-app screen has no browser to land a link in. A link
+     * is the right primitive on the web, and duplicating the mobile table here
+     * would mean maintaining two hand-rolled token stores where the framework
+     * already ships one.
+     */
 
     public function showForgotPassword()
     {
         return view('auth.forgot_password');
     }
 
+    /**
+     * Step 1 — issue and mail a reset link.
+     *
+     * The response is deliberately constant. Whether the address is registered,
+     * unregistered, or registered but inside the broker's own 60-second
+     * re-request window, the caller gets the same redirect, the same status and
+     * the same flash string. Reporting "no such account" here — or reporting
+     * "you already asked" — hands an attacker a membership oracle for a
+     * national health platform, where knowing that someone holds an account is
+     * itself disclosure.
+     */
     public function submitForgotPassword(Request $request)
     {
-        return redirect()->route('password.request')->with('success', __('onboarding.forgot.success'));
+        $validated = $request->validate([
+            'email' => ['required', 'string', 'email', 'max:180'],
+        ]);
+
+        /*
+         * Trimmed, but deliberately NOT lower-cased.
+         *
+         * users.email is stored exactly as it was typed at registration (see
+         * submitPatientRegister) and both Auth::attempt() and the unique index
+         * match it case-sensitively on PostgreSQL. Folding the case here would
+         * make recovery MISS an account that login can reach — the worst
+         * possible direction for this particular endpoint to be wrong in.
+         */
+        $email = trim($validated['email']);
+
+        $status = Password::broker()->sendResetLink(
+            ['email' => $email],
+            function (User $user, string $token): string {
+                try {
+                    $user->notify(
+                        (new PasswordResetLinkNotification($token, $this->passwordResetTtlMinutes()))
+                            ->locale(app()->getLocale())
+                    );
+                } catch (\Throwable $e) {
+                    /*
+                     * A dead queue or a dead mail transport must not change the
+                     * SHAPE of this response. Letting it bubble would answer
+                     * 500 for a registered address and 302 for an unknown one —
+                     * a cleaner enumeration oracle than any message body. The
+                     * token stays valid until it expires; the user sees the
+                     * same line either way and can ask again. Same posture as
+                     * MobileAuthController::forgotPassword.
+                     */
+                    \Illuminate\Support\Facades\Log::warning('password_reset_link_dispatch_failed', [
+                        'user_id' => $user->id,
+                        'error'   => $e->getMessage(),
+                    ]);
+                }
+
+                return Password::RESET_LINK_SENT;
+            }
+        );
+
+        if ($status !== Password::RESET_LINK_SENT) {
+            /*
+             * Equalise the timing, not just the body.
+             *
+             * The registered branch pays for one bcrypt hash of the token
+             * (BCRYPT_ROUNDS=12 in production, ~250-400 ms) — more than the
+             * broker's 200 ms timebox can absorb — while an unregistered
+             * address returns after a single indexed SELECT and gets padded to
+             * 200 ms flat. That gap is a clean enumeration signal to anyone
+             * with a stopwatch. Burning an equivalent hash here costs the
+             * attacker the same wall-clock either way.
+             */
+            Hash::make(Str::random(40));
+        }
+
+        return redirect()
+            ->route('password.request')
+            ->with('success', __('passwords.request.sent', ['minutes' => $this->passwordResetTtlMinutes()]));
     }
 
-    public function showResetPassword($token)
+    /**
+     * Step 2a — render the form, but only for a link that is actually live.
+     *
+     * A dead token must never reach a form. Rendering one invites the user to
+     * type a new password into a page that cannot save it, and then tells them
+     * on submit that something went wrong — after the fact. It is also the
+     * cheaper half of a guessing attack: a form for a live token and an error
+     * card for a dead one is a yes/no answer served at 200 OK.
+     */
+    public function showResetPassword(Request $request, $token)
     {
-        return view('auth.reset_password', ['token' => $token]);
+        // Not lower-cased, for the reason given in submitForgotPassword(): the
+        // address in the link is the stored one, and the match is exact.
+        $email = trim((string) $request->query('email', ''));
+
+        if (! $this->passwordResetTokenIsLive($email, (string) $token)) {
+            return $this->deadResetLink();
+        }
+
+        return view('auth.reset_password', [
+            'token'   => $token,
+            'email'   => $email,
+            'invalid' => false,
+        ]);
     }
 
+    /**
+     * Step 2b — actually set the password.
+     *
+     * On success the account is treated as compromised until proven otherwise,
+     * because that is the usual reason someone resets: every other browser
+     * session is destroyed, the remember-me token is rotated so a stolen cookie
+     * stops working, any mobile access tokens for the linked patient are
+     * revoked (the same thing MobileAuthController::resetPassword does), the
+     * change is written to audit_events, and the owner is emailed that it
+     * happened.
+     */
     public function submitResetPassword(Request $request, $token)
     {
-        return redirect()->route('login')->with('success', __('onboarding.forgot.reset_success'));
+        $request->validate([
+            'email'    => ['required', 'string', 'email', 'max:180'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        /** @var \App\Models\User|null $reset */
+        $reset = null;
+
+        $status = Password::broker()->reset(
+            [
+                'email'                 => trim((string) $request->input('email')),
+                'password'              => (string) $request->input('password'),
+                'password_confirmation' => (string) $request->input('password_confirmation'),
+                'token'                 => (string) $token,
+            ],
+            function (User $user, string $password) use ($request, &$reset): void {
+                $user->forceFill([
+                    // 'password' carries the 'hashed' cast on User, so this is
+                    // hashed on save — never assign an already-hashed value.
+                    'password'       => $password,
+                    'remember_token' => Str::random(60),
+                ])->save();
+
+                // Everything else that was signed in as this account is signed
+                // out. SESSION_DRIVER is 'database', so the session rows ARE
+                // the live sessions.
+                DB::table('sessions')->where('user_id', $user->id)->delete();
+
+                if ($user->patient_id) {
+                    \App\Models\PatientAccessToken::where('patient_id', $user->patient_id)->delete();
+                }
+
+                event(new PasswordResetEvent($user));
+
+                $reset = $user;
+            }
+        );
+
+        if ($status !== Password::PASSWORD_RESET || ! $reset instanceof User) {
+            // One answer for a forged token, an expired token, a spent token
+            // and an address that does not exist. Anything more specific is an
+            // oracle, and none of the four is recoverable from this page.
+            return $this->deadResetLink();
+        }
+
+        try {
+            \App\Models\AuditEvent::create([
+                'actor_id'           => $reset->id,
+                'actor_role'         => $reset->role?->name,
+                'facility_id'        => $reset->primary_facility_id,
+                'action_type'        => 'password_reset_completed',
+                'resource_type'      => 'User',
+                'resource_id'        => $reset->id,
+                'source_system'      => 'portal',
+                'ip_address'         => $request->ip(),
+                'emergency_override' => false,
+                'created_at'         => now(),
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('audit_event_failed', [
+                'action' => 'password_reset_completed',
+                'error'  => $e->getMessage(),
+            ]);
+        }
+
+        try {
+            $reset->notify(
+                (new PasswordChangedNotification($request->ip()))
+                    ->locale(app()->getLocale())
+            );
+        } catch (\Throwable $e) {
+            // The password IS changed at this point. A failed confirmation
+            // email must not turn a successful reset into an error page.
+            \Illuminate\Support\Facades\Log::warning('password_changed_notification_failed', [
+                'user_id' => $reset->id,
+                'error'   => $e->getMessage(),
+            ]);
+        }
+
+        return redirect()->route('login')->with('success', __('passwords.reset'));
     }
 
+    /** How long a reset link stays live, straight from the broker's own config. */
+    private function passwordResetTtlMinutes(): int
+    {
+        $broker = (string) config('auth.defaults.passwords', 'users');
+
+        return (int) config("auth.passwords.{$broker}.expire", 60);
+    }
+
+    /**
+     * True only if this exact token is live for this exact address.
+     *
+     * Both halves matter: the token is stored hashed and keyed by email, so a
+     * token issued for one account cannot be replayed against another simply by
+     * editing the address in the link.
+     */
+    private function passwordResetTokenIsLive(string $email, string $token): bool
+    {
+        if ($email === '' || $token === '') {
+            return false;
+        }
+
+        $broker = Password::broker();
+        $user   = $broker->getUser(['email' => $email]);
+
+        return $user instanceof CanResetPassword && $broker->tokenExists($user, $token);
+    }
+
+    /**
+     * The one visible failure for every dead reset link.
+     *
+     * 410 Gone rather than 200: the page is honest to a human reader and to a
+     * crawler, and it carries no form, so nothing on it can report a reset that
+     * did not happen.
+     */
+    private function deadResetLink(): \Illuminate\Http\Response
+    {
+        return response()->view('auth.reset_password', [
+            'token'   => null,
+            'email'   => null,
+            'invalid' => true,
+            'ttl'     => $this->passwordResetTtlMinutes(),
+        ], 410);
+    }
+
+    /*
+     * ── /verify/otp — a verification screen with nothing behind it ──────────
+     *
+     * This trio used to be theatre. submitVerifyOtp() compared the six digits
+     * against two hardcoded literals — '000000' returned "incorrect", '111111'
+     * returned "expired" — and EVERY other value, including 123456 and 999999,
+     * fell through to a redirect carrying flash.authentication_complete. It
+     * verified nothing, consumed nothing, and told the user they were verified.
+     * resendOtp() sent no code and claimed one had been sent.
+     *
+     * It is not wired to anything and cannot honestly be wired here. Checked
+     * 2026-09-02:
+     *
+     *   - Nothing in the application redirects to otp.verify. The only
+     *     references to the route names are the three route lines, this
+     *     controller, and the view's own form action.
+     *   - There is no session state naming a subject. The real second factor,
+     *     /mfa/challenge, carries 'mfa.user_id' through the session and refuses
+     *     to render without it; /verify/otp has no equivalent, so the page
+     *     cannot even say WHO is being verified, let alone at which address.
+     *   - The OTP tables that do exist — patient_otp_codes, provider_otp_codes —
+     *     are keyed by phone_number and belong to the mobile API's phone login
+     *     (MobileAuthController, ProviderMobileAuthController). Adopting one of
+     *     them here would mean inventing an entry point, a channel, a subject
+     *     and a success effect that no surrounding code specifies.
+     *
+     * So it fails closed. Wiring it would require guessing four decisions that
+     * govern authentication, and a screen that guesses is worse than one that
+     * says the channel is not available. The strings live in auth.otp_unavailable
+     * so both halves of the site say the same thing.
+     */
+
+    /** The page states plainly that nothing here verifies anything. */
     public function showVerifyOtp()
     {
         return view('auth.verify_otp');
     }
 
+    /**
+     * Fail closed. No code is checked, so no success is ever reported and no
+     * redirect leads anywhere privileged.
+     */
     public function submitVerifyOtp(Request $request)
     {
-        $code = implode('', $request->input('otp', []));
-        if ($code === '000000') {
-            return redirect()->route('otp.verify')->with('error', __('onboarding.otp.errors.incorrect'));
-        }
-        if ($code === '111111') {
-            return redirect()->route('otp.verify')->with('error', __('onboarding.otp.errors.expired'));
-        }
-
-        $url = Auth::check()
-            ? app(DashboardProfileService::class)->landingUrlForCurrent()
-            : route('portals.patient');
-
-        return redirect($url)->with('success', __('flash.authentication_complete'));
+        return $this->otpUnavailable($request);
     }
 
+    /** Nothing is sent, so nothing may claim to have been sent. */
     public function resendOtp(Request $request)
     {
+        return $this->otpUnavailable($request);
+    }
+
+    /**
+     * The single refusal both OTP writes return.
+     *
+     * 503 for a machine (the view's resend button uses fetch() and checks
+     * res.ok, so a non-2xx keeps it from announcing a code that was never
+     * sent); a redirect carrying the error flash for a browser form post.
+     */
+    private function otpUnavailable(Request $request)
+    {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'error'   => 'otp_channel_unavailable',
+                'message' => __('auth.otp_unavailable.error'),
+            ], 503);
+        }
+
         return redirect()
             ->route('otp.verify')
-            ->with('success', __('flash.otp_resent'));
+            ->with('error', __('auth.otp_unavailable.error'));
     }
 
     public function showPendingApproval()
@@ -671,20 +1128,62 @@ class PublicPageController extends Controller
         return view('auth.account_suspended');
     }
 
+    /**
+     * The facilities this user is actually entitled to act in.
+     *
+     * Returns null for the platform tier, meaning "no restriction" — platform
+     * admins belong to no facility and legitimately scope themselves into any
+     * of them. For everyone else it is their primary facility plus any active
+     * FacilityRoleAssignment, and nothing else.
+     *
+     * This is the authority behind session('active_facility_id'), which more
+     * than twenty controllers trust as their facility scope. Without it, the
+     * selector's POST would accept any facility id the browser sent, and every
+     * one of those controllers would then happily read and write another
+     * hospital's data.
+     */
+    private function selectableFacilityIds(?User $user): ?array
+    {
+        if (! $user) {
+            return [];
+        }
+
+        if (\App\Http\Middleware\RequirePlatformAdmin::isPlatformTier($user)) {
+            return null; // unrestricted
+        }
+
+        $ids = [];
+
+        if ($user->primary_facility_id) {
+            $ids[] = $user->primary_facility_id;
+        }
+
+        if (method_exists($user, 'facilityRoleAssignments')) {
+            $ids = array_merge(
+                $ids,
+                $user->facilityRoleAssignments()->active()->pluck('facility_id')->all()
+            );
+        }
+
+        return array_values(array_unique($ids));
+    }
+
     public function showSelectFacility()
     {
         $user     = Auth::user();
         $roleName = $user?->role?->description ?? $user?->role?->name ?? 'User';
 
-        // Build a list of selectable facilities.
-        // Platform-level users (no primary facility) see all active facilities.
-        // A user with a primary facility would normally never reach this page,
-        // but we handle it gracefully by showing their own facility.
+        // Build a list of selectable facilities: exactly the ones the user is
+        // entitled to (see selectableFacilityIds). Platform-tier users get the
+        // full list; everyone else gets their own assignments only, so the page
+        // never offers a choice the POST would refuse.
         $query = Facility::withoutGlobalScope('isolate_demo')
             ->orderBy('name');
 
-        if ($user?->primary_facility_id) {
-            $query->where('id', $user->primary_facility_id);
+        $allowed = $this->selectableFacilityIds($user);
+
+        if ($allowed !== null) {
+            $query->whereIn('id', $allowed);
         }
 
         $facilities = $query->get()->map(fn(Facility $f) => [
@@ -710,6 +1209,18 @@ class PublicPageController extends Controller
         if (!$facilityId) {
             return redirect()->route('select-facility')
                 ->with('error', __('flash.facility_select_required'));
+        }
+
+        // The chosen id has to be one the user is entitled to. Without this
+        // check the selector was an open door: POST any facility uuid and
+        // session('active_facility_id') became that facility, which is the
+        // scope every portal controller then trusts — including staff
+        // invitations, patient queues, billing and messaging.
+        $allowed = $this->selectableFacilityIds(Auth::user());
+
+        if ($allowed !== null && ! in_array($facilityId, $allowed, true)) {
+            return redirect()->route('select-facility')
+                ->with('error', __('flash.facility_select_not_allowed'));
         }
 
         // ✅ Save the chosen facility to session so RequireFacilityContext passes

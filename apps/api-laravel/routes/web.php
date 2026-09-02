@@ -109,14 +109,20 @@ Route::get('/signup/developer', [PublicPageController::class, 'showDeveloperRegi
 Route::post('/signup/developer', [PublicPageController::class, 'submitDeveloperRegister'])->middleware('throttle:signup')->name('register.developer.submit');
 
 // Staff Invitation Activation
-Route::get('/invite/{token}', [PublicPageController::class, 'showStaffInvite'])->name('invite.accept');
-Route::post('/invite/{token}', [PublicPageController::class, 'submitStaffInvite'])->name('invite.accept.submit');
+// Both verbs are throttled: the POST mints a staff account at a facility, and
+// the GET tells an enumerating caller whether a token is live by what it
+// renders. Limiting only the POST would leave the oracle wide open.
+Route::get('/invite/{token}', [PublicPageController::class, 'showStaffInvite'])->middleware('throttle:invite')->name('invite.accept');
+Route::post('/invite/{token}', [PublicPageController::class, 'submitStaffInvite'])->middleware('throttle:invite')->name('invite.accept.submit');
 
 // Password Recovery & Credential Update
 Route::get('/forgot-password', [PublicPageController::class, 'showForgotPassword'])->name('password.request');
 Route::post('/forgot-password', [PublicPageController::class, 'submitForgotPassword'])->middleware('throttle:password-reset')->name('password.email');
-Route::get('/reset-password/{token}', [PublicPageController::class, 'showResetPassword'])->name('password.reset');
-Route::post('/reset-password/{token}', [PublicPageController::class, 'submitResetPassword'])->name('password.update');
+// Both verbs are throttled: the POST sets a password from a token in the URL,
+// so a successful guess is an account takeover, and the GET is an oracle too —
+// it renders the form for a live token and an expired-link card for a dead one.
+Route::get('/reset-password/{token}', [PublicPageController::class, 'showResetPassword'])->middleware('throttle:password-reset-token')->name('password.reset');
+Route::post('/reset-password/{token}', [PublicPageController::class, 'submitResetPassword'])->middleware('throttle:password-reset-token')->name('password.update');
 
 // OTP Screen Challenge
 Route::get('/verify/otp', [PublicPageController::class, 'showVerifyOtp'])->name('otp.verify');
@@ -747,6 +753,7 @@ Route::middleware(['web', 'auth', 'platform.admin'])->group(function () {
     Route::post('/admin/care-map/review/imports/{review}/accept', [\App\Http\Controllers\MedicalId\AdminDirectoryReviewController::class, 'acceptImport'])->name('admin.care-map.review.imports.accept');
     Route::post('/admin/care-map/review/imports/{review}/merge',  [\App\Http\Controllers\MedicalId\AdminDirectoryReviewController::class, 'mergeImport'])->name('admin.care-map.review.imports.merge');
     Route::post('/admin/care-map/review/imports/{review}/reject', [\App\Http\Controllers\MedicalId\AdminDirectoryReviewController::class, 'rejectImport'])->name('admin.care-map.review.imports.reject');
+    Route::post('/admin/care-map/review/imports/{review}/defer',  [\App\Http\Controllers\MedicalId\AdminDirectoryReviewController::class, 'deferImport'])->name('admin.care-map.review.imports.defer');
 });
 // ┌──────────────────────────────────────────────────────────────────────────┐
 // │ END — Facility claim + self-service listing + directory review           │

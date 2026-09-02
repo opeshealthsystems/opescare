@@ -6,7 +6,9 @@
     <div class="auth-card">
         <div class="auth-card__head">
             <h1 class="auth-card__title">{{ __('onboarding.forgot.title') }}</h1>
-            <p class="auth-card__sub">{{ __('onboarding.forgot.desc') }}</p>
+            {{-- The old copy promised "email address or phone number". Recovery
+                 goes out by email only, so the description is the email one. --}}
+            <p class="auth-card__sub">{{ __('passwords.request.desc') }}</p>
         </div>
 
         @if(session('success'))
@@ -42,17 +44,20 @@
                 @csrf
 
                 <div class="auth-form-group">
-                    <label for="email" class="auth-label">{{ __('onboarding.common.email') }} {{ __('onboarding.common.or') }} {{ __('onboarding.common.phone') }} *</label>
+                    <label for="email" class="auth-label">{{ __('onboarding.common.email') }} *</label>
                     <div class="auth-input-icon-wrap">
                         <i data-lucide="mail" class="auth-input-icon"></i>
                         <input
-                            type="text"
+                            type="email"
                             id="email"
                             name="email"
                             class="auth-input auth-input--icon{{ $errors->has('email') ? ' auth-input-error' : '' }}"
                             required
                             autofocus
-                            placeholder="name@email.com or +123..."
+                            autocomplete="email"
+                            inputmode="email"
+                            maxlength="180"
+                            placeholder="name@email.com"
                             value="{{ old('email') }}"
                         >
                     </div>

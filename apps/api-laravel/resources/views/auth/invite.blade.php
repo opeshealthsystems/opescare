@@ -57,7 +57,7 @@ body{margin:0;min-height:100vh;background:var(--p-bg,#f0f4f8);font-family:var(--
             @endif
 
             <p class="auth-card__sub" style="text-align:center">
-                If you believe this is an error, please coordinate with your clinical branch administrator to issue a new OpesCare invitation.
+                {{ __('team.invite_error_help') }}
             </p>
 
             <a href="{{ route('login') }}" class="btn-secondary-full">
@@ -69,14 +69,14 @@ body{margin:0;min-height:100vh;background:var(--p-bg,#f0f4f8);font-family:var(--
         <div class="auth-card__icon">
             <i data-lucide="mail-open"></i>
         </div>
-        <h1 class="auth-card__title">Accept your invitation</h1>
-        <p class="auth-card__sub">Complete your account setup</p>
+        <h1 class="auth-card__title">{{ __('onboarding.invite.title') }}</h1>
+        <p class="auth-card__sub">{{ __('onboarding.invite.subtitle') }}</p>
 
         <div class="invite-meta">
             <p class="invite-meta__heading">{{ __('onboarding.invite.sec_details') }}</p>
             <div class="invite-meta__row">
-                <span class="invite-meta__label">{{ __('onboarding.invite.org_lbl') }}</span>
-                <span class="invite-meta__value">{{ $org_name }}</span>
+                <span class="invite-meta__label">{{ __('team.invite_email_lbl') }}</span>
+                <span class="invite-meta__value">{{ $email }}</span>
             </div>
             <div class="invite-meta__row">
                 <span class="invite-meta__label">{{ __('onboarding.invite.facility_lbl') }}</span>
@@ -132,7 +132,7 @@ body{margin:0;min-height:100vh;background:var(--p-bg,#f0f4f8);font-family:var(--
             <div class="form-row">
                 <div class="form-group">
                     <label for="password" class="form-label">{{ __('onboarding.common.password') }} *</label>
-                    <input type="password" id="password" name="password" class="form-input{{ $errors->has('password') ? ' form-input--error' : '' }}" required minlength="8" placeholder="Min. 8 characters">
+                    <input type="password" id="password" name="password" class="form-input{{ $errors->has('password') ? ' form-input--error' : '' }}" required minlength="8" placeholder="{{ __('team.password_hint') }}">
                     @error('password')<div class="field-error">{{ $message }}</div>@enderror
                 </div>
                 <div class="form-group">
