@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Middleware\RequirePlatformAdmin;
 use App\Models\Facility;
 use App\Models\Role;
+use App\Models\FacilityRoleAssignment;
 use App\Models\User;
 use App\Services\Portal\PortalContextService;
 use Illuminate\Http\Request;
@@ -151,6 +152,67 @@ class AdminUserManagementController extends Controller
      * stamped with the facility the account was moved INTO, which is the one
      * that gained the access.
      */
+    /**
+     * Keep `facility_role_assignments` in step with the assignment just made.
+     *
+     * `primary_facility_id` alone is enough to get the user past
+     * RequireFacilityContext -- the middleware seeds `active_facility_id` from
+     * it -- but not enough to resolve their role correctly.
+     * `User::roleAtFacility()` looks for an active assignment and, finding
+     * none, falls back to the global `users.role_id`. That fallback is the
+     * backward-compatibility path for accounts predating this table, and
+     * leaning on it means a role at a facility is inferred rather than
+     * recorded: nothing distinguishes "nurse at this hospital" from "nurse
+     * everywhere", which is the wrong shape for a platform where one person may
+     * hold different roles at different facilities.
+     *
+     * `PublicPageController::submitStaffInvite()` writes the same row for the
+     * invite path; this is the platform-admin equivalent.
+     *
+     * Deactivated rather than deleted: an assignment records access that was
+     * once granted, and the table is UNIQUE on (user_id, facility_id, role_id),
+     * so a user moved away and back must revive the original row rather than
+     * collide with it.
+     */
+    private function syncFacilityRoleAssignment(
+        User $user,
+        ?string $previousFacilityId,
+        ?string $facilityId,
+        ?string $roleId
+    ): void {
+        // Withdraw every standing assignment that is not what this user now
+        // holds -- the previous facility, and any stale role at a facility they
+        // are staying at.
+        FacilityRoleAssignment::query()
+            ->where('user_id', $user->id)
+            ->where('is_active', true)
+            ->when(
+                $facilityId !== null && $roleId !== null,
+                fn ($q) => $q->where(fn ($inner) => $inner
+                    ->where('facility_id', '!=', $facilityId)
+                    ->orWhere('role_id', '!=', $roleId))
+            )
+            ->update(['is_active' => false, 'expires_at' => now()]);
+
+        if ($facilityId === null || $roleId === null) {
+            return;
+        }
+
+        FacilityRoleAssignment::updateOrCreate(
+            [
+                'user_id'     => $user->id,
+                'facility_id' => $facilityId,
+                'role_id'     => $roleId,
+            ],
+            [
+                'is_active'   => true,
+                'expires_at'  => null,
+                'assigned_by' => Auth::id(),
+                'assigned_at' => now(),
+            ]
+        );
+    }
+
     private function auditFacilityAssignment(User $user, ?string $before, ?string $after): void
     {
         $this->ctx->auditPatientAccess(
@@ -263,6 +325,7 @@ class AdminUserManagementController extends Controller
         $user->save();
 
         if ($facilityId !== null) {
+            $this->syncFacilityRoleAssignment($user, null, $facilityId, $roleId);
             $this->auditFacilityAssignment($user, null, $facilityId);
         }
 
@@ -282,6 +345,8 @@ class AdminUserManagementController extends Controller
             'status'  => 'required|string',
             'primary_facility_id' => ['bail', 'nullable', 'uuid', 'exists:facilities,id'],
         ]);
+
+        $roleChanged = (string) $user->role_id !== (string) $validated['role_id'];
 
         $user->name   = $validated['name'];
         $user->email  = $validated['email'];
@@ -304,6 +369,17 @@ class AdminUserManagementController extends Controller
         }
 
         $user->save();
+
+        // The role can change without the facility changing, and the assignment
+        // records the pair -- so it is re-synced whenever either side moves.
+        if ($facilityChanged || $roleChanged) {
+            $this->syncFacilityRoleAssignment(
+                $user,
+                $facilityChanged ? $facilityChangedFrom : $user->primary_facility_id,
+                $user->primary_facility_id,
+                $user->role_id
+            );
+        }
 
         if ($facilityChanged) {
             $this->auditFacilityAssignment($user, $facilityChangedFrom, $user->primary_facility_id);
