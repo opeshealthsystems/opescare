@@ -1,8 +1,8 @@
 @extends('documents.base')
 
-@section('title')ADVERSE EVENT FOLLOWING IMMUNIZATION REPORT@endsection
+@section('title', 'ADVERSE EVENT FOLLOWING IMMUNIZATION REPORT')
 
-@section('subtitle')WHO / MINSANTE Pharmacovigilance | Code: AEF | {{ $document_number }}@endsection
+@section('subtitle', 'WHO / MINSANTE Pharmacovigilance | Code: AEF | {{ $document_number }}')
 
 @section('content')
 <style>

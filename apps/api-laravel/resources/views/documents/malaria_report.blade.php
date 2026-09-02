@@ -1,8 +1,8 @@
 @extends('documents.base')
 
-@section('title')MALARIA DIAGNOSTIC REPORT@endsection
+@section('title', 'MALARIA DIAGNOSTIC REPORT')
 
-@section('subtitle')RDT + Microscopy | Code: MAL | {{ $document_number }}@endsection
+@section('subtitle', 'RDT + Microscopy | Code: MAL | {{ $document_number }}')
 
 @section('content')
 <style>

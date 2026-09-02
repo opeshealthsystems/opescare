@@ -1,8 +1,8 @@
 @extends('documents.base')
 
-@section('title')BLOOD BANK REQUEST / CROSSMATCH FORM@endsection
+@section('title', 'BLOOD BANK REQUEST / CROSSMATCH FORM')
 
-@section('subtitle')Transfusion Medicine | Code: BBR | {{ $document_number }}@endsection
+@section('subtitle', 'Transfusion Medicine | Code: BBR | {{ $document_number }}')
 
 @section('content')
 <style>

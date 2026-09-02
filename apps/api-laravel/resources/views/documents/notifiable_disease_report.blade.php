@@ -1,8 +1,8 @@
 @extends('documents.base')
 
-@section('title')NOTIFIABLE DISEASE REPORT@endsection
+@section('title', 'NOTIFIABLE DISEASE REPORT')
 
-@section('subtitle')Cameroon Public Health Law No. 96/03 | Code: NDR | {{ $document_number }}@endsection
+@section('subtitle', 'Cameroon Public Health Law No. 96/03 | Code: NDR | {{ $document_number }}')
 
 @section('content')
 <style>

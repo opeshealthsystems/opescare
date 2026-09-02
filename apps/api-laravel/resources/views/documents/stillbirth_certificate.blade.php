@@ -1,8 +1,8 @@
 @extends('documents.base')
 
-@section('title')STILLBIRTH CERTIFICATE / CERTIFICAT DE MORTINAISSANCE@endsection
+@section('title', 'STILLBIRTH CERTIFICATE / CERTIFICAT DE MORTINAISSANCE')
 
-@section('subtitle')REPUBLIC OF CAMEROON — RÉPUBLIQUE DU CAMEROUN | Code: SBC | {{ $document_number }}@endsection
+@section('subtitle', 'REPUBLIC OF CAMEROON — RÉPUBLIQUE DU CAMEROUN | Code: SBC | {{ $document_number }}')
 
 @section('content')
 <style>
@@ -68,7 +68,8 @@
         @if(!empty($payload['maceration_present']))
         <div style="margin-top:2mm;">
             <span class="maceration-badge">
-                Maceration Present@if(!empty($payload['maceration_grade'])) — {{ $payload['maceration_grade'] }}@endif
+                Maceration Present
+                @if(!empty($payload['maceration_grade'])) — {{ $payload['maceration_grade'] }}@endif
             </span>
         </div>
         @endif

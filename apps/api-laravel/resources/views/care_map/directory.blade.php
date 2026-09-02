@@ -1044,7 +1044,7 @@ html, body {
             {{-- dialablePhone() nulls the literal 'N/A' the registry extract left
                  behind. Guarding on phone_primary is true for that string, which
                  rendered `tel:N/A` and a dead Call button on 1,680 of 2,465 rows. --}}
-            @php($facPhone = $f->dialablePhone())
+            @php $facPhone = $f->dialablePhone(); @endphp
             @if($facPhone)
               <div class="fac-row">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

@@ -1,8 +1,8 @@
 @extends('documents.base')
 
-@section('title')CONFIDENTIAL — HIV COUNSELLING RECORD@endsection
+@section('title', 'CONFIDENTIAL — HIV COUNSELLING RECORD')
 
-@section('subtitle')MINSANTE HIV/AIDS Programme | Code: HCR | {{ $document_number }}@endsection
+@section('subtitle', 'MINSANTE HIV/AIDS Programme | Code: HCR | {{ $document_number }}')
 
 @section('content')
 <style>
