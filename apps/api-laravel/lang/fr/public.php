@@ -141,6 +141,7 @@ return [
         'nav_care_map'           => 'Carte de soins',
         'nav_labs'               => 'Résultats de laboratoire',
         'nav_prescriptions'      => 'Ordonnances',
+        'nav_prescribe'          => 'Nouvelle ordonnance',
         'nav_consent'            => 'Demandes de consentement',
         'nav_documents'          => 'Documents',
         'nav_profile'            => 'Mon profil',
@@ -3755,6 +3756,8 @@ return [
     // Inventory Blood
     'stf_inv_blood_title'            => 'Inventaire de la banque de sang',
     'stf_inv_blood_subtitle'         => 'Suivre la disponibilité des groupes sanguins et l\'état des composants.',
+    'stf_inv_blood_publishes_notice' => 'Le stock enregistré ici est publié dans le Localisateur de sang public. Les patients qui recherchent ces groupes sanguins verront cet établissement, avec l\'heure de votre dernière mise à jour. Les unités expirées, non sécuritaires ou en quarantaine ne sont jamais annoncées.',
+    'stf_inv_blood_no_listing_notice'=> 'Cet établissement n\'a pas encore de fiche publique : le stock enregistré ici reste interne et n\'apparaîtra pas dans le Localisateur de sang. Demandez à un administrateur de rattacher une fiche publique à cet établissement.',
     'stf_inv_blood_update_stock_btn' => 'Mettre à jour le stock',
     'stf_inv_blood_stat_total'       => 'Unités totales',
     'stf_inv_blood_stat_groups'      => 'Groupes en stock',

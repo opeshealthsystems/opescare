@@ -129,11 +129,46 @@ return Application::configure(basePath: dirname(__DIR__))
             //   api/v1/connect/inventory/*   (partner stock-sync ingest)
             //   api/v1/sdk/facilities/*/stock
             //   api/v1/pharmacy/formulary/*  (medicine catalogue)
+            //   portals/staff/inventory/blood + /blood/*  <- SEE BELOW
+            //
+            // ── The blood carve-out. Do not "tidy" this back. ───────────────
+            //
+            // This list used to read `portals/staff/inventory/*`, which swept
+            // up the blood-bank stock screen along with pharmacy stock. That
+            // 404'd the ONLY reachable writer of `blood_availability`, and
+            // `blood_availability` is what the public Blood Finder
+            // (GET api/v1/care-map/blood/search, GET api/mobile/blood/search)
+            // reads. The finder shipped in V1, had no way to be given data,
+            // and returned [] for ever.
+            //
+            // So the pharmacy paths are enumerated one by one instead of
+            // wildcarding the whole prefix. The freeze is unchanged in every
+            // other respect — `portals/staff/inventory/pharmacy*`,
+            // `portals/staff/supply*`, `api/v1/inventory*` and
+            // `portals/pharmacy/inventory` are all still frozen, because
+            // facility inventory and supply-chain OPERATIONS are genuinely out
+            // of V1. Only the blood-bank stock entry that feeds the finder is
+            // let through. This matches what config/features.php has always
+            // said about this flag: it "does NOT cover the pharmacy/blood
+            // FINDERS ... nor the partner stock-sync ingest that feeds them".
+            //
+            // `api/v1/inventory/blood*` stays FROZEN on purpose even though it
+            // writes the same table: it is the facility inventory-ops API, and
+            // partners already have a live, unfrozen ingest for blood at
+            // POST api/v1/connect/inventory/blood-stock/sync (which does not
+            // match `api/v1/inventory*`). Blood therefore has two live writers
+            // — the staff screen and the partner ingest — without unfreezing
+            // the inventory-ops API surface.
+            //
+            // If a new route is added under portals/staff/inventory/, decide
+            // deliberately which list it belongs to. There is no catch-all any
+            // more, so an unlisted path is LIVE, not frozen.
             'inventory_ops' => [
                 'api/v1/inventory',
                 'api/v1/inventory/*',
-                'portals/staff/inventory',
-                'portals/staff/inventory/*',
+                'portals/staff/inventory',            // bare prefix; no route today
+                'portals/staff/inventory/pharmacy',
+                'portals/staff/inventory/pharmacy/*',
                 'portals/staff/supply',
                 'portals/staff/supply/*',
                 'portals/pharmacy/inventory',

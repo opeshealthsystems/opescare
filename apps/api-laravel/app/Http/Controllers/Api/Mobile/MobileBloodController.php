@@ -58,14 +58,20 @@ class MobileBloodController extends Controller
      */
     public function options(): JsonResponse
     {
+        // Same provenance gate the search itself applies
+        // (BloodAvailabilitySearchService). A chip that promises "12
+        // facilities" and a search that then returns three is a worse lie than
+        // either alone — the count and the result set must be the same query.
         $groupCounts = BloodAvailability::query()
-            ->where('availability_status', 'available')
+            ->available()
+            ->reportedByRealSource()
             ->selectRaw('blood_group, COUNT(DISTINCT facility_id) AS total')
             ->groupBy('blood_group')
             ->pluck('total', 'blood_group');
 
         $componentCounts = BloodAvailability::query()
-            ->where('availability_status', 'available')
+            ->available()
+            ->reportedByRealSource()
             ->selectRaw('component_type, COUNT(DISTINCT facility_id) AS total')
             ->groupBy('component_type')
             ->pluck('total', 'component_type');

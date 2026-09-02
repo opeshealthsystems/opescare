@@ -48,10 +48,31 @@ use Illuminate\Support\Facades\DB;
  *    `unavailable`, never left showing a stale band.
  *  - Rows are only ever updated, never deleted: `blood_requests` links to them
  *    and a patient's history must survive a stock rotation.
+ *  - Every published row is STAMPED with the source that caused it
+ *    (`blood_availability.source_system`). The Blood Finder withholds rows
+ *    that are seeded or unattributed — see
+ *    App\Models\BloodAvailability::scopeReportedByRealSource() — so a row this
+ *    projector writes and does not stamp would be invisible to patients. The
+ *    stamp is what makes projected data publishable at all.
  *  - Idempotent — running it twice changes nothing the second time.
  */
 class BloodAvailabilityProjector
 {
+    /**
+     * Default provenance for a projected row: the facility's own operational
+     * blood-bank record.
+     *
+     * Callers that know something more specific say so — the staff portal
+     * passes 'portal'. The default is deliberately a REAL source rather than
+     * null: a `blood_inventories` row can only be created through an
+     * authenticated facility write path (the staff blood screen, the partner
+     * ingest at api/v1/connect/inventory/blood-stock/sync, the bridge agent, or
+     * the facility inventory API), and the one seeder that touches that table
+     * — DemoPharmacyStockSeeder — never runs this projector, so nothing it
+     * writes is ever published.
+     */
+    public const SOURCE_OPERATIONAL = 'blood_inventory';
+
     /**
      * Operational component vocabulary → the patient-facing one.
      *
@@ -100,9 +121,15 @@ class BloodAvailabilityProjector
     /**
      * Re-publish availability for one tenant facility (`facilities.id`).
      *
+     * @param  string|null  $source  Provenance to stamp on every row published
+     *                               by this pass. Defaults to
+     *                               self::SOURCE_OPERATIONAL. Never pass a
+     *                               value from BloodAvailability::SYNTHETIC_SOURCE_SYSTEMS
+     *                               unless the data really is seeded — that is
+     *                               the switch that hides a row from patients.
      * @return int Number of `blood_availability` rows written or refreshed.
      */
-    public function projectFacility(string $facilityId): int
+    public function projectFacility(string $facilityId, ?string $source = null): int
     {
         $listings = CareFacility::query()
             ->where('facility_id', $facilityId)
@@ -128,7 +155,7 @@ class BloodAvailabilityProjector
         $written   = 0;
 
         foreach ($listings as $listing) {
-            $written += $this->publish($listing, $projected);
+            $written += $this->publish($listing, $projected, $source ?? self::SOURCE_OPERATIONAL);
         }
 
         return $written;
@@ -206,10 +233,11 @@ class BloodAvailabilityProjector
      * Write the projection onto one public listing.
      *
      * @param  array<string,array{group:string,component:string,units:int,updated:?CarbonInterface}>  $projected
+     * @param  string  $source  Provenance stamped on every row touched here.
      */
-    private function publish(CareFacility $listing, array $projected): int
+    private function publish(CareFacility $listing, array $projected, string $source): int
     {
-        return DB::transaction(function () use ($listing, $projected) {
+        return DB::transaction(function () use ($listing, $projected, $source) {
             $existing = BloodAvailability::query()
                 ->where('facility_id', $listing->id)
                 ->get()
@@ -228,6 +256,16 @@ class BloodAvailabilityProjector
                     'units_available_range' => $range,
                     'availability_status'   => $status,
                     'freshness_status'      => $this->freshness($entry['updated']),
+                    // Provenance is re-stamped on UPDATE as well as INSERT: a
+                    // seeded row that a real blood bank has now taken over must
+                    // stop being withheld from patients, and a row projected
+                    // from the operational record IS the bank's own statement.
+                    'source_system'         => $source,
+                    // The freshness contract in CareMapController::searchBlood()
+                    // reads exactly this column (REPORTED_AT_KEYS), so it must
+                    // never be left null on a published row — a null here reads
+                    // as 'stale' at best and drops the row out of meta entirely
+                    // at worst.
                     'last_updated_at'       => $entry['updated'] ?? now(),
                 ];
 
@@ -266,6 +304,9 @@ class BloodAvailabilityProjector
                     'units_available_range' => '0',
                     'availability_status'   => 'unavailable',
                     'freshness_status'      => 'stale',
+                    // "We no longer hold this" is the bank's statement too, and
+                    // it supersedes whatever seeded row used to sit here.
+                    'source_system'         => $source,
                     'last_updated_at'       => now(),
                 ]);
 

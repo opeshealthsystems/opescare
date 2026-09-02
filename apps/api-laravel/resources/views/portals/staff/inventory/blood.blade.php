@@ -49,17 +49,25 @@
         <span>{{ __('public.portal.nav_staff_leave', [], app()->getLocale()) ?: 'Leave' }}</span>
     </a>
 </div>
+{{-- Blood Bank is carved OUT of the inventory_ops freeze (see the
+     'inventory_ops' block in bootstrap/app.php): it is the only reachable
+     writer of the public Blood Finder's data. Pharmacy stock and Supply Chain
+     are NOT — they 404 while the flag is off, so they are guarded here rather
+     than offered as dead links. --}}
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_inventory', [], app()->getLocale()) ?: 'Inventory' }}</div>
+    @feature('inventory_ops')
     <a href="{{ route('portals.staff.inventory.pharmacy') }}" class="sidebar-link">
         <i data-lucide="pill"></i>
         <span>{{ __('public.portal.nav_inventory_pharmacy', [], app()->getLocale()) ?: 'Pharmacy' }}</span>
     </a>
+    @endfeature
     <a href="{{ route('portals.staff.inventory.blood') }}" class="sidebar-link active">
         <i data-lucide="droplets"></i>
         <span>{{ __('public.portal.nav_inventory_blood', [], app()->getLocale()) ?: 'Blood Bank' }}</span>
     </a>
 </div>
+@feature('inventory_ops')
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</div>
     <a href="{{ route('portals.staff.supply') }}" class="sidebar-link {{ request()->routeIs('portals.staff.supply*') ? 'active' : '' }}">
@@ -67,12 +75,15 @@
         <span>{{ __('staff_inv.nav_supply_chain', [], app()->getLocale()) ?: 'Supply Chain' }}</span>
     </a>
 </div>
+@endfeature
 <div class="sidebar-nav-section">
     <div class="sidebar-nav-label">{{ __('staff_inv.nav_lbl_operations', [], app()->getLocale()) ?: 'Operations' }}</div>
+    @feature('billing')
     <a href="{{ route('portals.staff.billing') }}" class="sidebar-link">
         <i data-lucide="receipt"></i>
         <span>{{ __('public.portal.nav_billing', [], app()->getLocale()) ?: 'Billing' }}</span>
     </a>
+    @endfeature
     <a href="{{ route('portals.staff.support') }}" class="sidebar-link">
         <i data-lucide="headset"></i>
         <span>{{ __('public.portal.nav_support', [], app()->getLocale()) ?: 'Support' }}</span>
@@ -117,6 +128,24 @@
 @endif
 @if(session('error'))
     <div class="alert alert-danger mb-6"><i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div></div>
+@endif
+
+{{-- What this screen is FOR. Stock typed here is published to the public Blood
+     Finder, and that only happens when the facility has a public directory
+     listing to publish onto — BloodAvailabilityProjector writes onto
+     care_facilities rows linked back by facility_id and silently writes
+     nothing when there are none. Saying so beats a clerk keeping a fridge
+     up to date that no patient can ever see. --}}
+@if($publishesToFinder)
+    <div class="alert alert-info mb-6">
+        <i data-lucide="radio-tower"></i>
+        <div>{{ __('public.stf_inv_blood_publishes_notice') }}</div>
+    </div>
+@else
+    <div class="alert alert-warning mb-6">
+        <i data-lucide="triangle-alert"></i>
+        <div>{{ __('public.stf_inv_blood_no_listing_notice') }}</div>
+    </div>
 @endif
 
 {{-- Summary Cards --}}

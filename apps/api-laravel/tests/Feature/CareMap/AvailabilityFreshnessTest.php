@@ -257,6 +257,13 @@ class AvailabilityFreshnessTest extends TestCase
             'units_available_range' => '1-5',
             'availability_status'   => 'available',
             'freshness_status'      => 'stale',
+            // A real report, like the medicine fixtures above. Blood
+            // availability now carries provenance and the finder withholds
+            // seeded and unattributed rows
+            // (BloodAvailability::scopeReportedByRealSource()), so an
+            // unstamped row here would be filtered out and this test would
+            // measure the empty-set path instead of the staleness it is about.
+            'source_system'         => 'portal',
             'last_updated_at'       => Carbon::now()->subDays(3),
         ]);
 

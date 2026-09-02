@@ -141,6 +141,7 @@ return [
         'nav_care_map'           => 'Care Map',
         'nav_labs'               => 'Lab Results',
         'nav_prescriptions'      => 'Prescriptions',
+        'nav_prescribe'          => 'New Prescription',
         'nav_consent'            => 'Consent Requests',
         'nav_documents'          => 'Documents',
         'nav_profile'            => 'My Profile',
@@ -3754,6 +3755,8 @@ return [
     // Inventory Blood
     'stf_inv_blood_title'            => 'Blood bank inventory',
     'stf_inv_blood_subtitle'         => 'Track blood group availability and component status.',
+    'stf_inv_blood_publishes_notice' => 'Stock recorded here is published to the public Blood Finder. Patients searching for these blood groups will be shown this facility, with the time you last updated it. Expired, unsafe and quarantined units are never advertised.',
+    'stf_inv_blood_no_listing_notice'=> 'This facility has no public directory listing yet, so stock recorded here stays internal and will not appear in the Blood Finder. Ask an administrator to link a public listing to this facility.',
     'stf_inv_blood_update_stock_btn' => 'Update Stock',
     'stf_inv_blood_stat_total'       => 'Total Units',
     'stf_inv_blood_stat_groups'      => 'Groups in Stock',

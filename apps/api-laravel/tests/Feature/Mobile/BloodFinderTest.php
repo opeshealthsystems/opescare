@@ -85,6 +85,11 @@ class BloodFinderTest extends TestCase
             'phone_primary'  => '+237233421599',
         ]);
 
+        // `source_system` is required for a row to be PUBLIC. The finder
+        // withholds seeded and unattributed availability
+        // (BloodAvailability::scopeReportedByRealSource()), so an unstamped
+        // fixture would make every assertion below measure the empty set.
+        // 'portal' is what the staff blood screen stamps.
         $this->nearAvailability = BloodAvailability::create([
             'facility_id'           => $this->nearBank->id,
             'blood_group'           => BloodGroup::ONegative->value,
@@ -93,6 +98,7 @@ class BloodFinderTest extends TestCase
             'availability_status'   => 'available',
             'freshness_status'      => 'fresh',
             'emergency_contact'     => '+237699000111',
+            'source_system'         => 'portal',
             'last_updated_at'       => now(),
         ]);
 
@@ -103,6 +109,7 @@ class BloodFinderTest extends TestCase
             'units_available_range' => '1-4',
             'availability_status'   => 'available',
             'freshness_status'      => 'recent',
+            'source_system'         => 'portal',
             'last_updated_at'       => now(),
         ]);
     }

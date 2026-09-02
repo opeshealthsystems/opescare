@@ -30,6 +30,14 @@ use Illuminate\Support\Str;
  * the empty-state and compatible-group fallbacks the screen is built around.
  *
  * Idempotent — keyed on (facility, group, component).
+ *
+ * NOT PUBLIC. Every row is stamped `source_system = 'demo_seed'`, and the
+ * Blood Finder withholds synthetic rows
+ * (App\Models\BloodAvailability::scopeReportedByRealSource()). These rows exist
+ * to make the staff and demo screens render and to measure real coverage
+ * against — they are never shown to a patient searching for blood. Real
+ * availability arrives through the staff blood screen or the partner ingest and
+ * is published by BloodAvailabilityProjector with a real source.
  */
 class DemoBloodInventorySeeder extends Seeder
 {
@@ -81,13 +89,28 @@ class DemoBloodInventorySeeder extends Seeder
                         continue;   // this bank genuinely does not hold it
                     }
 
-                    $exists = DB::table('blood_availability')
+                    $existing = DB::table('blood_availability')
                         ->where('facility_id', $facility->id)
                         ->where('blood_group', $group->value)
                         ->where('component_type', $component->value)
-                        ->exists();
+                        ->first(['id', 'source_system']);
 
-                    if ($exists) {
+                    if ($existing) {
+                        // Claim rows this seeder wrote before provenance
+                        // existed. They are withheld from patients either way
+                        // (unattributed is withheld too), but leaving them
+                        // blank hides WHY the Blood Finder ignores them.
+                        //
+                        // Only NULL is claimed: a row a real blood bank has
+                        // since published carries its own source, and
+                        // relabelling that as demo data would take a true
+                        // report away from patients.
+                        if ($existing->source_system === null) {
+                            DB::table('blood_availability')
+                                ->where('id', $existing->id)
+                                ->update(['source_system' => 'demo_seed', 'updated_at' => now()]);
+                        }
+
                         continue;
                     }
 
@@ -102,6 +125,14 @@ class DemoBloodInventorySeeder extends Seeder
                         // Real number where the registry has one, so "Call"
                         // actually dials somewhere.
                         'emergency_contact'     => $facility->phone_primary !== 'N/A' ? $facility->phone_primary : null,
+                        // SYNTHETIC. Every stock level in this seeder was
+                        // invented — see the class docblock. The stamp is what
+                        // keeps these rows out of the public Blood Finder:
+                        // App\Models\BloodAvailability::scopeReportedByRealSource()
+                        // withholds it, so a patient is never sent to a blood
+                        // bank on the strength of seed data. The rows stay for
+                        // demos, screenshots and coverage measurement.
+                        'source_system'         => 'demo_seed',
                         'last_updated_at'       => now()->subMinutes(random_int(10, 240)),
                         'created_at'            => now(),
                         'updated_at'            => now(),

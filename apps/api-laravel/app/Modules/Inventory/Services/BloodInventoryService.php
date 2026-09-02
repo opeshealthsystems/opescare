@@ -40,8 +40,21 @@ class BloodInventoryService
         return $query->get();
     }
 
-    public function upsertUnit(string $facilityId, array $data): BloodInventory
+    /**
+     * @param  string|null  $source  Provenance stamped on the published
+     *                               `blood_availability` row this write
+     *                               refreshes. Null keeps the projector's
+     *                               default (BloodAvailabilityProjector::SOURCE_OPERATIONAL).
+     *                               The Blood Finder withholds rows with no
+     *                               source, so this is what makes a staff
+     *                               entry visible to a patient at all.
+     */
+    public function upsertUnit(string $facilityId, array $data, ?string $source = null): BloodInventory
     {
+        // `source_system` is provenance for the PUBLISHED row, not a column on
+        // this table — strip it if a caller passed the whole request through.
+        unset($data['source_system']);
+
         // Upsert by facility + blood_group + component
         $existing = BloodInventory::where('facility_id', $facilityId)
             ->where('blood_group', $data['blood_group'])
@@ -52,7 +65,7 @@ class BloodInventoryService
             $existing->update(array_merge($data, [
                 'last_stock_update' => now(),
             ]));
-            $this->projector->projectFacility($facilityId);
+            $this->projector->projectFacility($facilityId, $source);
 
             return $existing;
         }
@@ -62,7 +75,7 @@ class BloodInventoryService
             'last_stock_update' => now(),
         ]));
 
-        $this->projector->projectFacility($facilityId);
+        $this->projector->projectFacility($facilityId, $source);
 
         return $created;
     }
@@ -73,7 +86,7 @@ class BloodInventoryService
      *                                   facility so one client can never adjust
      *                                   another blood bank's shelf.
      */
-    public function adjustUnits(string $itemId, int $delta, string $direction = 'add', ?string $facilityId = null): BloodInventory
+    public function adjustUnits(string $itemId, int $delta, string $direction = 'add', ?string $facilityId = null, ?string $source = null): BloodInventory
     {
         $item = $this->findScoped($itemId, $facilityId);
 
@@ -86,13 +99,13 @@ class BloodInventoryService
         $item->last_stock_update = now();
         $item->save();
 
-        $this->projector->projectFacility((string) $item->facility_id);
+        $this->projector->projectFacility((string) $item->facility_id, $source);
 
         return $item;
     }
 
     /** @param  string|null  $facilityId  See adjustUnits(). */
-    public function setFlags(string $itemId, array $flags, ?string $facilityId = null): BloodInventory
+    public function setFlags(string $itemId, array $flags, ?string $facilityId = null, ?string $source = null): BloodInventory
     {
         $allowed = ['is_expired', 'is_quarantined', 'is_unsafe'];
         $update  = array_intersect_key($flags, array_flip($allowed));
@@ -101,7 +114,7 @@ class BloodInventoryService
 
         // Flagging a unit expired/quarantined/unsafe pulls it out of the
         // published band immediately — an unsafe unit must never be advertised.
-        $this->projector->projectFacility((string) $item->facility_id);
+        $this->projector->projectFacility((string) $item->facility_id, $source);
 
         return $item;
     }

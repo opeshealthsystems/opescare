@@ -117,6 +117,28 @@ return [
         // NOTE: this does NOT cover the pharmacy/blood FINDERS, which are the
         // interoperability product itself and ship in V1 — nor the partner
         // stock-sync ingest that feeds them.
+        //
+        // That note was true of the intent and false of the code. The URI map
+        // in bootstrap/app.php froze `portals/staff/inventory/*`, which swept
+        // up the blood-bank stock screen — the ONLY reachable writer of
+        // `blood_availability`, the table the public Blood Finder reads. The
+        // finder shipped with no way to be given data and answered [] for ever.
+        //
+        // The blood entry paths are therefore CARVED OUT of this flag:
+        //   LIVE   portals/staff/inventory/blood        (+ /blood/{id}/adjust,
+        //                                                  /blood/{id}/flag)
+        //   FROZEN portals/staff/inventory/pharmacy*
+        //   FROZEN portals/staff/supply*
+        //   FROZEN portals/pharmacy/inventory
+        //   FROZEN api/v1/inventory*   (incl. api/v1/inventory/blood — partners
+        //                               use the live, unfrozen ingest at
+        //                               POST api/v1/connect/inventory/blood-stock/sync)
+        //
+        // The carve-out lives in the pattern list in bootstrap/app.php, not in
+        // this flag: flipping FEATURE_INVENTORY_OPS still turns facility
+        // inventory operations on and off as a whole, and turning it OFF must
+        // never take the Blood Finder's only data source with it. Read the
+        // 'inventory_ops' block in bootstrap/app.php before editing either.
         'inventory_ops' => (bool) env('FEATURE_INVENTORY_OPS', $frozenDefault),
 
         // Drug-interaction / allergy / lab-rule alerting. Clinical-safety
