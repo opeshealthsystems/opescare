@@ -96,6 +96,8 @@ class SeoController extends Controller
             '/forgot-password', '/reset-password', '/invite/', '/select-facility',
             '/pending-approval', '/account-suspended', '/portal-unavailable',
             '/document-preview', '/demo-access', '/lang/', '/up',
+            // The patient app shell — a JS bundle, no crawlable content.
+            '/app', '/app/',
         ];
 
         $group = function (string $agent) use ($disallow): array {

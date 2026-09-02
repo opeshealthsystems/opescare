@@ -29,7 +29,9 @@
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "output": "single"
     },
     "plugins": [
       "expo-router",
@@ -67,6 +69,9 @@
         "projectId": "c1ae70c8-48c1-48fc-bdd7-448e641792b6"
       }
     },
-    "owner": "opesware"
+    "owner": "opesware",
+    "experiments": {
+      "baseUrl": "/app"
+    }
   }
 }

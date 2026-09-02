@@ -143,6 +143,27 @@ Route::post('/login', [PublicPageController::class, 'submitLogin'])->middleware(
 Route::get('/mfa/challenge', [PublicPageController::class, 'showMfaChallenge'])->name('mfa.challenge');
 Route::post('/mfa/challenge', [PublicPageController::class, 'submitMfaChallenge'])->middleware('throttle:auth-code')->name('mfa.challenge.submit');
 
+// ── Patient mobile app (Expo web build) ─────────────────────────────────────
+// The app is exported as a single-page bundle into public/app, so nginx serves
+// every real file (/app/_expo/*, /app/assets/*) directly and never reaches
+// Laravel. Only paths that do NOT exist on disk fall through to here — which is
+// exactly the client-side routes expo-router owns. Without this, deep links and
+// refreshes inside the app would 404.
+//
+// It talks to this same origin's API, so there is no CORS surface and no second
+// host to keep in step.
+Route::get('/app/{path?}', function (?string $path = null) {
+    $index = public_path('app/index.html');
+
+    abort_unless(is_file($index), 404);
+
+    return response()->file($index, [
+        // The shell is tiny and changes on every deploy; the fingerprinted
+        // bundles it pulls are immutable and cached by nginx on their own.
+        'Cache-Control' => 'no-cache, must-revalidate',
+    ]);
+})->where('path', '.*')->name('mobile.app');
+
 // Session / Logout
 Route::post('/logout', function () {
     auth()->logout();
@@ -376,6 +397,27 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
     Route::post('/portals/staff/support/{id}/close', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'supportClose'])->name('portals.staff.support.close');
     Route::post('/portals/staff/support/{id}/escalate', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'supportEscalate'])->name('portals.staff.support.escalate');
     Route::post('/portals/staff/support/{id}/assign', [\App\Http\Controllers\MedicalId\StaffPortalController::class, 'supportAssign'])->name('portals.staff.support.assign');
+
+    // ══ BEGIN: staff messaging + facility team management ════════
+    // Two halves of the same gap: patients could send messages nobody could
+    // read, and facilities could not create the staff accounts that would read
+    // them. Both sit in this group so they inherit portal.access (role→portal
+    // routing), facility.context (session facility) and throttle:portal.
+
+    // ── Staff: patient message inbox ─────────────────────────────
+    Route::get('/portals/staff/messages',                 [\App\Http\Controllers\MedicalId\StaffMessagingController::class, 'index'])->name('portals.staff.messages');
+    Route::get('/portals/staff/messages/{thread}',        [\App\Http\Controllers\MedicalId\StaffMessagingController::class, 'show'])->name('portals.staff.messages.show');
+    Route::post('/portals/staff/messages/{thread}/reply', [\App\Http\Controllers\MedicalId\StaffMessagingController::class, 'send'])->name('portals.staff.messages.send');
+
+    // ── Facility admin: my team (invite / reissue / revoke) ───────
+    // Prefix is portals/facility, NOT portals/admin: everything under
+    // portals/admin/* is platform-tier only (RequirePlatformAdmin), which is
+    // exactly why facility admins had no staff management at all.
+    Route::get('/portals/facility/team',                            [\App\Http\Controllers\MedicalId\FacilityStaffController::class, 'index'])->name('portals.facility.team');
+    Route::post('/portals/facility/team/invites',                   [\App\Http\Controllers\MedicalId\FacilityStaffController::class, 'store'])->name('portals.facility.team.invite');
+    Route::post('/portals/facility/team/invites/{id}/reissue',      [\App\Http\Controllers\MedicalId\FacilityStaffController::class, 'reissue'])->name('portals.facility.team.invite.reissue');
+    Route::post('/portals/facility/team/invites/{id}/revoke',       [\App\Http\Controllers\MedicalId\FacilityStaffController::class, 'revoke'])->name('portals.facility.team.invite.revoke');
+    // ══ END: staff messaging + facility team management ══════════
 
     // ── Data Import Portal ────────────────────────────────────────
     Route::get('/portals/staff/data-import',                    [\App\Http\Controllers\MedicalId\DataImportController::class, 'index'])->name('portals.staff.data_import.index');
@@ -665,6 +707,50 @@ Route::get('/care-map', [\App\Http\Controllers\Api\V1\CareMapController::class, 
 Route::get('/care-map/facility/{id}', [\App\Http\Controllers\Api\V1\CareMapController::class, 'publicProfile'])->name('public.care-map.profile');
 Route::get('/care-map/emergency', [\App\Http\Controllers\Api\V1\CareMapController::class, 'publicEmergency'])->name('public.care-map.emergency');
 Route::middleware(['web', 'auth', 'platform.admin'])->get('/admin/care-map/governance', [\App\Http\Controllers\Api\V1\CareMapController::class, 'adminGovernance'])->name('admin.care-map.governance');
+
+// ┌──────────────────────────────────────────────────────────────────────────┐
+// │ BEGIN — Facility claim + self-service listing + directory review         │
+// └──────────────────────────────────────────────────────────────────────────┘
+//
+// Three audiences, three gates:
+//
+//  1. A facility representative claiming their listing (auth, listing id in
+//     the URL — this is the ONLY place a facility id may come from a request).
+//  2. That representative editing what they were approved for. Note that no
+//     route below carries a facility id: FacilityListingController resolves it
+//     from the approved claim on the authenticated user and nowhere else.
+//  3. A platform administrator deciding claims and import candidates. The
+//     /admin/care-map prefix is already in RequirePlatformAdmin's
+//     PLATFORM_ONLY_PREFIXES, so facility-tier admins cannot reach it.
+
+Route::middleware(['web', 'auth', 'throttle:portal'])->group(function () {
+    Route::get('/care-map/facility/{id}/claim',  [\App\Http\Controllers\CareMap\FacilityClaimController::class, 'create'])->name('public.care-map.claim');
+    Route::post('/care-map/facility/{id}/claim', [\App\Http\Controllers\CareMap\FacilityClaimController::class, 'store'])->name('public.care-map.claim.store');
+
+    Route::get('/portals/listing/claims', [\App\Http\Controllers\CareMap\FacilityClaimController::class, 'myClaims'])->name('portals.listing.claims');
+
+    // Self-service listing editor — deliberately id-less.
+    Route::get('/portals/listing',                       [\App\Http\Controllers\CareMap\FacilityListingController::class, 'edit'])->name('portals.listing.edit');
+    Route::post('/portals/listing',                      [\App\Http\Controllers\CareMap\FacilityListingController::class, 'update'])->name('portals.listing.update');
+    Route::post('/portals/listing/hours',                [\App\Http\Controllers\CareMap\FacilityListingController::class, 'updateHours'])->name('portals.listing.hours.update');
+    Route::post('/portals/listing/services',             [\App\Http\Controllers\CareMap\FacilityListingController::class, 'storeService'])->name('portals.listing.services.store');
+    Route::delete('/portals/listing/services/{service}', [\App\Http\Controllers\CareMap\FacilityListingController::class, 'destroyService'])->name('portals.listing.services.destroy');
+});
+
+Route::middleware(['web', 'auth', 'platform.admin'])->group(function () {
+    Route::get('/admin/care-map/review', [\App\Http\Controllers\MedicalId\AdminDirectoryReviewController::class, 'index'])->name('admin.care-map.review');
+
+    Route::post('/admin/care-map/review/claims/{claim}/approve', [\App\Http\Controllers\MedicalId\AdminDirectoryReviewController::class, 'approveClaim'])->name('admin.care-map.review.claims.approve');
+    Route::post('/admin/care-map/review/claims/{claim}/reject',  [\App\Http\Controllers\MedicalId\AdminDirectoryReviewController::class, 'rejectClaim'])->name('admin.care-map.review.claims.reject');
+    Route::post('/admin/care-map/review/claims/{claim}/revoke',  [\App\Http\Controllers\MedicalId\AdminDirectoryReviewController::class, 'revokeClaim'])->name('admin.care-map.review.claims.revoke');
+
+    Route::post('/admin/care-map/review/imports/{review}/accept', [\App\Http\Controllers\MedicalId\AdminDirectoryReviewController::class, 'acceptImport'])->name('admin.care-map.review.imports.accept');
+    Route::post('/admin/care-map/review/imports/{review}/merge',  [\App\Http\Controllers\MedicalId\AdminDirectoryReviewController::class, 'mergeImport'])->name('admin.care-map.review.imports.merge');
+    Route::post('/admin/care-map/review/imports/{review}/reject', [\App\Http\Controllers\MedicalId\AdminDirectoryReviewController::class, 'rejectImport'])->name('admin.care-map.review.imports.reject');
+});
+// ┌──────────────────────────────────────────────────────────────────────────┐
+// │ END — Facility claim + self-service listing + directory review           │
+// └──────────────────────────────────────────────────────────────────────────┘
 
 /*
 |--------------------------------------------------------------------------

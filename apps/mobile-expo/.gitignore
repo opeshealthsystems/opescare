@@ -39,3 +39,6 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Expo web export — the built copy is deployed from apps/api-laravel/public/app
+dist-web/
