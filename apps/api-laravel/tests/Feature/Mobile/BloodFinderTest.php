@@ -367,6 +367,10 @@ class BloodFinderTest extends TestCase
                 'availability_status' => 'available',
                 'freshness_status'    => 'fresh',
                 'last_updated_at'     => now(),
+                // Provenance, as a real blood-bank report carries it. Ordering
+                // is gated by the same scope the finder reads, so an unstamped
+                // row is neither findable nor orderable — which is the point.
+                'source_system'       => 'portal',
             ]);
 
             $this->mobilePostJson($this->patient, '/api/mobile/blood/requests', [
@@ -470,6 +474,10 @@ class BloodFinderTest extends TestCase
                 'availability_status' => 'available',
                 'freshness_status'    => 'fresh',
                 'last_updated_at'     => now(),
+                // Provenance, as a real blood-bank report carries it. Ordering
+                // is gated by the same scope the finder reads, so an unstamped
+                // row is neither findable nor orderable — which is the point.
+                'source_system'       => 'portal',
             ]);
 
             $this->mobilePostJson($this->patient, '/api/mobile/blood/requests', [

@@ -62,9 +62,20 @@ class BloodRequestService
     ): BloodRequest {
         $quantity = max(1, min($quantity, self::MAX_UNITS));
 
-        // The facility must actually report this group/component as available —
-        // otherwise the patient would travel for nothing.
+        /*
+         * The facility must actually report this group/component as available —
+         * otherwise the patient would travel for nothing.
+         *
+         * `reportedByRealSource()` is the same scope the public Blood Finder
+         * reads through, and applying it here is the point: without it a row
+         * that is withheld from search because it is seeded or unattributed
+         * would still accept a booking. A patient cannot see that stock, but
+         * could be told a request against it succeeded — which for someone
+         * chasing blood in an emergency is worse than being told there is none.
+         * What can be ordered and what can be found must be the same set.
+         */
         $availability = BloodAvailability::query()
+            ->reportedByRealSource()
             ->where('facility_id', $facility->id)
             ->where('blood_group', $bloodGroup->value)
             ->where('component_type', $componentType->value)
