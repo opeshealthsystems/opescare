@@ -158,22 +158,15 @@
                 @error('patient_id')<p class="form-error">{{ $message }}</p>@enderror
             </div>
 
+            {{-- The facility is the one this session is working in, shown rather
+                 than chosen. It used to be a free choice posted in the body, so a
+                 clerk could book into any facility in the country by picking a
+                 different option; the controller now takes it from the session and
+                 ignores the field entirely, so offering a picker would only mislead. --}}
             <div class="form-group mb-4">
                 <label class="form-label">{{ __('public.stf_appt_facility') }}</label>
-                @if(count($facilities) > 0)
-                    <select name="facility_id" class="form-control" required>
-                        <option value="">{{ __('public.stf_select_facility') }}</option>
-                        @foreach($facilities as $f)
-                            <option value="{{ $f->id }}" {{ old('facility_id') == $f->id ? 'selected' : '' }}>
-                                {{ $f->name ?? $f->id }}
-                            </option>
-                        @endforeach
-                    </select>
-                @else
-                    <input type="text" name="facility_id" class="form-control" required
-                        placeholder="{{ __('public.stf_appt_facility_id') }}" value="{{ old('facility_id') }}">
-                @endif
-                @error('facility_id')<p class="form-error">{{ $message }}</p>@enderror
+                <input type="text" class="form-control" disabled
+                       value="{{ $activeFacilityName ?? __('public.stf_appt_facility_session') }}">
             </div>
 
             <div class="form-row mb-4">

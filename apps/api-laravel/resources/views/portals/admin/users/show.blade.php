@@ -20,7 +20,7 @@
     @else<span class="badge badge-warning">@enum($user->status ?? 'pending')</span>@endif
     <div class="entity-head__spacer"></div>
     @if(($user->status??'')==='suspended')
-    <form method="POST" action="{{ route('portals.admin.users.activate', $user) }}" class="inline-form">@csrf
+    <form method="POST" action="{{ route('admin.users.activate', $user) }}" class="inline-form">@csrf
         <button class="btn btn-success"><i data-lucide="check-circle"></i> {{ __('public.adm_users_show_btn_activate') }}</button>
     </form>
     @else
@@ -46,6 +46,10 @@
         <div class="stat-card__value">{{ $user->role?->name ?? 'no role' }}</div>
     </div>
     <div class="stat-card">
+        <div class="stat-card__label">{{ __('admin_extra.users_stat_facility') }}</div>
+        <div class="stat-card__value">{{ $user->primaryFacility?->name ?? __('admin_extra.users_facility_none') }}</div>
+    </div>
+    <div class="stat-card">
         <div class="stat-card__label">{{ __('public.adm_users_show_stat_status') }}</div>
         <div class="stat-card__value">@enum($user->status ?? 'pending')</div>
     </div>
@@ -62,7 +66,15 @@
 <div class="panel mb-6">
     <div class="panel-header"><h3 class="panel-title"><i data-lucide="edit-2"></i> {{ __('public.adm_users_show_panel_edit') }}</h3></div>
     <div class="panel-body">
-        <form method="POST" action="{{ route('portals.admin.users.update', $user) }}">
+        @include('portals.admin.users._facility_finder', [
+            'searchAction' => route('admin.users.show', $user->id),
+            'carry'        => [],
+        ])
+
+        {{-- admin.users.update is the PUT route. The form used to point at
+             portals.admin.users.update, which is registered as a POST, so every
+             save spoofed PUT at a POST-only route and came back 405. --}}
+        <form method="POST" action="{{ route('admin.users.update', $user->id) }}">
             @csrf @method('PUT')
             <div class="form-row">
                 <div class="form-group">
@@ -86,6 +98,20 @@
                 </select>
                 @error('role_id')<div class="form-hint">{{ $message }}</div>@enderror
             </div>
+            {{-- update() has always required `status`; the form never sent it,
+                 so every save failed validation before it reached the model. --}}
+            <div class="form-group mt-6">
+                <label class="form-label form-label-required" for="user_status">{{ __('admin_extra.users_lbl_status') }}</label>
+                <select name="status" id="user_status" class="form-control" required>
+                    @foreach(['active', 'pending', 'suspended'] as $statusOption)
+                    <option value="{{ $statusOption }}" @selected(old('status', $user->status ?? 'pending') === $statusOption)>@enum($statusOption)</option>
+                    @endforeach
+                </select>
+                @error('status')<div class="form-hint">{{ $message }}</div>@enderror
+            </div>
+
+            @include('portals.admin.users._facility_picker', ['selected' => $user->primary_facility_id])
+
             <div class="mt-6">
                 <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> {{ __('public.adm_users_show_btn_save') }}</button>
             </div>
@@ -96,7 +122,7 @@
 <div class="panel">
     <div class="panel-header"><h3 class="panel-title"><i data-lucide="key"></i> {{ __('public.adm_users_show_panel_reset_pw') }}</h3></div>
     <div class="panel-body">
-        <form method="POST" action="{{ route('portals.admin.users.reset-password', $user) }}">
+        <form method="POST" action="{{ route('admin.users.reset_password', $user->id) }}">
             @csrf
             <div class="form-row">
                 <div class="form-group">
@@ -119,7 +145,7 @@
 <div id="suspend-modal" class="modal-backdrop mt-6" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="suspend-modal-title">
         <h3 class="modal__title" id="suspend-modal-title"><i data-lucide="ban"></i> {{ __('public.adm_users_show_modal_suspend_title') }}</h3>
-        <form method="POST" action="{{ route('portals.admin.users.suspend', $user) }}">@csrf
+        <form method="POST" action="{{ route('admin.users.suspend', $user->id) }}">@csrf
             <div class="modal__body"><p>{{ __('public.adm_users_show_modal_suspend_body', ['name' => $user->name]) }}</p></div>
             <div class="modal__footer">
                 <button type="button" class="btn btn-ghost" onclick="opCloseModal('suspend-modal')">{{ __('public.adm_users_show_modal_suspend_btn_cancel') }}</button>
@@ -132,7 +158,7 @@
 <div id="delete-modal" class="modal-backdrop mt-6" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
         <h3 class="modal__title" id="delete-modal-title"><i data-lucide="alert-triangle"></i> {{ __('public.adm_users_show_modal_delete_title') }}</h3>
-        <form method="POST" action="{{ route('portals.admin.users.destroy', $user) }}">@csrf @method('DELETE')
+        <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}">@csrf @method('DELETE')
             <div class="modal__body"><p>{{ __('public.adm_users_show_modal_delete_body', ['name' => $user->name]) }}</p></div>
             <div class="modal__footer">
                 <button type="button" class="btn btn-ghost" onclick="opCloseModal('delete-modal')">{{ __('public.adm_users_show_modal_delete_btn_cancel') }}</button>

@@ -3,24 +3,175 @@
 namespace App\Http\Controllers\MedicalId;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\RequirePlatformAdmin;
+use App\Models\Facility;
 use App\Models\Role;
 use App\Models\User;
+use App\Services\Portal\PortalContextService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * AdminUserManagementController — the admin screen for staff accounts.
+ *
+ * It gained the ability to set users.primary_facility_id because it had to.
+ * Every staff portal now resolves its acting facility through
+ * PortalContextService::facilityId() and returns 409 when nothing resolves,
+ * replacing an old Facility::value('id') fallback that used to hand a
+ * facility-less user whichever facility happened to sort first. That fallback
+ * was the bug; removing it was right. But it also means an account created
+ * without a facility can now open no portal at all — and this screen, the only
+ * place a platform admin creates staff, had no control for the column.
+ *
+ * Two rules govern the assignment, both borrowed rather than invented:
+ *
+ * 1. THE TIER TEST IS RequirePlatformAdmin::isPlatformTier(). A platform-tier
+ *    admin (the OpesCare company roles) may assign any facility. Anyone else
+ *    may only ever name the facility they are already acting in, resolved from
+ *    PortalContextService — never from the form. Naming another facility is
+ *    refused with a 403 rather than quietly rewritten, so a tampered field
+ *    cannot pass for an accident. This is the same contract
+ *    FacilityStaffController runs on.
+ *
+ * 2. THE PICKER IS BOUNDED AND SEARCH-DRIVEN. The facility register holds
+ *    thousands of rows; a <select> containing all of them is both dead page
+ *    weight on every load and a directory of the register published by a page
+ *    that has no business publishing one.
+ */
 class AdminUserManagementController extends Controller
 {
+    /** The most facilities the picker will ever render at once. */
+    private const FACILITY_PICKER_LIMIT = 25;
+
+    public function __construct(private readonly PortalContextService $ctx) {}
+
     private function actorId(): string
     {
         return Auth::id() ?? session('auth_email', 'system');
     }
 
+    // ── Facility assignment: authorisation ───────────────────────────────
+
+    /** Is the acting admin in the platform-owner role tier? */
+    private function actorIsPlatformTier(): bool
+    {
+        return RequirePlatformAdmin::isPlatformTier(Auth::user());
+    }
+
+    /**
+     * Decide which facility id may actually be written.
+     *
+     * A platform-tier admin gets what they asked for (validation has already
+     * proved the facility exists). Anyone else gets the facility they are
+     * acting in, and is refused outright if they named a different one — that
+     * request is an attempt to grant an account access to another facility's
+     * patient record, which is precisely the class of bug the portal hardening
+     * was closing.
+     *
+     * @param  string|null  $requested    the validated primary_facility_id, or null
+     * @param  bool         $wasSubmitted whether the field was present in the request at all
+     */
+    private function resolveAssignedFacilityId(?string $requested, bool $wasSubmitted): ?string
+    {
+        if ($this->actorIsPlatformTier()) {
+            return $requested;
+        }
+
+        // Facility tier. Session-resolved, never request-resolved.
+        $acting = $this->ctx->facilityId();
+
+        abort_if(
+            $acting === null,
+            403,
+            'This account has no facility context, so it cannot assign one.'
+        );
+
+        abort_if(
+            $wasSubmitted && $requested !== null && $requested !== $acting,
+            403,
+            'You may only assign users to the facility you administer.'
+        );
+
+        return $acting;
+    }
+
+    /**
+     * Options for the facility picker.
+     *
+     * Never `Facility::all()`. The list is capped at FACILITY_PICKER_LIMIT and
+     * narrowed by a `facility_q` search on the same GET route, and the facility
+     * already on the record is always kept in the list so opening an edit form
+     * can never silently drop the current value. A facility-tier admin has
+     * exactly one assignable facility, so their picker is that single row and
+     * there is nothing to search.
+     *
+     * @param  string|null  $keepId  facility already assigned to the record being edited
+     */
+    private function facilityOptions(Request $request, ?string $keepId = null): Collection
+    {
+        if (! $this->actorIsPlatformTier()) {
+            $acting = $this->ctx->facilityId();
+
+            return $acting
+                ? Facility::query()->select('id', 'name')->whereKey($acting)->get()
+                : collect();
+        }
+
+        $query = Facility::query()->select('id', 'name')->orderBy('name');
+
+        $term = trim((string) $request->input('facility_q', ''));
+
+        if ($term !== '') {
+            // PostgreSQL: ILIKE for case-insensitive matching, with the LIKE
+            // metacharacters escaped so a name containing % or _ searches for
+            // itself rather than for everything.
+            $query->where('name', 'ilike', '%' . addcslashes($term, '%_\\') . '%');
+        }
+
+        $options = $query->limit(self::FACILITY_PICKER_LIMIT)->get();
+
+        if ($keepId !== null && ! $options->contains('id', $keepId)) {
+            $current = Facility::query()->select('id', 'name')->find($keepId);
+
+            if ($current) {
+                $options = $options->prepend($current);
+            }
+        }
+
+        return $options;
+    }
+
+    /**
+     * Record a facility assignment on the audit trail.
+     *
+     * Moving an account between facilities changes which patient records it can
+     * reach, so it is a security event and not a profile edit. The event is
+     * stamped with the facility the account was moved INTO, which is the one
+     * that gained the access.
+     */
+    private function auditFacilityAssignment(User $user, ?string $before, ?string $after): void
+    {
+        $this->ctx->auditPatientAccess(
+            actionType:   'admin_user_facility_assigned',
+            resourceType: 'User',
+            resourceId:   $user->id,
+            extra: [
+                'facility_id'  => $after,
+                'before_state' => ['primary_facility_id' => $before],
+                'after_state'  => ['primary_facility_id' => $after],
+            ],
+        );
+    }
+
+    // ── Screens ──────────────────────────────────────────────────────────
+
     public function index(Request $request)
     {
         if (!Auth::check()) return redirect()->route('login');
 
-        $query = User::with('role');
+        $query = User::with(['role', 'primaryFacility']);
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
@@ -47,17 +198,36 @@ class AdminUserManagementController extends Controller
             'pending'   => User::where('status', 'pending')->count(),
         ];
 
-        return view('portals.admin.users.index', compact('users', 'roles', 'stats'));
+        return view('portals.admin.users.index', [
+            'users'              => $users,
+            'roles'              => $roles,
+            'stats'              => $stats,
+            'facilityOptions'    => $this->facilityOptions($request),
+            'facilityQuery'      => trim((string) $request->input('facility_q', '')),
+            'facilityPickerOpen' => $this->actorIsPlatformTier(),
+            'facilityPickerCap'  => self::FACILITY_PICKER_LIMIT,
+        ]);
     }
 
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
         if (!Auth::check()) return redirect()->route('login');
 
         $user = User::with(['role', 'facilityRoleAssignments', 'primaryFacility'])->findOrFail($id);
 
-        return view('portals.admin.users.show', compact('user'));
+        return view('portals.admin.users.show', [
+            'user'               => $user,
+            // The edit form has always rendered a role <select>; the variable
+            // behind it was never passed, so this page threw on every request.
+            'roles'              => Role::orderBy('name')->get(),
+            'facilityOptions'    => $this->facilityOptions($request, $user->primary_facility_id),
+            'facilityQuery'      => trim((string) $request->input('facility_q', '')),
+            'facilityPickerOpen' => $this->actorIsPlatformTier(),
+            'facilityPickerCap'  => self::FACILITY_PICKER_LIMIT,
+        ]);
     }
+
+    // ── Writes ───────────────────────────────────────────────────────────
 
     public function store(Request $request)
     {
@@ -68,19 +238,33 @@ class AdminUserManagementController extends Controller
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|min:8',
             'role_id'  => 'required|exists:roles,id',
+            // `uuid` before `exists`: facilities.id is a uuid column, and
+            // sending a non-uuid straight into the exists query would surface
+            // as a Postgres 22P02 cast error (a 500) instead of a form error.
+            'primary_facility_id' => ['bail', 'nullable', 'uuid', 'exists:facilities,id'],
         ]);
+
+        $facilityId = $this->resolveAssignedFacilityId(
+            $validated['primary_facility_id'] ?? null,
+            $request->has('primary_facility_id')
+        );
 
         $roleId = $validated['role_id'];
 
         $user = User::create([
-            'name'     => $validated['name'],
-            'email'    => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'status'   => 'active',
+            'name'                => $validated['name'],
+            'email'               => $validated['email'],
+            'password'            => Hash::make($validated['password']),
+            'status'              => 'active',
+            'primary_facility_id' => $facilityId,
         ]);
 
         $user->role_id = $roleId;
         $user->save();
+
+        if ($facilityId !== null) {
+            $this->auditFacilityAssignment($user, null, $facilityId);
+        }
 
         return redirect()->route('admin.users.index')->with('success', __('flash.user_created'));
     }
@@ -96,13 +280,34 @@ class AdminUserManagementController extends Controller
             'email'   => 'required|email|unique:users,email,' . $user->id,
             'role_id' => 'required|exists:roles,id',
             'status'  => 'required|string',
+            'primary_facility_id' => ['bail', 'nullable', 'uuid', 'exists:facilities,id'],
         ]);
 
         $user->name   = $validated['name'];
         $user->email  = $validated['email'];
         $user->status = $validated['status'];
         $user->role_id = $validated['role_id'];
+
+        // A form that does not carry the field leaves the assignment alone;
+        // one that does is authorised before anything is written.
+        $facilityChangedFrom = null;
+        $facilityChanged     = false;
+
+        if ($request->has('primary_facility_id')) {
+            $assigned = $this->resolveAssignedFacilityId($validated['primary_facility_id'] ?? null, true);
+
+            if ($assigned !== $user->primary_facility_id) {
+                $facilityChangedFrom      = $user->primary_facility_id;
+                $facilityChanged          = true;
+                $user->primary_facility_id = $assigned;
+            }
+        }
+
         $user->save();
+
+        if ($facilityChanged) {
+            $this->auditFacilityAssignment($user, $facilityChangedFrom, $user->primary_facility_id);
+        }
 
         return redirect()->back()->with('success', __('flash.user_updated'));
     }

@@ -10,6 +10,10 @@
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], $l) ?: 'Dashboard' }}</span>
     </a>
+    <a href="{{ route('portals.facility.team') }}" class="sidebar-link {{ request()->routeIs('portals.facility.team*') ? 'active' : '' }}">
+        <i data-lucide="users"></i>
+        <span>{{ __('team.page_title', [], $l) ?: 'My Team' }}</span>
+    </a>
     @platformadmin
     <a href="{{ route('portals.admin.kpi.index') }}" class="sidebar-link">
         <i data-lucide="trending-up"></i>

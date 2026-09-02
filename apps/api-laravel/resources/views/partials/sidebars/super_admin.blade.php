@@ -37,6 +37,11 @@
   <a href="{{ route('portals.admin.facilities.index') }}" class="nav-item {{ request()->routeIs('portals.admin.facilities.*') ? 'active' : '' }}">
     <i data-lucide="hospital"></i><span>{{ __('public.portal.nav_facilities', [], $l) ?: 'Facilities' }}</span>
   </a>
+  @platformadmin
+  <a href="{{ route('admin.care-map.review') }}" class="nav-item {{ request()->routeIs('admin.care-map.review*') ? 'active' : '' }}">
+    <i data-lucide="clipboard-check"></i><span>{{ __('caremap_claim.nav_directory_review', [], $l) }}</span>
+  </a>
+  @endplatformadmin
   <a href="{{ route('portals.admin.subscription') }}" class="nav-item {{ request()->routeIs('portals.admin.subscription*') ? 'active' : '' }}">
     <i data-lucide="credit-card"></i><span>{{ __('public.portal.nav_subscriptions', [], $l) ?: 'Subscriptions' }}</span>
   </a>

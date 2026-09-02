@@ -89,6 +89,14 @@
     <a href="{{ route('admin.facilities.index') }}" class="sidebar-link {{ request()->routeIs('admin.facilities*') ? 'active' : '' }}">
         <i data-lucide="building-2"></i><span>{{ __('public.adm_cc_sidebar_all_facilities') }}</span>
     </a>
+    <a href="{{ route('admin.care-map.review') }}" class="sidebar-link {{ request()->routeIs('admin.care-map.review*') ? 'active' : '' }}">
+        <i data-lucide="clipboard-check"></i><span>{{ __('caremap_claim.nav_directory_review') }}</span>
+        @php
+            $directoryPending = \App\Models\FacilityClaim::query()->open()->count()
+                + \App\Models\FacilityImportReview::where('status', \App\Enums\FacilityImportReviewStatus::Pending->value)->count();
+        @endphp
+        @if($directoryPending > 0)<span class="sidebar-badge sidebar-badge--warning">{{ $directoryPending }}</span>@endif
+    </a>
     <a href="{{ route('admin.patients.index') }}" class="sidebar-link {{ request()->routeIs('admin.patients*') ? 'active' : '' }}">
         <i data-lucide="heart-pulse"></i><span>{{ __('public.adm_cc_sidebar_all_patients') }}</span>
     </a>

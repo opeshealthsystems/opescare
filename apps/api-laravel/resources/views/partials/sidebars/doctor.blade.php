@@ -10,6 +10,10 @@
         <i data-lucide="layout-dashboard"></i>
         <span>{{ __('public.portal.nav_dashboard', [], $l) ?: 'Dashboard' }}</span>
     </a>
+    <a href="{{ route('portals.staff.messages') }}" class="sidebar-link {{ request()->routeIs('portals.staff.messages*') ? 'active' : '' }}">
+        <i data-lucide="messages-square"></i>
+        <span>{{ __('messaging.nav', [], $l) ?: 'Messages' }}</span>
+    </a>
     <a href="{{ route('portals.staff.tasks') }}" class="sidebar-link {{ request()->routeIs('portals.staff.tasks*') ? 'active' : '' }}">
         <i data-lucide="check-square"></i>
         <span>{{ __('tasks.nav', [], $l) ?: 'Tasks' }}</span>

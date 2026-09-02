@@ -39,6 +39,61 @@
     <a href="{{ route('admin.users.index') }}" class="btn btn-ghost btn-sm">{{ __('public.adm_users_idx_btn_reset') }}</a>
 </form>
 
+<div class="panel mb-6">
+    <div class="panel-header">
+        <h3 class="panel-title"><i data-lucide="user-plus"></i> {{ __('admin_extra.users_create_title') }}</h3>
+    </div>
+    <div class="panel-body">
+        @include('portals.admin.users._facility_finder', [
+            'searchAction' => route('admin.users.index'),
+            'carry'        => [
+                'search'  => request('search'),
+                'role_id' => request('role_id'),
+                'status'  => request('status'),
+            ],
+        ])
+
+        <form method="POST" action="{{ route('admin.users.store') }}">
+            @csrf
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label form-label-required" for="new_user_name">{{ __('admin_extra.users_create_name') }}</label>
+                    <input type="text" id="new_user_name" name="name" class="form-control" value="{{ old('name') }}" required>
+                    @error('name')<div class="form-hint">{{ $message }}</div>@enderror
+                </div>
+                <div class="form-group">
+                    <label class="form-label form-label-required" for="new_user_email">{{ __('admin_extra.users_create_email') }}</label>
+                    <input type="email" id="new_user_email" name="email" class="form-control" value="{{ old('email') }}" required>
+                    @error('email')<div class="form-hint">{{ $message }}</div>@enderror
+                </div>
+            </div>
+            <div class="form-row mt-6">
+                <div class="form-group">
+                    <label class="form-label form-label-required" for="new_user_password">{{ __('admin_extra.users_create_pw') }}</label>
+                    <input type="password" id="new_user_password" name="password" class="form-control" required>
+                    @error('password')<div class="form-hint">{{ $message }}</div>@enderror
+                </div>
+                <div class="form-group">
+                    <label class="form-label form-label-required" for="new_user_role">{{ __('admin_extra.users_create_role') }}</label>
+                    <select id="new_user_role" name="role_id" class="form-control" required>
+                        <option value="">{{ __('admin_extra.users_create_role_ph') }}</option>
+                        @foreach($roles as $role)
+                        <option value="{{ $role->id }}" @selected(old('role_id') == $role->id)>{{ $role->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('role_id')<div class="form-hint">{{ $message }}</div>@enderror
+                </div>
+            </div>
+
+            @include('portals.admin.users._facility_picker', ['selected' => null])
+
+            <div class="mt-6">
+                <button type="submit" class="btn btn-primary"><i data-lucide="user-plus"></i> {{ __('admin_extra.users_create_btn') }}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="panel">
     <div class="panel-header">
         <h3 class="panel-title"><i data-lucide="users"></i> {{ __('admin_extra.count_users', ['n' => $users->total()], app()->getLocale()) ?: $users->total().' users' }}</h3>
@@ -50,6 +105,7 @@
                     <th>{{ __('public.adm_users_idx_col_name') }}</th>
                     <th>{{ __('public.adm_users_idx_col_email') }}</th>
                     <th>{{ __('public.adm_users_idx_col_role') }}</th>
+                    <th>{{ __('admin_extra.users_col_facility') }}</th>
                     <th>{{ __('public.adm_users_idx_col_status') }}</th>
                     <th>{{ __('public.adm_users_idx_col_created') }}</th>
                     <th class="row-actions">{{ __('public.adm_users_idx_col_actions') }}</th>
@@ -61,6 +117,13 @@
                     <td data-label="{{ __('public.adm_users_idx_col_name') }}"><span class="td-strong">{{ $user->name }}</span></td>
                     <td data-label="{{ __('public.adm_users_idx_col_email') }}">{{ $user->email }}</td>
                     <td data-label="{{ __('public.adm_users_idx_col_role') }}"><span class="badge badge-neutral">{{ $user->role?->name ?? (__('admin_extra.users_role_none', [], app()->getLocale()) ?: 'none') }}</span></td>
+                    <td data-label="{{ __('admin_extra.users_col_facility') }}">
+                        @if($user->primaryFacility)
+                            {{ $user->primaryFacility->name }}
+                        @else
+                            <span class="badge badge-warning">{{ __('admin_extra.users_facility_none') }}</span>
+                        @endif
+                    </td>
                     <td data-label="{{ __('public.adm_users_idx_col_status') }}">
                         @if($user->status==='active')<span class="badge badge-success">{{ __('public.adm_users_idx_badge_active') }}</span>
                         @elseif($user->status==='suspended')<span class="badge badge-danger">{{ __('public.adm_users_idx_badge_suspended') }}</span>
@@ -95,7 +158,7 @@
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="6" class="td-muted empty-cell">{{ __('public.adm_users_idx_empty') }}</td></tr>
+                <tr><td colspan="7" class="td-muted empty-cell">{{ __('public.adm_users_idx_empty') }}</td></tr>
             @endforelse
             </tbody>
         </table>

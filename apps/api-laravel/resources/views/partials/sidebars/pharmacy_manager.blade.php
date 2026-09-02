@@ -40,6 +40,10 @@
     @endfeature
     @feature('analytics_dashboards')
     @endfeature
+    <a href="{{ route('portals.listing.edit') }}" class="sidebar-link {{ request()->routeIs('portals.listing.*') ? 'active' : '' }}">
+        <i data-lucide="map-pin"></i>
+        <span>{{ __('caremap_claim.nav_my_listing', [], $l) }}</span>
+    </a>
     <a href="{{ route('portals.staff.support') }}" class="sidebar-link">
         <i data-lucide="headset"></i>
         <span>{{ __('public.portal.nav_support', [], $l) ?: 'Support' }}</span>
