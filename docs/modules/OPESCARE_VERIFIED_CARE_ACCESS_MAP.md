@@ -1576,16 +1576,40 @@ POST /api/v1/care-map/facilities/{id}/report
 
 ## 28.2 Partner Facility Management
 
+> **Checked against `routes/api.php` on 2026-09-02: none of the eight
+> `/api/v1/partner/care-map/*` paths below has ever been registered.** This
+> block described an intended surface, not a built one. Two of the eight
+> exist under a different prefix, and both are currently unreachable — see
+> the notes under each.
+
 ```text
+# NOT IMPLEMENTED - no route exists for any of these
 GET  /api/v1/partner/care-map/facilities
 PUT  /api/v1/partner/care-map/facilities/{id}
 POST /api/v1/partner/care-map/facilities/{id}/services
 PUT  /api/v1/partner/care-map/facilities/{id}/hours
-POST /api/v1/partner/care-map/facilities/{id}/stock-sync
 POST /api/v1/partner/care-map/facilities/{id}/blood-availability
 POST /api/v1/partner/care-map/facilities/{id}/lab-tests
-POST /api/v1/partner/care-map/facilities/{id}/claim
 ```
+
+What actually exists, under `/api/v1/care-map/` (not `/api/v1/partner/care-map/`):
+
+```text
+POST /api/v1/care-map/partner/facilities/{id}/stock-sync
+POST /api/v1/care-map/facilities/{id}/claim
+```
+
+**Both are behind `auth:sanctum`, and Sanctum is not installed in this
+application** — it is absent from `composer.json` and `vendor/`, and
+`config/auth.php` declares only the `web` guard. Every request to either
+returns a 500 (`Auth guard [sanctum] is not defined`). Resolving that is a
+human decision because `routes/api.php` is sealed.
+
+`stock-sync` additionally **does not ingest stock and never did**. As of
+2026-09-02 it returns `501 STOCK_SYNC_NOT_IMPLEMENTED_HERE`; previously it
+stored nothing and stamped `last_availability_update_at = now()`, which the
+directory renders as freshness. Real partner stock ingest is
+`POST /api/v1/connect/inventory/pharmacy`.
 
 ## 28.3 Admin
 

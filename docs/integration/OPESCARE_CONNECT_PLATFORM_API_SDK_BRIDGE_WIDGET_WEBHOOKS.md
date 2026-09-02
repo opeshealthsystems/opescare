@@ -877,6 +877,9 @@ Creates or updates referral package according to consent and facility policy.
 
 ### 13.1 Search Medication Availability
 
+> **Not implemented as of 2026-09-02.** No route matches `GET /api/v1/connect/availability/medications/search` anywhere in `apps/api-laravel/routes/`. The medicine search that exists today is `GET /api/v1/care-map/pharmacies/medicine-search` (`CareMapController::searchMedicine`), which takes `medicine` (required), `latitude`, `longitude`, `radius` and answers `{ status, data, meta }` — not the parameters or response shape below. The section is retained as design intent, not as a contract a partner can call.
+
+
 Endpoint:
 
 ```text
@@ -929,44 +932,307 @@ Response:
 
 ### 13.2 Pharmacy Stock Sync
 
+> **Checked against the running code on 2026-09-02.**
+> Source of truth: `apps/api-laravel/app/Http/Controllers/Api/V1/Connect/InventoryController.php::syncPharmacyStock()`
+> and `apps/api-laravel/app/Modules/Connect/Services/PartnerStockIngestService.php`.
+> Every field below is one the validator enforces. The body published in this
+> section before that date (`external_item_id`, `generic_name`, `brand_name`,
+> `strength`, `form`, `quantity_available`, `batch_number`, `status`,
+> `prescription_required`, `updated_at`) was never accepted by the API — see
+> §13.2.8. Until this revision the endpoint also validated a request and then
+> wrote nothing; it now persists real stock that reaches the public Medicine
+> Finder, so a wrong body is a wrong shelf, not a no-op.
+
 Endpoint:
 
 ```text
 POST /api/v1/connect/inventory/pharmacy-stock/sync
 ```
 
+#### 13.2.1 Authentication and headers
+
+```text
+Authorization: Bearer <RS256 JWT>      required
+Content-Type: application/json         required
+Idempotency-Key: <opaque string>       optional
+X-Correlation-Id: <string>             optional
+```
+
+The facility whose shelf is written is taken **only** from the bearer token
+(`facility_id` resolved by the auth middleware). A token that carries no
+facility scope is refused with `403 FACILITY_UNRESOLVABLE`; there is no way to
+sync stock for another facility.
+
+Unlike the `/records/*` writes described in §15, `Idempotency-Key` is
+**optional** on this endpoint — it is honoured when sent (replay, and `409` on
+key reuse with a different body) but its absence is not an error. The writes are
+natural-key upserts on `(medicine_id, care_facility_id)` taken under a row lock,
+so a repeat sync updates in place with or without the header.
+
+When `X-Correlation-Id` is absent the API generates one (`req_` + 16 hex
+characters) and returns it in every response body.
+
+#### 13.2.2 Request fields
+
+| Field | Type | Required | Validator rule | Notes |
+|---|---|---|---|---|
+| `facility_reference` | string | **required** | `required, string, max:100` | The partner's own reference for the pharmacy. Informational only — it is echoed back and recorded in the audit event, and is **never** used to select or authorise a facility. |
+| `items` | array | **required** | `required, array, min:1` | At least one item. |
+| `items[].drug_code` | string | **required** | `required, string` | Resolved against the OpesCare `medicines` catalogue: either the catalogue medicine **UUID** or a **WHO ATC code** (matched case-insensitively). See §13.2.5. |
+| `items[].quantity` | integer | **required** | `required, integer, min:0` | Packs currently on the shelf. `0` is meaningful and is stored as `out_of_stock`. |
+| `items[].expiry_date` | date | optional | `nullable, date` | Safety gate only (§13.2.4). It is **not** stored on the stock row. |
+| `items[].stock_status` | string | optional | `nullable, string, in: in_stock, low_stock, out_of_stock, unknown` | Overrides the quantity-derived status when the partner keeps its own availability state. |
+| `items[].pack_size` | string | optional | `nullable, string, max:100` | Free text, e.g. `"box of 20"`. |
+| `items[].unit_price` | number | optional | `nullable, numeric, min:0` | Currency is **not** part of the payload: it is taken from the catalogue medicine (XAF). |
+
+Any other key inside an item is ignored — only the validated keys are read, so
+an unknown field is dropped silently rather than rejected.
+
 Request:
 
 ```json
 {
   "facility_reference": "PHARM-001",
-  "updated_at": "2026-05-17T10:20:00Z",
   "items": [
     {
-      "external_item_id": "MED-001",
-      "generic_name": "Amoxicillin",
-      "brand_name": "Example Brand",
-      "strength": "500mg",
-      "form": "capsule",
-      "quantity_available": 120,
-      "batch_number": "BATCH-2026-01",
+      "drug_code": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "quantity": 120,
       "expiry_date": "2027-01-31",
-      "status": "available",
-      "prescription_required": true
+      "pack_size": "box of 20",
+      "unit_price": 2500
+    },
+    {
+      "drug_code": "C01AA05",
+      "quantity": 4,
+      "stock_status": "low_stock"
     }
   ]
 }
 ```
 
-Rules:
+```bash
+curl -X POST https://api.opescare.com/api/v1/connect/inventory/pharmacy-stock/sync \
+  -H "Authorization: Bearer $OPESCARE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: 4f5b2fd8-b16e-4c66-9fa0-620af5b6c901" \
+  -d '{
+        "facility_reference": "PHARM-001",
+        "items": [
+          { "drug_code": "C01AA05", "quantity": 120, "expiry_date": "2027-01-31" }
+        ]
+      }'
+```
 
-- expired stock excluded
-- recalled stock excluded
-- quarantined stock excluded
-- stale update marked stale
-- unverified pharmacy not shown publicly
+#### 13.2.3 How a reported quantity becomes a published status
+
+When `stock_status` is omitted, the pack count decides — the same thresholds the
+pharmacy portal uses, so the dispensing ledger and the public finder never
+disagree about what "low" means:
+
+```text
+quantity = 0        -> out_of_stock
+quantity 1 .. 10    -> low_stock
+quantity >= 11      -> in_stock
+```
+
+An explicit `stock_status` always wins.
+
+Two further rules apply to every row a partner writes:
+
+- `source_system` is stamped `partner_api:<integration_client_id>` (or
+  `partner_api` when the middleware could not name the client) and returned as
+  `source_system`. The public finders withhold seeded and unattributed stock, so
+  this provenance is what makes a partner's report reachable by a patient.
+- `reservation_enabled` is always `false`. Counter reservation is a workflow a
+  pharmacy opts into through the portal; a partner feed cannot honour it.
+
+#### 13.2.4 Expired stock — the batch is refused whole
+
+Every item carrying an `expiry_date` in the past is collected, and the **entire
+batch is rejected without writing anything**. A batch carrying expired stock is
+not partially trustworthy.
+
+```json
+{
+  "status": "rejected",
+  "error_code": "UNSAFE_STOCK_STATUS",
+  "message": "Expired stock synchronisation blocked. Remove the listed items and retry.",
+  "expired_items": [
+    { "index": 0, "drug_code": "C01AA05", "expiry_date": "2024-01-31" }
+  ],
+  "correlation_id": "req_9f2c1d4b6a8e0c37"
+}
+```
+
+HTTP status: `422`.
+
+#### 13.2.5 Per-item outcomes
+
+Items are resolved against the catalogue individually; nothing is ever dropped
+in silence. Every submitted line comes back either counted (created or updated)
+or listed in `rejected_items` with a machine-readable `reason`:
+
+| `reason` | When | What the partner must change |
+|---|---|---|
+| `unknown_drug_code` | The code matches no active medicine in the OpesCare catalogue. | Send the catalogue medicine UUID, or a WHO ATC code that exists in the catalogue. |
+| `ambiguous_drug_code` | The ATC code matches **more than one** active catalogue medicine. | Send the catalogue medicine UUID instead of the ATC code. |
+| `pharmacy_listing_unlinked` | No public pharmacy listing is linked to the authenticated facility. Applied to **every** item in the batch. | Contact OpesCare support to link the listing; reported stock would otherwise reach no patient. |
+
+`ambiguous_drug_code` is not an edge case. ATC is not unique in this catalogue:
+**18 ATC codes in the 419-medicine catalogue map to more than one active row**
+(counted on 2026-09-02), because they are strength or form variants of the same
+molecule — `N02AA01` is both *Morphine Sulfate 10mg Tablet* and *Morphine
+Sulfate 10mg/mL Injection*, and `J01CA04` (the amoxicillin used in this
+document's previous example) is both the *500mg Capsule* and the *250mg/5ml Oral
+Suspension*. The API reports those items back rather than guessing: guessing
+would file a pharmacy's 500mg capsules against the oral-suspension catalogue row
+and publish it to patients as fact. **A partner keying its feed on ATC codes
+should expect these rejections and map the affected products to catalogue UUIDs
+once.**
+
+Each entry of `rejected_items` has the shape:
+
+```json
+{
+  "index": 2,
+  "drug_code": "N02AA01",
+  "reason": "ambiguous_drug_code",
+  "message": "drug_code matches more than one catalogue medicine, so the right one cannot be chosen. Send the catalogue medicine UUID instead of the ATC code."
+}
+```
+
+`index` is the zero-based position in the submitted `items` array. `message` is
+localized (EN/FR); `reason` is the stable value to branch on.
+
+#### 13.2.6 Warnings — stored, but still not visible to patients
+
+`warnings` is a list of listing-level codes. A warning is **not** a rejection:
+the stock was written correctly, but the public listing still prevents patients
+from seeing it.
+
+| Warning | Meaning |
+|---|---|
+| `not_listed` | The linked pharmacy listing is not `active`, so the Medicine Finder excludes it. |
+| `no_coordinates` | The listing has no latitude/longitude; every finder query is geographic, so it can never appear in a result. |
+| `unlinked` | No public listing is linked at all. Accompanies the batch-wide `pharmacy_listing_unlinked` rejection. |
+
+#### 13.2.7 Responses
+
+**`200 OK` — at least one item reached the database**
+
+```json
+{
+  "status": "synced",
+  "facility_id": "8c1f0c1e-2f5a-4a2b-9d3e-77b0a4c2e911",
+  "facility_reference": "PHARM-001",
+  "source_system": "partner_api:his_client_042",
+  "submitted_count": 3,
+  "accepted_count": 1,
+  "updated_count": 1,
+  "rejected_count": 1,
+  "synced_items_count": 2,
+  "rejected_items": [
+    {
+      "index": 2,
+      "drug_code": "N02AA01",
+      "reason": "ambiguous_drug_code",
+      "message": "drug_code matches more than one catalogue medicine, so the right one cannot be chosen. Send the catalogue medicine UUID instead of the ATC code."
+    }
+  ],
+  "warnings": ["no_coordinates"],
+  "timestamp": 1788307200,
+  "correlation_id": "req_9f2c1d4b6a8e0c37"
+}
+```
+
+| Field | Meaning |
+|---|---|
+| `accepted_count` | Rows **created**. |
+| `updated_count` | Rows **updated** in place. |
+| `rejected_count` | Length of `rejected_items`. |
+| `synced_items_count` | `accepted_count + updated_count` — the number of items that genuinely reached the database, not the batch size. |
+| `source_system` | The provenance stamped on every row written by this call. |
+| `timestamp` | Unix epoch seconds (integer). |
+
+**`422 Unprocessable Entity` — nothing could be stored**
+
+If every submitted item was rejected, the response carries the **same body** with
+`status: "rejected"` plus an `error_code` and `message`, and the HTTP status is
+`422`. A success response is never returned for a batch that wrote nothing.
+
+```json
+{
+  "status": "rejected",
+  "error_code": "VALIDATION_FAILED",
+  "message": "No submitted item could be stored, so nothing was written. See rejected_items for the reason on each line.",
+  "submitted_count": 2,
+  "accepted_count": 0,
+  "updated_count": 0,
+  "rejected_count": 2,
+  "synced_items_count": 0,
+  "rejected_items": [ "..." ],
+  "warnings": ["unlinked"],
+  "correlation_id": "req_9f2c1d4b6a8e0c37"
+}
+```
+
+**Every status code this endpoint returns**
+
+| Status | `error_code` | Cause |
+|---|---|---|
+| `200` | — | At least one item created or updated. |
+| `403` | `FACILITY_UNRESOLVABLE` | The bearer token carries no facility scope. |
+| `409` | `IDEMPOTENCY_CONFLICT` | The same `Idempotency-Key` was reused with a different body. |
+| `422` | `VALIDATION_FAILED` | Body failed validation (missing `drug_code`, missing `quantity`, empty `items`, …). Envelope: `{ "status": "error", "error_code": "VALIDATION_FAILED", "message": "The request data failed validation.", "errors": { … } }`. |
+| `422` | `VALIDATION_FAILED` | Body was valid, but **no item could be stored** (see above — this variant carries the full count/rejection body). |
+| `422` | `UNSAFE_STOCK_STATUS` | One or more items carried a past `expiry_date`; the whole batch was refused. |
+
+A replayed `Idempotency-Key` returns the stored response verbatim with the
+header `X-Cache-Idempotency: HIT`. Only `200` responses are stored for replay.
+
+Each call emits the audit event `pharmacy_stock_synced` carrying
+`items_count`, `created_rows`, `updated_rows`, `rejected_rows`, `source_system`
+and `facility_reference`.
+
+#### 13.2.8 Fields removed from this specification on 2026-09-02
+
+These were published here but have never existed in the endpoint. They are not
+aliases and they are not deprecated — sending them has no effect, and a body
+built from the old specification fails validation because it carries no
+`drug_code` and no `quantity`.
+
+| Removed field | Status in the API | Closest supported field |
+|---|---|---|
+| `external_item_id` | Not accepted. | — (identify the product with `drug_code`) |
+| `generic_name` | Not accepted. | `drug_code` (catalogue UUID or ATC code) |
+| `brand_name` | Not accepted. | `drug_code` |
+| `strength` | Not accepted. | `drug_code` — strength is a property of the catalogue medicine |
+| `form` | Not accepted. | `drug_code` |
+| `quantity_available` | Not accepted. | `quantity` |
+| `batch_number` | Not accepted. | — (batch/lot is not modelled on reported stock) |
+| `status` | Not accepted. | `stock_status`, with the enum values listed in §13.2.2 |
+| `prescription_required` | Not accepted. | — (a catalogue property, not a per-facility report) |
+| `updated_at` (top level) | Not accepted. | — (the server stamps `last_reported_at` itself) |
+
+The previously published "Rules" list is restated against the behaviour that
+exists:
+
+- **expired stock excluded** — enforced, and stricter than "excluded": the whole
+  batch is refused (§13.2.4).
+- **recalled stock excluded / quarantined stock excluded** — **not implemented
+  on this endpoint.** There is no recall or quarantine field in the payload and
+  no such check in the controller. Partners remain contractually required to
+  withhold recalled or quarantined stock, but the API cannot detect it.
+- **stale update marked stale** — freshness is stamped server-side
+  (`last_reported_at` per row, `last_availability_update_at` per listing) and
+  the finder surfaces it; the sync endpoint itself returns no staleness field.
+- **unverified pharmacy not shown publicly** — enforced downstream by the
+  finder, and reported here through the `warnings` list (§13.2.6).
 
 ### 13.3 Medication Reservation
+
+> **Not implemented as of 2026-09-02.** No route matches `POST /api/v1/connect/availability/medications/reservations` in `apps/api-laravel/routes/`. Design intent only.
+
 
 Endpoint:
 
@@ -981,6 +1247,9 @@ Reservation must expire.
 ## 14. Blood Availability API
 
 ### 14.1 Search Blood Availability
+
+> **Not implemented as of 2026-09-02.** No route matches `GET /api/v1/connect/availability/blood/search` in `apps/api-laravel/routes/`. The blood search that exists today is `GET /api/v1/care-map/blood/search` (`CareMapController::searchBlood`), which requires `blood_group` and answers `{ status, data, meta }` — not the response shape below. Design intent only.
+
 
 Endpoint:
 
@@ -1026,41 +1295,217 @@ Response:
 
 ### 14.2 Blood Stock Sync
 
+> **Checked against the running code on 2026-09-02.**
+> Source of truth: `apps/api-laravel/app/Http/Controllers/Api/V1/Connect/InventoryController.php::syncBloodStock()`
+> and `apps/api-laravel/app/Modules/Connect/Services/PartnerStockIngestService.php`.
+> `blood_group` is now **required** — a blood inventory row is keyed on
+> (facility, blood group, component), so a payload without it could not be
+> stored at all. `component` was renamed `component_code` and constrained to the
+> operational vocabulary; `usable_units` was renamed `units`. See §14.2.7.
+
 Endpoint:
 
 ```text
 POST /api/v1/connect/inventory/blood-stock/sync
 ```
 
+#### 14.2.1 Authentication and headers
+
+Identical to §13.2.1: Bearer JWT, facility taken **only** from the token
+(`403 FACILITY_UNRESOLVABLE` when the token carries no facility scope), optional
+`Idempotency-Key`, optional `X-Correlation-Id` (generated when absent).
+
+#### 14.2.2 Request fields
+
+| Field | Type | Required | Validator rule | Notes |
+|---|---|---|---|---|
+| `facility_reference` | string | **required** | `required, string, max:100` | The partner's own reference for the blood bank. Informational only — never used to select or authorise a facility. |
+| `items` | array | **required** | `required, array, min:1` | |
+| `items[].blood_group` | string | **required** | `required, string, in: A+, A-, B+, B-, AB+, AB-, O+, O-` | Part of the row's natural key. |
+| `items[].component_code` | string | **required** | `required, string, in:` the operational component list below | Part of the row's natural key. |
+| `items[].units` | integer | **required** | `required, integer, min:0` | Units currently available. `0` is meaningful and publishes as "none held". |
+| `items[].screening_status` | string | **required** | `required, string` | Any string validates, but only `screened_safe` is accepted downstream — see §14.2.4. |
+
+Accepted `component_code` values (operational spellings; several are aliases of
+the same published component):
+
+```text
+whole_blood
+red_cells
+packed_cells
+packed_red_cells
+prbc
+plasma
+fresh_frozen_plasma
+ffp
+platelets
+cryoprecipitate
+```
+
+`cryoprecipitate` is storable but has no patient-facing component, so it is
+recorded on the operational shelf and never published to the Blood Finder.
+
+Any other key inside an item is ignored — only the validated keys are read.
+
 Request:
 
 ```json
 {
   "facility_reference": "BLOOD-001",
-  "updated_at": "2026-05-17T10:15:00Z",
   "items": [
     {
       "blood_group": "O+",
-      "component": "packed_red_cells",
-      "usable_units": 4,
-      "reserved_units": 1,
-      "expiry_date": "2026-06-01",
-      "screening_status": "screened_safe",
-      "status": "available"
+      "component_code": "packed_red_cells",
+      "units": 4,
+      "screening_status": "screened_safe"
     }
   ]
 }
 ```
 
-Rules:
+```bash
+curl -X POST https://api.opescare.com/api/v1/connect/inventory/blood-stock/sync \
+  -H "Authorization: Bearer $OPESCARE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "facility_reference": "BLOOD-001",
+        "items": [
+          { "blood_group": "O+", "component_code": "packed_red_cells",
+            "units": 4, "screening_status": "screened_safe" }
+        ]
+      }'
+```
 
-- expired units excluded
-- quarantined units excluded
-- unsafe units excluded
-- unverified sources excluded
-- patient identity never shown publicly
+#### 14.2.3 How a sync is stored and published
+
+Each item upserts one operational row keyed `(facility_id, blood_group,
+component)`, then re-publishes the patient-facing availability band through the
+blood availability projector, so the Blood Finder stays in step with what the
+bank actually holds. Every row is stamped
+`source_system = partner_api:<integration_client_id>` (or `partner_api` when the
+client cannot be named) — the public finder withholds seeded and unattributed
+rows, so this provenance is what makes the report reachable by a patient.
+
+Repeat syncs update in place: the natural key makes duplication impossible with
+or without an `Idempotency-Key`.
+
+#### 14.2.4 Unscreened blood — the batch is refused whole
+
+Every item whose `screening_status` is not exactly `screened_safe` is collected,
+and the **entire batch is rejected without writing anything**.
+
+```json
+{
+  "status": "rejected",
+  "error_code": "UNSAFE_BLOOD_STATUS",
+  "message": "Unscreened or unsafe blood component sync is forbidden. Remove the listed items and retry.",
+  "unsafe_items": [
+    { "index": 1, "component_code": "plasma", "screening_status": "pending" }
+  ],
+  "correlation_id": "req_9f2c1d4b6a8e0c37"
+}
+```
+
+HTTP status: `422`.
+
+Because the batch is all-or-nothing, everything that reaches storage has passed
+the screening gate, and `is_unsafe` is written as `false` on every row.
+
+#### 14.2.5 Warnings
+
+| Warning | Meaning |
+|---|---|
+| `blood_listing_unlinked` | No public listing is linked to the authenticated facility. The operational record is stored and correct, but no patient can find it. Contact OpesCare support to link the listing. |
+
+This is a warning, not a rejection: unlike pharmacy stock, blood units are
+stored on the facility's own operational shelf whether or not a public listing
+exists.
+
+#### 14.2.6 Responses
+
+**`200 OK`**
+
+```json
+{
+  "status": "synced",
+  "facility_id": "8c1f0c1e-2f5a-4a2b-9d3e-77b0a4c2e911",
+  "facility_reference": "BLOOD-001",
+  "source_system": "partner_api:his_client_042",
+  "submitted_count": 2,
+  "accepted_count": 1,
+  "updated_count": 1,
+  "rejected_count": 0,
+  "synced_components_count": 2,
+  "stored_rows": 2,
+  "rejected_items": [],
+  "warnings": [],
+  "timestamp": 1788307200,
+  "correlation_id": "req_9f2c1d4b6a8e0c37"
+}
+```
+
+| Field | Meaning |
+|---|---|
+| `accepted_count` | Rows **created**. |
+| `updated_count` | Rows **updated** in place. |
+| `rejected_count` / `rejected_items` | Always `0` / `[]` on this endpoint today: an item that passes validation and the screening gate always resolves to a storable row. The fields exist so the two sync endpoints answer with the same shape. |
+| `synced_components_count` | The number of items submitted. |
+| `stored_rows` | `accepted_count + updated_count`. |
+| `timestamp` | Unix epoch seconds (integer). |
+
+**Every status code this endpoint returns**
+
+| Status | `error_code` | Cause |
+|---|---|---|
+| `200` | — | The batch was stored. |
+| `403` | `FACILITY_UNRESOLVABLE` | The bearer token carries no facility scope. |
+| `409` | `IDEMPOTENCY_CONFLICT` | The same `Idempotency-Key` was reused with a different body. |
+| `422` | `VALIDATION_FAILED` | Body failed validation (missing `blood_group`, unknown `component_code`, missing `units`, …). Envelope: `{ "status": "error", "error_code": "VALIDATION_FAILED", "message": "The request data failed validation.", "errors": { … } }`. |
+| `422` | `UNSAFE_BLOOD_STATUS` | One or more items were not `screened_safe`; the whole batch was refused. |
+
+There is no "nothing stored" 422 on this endpoint — that outcome cannot arise
+here, because a validated, screened item always writes.
+
+A replayed `Idempotency-Key` returns the stored response verbatim with the
+header `X-Cache-Idempotency: HIT`. Only `200` responses are stored for replay.
+
+Each call emits the audit event `blood_stock_synced` carrying
+`components_count`, `stored_rows`, `created_rows`, `updated_rows`,
+`source_system` and `facility_reference`.
+
+#### 14.2.7 Fields changed or removed on 2026-09-02
+
+| Previously published | Status in the API | Replacement |
+|---|---|---|
+| `component` | Not accepted. | `component_code`, restricted to the list in §14.2.2 |
+| `usable_units` | Not accepted. | `units` |
+| `reserved_units` | Not accepted. | — (reservation is not modelled on a partner sync) |
+| `expiry_date` | Not accepted **on this endpoint**. | — (the pharmacy endpoint accepts one as a safety gate; the blood endpoint does not) |
+| `status` | Not accepted. | — (availability is derived from `units`) |
+| `updated_at` (top level) | Not accepted. | — (the server stamps `last_stock_update` itself) |
+| *(absent)* | **`blood_group` is now required.** | Without it a row cannot be keyed, which is why this endpoint previously stored nothing. |
+
+The previously published "Rules" list restated against the behaviour that
+exists:
+
+- **unsafe units excluded** — enforced, and stricter than "excluded": the whole
+  batch is refused (§14.2.4).
+- **expired units excluded / quarantined units excluded** — **not implemented on
+  this endpoint.** There is no expiry or quarantine field in the payload and no
+  such check in the controller. `is_expired` and `is_quarantined` exist on the
+  operational record but are set elsewhere — `PATCH /api/v1/inventory/blood/{item}/flags`
+  on the staff-facing inventory API, or the facility's inventory portal — never
+  by a partner sync. Partners remain contractually required to withhold expired
+  or quarantined units.
+- **unverified sources excluded** — enforced downstream by the finder's
+  provenance gate, and reported here through `warnings` (§14.2.5).
+- **patient identity never shown publicly** — unchanged: this payload carries no
+  patient identifier of any kind.
 
 ### 14.3 Create Blood Need Request
+
+> **Not implemented as of 2026-09-02.** No route matches `POST /api/v1/connect/availability/blood/needs` in `apps/api-laravel/routes/`. Design intent only.
+
 
 Endpoint:
 
@@ -1085,6 +1530,9 @@ Request:
 No patient identity should be publicly exposed.
 
 ### 14.4 Blood Reservation and Transfer
+
+> **Not implemented as of 2026-09-02.** None of the three routes below exist in `apps/api-laravel/routes/`. Design intent only.
+
 
 Endpoints:
 

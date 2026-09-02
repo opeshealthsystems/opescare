@@ -603,11 +603,19 @@ Public (no auth):
 - `GET /care-map/emergency`
 - Web: `GET /care-map`, facility profile, emergency page
 
-Authenticated:
+Authenticated — **all four return 500 today** (checked 2026-09-02). They sit
+behind `auth:sanctum` and Sanctum is not installed: it is absent from
+`composer.json` and `vendor/`, and `config/auth.php` declares only the `web`
+guard. Fixing it means installing Sanctum or moving the group to `web`, and
+`routes/api.php` is sealed, so it is a human decision.
+
 - `POST /care-map/facilities/{id}/save` — save to favourites
 - `POST /care-map/facilities/{id}/report` — report inaccuracy
-- `POST /care-map/facilities/{id}/claim` — claim facility
-- `POST /care-map/partner/facilities/{id}/stock-sync` — partner sync
+- `POST /care-map/facilities/{id}/claim` — claim facility (the working claim
+  flow is the web one at `/care-map/facilities/{id}/claim`, not this)
+- `POST /care-map/partner/facilities/{id}/stock-sync` — **not a stock ingest.**
+  Returns `501 STOCK_SYNC_NOT_IMPLEMENTED_HERE`. Partner stock goes to
+  `POST /api/v1/connect/inventory/pharmacy`.
 
 Admin:
 - `POST /admin/care-map/facilities/{id}/verify`
