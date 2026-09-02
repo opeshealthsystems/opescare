@@ -36,6 +36,12 @@ return [
         'dismissed'                 => 'Écarté',
         'disputed'                  => 'Contesté',
         'expired'                   => 'Expiré',
+        // Cycle de vie d'une ordonnance — un acte clinique se corrige, ne s'écrase jamais.
+        'dispensed'                 => 'Délivrée',
+        'partially_dispensed'       => 'Partiellement délivrée',
+        'amended'                   => 'Modifiée',
+        'voided'                    => 'Annulée',
+        'entered_in_error'          => 'Saisie erronée',
         'suspended'                 => 'Suspendu',
         'terminated'                => 'Résilié',
         'archived'                  => 'Archivé',
@@ -198,6 +204,20 @@ return [
         'fresh_frozen_plasma' => 'Plasma frais congelé',
         'platelets'           => 'Plaquettes',
         'cryoprecipitate'     => 'Cryoprécipité',
+    ],
+
+    // Voies d'administration proposées sur le formulaire de prescription.
+    'medication_route' => [
+        'oral'       => 'Orale',
+        'iv'         => 'IV (intraveineuse)',
+        'im'         => 'IM (intramusculaire)',
+        'sc'         => 'SC (sous-cutanée)',
+        'topical'    => 'Topique',
+        'inhalation' => 'Inhalation',
+        'rectal'     => 'Rectale',
+        'ophthalmic' => 'Ophtalmique',
+        'otic'       => 'Auriculaire',
+        'nasal'      => 'Nasale',
     ],
 
     'resource_type' => [

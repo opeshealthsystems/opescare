@@ -248,6 +248,12 @@ return [
     'enrollment_submitted'                => 'Enrollment submitted! Your policy is pending activation and will be confirmed within 1–2 business days.',
     // Pharmacy
     'prescription_dispensed'              => 'Prescription marked as dispensed.',
+    'prescription_not_dispensable'        => 'This prescription cannot be dispensed — it has already been dispensed, or it has expired, been voided or been marked entered in error.',
+    // Prescribing
+    'prescription_issued'                 => 'Prescription issued. It is now visible to the patient and in the pharmacy queue.',
+    'prescription_issue_failed'           => 'The prescription could not be issued. Please check the details and try again.',
+    'prescription_voided'                 => 'Prescription voided. The record is preserved with the reason you gave.',
+    'prescription_void_failed'            => 'This prescription can no longer be voided.',
     // Security ops
     'security_incident_logged'            => 'Security incident logged.',
     'incident_updated'                    => 'Incident updated.',

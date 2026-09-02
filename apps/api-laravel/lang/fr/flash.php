@@ -248,6 +248,12 @@ return [
     'enrollment_submitted'                => 'Inscription soumise ! Votre police est en attente d\'activation et sera confirmée sous 1 à 2 jours ouvrables.',
     // Pharmacy
     'prescription_dispensed'              => 'Ordonnance marquée comme délivrée.',
+    'prescription_not_dispensable'        => 'Cette ordonnance ne peut pas être délivrée : elle a déjà été délivrée, ou elle est expirée, annulée ou marquée comme saisie erronée.',
+    // Prescription
+    'prescription_issued'                 => 'Ordonnance émise. Elle est désormais visible par le patient et présente dans la file de la pharmacie.',
+    'prescription_issue_failed'           => 'L\'ordonnance n\'a pas pu être émise. Veuillez vérifier les informations saisies et réessayer.',
+    'prescription_voided'                 => 'Ordonnance annulée. Le dossier est conservé avec le motif que vous avez indiqué.',
+    'prescription_void_failed'            => 'Cette ordonnance ne peut plus être annulée.',
     // Security ops
     'security_incident_logged'            => 'Incident de sécurité enregistré.',
     'incident_updated'                    => 'Incident mis à jour.',

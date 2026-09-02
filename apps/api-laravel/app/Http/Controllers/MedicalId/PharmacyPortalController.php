@@ -135,15 +135,24 @@ class PharmacyPortalController extends Controller
     // Dispense (mark a prescription as dispensed)
     // ------------------------------------------------------------------
 
-    public function dispense(Request $req, string $id)
+    /**
+     * Dispensing goes through PrescriptionService so that the item lines, the
+     * dispenser, and the audit event are all recorded — and so a repeat POST is
+     * refused rather than silently re-stamping a prescription that has already
+     * been handed to the patient.
+     */
+    public function dispense(Request $req, string $id, \App\Services\Clinical\PrescriptionService $prescriptions)
     {
         $facilityId = $this->facilityId();
 
         $rx = Prescription::where('facility_id', $facilityId)->findOrFail($id);
 
-        $rx->status       = 'dispensed';
-        $rx->dispensed_at = now();
-        $rx->save();
+        try {
+            $prescriptions->dispense($rx, auth()->id(), ['notes' => $req->input('dispense_notes')]);
+        } catch (\Throwable $e) {
+            return redirect()->route('portals.pharmacy.prescriptions')
+                ->with('error', __('flash.prescription_not_dispensable'));
+        }
 
         return redirect()->route('portals.pharmacy.prescriptions')
             ->with('success', __('flash.prescription_dispensed'));

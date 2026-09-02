@@ -33,6 +33,10 @@
         <i data-lucide="clipboard-list"></i>
         <span>{{ __('public.portal.nav_prescriptions', [], $l) ?: 'Prescriptions' }}</span>
     </a>
+    <a href="{{ route('portals.staff.prescriptions.create') }}" class="sidebar-link {{ request()->routeIs('portals.staff.prescriptions.create') ? 'active' : '' }}">
+        <i data-lucide="clipboard-plus"></i>
+        <span>{{ __('public.portal.nav_prescribe', [], $l) ?: 'New Prescription' }}</span>
+    </a>
     <a href="{{ route('portals.staff.lab_orders') }}" class="sidebar-link">
         <i data-lucide="microscope"></i>
         <span>{{ __('public.portal.nav_lab_orders', [], $l) ?: 'Lab Orders' }}</span>

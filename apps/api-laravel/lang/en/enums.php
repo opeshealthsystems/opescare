@@ -38,6 +38,12 @@ return [
         'dismissed'                 => 'Dismissed',
         'disputed'                  => 'Disputed',
         'expired'                   => 'Expired',
+        // Prescription lifecycle — a clinical event is corrected, never overwritten.
+        'dispensed'                 => 'Dispensed',
+        'partially_dispensed'       => 'Partially Dispensed',
+        'amended'                   => 'Amended',
+        'voided'                    => 'Voided',
+        'entered_in_error'          => 'Entered in Error',
         'suspended'                 => 'Suspended',
         'terminated'                => 'Terminated',
         'archived'                  => 'Archived',
@@ -202,6 +208,20 @@ return [
         'fresh_frozen_plasma' => 'Fresh Frozen Plasma',
         'platelets'           => 'Platelets',
         'cryoprecipitate'     => 'Cryoprecipitate',
+    ],
+
+    // Routes of administration offered on the prescribing form.
+    'medication_route' => [
+        'oral'       => 'Oral',
+        'iv'         => 'IV (Intravenous)',
+        'im'         => 'IM (Intramuscular)',
+        'sc'         => 'SC (Subcutaneous)',
+        'topical'    => 'Topical',
+        'inhalation' => 'Inhalation',
+        'rectal'     => 'Rectal',
+        'ophthalmic' => 'Ophthalmic',
+        'otic'       => 'Otic (ear)',
+        'nasal'      => 'Nasal',
     ],
 
     'resource_type' => [

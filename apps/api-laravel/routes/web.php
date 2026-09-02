@@ -395,6 +395,14 @@ Route::middleware(['web', 'auth', 'mfa.verified', 'portal.access', 'platform.adm
 
     // ── Clinical Register (prescription & lab listings for clinical staff) ─────
     Route::get('/portals/staff/prescriptions', [\App\Http\Controllers\MedicalId\StaffClinicalController::class, 'prescriptions'])->name('portals.staff.prescriptions');
+    // ── BEGIN prescribing block (clinician issues a prescription) ─────────────
+    // `create` must precede any /{id} route added under this prefix later.
+    Route::get('/portals/staff/prescriptions/create',     [\App\Http\Controllers\MedicalId\StaffClinicalController::class, 'prescriptionCreate'])->name('portals.staff.prescriptions.create');
+    Route::post('/portals/staff/prescriptions',           [\App\Http\Controllers\MedicalId\StaffClinicalController::class, 'prescriptionStore'])->name('portals.staff.prescriptions.store');
+    // No update / destroy by design — a prescription is an immutable clinical
+    // event, corrected by void or entered-in-error, never overwritten.
+    Route::post('/portals/staff/prescriptions/{id}/void', [\App\Http\Controllers\MedicalId\StaffClinicalController::class, 'prescriptionVoid'])->name('portals.staff.prescriptions.void');
+    // ── END prescribing block ────────────────────────────────────────────────
     Route::get('/portals/staff/lab-orders',    [\App\Http\Controllers\MedicalId\StaffClinicalController::class, 'labOrders'])->name('portals.staff.lab_orders');
 
     // --- Ward / Admission / Bed Management ---

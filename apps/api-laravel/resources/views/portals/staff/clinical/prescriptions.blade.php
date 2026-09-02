@@ -11,6 +11,10 @@
 <div class="page-head">
     <h2>{{ __('public.staff_portal.clin_rx_title') }}</h2>
     <div class="page-head__spacer"></div>
+    <a href="{{ route('portals.staff.prescriptions.create') }}" class="btn btn-primary btn-sm">
+        <i data-lucide="clipboard-plus"></i>
+        {{ __('staff_clinical.rx_btn_new') }}
+    </a>
     <a href="{{ route('portals.pharmacy.prescriptions') }}" class="btn btn-secondary btn-sm">
         <i data-lucide="pill"></i>
         {{ __('public.staff_portal.clin_rx_btn_queue') }}
@@ -21,6 +25,12 @@
 @if(session('success'))
     <div class="alert alert-success mb-4">
         <i data-lucide="check-circle"></i><div>{{ session('success') }}</div>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger mb-4">
+        <i data-lucide="triangle-alert"></i><div>{{ session('error') }}</div>
     </div>
 @endif
 
@@ -57,6 +67,8 @@
         <option value="dispensed" {{ request('status') === 'dispensed' ? 'selected' : '' }}>{{ __('public.staff_portal.clin_rx_chip_dispensed') }}</option>
         <option value="expired" {{ request('status') === 'expired' ? 'selected' : '' }}>{{ __('public.staff_portal.clin_rx_chip_expired') }}</option>
         <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>{{ __('public.staff_portal.btn_cancel') }}</option>
+        <option value="voided" {{ request('status') === 'voided' ? 'selected' : '' }}>@enum('voided')</option>
+        <option value="entered_in_error" {{ request('status') === 'entered_in_error' ? 'selected' : '' }}>@enum('entered_in_error')</option>
     </select>
     <input type="text" name="search" class="filter-search" placeholder="{{ __('public.staff_portal.clin_rx_ph_search') }}" value="{{ request('search') }}">
     <button type="submit" class="btn btn-primary btn-sm">{{ __('public.staff_portal.clin_lab_btn_filter') }}</button>
@@ -77,6 +89,7 @@
                         <th>{{ __('public.staff_portal.clin_rx_col_expires') }}</th>
                         <th>{{ __('public.staff_portal.clin_rx_col_status') }}</th>
                         <th>{{ __('public.staff_portal.clin_rx_col_dispensed_at') }}</th>
+                        <th>{{ __('staff_clinical.rx_col_actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -97,7 +110,7 @@
                         </td>
                         <td data-label="{{ __('public.staff_portal.clin_rx_col_items') }}">
                             @foreach($rx->items->take(2) as $item)
-                                <div>{{ $item->drug_name ?? '—' }} {{ $item->dosage ?? '' }}</div>
+                                <div>{{ $item->drug_name ?? '—' }} {{ $item->dose ?? '' }}</div>
                             @endforeach
                             @if($rx->items->count() > 2)
                                 <div class="td-muted">+{{ $rx->items->count()-2 }} {{ __('public.staff_portal.clin_rx_more_items') }}</div>
@@ -121,10 +134,36 @@
                             </span>
                         </td>
                         <td data-label="{{ __('public.staff_portal.clin_rx_col_dispensed_at') }}" class="td-muted">{{ $rx->dispensed_at?->format('d M Y H:i') ?? '—' }}</td>
+                        <td data-label="{{ __('staff_clinical.rx_col_actions') }}">
+                            {{-- No edit and no delete: a prescription is an immutable
+                                 clinical event, corrected by void, never overwritten. --}}
+                            @if($rx->isTerminal())
+                                @if($rx->void_reason)
+                                    <span class="td-muted">{{ __('staff_clinical.rx_voided_reason', ['reason' => $rx->void_reason]) }}</span>
+                                @else
+                                    <span class="td-muted">—</span>
+                                @endif
+                            @else
+                                <form method="POST" action="{{ route('portals.staff.prescriptions.void', $rx->id) }}"
+                                      class="rx-void-form">
+                                    @csrf
+                                    <input type="text" name="void_reason" class="form-control" required minlength="5" maxlength="500"
+                                           placeholder="{{ __('staff_clinical.rx_void_reason_ph') }}">
+                                    <label class="form-label" style="font-weight:400;margin-top:4px;">
+                                        <input type="checkbox" name="entered_in_error" value="1" style="width:auto;">
+                                        {{ __('staff_clinical.rx_void_entered_error') }}
+                                    </label>
+                                    <button type="submit" class="btn btn-ghost btn-sm">
+                                        <i data-lucide="ban"></i>
+                                        {{ __('staff_clinical.rx_void') }}
+                                    </button>
+                                </form>
+                            @endif
+                        </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6">
+                        <td colspan="7">
                             <div class="empty-state">
                                 <div class="empty-state-icon"><i data-lucide="clipboard-plus"></i></div>
                                 <p>{{ __('public.staff_portal.clin_rx_empty') }}</p>
