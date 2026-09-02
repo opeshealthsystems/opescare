@@ -39,7 +39,7 @@ single-hospital CRUD app.
 - **Clinical events are immutable** — amend / void / reverse / entered-in-error, never hard-overwrite. **External writes are idempotent** (`Idempotency-Key`).
 
 ## Conventions — honor on every change
-- **i18n (EN/FR):** every user-facing string goes through `__('namespace.key')` or the `@enum($value[,'group'])` Blade directive — never hardcode. `lang/en/*.php` and `lang/fr/*.php` MUST stay **1:1** (enforced by `php scripts/i18n-audit.php`). Status/severity/tier values render via `@enum`; role badges via `lang/portal.php`; portal nav via `public.portal.nav_*`.
+- **i18n (EN/FR):** every user-facing string goes through `__('namespace.key')` or the `@enum($value[,'group'])` Blade directive — never hardcode. `lang/en/*.php` and `lang/fr/*.php` MUST stay **1:1** (enforced by `php scripts/i18n-audit.php`, which runs in CI before migrations). The audit checks three things, not one: identical keys, valid non-double-encoded UTF-8, and the same `:placeholders` on both sides — a key can be present, counted, and still be mojibake or have silently dropped its variable. Status/severity/tier values render via `@enum`; role badges via `lang/portal.php`; portal nav via `public.portal.nav_*`.
 - **UI:** **Lucide icons only** (never emoji); brand color **#0F4C81** (never purple); currency **XAF/FCFA**; payments **MTN MoMo / Orange Money** only.
 - **Portals are role-driven:** `role.dashboard_profile_key` → `resources/views/partials/sidebars/{key}.blade.php`, rendered by `layouts/portal.blade.php`. **Every feature needs a route + a nav link + a `route:list` check** — never leave a page reachable by URL only.
 - **Security (full list in the app CLAUDE.md):** `facility_id` only from `$request->attributes` (set by auth middleware) — never headers/body/session/fallback; `ConsentGrant` gate on every patient endpoint; no patient `LIKE`/enumeration search; client secrets **Argon2id** only.
@@ -52,7 +52,7 @@ single-hospital CRUD app.
 ## Verify before calling something "done"
 ```bash
 php artisan test --parallel        # the deploy gate
-php scripts/i18n-audit.php          # EN/FR 1:1 parity (must be 0 mismatches)
+php scripts/i18n-audit.php          # EN/FR keys 1:1 + UTF-8 encoding + :placeholder parity (now a CI gate)
 php artisan view:cache              # every Blade compiles
 php artisan route:list              # routes are wired
 ```

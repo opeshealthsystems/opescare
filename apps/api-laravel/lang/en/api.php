@@ -56,6 +56,9 @@ return [
     'appointment_cancelled'         => 'Appointment cancelled.',
     'appointment_already_cancelled' => 'Appointment is already cancelled.',
     'appointment_cancel_own_only'   => 'You may only cancel your own appointments.',
+    'appointment_facility_slot_mismatch' => 'That appointment slot belongs to a different facility.',
+    'appointment_slot_not_bookable'      => 'This appointment slot is no longer available.',
+    'appointment_facility_not_bookable'  => 'This facility is not accepting appointments.',
     'waitlist_dispatched'           => 'Waitlist backfill job dispatched.',
     'slot_not_available'            => 'The selected slot is no longer available.',
     // Blood / Inventory
@@ -162,6 +165,7 @@ return [
     'facility_listing_suspended'    => 'Facility listing suspended successfully.',
     'unauthorized_facility_owner'   => 'Unauthorized facility owner.',
     'pharmacy_stock_synced'         => 'Pharmacy stock sync accomplished successfully.',
+    'pharmacy_stock_sync_moved'     => 'This endpoint does not store stock. Send pharmacy stock to the Connect inventory API instead.',
     // Platform admin
     'default_settings_seeded'       => 'Default settings seeded.',
     'reason_required_disable_module'=> 'A reason is required when disabling a module.',
@@ -274,6 +278,10 @@ return [
     // Connect inventory
     'expired_stock_sync_blocked'    => 'Expired stock synchronisation blocked. Remove the listed items and retry.',
     'unsafe_blood_sync_forbidden'   => 'Unscreened or unsafe blood component sync is forbidden. Remove the listed items and retry.',
+    'partner_stock_nothing_stored'  => 'No submitted item could be stored, so nothing was written. See rejected_items for the reason on each line.',
+    'partner_stock_unknown_drug'    => 'drug_code matches no active medicine in the OpesCare catalogue. Send the catalogue medicine UUID or its WHO ATC code.',
+    'partner_stock_ambiguous_drug'  => 'drug_code matches more than one catalogue medicine, so the right one cannot be chosen. Send the catalogue medicine UUID instead of the ATC code.',
+    'partner_stock_listing_unlinked' => 'No public pharmacy listing is linked to this facility, so reported stock would reach no patient. Contact OpesCare support to link the listing.',
     // Patient search
     'search_params_missing'         => 'Missing required search parameters: search_type, purpose.',
     'search_query_missing'          => 'Missing required parameter: query.',

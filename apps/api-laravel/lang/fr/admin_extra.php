@@ -91,4 +91,30 @@ return [
 
     // legal/show — change-summary input placeholder
     'ph_change_summary' => 'Qu\'est-ce qui a changé dans cette version ?',
+
+    // users — primary facility assignment
+    'users_col_facility'      => 'Établissement',
+    'users_facility_none'     => 'Aucun établissement',
+    'users_stat_facility'     => 'Établissement principal',
+    'users_lbl_facility'      => 'Établissement principal',
+    'users_ph_facility'       => 'Aucun établissement (compte plateforme)',
+    'users_facility_help'     => 'Un compte du personnel sans établissement ne peut ouvrir aucun portail.',
+    'users_facility_find'     => 'Rechercher un établissement',
+    'users_facility_find_ph'  => 'Saisissez une partie du nom de l\'établissement',
+    'users_facility_find_btn' => 'Rechercher',
+    'users_facility_hint'     => 'Affichage de :n établissements au maximum. Recherchez par nom pour en atteindre un autre.',
+    'users_facility_no_match' => 'Aucun établissement ne correspond à cette recherche.',
+    'users_facility_locked'   => 'Vous ne pouvez affecter du personnel qu\'à l\'établissement que vous administrez.',
+
+    // users/index — create form
+    'users_create_title'   => 'Créer un utilisateur',
+    'users_create_name'    => 'Nom complet',
+    'users_create_email'   => 'E-mail',
+    'users_create_pw'      => 'Mot de passe temporaire',
+    'users_create_role'    => 'Rôle',
+    'users_create_role_ph' => 'Sélectionner un rôle',
+    'users_create_btn'     => 'Créer l\'utilisateur',
+
+    // users/show — status control
+    'users_lbl_status' => 'Statut',
 ];

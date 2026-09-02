@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     var mergeCases    = [];
     var currentReviewId = null;
 
-    // â”€â”€ Partner Governance â”€â”€
+    // ── Partner Governance ──
     const loadPartners = async () => {
         try {
             const res = await fetch('/api/partner-governance/partners', {headers:{'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? ''}});
@@ -368,7 +368,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     loadPartners();
 
-    // â”€â”€ Duplicate Cases â”€â”€
+    // ── Duplicate Cases ──
     const loadCases = async () => {
         const tbody = document.getElementById('duplicates-body');
         try {
@@ -403,7 +403,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     await loadCases();
 
-    // â”€â”€ Modal Logic â”€â”€
+    // ── Modal Logic ──
     window.openReviewModal = (id) => {
         currentReviewId = id;
         const c = mergeCases.find(x => x.uuid === id);

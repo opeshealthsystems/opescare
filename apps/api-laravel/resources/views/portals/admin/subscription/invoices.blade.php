@@ -71,7 +71,7 @@
                         <td data-label="{{ __('public.adm_sub_inv_col_invoice_date') }}">{{ $inv->invoice_date->format('d M Y') }}</td>
                         <td data-label="{{ __('public.adm_sub_inv_col_due_date') }}">
                             @if($inv->isOverdue())
-                                <span class="badge badge-danger">{{ $inv->due_date->format('d M Y') }} Â· {{ __('public.adm_sub_inv_badge_overdue') }}</span>
+                                <span class="badge badge-danger">{{ $inv->due_date->format('d M Y') }} · {{ __('public.adm_sub_inv_badge_overdue') }}</span>
                             @else
                                 {{ $inv->due_date->format('d M Y') }}
                             @endif

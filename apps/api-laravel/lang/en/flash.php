@@ -329,6 +329,7 @@ return [
     'authentication_complete' => 'Authentication complete. Welcome to OpesCare.',
     'otp_resent' => 'A new verification code has been requested. Please check your registered contact method.',
     'facility_select_required' => 'Please select a facility to continue.',
+    'facility_select_not_allowed' => 'You are not assigned to that facility.',
     'clinical_session_established' => 'Active clinical session established.',
     'import_approved_queued' => 'Import approved and queued. :count valid records will be processed shortly.',
     'legal_version_published' => 'Version :version published as current.',

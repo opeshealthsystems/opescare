@@ -61,4 +61,12 @@ return [
     'ctx_visit'           => 'Visit',
     'ctx_insurance'       => 'Insurance policy',
     'ctx_generic'         => 'Linked record',
+
+    // Staff-side inbox (portals/staff/messages)
+    'staff_inbox_subtitle'  => 'Secure messages from patients registered at your facility.',
+    'staff_breadcrumb_home' => 'Staff Portal',
+    'staff_empty_body'      => 'No patient at your facility has an open conversation with you yet.',
+    'patient_label'         => 'Patient',
+    'from_patient'          => 'Patient',
+    'nav'                   => 'Messages',
 ];

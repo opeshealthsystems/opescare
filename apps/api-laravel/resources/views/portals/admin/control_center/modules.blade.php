@@ -37,8 +37,8 @@
                     <span class="code-token">{{ $mod->module_key }}</span>
                     <span class="badge badge-neutral badge-sm">{{ $mod->scope }}</span>
                     @if($mod->scope_value)<span class="td-muted">{{ $mod->scope_value }}</span>@endif
-                    @if(!$mod->enabled && $mod->disable_reason)<span class="td-muted">Â· {{ $mod->disable_reason }}</span>@endif
-                    @if($mod->updated_by)<span class="td-muted">Â· {{ __('public.adm_cc_mod_updated_by') }} {{ $mod->updated_by }}</span>@endif
+                    @if(!$mod->enabled && $mod->disable_reason)<span class="td-muted">· {{ $mod->disable_reason }}</span>@endif
+                    @if($mod->updated_by)<span class="td-muted">· {{ __('public.adm_cc_mod_updated_by') }} {{ $mod->updated_by }}</span>@endif
                 </div>
             </div>
             <span class="badge {{ $mod->enabled ? 'badge-success' : 'badge-neutral' }} badge-sm">

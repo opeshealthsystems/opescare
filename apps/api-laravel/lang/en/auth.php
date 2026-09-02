@@ -58,4 +58,14 @@ return [
         'cta_signout'   => 'Sign out',
         'signed_in_as'  => 'Signed in as :email',
     ],
+    /* ── /verify/otp — a code screen with no channel behind it ───── */
+    'otp_unavailable' => [
+        'page_title'    => 'Verification unavailable | OpesCare',
+        'title'         => 'This verification step is not available.',
+        'body'          => 'No one-time code was sent to you, and none can be checked here. This screen is not connected to a verification channel in this version of OpesCare, so nothing entered on it would be verified.',
+        'next'          => 'If something sent you here, sign in again from the sign-in page. Accounts protected by a second factor are challenged there, on the sign-in screen itself.',
+        'cta_signin'    => 'Back to sign in',
+        'security_note' => 'OpesCare will never ask you for a one-time code on a page that did not send you one. Report any page that does.',
+        'error'         => 'Verification is unavailable. No code was checked and nothing has been verified.',
+    ],
 ];

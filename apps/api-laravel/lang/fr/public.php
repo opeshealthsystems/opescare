@@ -3446,6 +3446,7 @@ return [
     'stf_appt_patient_id'       => 'ID Patient *',
     'stf_appt_enter_patient_id' => 'Entrer l\'ID patient',
     'stf_appt_facility'         => 'Établissement *',
+    'stf_appt_facility_session' => 'L\'établissement auquel vous êtes connecté',
     'stf_appt_facility_id'      => 'ID établissement',
     'stf_appt_type'             => 'Type de rendez-vous *',
     'stf_appt_datetime'         => 'Date et heure *',

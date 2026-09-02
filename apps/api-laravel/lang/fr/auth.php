@@ -52,10 +52,23 @@ return [
     'portal_unavailable' => [
         'page_title'    => 'Portail indisponible | OpesCare',
         'title'         => 'Ce portail ne fait pas partie de la version actuelle.',
-        'body'          => 'Votre compte est actif et votre connexion a réussi. Le portail correspondant à votre rôle n\x27est pas activé dans cette version d\x27OpesCare : il n\x27y a donc rien à ouvrir pour le moment.',
-        'next'          => 'Votre compte n\x27a aucun problème et aucune donnée n\x27a été perdue. Votre accès reprendra dès l\x27activation du module.',
+        // \x27 is not an escape sequence inside a single-quoted PHP string, so
+        // these three sentences rendered a literal "n\x27est pas activé" to
+        // every French visitor. Typographic apostrophes need no escaping.
+        'body'          => 'Votre compte est actif et votre connexion a réussi. Le portail correspondant à votre rôle n’est pas activé dans cette version d’OpesCare : il n’y a donc rien à ouvrir pour le moment.',
+        'next'          => 'Votre compte n’a aucun problème et aucune donnée n’a été perdue. Votre accès reprendra dès l’activation du module.',
         'cta_contact'   => 'Contacter le support',
         'cta_signout'   => 'Se déconnecter',
         'signed_in_as'  => 'Connecté en tant que :email',
+    ],
+    /* ── /verify/otp — un écran de code sans canal derrière ───── */
+    'otp_unavailable' => [
+        'page_title'    => 'Vérification indisponible | OpesCare',
+        'title'         => 'Cette étape de vérification n’est pas disponible.',
+        'body'          => 'Aucun code à usage unique ne vous a été envoyé et aucun ne peut être vérifié ici. Cet écran n’est relié à aucun canal de vérification dans cette version d’OpesCare : rien de ce qui y est saisi ne serait vérifié.',
+        'next'          => 'Si vous avez été redirigé ici, reconnectez-vous depuis la page de connexion. Les comptes protégés par un second facteur y sont contrôlés, sur l’écran de connexion lui-même.',
+        'cta_signin'    => 'Retour à la connexion',
+        'security_note' => 'OpesCare ne vous demandera jamais un code à usage unique sur une page qui ne vous en a pas envoyé. Signalez toute page qui le ferait.',
+        'error'         => 'La vérification est indisponible. Aucun code n’a été vérifié et rien n’a été validé.',
     ],
 ];

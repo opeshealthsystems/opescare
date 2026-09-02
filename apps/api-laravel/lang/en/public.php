@@ -3445,6 +3445,7 @@ return [
     'stf_appt_patient_id'       => 'Patient ID *',
     'stf_appt_enter_patient_id' => 'Enter Patient ID',
     'stf_appt_facility'         => 'Facility *',
+    'stf_appt_facility_session' => 'The facility you are signed in to',
     'stf_appt_facility_id'      => 'Facility ID',
     'stf_appt_type'             => 'Appointment Type *',
     'stf_appt_datetime'         => 'Date & Time *',

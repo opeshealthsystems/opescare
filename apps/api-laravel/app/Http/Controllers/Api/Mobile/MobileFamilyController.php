@@ -228,7 +228,7 @@ class MobileFamilyController extends Controller
         return response()->json(['message' => __('api.invitation_cancelled')]);
     }
 
-    // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Helpers ────────────────────────────────────────────────────────────
 
     private function formatLink(FamilyLink $link): array
     {

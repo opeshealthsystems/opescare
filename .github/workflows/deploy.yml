@@ -93,6 +93,17 @@ jobs:
           echo "QUEUE_CONNECTION=redis" >> .env
           echo "REDIS_HOST=127.0.0.1" >> .env
 
+      # Cheap, no database, and it fails in about a second - so it runs
+      # before migrations. This is a hard gate because it has already been
+      # missed once: lang/fr/api.php sat double-encoded in production and
+      # the audit was green throughout, because it only compared KEYS. It
+      # now also checks encoding and :placeholder parity - and it was never
+      # wired into CI at all, the project checklist just asked a human to
+      # remember to run it.
+      - name: i18n parity, encoding and placeholder audit
+        working-directory: apps/api-laravel
+        run: php scripts/i18n-audit.php
+
       - name: Run migrations
         working-directory: apps/api-laravel
         run: php artisan migrate --force

@@ -61,4 +61,12 @@ return [
     'ctx_visit'           => 'Visite',
     'ctx_insurance'       => "Police d'assurance",
     'ctx_generic'         => 'Dossier lié',
+
+    // Boîte de réception du personnel (portals/staff/messages)
+    'staff_inbox_subtitle'  => 'Messages sécurisés des patients enregistrés dans votre établissement.',
+    'staff_breadcrumb_home' => 'Portail du personnel',
+    'staff_empty_body'      => "Aucun patient de votre établissement n'a encore de conversation ouverte avec vous.",
+    'patient_label'         => 'Patient',
+    'from_patient'          => 'Patient',
+    'nav'                   => 'Messages',
 ];
