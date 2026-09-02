@@ -125,6 +125,10 @@ class CareFacility extends Model
         'last_verified_at' => 'datetime',
         'last_profile_update_at' => 'datetime',
         'last_availability_update_at' => 'datetime',
+        // Import provenance. source_synced_at is read by CareFacilityResource,
+        // which calls ->toISOString() on it — without the cast that is a
+        // fatal on a plain string.
+        'source_synced_at' => 'datetime',
     ];
 
     public function services()

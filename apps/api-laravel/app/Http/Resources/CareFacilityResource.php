@@ -45,6 +45,24 @@ class CareFacilityResource extends ApiResource
             'last_availability_update_at' => $this->last_availability_update_at?->toISOString(),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
+
+            /*
+             * Where this row came from, and the attribution that has to travel
+             * with it.
+             *
+             * Facilities imported from OpenStreetMap are ODbL-licensed, and
+             * ODbL requires attribution wherever the data is redistributed —
+             * which this API does, to partners and to the public. Serving an
+             * OSM-derived facility without its notice puts OpesCare in breach
+             * of the very licence that makes the import lawful, so the notice
+             * ships with the record rather than living only in a footer
+             * somebody may forget to render.
+             *
+             * Null for the MINSANTE registry rows, which are not OSM-derived.
+             */
+            'source_system' => $this->source_system,
+            'source_attribution' => $this->source_attribution,
+            'source_synced_at' => $this->source_synced_at?->toISOString(),
         ];
     }
 }
