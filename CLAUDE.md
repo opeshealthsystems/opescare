@@ -19,6 +19,22 @@ single-hospital CRUD app.
 | **The full knowledge base** | `docs/` (being reorganized: `00-overview … 70-development` + `docs/README.md` index) |
 | **Decisions & state across sessions** (Claude Code) | the project memory: `~/.claude/projects/C--laragon-www-opescare/memory/MEMORY.md` |
 
+## The three checkouts on this machine — nothing else is live
+There are exactly three OpesCare working folders. Any other `opescare*` folder is
+cruft: it has been deleted, and a new one should not be created.
+
+| Folder | Repository | What it is |
+|---|---|---|
+| `C:\laragon\www\opescare` | `opeshealthsystems/opescare` on `main` | **This** monorepo — the platform (opescare.cloud) |
+| `C:\laragon\www\opescare-finder` | local `master`, no remote | **OpesCare Finder** (finder.opescare.cloud) — extracted from this repo 2026-09-02, own lifecycle; see its `CLAUDE.md` |
+| `C:\laragon\www\opescare-finder-mobile` | local `master`, no remote | the Finder's Expo app, shipped via EAS |
+
+Keep them separate. The Finder deploys by scp from its own checkout and has its
+own `APP_KEY` and JWT keypair — folding it back into this repo would break both
+deploys and leak secrets across two estates. Retired on **2026-10-12**:
+`opescare-legacy` (a second checkout of this same repo on an ancestor of `main`,
+holding no unique code) and 81 fully merged feature/agent branches.
+
 ## Monorepo map
 | Path | What it is | Deployed to prod? |
 |---|---|---|
